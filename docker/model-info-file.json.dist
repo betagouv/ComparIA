@@ -1,0 +1,8 @@
+{
+  "gpt2": {
+    "api_base": "https://api-inference.huggingface.co/models/",
+    "token": "",
+    "context_length": "4096",
+    "model_path": "gpt2"
+  }
+}
