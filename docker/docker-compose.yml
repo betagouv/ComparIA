@@ -1,12 +1,13 @@
 services:
   languia-front:
     ports:
-      - "8002:3000"
+      - "8002:80"
+      # - "8002:3000"
     image: "languia-front:latest"
     build: "../../languia-front"
-    volumes: 
-    - "../../languia-front:/app"
-    command: vite dev
+    # volumes: 
+    # - "../../languia-front:/app"
+    # command: vite dev
   fastchat-controller:
     build:
       context: .
