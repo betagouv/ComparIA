@@ -44,6 +44,8 @@ services:
     image: fastchat:latest
     ports:
       - "8001:8001"
-    entrypoint: ["python3.9", "-m", "fastchat.serve.gradio_web_server", "--controller-url", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "8001"]
 volumes:
-  huggingface:
+      - ./register-api-endpoint-file.json:/register-api-endpoint-file.json
+    entrypoint: ["python3.9", "-m", "fastchat.serve.gradio_web_server", "--controller-url", "http://fastchat-controller:21001", "--register-api-endpoint-file", "/register-api-endpoint-file.json", "--host", "0.0.0.0", "--port", "8001"]
+# volumes:
+#   huggingface:
