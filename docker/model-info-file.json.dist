@@ -1,8 +1,8 @@
 {
-  "gpt2": {
+  "microsoft/Phi-3-mini-4k-instruct": {
     "api_base": "https://api-inference.huggingface.co/models/",
     "token": "",
     "context_length": "4096",
-    "model_path": "gpt2"
+    "model_path": "microsoft/Phi-3-mini-4k-instruct"
   }
 }
