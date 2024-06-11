@@ -1,13 +1,4 @@
 services:
-  languia-front:
-    ports:
-      - "8002:80"
-      # - "8002:3000"
-    image: "languia-front:latest"
-    build: "../../languia-front"
-    # volumes: 
-    # - "../../languia-front:/app"
-    # command: vite dev
   fastchat-controller:
     build:
       context: .
@@ -30,12 +21,9 @@ services:
     #         - driver: nvidia
     #           count: 1
     #           capabilities: [gpu]
-    # huggingface_api_worker.py
-    # "model_path", "api_base", "token", and "context_length" are necessary, while others are optional.
     volumes:
       - ./model-info-file.json:/model-info-file.json
     entrypoint: ["python3.9", "-m", "fastchat.serve.huggingface_api_worker", "--model-info-file", "/model-info-file.json", "--worker-address", "http://fastchat-model-worker:21002", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "21002"]
-    # entrypoint: ["python3.9", "-m", "fastchat.serve.model_worker", "--model-names", "${FASTCHAT_WORKER_MODEL_NAMES:-vicuna-7b-v1.5}", "--model-path", "${FASTCHAT_WORKER_MODEL_PATH:-lmsys/vicuna-7b-v1.5}", "--worker-address", "http://fastchat-model-worker:21002", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "21002"]
   fastchat-api-server:
     build:
       context: .
