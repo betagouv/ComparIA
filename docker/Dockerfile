@@ -12,10 +12,10 @@ USER fastchat
 COPY --chown=fastchat:fastchat . /app
 WORKDIR /app
 
-RUN pip3 install -e ".[webui,model_worker]"
+RUN pip3 install -e ".[webui]"
 
 # For monitoring
-RUN pip3 install plotly
+RUN pip3 install plotly psutil
 
 # For OpenAI-like APIs
 RUN pip3 install openai
