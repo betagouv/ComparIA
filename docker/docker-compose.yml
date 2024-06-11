@@ -7,23 +7,23 @@ services:
     ports:
       - "21001:21001"
     entrypoint: ["python3.9", "-m", "fastchat.serve.controller", "--host", "0.0.0.0", "--port", "21001"]
-  fastchat-model-worker:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    # volumes:
-    #   - huggingface:/root/.cache/huggingface
-    image: fastchat:latest
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
-    volumes:
-      - ./model-info-file.json:/model-info-file.json
-    entrypoint: ["python3.9", "-m", "fastchat.serve.huggingface_api_worker", "--model-info-file", "/model-info-file.json", "--worker-address", "http://fastchat-model-worker:21002", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "21002"]
+  # fastchat-model-worker:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   # volumes:
+  #   #   - huggingface:/root/.cache/huggingface
+  #   image: fastchat:latest
+  #   # deploy:
+  #   #   resources:
+  #   #     reservations:
+  #   #       devices:
+  #   #         - driver: nvidia
+  #   #           count: 1
+  #   #           capabilities: [gpu]
+  #   volumes:
+  #     - ./model-info-file.json:/model-info-file.json
+  #   entrypoint: ["python3.9", "-m", "fastchat.serve.huggingface_api_worker", "--model-info-file", "/model-info-file.json", "--worker-address", "http://fastchat-model-worker:21002", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "21002"]
   fastchat-api-server:
     build:
       context: .
