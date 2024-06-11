@@ -9,7 +9,7 @@ WORKDIR /app
 # ENV VIRTUAL_ENV=/app/venv
 # ENV PATH="/app/venv/bin:$PATH"
 # Install deps first
-RUN pip3 install fastchat[webui]
+RUN pip3 install fschat[webui]
 
 # For monitoring
 RUN pip3 install plotly psutil
