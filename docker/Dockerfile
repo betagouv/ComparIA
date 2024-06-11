@@ -4,9 +4,8 @@ RUN groupadd fastchat --gid 10001 && useradd --system -u 10001 --gid 10001 --hom
 USER fastchat
 WORKDIR /app
 
-RUN pip3 install fschat[webui,model_worker]
-
 # Install deps first
+RUN pip3 install fschat[webui,model_worker]
 
 # For monitoring
 RUN pip3 install plotly
