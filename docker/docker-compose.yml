@@ -33,6 +33,8 @@ services:
       - "8000:8000"
     entrypoint: ["python3.9", "-m", "fastchat.serve.openai_api_server", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "8000"]
   fastchat-gradio-web-server:
+    environment:
+      LOGDIR: /data
     build:
       context: .
       dockerfile: Dockerfile
@@ -40,7 +42,6 @@ services:
     ports:
       - "8001:8001"
     volumes:
+      - ../data:/data
       - ./register-api-endpoint-file.json:/register-api-endpoint-file.json
     entrypoint: ["python3.9", "-m", "fastchat.serve.gradio_web_server_multi", "--controller-url", "http://fastchat-controller:21001", "--register-api-endpoint-file", "/register-api-endpoint-file.json", "--host", "0.0.0.0", "--port", "8001"]
-# volumes:
-#   huggingface:
