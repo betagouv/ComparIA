@@ -505,7 +505,7 @@ def bot_response_multi(
 def build_side_by_side_ui_anony(models):
     notice_markdown = """
 # LANGU:IA
-- [GitHub](https://github.com/betagouvfr/languia)
+- [GitHub](https://github.com/betagouv/languia)
 
 ## 📜 Règles
 Posez vos questions et déterminez le LLM vainqueur !
