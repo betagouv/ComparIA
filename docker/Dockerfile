@@ -15,3 +15,4 @@ USER fastchat
 WORKDIR /app
 
 COPY --chown=fastchat:fastchat . /app
+VOLUME /data
