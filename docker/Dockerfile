@@ -11,6 +11,7 @@ RUN pip3 install fschat[model_worker,webui]
 RUN pip3 install openai plotly pydantic-settings
 
 RUN groupadd fastchat --gid 10001 && useradd --system -u 10001 --gid 10001 --home /app fastchat
+RUN mkdir /data && touch /data/gradio_web_server.log && chown fastchat:fastchat -R /data 
 USER fastchat
 WORKDIR /app
 
