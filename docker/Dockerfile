@@ -10,5 +10,8 @@ RUN pip3 install fschat
 RUN pip3 install fschat[model_worker,webui]
 RUN pip3 install openai plotly pydantic-settings
 
-COPY . /app
+RUN groupadd fastchat --gid 10001 && useradd --system -u 10001 --gid 10001 --home /app fastchat
+USER fastchat
 WORKDIR /app
+
+COPY --chown=fastchat:fastchat . /app
