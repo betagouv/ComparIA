@@ -118,18 +118,6 @@ def build_demo(models, vl_models, elo_results_file, leaderboard_table_file):
     head_js = """
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 """
-    if args.ga_id is not None:
-        head_js += f"""
-<script async src="https://www.googletagmanager.com/gtag/js?id={args.ga_id}"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){{dataLayer.push(arguments);}}
-gtag('js', new Date());
-
-gtag('config', '{args.ga_id}');
-window.__gradio_mode__ = "app";
-</script>
-        """
 
     with gr.Blocks(
         title="LANGU:IA, l'arène de comparaison des LLM",
