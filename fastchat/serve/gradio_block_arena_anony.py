@@ -531,7 +531,7 @@ Posez vos questions et déterminez le LLM vainqueur !
                     chatbots[i] = gr.Chatbot(
                         label=label,
                         elem_id="chatbot",
-                        height=550,
+                        height=150,
                         show_copy_button=True,
                     )
 
