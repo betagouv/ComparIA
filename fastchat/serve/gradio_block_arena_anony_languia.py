@@ -386,7 +386,7 @@ def add_text(
     all_conv_text = (
         all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
     )
-    flagged = moderation_filter(all_conv_text, model_list, do_moderation=True)
+    flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
     if flagged:
         logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
         # overwrite the original text
@@ -504,19 +504,12 @@ def bot_response_multi(
 
 def build_side_by_side_ui_anony(models):
     notice_markdown = """
-# ⚔️  LMSYS Chatbot Arena: Benchmarking LLMs in the Wild
-- | [Blog](https://lmsys.org/blog/2023-05-03-arena/) | [GitHub](https://github.com/lm-sys/FastChat) | [Paper](https://arxiv.org/abs/2306.05685) | [Dataset](https://github.com/lm-sys/FastChat/blob/main/docs/dataset_release.md) | [Twitter](https://twitter.com/lmsysorg) | [Discord](https://discord.gg/HSWAKCrnFx) |
+# LANGU:IA
+- [GitHub](https://github.com/betagouv/languia)
 
-## 📜 Rules
-- Ask any question to two anonymous models (e.g., ChatGPT, Claude, Llama) and vote for the better one!
-- You can continue chatting until you identify a winner.
-- Vote won't be counted if model identity is revealed during conversation.
+## 📜 Règles
+Posez vos questions et déterminez le LLM vainqueur !
 
-## 🏆 LMSYS Arena [Leaderboard](https://leaderboard.lmsys.org)
-We've collected **500K+** human votes to compute an LLM Elo leaderboard.
-Find out who is the 🥇LLM Champion!
-
-## 👇 Chat now!
 """
 
     states = [gr.State() for _ in range(num_sides)]
@@ -538,7 +531,7 @@ Find out who is the 🥇LLM Champion!
                     chatbots[i] = gr.Chatbot(
                         label=label,
                         elem_id="chatbot",
-                        height=550,
+                        height=150,
                         show_copy_button=True,
                     )
 
@@ -553,20 +546,20 @@ Find out who is the 🥇LLM Champion!
 
     with gr.Row():
         leftvote_btn = gr.Button(
-            value="👈  A is better", visible=False, interactive=False
+            value="👈  A est mieux", visible=False, interactive=False
         )
         rightvote_btn = gr.Button(
-            value="👉  B is better", visible=False, interactive=False
+            value="👉  B est mieux", visible=False, interactive=False
         )
-        tie_btn = gr.Button(value="🤝  Tie", visible=False, interactive=False)
+        tie_btn = gr.Button(value="🤝  Les deux se valent", visible=False, interactive=False)
         bothbad_btn = gr.Button(
-            value="👎  Both are bad", visible=False, interactive=False
+            value="👎  Aucun des deux", visible=False, interactive=False
         )
 
     with gr.Row():
         textbox = gr.Textbox(
             show_label=False,
-            placeholder="👉 Enter your prompt and press ENTER",
+            placeholder="C'est quand la fête nationale ?",
             elem_id="input_box",
         )
         send_btn = gr.Button(value="Send", variant="primary", scale=0)
