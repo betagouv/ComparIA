@@ -19,14 +19,14 @@ class DSFR(Base):
         font: fonts.Font
         | str
         | Iterable[fonts.Font | str] = ("Marianne",
-            Arial,
+            "Arial",
             "ui-sans-serif",
             "sans-serif",
         ),
         font_mono: fonts.Font
         | str
         | Iterable[fonts.Font | str] = ("Marianne",
-            Arial,
+            "Arial",
             "ui-sans-serif",
             "sans-serif",
         ),
