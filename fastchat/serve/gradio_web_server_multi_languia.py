@@ -115,8 +115,11 @@ def build_demo(models, vl_models, elo_results_file, leaderboard_table_file):
     else:
         load_js = get_window_url_params_js
 
+# TODO: async load?
     head_js = """
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script type="module" src="file=assets/js/dsfr.module.js"></script>
+<script type="text/javascript" nomodule src="file=assets/js/dsfr.nomodule.js"></script> 
 """
 
     with gr.Blocks(
