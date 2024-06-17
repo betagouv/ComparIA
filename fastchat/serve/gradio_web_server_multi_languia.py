@@ -7,7 +7,7 @@ import argparse
 import pickle
 import time
 
-from .themes.dsfr import DSFR
+from fastchat.serve.themes.dsfr import DSFR
 
 import gradio as gr
 
@@ -34,7 +34,7 @@ from fastchat.serve.gradio_block_arena_vision_named import (
 
 from fastchat.serve.gradio_web_server import (
     set_global_vars,
-    block_css,
+    # block_css,
     build_single_model_ui,
     build_about,
     get_model_list,
@@ -123,7 +123,7 @@ def build_demo(models, vl_models, elo_results_file, leaderboard_table_file):
         title="LANGU:IA, l'arène de comparaison des LLM",
         # theme=gr.themes.Default(text_size=text_size),
         theme=DSFR(text_size=text_size),
-        css=block_css,
+        css="./assets/dsfr.css",
         head=head_js,
     ) as demo:
         with gr.Tabs() as tabs:
@@ -268,6 +268,7 @@ if __name__ == "__main__":
         status_update_rate=10,
         api_open=False,
     ).launch(
+        allowed_paths=["/app/assets/fonts","/app/assets/icons", "/app/assets/js"], # Access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
         server_name=args.host,
         server_port=args.port,
         share=args.share,
@@ -275,4 +276,5 @@ if __name__ == "__main__":
         auth=auth,
         root_path=args.gradio_root_path,
         show_api=False,
+        # debug=True
     )
