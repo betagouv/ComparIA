@@ -546,14 +546,14 @@ Posez vos questions et déterminez le LLM vainqueur !
 
     with gr.Row():
         leftvote_btn = gr.Button(
-            value="👈  A is better", visible=False, interactive=False
+            value="👈  A est mieux", visible=False, interactive=False
         )
         rightvote_btn = gr.Button(
-            value="👉  B is better", visible=False, interactive=False
+            value="👉  B est mieux", visible=False, interactive=False
         )
-        tie_btn = gr.Button(value="🤝  Tie", visible=False, interactive=False)
+        tie_btn = gr.Button(value="🤝  Les deux se valent", visible=False, interactive=False)
         bothbad_btn = gr.Button(
-            value="👎  Both are bad", visible=False, interactive=False
+            value="👎  Aucun des deux", visible=False, interactive=False
         )
 
     with gr.Row():
