@@ -18,17 +18,17 @@ class DSFR(Base):
         text_size: sizes.Size | str = sizes.text_lg,
         font: fonts.Font
         | str
-        | Iterable[fonts.Font | str] = (
-            fonts.GoogleFont("Quicksand"),
+        | Iterable[fonts.Font | str] = ("Marianne",
+            Arial,
             "ui-sans-serif",
             "sans-serif",
         ),
         font_mono: fonts.Font
         | str
-        | Iterable[fonts.Font | str] = (
-            fonts.GoogleFont("IBM Plex Mono"),
-            "ui-monospace",
-            "monospace",
+        | Iterable[fonts.Font | str] = ("Marianne",
+            Arial,
+            "ui-sans-serif",
+            "sans-serif",
         ),
     ):
         super().__init__(
