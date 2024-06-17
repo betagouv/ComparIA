@@ -56,26 +56,11 @@ enable_moderation = False
 use_remote_storage = False
 
 acknowledgment_md = """
-### Terms of Service
 
-Users are required to agree to the following terms before using the service:
+### A propos
 
-The service is a research preview. It only provides limited safety measures and may generate offensive content.
-It must not be used for any illegal, harmful, violent, racist, or sexual purposes.
-Please do not upload any private information.
-The service collects user dialogue data, including both text and images, and reserves the right to distribute it under a Creative Commons Attribution (CC-BY) or a similar license.
-
-### Acknowledgment
-We thank [UC Berkeley SkyLab](https://sky.cs.berkeley.edu/), [Kaggle](https://www.kaggle.com/), [MBZUAI](https://mbzuai.ac.ae/), [a16z](https://www.a16z.com/), [Together AI](https://www.together.ai/), [Hyperbolic](https://hyperbolic.xyz/), [Anyscale](https://www.anyscale.com/), [HuggingFace](https://huggingface.co/) for their generous [sponsorship](https://lmsys.org/donations/).
-
+Remerciements :
 <div class="sponsor-image-about">
-    <img src="https://storage.googleapis.com/public-arena-asset/skylab.png" alt="SkyLab">
-    <img src="https://storage.googleapis.com/public-arena-asset/kaggle.png" alt="Kaggle">
-    <img src="https://storage.googleapis.com/public-arena-asset/mbzuai.jpeg" alt="MBZUAI">
-    <img src="https://storage.googleapis.com/public-arena-asset/a16z.jpeg" alt="a16z">
-    <img src="https://storage.googleapis.com/public-arena-asset/together.png" alt="Together AI">
-    <img src="https://storage.googleapis.com/public-arena-asset/hyperbolic_logo.png" alt="Hyperbolic">
-    <img src="https://storage.googleapis.com/public-arena-asset/anyscale.png" alt="AnyScale">
     <img src="https://storage.googleapis.com/public-arena-asset/huggingface.png" alt="HuggingFace">
 </div>
 """
@@ -800,12 +785,8 @@ def build_single_model_ui(models, add_promotion_links=False):
                 container=False,
             )
         with gr.Row():
-            with gr.Accordion(
-                f"🔍 Expand to see the descriptions of {len(models)} models",
-                open=False,
-            ):
-                model_description_md = get_model_description_md(models)
-                gr.Markdown(model_description_md, elem_id="model_description_markdown")
+            model_description_md = get_model_description_md(models)
+            gr.Markdown(model_description_md, elem_id="model_description_markdown")
 
         chatbot = gr.Chatbot(
             elem_id="chatbot",
@@ -816,10 +797,10 @@ def build_single_model_ui(models, add_promotion_links=False):
     with gr.Row():
         textbox = gr.Textbox(
             show_label=False,
-            placeholder="👉 Enter your prompt and press ENTER",
+            placeholder="👉 C'est quand la fête nationale ?",
             elem_id="input_box",
         )
-        send_btn = gr.Button(value="Send", variant="primary", scale=0)
+        send_btn = gr.Button(value="Envoyer", variant="primary", scale=0)
 
     with gr.Row() as button_row:
         upvote_btn = gr.Button(value="👍  Upvote", interactive=False)
