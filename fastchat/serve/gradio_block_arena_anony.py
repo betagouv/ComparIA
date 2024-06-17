@@ -559,7 +559,7 @@ Posez vos questions et déterminez le LLM vainqueur !
     with gr.Row():
         textbox = gr.Textbox(
             show_label=False,
-            placeholder="👉 Enter your prompt and press ENTER",
+            placeholder="C'est quand la fête nationale ?",
             elem_id="input_box",
         )
         send_btn = gr.Button(value="Send", variant="primary", scale=0)
