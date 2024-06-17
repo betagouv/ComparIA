@@ -7,6 +7,8 @@ import argparse
 import pickle
 import time
 
+from .themes.dsfr import DSFR
+
 import gradio as gr
 
 from fastchat.serve.gradio_block_arena_anony import (
@@ -130,13 +132,14 @@ window.__gradio_mode__ = "app";
         """
 
     with gr.Blocks(
-        title="Chat with Open Large Language Models",
-        theme=gr.themes.Default(text_size=text_size),
+        title="LANGU:IA, l'arène de comparaison des LLM",
+        # theme=gr.themes.Default(text_size=text_size),
+        theme=DSFR(text_size=text_size),
         css=block_css,
         head=head_js,
     ) as demo:
         with gr.Tabs() as tabs:
-            with gr.Tab("Text Arena", id=0):
+            with gr.Tab("Arène", id=0):
                 side_by_side_anony_list = build_side_by_side_ui_anony(models)
 
             
