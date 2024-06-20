@@ -22,7 +22,7 @@ services:
   #   #           count: 1
   #   #           capabilities: [gpu]
   #   volumes:
-  #     - ./model-info-file.json:/model-info-file.json
+  #     - ../model-info-file.json:/model-info-file.json
   #   entrypoint: ["python3.9", "-m", "fastchat.serve.huggingface_api_worker", "--model-info-file", "/model-info-file.json", "--worker-address", "http://fastchat-model-worker:21002", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "21002"]
   # fastchat-api-server:
   #   build:
@@ -43,5 +43,8 @@ services:
       - "8001:8001"
     volumes:
       - ../data:/data
-      - ./register-api-endpoint-file.json:/register-api-endpoint-file.json
+      - ../register-api-endpoint-file.json:/register-api-endpoint-file.json
+    # WIP: dev config
+      # - ../fastchat:/app/fastchat
+    # command: ["gradio", "fastchat/serve/gradio_web_server_multi_languia.py"]
     command: ["python3.9", "-m", "fastchat.serve.gradio_web_server_multi_languia", "--controller-url", "http://fastchat-controller:21001", "--register-api-endpoint-file", "/register-api-endpoint-file.json", "--host", "0.0.0.0", "--port", "8001"]

@@ -14,3 +14,7 @@ WORKDIR /app
 
 COPY . /app
 VOLUME /data
+
+EXPOSE 80
+
+CMD ["python3.9", "-m", "fastchat.serve.gradio_web_server_multi_languia", "--controller-url", "http://fastchat-controller:21001", "--register-api-endpoint-file", "/register-api-endpoint-file.json", "--host", "0.0.0.0", "--port", "80"]

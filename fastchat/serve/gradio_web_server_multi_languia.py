@@ -204,6 +204,7 @@ if __name__ == "__main__":
         "--register-api-endpoint-file",
         type=str,
         help="Register API-based model endpoints from a JSON file",
+        default="register-api-endpoint-file.json"
     )
     parser.add_argument(
         "--gradio-auth-path",
