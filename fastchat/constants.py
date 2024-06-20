@@ -32,7 +32,7 @@ CONVERSATION_TURN_LIMIT = 50
 # Session expiration time
 SESSION_EXPIRATION_TIME = 3600
 # The output dir of log files
-LOGDIR = os.getenv("LOGDIR", ".")
+LOGDIR = os.getenv("LOGDIR", "./data")
 # CPU Instruction Set Architecture
 CPU_ISA = os.getenv("CPU_ISA")
 
