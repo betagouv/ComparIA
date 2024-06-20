@@ -6,6 +6,9 @@ __pycache__
 .venv
 venv
 
+# JS
+node_modules
+
 # Log
 *.log
 *.log.*
