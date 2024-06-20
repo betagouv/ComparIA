@@ -7,9 +7,11 @@ import argparse
 import pickle
 import time
 
+from fastchat.serve.themes.dsfr import DSFR
+
 import gradio as gr
 
-from fastchat.serve.gradio_block_arena_anony import (
+from fastchat.serve.gradio_block_arena_anony_languia import (
     build_side_by_side_ui_anony,
     load_demo_side_by_side_anony,
     set_global_vars_anony,
@@ -32,7 +34,7 @@ from fastchat.serve.gradio_block_arena_vision_named import (
 
 from fastchat.serve.gradio_web_server import (
     set_global_vars,
-    block_css,
+    # block_css,
     build_single_model_ui,
     build_about,
     get_model_list,
@@ -85,7 +87,7 @@ def load_demo(url_params, request: gr.Request):
 
     single_updates = load_demo_single(models, url_params)
     side_by_side_anony_updates = load_demo_side_by_side_anony(all_models, url_params)
-    side_by_side_named_updates = load_demo_side_by_side_named(models, url_params)
+    # side_by_side_named_updates = load_demo_side_by_side_named(models, url_params)
 
     vision_language_updates = load_demo_single(vl_models, url_params)
     side_by_side_vision_named_updates = load_demo_side_by_side_named(
@@ -99,10 +101,10 @@ def load_demo(url_params, request: gr.Request):
         (gr.Tabs(selected=selected),)
         + single_updates
         + side_by_side_anony_updates
-        + side_by_side_named_updates
-        + side_by_side_vision_anony_updates
-        + side_by_side_vision_named_updates
-        + vision_language_updates
+        # + side_by_side_named_updates
+        # + side_by_side_vision_anony_updates
+        # + side_by_side_vision_named_updates
+        # + vision_language_updates
     )
 
 
@@ -113,79 +115,23 @@ def build_demo(models, vl_models, elo_results_file, leaderboard_table_file):
     else:
         load_js = get_window_url_params_js
 
+    # TODO: async load?
     head_js = """
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script type="module" src="file=assets/js/dsfr.module.js"></script>
+<script type="text/javascript" nomodule src="file=assets/js/dsfr.nomodule.js"></script> 
 """
-    if args.ga_id is not None:
-        head_js += f"""
-<script async src="https://www.googletagmanager.com/gtag/js?id={args.ga_id}"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){{dataLayer.push(arguments);}}
-gtag('js', new Date());
-
-gtag('config', '{args.ga_id}');
-window.__gradio_mode__ = "app";
-</script>
-        """
 
     with gr.Blocks(
-        title="Chat with Open Large Language Models",
-        theme=gr.themes.Default(text_size=text_size),
-        css=block_css,
+        title="LANGU:IA, l'arène de comparaison des LLM",
+        # theme=gr.themes.Default(text_size=text_size),
+        theme=DSFR(text_size=text_size),
+        css="./assets/dsfr.css",
         head=head_js,
     ) as demo:
         with gr.Tabs() as tabs:
-            with gr.Tab("Text Arena", id=0):
-                with gr.Tab("⚔️  Arena (battle)", id=0):
-                    side_by_side_anony_list = build_side_by_side_ui_anony(models)
-
-                with gr.Tab("⚔️  Arena (side-by-side)", id=1):
-                    side_by_side_named_list = build_side_by_side_ui_named(models)
-
-                with gr.Tab("💬 Direct Chat", id=2):
-                    single_model_list = build_single_model_ui(
-                        models, add_promotion_links=True
-                    )
-
-            demo_tabs = (
-                [tabs]
-                + single_model_list
-                + side_by_side_anony_list
-                + side_by_side_named_list
-            )
-
-            if args.vision_arena:
-                with gr.Tab("Vision Arena", id=3):
-                    with gr.Tab("⚔️  Vision Arena (battle)", id=3):
-                        side_by_side_vision_anony_list = (
-                            build_side_by_side_vision_ui_anony(
-                                vl_models,
-                                random_questions=args.random_questions,
-                            )
-                        )
-
-                    with gr.Tab("⚔️  Vision Arena (side-by-side)", id=4):
-                        side_by_side_vision_named_list = (
-                            build_side_by_side_vision_ui_named(
-                                vl_models,
-                                random_questions=args.random_questions,
-                            )
-                        )
-
-                    with gr.Tab("👀 Vision Direct Chat", id=5):
-                        single_vision_language_model_list = (
-                            build_single_vision_language_model_ui(
-                                vl_models,
-                                add_promotion_links=True,
-                                random_questions=args.random_questions,
-                            )
-                        )
-                demo_tabs += (
-                    side_by_side_vision_anony_list
-                    + side_by_side_vision_named_list
-                    + single_vision_language_model_list
-                )
+            with gr.Tab("Arène", id=0):
+                side_by_side_anony_list = build_side_by_side_ui_anony(models)
 
             if elo_results_file:
                 with gr.Tab("Leaderboard", id=6):
@@ -204,7 +150,6 @@ window.__gradio_mode__ = "app";
         demo.load(
             load_demo,
             [url_params],
-            demo_tabs,
             js=load_js,
         )
 
@@ -325,6 +270,11 @@ if __name__ == "__main__":
         status_update_rate=10,
         api_open=False,
     ).launch(
+        allowed_paths=[
+            "/app/assets/fonts",
+            "/app/assets/icons",
+            "/app/assets/js",
+        ],  # Access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
         server_name=args.host,
         server_port=args.port,
         share=args.share,
@@ -332,4 +282,5 @@ if __name__ == "__main__":
         auth=auth,
         root_path=args.gradio_root_path,
         show_api=False,
+        # debug=True
     )

@@ -386,7 +386,7 @@ def add_text(
     all_conv_text = (
         all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
     )
-    flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
+    flagged = moderation_filter(all_conv_text, model_list, do_moderation=True)
     if flagged:
         logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
         # overwrite the original text
@@ -504,12 +504,19 @@ def bot_response_multi(
 
 def build_side_by_side_ui_anony(models):
     notice_markdown = """
-# LANGU:IA
-- [GitHub](https://github.com/betagouv/languia)
+# ⚔️  LMSYS Chatbot Arena: Benchmarking LLMs in the Wild
+- | [Blog](https://lmsys.org/blog/2023-05-03-arena/) | [GitHub](https://github.com/lm-sys/FastChat) | [Paper](https://arxiv.org/abs/2306.05685) | [Dataset](https://github.com/lm-sys/FastChat/blob/main/docs/dataset_release.md) | [Twitter](https://twitter.com/lmsysorg) | [Discord](https://discord.gg/HSWAKCrnFx) |
 
-## 📜 Règles
-Posez vos questions et déterminez le LLM vainqueur !
+## 📜 Rules
+- Ask any question to two anonymous models (e.g., ChatGPT, Claude, Llama) and vote for the better one!
+- You can continue chatting until you identify a winner.
+- Vote won't be counted if model identity is revealed during conversation.
 
+## 🏆 LMSYS Arena [Leaderboard](https://leaderboard.lmsys.org)
+We've collected **500K+** human votes to compute an LLM Elo leaderboard.
+Find out who is the 🥇LLM Champion!
+
+## 👇 Chat now!
 """
 
     states = [gr.State() for _ in range(num_sides)]
