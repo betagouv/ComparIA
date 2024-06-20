@@ -26,8 +26,9 @@ from fastchat.utils import (
     build_logger,
     get_window_url_params_js,
     get_window_url_params_with_tos_js,
-    parse_gradio_auth_creds,
 )
+
+import os
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
@@ -54,21 +55,13 @@ def load_demo(url_params, request: gr.Request):
         )
 
     side_by_side_anony_updates = load_demo_side_by_side_anony(all_models, url_params)
-    # side_by_side_named_updates = load_demo_side_by_side_named(models, url_params)
 
     return (gr.Tabs(selected=selected),) + side_by_side_anony_updates
 
 
-# return demo
-
 parser = argparse.ArgumentParser()
 parser.add_argument("--host", type=str, default="0.0.0.0")
 parser.add_argument("--port", type=int)
-parser.add_argument(
-    "--share",
-    action="store_true",
-    help="Whether to generate a public, shareable link",
-)
 parser.add_argument(
     "--controller-url",
     type=str,
@@ -98,21 +91,21 @@ parser.add_argument(
     action="store_true",
     help="Shows term of use before loading the demo",
 )
-parser.add_argument(
-    "--random-questions", type=str, help="Load random questions from a JSON file"
-)
+# parser.add_argument(
+#     "--random-questions", type=str, help="Load random questions from a JSON file"
+# )
 parser.add_argument(
     "--register-api-endpoint-file",
     type=str,
     help="Register API-based model endpoints from a JSON file",
     default="register-api-endpoint-file.json",
 )
-parser.add_argument(
-    "--gradio-auth-path",
-    type=str,
-    help='Set the gradio authentication file path. The file should contain one or more user:password pairs in this format: "u1:p1,u2:p2,u3:p3"',
-    default=None,
-)
+# parser.add_argument(
+#     "--gradio-auth-path",
+#     type=str,
+#     help='Set the gradio authentication file path. The file should contain one or more user:password pairs in this format: "u1:p1,u2:p2,u3:p3"',
+#     default=None,
+# )
 parser.add_argument(
     "--elo-results-file", type=str, help="Load leaderboard results and plots"
 )
@@ -125,22 +118,22 @@ parser.add_argument(
     help="Sets the gradio root path, eg /abc/def. Useful when running behind a reverse-proxy or at a custom URL path prefix",
 )
 parser.add_argument(
-    "--ga-id",
-    type=str,
-    help="the Google Analytics ID",
-    default=None,
-)
-parser.add_argument(
-    "--use-remote-storage",
-    action="store_true",
+    "--debug",
     default=False,
-    help="Uploads image files to google cloud storage if set to true",
+    help="Debug mode if set to true",
 )
 args = parser.parse_args()
+
+env_debug = os.getenv('LANGUIA_DEBUG')
+
+if env_debug:
+    if env_debug.lower() == "true":
+        args.debug = True
+
 logger.info(f"args: {args}")
 
 # Set global variables
-set_global_vars(args.controller_url, args.moderate, args.use_remote_storage)
+set_global_vars(args.controller_url, args.moderate, False)
 set_global_vars_anony(args.moderate)
 models, all_models = get_model_list(
     args.controller_url,
@@ -196,8 +189,8 @@ with gr.Blocks(
 if __name__ == "__main__":
     # Set authorization credentials
     auth = None
-    if args.gradio_auth_path is not None:
-        auth = parse_gradio_auth_creds(args.gradio_auth_path)
+    # if args.gradio_auth_path is not None:
+    #     auth = parse_gradio_auth_creds(args.gradio_auth_path)
 
     demo = demo.queue(
         default_concurrency_limit=args.concurrency_count,
@@ -212,10 +205,12 @@ if __name__ == "__main__":
         ],  # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
         server_name=args.host,
         server_port=args.port,
-        share=args.share,
+        share=False,
         max_threads=200,
         auth=auth,
         root_path=args.gradio_root_path,
-        show_api=False,
-        debug=True,
+        # TODO: choose if show api
+        show_api=args.debug,
+        debug=args.debug,
+        show_error=args.debug
     )
