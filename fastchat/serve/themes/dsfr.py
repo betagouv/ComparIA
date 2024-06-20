@@ -16,16 +16,14 @@ class DSFR(Base):
         spacing_size: sizes.Size | str = sizes.spacing_md,
         radius_size: sizes.Size | str = sizes.radius_md,
         text_size: sizes.Size | str = sizes.text_lg,
-        font: fonts.Font
-        | str
-        | Iterable[fonts.Font | str] = ("Marianne",
+        font: fonts.Font | str | Iterable[fonts.Font | str] = (
+            "Marianne",
             "Arial",
             "ui-sans-serif",
             "sans-serif",
         ),
-        font_mono: fonts.Font
-        | str
-        | Iterable[fonts.Font | str] = ("Marianne",
+        font_mono: fonts.Font | str | Iterable[fonts.Font | str] = (
+            "Marianne",
             "Arial",
             "ui-sans-serif",
             "sans-serif",
@@ -41,4 +39,3 @@ class DSFR(Base):
             font=font,
             font_mono=font_mono,
         )
-

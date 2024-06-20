@@ -551,7 +551,9 @@ Posez vos questions et déterminez le LLM vainqueur !
         rightvote_btn = gr.Button(
             value="👉  B est mieux", visible=False, interactive=False
         )
-        tie_btn = gr.Button(value="🤝  Les deux se valent", visible=False, interactive=False)
+        tie_btn = gr.Button(
+            value="🤝  Les deux se valent", visible=False, interactive=False
+        )
         bothbad_btn = gr.Button(
             value="👎  Aucun des deux", visible=False, interactive=False
         )

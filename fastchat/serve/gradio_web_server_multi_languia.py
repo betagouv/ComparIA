@@ -115,7 +115,7 @@ def build_demo(models, vl_models, elo_results_file, leaderboard_table_file):
     else:
         load_js = get_window_url_params_js
 
-# TODO: async load?
+    # TODO: async load?
     head_js = """
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script type="module" src="file=assets/js/dsfr.module.js"></script>
@@ -133,7 +133,6 @@ def build_demo(models, vl_models, elo_results_file, leaderboard_table_file):
             with gr.Tab("Arène", id=0):
                 side_by_side_anony_list = build_side_by_side_ui_anony(models)
 
-            
             if elo_results_file:
                 with gr.Tab("Leaderboard", id=6):
                     build_leaderboard_tab(
@@ -271,7 +270,11 @@ if __name__ == "__main__":
         status_update_rate=10,
         api_open=False,
     ).launch(
-        allowed_paths=["/app/assets/fonts","/app/assets/icons", "/app/assets/js"], # Access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
+        allowed_paths=[
+            "/app/assets/fonts",
+            "/app/assets/icons",
+            "/app/assets/js",
+        ],  # Access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
         server_name=args.host,
         server_port=args.port,
         share=args.share,
