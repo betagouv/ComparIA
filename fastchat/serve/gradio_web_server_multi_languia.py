@@ -141,8 +141,7 @@ models, all_models = get_model_list(
     vision_arena=False,
 )
 
-# def build_demo(models, elo_results_file, leaderboard_table_file):
-text_size = gr.themes.sizes.text_md
+# TODO: make it a modal
 if args.show_terms_of_use:
     load_js = get_window_url_params_with_tos_js
 else:
@@ -155,14 +154,61 @@ head_js = """
 <script type="text/javascript" nomodule src="file=assets/js/dsfr.nomodule.js"></script> 
 """
 
+custom_css = """
+.reset-tab .tabitem {
+border: none
+}
+"""
+
+with open("./assets/dsfr.css", encoding="utf-8") as css_file:
+    css_dsfr = css_file.read()
+# css = css_dsfr
+css = css_dsfr + custom_css
+
 with gr.Blocks(
-    title="LANGU:IA, l'arène de comparaison des LLM",
-    # theme=gr.themes.Default(text_size=text_size),
-    theme=DSFR(text_size=text_size),
-    css="./assets/dsfr.css",
+    title="LANGU:IA, l'arène francophone de classement de modèles de langage par préférences humaines",
+    theme=DSFR(),
+    css=css,
     head=head_js,
 ) as demo:
-    with gr.Tabs() as tabs:
+
+# TODO: skiplinks
+
+    header_html = """
+    <header role="banner" class="fr-header">
+  <div class="fr-header__body">
+    <div class="fr-container">
+      <div class="fr-header__body-row">
+        <div class="fr-header__brand fr-enlarge-link">
+          <div class="fr-header__brand-top">
+            <div class="fr-header__logo">
+              <p class="fr-logo">
+                République
+                <br>Française
+              </p>
+            </div>
+          </div>
+          <div class="fr-header__service">
+            <a href="/" title="Accueil - LANGU:IA">
+              <p class="fr-header__service-title">LANGU:IA</p>
+            </a>
+            <p class="fr-header__service-tagline">L'arène francophone de classement de modèles de langage par préférences humaines</p>
+          </div>
+        </div>
+
+        <div class="fr-header__tools">
+          <div class="fr-badge fr-badge--info">
+           Version Demo
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+"""
+    gr.HTML(header_html, elem_id="header_html")
+    with gr.Tabs(elem_classes="reset-tab") as tabs:
         with gr.Tab("Arène", id=0):
             side_by_side_anony_list = build_side_by_side_ui_anony(models)
 
@@ -195,6 +241,7 @@ if __name__ == "__main__":
     demo = demo.queue(
         default_concurrency_limit=args.concurrency_count,
         status_update_rate=10,
+        # FIXME: what do?
         api_open=False,
     )
     demo.launch(

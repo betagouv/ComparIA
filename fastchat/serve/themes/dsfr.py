@@ -10,11 +10,11 @@ class DSFR(Base):
     def __init__(
         self,
         *,
-        primary_hue: colors.Color | str = colors.emerald,
-        secondary_hue: colors.Color | str = colors.blue,
-        neutral_hue: colors.Color | str = colors.gray,
+        primary_hue: colors.Color | str = colors.neutral,
+        secondary_hue: colors.Color | str = colors.neutral,
+        neutral_hue: colors.Color | str = colors.neutral,
         spacing_size: sizes.Size | str = sizes.spacing_md,
-        radius_size: sizes.Size | str = sizes.radius_md,
+        radius_size: sizes.Size | str = sizes.radius_none,
         text_size: sizes.Size | str = sizes.text_lg,
         font: fonts.Font | str | Iterable[fonts.Font | str] = (
             "Marianne",

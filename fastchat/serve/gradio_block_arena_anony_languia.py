@@ -19,6 +19,7 @@ from fastchat.constants import (
 from fastchat.model.model_adapter import get_conversation_template
 from fastchat.serve.gradio_block_arena_named import flash_buttons
 from fastchat.serve.gradio_web_server import (
+    # TODO: to import/replace State and bot_response?
     State,
     bot_response,
     get_conv_log_filename,
@@ -26,7 +27,6 @@ from fastchat.serve.gradio_web_server import (
     enable_btn,
     disable_btn,
     invisible_btn,
-    acknowledgment_md,
     get_ip,
     get_model_description_md,
     _prepare_text_with_image,
@@ -44,7 +44,6 @@ enable_moderation = False
 anony_names = ["", ""]
 models = []
 
-
 def set_global_vars_anony(enable_moderation_):
     global enable_moderation
     enable_moderation = enable_moderation_
@@ -55,6 +54,7 @@ def load_demo_side_by_side_anony(models_, url_params):
     models = models_
 
     states = (None,) * num_sides
+    # What does it do???
     selector_updates = (
         gr.Markdown(visible=True),
         gr.Markdown(visible=True),
@@ -145,8 +145,20 @@ def regenerate(state0, state1, request: gr.Request):
     return states + [x.to_gradio_chatbot() for x in states] + [""] + [no_change_btn] * 6
 
 
-def clear_history(request: gr.Request):
+# TODO: refacto so that it clears any object
+def clear_history(
+    request: gr.Request,
+) -> tuple[
+    list[None],
+    list[None],
+    list[str],
+    list[str],
+    list[gr.Button],
+    list[gr.Button],
+    list[str],
+]:
     logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+    # TODO: A typer / refacto
     return (
         [None] * num_sides
         + [None] * num_sides
@@ -158,12 +170,12 @@ def clear_history(request: gr.Request):
     )
 
 
-def share_click(state0, state1, model_selector0, model_selector1, request: gr.Request):
-    logger.info(f"share (anony). ip: {get_ip(request)}")
-    if state0 is not None and state1 is not None:
-        vote_last_response(
-            [state0, state1], "share", [model_selector0, model_selector1], request
-        )
+# def share_click(state0, state1, model_selector0, model_selector1, request: gr.Request):
+#     logger.info(f"share (anony). ip: {get_ip(request)}")
+#     if state0 is not None and state1 is not None:
+#         vote_last_response(
+#             [state0, state1], "share", [model_selector0, model_selector1], request
+#         )
 
 
 SAMPLING_WEIGHTS = {
@@ -342,7 +354,13 @@ def get_battle_pair(
 
 
 def add_text(
-    state0, state1, model_selector0, model_selector1, text, image, request: gr.Request
+    state0: gr.State,
+    state1: gr.State,
+    model_selector0: gr.Markdown,
+    model_selector1: gr.Markdown,
+    text: gr.Text,
+    image: gr.State,
+    request: gr.Request,
 ):
     ip = get_ip(request)
     logger.info(f"add_text (anony). ip: {ip}. len: {len(text)}")
@@ -503,27 +521,19 @@ def bot_response_multi(
 
 
 def build_side_by_side_ui_anony(models):
-    notice_markdown = """
-# LANGU:IA
-- [GitHub](https://github.com/betagouv/languia)
-
-## 📜 Règles
-Posez vos questions et déterminez le LLM vainqueur !
-
-"""
-
     states = [gr.State() for _ in range(num_sides)]
     model_selectors = [None] * num_sides
+    # TODO: allow_flagging?
     chatbots = [None] * num_sides
 
-    gr.Markdown(notice_markdown, elem_id="notice_markdown")
+    # gr.Markdown(notice_markdown, elem_id="notice_markdown")
 
     with gr.Group(elem_id="share-region-anony"):
-        with gr.Accordion(
-            f"🔍 Expand to see the descriptions of {len(models)} models", open=False
-        ):
-            model_description_md = get_model_description_md(models)
-            gr.Markdown(model_description_md, elem_id="model_description_markdown")
+        # with gr.Accordion(
+        #     f"🔍 Expand to see the descriptions of {len(models)} models", open=False
+        # ):
+        #     model_description_md = get_model_description_md(models)
+        #     gr.Markdown(model_description_md, elem_id="model_description_markdown")
         with gr.Row():
             for i in range(num_sides):
                 label = "Model A" if i == 0 else "Model B"
@@ -531,7 +541,6 @@ Posez vos questions et déterminez le LLM vainqueur !
                     chatbots[i] = gr.Chatbot(
                         label=label,
                         elem_id="chatbot",
-                        height=150,
                         show_copy_button=True,
                     )
 
@@ -544,6 +553,7 @@ Posez vos questions et déterminez le LLM vainqueur !
         with gr.Row():
             slow_warning = gr.Markdown("")
 
+    # TODO: visible à update quand "terminer l'exp"
     with gr.Row():
         leftvote_btn = gr.Button(
             value="👈  A est mieux", visible=False, interactive=False
@@ -561,15 +571,16 @@ Posez vos questions et déterminez le LLM vainqueur !
     with gr.Row():
         textbox = gr.Textbox(
             show_label=False,
-            placeholder="C'est quand la fête nationale ?",
+            placeholder="Ecrivez votre premier message à l'arène ici",
             elem_id="input_box",
+            elem_classes="fr-input",
         )
-        send_btn = gr.Button(value="Send", variant="primary", scale=0)
+        send_btn = gr.Button(value="Envoyer", scale=0, elem_classes="fr-btn")
 
     with gr.Row() as button_row:
+        # Make invisible at first then visible when interactive
         clear_btn = gr.Button(value="🎲 New Round", interactive=False)
         regenerate_btn = gr.Button(value="🔄  Regenerate", interactive=False)
-        share_btn = gr.Button(value="📷  Share")
 
     with gr.Accordion("Parameters", open=False, visible=False) as parameter_row:
         temperature = gr.Slider(
@@ -597,8 +608,7 @@ Posez vos questions et déterminez le LLM vainqueur !
             label="Max output tokens",
         )
 
-    gr.Markdown(acknowledgment_md, elem_id="ack_markdown")
-
+    # TODO: get rid
     imagebox = gr.State(None)
     # Register listeners
     btn_list = [
@@ -635,36 +645,13 @@ Posez vos questions et déterminez le LLM vainqueur !
         bot_response_multi,
         states + [temperature, top_p, max_output_tokens],
         states + chatbots + btn_list,
-    ).then(
-        flash_buttons, [], btn_list
-    )
+    ).then(flash_buttons, [], btn_list)
     clear_btn.click(
         clear_history,
         None,
+        # List of objects to clear
         states + chatbots + model_selectors + [textbox] + btn_list + [slow_warning],
     )
-
-    share_js = """
-function (a, b, c, d) {
-    const captureElement = document.querySelector('#share-region-anony');
-    html2canvas(captureElement)
-        .then(canvas => {
-            canvas.style.display = 'none'
-            document.body.appendChild(canvas)
-            return canvas
-        })
-        .then(canvas => {
-            const image = canvas.toDataURL('image/png')
-            const a = document.createElement('a')
-            a.setAttribute('download', 'chatbot-arena.png')
-            a.setAttribute('href', image)
-            a.click()
-            canvas.remove()
-        });
-    return [a, b, c, d];
-}
-"""
-    share_btn.click(share_click, states + model_selectors, [], js=share_js)
 
     textbox.submit(
         add_text,
@@ -688,8 +675,6 @@ function (a, b, c, d) {
         bot_response_multi,
         states + [temperature, top_p, max_output_tokens],
         states + chatbots + btn_list,
-    ).then(
-        flash_buttons, [], btn_list
-    )
+    ).then(flash_buttons, [], btn_list)
 
     return states + model_selectors
