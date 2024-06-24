@@ -30,7 +30,25 @@ from fastchat.utils import (
 
 import os
 
+import sentry_sdk
+
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
+
+if os.getenv("SENTRY_DSN"):
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    traces_sample_rate = 1.0
+    logger.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
+    if os.getenv("SENTRY_ENV"):
+        sentry_env = os.getenv("SENTRY_ENV")
+    else:
+        sentry_env = "Development"
+        sentry_sdk.init(
+            dsn=os.getenv("SENTRY_DSN"),
+            environment=sentry_env,
+            traces_sample_rate=traces_sample_rate,
+        )
 
 
 def load_demo(url_params, request: gr.Request):
@@ -124,7 +142,7 @@ parser.add_argument(
 )
 args = parser.parse_args()
 
-env_debug = os.getenv('LANGUIA_DEBUG')
+env_debug = os.getenv("LANGUIA_DEBUG")
 
 if env_debug:
     if env_debug.lower() == "true":
@@ -171,8 +189,7 @@ with gr.Blocks(
     css=css,
     head=head_js,
 ) as demo:
-
-# TODO: skiplinks
+    # TODO: skiplinks
 
     header_html = """
     <header role="banner" class="fr-header">
@@ -259,5 +276,5 @@ if __name__ == "__main__":
         # TODO: choose if show api
         show_api=args.debug,
         debug=args.debug,
-        show_error=args.debug
+        show_error=args.debug,
     )

@@ -8,7 +8,7 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 RUN python3.9 get-pip.py
 RUN pip3 install fschat
 RUN pip3 install fschat[model_worker,webui]
-RUN pip3 install openai plotly pydantic-settings
+RUN pip3 install openai plotly pydantic-settings sentry-sdk
 
 WORKDIR /app
 
