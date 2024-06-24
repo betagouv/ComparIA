@@ -33,6 +33,7 @@ services:
   #     - "8000:8000"
   #   command: ["python3.9", "-m", "fastchat.serve.openai_api_server", "--controller-address", "http://fastchat-controller:21001", "--host", "0.0.0.0", "--port", "8000"]
   fastchat-gradio-web-server:
+    env_file: .env
     environment:
       LOGDIR: /data
     build:
