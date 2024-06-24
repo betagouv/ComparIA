@@ -435,10 +435,10 @@ def build_side_by_side_ui_named(models):
     ).then(
         bot_response_multi,
         states + [temperature, top_p, max_output_tokens],
-        states + chatbots + btn_list,
-    ).then(
-        flash_buttons, [], btn_list
-    )
+        states + chatbots + btn_list,)
+    # ).then(
+    #     flash_buttons, [], btn_list
+    # )
     clear_btn.click(clear_history, None, states + chatbots + [textbox] + btn_list)
 
     share_js = """
@@ -476,9 +476,10 @@ function (a, b, c, d) {
         bot_response_multi,
         states + [temperature, top_p, max_output_tokens],
         states + chatbots + btn_list,
-    ).then(
-        flash_buttons, [], btn_list
     )
+    # .then(
+    #     flash_buttons, [], btn_list
+    # )
     send_btn.click(
         add_text,
         states + model_selectors + [textbox, imagebox],
@@ -487,8 +488,9 @@ function (a, b, c, d) {
         bot_response_multi,
         states + [temperature, top_p, max_output_tokens],
         states + chatbots + btn_list,
-    ).then(
-        flash_buttons, [], btn_list
     )
+    # .then(
+    #     flash_buttons, [], btn_list
+    # )
 
     return states + model_selectors

@@ -17,8 +17,8 @@ from fastchat.constants import (
     CONVERSATION_TURN_LIMIT,
 )
 from fastchat.model.model_adapter import get_conversation_template
-from fastchat.serve.gradio_block_arena_named import flash_buttons
-from fastchat.serve.gradio_web_server import (
+
+from fastchat.serve.gradio_web_server_languia import (
     # TODO: to import/replace State and bot_response?
     State,
     bot_response,
@@ -48,6 +48,9 @@ def set_global_vars_anony(enable_moderation_):
     global enable_moderation
     enable_moderation = enable_moderation_
 
+def enable_buttons(*buttons_list):
+    # Is it perf-intensive? / Pass dict instead?
+    return [enable_btn] * len(buttons_list)
 
 def load_demo_side_by_side_anony(models_, url_params):
     global models
@@ -146,28 +149,29 @@ def regenerate(state0, state1, request: gr.Request):
 
 
 # TODO: refacto so that it clears any object
-def clear_history(
-    request: gr.Request,
-) -> tuple[
-    list[None],
-    list[None],
-    list[str],
-    list[str],
-    list[gr.Button],
-    list[gr.Button],
-    list[str],
-]:
-    logger.info(f"clear_history (anony). ip: {get_ip(request)}")
-    # TODO: A typer / refacto
-    return (
-        [None] * num_sides
-        + [None] * num_sides
-        + anony_names
-        + [""]
-        + [invisible_btn] * 4
-        + [disable_btn] * 2
-        + [""]
-    )
+# def clear_history(*args):
+# # def clear_history(data):
+#     logger.info(f"clear_history (anony). ip: {get_ip(args['request'])}")
+#     # TODO: A typer / refacto
+    
+#     response = []
+#     for arg in args:
+#         if isinstance(arg) == gr.Button:
+#             response.append(enable_btn())
+#         elif isinstance(arg) == gr.State:
+#             response.append(None)
+#         elif isinstance(arg) == str:
+#             response.append([""])
+#     return (tuple(response))
+
+        # [None] * num_sides
+        # + [None] * num_sides
+        # + anony_names
+        # + [""]
+        # + [invisible_btn] * 4
+        # + [disable_btn] * 2
+        # + [""]
+
 
 
 # def share_click(state0, state1, model_selector0, model_selector1, request: gr.Request):
@@ -393,7 +397,7 @@ def add_text(
             + [
                 no_change_btn,
             ]
-            * 6
+            * 9
             + [""]
         )
 
@@ -422,7 +426,7 @@ def add_text(
             + [
                 no_change_btn,
             ]
-            * 6
+            * 9
             + [""]
         )
 
@@ -446,7 +450,7 @@ def add_text(
         + [
             disable_btn,
         ]
-        * 6
+        * 9
         + [hint_msg]
     )
 
@@ -468,7 +472,7 @@ def bot_response_multi(
             state1,
             state0.to_gradio_chatbot(),
             state1.to_gradio_chatbot(),
-        ) + (no_change_btn,) * 6
+        ) + (no_change_btn,) * 9
         return
 
     states = [state0, state1]
@@ -515,9 +519,41 @@ def bot_response_multi(
                 stop = False
             except StopIteration:
                 pass
-        yield states + chatbots + [disable_btn] * 6
+        yield states + chatbots + [disable_btn] * 9
         if stop:
             break
+
+
+def accept_tos():
+    # global languia_state
+    # languia_state.tos_accepted = True
+    print("ToS accepted!")
+    return [
+        # accept_tos_btn:
+        invisible_btn,
+        # free_mode_btn:
+        enable_btn,
+        # guided_mode_btn:
+        enable_btn,
+    ]
+
+
+def choose_mode(choosen_mode_button):
+    # global languia_state
+    # languia_state.tos_accepted = True
+    print("chose mode!")
+    return [
+        # guided_mode_btn:
+        invisible_btn,
+        # free_mode_btn:
+        invisible_btn,
+        # chat_area:
+        gr.Group(visible=True),
+        # send_btn:
+        enable_btn,
+        # textbox:
+        gr.Textbox(visible=True),
+    ]
 
 
 def build_side_by_side_ui_anony(models):
@@ -527,8 +563,7 @@ def build_side_by_side_ui_anony(models):
     chatbots = [None] * num_sides
 
     # gr.Markdown(notice_markdown, elem_id="notice_markdown")
-
-    with gr.Group(elem_id="share-region-anony"):
+    with gr.Group(elem_id="share-region-anony", visible=False) as chat_area:
         # with gr.Accordion(
         #     f"🔍 Expand to see the descriptions of {len(models)} models", open=False
         # ):
@@ -569,19 +604,37 @@ def build_side_by_side_ui_anony(models):
         )
 
     with gr.Row():
+        # TODO: use @gr.render instead?
         textbox = gr.Textbox(
             show_label=False,
+            visible=False,
             placeholder="Ecrivez votre premier message à l'arène ici",
             elem_id="input_box",
             elem_classes="fr-input",
         )
-        send_btn = gr.Button(value="Envoyer", scale=0, elem_classes="fr-btn")
+        send_btn = gr.Button(
+            visible=False, value="Envoyer", scale=0, elem_classes="fr-btn"
+        )
+
+    with gr.Row() as mode_row:
+        free_mode_btn = gr.Button(
+            value="🎲 Mode libre",
+            interactive=False,
+            # , visible=False
+        )
+        guided_mode_btn = gr.Button(
+            value="🎲 Mode inspiré",
+            interactive=False,
+            # , visible=False
+        )
 
     with gr.Row() as button_row:
         # Make invisible at first then visible when interactive
-        clear_btn = gr.Button(value="🎲 New Round", interactive=False)
-        regenerate_btn = gr.Button(value="🔄  Regenerate", interactive=False)
-
+        clear_btn = gr.Button(value="🎲 New Round", interactive=False, visible=False)
+        regenerate_btn = gr.Button(
+            value="🔄  Regenerate", interactive=False, visible=False
+        )
+        accept_tos_btn = gr.Button(value="🔄  Accept ToS", interactive=True)
     with gr.Accordion("Parameters", open=False, visible=False) as parameter_row:
         temperature = gr.Slider(
             minimum=0.0,
@@ -618,6 +671,9 @@ def build_side_by_side_ui_anony(models):
         bothbad_btn,
         regenerate_btn,
         clear_btn,
+        accept_tos_btn,
+        guided_mode_btn,
+        free_mode_btn,
     ]
     leftvote_btn.click(
         leftvote_last_response,
@@ -645,12 +701,29 @@ def build_side_by_side_ui_anony(models):
         bot_response_multi,
         states + [temperature, top_p, max_output_tokens],
         states + chatbots + btn_list,
-    ).then(flash_buttons, [], btn_list)
+    ).then(
+        enable_buttons,
+        [leftvote_btn, rightvote_btn, tie_btn, bothbad_btn],
+        [leftvote_btn, rightvote_btn, tie_btn, bothbad_btn],
+    )
     clear_btn.click(
         clear_history,
         None,
         # List of objects to clear
         states + chatbots + model_selectors + [textbox] + btn_list + [slow_warning],
+    )
+    accept_tos_btn.click(
+        accept_tos, inputs=[], outputs=[accept_tos_btn, free_mode_btn, guided_mode_btn]
+    )
+    guided_mode_btn.click(
+        choose_mode,
+        inputs=[guided_mode_btn],
+        outputs=[guided_mode_btn, free_mode_btn, chat_area, send_btn, textbox],
+    )
+    free_mode_btn.click(
+        choose_mode,
+        inputs=[free_mode_btn],
+        outputs=[free_mode_btn, guided_mode_btn, chat_area, send_btn, textbox],
     )
 
     textbox.submit(
@@ -662,8 +735,8 @@ def build_side_by_side_ui_anony(models):
         states + [temperature, top_p, max_output_tokens],
         states + chatbots + btn_list,
     ).then(
-        flash_buttons,
-        [],
+        enable_buttons,
+        btn_list,
         btn_list,
     )
 
@@ -675,6 +748,6 @@ def build_side_by_side_ui_anony(models):
         bot_response_multi,
         states + [temperature, top_p, max_output_tokens],
         states + chatbots + btn_list,
-    ).then(flash_buttons, [], btn_list)
+    ).then(enable_buttons, btn_list, btn_list)
 
     return states + model_selectors
