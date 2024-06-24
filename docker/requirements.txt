@@ -21,7 +21,6 @@ ffmpy==0.3.2
 filelock==3.15.3
 fonttools==4.53.0
 frozenlist==1.4.1
--e git+ssh://git@github.com/ketsapiwiq/FastChat@9dde3c67d3407acc780d460b4b56ac31c77d56c4#egg=fschat
 fsspec==2024.6.0
 gradio==4.36.1
 gradio_client==1.0.1
