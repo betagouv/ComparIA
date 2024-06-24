@@ -43,7 +43,7 @@ if os.getenv("SENTRY_DSN"):
     if os.getenv("SENTRY_ENV"):
         sentry_env = os.getenv("SENTRY_ENV")
     else:
-        sentry_env = "Development"
+        sentry_env = "development"
         sentry_sdk.init(
             dsn=os.getenv("SENTRY_DSN"),
             environment=sentry_env,
@@ -261,12 +261,16 @@ if __name__ == "__main__":
         # FIXME: what do?
         api_open=False,
     )
+
+    # Better use gr.set_static_paths(paths=["test/test_files/"])?
+    # use gradio_root_path?
+    # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
     demo.launch(
         allowed_paths=[
             "/app/assets/fonts",
             "/app/assets/icons",
             "/app/assets/js",
-        ],  # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
+        ],
         server_name=args.host,
         server_port=args.port,
         share=False,
