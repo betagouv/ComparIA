@@ -15,6 +15,10 @@ from fastchat.constants import (
     SLOW_MODEL_MSG,
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     CONVERSATION_TURN_LIMIT,
+    SAMPLING_WEIGHTS,
+    BATTLE_TARGETS,
+    SAMPLING_BOOST_MODELS,
+    OUTAGE_MODELS,
 )
 from fastchat.model.model_adapter import get_conversation_template
 
@@ -173,131 +177,6 @@ def clear_history(data):
         + [disable_btn] * 2
         + [""]
     )
-
-
-# def share_click(state0, state1, model_selector0, model_selector1, request: gr.Request):
-#     logger.info(f"share (anony). ip: {get_ip(request)}")
-#     if state0 is not None and state1 is not None:
-#         vote_last_response(
-#             [state0, state1], "share", [model_selector0, model_selector1], request
-#         )
-
-
-SAMPLING_WEIGHTS = {
-    # tier 0
-    "gpt-4-0314": 4,
-    "gpt-4-0613": 4,
-    "gpt-4-1106-preview": 2,
-    "gpt-4-0125-preview": 4,
-    "gpt-4-turbo-2024-04-09": 4,
-    "gpt-3.5-turbo-0125": 2,
-    "claude-3-opus-20240229": 4,
-    "claude-3-sonnet-20240229": 4,
-    "claude-3-haiku-20240307": 4,
-    "claude-2.1": 1,
-    "zephyr-orpo-141b-A35b-v0.1": 2,
-    "dbrx-instruct": 1,
-    "command-r-plus": 4,
-    "command-r": 2,
-    "reka-flash": 4,
-    "reka-flash-online": 4,
-    "qwen1.5-72b-chat": 2,
-    "qwen1.5-32b-chat": 2,
-    "qwen1.5-14b-chat": 2,
-    "qwen1.5-7b-chat": 2,
-    "gemma-1.1-7b-it": 2,
-    "gemma-1.1-2b-it": 1,
-    "mixtral-8x7b-instruct-v0.1": 4,
-    "mistral-7b-instruct-v0.2": 2,
-    "mistral-large-2402": 4,
-    "mistral-medium": 2,
-    "starling-lm-7b-beta": 2,
-    # tier 1
-    "deluxe-chat-v1.3": 2,
-    "llama-2-70b-chat": 2,
-    "llama-2-13b-chat": 1,
-    "llama-2-7b-chat": 1,
-    "vicuna-33b": 1,
-    "vicuna-13b": 1,
-    "yi-34b-chat": 1,
-}
-
-# target model sampling weights will be boosted.
-BATTLE_TARGETS = {
-    "gpt-4-turbo-2024-04-09": {
-        "gpt-4-1106-preview",
-        "gpt-4-0125-preview",
-        "claude-3-opus-20240229",
-        "gemini-pro-dev-api",
-    },
-    "gemini-pro-dev-api": {
-        "gpt-4-turbo-2024-04-09",
-        "claude-3-opus-20240229",
-        "gpt-4-0125-preview",
-        "claude-3-sonnet-20240229",
-    },
-    "reka-flash": {
-        "qwen1.5-72b-chat",
-        "claude-3-haiku-20240307",
-        "command-r-plus",
-        "command-r",
-    },
-    "reka-flash-online": {
-        "qwen1.5-72b-chat",
-        "claude-3-haiku-20240307",
-        "command-r-plus",
-        "command-r",
-    },
-    "deluxe-chat-v1.3": {
-        "gpt-4-1106-preview",
-        "gpt-4-0125-preview",
-        "claude-3-opus-20240229",
-        "claude-3-sonnet-20240229",
-    },
-    "qwen1.5-32b-chat": {
-        "gpt-3.5-turbo-0125",
-        "gpt-4-0613",
-        "gpt-4-0125-preview",
-        "llama-2-70b-chat",
-        "mixtral-8x7b-instruct-v0.1",
-        "mistral-large-2402",
-        "yi-34b-chat",
-    },
-    "qwen1.5-14b-chat": {
-        "starling-lm-7b-alpha",
-        "claude-3-haiku-20240307",
-        "gpt-3.5-turbo-0125",
-        "openchat-3.5-0106",
-        "mixtral-8x7b-instruct-v0.1",
-    },
-    "mistral-large-2402": {
-        "gpt-4-0125-preview",
-        "gpt-4-0613",
-        "mixtral-8x7b-instruct-v0.1",
-        "mistral-medium",
-        "mistral-next",
-        "claude-3-sonnet-20240229",
-    },
-    "gemma-1.1-2b-it": {
-        "gpt-3.5-turbo-0125",
-        "mixtral-8x7b-instruct-v0.1",
-        "starling-lm-7b-beta",
-        "llama-2-7b-chat",
-        "mistral-7b-instruct-v0.2",
-        "gemma-1.1-7b-it",
-    },
-    "zephyr-orpo-141b-A35b-v0.1": {
-        "qwen1.5-72b-chat",
-        "mistral-large-2402",
-        "command-r-plus",
-        "claude-3-haiku-20240307",
-    },
-}
-
-SAMPLING_BOOST_MODELS = []
-
-# outage models won't be sampled.
-OUTAGE_MODELS = []
 
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
