@@ -43,6 +43,8 @@ enable_moderation = False
 anony_names = ["", ""]
 models = []
 
+tos_accepted = False
+
 
 def set_global_vars_anony(enable_moderation_):
     global enable_moderation
@@ -367,10 +369,25 @@ def bot_response_multi(
             break
 
 
+def check_for_tos_cookie(request: gr.Request):
+    global tos_accepted
+    if request:
+        cookies_kv = request.headers["cookie"].split(";")
+        for cookie_kv in cookies_kv:
+            cookie_key, cookie_value = cookie_kv.split("=")
+            if cookie_key == "languia_tos_accepted":
+                if cookie_value == "1":
+                    tos_accepted = True
+                    return tos_accepted
+
+    return tos_accepted
+
+
 # TODO: à move
-def accept_tos():
-    # global languia_state
-    # languia_state.tos_accepted = True
+def accept_tos(request: gr.Request):
+    global tos_accepted
+    tos_accepted = True
+
     print("ToS accepted!")
     return [
         # start_screen:
@@ -390,12 +407,22 @@ def choose_mode(choosen_mode_button):
     ]
 
 
+accept_tos_js = """
+function () {
+  document.cookie="languia_tos_accepted=1"
+}
+"""
+
+
 def build_side_by_side_ui_anony(models):
     states = [gr.State() for _ in range(num_sides)]
     model_selectors = [None] * num_sides
     # TODO: allow_flagging?
     chatbots = [None] * num_sides
 
+    # TODO: check cookies on load!
+    # tos_cookie = check_for_tos_cookie(request)
+    # if not tos_cookie:
     with gr.Row() as start_screen:
         accept_tos_btn = gr.Button(value="🔄  Accept ToS", interactive=True)
 
@@ -529,7 +556,9 @@ def build_side_by_side_ui_anony(models):
     # TODO: export listeners to another file
     # Register listeners
 
-    accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
+    accept_tos_btn.click(
+        accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
+    )
     guided_mode_btn.click(
         choose_mode,
         inputs=[guided_mode_btn],
