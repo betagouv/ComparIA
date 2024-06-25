@@ -50,6 +50,7 @@ no_change_btn = gr.Button()
 enable_btn = gr.Button(interactive=True, visible=True)
 disable_btn = gr.Button(interactive=False)
 invisible_btn = gr.Button(interactive=False, visible=False)
+invisible_row = gr.Row(visible=False)
 
 controller_url = None
 enable_moderation = False
