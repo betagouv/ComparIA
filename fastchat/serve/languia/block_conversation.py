@@ -192,40 +192,6 @@ def get_ip(request: gr.Request):
         ip = request.client.host
     return ip
 
-
-def add_text(state, model_selector, text, image, request: gr.Request):
-    ip = get_ip(request)
-    logger.info(f"add_text. ip: {ip}. len: {len(text)}")
-
-    if state is None:
-        state = State(model_selector)
-
-    if len(text) <= 0:
-        state.skip_next = True
-        return (state, state.to_gradio_chatbot(), "", None) + (no_change_btn,) * 5
-
-    all_conv_text = state.conv.get_prompt()
-    all_conv_text = all_conv_text[-2000:] + "\nuser: " + text
-    flagged = moderation_filter(all_conv_text, [state.model_name])
-    # flagged = moderation_filter(text, [state.model_name])
-    if flagged:
-        logger.info(f"violate moderation. ip: {ip}. text: {text}")
-        # overwrite the original text
-        text = MODERATION_MSG
-
-    if (len(state.conv.messages) - state.conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
-        logger.info(f"conversation turn limit. ip: {ip}. text: {text}")
-        state.skip_next = True
-        return (state, state.to_gradio_chatbot(), CONVERSATION_LIMIT_MSG, None) + (
-            no_change_btn,
-        ) * 5
-
-    text = text[:INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
-    state.conv.append_message(state.conv.roles[0], text)
-    state.conv.append_message(state.conv.roles[1], None)
-    return (state, state.to_gradio_chatbot(), "", None) + (disable_btn,) * 5
-
-
 def model_worker_stream_iter(
     conv,
     model_name,

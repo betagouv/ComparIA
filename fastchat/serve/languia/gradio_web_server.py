@@ -11,7 +11,7 @@ import gradio as gr
 
 from fastchat.serve.languia.block_arena import (
     build_side_by_side_ui_anony,
-    load_demo_side_by_side_anony,
+    load_demo_arena,
     set_global_vars_anony,
 )
 
@@ -72,9 +72,9 @@ def load_demo(url_params, request: gr.Request):
             vision_arena=False,
         )
 
-    side_by_side_anony_updates = load_demo_side_by_side_anony(all_models, url_params)
+    arena_updates = load_demo_arena(all_models, url_params)
 
-    return (gr.Tabs(selected=selected),) + side_by_side_anony_updates
+    return (gr.Tabs(selected=selected),) + arena_updates
 
 
 parser = argparse.ArgumentParser()

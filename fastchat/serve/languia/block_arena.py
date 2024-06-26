@@ -72,7 +72,7 @@ def show_vote_area():
     ]
 
 
-def load_demo_side_by_side_anony(models_, url_params):
+def load_demo_arena(models_, url_params):
     global models
     models = models_
 
