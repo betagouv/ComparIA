@@ -286,47 +286,59 @@ def bot_response(
     images = conv.get_images()
 
     if model_api_dict is None:
-        # Query worker address
-        ret = requests.post(
-            controller_url + "/get_worker_address", json={"model": model_name}
+        conv.update_last_message(SERVER_ERROR_MSG)
+        yield (
+            state,
+            state.to_gradio_chatbot(),
+            disable_btn,
+            disable_btn,
+            disable_btn,
+            enable_btn,
+            enable_btn,
         )
-        worker_addr = ret.json()["address"]
-        logger.info(f"model_name: {model_name}, worker_addr: {worker_addr}")
+        return
 
-        # No available worker
-        if worker_addr == "":
-            conv.update_last_message(SERVER_ERROR_MSG)
-            yield (
-                state,
-                state.to_gradio_chatbot(),
-                disable_btn,
-                disable_btn,
-                disable_btn,
-                enable_btn,
-                enable_btn,
-            )
-            return
+    #     # Query worker address
+    #     ret = requests.post(
+    #         controller_url + "/get_worker_address", json={"model": model_name}
+    #     )
+    #     worker_addr = ret.json()["address"]
+    #     logger.info(f"model_name: {model_name}, worker_addr: {worker_addr}")
 
-        # Construct prompt.
-        # We need to call it here, so it will not be affected by "▌".
-        prompt = conv.get_prompt()
-        # Set repetition_penalty
-        if "t5" in model_name:
-            repetition_penalty = 1.2
-        else:
-            repetition_penalty = 1.0
+    #     # No available worker
+    #     if worker_addr == "":
+    #         conv.update_last_message(SERVER_ERROR_MSG)
+    #         yield (
+    #             state,
+    #             state.to_gradio_chatbot(),
+    #             disable_btn,
+    #             disable_btn,
+    #             disable_btn,
+    #             enable_btn,
+    #             enable_btn,
+    #         )
+    #         return
 
-        stream_iter = model_worker_stream_iter(
-            conv,
-            model_name,
-            worker_addr,
-            prompt,
-            temperature,
-            repetition_penalty,
-            top_p,
-            max_new_tokens,
-            images,
-        )
+    #     # Construct prompt.
+    #     # We need to call it here, so it will not be affected by "▌".
+    #     prompt = conv.get_prompt()
+    #     # Set repetition_penalty
+    #     if "t5" in model_name:
+    #         repetition_penalty = 1.2
+    #     else:
+    #         repetition_penalty = 1.0
+
+    #     stream_iter = model_worker_stream_iter(
+    #         conv,
+    #         model_name,
+    #         worker_addr,
+    #         prompt,
+    #         temperature,
+    #         repetition_penalty,
+    #         top_p,
+    #         max_new_tokens,
+    #         images,
+    #     )
     else:
         if use_recommended_config:
             recommended_config = model_api_dict.get("recommended_config", None)
