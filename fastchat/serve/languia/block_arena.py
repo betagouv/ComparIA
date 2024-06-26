@@ -468,7 +468,8 @@ def build_side_by_side_ui_anony(models):
     # TODO: visible à update quand "terminer l'exp"
     with gr.Row(visible=False) as conclude_area:
         conclude_btn = gr.Button(value="Terminer et donner mon avis")
-        clear_btn = gr.Button(value="Recommencer sans voter")
+        retry_btn = gr.Button(value="Recommencer")
+        # clear_btn.render()
     # TODO: visible à update quand "terminer l'exp"
 
     with gr.Row(visible=False) as vote_area:
@@ -495,31 +496,32 @@ def build_side_by_side_ui_anony(models):
             opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
             leaderboard_btn = gr.Button(value="Classement de l'arène")
 
-            # TODO: re-render clear btn instead
-            clear_btn = gr.Button(value="Nouvelle conversation")
+            clear_btn = gr.Button(value="Recommencer sans voter")
 
     # TODO: refacto so that it clears any object
-    def clear_history(request: gr.Request):
+    def clear_history(
+        state0,
+        state1,
+        chatbot0,
+        chatbot1,
+        model_selector0,
+        model_selector1,
+        textbox,
+        request: gr.Request,
+    ):
         logger.info(f"clear_history (anony). ip: {get_ip(request)}")
-        # FIXME: cleanup better
-        return (
-            # states
-            # + chatbots
-            # + model_selectors
-            # + [textbox]
-            # + [vote_area]
-            # + [supervote_area]
-            # + [mode_screen],
-            {
-                states: [None, None],
-                chatbots: [None, None],
-                model_selectors: anony_names,
-                textbox: [""],
-                vote_area: gr.update(visible=False),
-                supervote_area: gr.update(visible=False),
-                mode_screen: gr.update(visible=True),
-            },
-        )
+        return [
+            None,
+            None,
+            None,
+            None,
+            "",
+            "",
+            "",
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=True),
+        ]
 
     # with gr.Row() as results_area:
     #     gr.Markdown(get_model_description_md(models), elem_id="model_description_markdown")
@@ -553,86 +555,97 @@ def build_side_by_side_ui_anony(models):
         label="Max output tokens",
     )
 
-    # TODO: export listeners to another file
     # Register listeners
+    def register_listeners():
+        accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
+        # TODO: fix js output
+        # accept_tos_btn.click(
+        #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
+        # )
+        guided_mode_btn.click(
+            choose_mode,
+            inputs=[guided_mode_btn],
+            outputs=[mode_screen, send_area],
+        )
+        free_mode_btn.click(
+            choose_mode,
+            inputs=[free_mode_btn],
+            outputs=[mode_screen, send_area],
+        )
 
-    accept_tos_btn.click(
-        accept_tos, inputs=[], outputs=[start_screen, mode_screen]
-    )
-    # TODO: fix js output
-    # accept_tos_btn.click(
-    #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
-    # )
-    guided_mode_btn.click(
-        choose_mode,
-        inputs=[guided_mode_btn],
-        outputs=[mode_screen, send_area],
-    )
-    free_mode_btn.click(
-        choose_mode,
-        inputs=[free_mode_btn],
-        outputs=[mode_screen, send_area],
-    )
+        textbox.submit(
+            add_text,
+            states + model_selectors + [textbox],
+            states + chatbots + [textbox] + [chat_area],
+        ).then(
+            bot_response_multi,
+            states + [temperature, top_p, max_output_tokens],
+            states + chatbots,
+        ).then(show_component, [], [conclude_area])
 
-    textbox.submit(
-        add_text,
-        states + model_selectors + [textbox],
-        states + chatbots + [textbox] + [chat_area],
-    ).then(
-        bot_response_multi,
-        states + [temperature, top_p, max_output_tokens],
-        states + chatbots,
-    ).then(show_component, [], [conclude_area])
+        send_btn.click(
+            add_text,
+            states + model_selectors + [textbox],
+            states + chatbots + [textbox] + [chat_area],
+        ).then(
+            bot_response_multi,
+            states + [temperature, top_p, max_output_tokens],
+            states + chatbots,
+        ).then(show_component, [], [conclude_area])
 
-    send_btn.click(
-        add_text,
-        states + model_selectors + [textbox],
-        states + chatbots + [textbox] + [chat_area],
-    ).then(
-        bot_response_multi,
-        states + [temperature, top_p, max_output_tokens],
-        states + chatbots,
-    ).then(show_component, [], [conclude_area])
+        conclude_btn.click(
+            show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
+        )
 
-    conclude_btn.click(
-        show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
-    )
+        leftvote_btn.click(
+            leftvote_last_response,
+            states + model_selectors,
+            model_selectors,
+            #  + [supervote_area],
+        ).then(show_component, [], [supervote_area])
+        rightvote_btn.click(
+            rightvote_last_response,
+            states + model_selectors,
+            model_selectors,
+            #  + [supervote_area],
+        ).then(show_component, [], [supervote_area])
+        tie_btn.click(
+            tievote_last_response,
+            states + model_selectors,
+            model_selectors,
+            #  + [supervote_area],
+        ).then(show_component, [], [supervote_area])
+        bothbad_btn.click(
+            bothbad_vote_last_response,
+            states + model_selectors,
+            model_selectors + [supervote_area],
+        ).then(show_component, [], [supervote_area])
+        # FIXME:
+        clear_btn.click(
+            clear_history,
+            states + chatbots + model_selectors + [textbox],
+            # List of objects to clear
+            states
+            + chatbots
+            + model_selectors
+            + [textbox]
+            + [vote_area]
+            + [supervote_area]
+            + [mode_screen],
+        )
+        retry_btn.click(
+            clear_history,
+            states + chatbots + model_selectors + [textbox],
+            # List of objects to clear
+            states
+            + chatbots
+            + model_selectors
+            + [textbox]
+            + [vote_area]
+            + [supervote_area]
+            + [mode_screen],
+        )
 
-    leftvote_btn.click(
-        leftvote_last_response,
-        states + model_selectors,
-        model_selectors,
-        #  + [supervote_area],
-    ).then(show_component, [], [supervote_area])
-    rightvote_btn.click(
-        rightvote_last_response,
-        states + model_selectors,
-        model_selectors,
-        #  + [supervote_area],
-    ).then(show_component, [], [supervote_area])
-    tie_btn.click(
-        tievote_last_response,
-        states + model_selectors,
-        model_selectors,
-        #  + [supervote_area],
-    ).then(show_component, [], [supervote_area])
-    bothbad_btn.click(
-        bothbad_vote_last_response,
-        states + model_selectors,
-        model_selectors + [supervote_area],
-    ).then(show_component, [], [supervote_area])
-    # FIXME:
-    clear_btn.click(
-        clear_history,
-        [],
-        # List of objects to clear
-        states
-        + chatbots
-        + model_selectors
-        + [textbox]
-        + [vote_area]
-        + [supervote_area]
-        + [mode_screen],
-    )
-    # TODO: rationalize, do a common state?
+    register_listeners()
+
     return states + model_selectors
