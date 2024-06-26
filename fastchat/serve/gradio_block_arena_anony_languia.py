@@ -557,8 +557,12 @@ def build_side_by_side_ui_anony(models):
     # Register listeners
 
     accept_tos_btn.click(
-        accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
+        accept_tos, inputs=[], outputs=[start_screen, mode_screen]
     )
+    # TODO: fix js output
+    # accept_tos_btn.click(
+    #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
+    # )
     guided_mode_btn.click(
         choose_mode,
         inputs=[guided_mode_btn],
