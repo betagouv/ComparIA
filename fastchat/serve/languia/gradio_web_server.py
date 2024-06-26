@@ -9,15 +9,15 @@ from fastchat.serve.themes.dsfr import DSFR
 
 import gradio as gr
 
-from fastchat.serve.gradio_block_arena_anony_languia import (
+from fastchat.serve.languia.block_arena import (
     build_side_by_side_ui_anony,
     load_demo_side_by_side_anony,
     set_global_vars_anony,
 )
 
-from fastchat.serve.gradio_web_server_languia import (
+from fastchat.serve.languia.block_conversation import (
     set_global_vars,
-    build_about,
+    # build_about,
     get_model_list,
     get_ip,
 )
@@ -249,8 +249,8 @@ with gr.Blocks(
                     args.elo_results_file, args.leaderboard_table_file, show_plot=True
                 )
 
-        with gr.Tab("ℹ️  About Us", id=7):
-            about = build_about()
+        # with gr.Tab("ℹ️  About Us", id=7):
+        #     about = build_about()
 
     url_params = gr.JSON(visible=False)
 

@@ -22,7 +22,7 @@ from fastchat.constants import (
 )
 # from fastchat.model.model_adapter import get_conversation_template
 
-from fastchat.serve.gradio_web_server_languia import (
+from fastchat.serve.languia.block_conversation import (
     # TODO: to import/replace State and bot_response?
     State,
     bot_response,
