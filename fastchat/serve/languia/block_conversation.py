@@ -283,7 +283,6 @@ def bot_response(
     model_api_dict = (
         api_endpoint_info[model_name] if model_name in api_endpoint_info else None
     )
-    images = conv.get_images()
 
     if model_api_dict is None:
         conv.update_last_message(SERVER_ERROR_MSG)

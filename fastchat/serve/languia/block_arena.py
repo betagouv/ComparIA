@@ -397,14 +397,33 @@ def accept_tos(request: gr.Request):
     ]
 
 
-def choose_mode(choosen_mode_button):
-    # global languia_state
-    # languia_state.tos_accepted = True
-    print("chose mode!")
+def free_mode():
+    
+    print("chose free mode!")
     return [
+        # Refacto w/ "next_row" that should do that
         gr.Row(visible=False),
         gr.Row(visible=True),
     ]
+
+
+def guided_mode():
+    
+    print("chose guided mode!")
+    return [
+        # Previous screen
+        gr.Row(visible=False),
+        # Next screen
+        gr.Row(visible=True),
+        # Inspired options
+        gr.Row(visible=True)
+    ]
+
+def craft_guided_prompt(topic_choice):
+    if (str(topic_choice) == "Québécois ?"):
+        return "Tu comprends-tu, quand je parle ?"
+    else:
+        return "Quoque ch’est qu’te berdoules ?"
 
 
 accept_tos_js = """
@@ -412,7 +431,6 @@ function () {
   document.cookie="languia_tos_accepted=1"
 }
 """
-
 
 def build_side_by_side_ui_anony(models):
     states = [gr.State() for _ in range(num_sides)]
@@ -429,11 +447,11 @@ def build_side_by_side_ui_anony(models):
     with gr.Row(visible=False) as mode_screen:
         # render: no?
         free_mode_btn = gr.Button(
-            value="🎲 Mode libre",
+            value="Mode libre",
             interactive=True,
         )
         guided_mode_btn = gr.Button(
-            value="🎲 Mode inspiré",
+            value="Mode inspiré",
             interactive=True,
         )
 
@@ -454,6 +472,12 @@ def build_side_by_side_ui_anony(models):
                     model_selectors[i] = gr.Markdown(
                         anony_names[i], elem_id="model_selector_md"
                     )
+
+    with gr.Row(visible=False) as guided_area:
+        # TODO: use @gr.render instead?
+        guided_prompt = gr.Radio(
+            choices=["Chtimi ?", "Québécois ?"], elem_classes=""
+        )
 
     with gr.Row(visible=False) as send_area:
         # TODO: use @gr.render instead?
@@ -557,22 +581,28 @@ def build_side_by_side_ui_anony(models):
 
     # Register listeners
     def register_listeners():
+        # Step 0
         accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
         # TODO: fix js output
         # accept_tos_btn.click(
         #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
         # )
+        # Step 1
         guided_mode_btn.click(
-            choose_mode,
-            inputs=[guided_mode_btn],
-            outputs=[mode_screen, send_area],
+            guided_mode,
+            inputs=[],
+            outputs=[mode_screen, send_area, guided_area],
         )
         free_mode_btn.click(
-            choose_mode,
-            inputs=[free_mode_btn],
+            free_mode,
+            inputs=[],
             outputs=[mode_screen, send_area],
         )
 
+        # Step 1.1
+        guided_prompt.change(craft_guided_prompt, guided_prompt, textbox)
+
+        # Step 2
         textbox.submit(
             add_text,
             states + model_selectors + [textbox],
