@@ -225,6 +225,20 @@ with gr.Blocks(
 </header>
 """
     gr.HTML(header_html, elem_id="header_html")
+
+    stepper_html = """
+    <div class="fr-stepper">
+    <h2 class="fr-stepper__title">
+        Titre de l'étape en cours
+        <span class="fr-stepper__state">Étape 1 sur 3</span>
+    </h2>
+    <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
+    <p class="fr-stepper__details">
+        <span class="fr-text--bold">Étape suivante :</span> Titre de la prochaine étape
+    </p>
+</div>"""
+    gr.HTML(stepper_html, elem_id="stepper_html")
+
     with gr.Tabs(elem_classes="reset-tab") as tabs:
         with gr.Tab("Arène", id=0):
             side_by_side_anony_list = build_side_by_side_ui_anony(models)
