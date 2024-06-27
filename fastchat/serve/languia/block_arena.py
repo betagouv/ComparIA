@@ -32,7 +32,11 @@ from fastchat.serve.languia.block_conversation import (
     get_model_description_md,
 )
 
-from fastchat.serve.languia.components import stepper_block, accept_tos_btn
+from fastchat.serve.languia.components import (
+    stepper_block,
+    stepper_html,
+    accept_tos_btn,
+)
 from fastchat.serve.languia.actions import (
     accept_tos,
     accept_tos_js,
@@ -344,11 +348,7 @@ def check_for_tos_cookie(request: gr.Request):
 
 def free_mode():
     print("chose free mode!")
-    return [
-        # Refacto w/ "next_row" that should do that
-        gr.Row(visible=False),
-        gr.Row(visible=True),
-    ]
+    return gr.Row(visible=True)
 
 
 def guided_mode():
@@ -359,7 +359,7 @@ def guided_mode():
         # Next screen
         gr.Row(visible=True),
         # Inspired options
-        gr.Row(visible=True),
+        gr.Row(visible=True)
     ]
 
 
@@ -409,21 +409,36 @@ def build_arena(models):
     # if not tos_cookie:
 
     with gr.Row() as stepper_row:
-        stepper_block.render()
+        gr.HTML(stepper_html("Choix du mode de conversation", 1, 4))
 
     with gr.Row() as start_screen:
         accept_tos_btn.render()
 
-    with gr.Row(visible=False) as mode_screen:
-        # render: no?
-        free_mode_btn = gr.Button(
-            value="Mode libre",
-            interactive=True,
-        )
-        guided_mode_btn = gr.Button(
-            value="Mode inspiré",
-            interactive=True,
-        )
+    with gr.Blocks(visible=False) as mode_screen:
+        mode_html = gr.HTML("""
+        <div class="fr-notice fr-notice--info">
+            <div class="fr-container">
+                    <div class="fr-notice__body">
+                                <p class="fr-notice__title">Discutez d'un sujet que vous connaissez ou qui vous intéresse puis évaluez les réponses des modèles</p>
+                    </div>
+            </div>
+        </div>""")
+        gr.Markdown("## Comment voulez-vous commencer la conversation ?")
+        gr.Markdown("_(Sélectionnez un des deux modes)_")
+        with gr.Row():
+            with gr.Column():
+                # free_mode_html_before = gr.HTML("""
+        # <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md fr-enlarge-link">    <div class="fr-tile__body">        <div class="fr-tile__content">            <h3 class="fr-tile__title">                <a href="#">Intitulé de la tuile</a>            </h3>            <p class="fr-tile__detail">Détail (optionel)</p>        </div>    </div>    <div class="fr-tile__header">        <div class="fr-tile__pictogram">            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">                <use class="fr-artwork-decorative" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-minor" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-major" href="file=assets/icons/document/draft-fill.svg"></use>            </svg>        </div>    </div></div>
+        # """)
+            
+                free_mode_btn = gr.Button(
+                value="Mode libre",
+                interactive=True, icon="assets/icons/document/draft-fill.svg"
+            )
+            guided_mode_btn = gr.Button(
+                value="Mode inspiré",
+                interactive=True,
+            )
 
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
@@ -543,7 +558,7 @@ def build_arena(models):
     free_mode_btn.click(
         free_mode,
         inputs=[],
-        outputs=[mode_screen, send_area],
+        outputs=[send_area],
     )
 
     # Step 1.1
@@ -559,9 +574,7 @@ def build_arena(models):
         bot_response_multi,
         conversations_state + [temperature, top_p, max_output_tokens],
         conversations_state + chatbots,
-    ).then(
-        show_component, [], [conclude_area]
-    )
+    ).then(show_component, [], [conclude_area])
 
     conclude_btn.click(
         show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
