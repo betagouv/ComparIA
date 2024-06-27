@@ -30,7 +30,10 @@ from fastchat.serve.languia.block_conversation import (
     get_ip,
     get_model_description_md,
 )
-from fastchat.serve.remote_logger import get_remote_logger
+
+from fastchat.serve.languia.components import stepper_block, accept_tos_btn
+from fastchat.serve.languia.actions import accept_tos, accept_tos_js, send_preferences, bothbad_vote_last_response, tievote_last_response, rightvote_last_response, leftvote_last_response
+
 from fastchat.utils import (
     build_logger,
     moderation_filter,
@@ -38,8 +41,10 @@ from fastchat.utils import (
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
+# TODO: move to constants.py
 num_sides = 2
 enable_moderation = False
+
 anony_names = ["", ""]
 models = []
 
@@ -55,8 +60,9 @@ def show_component():
     return gr.update(visible=True)
 
 
+# TODO: à refacto
 def show_vote_area():
-    # If I want this form, I need to use @render to refacto and have these already declared in that fn context by here
+    # If I want this form, I need to use .render() to refacto and have these already declared in that fn context by here
     # return {
     #     conclude_area: gr.update(visible=False),
     #     chat_area: gr.update(visible=False),
@@ -85,66 +91,6 @@ def load_demo_arena(models_, url_params):
 
     return conversations_state + selector_updates
 
-
-def vote_last_response(conversations_state, vote_type, model_selectors, request: gr.Request):
-    with open(get_conv_log_filename(), "a") as fout:
-        data = {
-            "tstamp": round(time.time(), 4),
-            "type": vote_type,
-            "models": [x for x in model_selectors],
-            "conversations_state": [x.dict() for x in conversations_state],
-            "ip": get_ip(request),
-        }
-        fout.write(json.dumps(data) + "\n")
-
-    get_remote_logger().log(data)
-
-    names = (
-        "### Model A: " + conversations_state[0].model_name,
-        "### Model B: " + conversations_state[1].model_name,
-    )
-    yield names + ("",)
-    #  + [gr.update(visible=True)]
-
-
-def leftvote_last_response(
-    state0, state1, model_selector0, model_selector1, request: gr.Request
-):
-    logger.info(f"leftvote (anony). ip: {get_ip(request)}")
-    for x in vote_last_response(
-        [state0, state1], "leftvote", [model_selector0, model_selector1], request
-    ):
-        yield x
-
-
-def rightvote_last_response(
-    state0, state1, model_selector0, model_selector1, request: gr.Request
-):
-    logger.info(f"rightvote (anony). ip: {get_ip(request)}")
-    for x in vote_last_response(
-        [state0, state1], "rightvote", [model_selector0, model_selector1], request
-    ):
-        yield x
-
-
-def tievote_last_response(
-    state0, state1, model_selector0, model_selector1, request: gr.Request
-):
-    logger.info(f"tievote (anony). ip: {get_ip(request)}")
-    for x in vote_last_response(
-        [state0, state1], "tievote", [model_selector0, model_selector1], request
-    ):
-        yield x
-
-
-def bothbad_vote_last_response(
-    state0, state1, model_selector0, model_selector1, request: gr.Request
-):
-    logger.info(f"bothbad_vote (anony). ip: {get_ip(request)}")
-    for x in vote_last_response(
-        [state0, state1], "bothbad_vote", [model_selector0, model_selector1], request
-    ):
-        yield x
 
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
@@ -198,7 +144,7 @@ def get_battle_pair(
     rival_idx = np.random.choice(len(rival_models), p=rival_weights)
     rival_model = rival_models[rival_idx]
 
-    swap = np.random.randint(2)
+    swap = np.random.randint(num_sides)
     if swap == 0:
         return chosen_model, rival_model
     else:
@@ -285,8 +231,12 @@ def add_text(
     for i in range(num_sides):
         # post_processed_text = _prepare_text_with_image(conversations_state[i], text, csam_flag=False)
         post_processed_text = text
-        conversations_state[i].conv.append_message(conversations_state[i].conv.roles[0], post_processed_text)
-        conversations_state[i].conv.append_message(conversations_state[i].conv.roles[1], None)
+        conversations_state[i].conv.append_message(
+            conversations_state[i].conv.roles[0], post_processed_text
+        )
+        conversations_state[i].conv.append_message(
+            conversations_state[i].conv.roles[1], None
+        )
         conversations_state[i].skip_next = False
 
     return (
@@ -384,22 +334,7 @@ def check_for_tos_cookie(request: gr.Request):
     return tos_accepted
 
 
-# TODO: à move
-def accept_tos(request: gr.Request):
-    global tos_accepted
-    tos_accepted = True
-
-    print("ToS accepted!")
-    return [
-        # start_screen:
-        gr.update(visible=False),
-        # mode_screen:
-        gr.update(visible=True),
-    ]
-
-
 def free_mode():
-    
     print("chose free mode!")
     return [
         # Refacto w/ "next_row" that should do that
@@ -409,7 +344,6 @@ def free_mode():
 
 
 def guided_mode():
-    
     print("chose guided mode!")
     return [
         # Previous screen
@@ -417,21 +351,41 @@ def guided_mode():
         # Next screen
         gr.Row(visible=True),
         # Inspired options
-        gr.Row(visible=True)
+        gr.Row(visible=True),
     ]
 
+
 def craft_guided_prompt(topic_choice):
-    if (str(topic_choice) == "Québécois ?"):
+    if str(topic_choice) == "Québécois ?":
         return "Tu comprends-tu, quand je parle ?"
     else:
         return "Quoque ch’est qu’te berdoules ?"
 
 
-accept_tos_js = """
-function () {
-  document.cookie="languia_tos_accepted=1"
-}
-"""
+    # TODO: refacto so that it clears any object / trashes the state except ToS
+def clear_history(
+    state0,
+    state1,
+    chatbot0,
+    chatbot1,
+    model_selector0,
+    model_selector1,
+    textbox,
+    request: gr.Request,
+):
+    logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+    return [
+        None,
+        None,
+        None,
+        None,
+        "",
+        "",
+        "",
+        gr.update(visible=False),
+        gr.update(visible=False),
+        gr.update(visible=True),
+    ]
 
 
 # build_arena_demo?
@@ -444,8 +398,12 @@ def build_arena(models):
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
     # if not tos_cookie:
+
+    with gr.Row() as stepper_row:
+        stepper_block.render()
+
     with gr.Row() as start_screen:
-        accept_tos_btn = gr.Button(value="🔄  Accept ToS", interactive=True)
+        accept_tos_btn.render()
 
     with gr.Row(visible=False) as mode_screen:
         # render: no?
@@ -478,9 +436,7 @@ def build_arena(models):
 
     with gr.Row(visible=False) as guided_area:
         # TODO: use @gr.render instead?
-        guided_prompt = gr.Radio(
-            choices=["Chtimi ?", "Québécois ?"], elem_classes=""
-        )
+        guided_prompt = gr.Radio(choices=["Chtimi ?", "Québécois ?"], elem_classes="")
 
     with gr.Row(visible=False) as send_area:
         # TODO: use @gr.render instead?
@@ -510,45 +466,20 @@ def build_arena(models):
         gr.Markdown(
             value="### Pourquoi ce choix de modèle ?\nSélectionnez vos préférences (facultatif)"
         )
-        gr.Markdown(value="Ressenti")
-        with gr.Group():
+        with gr.Row():
             # TODO: refacto
-            lisible_btn = gr.Button(value="Lisible")
-            impressionne_btn = gr.Button(value="Impressionné")
-            facile_a_comprendre_btn = gr.Button(value="Facile à comprendre")
+            ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
+            # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
+            # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
         final_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
         final_send_btn = gr.Button(value="Envoyer mes préférences")
         with gr.Row():
-            # These 2 should just be normal links...
-            opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
+            # dsfr: These 2 should just be normal links...
             leaderboard_btn = gr.Button(value="Classement de l'arène")
 
-            clear_btn = gr.Button(value="Recommencer sans voter")
-
-    # TODO: refacto so that it clears any object
-    def clear_history(
-        state0,
-        state1,
-        chatbot0,
-        chatbot1,
-        model_selector0,
-        model_selector1,
-        textbox,
-        request: gr.Request,
-    ):
-        logger.info(f"clear_history (anony). ip: {get_ip(request)}")
-        return [
-            None,
-            None,
-            None,
-            None,
-            "",
-            "",
-            "",
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-        ]
+    # dsfr: These 2 should just be normal links...
+    opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
+    clear_btn = gr.Button(value="Recommencer sans voter")
 
     # with gr.Row() as results_area:
     #     gr.Markdown(get_model_description_md(models), elem_id="model_description_markdown")
@@ -583,102 +514,88 @@ def build_arena(models):
     )
 
     # Register listeners
-    def register_listeners():
-        # Step 0
-        accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
-        # TODO: fix js output
-        # accept_tos_btn.click(
-        #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
-        # )
-        # Step 1
-        guided_mode_btn.click(
-            guided_mode,
-            inputs=[],
-            outputs=[mode_screen, send_area, guided_area],
-        )
-        free_mode_btn.click(
-            free_mode,
-            inputs=[],
-            outputs=[mode_screen, send_area],
-        )
+    # def register_listeners():
+    # Step 0
+    accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
+    # TODO: fix js output
+    # accept_tos_btn.click(
+    #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
+    # )
+    # Step 1
+    guided_mode_btn.click(
+        guided_mode,
+        inputs=[],
+        outputs=[mode_screen, send_area, guided_area],
+    )
+    free_mode_btn.click(
+        free_mode,
+        inputs=[],
+        outputs=[mode_screen, send_area],
+    )
 
-        # Step 1.1
-        guided_prompt.change(craft_guided_prompt, guided_prompt, textbox)
+    # Step 1.1
+    guided_prompt.change(craft_guided_prompt, guided_prompt, textbox)
 
-        # Step 2
-        textbox.submit(
-            add_text,
-            conversations_state + model_selectors + [textbox],
-            conversations_state + chatbots + [textbox] + [chat_area],
-        ).then(
-            bot_response_multi,
-            conversations_state + [temperature, top_p, max_output_tokens],
-            conversations_state + chatbots,
-        ).then(show_component, [], [conclude_area])
+    # Step 2
+    gr.on(
+        triggers=[textbox.submit,send_btn.click],
+        fn=add_text,
+        inputs=conversations_state + model_selectors + [textbox],
+        outputs=conversations_state + chatbots + [textbox] + [chat_area],
+    ).then(
+        bot_response_multi,
+        conversations_state + [temperature, top_p, max_output_tokens],
+        conversations_state + chatbots,
+    ).then(show_component, [], [conclude_area])
 
-        send_btn.click(
-            add_text,
-            conversations_state + model_selectors + [textbox],
-            conversations_state + chatbots + [textbox] + [chat_area],
-        ).then(
-            bot_response_multi,
-            conversations_state + [temperature, top_p, max_output_tokens],
-            conversations_state + chatbots,
-        ).then(show_component, [], [conclude_area])
+    conclude_btn.click(
+        show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
+    )
 
-        conclude_btn.click(
-            show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
-        )
+    # Step 3
+    leftvote_btn.click(
+        leftvote_last_response,
+        conversations_state + model_selectors,
+        model_selectors,
+    ).then(show_component, [], [supervote_area])
+    rightvote_btn.click(
+        rightvote_last_response,
+        conversations_state + model_selectors,
+        model_selectors,
+    ).then(show_component, [], [supervote_area])
+    tie_btn.click(
+        tievote_last_response,
+        conversations_state + model_selectors,
+        model_selectors,
+    ).then(show_component, [], [supervote_area])
+    bothbad_btn.click(
+        bothbad_vote_last_response,
+        conversations_state + model_selectors,
+        model_selectors,
+    ).then(show_component, [], [supervote_area])
 
-        leftvote_btn.click(
-            leftvote_last_response,
-            conversations_state + model_selectors,
-            model_selectors,
-            #  + [supervote_area],
-        ).then(show_component, [], [supervote_area])
-        rightvote_btn.click(
-            rightvote_last_response,
-            conversations_state + model_selectors,
-            model_selectors,
-            #  + [supervote_area],
-        ).then(show_component, [], [supervote_area])
-        tie_btn.click(
-            tievote_last_response,
-            conversations_state + model_selectors,
-            model_selectors,
-            #  + [supervote_area],
-        ).then(show_component, [], [supervote_area])
-        bothbad_btn.click(
-            bothbad_vote_last_response,
-            conversations_state + model_selectors,
-            model_selectors + [supervote_area],
-        ).then(show_component, [], [supervote_area])
-        # FIXME:
-        clear_btn.click(
-            clear_history,
-            conversations_state + chatbots + model_selectors + [textbox],
-            # List of objects to clear
-            conversations_state
-            + chatbots
-            + model_selectors
-            + [textbox]
-            + [vote_area]
-            + [supervote_area]
-            + [mode_screen],
-        )
-        retry_btn.click(
-            clear_history,
-            conversations_state + chatbots + model_selectors + [textbox],
-            # List of objects to clear
-            conversations_state
-            + chatbots
-            + model_selectors
-            + [textbox]
-            + [vote_area]
-            + [supervote_area]
-            + [mode_screen],
-        )
 
-    register_listeners()
+    final_send_btn.click(send_preferences, conversations_state + model_selectors + [ressenti_checkbox],
+        (model_selectors))
+
+    # On reset go to mode selection mode_screen 
+    gr.on(
+        triggers=[clear_btn.click,retry_btn.click],
+        fn=clear_history,
+        inputs=conversations_state + chatbots + model_selectors + [textbox],
+        # List of objects to clear
+        outputs=conversations_state
+        + chatbots
+        + model_selectors
+        + [textbox]
+        + [vote_area]
+        + [supervote_area]
+        + [mode_screen]
+    )
+
+
+
+
+    # register_listeners()
 
     return conversations_state + model_selectors
