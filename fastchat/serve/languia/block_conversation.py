@@ -35,11 +35,6 @@ from fastchat.serve.api_provider import get_api_provider_stream_iter
 from fastchat.serve.remote_logger import get_remote_logger
 from fastchat.utils import (
     build_logger,
-    get_window_url_params_js,
-    get_window_url_params_with_tos_js,
-    moderation_filter,
-    parse_gradio_auth_creds,
-    load_image,
 )
 
 logger = build_logger("gradio_web_server", "gradio_web_server.log")
@@ -73,7 +68,7 @@ use_remote_storage = False
 api_endpoint_info = {}
 
 
-class State:
+class ConversationState:
     def __init__(self, model_name, is_vision=False):
         self.conv = get_conversation_template(model_name)
         self.conv_id = uuid.uuid4().hex

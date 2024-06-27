@@ -24,7 +24,7 @@ from fastchat.constants import (
 
 from fastchat.serve.languia.block_conversation import (
     # TODO: to import/replace State and bot_response?
-    State,
+    ConversationState,
     bot_response,
     get_conv_log_filename,
     get_ip,
@@ -76,23 +76,23 @@ def load_demo_arena(models_, url_params):
     global models
     models = models_
 
-    states = (None,) * num_sides
+    conversations_state = (None,) * num_sides
     # What does it do???
     selector_updates = (
         gr.Markdown(visible=True),
         gr.Markdown(visible=True),
     )
 
-    return states + selector_updates
+    return conversations_state + selector_updates
 
 
-def vote_last_response(states, vote_type, model_selectors, request: gr.Request):
+def vote_last_response(conversations_state, vote_type, model_selectors, request: gr.Request):
     with open(get_conv_log_filename(), "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
             "type": vote_type,
             "models": [x for x in model_selectors],
-            "states": [x.dict() for x in states],
+            "conversations_state": [x.dict() for x in conversations_state],
             "ip": get_ip(request),
         }
         fout.write(json.dumps(data) + "\n")
@@ -100,8 +100,8 @@ def vote_last_response(states, vote_type, model_selectors, request: gr.Request):
     get_remote_logger().log(data)
 
     names = (
-        "### Model A: " + states[0].model_name,
-        "### Model B: " + states[1].model_name,
+        "### Model A: " + conversations_state[0].model_name,
+        "### Model B: " + conversations_state[1].model_name,
     )
     yield names + ("",)
     #  + [gr.update(visible=True)]
@@ -215,12 +215,13 @@ def add_text(
 ):
     ip = get_ip(request)
     logger.info(f"add_text (anony). ip: {ip}. len: {len(text)}")
-    states = [state0, state1]
+    conversations_state = [state0, state1]
     model_selectors = [model_selector0, model_selector1]
 
-    # Init states if necessary
-    if states[0] is None:
-        assert states[1] is None
+    # TODO: refacto and put init apart
+    # Init conversations_state if necessary
+    if conversations_state[0] is None:
+        assert conversations_state[1] is None
 
         model_left, model_right = get_battle_pair(
             models,
@@ -229,20 +230,20 @@ def add_text(
             SAMPLING_WEIGHTS,
             SAMPLING_BOOST_MODELS,
         )
-        states = [
-            State(model_left),
-            State(model_right),
+        conversations_state = [
+            ConversationState(model_left),
+            ConversationState(model_right),
         ]
 
     # FIXME: when submitting empty text
     # if len(text) <= 0:
     #     for i in range(num_sides):
-    #         states[i].skip_next = True
+    #         conversations_state[i].skip_next = True
     #     return (
-    #         # 2 states
-    #         states
+    #         # 2 conversations_state
+    #         conversations_state
     #         # 2 chatbots
-    #         + [x.to_gradio_chatbot() for x in states]
+    #         + [x.to_gradio_chatbot() for x in conversations_state]
     #         # text
     #         + [""]
     #         + [visible_row]
@@ -250,10 +251,10 @@ def add_text(
     #         + [""]
     #     )
 
-    model_list = [states[i].model_name for i in range(num_sides)]
+    model_list = [conversations_state[i].model_name for i in range(num_sides)]
     # turn on moderation in battle mode
-    all_conv_text_left = states[0].conv.get_prompt()
-    all_conv_text_right = states[0].conv.get_prompt()
+    all_conv_text_left = conversations_state[0].conv.get_prompt()
+    all_conv_text_right = conversations_state[0].conv.get_prompt()
     all_conv_text = (
         all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
     )
@@ -263,17 +264,17 @@ def add_text(
         # overwrite the original text
         text = MODERATION_MSG
 
-    conv = states[0].conv
+    conv = conversations_state[0].conv
     if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
         logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
         for i in range(num_sides):
-            states[i].skip_next = True
+            conversations_state[i].skip_next = True
             # TODO: refacto
         return (
-            # 2 states
-            states
+            # 2 conversations_state
+            conversations_state
             # 2 chatbots
-            + [x.to_gradio_chatbot() for x in states]
+            + [x.to_gradio_chatbot() for x in conversations_state]
             # text
             + [CONVERSATION_LIMIT_MSG]
             + [gr.update(visible=True)]
@@ -282,17 +283,17 @@ def add_text(
     text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
     # TODO: what do?
     for i in range(num_sides):
-        # post_processed_text = _prepare_text_with_image(states[i], text, csam_flag=False)
+        # post_processed_text = _prepare_text_with_image(conversations_state[i], text, csam_flag=False)
         post_processed_text = text
-        states[i].conv.append_message(states[i].conv.roles[0], post_processed_text)
-        states[i].conv.append_message(states[i].conv.roles[1], None)
-        states[i].skip_next = False
+        conversations_state[i].conv.append_message(conversations_state[i].conv.roles[0], post_processed_text)
+        conversations_state[i].conv.append_message(conversations_state[i].conv.roles[1], None)
+        conversations_state[i].skip_next = False
 
     return (
-        # 2 states
-        states
+        # 2 conversations_state
+        conversations_state
         # 2 chatbots
-        + [x.to_gradio_chatbot() for x in states]
+        + [x.to_gradio_chatbot() for x in conversations_state]
         # text
         + [""]
         # gr.group visible
@@ -320,12 +321,12 @@ def bot_response_multi(
         )
         return
 
-    states = [state0, state1]
+    conversations_state = [state0, state1]
     gen = []
     for i in range(num_sides):
         gen.append(
             bot_response(
-                states[i],
+                conversations_state[i],
                 temperature,
                 top_p,
                 max_new_tokens,
@@ -338,7 +339,7 @@ def bot_response_multi(
     is_stream_batch = []
     for i in range(num_sides):
         is_stream_batch.append(
-            states[i].model_name
+            conversations_state[i].model_name
             in [
                 "gemini-pro",
                 "gemini-pro-dev-api",
@@ -360,11 +361,11 @@ def bot_response_multi(
                 # otherwise, gemini will stream too fast
                 if not is_stream_batch[i] or (iters % 30 == 1 or iters < 3):
                     ret = next(gen[i])
-                    states[i], chatbots[i] = ret[0], ret[1]
+                    conversations_state[i], chatbots[i] = ret[0], ret[1]
                 stop = False
             except StopIteration:
                 pass
-        yield states + chatbots
+        yield conversations_state + chatbots
         if stop:
             break
 
@@ -432,8 +433,10 @@ function () {
 }
 """
 
-def build_side_by_side_ui_anony(models):
-    states = [gr.State() for _ in range(num_sides)]
+
+# build_arena_demo?
+def build_arena(models):
+    conversations_state = [gr.State() for _ in range(num_sides)]
     model_selectors = [None] * num_sides
     # TODO: allow_flagging?
     chatbots = [None] * num_sides
@@ -605,22 +608,22 @@ def build_side_by_side_ui_anony(models):
         # Step 2
         textbox.submit(
             add_text,
-            states + model_selectors + [textbox],
-            states + chatbots + [textbox] + [chat_area],
+            conversations_state + model_selectors + [textbox],
+            conversations_state + chatbots + [textbox] + [chat_area],
         ).then(
             bot_response_multi,
-            states + [temperature, top_p, max_output_tokens],
-            states + chatbots,
+            conversations_state + [temperature, top_p, max_output_tokens],
+            conversations_state + chatbots,
         ).then(show_component, [], [conclude_area])
 
         send_btn.click(
             add_text,
-            states + model_selectors + [textbox],
-            states + chatbots + [textbox] + [chat_area],
+            conversations_state + model_selectors + [textbox],
+            conversations_state + chatbots + [textbox] + [chat_area],
         ).then(
             bot_response_multi,
-            states + [temperature, top_p, max_output_tokens],
-            states + chatbots,
+            conversations_state + [temperature, top_p, max_output_tokens],
+            conversations_state + chatbots,
         ).then(show_component, [], [conclude_area])
 
         conclude_btn.click(
@@ -629,33 +632,33 @@ def build_side_by_side_ui_anony(models):
 
         leftvote_btn.click(
             leftvote_last_response,
-            states + model_selectors,
+            conversations_state + model_selectors,
             model_selectors,
             #  + [supervote_area],
         ).then(show_component, [], [supervote_area])
         rightvote_btn.click(
             rightvote_last_response,
-            states + model_selectors,
+            conversations_state + model_selectors,
             model_selectors,
             #  + [supervote_area],
         ).then(show_component, [], [supervote_area])
         tie_btn.click(
             tievote_last_response,
-            states + model_selectors,
+            conversations_state + model_selectors,
             model_selectors,
             #  + [supervote_area],
         ).then(show_component, [], [supervote_area])
         bothbad_btn.click(
             bothbad_vote_last_response,
-            states + model_selectors,
+            conversations_state + model_selectors,
             model_selectors + [supervote_area],
         ).then(show_component, [], [supervote_area])
         # FIXME:
         clear_btn.click(
             clear_history,
-            states + chatbots + model_selectors + [textbox],
+            conversations_state + chatbots + model_selectors + [textbox],
             # List of objects to clear
-            states
+            conversations_state
             + chatbots
             + model_selectors
             + [textbox]
@@ -665,9 +668,9 @@ def build_side_by_side_ui_anony(models):
         )
         retry_btn.click(
             clear_history,
-            states + chatbots + model_selectors + [textbox],
+            conversations_state + chatbots + model_selectors + [textbox],
             # List of objects to clear
-            states
+            conversations_state
             + chatbots
             + model_selectors
             + [textbox]
@@ -678,4 +681,4 @@ def build_side_by_side_ui_anony(models):
 
     register_listeners()
 
-    return states + model_selectors
+    return conversations_state + model_selectors
