@@ -26,7 +26,6 @@ stepper_block = gr.HTML(
 # accept_tos_btn.click(
 #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
 # )
-accept_tos_btn = gr.Button(value="Accepter les Conditions Générales d'Utilisation", interactive=True, render=False)
 
 
 header_html = """

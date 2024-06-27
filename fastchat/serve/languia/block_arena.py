@@ -35,7 +35,6 @@ from fastchat.serve.languia.block_conversation import (
 from fastchat.serve.languia.components import (
     stepper_block,
     stepper_html,
-    accept_tos_btn,
 )
 from fastchat.serve.languia.actions import (
     accept_tos,
@@ -411,8 +410,8 @@ def build_arena(models):
     with gr.Row() as stepper_row:
         gr.HTML(stepper_html("Choix du mode de conversation", 1, 4))
 
-    with gr.Row() as start_screen:
-        accept_tos_btn.render()
+    # with gr.Row() as start_screen:
+    accept_tos_btn = gr.Button(value="Accepter les Conditions Générales d'Utilisation", interactive=True)
 
     with gr.Blocks(visible=False) as mode_screen:
         mode_html = gr.HTML("""
@@ -544,7 +543,7 @@ def build_arena(models):
     # Register listeners
     # def register_listeners():
     # Step 0
-    accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
+    accept_tos_btn.click(accept_tos, inputs=[], outputs=[accept_tos_btn, mode_screen])
     # TODO: fix js output
     # accept_tos_btn.click(
     #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
