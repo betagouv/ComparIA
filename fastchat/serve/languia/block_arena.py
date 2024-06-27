@@ -32,7 +32,7 @@ from fastchat.serve.languia.block_conversation import (
     get_model_description_md,
 )
 
-from fastchat.serve.languia.components import stepper_block, accept_tos_btn
+from fastchat.serve.languia.components import stepper_html, accept_tos_btn
 from fastchat.serve.languia.actions import (
     accept_tos,
     accept_tos_js,
@@ -409,7 +409,12 @@ def build_arena(models):
     # if not tos_cookie:
 
     with gr.Row() as stepper_row:
-        stepper_block.render()
+        stepper_block = gr.HTML(
+            stepper_html("Choix du mode de conversation", 1, 4),
+            elem_id="stepper_html",
+            render=False,
+        )
+
 
     with gr.Row() as start_screen:
         accept_tos_btn.render()

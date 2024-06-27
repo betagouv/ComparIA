@@ -8,16 +8,10 @@ def stepper_html(title, step, total_steps):
         {title}
         <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
     </h2>
-    <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="3"></div>
+    <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="{total_steps}"></div>
 
 </div>"""
 
-
-stepper_block = gr.HTML(
-    stepper_html("Choix du mode de conversation", 1, 4),
-    elem_id="stepper_html",
-    render=False,
-)
 
 
 # Step 0
