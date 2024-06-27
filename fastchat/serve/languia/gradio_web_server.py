@@ -9,15 +9,17 @@ from fastchat.serve.themes.dsfr import DSFR
 
 import gradio as gr
 
-from fastchat.serve.gradio_block_arena_anony_languia import (
-    build_side_by_side_ui_anony,
-    load_demo_side_by_side_anony,
+from fastchat.serve.languia.block_arena import (
+    build_arena,
+    load_demo_arena,
     set_global_vars_anony,
 )
 
-from fastchat.serve.gradio_web_server import (
+from fastchat.serve.languia.components import header_html
+
+from fastchat.serve.languia.block_conversation import (
     set_global_vars,
-    build_about,
+    # build_about,
     get_model_list,
     get_ip,
 )
@@ -57,13 +59,13 @@ def load_demo(url_params, request: gr.Request):
     ip = get_ip(request)
     logger.info(f"load_demo. ip: {ip}. params: {url_params}")
 
-    selected = 0
-    if "arena" in url_params:
-        selected = 0
-    elif "leaderboard" in url_params:
-        selected = 4
-    elif "about" in url_params:
-        selected = 5
+    # selected = 0
+    # if "arena" in url_params:
+    #     selected = 0
+    # elif "leaderboard" in url_params:
+    #     selected = 4
+    # elif "about" in url_params:
+    #     selected = 5
 
     if args.model_list_mode == "reload":
         models, all_models = get_model_list(
@@ -72,9 +74,10 @@ def load_demo(url_params, request: gr.Request):
             vision_arena=False,
         )
 
-    side_by_side_anony_updates = load_demo_side_by_side_anony(all_models, url_params)
+    arena_updates = load_demo_arena(all_models, url_params)
 
-    return (gr.Tabs(selected=selected),) + side_by_side_anony_updates
+    # return (gr.Tabs(selected=selected),) + arena_updates
+    return (gr.Blocks(),) + arena_updates
 
 
 parser = argparse.ArgumentParser()
@@ -169,7 +172,7 @@ else:
 head_js = """
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script type="module" src="file=assets/js/dsfr.module.js"></script>
-<script type="text/javascript" nomodule src="file=assets/js/dsfr.nomodule.js"></script> 
+<script type="text/javascript" nomodule src="file=assets/js/dsfr.nomodule.js"></script>
 """
 
 custom_css = """
@@ -191,52 +194,22 @@ with gr.Blocks(
 ) as demo:
     # TODO: skiplinks
 
-    header_html = """
-    <header role="banner" class="fr-header">
-  <div class="fr-header__body">
-    <div class="fr-container">
-      <div class="fr-header__body-row">
-        <div class="fr-header__brand fr-enlarge-link">
-          <div class="fr-header__brand-top">
-            <div class="fr-header__logo">
-              <p class="fr-logo">
-                République
-                <br>Française
-              </p>
-            </div>
-          </div>
-          <div class="fr-header__service">
-            <a href="/" title="Accueil - LANGU:IA">
-              <p class="fr-header__service-title">LANGU:IA</p>
-            </a>
-            <p class="fr-header__service-tagline">L'arène francophone de classement de modèles de langage par préférences humaines</p>
-          </div>
-        </div>
-
-        <div class="fr-header__tools">
-          <div class="fr-badge fr-badge--info">
-           Version Demo
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</header>
-"""
     gr.HTML(header_html, elem_id="header_html")
-    with gr.Tabs(elem_classes="reset-tab") as tabs:
-        with gr.Tab("Arène", id=0):
-            side_by_side_anony_list = build_side_by_side_ui_anony(models)
+
+    # Tab was needed for "selected" to work
+    # with gr.Tab"Leaderboard", id=6):
+    with gr.Blocks() as pages:
+        with gr.Blocks():
+            two_models_arena = build_arena(models)
 
         if args.elo_results_file:
-            with gr.Tab("Leaderboard", id=6):
+            with gr.Group("Leaderboard"):
                 build_leaderboard_tab(
                     args.elo_results_file, args.leaderboard_table_file, show_plot=True
                 )
 
-        with gr.Tab("ℹ️  About Us", id=7):
-            about = build_about()
+        # with gr.Tab("ℹ️  About Us", id=7):
+        #     about = build_about()
 
     url_params = gr.JSON(visible=False)
 
@@ -258,7 +231,7 @@ if __name__ == "__main__":
     demo = demo.queue(
         default_concurrency_limit=args.concurrency_count,
         status_update_rate=10,
-        # FIXME: what do?
+        # FIXME: what does it do?
         api_open=False,
     )
 
