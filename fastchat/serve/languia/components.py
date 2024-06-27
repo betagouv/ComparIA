@@ -1,7 +1,8 @@
 import gradio as gr
 
+
 def stepper_html(title, step, total_steps):
-  return f"""
+    return f"""
     <div class="fr-stepper">
     <h2 class="fr-stepper__title">
         {title}
@@ -12,7 +13,11 @@ def stepper_html(title, step, total_steps):
 </div>"""
 
 
-stepper_block = gr.HTML(stepper_html("Choix du mode de conversation", 1, 4), elem_id="stepper_html", render=False)
+stepper_block = gr.HTML(
+    stepper_html("Choix du mode de conversation", 1, 4),
+    elem_id="stepper_html",
+    render=False,
+)
 
 
 # Step 0

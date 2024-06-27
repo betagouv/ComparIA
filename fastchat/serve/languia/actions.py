@@ -4,9 +4,7 @@ import time
 
 import json
 
-from fastchat.serve.languia.block_conversation import (
-    get_conv_log_filename,
-    get_ip)
+from fastchat.serve.languia.block_conversation import get_conv_log_filename, get_ip
 
 from fastchat.serve.remote_logger import get_remote_logger
 
@@ -77,12 +75,23 @@ def bothbad_vote_last_response(
         yield x
 
 
-def send_preferences(state0, state1, model_selector0, model_selector1, ressenti_checkbox, request: gr.Request):    
+def send_preferences(
+    state0,
+    state1,
+    model_selector0,
+    model_selector1,
+    ressenti_checkbox,
+    request: gr.Request,
+):
     print(ressenti_checkbox)
     for x in vote_last_response(
-        [state0, state1], f"ressenti: {str(ressenti_checkbox)}", [model_selector0, model_selector1], request
+        [state0, state1],
+        f"ressenti: {str(ressenti_checkbox)}",
+        [model_selector0, model_selector1],
+        request,
     ):
         yield x
+
 
 def accept_tos(request: gr.Request):
     global tos_accepted

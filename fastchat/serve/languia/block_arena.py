@@ -20,6 +20,7 @@ from fastchat.constants import (
     SAMPLING_BOOST_MODELS,
     OUTAGE_MODELS,
 )
+
 # from fastchat.model.model_adapter import get_conversation_template
 
 from fastchat.serve.languia.block_conversation import (
@@ -32,7 +33,15 @@ from fastchat.serve.languia.block_conversation import (
 )
 
 from fastchat.serve.languia.components import stepper_block, accept_tos_btn
-from fastchat.serve.languia.actions import accept_tos, accept_tos_js, send_preferences, bothbad_vote_last_response, tievote_last_response, rightvote_last_response, leftvote_last_response
+from fastchat.serve.languia.actions import (
+    accept_tos,
+    accept_tos_js,
+    send_preferences,
+    bothbad_vote_last_response,
+    tievote_last_response,
+    rightvote_last_response,
+    leftvote_last_response,
+)
 
 from fastchat.utils import (
     build_logger,
@@ -90,7 +99,6 @@ def load_demo_arena(models_, url_params):
     )
 
     return conversations_state + selector_updates
-
 
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
@@ -361,8 +369,9 @@ def craft_guided_prompt(topic_choice):
     else:
         return "Quoque ch’est qu’te berdoules ?"
 
-
     # TODO: refacto so that it clears any object / trashes the state except ToS
+
+
 def clear_history(
     state0,
     state1,
@@ -468,7 +477,11 @@ def build_arena(models):
         )
         with gr.Row():
             # TODO: refacto
-            ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
+            ressenti_checkbox = gr.CheckboxGroup(
+                ["Lisible", "Impressionné·e", "Facile à comprendre"],
+                label="ressenti",
+                info="Quel a été votre ressenti ?",
+            )
             # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
             # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
         final_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
@@ -538,7 +551,7 @@ def build_arena(models):
 
     # Step 2
     gr.on(
-        triggers=[textbox.submit,send_btn.click],
+        triggers=[textbox.submit, send_btn.click],
         fn=add_text,
         inputs=conversations_state + model_selectors + [textbox],
         outputs=conversations_state + chatbots + [textbox] + [chat_area],
@@ -546,7 +559,9 @@ def build_arena(models):
         bot_response_multi,
         conversations_state + [temperature, top_p, max_output_tokens],
         conversations_state + chatbots,
-    ).then(show_component, [], [conclude_area])
+    ).then(
+        show_component, [], [conclude_area]
+    )
 
     conclude_btn.click(
         show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
@@ -574,13 +589,15 @@ def build_arena(models):
         model_selectors,
     ).then(show_component, [], [supervote_area])
 
+    final_send_btn.click(
+        send_preferences,
+        conversations_state + model_selectors + [ressenti_checkbox],
+        (model_selectors),
+    )
 
-    final_send_btn.click(send_preferences, conversations_state + model_selectors + [ressenti_checkbox],
-        (model_selectors))
-
-    # On reset go to mode selection mode_screen 
+    # On reset go to mode selection mode_screen
     gr.on(
-        triggers=[clear_btn.click,retry_btn.click],
+        triggers=[clear_btn.click, retry_btn.click],
         fn=clear_history,
         inputs=conversations_state + chatbots + model_selectors + [textbox],
         # List of objects to clear
@@ -590,11 +607,8 @@ def build_arena(models):
         + [textbox]
         + [vote_area]
         + [supervote_area]
-        + [mode_screen]
+        + [mode_screen],
     )
-
-
-
 
     # register_listeners()
 

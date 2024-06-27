@@ -177,7 +177,6 @@ def get_model_list(controller_url, register_api_endpoint_file, vision_arena):
     return visible_models, models
 
 
-
 def get_ip(request: gr.Request):
     if "cf-connecting-ip" in request.headers:
         ip = request.headers["cf-connecting-ip"]
@@ -186,6 +185,7 @@ def get_ip(request: gr.Request):
     else:
         ip = request.client.host
     return ip
+
 
 def model_worker_stream_iter(
     conv,
@@ -436,7 +436,6 @@ def bot_response(
         }
         fout.write(json.dumps(data) + "\n")
     get_remote_logger().log(data)
-
 
 
 def get_model_description_md(models):
