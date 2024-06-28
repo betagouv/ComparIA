@@ -98,12 +98,12 @@ def accept_tos(request: gr.Request):
     tos_accepted = True
 
     print("ToS accepted!")
-    return [
-        # start_screen:
+    return (
+        # accept_tos_btn:
         gr.update(visible=False),
         # mode_screen:
-        gr.update(visible=True),
-    ]
+        gr.update(visible=True)
+    )
 
 
 accept_tos_js = """

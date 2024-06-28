@@ -32,7 +32,7 @@ from fastchat.serve.languia.block_conversation import (
     get_model_description_md,
 )
 
-from fastchat.serve.languia.components import stepper_html, accept_tos_btn
+from fastchat.serve.languia.components import stepper_html
 from fastchat.serve.languia.actions import (
     accept_tos,
     accept_tos_js,
@@ -67,6 +67,9 @@ def set_global_vars_anony(enable_moderation_):
 
 def show_component():
     return gr.update(visible=True)
+
+def enable_component():
+    return gr.update(interactive=True)
 
 
 # TODO: à refacto
@@ -254,7 +257,15 @@ def add_text(
         + [x.to_gradio_chatbot() for x in conversations_state]
         # text
         + [""]
-        # gr.group visible
+        # mode_screen
+        + [gr.update(visible=False)]
+        # chat_area
+        + [gr.update(visible=True)]
+        # send_btn
+        + [gr.update(interactive=False)]
+        # retry_btn
+        + [gr.update(visible=True)]
+        # conclude_area
         + [gr.update(visible=True)]
     )
 
@@ -344,22 +355,16 @@ def check_for_tos_cookie(request: gr.Request):
 
 def free_mode():
     print("chose free mode!")
-    return [
-        # Refacto w/ "next_row" that should do that
-        gr.Row(visible=False),
-        gr.Row(visible=True),
-    ]
+    return [gr.update(visible=True),gr.update(visible=False)]
 
 
 def guided_mode():
     print("chose guided mode!")
     return [
-        # Previous screen
-        gr.Row(visible=False),
         # Next screen
-        gr.Row(visible=True),
+        gr.update(visible=True),
         # Inspired options
-        gr.Row(visible=True),
+        gr.update(visible=True),
     ]
 
 
@@ -383,6 +388,13 @@ def clear_history(
     request: gr.Request,
 ):
     logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+        #     + chatbots
+        # + model_selectors
+        # + [textbox]
+        # + [chat_area]
+        # + [vote_area]
+        # + [supervote_area]
+        # + [mode_screen],
     return [
         None,
         None,
@@ -391,6 +403,7 @@ def clear_history(
         "",
         "",
         "",
+        gr.update(visible=False),
         gr.update(visible=False),
         gr.update(visible=False),
         gr.update(visible=True),
@@ -410,25 +423,48 @@ def build_arena(models):
 
     with gr.Row() as stepper_row:
         stepper_block = gr.HTML(
-            stepper_html("Choix du mode de conversation", 1, 4),
-            elem_id="stepper_html",
-            render=False,
+            stepper_html("Choix du mode de conversation", 1, 4), elem_id="stepper_html"
         )
-
 
     with gr.Row() as start_screen:
-        accept_tos_btn.render()
+        accept_tos_btn = gr.Button(
+            value="Accepter les Conditions Générales d'Utilisation", interactive=True
+        )
 
-    with gr.Row(visible=False) as mode_screen:
-        # render: no?
-        free_mode_btn = gr.Button(
-            value="Mode libre",
-            interactive=True,
-        )
-        guided_mode_btn = gr.Button(
-            value="Mode inspiré",
-            interactive=True,
-        )
+    # what's the most div component?
+    with gr.Column(visible=False) as mode_screen:
+        mode_html = gr.HTML("""
+        <div class="fr-notice fr-notice--info">
+            <div class="fr-container">
+                    <div class="fr-notice__body">
+                                <p class="fr-notice__title">Discutez d'un sujet que vous connaissez ou qui vous intéresse puis évaluez les réponses des modèles</p>
+                    </div>
+            </div>
+        </div>""")
+        gr.Markdown("## Comment voulez-vous commencer la conversation ?")
+        gr.Markdown("_(Sélectionnez un des deux modes)_")
+        with gr.Row():
+            with gr.Column():
+                # free_mode_html_before = gr.HTML("""
+                # <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md fr-enlarge-link">    <div class="fr-tile__body">        <div class="fr-tile__content">            <h3 class="fr-tile__title">                <a href="#">Intitulé de la tuile</a>            </h3>            <p class="fr-tile__detail">Détail (optionel)</p>        </div>    </div>    <div class="fr-tile__header">        <div class="fr-tile__pictogram">            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">                <use class="fr-artwork-decorative" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-minor" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-major" href="file=assets/icons/document/draft-fill.svg"></use>            </svg>        </div>    </div></div>
+                # """)
+
+                free_mode_btn = gr.Button(
+                    value="Mode libre",
+                    interactive=True,
+                    icon="assets/icons/document/draft-fill.svg",
+                )
+            with gr.Column():
+                guided_mode_btn = gr.Button(
+                    value="Mode inspiré",
+                    interactive=True,
+                )
+
+        with gr.Row(visible=False) as guided_area:
+            # TODO: use @gr.render instead?
+            guided_prompt = gr.Radio(
+                choices=["Chtimi ?", "Québécois ?"], elem_classes=""
+            )
 
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
@@ -448,35 +484,34 @@ def build_arena(models):
                         anony_names[i], elem_id="model_selector_md"
                     )
 
-    with gr.Row(visible=False) as guided_area:
-        # TODO: use @gr.render instead?
-        guided_prompt = gr.Radio(choices=["Chtimi ?", "Québécois ?"], elem_classes="")
-
     with gr.Row(visible=False) as send_area:
-        # TODO: use @gr.render instead?
+        # with gr.Row():
         textbox = gr.Textbox(
             show_label=False,
             placeholder="Ecrivez votre premier message à l'arène ici",
             elem_id="input_box",
-            elem_classes="fr-input",
+            elem_classes="fr-input",scale=3
         )
-        send_btn = gr.Button(value="Envoyer", scale=0, elem_classes="fr-btn")
-
-    # TODO: visible à update quand "terminer l'exp"
+        send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
+        retry_btn = gr.Button(value="Recommencer", elem_classes="fr-btn", scale=0)
     with gr.Row(visible=False) as conclude_area:
-        conclude_btn = gr.Button(value="Terminer et donner mon avis")
-        retry_btn = gr.Button(value="Recommencer")
-        # clear_btn.render()
-    # TODO: visible à update quand "terminer l'exp"
+        conclude_btn = gr.Button(
+            value="Terminer et donner mon avis",
+            scale=1,
+            elem_classes="fr-btn",
+            interactive=True,
+            # interactive=False
+        )
 
-    with gr.Row(visible=False) as vote_area:
+    with gr.Column(visible=False) as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
-        leftvote_btn = gr.Button(value="👈  A est mieux")
-        rightvote_btn = gr.Button(value="👉  B est mieux")
-        tie_btn = gr.Button(value="🤝  Les deux se valent")
-        bothbad_btn = gr.Button(value="👎  Aucun des deux")
+        with gr.Row():
+            leftvote_btn = gr.Button(value="👈  A est mieux")
+            rightvote_btn = gr.Button(value="👉  B est mieux")
+            tie_btn = gr.Button(value="🤝  Les deux se valent")
+            bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-    with gr.Row(visible=False) as supervote_area:
+    with gr.Column(visible=False) as supervote_area:
         gr.Markdown(
             value="### Pourquoi ce choix de modèle ?\nSélectionnez vos préférences (facultatif)"
         )
@@ -495,9 +530,9 @@ def build_arena(models):
             # dsfr: These 2 should just be normal links...
             leaderboard_btn = gr.Button(value="Classement de l'arène")
 
-    # dsfr: These 2 should just be normal links...
-    opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
-    clear_btn = gr.Button(value="Recommencer sans voter")
+            # dsfr: These 2 should just be normal links...
+            opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
+            clear_btn = gr.Button(value="Recommencer sans voter")
 
     # with gr.Row() as results_area:
     #     gr.Markdown(get_model_description_md(models), elem_id="model_description_markdown")
@@ -543,30 +578,44 @@ def build_arena(models):
     guided_mode_btn.click(
         guided_mode,
         inputs=[],
-        outputs=[mode_screen, send_area, guided_area],
+        outputs=[send_area, guided_area],
     )
     free_mode_btn.click(
         free_mode,
         inputs=[],
-        outputs=[mode_screen, send_area],
+        outputs=[send_area, guided_area],
     )
 
     # Step 1.1
     guided_prompt.change(craft_guided_prompt, guided_prompt, textbox)
 
+    def change_send_btn_state(textbox):
+        if textbox != "":
+            return gr.update(interactive=True)
+        else:
+            return gr.update(interactive=False)
+
     # Step 2
+    textbox.change(change_send_btn_state, textbox, send_btn)
+
     gr.on(
         triggers=[textbox.submit, send_btn.click],
         fn=add_text,
         inputs=conversations_state + model_selectors + [textbox],
-        outputs=conversations_state + chatbots + [textbox] + [chat_area],
+        outputs=conversations_state
+        + chatbots
+        + [textbox]
+        + [mode_screen]
+        + [chat_area]
+        + [send_btn]
+        + [retry_btn]
+        + [conclude_area],
     ).then(
         bot_response_multi,
         conversations_state + [temperature, top_p, max_output_tokens],
         conversations_state + chatbots,
-    ).then(
-        show_component, [], [conclude_area]
-    )
+    ).then(enable_component, [], [conclude_btn])
+
 
     conclude_btn.click(
         show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
@@ -610,6 +659,7 @@ def build_arena(models):
         + chatbots
         + model_selectors
         + [textbox]
+        + [chat_area]
         + [vote_area]
         + [supervote_area]
         + [mode_screen],
