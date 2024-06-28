@@ -12,7 +12,7 @@ RUN pip3 install openai plotly pydantic-settings sentry-sdk
 
 # Specific to LANGU:IA: install required Gradio Custom Components
 FROM python:3.9-slim as custom_components
-RUN apt update && apt install -y nodejs
+RUN apt update && apt install -y nodejs npm
 RUN pip3 install gradio
 COPY ./gradio-dsfr/ /custom_components/
 WORKDIR /custom_components/frbutton
