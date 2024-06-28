@@ -16,15 +16,16 @@ from fastchat.utils import (
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 
+# FIXME: TO REFACTO
 def vote_last_response(
-    conversations_state, vote_type, model_selectors, request: gr.Request
+    conversations_state, vote_type, _model_selectors, request: gr.Request
 ):
     logger.info(f"{vote_type}_vote (anony). ip: {get_ip(request)}")
     with open(get_conv_log_filename(), "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
             "type": vote_type,
-            "models": [x for x in model_selectors],
+            "models": [x.model_name for x in conversations_state],
             "conversations_state": [x.dict() for x in conversations_state],
             "ip": get_ip(request),
         }
@@ -39,7 +40,7 @@ def vote_last_response(
     )
     yield names + ("",)
 
-# TODO: refacto? why the loop?
+# TODO: refacto: why the loop?
 def leftvote_last_response(
     state0, state1, model_selector0, model_selector1, request: gr.Request
 ):
