@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04
+FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04 AS build
 # FROM debian:11-slim
 # FROM python:3.9-slim
 
@@ -10,9 +10,22 @@ RUN pip3 install fschat
 RUN pip3 install fschat[model_worker,webui]
 RUN pip3 install openai plotly pydantic-settings sentry-sdk
 
-WORKDIR /app
+# Specific to LANGU:IA: install required Gradio Custom Components
+FROM python:3.9-slim as custom_components
+RUN apt update && apt install -y nodejs
+RUN pip3 install gradio
+COPY ./gradio-dsfr/ /custom_components/
+WORKDIR /custom_components/frbutton
+RUN gradio cc install
+RUN gradio cc build
 
+FROM build
+COPY --from=custom_components /custom_components/frbutton/dist/gradio_frbutton-0.0.1-py3-none-any.whl /gradio_frbutton-0.0.1-py3-none-any.whl
+RUN pip3 install /gradio_frbutton-0.0.1-py3-none-any.whl
+
+WORKDIR /app
 COPY . /app
+
 VOLUME /data
 
 EXPOSE 80
