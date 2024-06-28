@@ -28,6 +28,7 @@ def vote_last_response(
             "conversations_state": [x.dict() for x in conversations_state],
             "ip": get_ip(request),
         }
+        logger.info(json.dumps(data))
         fout.write(json.dumps(data) + "\n")
 
     get_remote_logger().log(data)
@@ -38,7 +39,7 @@ def vote_last_response(
     )
     yield names + ("",)
 
-
+# TODO: refacto? why the loop?
 def leftvote_last_response(
     state0, state1, model_selector0, model_selector1, request: gr.Request
 ):

@@ -176,8 +176,12 @@ head_js = """
 """
 
 custom_css = """
-.reset-tab .tabitem {
-border: none
+#free-mode {
+    display: block
+    height: 30em
+}
+#free-mode.selected {
+    border-bottom: 5px navy solid;
 }
 """
 

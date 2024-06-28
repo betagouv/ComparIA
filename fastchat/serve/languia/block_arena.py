@@ -48,6 +48,8 @@ from fastchat.utils import (
     moderation_filter,
 )
 
+from gradio_frbutton import FrButton
+
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 # TODO: move to constants.py
@@ -67,6 +69,7 @@ def set_global_vars_anony(enable_moderation_):
 
 def show_component():
     return gr.update(visible=True)
+
 
 def enable_component():
     return gr.update(interactive=True)
@@ -355,7 +358,11 @@ def check_for_tos_cookie(request: gr.Request):
 
 def free_mode():
     print("chose free mode!")
-    return [gr.update(visible=True),gr.update(visible=False)]
+    return [
+        gr.update(elem_classes="selected"),
+        gr.update(visible=True),
+        gr.update(visible=False),
+    ]
 
 
 def guided_mode():
@@ -370,9 +377,9 @@ def guided_mode():
 
 def craft_guided_prompt(topic_choice):
     if str(topic_choice) == "Québécois ?":
-        return "Tu comprends-tu, quand je parle ?"
+        return gr.update(value="Tu comprends-tu, quand je parle ?")
     else:
-        return "Quoque ch’est qu’te berdoules ?"
+        return gr.update(value="Quoque ch'est qu'te berdoules ?")
 
     # TODO: refacto so that it clears any object / trashes the state except ToS
 
@@ -388,13 +395,13 @@ def clear_history(
     request: gr.Request,
 ):
     logger.info(f"clear_history (anony). ip: {get_ip(request)}")
-        #     + chatbots
-        # + model_selectors
-        # + [textbox]
-        # + [chat_area]
-        # + [vote_area]
-        # + [supervote_area]
-        # + [mode_screen],
+    #     + chatbots
+    # + model_selectors
+    # + [textbox]
+    # + [chat_area]
+    # + [vote_area]
+    # + [supervote_area]
+    # + [mode_screen],
     return [
         None,
         None,
@@ -449,19 +456,20 @@ def build_arena(models):
                 # <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md fr-enlarge-link">    <div class="fr-tile__body">        <div class="fr-tile__content">            <h3 class="fr-tile__title">                <a href="#">Intitulé de la tuile</a>            </h3>            <p class="fr-tile__detail">Détail (optionel)</p>        </div>    </div>    <div class="fr-tile__header">        <div class="fr-tile__pictogram">            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">                <use class="fr-artwork-decorative" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-minor" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-major" href="file=assets/icons/document/draft-fill.svg"></use>            </svg>        </div>    </div></div>
                 # """)
 
-                free_mode_btn = gr.Button(
-                    value="Mode libre",
-                    interactive=True,
+                free_mode_btn = FrButton(
+                    title="Mode libre",
+                    value="Ecrivez directement aux modèles, discutez du sujet que vous voulez",
+                    elem_id="free-mode",
                     icon="assets/icons/document/draft-fill.svg",
                 )
             with gr.Column():
-                guided_mode_btn = gr.Button(
-                    value="Mode inspiré",
-                    interactive=True,
+                guided_mode_btn = FrButton(
+                    title="Mode inspiré",
+                    value="Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants",
+                    icon="assets/icons/document/file-fill.svg",
                 )
 
         with gr.Row(visible=False) as guided_area:
-            # TODO: use @gr.render instead?
             guided_prompt = gr.Radio(
                 choices=["Chtimi ?", "Québécois ?"], elem_classes=""
             )
@@ -490,7 +498,8 @@ def build_arena(models):
             show_label=False,
             placeholder="Ecrivez votre premier message à l'arène ici",
             elem_id="input_box",
-            elem_classes="fr-input",scale=3
+            elem_classes="fr-input",
+            scale=3,
         )
         send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
         retry_btn = gr.Button(value="Recommencer", elem_classes="fr-btn", scale=0)
@@ -526,6 +535,7 @@ def build_arena(models):
             # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
         final_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
         final_send_btn = gr.Button(value="Envoyer mes préférences")
+
         with gr.Row():
             # dsfr: These 2 should just be normal links...
             leaderboard_btn = gr.Button(value="Classement de l'arène")
@@ -583,7 +593,8 @@ def build_arena(models):
     free_mode_btn.click(
         free_mode,
         inputs=[],
-        outputs=[send_area, guided_area],
+        # js?
+        outputs=[free_mode_btn, send_area, guided_area],
     )
 
     # Step 1.1
@@ -615,7 +626,6 @@ def build_arena(models):
         conversations_state + [temperature, top_p, max_output_tokens],
         conversations_state + chatbots,
     ).then(enable_component, [], [conclude_btn])
-
 
     conclude_btn.click(
         show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
