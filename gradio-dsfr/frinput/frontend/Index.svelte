@@ -1,6 +1,14 @@
 <svelte:options accessors={true} />
 
 <script lang="ts">
+
+    import '@gouvfr/dsfr/dist/scheme/scheme.css'
+    import '@gouvfr/dsfr/dist/core/core.css'
+    import '@gouvfr/dsfr/dist/component/form/form.css'
+    import '@gouvfr/dsfr/dist/component/link/link.css'
+    import '@gouvfr/dsfr/dist/component/button/button.css'
+    import '@gouvfr/dsfr/dist/component/input/input.css'
+
 	import type { Gradio } from "@gradio/utils";
 	import { BlockTitle } from "@gradio/atoms";
 	import { Block } from "@gradio/atoms";
@@ -71,13 +79,13 @@
 		/>
 	{/if}
 
-	<label class:container>
+	<label class:container class="fr-label">
 		<BlockTitle {show_label} info={undefined}>{label}</BlockTitle>
 
 		<input
 			data-testid="textbox"
 			type="text"
-			class="scroll-hide"
+			class="fr-input"
 			bind:value
 			bind:this={el}
 			{placeholder}
@@ -89,41 +97,4 @@
 </Block>
 
 <style>
-	label {
-		display: block;
-		width: 100%;
-	}
-
-	input {
-		display: block;
-		position: relative;
-		outline: none !important;
-		box-shadow: var(--input-shadow);
-		background: var(--input-background-fill);
-		padding: var(--input-padding);
-		width: 100%;
-		color: var(--body-text-color);
-		font-weight: var(--input-text-weight);
-		font-size: var(--input-text-size);
-		line-height: var(--line-sm);
-		border: none;
-	}
-	.container > input {
-		border: var(--input-border-width) solid var(--input-border-color);
-		border-radius: var(--input-radius);
-	}
-	input:disabled {
-		-webkit-text-fill-color: var(--body-text-color);
-		-webkit-opacity: 1;
-		opacity: 1;
-	}
-
-	input:focus {
-		box-shadow: var(--input-shadow-focus);
-		border-color: var(--input-border-color-focus);
-	}
-
-	input::placeholder {
-		color: var(--input-placeholder-color);
-	}
 </style>
