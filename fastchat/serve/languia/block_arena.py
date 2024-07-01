@@ -36,9 +36,9 @@ from fastchat.serve.languia.components import stepper_html
 from fastchat.serve.languia.actions import (
     accept_tos,
     accept_tos_js,
-    send_preferences,
+    vote_preferences,
     bothbad_vote_last_response,
-    tievote_last_response,
+    # tievote_last_response,
     rightvote_last_response,
     leftvote_last_response,
 )
@@ -459,10 +459,11 @@ def build_arena(models):
     with gr.Column(visible=False) as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
-            leftvote_btn = gr.Button(value="👈  A est mieux")
-            rightvote_btn = gr.Button(value="👉  B est mieux")
-            tie_btn = gr.Button(value="🤝  Les deux se valent")
-            bothbad_btn = gr.Button(value="👎  Aucun des deux")
+            which_model_radio = gr.Radio(choices=["Modèle A", "Modèle B", "Aucun des deux"])
+            # leftvote_btn = gr.Button(value="👈  A est mieux")
+            # rightvote_btn = gr.Button(value="👉  B est mieux")
+            # # tie_btn = gr.Button(value="🤝  Les deux se valent")
+            # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
     with gr.Column(visible=False) as supervote_area:
         gr.Markdown(
@@ -477,7 +478,7 @@ def build_arena(models):
             )
             # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
             # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
-        final_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
+        comments_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
         final_send_btn = gr.Button(value="Envoyer mes préférences")
 
         with gr.Row():
@@ -575,32 +576,32 @@ def build_arena(models):
         show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
     )
 
+    which_model_radio.change(show_component, [], [supervote_area])
     # Step 3
-    leftvote_btn.click(
-        leftvote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
-    rightvote_btn.click(
-        rightvote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
-    tie_btn.click(
-        tievote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
-    bothbad_btn.click(
-        bothbad_vote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
+    # leftvote_btn.click(
+    #     leftvote_last_response,
+    #     conversations_state + model_selectors,
+    #     model_selectors,
+    # ).then(show_component, [], [supervote_area])
+    # rightvote_btn.click(
+    #     rightvote_last_response,
+    #     conversations_state + model_selectors,
+    #     model_selectors,
+    # ).then(show_component, [], [supervote_area])
+    # # tie_btn.click(
+    # #     tievote_last_response,
+    # #     conversations_state + model_selectors,
+    # #     model_selectors,
+    # # ).then(show_component, [], [supervote_area])
+    # bothbad_btn.click(
+    #     bothbad_vote_last_response,
+    #     conversations_state + model_selectors,
+    #     model_selectors,
+    # ).then(show_component, [], [supervote_area])
 
     final_send_btn.click(
-        send_preferences,
-        conversations_state + model_selectors + [ressenti_checkbox],
-        (model_selectors),
+        vote_preferences,
+        conversations_state + [which_model_radio] + [ressenti_checkbox] + [comments_text], []
     )
 
     # On reset go to mode selection mode_screen
