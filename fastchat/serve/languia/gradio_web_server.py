@@ -26,9 +26,9 @@ from fastchat.serve.languia.block_conversation import (
 from fastchat.serve.monitor.monitor import build_leaderboard_tab
 from fastchat.utils import (
     build_logger,
-    get_window_url_params_js,
-    get_window_url_params_with_tos_js,
+    get_window_url_params_js
 )
+from fastchat.serve.languia.utils import get_matomo_js
 
 import os
 
@@ -162,18 +162,16 @@ models, all_models = get_model_list(
     vision_arena=False,
 )
 
-# TODO: make it a modal
-if args.show_terms_of_use:
-    load_js = get_window_url_params_with_tos_js
-else:
-    load_js = get_window_url_params_js
+# load_js is before loading demo, head_js is on main component render, maybe group it or do head_js later?
+load_js = get_window_url_params_js
 
-# TODO: async load?
 head_js = """
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script type="module" src="file=assets/js/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="file=assets/js/dsfr.nomodule.js"></script>
 """
+if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
+    head_js += get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
 
 custom_css = """
 #free-mode {
