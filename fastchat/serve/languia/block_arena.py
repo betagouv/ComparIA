@@ -48,6 +48,8 @@ from fastchat.utils import (
     moderation_filter,
 )
 
+from fastchat.serve.languia.utils import get_battle_pair
+
 from gradio_frbutton import FrButton
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
@@ -105,64 +107,6 @@ def load_demo_arena(models_, url_params):
     )
 
     return conversations_state + selector_updates
-
-
-def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
-    if model in outage_models:
-        return 0
-    weight = sampling_weights.get(model, 0)
-    if model in sampling_boost_models:
-        weight *= 5
-    return weight
-
-
-def get_battle_pair(
-    models, battle_targets, outage_models, sampling_weights, sampling_boost_models
-):
-    if len(models) == 1:
-        return models[0], models[0]
-
-    model_weights = []
-    for model in models:
-        weight = get_sample_weight(
-            model, outage_models, sampling_weights, sampling_boost_models
-        )
-        model_weights.append(weight)
-    total_weight = np.sum(model_weights)
-    model_weights = model_weights / total_weight
-    chosen_idx = np.random.choice(len(models), p=model_weights)
-    chosen_model = models[chosen_idx]
-    # for p, w in zip(models, model_weights):
-    #     print(p, w)
-
-    rival_models = []
-    rival_weights = []
-    for model in models:
-        if model == chosen_model:
-            continue
-        weight = get_sample_weight(
-            model, outage_models, sampling_weights, sampling_boost_models
-        )
-        if (
-            weight != 0
-            and chosen_model in battle_targets
-            and model in battle_targets[chosen_model]
-        ):
-            # boost to 50% chance
-            weight = total_weight / len(battle_targets[chosen_model])
-        rival_models.append(model)
-        rival_weights.append(weight)
-    # for p, w in zip(rival_models, rival_weights):
-    #     print(p, w)
-    rival_weights = rival_weights / np.sum(rival_weights)
-    rival_idx = np.random.choice(len(rival_models), p=rival_weights)
-    rival_model = rival_models[rival_idx]
-
-    swap = np.random.randint(num_sides)
-    if swap == 0:
-        return chosen_model, rival_model
-    else:
-        return rival_model, chosen_model
 
 
 def add_text(
