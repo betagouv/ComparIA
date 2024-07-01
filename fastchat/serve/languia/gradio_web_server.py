@@ -24,10 +24,7 @@ from fastchat.serve.languia.block_conversation import (
     get_ip,
 )
 from fastchat.serve.monitor.monitor import build_leaderboard_tab
-from fastchat.utils import (
-    build_logger,
-    get_window_url_params_js
-)
+from fastchat.utils import build_logger, get_window_url_params_js
 from fastchat.serve.languia.utils import get_matomo_js
 
 import os
@@ -173,7 +170,17 @@ head_js = """
 if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
     head_js += get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
 
+
 custom_css = """
+#send-area {
+    position: fixed;
+    padding: 3em 20%;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    background-color: var(--background-alt-grey);
+}
+
 #free-mode {
     display: block
     height: 30em
