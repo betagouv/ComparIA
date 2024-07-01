@@ -121,19 +121,6 @@ def vote_preferences(
     return vote_last_response(conversations_state, models_names, vote_str, request)
 
 
-def accept_tos(request: gr.Request):
-    global tos_accepted
-    tos_accepted = True
-
-    print("ToS accepted!")
-    return (
-        # accept_tos_btn:
-        gr.update(visible=False),
-        # mode_screen:
-        gr.update(visible=True),
-    )
-
-
 accept_tos_js = """
 function () {
   document.cookie="languia_tos_accepted=1"
