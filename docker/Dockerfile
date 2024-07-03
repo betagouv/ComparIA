@@ -14,14 +14,19 @@ RUN pip3 install openai plotly pydantic-settings sentry-sdk
 FROM python:3.9-slim as custom_components
 RUN apt update && apt install -y nodejs npm
 RUN pip3 install gradio
-COPY ./gradio-dsfr/ /custom_components/
+COPY ./custom_components/ /custom_components/
 WORKDIR /custom_components/frbutton
+RUN gradio cc install
+RUN gradio cc build
+WORKDIR /custom_components/frinput
 RUN gradio cc install
 RUN gradio cc build
 
 FROM build
 COPY --from=custom_components /custom_components/frbutton/dist/gradio_frbutton-0.0.1-py3-none-any.whl /gradio_frbutton-0.0.1-py3-none-any.whl
 RUN pip3 install /gradio_frbutton-0.0.1-py3-none-any.whl
+COPY --from=custom_components /custom_components/frinput/dist/gradio_frinput-0.0.1-py3-none-any.whl /gradio_frinput-0.0.1-py3-none-any.whl
+RUN pip3 install /gradio_frinput-0.0.1-py3-none-any.whl
 
 WORKDIR /app
 COPY . /app
