@@ -7,7 +7,6 @@
 	export let variant: "primary" | "secondary" | "stop" = "secondary";
 	export let size: "sm" | "lg" = "lg";
 	export let value: string | null = null;
-	export let title: string | null = null;
 	export let link: string | null = null;
 	export let icon: FileData | null = null;
 	export let disabled = false;
@@ -34,10 +33,7 @@
 		{#if icon}
 			<img class="button-icon" src={icon.url} alt={`${value} icon`} />
 		{/if}
-		{#if title}
-			<h3>{title}</h3>
-		{/if}
-		<p><slot /></p>
+		<slot />
 	</a>
 {:else}
 	<button
@@ -55,12 +51,7 @@
 		{#if icon}
 			<img class="button-icon" src={icon.url} alt={`${value} icon`} />
 		{/if}
-		{#if title}
-			<h3>{title}</h3>
-		{/if}
-		<p>
-			<slot />
-		</p>
+		<slot />
 	</button>
 {/if}
 
@@ -154,6 +145,7 @@
 	.lg {
 		border-radius: var(--button-large-radius);
 		padding: var(--button-large-padding);
+		/* font-weight: normal; */
 		font-weight: var(--button-large-text-weight);
 		font-size: var(--button-large-text-size);
 	}
@@ -165,7 +157,4 @@
 		margin-right: auto;
 	}
 
-	button.p {
-		font-weight: normal;
-	}
 </style>

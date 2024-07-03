@@ -20,7 +20,7 @@ class FrButton(Component):
     def __init__(
         self,
         value: str | Callable = "Run",
-        title: str | None = None,
+        custom_html: str | None = "None",
         *,
         every: float | None = None,
         variant: Literal["primary", "secondary", "stop"] = "secondary",
@@ -39,7 +39,7 @@ class FrButton(Component):
         """
         Parameters:
             value: Default text for the button to display. If callable, the function will be called whenever the app loads to set the initial value of the component.
-            title: Default text title for the button to display.
+            custom_html: Custom HTML for the button to display.
             every: If `value` is a callable, run the function 'every' number of seconds while the client connection is open. Has no effect otherwise. The event can be accessed (e.g. to cancel it) via this component's .load_event attribute.
             variant: 'primary' for main call-to-action, 'secondary' for a more subdued style, 'stop' for a stop button.
             size: Size of the button. Can be "sm" or "lg".
@@ -70,7 +70,7 @@ class FrButton(Component):
         self.variant = variant
         self.size = size
         self.link = link
-        self.title=title
+        self.custom_html = custom_html
 
     @property
     def skip_api(self):

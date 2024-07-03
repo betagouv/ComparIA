@@ -71,7 +71,7 @@ str | Callable
 </tr>
 
 <tr>
-<td align="left"><code>title</code></td>
+<td align="left"><code>custom_html</code></td>
 <td align="left" style="width: 25%;">
 
 ```python
@@ -79,8 +79,8 @@ str | None
 ```
 
 </td>
-<td align="left"><code>None</code></td>
-<td align="left">Default text title for the button to display.</td>
+<td align="left"><code>"None"</code></td>
+<td align="left">Custom HTML for the button to display.</td>
 </tr>
 
 <tr>

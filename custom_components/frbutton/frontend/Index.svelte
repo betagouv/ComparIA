@@ -12,7 +12,7 @@
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let value: string | null;
-	export let title: string | null;
+	export let custom_html: string | null;
 	export let variant: "primary" | "secondary" | "stop" = "secondary";
 	export let interactive: boolean;
 	export let size: "sm" | "lg" = "lg";
@@ -27,7 +27,6 @@
 
 <Button
 	{value}
-	{title}
 	{variant}
 	{elem_id}
 	{elem_classes}
@@ -40,5 +39,5 @@
 	disabled={!interactive}
 	on:click={() => gradio.dispatch("click")}
 >
-	{value ? gradio.i18n(value) : ""}
+	{@html custom_html}
 </Button>
