@@ -180,15 +180,10 @@ custom_css = """
     bottom: 0;
     left: 0;
     background-color: var(--background-alt-grey);
-}
+    border-top: solid 1px var(--border-default-grey);
+    z-index: 100;
+  }
 
-#free-mode {
-    display: block
-    height: 30em
-}
-#free-mode.selected {
-    border-bottom: 5px navy solid;
-}
 """
 
 with open("./assets/dsfr.css", encoding="utf-8") as css_file:
@@ -208,8 +203,8 @@ with gr.Blocks(
 
     # Tab was needed for "selected" to work
     # with gr.Tab"Leaderboard", id=6):
-    with gr.Blocks() as pages:
-        with gr.Blocks():
+    with gr.Blocks(elem_id="main-component", elem_classes="fr-container") as pages:
+        with gr.Blocks(elem_id="arena", elem_classes="fr-grid-row") as arena:
             two_models_arena = build_arena(models)
 
         if args.elo_results_file:

@@ -29,16 +29,17 @@ header_html = """
           </div>
           <div class="fr-header__service">
             <a href="/" title="Accueil - LANGU:IA">
-              <p class="fr-header__service-title">LANGU:IA</p>
+              <p class="fr-header__service-title">LANGU:IA
+              <span class="fr-badge fr-badge--success fr-badge--no-icon">Beta</span>
+              </p>
             </a>
-            <p class="fr-header__service-tagline">L'arène francophone de classement de modèles de langage par préférences humaines</p>
+
+            <p class="fr-header__service-tagline">L'arène francophone de comparaison de modèles conversationnels</p>
           </div>
         </div>
 
         <div class="fr-header__tools">
-          <div class="fr-badge fr-badge--info">
-           Version Demo
-          </div>
+          <a title="À propos - ouvre une nouvelle fenêtre" href="https://beta.gouv.fr/startups/languia.html" target="_blank" rel="noopener external" class="fr-link fr-link--icon-right">À propos</a>
         </div>
       </div>
     </div>

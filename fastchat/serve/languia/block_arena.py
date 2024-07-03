@@ -303,24 +303,6 @@ def check_for_tos_cookie(request: gr.Request):
     return tos_accepted
 
 
-def free_mode():
-    print("chose free mode!")
-    return [
-        gr.update(elem_classes="selected"),
-        gr.update(visible=True),
-        gr.update(visible=False),
-    ]
-
-
-def craft_guided_prompt(topic_choice):
-    if str(topic_choice) == "Québécois ?":
-        return gr.update(value="Tu comprends-tu, quand je parle ?")
-    else:
-        return gr.update(value="Quoque ch'est qu'te berdoules ?")
-
-    # TODO: refacto so that it clears any object / trashes the state except ToS
-
-
 def clear_history(
     state0,
     state1,
@@ -415,28 +397,27 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     </div>
             </div>
         </div>""")
-        gr.Markdown("## Comment voulez-vous commencer la conversation ?")
+        gr.Markdown("#### Comment voulez-vous commencer la conversation ?")
         gr.Markdown("_(Sélectionnez un des deux modes)_")
         with gr.Row():
             with gr.Column():
-                # free_mode_html_before = gr.HTML("""
-                # <div class="fr-tile fr-tile--horizontal fr-tile--vertical@md fr-enlarge-link">    <div class="fr-tile__body">        <div class="fr-tile__content">            <h3 class="fr-tile__title">                <a href="#">Intitulé de la tuile</a>            </h3>            <p class="fr-tile__detail">Détail (optionel)</p>        </div>    </div>    <div class="fr-tile__header">        <div class="fr-tile__pictogram">            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">                <use class="fr-artwork-decorative" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-minor" href="file=assets/icons/document/draft-fill.svg"></use>                <use class="fr-artwork-major" href="file=assets/icons/document/draft-fill.svg"></use>            </svg>        </div>    </div></div>
-                # """)
-
                 free_mode_btn = FrButton(
                     title="Mode libre",
                     value="Ecrivez directement aux modèles, discutez du sujet que vous voulez",
                     elem_id="free-mode",
-                    icon="assets/icons/document/draft-fill.svg",
+                    icon="assets/artwork/pictograms/document/contract.svg",
                 )
             with gr.Column():
                 guided_mode_btn = FrButton(
                     title="Mode inspiré",
                     value="Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants",
-                    icon="assets/icons/document/file-fill.svg",
+                    icon="assets/artwork/pictograms/leisure/community.svg",
                 )
 
         with gr.Row(visible=False) as guided_area:
+            # chtimi = FrButton(
+            #     badges=[("Chtimi ?", "q")], value="Ecrire à la manière d'un romancier ou d'une romancière"
+            # )
             guided_prompt = gr.Radio(
                 choices=["Chtimi ?", "Québécois ?"], elem_classes=""
             )
@@ -579,59 +560,58 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
         # )
         # Step 1
-        @guided_mode_btn.click(
-            inputs=[],
-            outputs=[send_area, retry_btn, guided_area],
-        )
-        def guided_mode():
-            print("chose guided mode!")
-            return [
-                # Next screen
-                gr.update(visible=True),
-                # retry_btn
-                gr.update(visible=False),
-                # Inspired options
-                gr.update(visible=True),
-            ]
 
-        free_mode_btn.click(
-            free_mode,
+        @free_mode_btn.click(
             inputs=[],
             # js?
-            outputs=[free_mode_btn, send_area, guided_area],
+            outputs=[guided_mode_btn, free_mode_btn, send_area, guided_area],
         )
+        def free_mode():
+            print("chose free mode!")
+            return [
+                gr.update(elem_classes=""),
+                gr.update(elem_classes="selected"),
+                gr.update(visible=True),
+                gr.update(visible=False),
+            ]
 
+        @guided_mode_btn.click(
+            inputs=[],
+            outputs=[free_mode_btn, guided_mode_btn, send_area, guided_area],
+        )
+        def guided_mode():
+            print(guided_mode_btn.elem_classes)
+            if "selected" in guided_mode_btn.elem_classes:
+                return [gr.skip()*4]
+            else:
+                print("chose guided mode!")
+                return [
+                    gr.update(elem_classes=""),
+                    gr.update(elem_classes="selected"),
+                    gr.update(visible=False),
+                    gr.update(visible=True),
+                ]
         # Step 1.1
-        guided_prompt.change(craft_guided_prompt, guided_prompt, textbox)
+        @guided_prompt.change(inputs=guided_prompt, outputs=[send_area, textbox])
+        def craft_guided_prompt(topic_choice):
+            if str(topic_choice) == "Québécois ?":
+                return [
+                    gr.update(visible=True),
+                    gr.update(value="Tu comprends-tu, quand je parle ?"),
+                ]
+            else:
+                return [
+                    gr.update(visible=True),
+                    gr.update(value="Quoque ch'est qu'te berdoules ?"),
+                ]
+
+            # TODO: refacto so that it clears any object / trashes the state except ToS
 
         def change_send_btn_state(textbox):
             if textbox != "":
                 return gr.update(interactive=True)
             else:
                 return gr.update(interactive=False)
-
-        which_model_radio.change(show_component, [], [supervote_area])
-        # Step 3
-        # leftvote_btn.click(
-        #     leftvote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # rightvote_btn.click(
-        #     rightvote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # # tie_btn.click(
-        # #     tievote_last_response,
-        # #     conversations_state + model_selectors,
-        # #     model_selectors,
-        # # ).then(show_component, [], [supervote_area])
-        # bothbad_btn.click(
-        #     bothbad_vote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
 
         # Step 2
         textbox.change(change_send_btn_state, textbox, send_btn)
@@ -658,54 +638,10 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         conclude_btn.click(
             show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
         )
-        # Step 3lick(
-        #     leftvote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # rightvote_btn.click(
-        #     rightvote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # tie_btn.click(
-        #     tievote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # bothbad_btn.click(
-        #     bothbad_vote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show
-        # FIXME:
-        # leftvote_btn.click(
-        #     leftvote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # rightvote_btn.click(
-        #     rightvote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # tie_btn.click(
-        #     tievote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # bothbad_btn.click(
-        #     bothbad_vote_last_response,
-        #     conversations_state + model_selectors,
-        #     model_selectors,
-        # ).then(show_component, [], [supervote_area])
-        # FIXME:
-        # final_send_btn.click(
-        #     send_preferences,
-        #     conversations_state + model_selectors + [ressenti_checkbox],
-        #     (model_selectors),
-        # )
 
+        which_model_radio.change(show_component, [], [supervote_area])
+        
+        # Step 3
         final_send_btn.click(
             vote_preferences,
             conversations_state
