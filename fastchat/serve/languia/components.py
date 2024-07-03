@@ -15,9 +15,9 @@ def stepper_html(title, step, total_steps):
 
 
 # Step 0
-# accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
+# start_arena_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
 # TODO: fix js output
-# accept_tos_btn.click(
+# start_arena_btn.click(
 #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
 # )
 

@@ -362,8 +362,25 @@ def build_arena(models):
     # tos_cookie = check_for_tos_cookie(request)
     # if not tos_cookie:
 
-    with gr.Row() as start_screen:
-        accept_tos_btn = gr.Button(
+    with gr.Column() as start_screen:
+        gr.Markdown("""
+# Bienvenue dans l'arène LANGU:IA
+#### Notre mission
+
+Donner accès à différents modèles de langage (LLMs) conversationnels
+
+#### Les règles de l'arène
+
+Posez une question. Deux modèles vous répondent en temps réel.
+Choisissez le modèle que vous préférez.
+Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiques.
+
+#### Nos objectifs
+
+Diversité des langues | Exprimez vous librement : vous parlez breton, occitan, basque, corse, créole ? Posez vos questions dans les dialectes, langues, argots ou registres que vous souhaitez !
+Identification des biais | Posez des questions sur des domaines ou des tâches que vous maîtrisez. Constatez-vous certains partis-pris des modèles ?
+        """)
+        start_arena_btn = gr.Button(
             value="Accepter les Conditions Générales d'Utilisation",
             interactive=True,
             scale=1,
@@ -527,7 +544,7 @@ def build_arena(models):
     # Register listeners
     def register_listeners():
         # Step 0
-        @accept_tos_btn.click(
+        @start_arena_btn.click(
             inputs=[], outputs=[start_screen, stepper_block, mode_screen]
         )
         def accept_tos(request: gr.Request):
@@ -536,14 +553,14 @@ def build_arena(models):
 
             print("ToS accepted!")
             return (
-                # accept_tos_btn:
+                # start_arena_btn:
                 gr.update(visible=False),
                 gr.update(visible=True),
                 gr.update(visible=True),
             )
 
         # TODO: fix js output
-        # accept_tos_btn.click(
+        # start_arena_btn.click(
         #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
         # )
         # Step 1
