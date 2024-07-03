@@ -8,7 +8,7 @@ def stepper_html(title, step, total_steps):
         {title}
         <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
     </h2>
-    <div class="fr-stepper__steps" data-fr-current-step="1" data-fr-steps="{total_steps}"></div>
+    <div class="fr-stepper__steps" data-fr-current-step="{step}" data-fr-steps="{total_steps}"></div>
 
 </div>"""
 

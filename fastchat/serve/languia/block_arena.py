@@ -173,7 +173,7 @@ def add_text(
         logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
         for i in range(num_sides):
             conversations_state[i].skip_next = True
-            # TODO: refacto
+            # FIXME: fix return value
         return (
             # 2 conversations_state
             conversations_state
@@ -197,6 +197,7 @@ def add_text(
         )
         conversations_state[i].skip_next = False
 
+# TODO: refacto, load/init components and .then() add text
     return (
         # 2 conversations_state
         conversations_state
@@ -204,6 +205,8 @@ def add_text(
         + [x.to_gradio_chatbot() for x in conversations_state]
         # text
         + [""]
+        # stepper_block
+        + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
         # mode_screen
         + [gr.update(visible=False)]
         # chat_area
@@ -382,7 +385,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
 **Identification des biais** : Posez des questions sur des domaines ou des tâches que vous maîtrisez. Constatez-vous certains partis-pris des modèles ?
         """)
-        # TODO: check DSFR
+        # TODO: DSFRize
         accept_tos_checkbox = gr.Checkbox(
             label="Conditions générales d'utilisation",
             show_label=True,
@@ -403,7 +406,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             visible=False,
         )
 
-    # what's the most div component?
     with gr.Column(visible=False) as mode_screen:
         mode_html = gr.HTML("""
         <div class="fr-notice fr-notice--info">
@@ -555,9 +557,9 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     def register_listeners():
         # Step 0
         @start_arena_btn.click(
-            inputs=[accept_tos_checkbox], outputs=[start_screen, stepper_block, mode_screen]
+            inputs=[accept_tos_checkbox],
+            outputs=[start_screen, stepper_block, mode_screen],
         )
-
         def check_tos(accept_tos_checkbox, request: gr.Request):
             global tos_accepted
             tos_accepted = accept_tos_checkbox
@@ -570,7 +572,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 )
             else:
                 print("ToS not accepted!")
-                return(gr.skip(), gr.skip(), gr.skip())
+                return (gr.skip(), gr.skip(), gr.skip())
 
         # TODO: fix js output
         # start_arena_btn.click(
@@ -641,6 +643,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             outputs=conversations_state
             + chatbots
             + [textbox]
+            + [stepper_block]
             + [mode_screen]
             + [chat_area]
             + [send_btn]

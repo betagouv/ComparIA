@@ -149,7 +149,6 @@ env_debug = os.getenv("LANGUIA_DEBUG")
 if env_debug:
     if env_debug.lower() == "true":
         args.debug = True
-
 logger.info(f"args: {args}")
 
 # Set global variables
