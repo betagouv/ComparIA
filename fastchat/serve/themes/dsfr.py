@@ -16,6 +16,7 @@ class DSFR(Base):
         spacing_size: sizes.Size | str = sizes.spacing_md,
         radius_size: sizes.Size | str = sizes.radius_none,
         text_size: sizes.Size | str = sizes.text_lg,
+        button_large_text_weight: str = "normal",
         font: fonts.Font | str | Iterable[fonts.Font | str] = (
             "Marianne",
             "Arial",
@@ -39,3 +40,4 @@ class DSFR(Base):
             font=font,
             font_mono=font_mono,
         )
+        super().set(button_large_text_weight="400")
