@@ -12,7 +12,7 @@ node_modules
 # Log
 *.log
 *.log.*
-*.json
+
 !playground/deepspeed_config_s2.json
 !playground/deepspeed_config_s3.json
 
@@ -39,3 +39,10 @@ serve_images
 val2014
 vqa_examples
 docker/.env
+
+# Secrets
+model-info-file.json
+register-api-endpoint-file.json
+
+# Logs
+data/
