@@ -402,22 +402,35 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         with gr.Row():
             with gr.Column():
                 free_mode_btn = FrButton(
-                    title="Mode libre",
-                    value="Ecrivez directement aux modèles, discutez du sujet que vous voulez",
+                    custom_html="<h3>Mode libre</h3><p>Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>",
                     elem_id="free-mode",
                     icon="assets/artwork/pictograms/document/contract.svg",
                 )
             with gr.Column():
                 guided_mode_btn = FrButton(
-                    title="Mode inspiré",
-                    value="Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants",
+                    custom_html="<h3>Mode inspiré</h3><p>Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>",
                     icon="assets/artwork/pictograms/leisure/community.svg",
                 )
 
-        with gr.Row(visible=False) as guided_area:
-            # chtimi = FrButton(
-            #     badges=[("Chtimi ?", "q")], value="Ecrire à la manière d'un romancier ou d'une romancière"
-            # )
+        with gr.Row(visible=False, elem_classes="") as guided_area:
+            maniere = FrButton(
+                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
+            )
+            registre = FrButton(
+                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
+            )
+            creativite = FrButton(
+                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
+            )
+            pedagogie = FrButton(
+                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
+            )
+            regional = FrButton(
+                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
+            )
+            variete = FrButton(
+                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
+            )
             guided_prompt = gr.Radio(
                 choices=["Chtimi ?", "Québécois ?"], elem_classes=""
             )
