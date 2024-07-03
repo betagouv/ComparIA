@@ -33,14 +33,14 @@ from fastchat.serve.languia.block_conversation import (
 )
 
 from fastchat.serve.languia.components import stepper_html
-# from fastchat.serve.languia.actions import (
-#     vote_preferences,
-#     # send_preferences,
-#     bothbad_vote_last_response,
-#     # tievote_last_response,
-#     rightvote_last_response,
-#     leftvote_last_response,
-# )
+from fastchat.serve.languia.actions import (
+    vote_preferences,
+    #     # send_preferences,
+    #     bothbad_vote_last_response,
+    #     # tievote_last_response,
+    #     rightvote_last_response,
+    #     leftvote_last_response,
+)
 
 from fastchat.utils import (
     build_logger,
@@ -309,7 +309,6 @@ def free_mode():
     ]
 
 
-
 def craft_guided_prompt(topic_choice):
     if str(topic_choice) == "Québécois ?":
         return gr.update(value="Tu comprends-tu, quand je parle ?")
@@ -365,12 +364,16 @@ def build_arena(models):
 
     with gr.Row() as start_screen:
         accept_tos_btn = gr.Button(
-            value="Accepter les Conditions Générales d'Utilisation", interactive=True, scale=1
+            value="Accepter les Conditions Générales d'Utilisation",
+            interactive=True,
+            scale=1,
         )
 
     with gr.Row() as stepper_row:
         stepper_block = gr.HTML(
-            stepper_html("Choix du mode de conversation", 1, 4), elem_id="stepper_html", visible=False
+            stepper_html("Choix du mode de conversation", 1, 4),
+            elem_id="stepper_html",
+            visible=False,
         )
 
     # what's the most div component?
@@ -426,7 +429,7 @@ def build_arena(models):
                     model_selectors[i] = gr.Markdown(
                         anony_names[i], elem_id="model_selector_md"
                     )
-    
+
     with gr.Row(elem_id="send-area", visible=False) as send_area:
         # with gr.Row():
         textbox = FrInput(
@@ -437,7 +440,9 @@ def build_arena(models):
         )
         send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
         # FIXME: visible=false not working?
-        retry_btn = gr.Button(value="Recommencer", elem_classes="fr-btn", scale=0, visible=False)
+        retry_btn = gr.Button(
+            value="Recommencer", elem_classes="fr-btn", scale=0, visible=False
+        )
 
     with gr.Row(visible=False) as conclude_area:
         conclude_btn = gr.Button(
@@ -451,7 +456,13 @@ def build_arena(models):
     with gr.Column(visible=False) as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
-            which_model_radio = gr.Radio(choices=["Modèle A", "Modèle B", "Aucun des deux"])
+            which_model_radio = gr.Radio(
+                choices=[
+                    ("Modèle A", "leftvote"),
+                    ("Modèle B", "rightvote"),
+                    ("Aucun des deux", "bothbad"),
+                ]
+            )
             # leftvote_btn = gr.Button(value="👈  A est mieux")
             # rightvote_btn = gr.Button(value="👉  B est mieux")
             # # tie_btn = gr.Button(value="🤝  Les deux se valent")
@@ -516,7 +527,9 @@ def build_arena(models):
     # Register listeners
     def register_listeners():
         # Step 0
-        @accept_tos_btn.click(inputs=[], outputs=[start_screen, stepper_block, mode_screen])
+        @accept_tos_btn.click(
+            inputs=[], outputs=[start_screen, stepper_block, mode_screen]
+        )
         def accept_tos(request: gr.Request):
             global tos_accepted
             tos_accepted = True
@@ -526,7 +539,7 @@ def build_arena(models):
                 # accept_tos_btn:
                 gr.update(visible=False),
                 gr.update(visible=True),
-                gr.update(visible=True)
+                gr.update(visible=True),
             )
 
         # TODO: fix js output
@@ -541,13 +554,13 @@ def build_arena(models):
         def guided_mode():
             print("chose guided mode!")
             return [
-            # Next screen
-            gr.update(visible=True),
-            # retry_btn
-            gr.update(visible=False),
-            # Inspired options
-            gr.update(visible=True),
-        ]
+                # Next screen
+                gr.update(visible=True),
+                # retry_btn
+                gr.update(visible=False),
+                # Inspired options
+                gr.update(visible=True),
+            ]
 
         free_mode_btn.click(
             free_mode,
@@ -609,9 +622,6 @@ def build_arena(models):
             conversations_state + chatbots,
         ).then(enable_component, [], [conclude_btn])
 
-
-
-        
         conclude_btn.click(
             show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
         )
@@ -663,10 +673,14 @@ def build_arena(models):
         #     (model_selectors),
         # )
 
-        # final_send_btn.click(
-        #     vote_preferences,
-        #     conversations_state + [which_model_radio] + [ressenti_checkbox] + [comments_text], []
-        # )
+        final_send_btn.click(
+            vote_preferences,
+            conversations_state
+            + [which_model_radio]
+            + [ressenti_checkbox]
+            + [comments_text],
+            [],
+        )
         # On reset go to mode selection mode_screen
         gr.on(
             triggers=[clear_btn.click, retry_btn.click],
