@@ -59,20 +59,22 @@
 			<h3>{title}</h3>
 		{/if}
 		<p>
-		<slot /></p>
+			<slot />
+		</p>
 	</button>
 {/if}
 
 <style>
 	button,
 	a {
-		display: inline-block;
+		display: block;
 		justify-content: center;
 		align-items: center;
 		transition: var(--button-transition);
 		box-shadow: var(--button-shadow);
 		padding: var(--size-0-5) var(--size-2);
 		text-align: center;
+	    height: 30rem;
 	}
 
 	button:hover,
@@ -85,6 +87,11 @@
 	button:active,
 	a:active {
 		box-shadow: var(--button-shadow-active);
+	}
+
+	button.selected, a.selected {
+	    border-bottom: 4px var(--border-default-blue-france) solid;
+
 	}
 
 	button[disabled],
@@ -152,8 +159,13 @@
 	}
 
 	.button-icon {
-		width: var(--text-xl);
-		height: var(--text-xl);
-		margin-right: var(--spacing-xl);
+		width: 5em;
+		height: 5em;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	button.p {
+		font-weight: normal;
 	}
 </style>
