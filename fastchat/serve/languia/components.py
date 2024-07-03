@@ -13,15 +13,6 @@ def stepper_html(title, step, total_steps):
 </div>"""
 
 
-
-# Step 0
-# start_arena_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
-# TODO: fix js output
-# start_arena_btn.click(
-#     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
-# )
-
-
 header_html = """
     <header role="banner" class="">
   <div class="fr-header__body">

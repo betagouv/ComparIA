@@ -362,28 +362,38 @@ def build_arena(models):
     # tos_cookie = check_for_tos_cookie(request)
     # if not tos_cookie:
 
-    with gr.Column() as start_screen:
+    with gr.Column(elem_classes="fr-container") as start_screen:
+        # TODO: titre en bleu
         gr.Markdown("""
 # Bienvenue dans l'arène LANGU:IA
-#### Notre mission
+###### Notre mission
 
 Donner accès à différents modèles de langage (LLMs) conversationnels
 
-#### Les règles de l'arène
+###### Les règles de l'arène
 
 Posez une question. Deux modèles vous répondent en temps réel.
 Choisissez le modèle que vous préférez.
 Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiques.
 
-#### Nos objectifs
+###### Nos objectifs
 
-Diversité des langues | Exprimez vous librement : vous parlez breton, occitan, basque, corse, créole ? Posez vos questions dans les dialectes, langues, argots ou registres que vous souhaitez !
-Identification des biais | Posez des questions sur des domaines ou des tâches que vous maîtrisez. Constatez-vous certains partis-pris des modèles ?
+**Diversité des langues** : Exprimez vous librement : vous parlez breton, occitan, basque, corse, créole ? Posez vos questions dans les dialectes, langues, argots ou registres que vous souhaitez !
+
+**Identification des biais** : Posez des questions sur des domaines ou des tâches que vous maîtrisez. Constatez-vous certains partis-pris des modèles ?
         """)
+        # TODO: check DSFR
+        accept_tos_checkbox = gr.Checkbox(
+            label="Conditions générales d'utilisation",
+            show_label=True,
+            elem_classes="",
+        )
         start_arena_btn = gr.Button(
-            value="Accepter les Conditions Générales d'Utilisation",
+            value="C'est parti",
             interactive=True,
-            scale=1,
+            scale=0,
+            # TODO: à centrer
+            elem_classes="fr-btn",
         )
 
     with gr.Row() as stepper_row:
@@ -545,19 +555,22 @@ Identification des biais | Posez des questions sur des domaines ou des tâches q
     def register_listeners():
         # Step 0
         @start_arena_btn.click(
-            inputs=[], outputs=[start_screen, stepper_block, mode_screen]
+            inputs=[accept_tos_checkbox], outputs=[start_screen, stepper_block, mode_screen]
         )
-        def accept_tos(request: gr.Request):
-            global tos_accepted
-            tos_accepted = True
 
-            print("ToS accepted!")
-            return (
-                # start_arena_btn:
-                gr.update(visible=False),
-                gr.update(visible=True),
-                gr.update(visible=True),
-            )
+        def check_tos(accept_tos_checkbox, request: gr.Request):
+            global tos_accepted
+            tos_accepted = accept_tos_checkbox
+            if tos_accepted:
+                print("ToS accepted!")
+                return (
+                    gr.update(visible=False),
+                    gr.update(visible=True),
+                    gr.update(visible=True),
+                )
+            else:
+                print("ToS not accepted!")
+                return(gr.skip(), gr.skip(), gr.skip())
 
         # TODO: fix js output
         # start_arena_btn.click(
