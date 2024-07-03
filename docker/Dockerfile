@@ -16,10 +16,10 @@ RUN apt update && apt install -y nodejs npm
 RUN pip3 install gradio
 COPY ./custom_components/ /custom_components/
 WORKDIR /custom_components/frbutton
-RUN gradio cc install
+RUN gradio cc install && npm i -D @gradio/preview
 RUN gradio cc build
 WORKDIR /custom_components/frinput
-RUN gradio cc install
+RUN gradio cc install && npm i -D @gradio/preview
 RUN gradio cc build
 
 FROM build
