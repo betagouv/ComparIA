@@ -34,13 +34,12 @@ from fastchat.serve.languia.block_conversation import (
 
 from fastchat.serve.languia.components import stepper_html
 from fastchat.serve.languia.actions import (
-    accept_tos,
-    accept_tos_js,
-    send_preferences,
-    bothbad_vote_last_response,
-    tievote_last_response,
-    rightvote_last_response,
-    leftvote_last_response,
+    vote_preferences,
+    #     # send_preferences,
+    #     bothbad_vote_last_response,
+    #     # tievote_last_response,
+    #     rightvote_last_response,
+    #     leftvote_last_response,
 )
 
 from fastchat.utils import (
@@ -51,6 +50,7 @@ from fastchat.utils import (
 from fastchat.serve.languia.utils import get_battle_pair
 
 from gradio_frbutton import FrButton
+from gradio_frinput import FrInput
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
@@ -309,16 +309,6 @@ def free_mode():
     ]
 
 
-def guided_mode():
-    print("chose guided mode!")
-    return [
-        # Next screen
-        gr.update(visible=True),
-        # Inspired options
-        gr.update(visible=True),
-    ]
-
-
 def craft_guided_prompt(topic_choice):
     if str(topic_choice) == "Québécois ?":
         return gr.update(value="Tu comprends-tu, quand je parle ?")
@@ -372,14 +362,18 @@ def build_arena(models):
     # tos_cookie = check_for_tos_cookie(request)
     # if not tos_cookie:
 
-    with gr.Row() as stepper_row:
-        stepper_block = gr.HTML(
-            stepper_html("Choix du mode de conversation", 1, 4), elem_id="stepper_html"
-        )
-
     with gr.Row() as start_screen:
         accept_tos_btn = gr.Button(
-            value="Accepter les Conditions Générales d'Utilisation", interactive=True
+            value="Accepter les Conditions Générales d'Utilisation",
+            interactive=True,
+            scale=1,
+        )
+
+    with gr.Row() as stepper_row:
+        stepper_block = gr.HTML(
+            stepper_html("Choix du mode de conversation", 1, 4),
+            elem_id="stepper_html",
+            visible=False,
         )
 
     # what's the most div component?
@@ -436,17 +430,20 @@ def build_arena(models):
                         anony_names[i], elem_id="model_selector_md"
                     )
 
-    with gr.Row(visible=False) as send_area:
+    with gr.Row(elem_id="send-area", visible=False) as send_area:
         # with gr.Row():
-        textbox = gr.Textbox(
+        textbox = FrInput(
             show_label=False,
             placeholder="Ecrivez votre premier message à l'arène ici",
-            elem_id="input_box",
             elem_classes="fr-input",
             scale=3,
         )
         send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
-        retry_btn = gr.Button(value="Recommencer", elem_classes="fr-btn", scale=0)
+        # FIXME: visible=false not working?
+        retry_btn = gr.Button(
+            value="Recommencer", elem_classes="fr-btn", scale=0, visible=False
+        )
+
     with gr.Row(visible=False) as conclude_area:
         conclude_btn = gr.Button(
             value="Terminer et donner mon avis",
@@ -459,10 +456,17 @@ def build_arena(models):
     with gr.Column(visible=False) as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
-            leftvote_btn = gr.Button(value="👈  A est mieux")
-            rightvote_btn = gr.Button(value="👉  B est mieux")
-            tie_btn = gr.Button(value="🤝  Les deux se valent")
-            bothbad_btn = gr.Button(value="👎  Aucun des deux")
+            which_model_radio = gr.Radio(
+                choices=[
+                    ("Modèle A", "leftvote"),
+                    ("Modèle B", "rightvote"),
+                    ("Aucun des deux", "bothbad"),
+                ]
+            )
+            # leftvote_btn = gr.Button(value="👈  A est mieux")
+            # rightvote_btn = gr.Button(value="👉  B est mieux")
+            # # tie_btn = gr.Button(value="🤝  Les deux se valent")
+            # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
     with gr.Column(visible=False) as supervote_area:
         gr.Markdown(
@@ -477,7 +481,7 @@ def build_arena(models):
             )
             # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
             # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
-        final_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
+        comments_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
         final_send_btn = gr.Button(value="Envoyer mes préférences")
 
         with gr.Row():
@@ -521,104 +525,178 @@ def build_arena(models):
     )
 
     # Register listeners
-    # def register_listeners():
-    # Step 0
-    accept_tos_btn.click(accept_tos, inputs=[], outputs=[start_screen, mode_screen])
-    # TODO: fix js output
-    # accept_tos_btn.click(
-    #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
-    # )
-    # Step 1
-    guided_mode_btn.click(
-        guided_mode,
-        inputs=[],
-        outputs=[send_area, guided_area],
-    )
-    free_mode_btn.click(
-        free_mode,
-        inputs=[],
-        # js?
-        outputs=[free_mode_btn, send_area, guided_area],
-    )
+    def register_listeners():
+        # Step 0
+        @accept_tos_btn.click(
+            inputs=[], outputs=[start_screen, stepper_block, mode_screen]
+        )
+        def accept_tos(request: gr.Request):
+            global tos_accepted
+            tos_accepted = True
 
-    # Step 1.1
-    guided_prompt.change(craft_guided_prompt, guided_prompt, textbox)
+            print("ToS accepted!")
+            return (
+                # accept_tos_btn:
+                gr.update(visible=False),
+                gr.update(visible=True),
+                gr.update(visible=True),
+            )
 
-    def change_send_btn_state(textbox):
-        if textbox != "":
-            return gr.update(interactive=True)
-        else:
-            return gr.update(interactive=False)
+        # TODO: fix js output
+        # accept_tos_btn.click(
+        #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
+        # )
+        # Step 1
+        @guided_mode_btn.click(
+            inputs=[],
+            outputs=[send_area, retry_btn, guided_area],
+        )
+        def guided_mode():
+            print("chose guided mode!")
+            return [
+                # Next screen
+                gr.update(visible=True),
+                # retry_btn
+                gr.update(visible=False),
+                # Inspired options
+                gr.update(visible=True),
+            ]
 
-    # Step 2
-    textbox.change(change_send_btn_state, textbox, send_btn)
+        free_mode_btn.click(
+            free_mode,
+            inputs=[],
+            # js?
+            outputs=[free_mode_btn, send_area, guided_area],
+        )
 
-    gr.on(
-        triggers=[textbox.submit, send_btn.click],
-        fn=add_text,
-        inputs=conversations_state + model_selectors + [textbox],
-        outputs=conversations_state
-        + chatbots
-        + [textbox]
-        + [mode_screen]
-        + [chat_area]
-        + [send_btn]
-        + [retry_btn]
-        + [conclude_area],
-    ).then(
-        bot_response_multi,
-        conversations_state + [temperature, top_p, max_output_tokens],
-        conversations_state + chatbots,
-    ).then(enable_component, [], [conclude_btn])
+        # Step 1.1
+        guided_prompt.change(craft_guided_prompt, guided_prompt, textbox)
 
-    conclude_btn.click(
-        show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
-    )
+        def change_send_btn_state(textbox):
+            if textbox != "":
+                return gr.update(interactive=True)
+            else:
+                return gr.update(interactive=False)
 
-    # Step 3
-    leftvote_btn.click(
-        leftvote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
-    rightvote_btn.click(
-        rightvote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
-    tie_btn.click(
-        tievote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
-    bothbad_btn.click(
-        bothbad_vote_last_response,
-        conversations_state + model_selectors,
-        model_selectors,
-    ).then(show_component, [], [supervote_area])
+        which_model_radio.change(show_component, [], [supervote_area])
+        # Step 3
+        # leftvote_btn.click(
+        #     leftvote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # rightvote_btn.click(
+        #     rightvote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # # tie_btn.click(
+        # #     tievote_last_response,
+        # #     conversations_state + model_selectors,
+        # #     model_selectors,
+        # # ).then(show_component, [], [supervote_area])
+        # bothbad_btn.click(
+        #     bothbad_vote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
 
-    final_send_btn.click(
-        send_preferences,
-        conversations_state + model_selectors + [ressenti_checkbox],
-        (model_selectors),
-    )
+        # Step 2
+        textbox.change(change_send_btn_state, textbox, send_btn)
 
-    # On reset go to mode selection mode_screen
-    gr.on(
-        triggers=[clear_btn.click, retry_btn.click],
-        fn=clear_history,
-        inputs=conversations_state + chatbots + model_selectors + [textbox],
-        # List of objects to clear
-        outputs=conversations_state
-        + chatbots
-        + model_selectors
-        + [textbox]
-        + [chat_area]
-        + [vote_area]
-        + [supervote_area]
-        + [mode_screen],
-    )
+        gr.on(
+            triggers=[textbox.submit, send_btn.click],
+            fn=add_text,
+            inputs=conversations_state + model_selectors + [textbox],
+            outputs=conversations_state
+            + chatbots
+            + [textbox]
+            + [mode_screen]
+            + [chat_area]
+            + [send_btn]
+            + [retry_btn]
+            + [conclude_area],
+        ).then(
+            bot_response_multi,
+            conversations_state + [temperature, top_p, max_output_tokens],
+            conversations_state + chatbots,
+        ).then(enable_component, [], [conclude_btn])
 
-    # register_listeners()
+        conclude_btn.click(
+            show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
+        )
+        # Step 3lick(
+        #     leftvote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # rightvote_btn.click(
+        #     rightvote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # tie_btn.click(
+        #     tievote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # bothbad_btn.click(
+        #     bothbad_vote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show
+        # FIXME:
+        # leftvote_btn.click(
+        #     leftvote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # rightvote_btn.click(
+        #     rightvote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # tie_btn.click(
+        #     tievote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # bothbad_btn.click(
+        #     bothbad_vote_last_response,
+        #     conversations_state + model_selectors,
+        #     model_selectors,
+        # ).then(show_component, [], [supervote_area])
+        # FIXME:
+        # final_send_btn.click(
+        #     send_preferences,
+        #     conversations_state + model_selectors + [ressenti_checkbox],
+        #     (model_selectors),
+        # )
+
+        final_send_btn.click(
+            vote_preferences,
+            conversations_state
+            + [which_model_radio]
+            + [ressenti_checkbox]
+            + [comments_text],
+            [],
+        )
+        # On reset go to mode selection mode_screen
+        gr.on(
+            triggers=[clear_btn.click, retry_btn.click],
+            fn=clear_history,
+            inputs=conversations_state + chatbots + model_selectors + [textbox],
+            # List of objects to clear
+            outputs=conversations_state
+            + chatbots
+            + model_selectors
+            + [textbox]
+            + [chat_area]
+            + [vote_area]
+            + [supervote_area]
+            + [mode_screen],
+        )
+
+    register_listeners()
 
     return conversations_state + model_selectors
