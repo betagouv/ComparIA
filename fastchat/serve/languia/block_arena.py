@@ -462,9 +462,11 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         with gr.Row():
+            # TODO: redevelop FrInput from Textbox and not SimpleTextbox
             textbox = FrInput(
                 show_label=False,
                 placeholder="Ecrivez votre premier message à l'arène ici",
+                # TODO: should be useless
                 elem_classes="fr-input",
                 scale=3,
             )
@@ -477,6 +479,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 visible=False,
             )
         with gr.Row():
+            # FIXME: visible=false not working?
             conclude_btn = gr.Button(
                 value="Terminer et donner mon avis",
                 scale=1,
