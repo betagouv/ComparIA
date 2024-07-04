@@ -41,3 +41,10 @@
 >
 	{@html custom_html}
 </Button>
+
+<style>
+	button.selected,
+	a.selected {
+		border-bottom: 4px var(--border-default-blue-france) solid;
+	}
+</style>

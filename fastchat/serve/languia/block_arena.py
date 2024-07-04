@@ -401,12 +401,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 free_mode_btn = FrButton(
                     custom_html="<h3>Mode libre</h3><p>Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>",
                     elem_id="free-mode",
-                    icon="assets/artwork/pictograms/document/contract.svg",
+                    icon="assets/artwork/pictograms/misc/conclusion.svg",
                 )
             with gr.Column():
                 guided_mode_btn = FrButton(
+                    elem_id="guided-mode",
                     custom_html="<h3>Mode inspiré</h3><p>Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>",
-                    icon="assets/artwork/pictograms/leisure/community.svg",
+                    icon="assets/artwork/pictograms/misc/innovation.svg",
                 )
 
         with gr.Row(visible=False, elem_classes="") as guided_area:
@@ -477,7 +478,10 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
         # FIXME: visible=false not working?
         retry_btn = gr.Button(
-            value="Recommencer", elem_classes="fr-btn", scale=0, visible=False
+            icon="assets/icons/system/refresh-line.svg",
+            value="",
+            elem_classes="fr-btn",
+            visible=False,
         )
 
     with gr.Row(visible=False) as conclude_area:

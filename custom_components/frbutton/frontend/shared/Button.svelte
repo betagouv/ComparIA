@@ -80,11 +80,6 @@
 		box-shadow: var(--button-shadow-active);
 	}
 
-	button.selected, a.selected {
-	    border-bottom: 4px var(--border-default-blue-france) solid;
-
-	}
-
 	button[disabled],
 	a.disabled {
 		opacity: 0.5;

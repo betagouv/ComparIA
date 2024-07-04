@@ -183,7 +183,9 @@ custom_css = """
     border-top: solid 1px var(--border-default-grey);
     z-index: 100;
   }
-
+#free-mode.selected, #guided-mode.selected, #guided-area button.selected {
+		border-bottom: 4px var(--border-default-blue-france) solid;
+	}
 """
 
 with open("./assets/dsfr.css", encoding="utf-8") as css_file:
