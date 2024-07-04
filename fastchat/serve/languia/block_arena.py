@@ -70,24 +70,6 @@ def enable_component():
     return gr.update(interactive=True)
 
 
-# TODO: à refacto
-def show_vote_area():
-    # If I want this form, I need to use .render() to refacto and have these already declared in that fn context by here
-    # return {
-    #     conclude_area: gr.update(visible=False),
-    #     chat_area: gr.update(visible=False),
-    #     send_area: gr.update(visible=False),
-    #     vote_area: gr.update(visible=True),
-    # }
-    # [conclude_area, chat_area, send_area, vote_area]
-    return [
-        gr.update(visible=False),
-        gr.update(visible=False),
-        gr.update(visible=False),
-        gr.update(visible=True),
-    ]
-
-
 def load_demo_arena(models_, url_params):
     global models
     models = models_
@@ -208,8 +190,8 @@ def add_text(
         + [gr.update(interactive=False)]
         # retry_btn
         + [gr.update(visible=True)]
-        # conclude_area
-        + [gr.update(visible=True)]
+        # conclude_btn
+        + [gr.update(visible=True, interactive=True)]
     )
 
 
@@ -477,31 +459,30 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                         anony_names[i], elem_id="model_selector_md"
                     )
 
-    with gr.Row(elem_id="send-area", visible=False) as send_area:
-        # with gr.Row():
-        textbox = FrInput(
-            show_label=False,
-            placeholder="Ecrivez votre premier message à l'arène ici",
-            elem_classes="fr-input",
-            scale=3,
-        )
-        send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
-        # FIXME: visible=false not working?
-        retry_btn = gr.Button(
-            icon="assets/icons/system/refresh-line.svg",
-            value="",
-            elem_classes="fr-btn",
-            visible=False,
-        )
-
-    with gr.Row(visible=False) as conclude_area:
-        conclude_btn = gr.Button(
-            value="Terminer et donner mon avis",
-            scale=1,
-            elem_classes="fr-btn",
-            interactive=True,
-            # interactive=False
-        )
+    with gr.Column(elem_id="send-area", visible=False) as send_area:
+        with gr.Row():
+            textbox = FrInput(
+                show_label=False,
+                placeholder="Ecrivez votre premier message à l'arène ici",
+                elem_classes="fr-input",
+                scale=3,
+            )
+            send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
+            # FIXME: visible=false not working?
+            retry_btn = gr.Button(
+                icon="assets/icons/system/refresh-line.svg",
+                value="",
+                elem_classes="fr-btn",
+                visible=False,
+            )
+        with gr.Row():
+            conclude_btn = gr.Button(
+                value="Terminer et donner mon avis",
+                scale=1,
+                elem_classes="fr-btn",
+                visible=False,
+                interactive=False,
+            )
 
     with gr.Column(visible=False) as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
@@ -702,7 +683,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         #             gr.update(value="Quoque ch'est qu'te berdoules ?"),
         #         ]
 
-            # TODO: refacto so that it clears any object / trashes the state except ToS
+        # TODO: refacto so that it clears any object / trashes the state except ToS
 
         # Step 2
 
@@ -712,7 +693,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 return gr.update(interactive=False)
             else:
                 return gr.update(interactive=True)
-
 
         gr.on(
             triggers=[textbox.submit, send_btn.click],
@@ -726,7 +706,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             + [chat_area]
             + [send_btn]
             + [retry_btn]
-            + [conclude_area],
+            + [conclude_btn],
         ).then(
             bot_response_multi,
             conversations_state + [temperature, top_p, max_output_tokens],
@@ -756,14 +736,29 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 details,
                 request,
             )
+
         chatbots[0].like(intermediate_like, conversations_state, [])
         chatbots[1].like(intermediate_like, conversations_state, [])
 
-        conclude_btn.click(
-            show_vote_area, [], [conclude_area, chat_area, send_area, vote_area],
-        # TODO: check if scroll_to_output is useful?
-             scroll_to_output=True
+        @conclude_btn.click(
+            inputs=[],
+            outputs=[chat_area, send_area, vote_area],
+            # TODO: check if scroll_to_output is useful?
+            scroll_to_output=True,
         )
+        def show_vote_area():
+            # return {
+            #     conclude_area: gr.update(visible=False),
+            #     chat_area: gr.update(visible=False),
+            #     send_area: gr.update(visible=False),
+            #     vote_area: gr.update(visible=True),
+            # }
+            # [conclude_area, chat_area, send_area, vote_area]
+            return [
+                gr.update(visible=False),
+                gr.update(visible=False),
+                gr.update(visible=True),
+            ]
 
         which_model_radio.change(show_component, [], [supervote_area])
 
