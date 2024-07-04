@@ -235,12 +235,13 @@ if __name__ == "__main__":
     # if args.gradio_auth_path is not None:
     #     auth = parse_gradio_auth_creds(args.gradio_auth_path)
 
-    demo = demo.queue(
-        default_concurrency_limit=args.concurrency_count,
-        status_update_rate=10,
-        # FIXME: what does it do?
-        api_open=False,
-    )
+    # TODO: Re-enable / Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
+    # demo = demo.queue(
+    #     default_concurrency_limit=args.concurrency_count,
+    #     status_update_rate=10,
+        
+    #     api_open=False,
+    # )
 
     # Better use gr.set_static_paths(paths=["test/test_files/"])?
     # use gradio_root_path?
