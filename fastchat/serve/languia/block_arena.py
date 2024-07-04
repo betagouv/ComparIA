@@ -370,10 +370,10 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         )
         start_arena_btn = gr.Button(
             value="C'est parti",
-            interactive=True,
             scale=0,
             # TODO: à centrer
             elem_classes="fr-btn",
+            interactive=False,
         )
 
     with gr.Row() as stepper_row:
@@ -567,6 +567,17 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     # Register listeners
     def register_listeners():
         # Step 0
+
+        @accept_tos_checkbox.change(
+            inputs=[accept_tos_checkbox],
+            outputs=start_arena_btn,
+            # doesn't work
+            scroll_to_output=True,
+        )
+        def scroll_to_enter_arena(accept_tos_checkbox):
+            # Enable if checked
+            return gr.update(interactive=accept_tos_checkbox)
+
         @start_arena_btn.click(
             inputs=[accept_tos_checkbox],
             outputs=[start_screen, stepper_block, mode_screen],
@@ -608,11 +619,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         @guided_mode_btn.click(
             inputs=[],
             outputs=[free_mode_btn, guided_mode_btn, send_area, guided_area],
+            # TODO: scroll_to_output?
+            scroll_to_output=True,
         )
         def guided_mode():
             print(guided_mode_btn.elem_classes)
             if "selected" in guided_mode_btn.elem_classes:
-                return [gr.skip()*4]
+                return [gr.skip() * 4]
             else:
                 print("chose guided mode!")
                 return [
