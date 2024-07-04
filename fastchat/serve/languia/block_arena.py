@@ -33,14 +33,7 @@ from fastchat.serve.languia.block_conversation import (
 )
 
 from fastchat.serve.languia.components import stepper_html
-from fastchat.serve.languia.actions import (
-    vote_preferences,
-    #     # send_preferences,
-    #     bothbad_vote_last_response,
-    #     # tievote_last_response,
-    #     rightvote_last_response,
-    #     leftvote_last_response,
-)
+from fastchat.serve.languia.actions import vote_last_response
 
 from fastchat.utils import (
     build_logger,
@@ -197,7 +190,7 @@ def add_text(
         )
         conversations_state[i].skip_next = False
 
-# TODO: refacto, load/init components and .then() add text
+    # TODO: refacto, load/init components and .then() add text
     return (
         # 2 conversations_state
         conversations_state
@@ -349,7 +342,8 @@ def build_arena(models):
 
     with gr.Column(elem_classes="fr-container") as start_screen:
         # TODO: titre en bleu
-        gr.Markdown("""
+        gr.Markdown(
+            """
 # Bienvenue dans l'arène LANGU:IA
 ###### Notre mission
 
@@ -366,7 +360,8 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 **Diversité des langues** : Exprimez vous librement : vous parlez breton, occitan, basque, corse, créole ? Posez vos questions dans les dialectes, langues, argots ou registres que vous souhaitez !
 
 **Identification des biais** : Posez des questions sur des domaines ou des tâches que vous maîtrisez. Constatez-vous certains partis-pris des modèles ?
-        """)
+        """
+        )
         # TODO: DSFRize
         accept_tos_checkbox = gr.Checkbox(
             label="Conditions générales d'utilisation",
@@ -389,14 +384,16 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         )
 
     with gr.Column(visible=False) as mode_screen:
-        mode_html = gr.HTML("""
+        mode_html = gr.HTML(
+            """
         <div class="fr-notice fr-notice--info">
             <div class="fr-container">
                     <div class="fr-notice__body">
                                 <p class="fr-notice__title">Discutez d'un sujet que vous connaissez ou qui vous intéresse puis évaluez les réponses des modèles</p>
                     </div>
             </div>
-        </div>""")
+        </div>"""
+        )
         gr.Markdown("#### Comment voulez-vous commencer la conversation ?")
         gr.Markdown("_(Sélectionnez un des deux modes)_")
         with gr.Row():
@@ -440,10 +437,26 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             for i in range(num_sides):
                 label = "Model A" if i == 0 else "Model B"
                 with gr.Column():
+                    # {likeable}
+                    # placeholder
+                    #         placeholder
+                    # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
                     chatbots[i] = gr.Chatbot(
+                        # container: bool = True par défaut,
+                        # min_width=
+                        # height=
+                        # Doesn't seem to work, is it because it always has at least our message?
+                        # Note: supports HTML, use it!
+                        placeholder="**En chargement**",
+                        # No difference
+                        # bubble_full_width=False,
+                        layout="panel",  # or "bubble"
+                        likeable=True,
+                        # TODO: move label
                         label=label,
-                        elem_id="chatbot",
-                        show_copy_button=True,
+                        elem_classes="chatbot",
+                        # Could we show it? Useful...
+                        show_copy_button=False,
                     )
 
         with gr.Row():
@@ -646,23 +659,89 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             bot_response_multi,
             conversations_state + [temperature, top_p, max_output_tokens],
             conversations_state + chatbots,
-        ).then(enable_component, [], [conclude_btn])
+        ).then(
+            enable_component, [], [conclude_btn]
+        )
 
+        def intermediate_like(state0, state1, event: gr.LikeData, request: gr.Request):
+
+            # TODO: add model name?
+            details = {"message": event.value["value"]}
+
+            vote_type = "intermediate_"
+            if event.liked:
+                vote_type += "like_"
+            else:
+                vote_type += "dislike_"
+            if event.target == chatbots[0]:
+                vote_type += "left"
+            elif event.target == chatbots[1]:
+                vote_type += "right"
+            else:
+                logger.error("Like event for unknown chat")
+            vote_last_response(
+                [state0, state1],
+                vote_type,
+                details,
+                request,
+            )
+
+        # @chatbots[i].liked([i, conversations_state], [])
+        chatbots[0].like(intermediate_like, conversations_state, [])
+        chatbots[1].like(intermediate_like, conversations_state, [])
+
+        # TODO: scroll_to_output?
         conclude_btn.click(
             show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
         )
 
         which_model_radio.change(show_component, [], [supervote_area])
-        
+
         # Step 3
-        final_send_btn.click(
-            vote_preferences,
-            conversations_state
-            + [which_model_radio]
-            + [ressenti_checkbox]
-            + [comments_text],
-            [],
+        @final_send_btn.click(
+            inputs=[
+                conversations_state[0],
+                conversations_state[1],
+                which_model_radio,
+                ressenti_checkbox,
+                comments_text,
+            ],
+            outputs=[],
         )
+        def vote_preferences(
+            state0,
+            state1,
+            which_model_radio,
+            # FIXME: more checkboxes
+            ressenti_checkbox,
+            comments_text,
+            request: gr.Request,
+        ):
+            # conversations_state = [state0, state1]
+
+            details = {
+                "chosen_model": which_model_radio,
+                "ressenti": ressenti_checkbox,
+                "comments": comments_text,
+            }
+            if which_model_radio in ["bothbad", "leftvote", "rightvote"]:
+                logger.info("Voting " + which_model_radio)
+
+                vote_last_response(
+                    [state0, state1],
+                    which_model_radio,
+                    details,
+                    request,
+                )
+            else:
+                logger.error(
+                    'Model selection was neither "bothbad", "leftvote" or "rightvote", got: '
+                    + str(which_model_radio)
+                )
+
+            return []
+            # return vote
+
         # On reset go to mode selection mode_screen
         gr.on(
             triggers=[clear_btn.click, retry_btn.click],
