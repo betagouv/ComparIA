@@ -395,6 +395,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         with gr.Column(
             visible=False, elem_id="guided-area", elem_classes=""
         ) as guided_area:
+            gr.Markdown("##### Sélectionnez un thème que vous aimeriez explorer :")
             with gr.Row():
                 maniere = FrButton(
                     value="maniere",
