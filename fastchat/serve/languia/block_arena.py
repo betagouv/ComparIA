@@ -47,7 +47,7 @@ from gradio_frinput import FrInput
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
-# TODO: move to constants.py
+# TODO: move to constants.py or hardcode it
 num_sides = 2
 enable_moderation = False
 
@@ -410,28 +410,38 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     icon="assets/artwork/pictograms/misc/innovation.svg",
                 )
 
-        with gr.Row(visible=False, elem_classes="") as guided_area:
-            maniere = FrButton(
-                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
-            )
-            registre = FrButton(
-                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
-            )
-            creativite = FrButton(
-                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
-            )
-            pedagogie = FrButton(
-                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
-            )
-            regional = FrButton(
-                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
-            )
-            variete = FrButton(
-                custom_html='''<span class="fr-badge">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>'''
-            )
-            guided_prompt = gr.Radio(
-                choices=["Chtimi ?", "Québécois ?"], elem_classes=""
-            )
+        with gr.Column(
+            visible=False, elem_id="guided-area", elem_classes=""
+        ) as guided_area:
+            with gr.Row():
+                maniere = FrButton(
+                    value="maniere",
+                    custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>""",
+                )
+                registre = FrButton(
+                    value="registre",
+                    custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Transposer en registre familier, courant, soutenu…</p>""",
+                )
+                creativite = FrButton(
+                    value="creativite",
+                    custom_html="""<span class="fr-badge fr-badge--green-tilleul-verveine">Créativité</span><p>Jeux de mots, humour et expressions</p>""",
+                )
+            with gr.Row():
+                pedagogie = FrButton(
+                    value="pedagogie",
+                    custom_html="""<span class="fr-badge fr-badge--blue-cumulus">Pédagogie</span><p>Expliquer simplement un concept</p>""",
+                )
+                regional = FrButton(
+                    value="regional",
+                    custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Parler en Occitan, Alsacien, Basque, Picard…</p>""",
+                )
+                variete = FrButton(
+                    value="variete",
+                    custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Est-ce différent en Québécois, Belge, Suisse, Antillais…</p>""",
+                )
+            # guided_prompt = gr.Radio(
+            #     choices=["Chtimi ?", "Québécois ?"], elem_classes="", visible=False
+            # )
 
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
@@ -634,30 +644,75 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     gr.update(visible=False),
                     gr.update(visible=True),
                 ]
+
         # Step 1.1
-        @guided_prompt.change(inputs=guided_prompt, outputs=[send_area, textbox])
-        def craft_guided_prompt(topic_choice):
-            if str(topic_choice) == "Québécois ?":
-                return [
-                    gr.update(visible=True),
-                    gr.update(value="Tu comprends-tu, quand je parle ?"),
-                ]
+
+        # TODO: refacto into RadioTile
+        # FIXME: selected logic...
+        # @
+        # @registre.click([registre], [send_area, textbox])
+        # @creativite.click([creativite], [send_area, textbox])
+        # @pedagogie.click([pedagogie], [send_area, textbox])
+        # @regional.click([regional], [send_area, textbox])
+        # @variete.click([variete], [send_area, textbox])
+        def set_guided_prompt(event: gr.EventData):
+            chosen_guide = event.target.value
+            if chosen_guide == "maniere":
+                preprompt = "Tu es Victor Hugo. Explique moi synthétiquement ce qu'est un LLM dans ton style d'écriture."
+            elif chosen_guide == "registre":
+                preprompt = "Parle argot wsh"
+            elif chosen_guide == "creativite":
+                preprompt = "Raconte-moi ta meilleure blague."
+            elif chosen_guide == "pedagogie":
+                preprompt = "Explique moi simplement ce qu'est la température d'un LLM"
+            elif chosen_guide == "regional":
+                preprompt = "Quoque ch'est qu'te berdoules ? Réponds en Chtimi."
+            elif chosen_guide == "variete":
+                preprompt = """Que veut dire "se sécher les dents" en Québécois ?"""
             else:
-                return [
-                    gr.update(visible=True),
-                    gr.update(value="Quoque ch'est qu'te berdoules ?"),
-                ]
+                print(chosen_guide)
+                logger.error("Error, chosen guided prompt not listed")
+
+            return [gr.update(visible=True), gr.update(value=preprompt)]
+
+        gr.on(
+            triggers=[
+                maniere.click,
+                registre.click,
+                regional.click,
+                variete.click,
+                pedagogie.click,
+                creativite.click,
+            ],
+            fn=set_guided_prompt,
+            inputs=[],
+            outputs=[send_area, textbox],
+        )
+
+        # @guided_prompt.change(inputs=guided_prompt, outputs=[send_area, textbox])
+        # def craft_guided_prompt(topic_choice):
+        #     if str(topic_choice) == "Québécois ?":
+        #         return [
+        #             gr.update(visible=True),
+        #             gr.update(value="Tu comprends-tu, quand je parle ?"),
+        #         ]
+        #     else:
+        #         return [
+        #             gr.update(visible=True),
+        #             gr.update(value="Quoque ch'est qu'te berdoules ?"),
+        #         ]
 
             # TODO: refacto so that it clears any object / trashes the state except ToS
 
-        def change_send_btn_state(textbox):
-            if textbox != "":
-                return gr.update(interactive=True)
-            else:
-                return gr.update(interactive=False)
-
         # Step 2
-        textbox.change(change_send_btn_state, textbox, send_btn)
+
+        @textbox.change(inputs=textbox, outputs=send_btn)
+        def change_send_btn_state(textbox):
+            if textbox == "":
+                return gr.update(interactive=False)
+            else:
+                return gr.update(interactive=True)
+
 
         gr.on(
             triggers=[textbox.submit, send_btn.click],
@@ -681,7 +736,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         )
 
         def intermediate_like(state0, state1, event: gr.LikeData, request: gr.Request):
-
             # TODO: add model name?
             details = {"message": event.value["value"]}
 
@@ -702,14 +756,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 details,
                 request,
             )
-
-        # @chatbots[i].liked([i, conversations_state], [])
         chatbots[0].like(intermediate_like, conversations_state, [])
         chatbots[1].like(intermediate_like, conversations_state, [])
 
-        # TODO: scroll_to_output?
         conclude_btn.click(
-            show_vote_area, [], [conclude_area, chat_area, send_area, vote_area]
+            show_vote_area, [], [conclude_area, chat_area, send_area, vote_area],
+        # TODO: check if scroll_to_output is useful?
+             scroll_to_output=True
         )
 
         which_model_radio.change(show_component, [], [supervote_area])
