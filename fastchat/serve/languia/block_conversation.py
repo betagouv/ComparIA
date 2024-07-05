@@ -2,13 +2,9 @@
 The gradio utilities for chatting with a single model.
 """
 
-import argparse
-from collections import defaultdict
 import datetime
-import hashlib
 import json
 import os
-import random
 import time
 import uuid
 
@@ -69,7 +65,7 @@ api_endpoint_info = {}
 
 
 class ConversationState:
-    def __init__(self, model_name, is_vision=False):
+    def __init__(self, model_name="", is_vision=False):
         self.conv = get_conversation_template(model_name)
         self.conv_id = uuid.uuid4().hex
         self.skip_next = False

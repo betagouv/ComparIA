@@ -32,7 +32,6 @@ from fastchat.serve.languia.block_conversation import (
     get_model_description_md,
 )
 
-from fastchat.serve.languia.components import stepper_html
 from fastchat.serve.languia.actions import vote_last_response
 
 from fastchat.utils import (
@@ -40,7 +39,7 @@ from fastchat.utils import (
     moderation_filter,
 )
 
-from fastchat.serve.languia.utils import get_battle_pair
+from fastchat.serve.languia.utils import get_battle_pair, build_reveal_html, stepper_html
 
 from gradio_frbutton import FrButton
 from gradio_frinput import FrInput
@@ -607,10 +606,17 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             # dsfr: These 2 should just be normal links...
             leaderboard_btn = gr.Button(value="Liste des modèles")
 
-    with gr.Row(visible=False) as results_area:
-        gr.Markdown(
-            get_model_description_md(models), elem_id="model_description_markdown"
-        )
+    results_area = gr.HTML(visible=False)
+    # with gr.Row(visible=False) as results_area:
+
+    # for i in range(num_sides):
+    #     with gr.Column():
+    #         gr.HTML("Modèle A : "+str(conversations_state[0].model_name))
+    #         gr.HTML("Modèle B : "+str(conversations_state[1].model_name))
+
+    # gr.Markdown(
+    #     get_model_description_md(models), elem_id="model_description_markdown"
+    # )
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -828,7 +834,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
         @conclude_btn.click(
             inputs=[],
-            outputs=[chat_area, send_area, vote_area],
+            outputs=[stepper_block, chat_area, send_area, vote_area],
             # TODO: scroll_to_output?
         )
         def show_vote_area():
@@ -840,6 +846,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             # }
             # [conclude_area, chat_area, send_area, vote_area]
             return [
+                gr.update(value=stepper_html("Évaluation des modèles", 3, 4)),
                 gr.update(visible=False),
                 gr.update(visible=False),
                 gr.update(visible=True),
@@ -873,7 +880,12 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 + (supervote_checkboxes)
                 + [comments_text]
             ),
-            outputs=[vote_area, supervote_area, results_area],
+            outputs=[
+                stepper_block,
+                vote_area,
+                supervote_area,
+                results_area,
+            ],
         )
         def vote_preferences(
             state0,
@@ -912,9 +924,15 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 )
 
             return [
+                gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
                 gr.update(visible=False),
                 gr.update(visible=False),
-                gr.update(visible=True),
+                gr.update(
+                    visible=True,
+                    value=build_reveal_html(
+                        state0.model_name, state1.model_name, which_model_radio
+                    ),
+                ),
             ]
             # return vote
 

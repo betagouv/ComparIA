@@ -2,6 +2,54 @@ import numpy as np
 import os
 
 
+def stepper_html(title, step, total_steps):
+    return f"""
+    <div class="fr-stepper">
+    <h2 class="fr-stepper__title">
+        {title}
+        <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
+    </h2>
+    <div class="fr-stepper__steps" data-fr-current-step="{step}" data-fr-steps="{total_steps}"></div>
+
+</div>"""
+
+
+header_html = """
+    <header role="banner" class="">
+  <div class="fr-header__body">
+    <div class="">
+      <div class="fr-header__body-row">
+        <div class="fr-header__brand fr-enlarge-link">
+          <div class="fr-header__brand-top">
+            <div class="fr-header__logo">
+              <p class="fr-logo">
+                République
+                <br>Française
+              </p>
+            </div>
+          </div>
+          <div class="fr-header__service">
+            <a href="/" title="Accueil - LANGU:IA">
+              <p class="fr-header__service-title">LANGU:IA
+              <span class="fr-badge fr-badge--success fr-badge--no-icon">Beta</span>
+              </p>
+            </a>
+
+            <p class="fr-header__service-tagline">L'arène francophone de comparaison de modèles conversationnels</p>
+          </div>
+
+        </div>
+        <div class="fr-header__tools">
+          <a title="À propos - ouvre une nouvelle fenêtre" href="https://beta.gouv.fr/startups/languia.html" target="_blank" rel="noopener external" class="fr-link fr-link--icon-right">À propos</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+"""
+
+
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
         return 0
@@ -58,7 +106,8 @@ def get_battle_pair(
         return chosen_model, rival_model
     else:
         return rival_model, chosen_model
-        
+
+
 def get_matomo_js(matomo_url, matomo_id):
     return f"""
     <!-- Matomo -->
@@ -79,3 +128,27 @@ def get_matomo_js(matomo_url, matomo_id):
 <noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="{matomo_url}/matomo.php?idsite={matomo_id}&amp;rec=1" style="border:0;" alt="" /></p></noscript>
 <!-- End Matomo Code -->
     """
+
+
+def add_chosen_badge(side, which_model_radio):
+    if (side == "a" and which_model_radio == "leftvote") or (
+        side == "b" and which_model_radio == "rightvote"
+    ):
+        return """
+         <span class="fr-badge">Votre choix</span>
+         """
+    else:
+        return ""
+
+
+def build_reveal_html(model_a, model_b, which_model_radio):
+    reveal_html = f"""<div><div class="fr-tile><h2>Modèle A : {model_a}</h2>"""
+    reveal_html += add_chosen_badge("a", which_model_radio)
+    reveal_html += f"""</div>
+    <div class="fr-tile><h2>Modèle B : {model_b}</h2>
+    """
+    reveal_html += add_chosen_badge("b", which_model_radio)
+    reveal_html += "</div></div>"
+
+    print(reveal_html)
+    return reveal_html

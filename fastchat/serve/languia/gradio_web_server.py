@@ -15,8 +15,6 @@ from fastchat.serve.languia.block_arena import (
     set_global_vars_anony,
 )
 
-from fastchat.serve.languia.components import header_html
-
 from fastchat.serve.languia.block_conversation import (
     set_global_vars,
     # build_about,
@@ -25,7 +23,7 @@ from fastchat.serve.languia.block_conversation import (
 )
 from fastchat.serve.monitor.monitor import build_leaderboard_tab
 from fastchat.utils import build_logger, get_window_url_params_js
-from fastchat.serve.languia.utils import get_matomo_js
+from fastchat.serve.languia.utils import get_matomo_js, header_html
 
 import os
 
@@ -203,6 +201,10 @@ body {
 
 #mode-screen {
     margin-bottom: 30rem;
+}
+
+.built-with {
+    display: none;
 }
 """
 
