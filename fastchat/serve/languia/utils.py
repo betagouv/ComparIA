@@ -1,6 +1,7 @@
 import numpy as np
 import os
 
+
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
         return 0

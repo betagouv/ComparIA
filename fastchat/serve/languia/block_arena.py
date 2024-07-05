@@ -67,7 +67,7 @@ def load_demo_arena(models_, url_params):
     models = models_
 
     conversations_state = (None,) * num_sides
-    # What does it do???
+    # FIXME: What does it do???
     selector_updates = (
         gr.Markdown(visible=True),
         gr.Markdown(visible=True),
@@ -77,17 +77,19 @@ def load_demo_arena(models_, url_params):
 
 
 def add_text(
+    # state0: ConversationState,
+    # state1: ConversationState,
     state0: gr.State,
     state1: gr.State,
-    model_selector0: gr.Markdown,
-    model_selector1: gr.Markdown,
+    # model_selector0: gr.Markdown,
+    # model_selector1: gr.Markdown,
     text: gr.Text,
     request: gr.Request,
 ):
     ip = get_ip(request)
     logger.info(f"add_text (anony). ip: {ip}. len: {len(text)}")
     conversations_state = [state0, state1]
-    model_selectors = [model_selector0, model_selector1]
+    # model_selectors = [model_selector0, model_selector1]
 
     # TODO: refacto and put init apart
     # Init conversations_state if necessary
@@ -102,8 +104,9 @@ def add_text(
             SAMPLING_BOOST_MODELS,
         )
         conversations_state = [
-            ConversationState(model_left),
-            ConversationState(model_right),
+            # NOTE: replacement of gr.State() to ConversationState happens here
+            ConversationState(model_name=model_left),
+            ConversationState(model_name=model_right),
         ]
 
     # FIXME: when submitting empty text
@@ -275,8 +278,8 @@ def clear_history(
     state1,
     chatbot0,
     chatbot1,
-    model_selector0,
-    model_selector1,
+    # model_selector0,
+    # model_selector1,
     textbox,
     request: gr.Request,
 ):
@@ -293,8 +296,8 @@ def clear_history(
         None,
         None,
         None,
-        "",
-        "",
+        # "",
+        # "",
         "",
         gr.update(visible=False),
         gr.update(visible=False),
@@ -305,8 +308,9 @@ def clear_history(
 
 # build_arena_demo?
 def build_arena(models):
+    # conversations_state = [ConversationState() for _ in range(num_sides)]
     conversations_state = [gr.State() for _ in range(num_sides)]
-    model_selectors = [None] * num_sides
+    # model_selectors = [None] * num_sides
     # TODO: allow_flagging?
     chatbots = [None] * num_sides
 
@@ -445,12 +449,9 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                         show_copy_button=False,
                     )
 
-        with gr.Row():
-            for i in range(num_sides):
-                with gr.Column():
-                    model_selectors[i] = gr.Markdown(
-                        anony_names[i], elem_id="model_selector_md"
-                    )
+                    # model_selectors[i] = gr.Markdown(
+                    #     anony_names[i], elem_id="model_selector_md"
+                    # )
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         with gr.Row():
@@ -781,7 +782,8 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         gr.on(
             triggers=[textbox.submit, send_btn.click],
             fn=add_text,
-            inputs=conversations_state + model_selectors + [textbox],
+            inputs=conversations_state + [textbox],
+            # inputs=conversations_state + model_selectors + [textbox],
             outputs=conversations_state
             + chatbots
             + [textbox]
@@ -921,18 +923,15 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             triggers=[retry_btn.click],
             # triggers=[clear_btn.click, retry_btn.click],
             fn=clear_history,
-            inputs=conversations_state + chatbots + model_selectors + [textbox],
+            inputs=conversations_state + chatbots + [textbox],
+            # inputs=conversations_state + chatbots + model_selectors + [textbox],
             # List of objects to clear
-            outputs=conversations_state
-            + chatbots
-            + model_selectors
-            + [textbox]
-            + [chat_area]
-            + [vote_area]
-            + [supervote_area]
-            + [mode_screen],
+            outputs=conversations_state + chatbots
+            # + model_selectors
+            + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
         )
 
     register_listeners()
 
-    return conversations_state + model_selectors
+    return conversations_state
+    # return conversations_state + model_selectors

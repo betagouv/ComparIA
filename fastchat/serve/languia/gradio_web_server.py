@@ -212,7 +212,7 @@ with open("./assets/dsfr.css", encoding="utf-8") as css_file:
 css = css_dsfr + custom_css
 
 with gr.Blocks(
-    title="LANGU:IA — L'arène francophone de comparaison de modèles conversationnels",
+    title="LANGU:IA – L'arène francophone de comparaison de modèles conversationnels",
     theme=DSFR(),
     css=css,
     head=head_js,
