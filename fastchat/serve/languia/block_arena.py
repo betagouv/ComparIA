@@ -578,6 +578,14 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 label="originalite",
                 info="Créativité et originalité",
             )
+
+        supervote_checkboxes = [
+            ressenti_checkbox,
+            pertinence_checkbox,
+            comprehension_checkbox,
+            originalite_checkbox,
+        ]
+
         comments_text = FrInput(
             label="Détails supplémentaires",
             # TODO:
@@ -585,18 +593,23 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             # autofocus=True,
             placeholder="Ajoutez plus de précisions ici",
         )
-        final_send_btn = gr.Button(value="Envoyer mes préférences")
+        final_send_btn = gr.Button(
+            elem_classes="fr-btn", value="Envoyer mes préférences"
+        )
 
         with gr.Row():
             # dsfr: These 2 should just be normal links...
-            leaderboard_btn = gr.Button(value="Classement de l'arène")
+            opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
+
+            # clear_btn = gr.Button(value="Recommencer sans voter")
 
             # dsfr: These 2 should just be normal links...
-            opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
-            clear_btn = gr.Button(value="Recommencer sans voter")
+            leaderboard_btn = gr.Button(value="Liste des modèles")
 
-    # with gr.Row() as results_area:
-    #     gr.Markdown(get_model_description_md(models), elem_id="model_description_markdown")
+    with gr.Row(visible=False) as results_area:
+        gr.Markdown(
+            get_model_description_md(models), elem_id="model_description_markdown"
+        )
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -851,21 +864,23 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
         # Step 3
         @final_send_btn.click(
-            inputs=[
-                conversations_state[0],
-                conversations_state[1],
-                which_model_radio,
-                ressenti_checkbox,
-                comments_text,
-            ],
-            outputs=[],
+            inputs=(
+                [conversations_state[0]]
+                + [conversations_state[1]]
+                + [which_model_radio]
+                + (supervote_checkboxes)
+                + [comments_text]
+            ),
+            outputs=[vote_area, supervote_area, results_area],
         )
         def vote_preferences(
             state0,
             state1,
             which_model_radio,
-            # FIXME: more checkboxes
             ressenti_checkbox,
+            pertinence_checkbox,
+            comprehension_checkbox,
+            originalite_checkbox,
             comments_text,
             request: gr.Request,
         ):
@@ -874,6 +889,9 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             details = {
                 "chosen_model": which_model_radio,
                 "ressenti": ressenti_checkbox,
+                "pertinence": pertinence_checkbox,
+                "comprehension": comprehension_checkbox,
+                "originalite": originalite_checkbox,
                 "comments": comments_text,
             }
             if which_model_radio in ["bothbad", "leftvote", "rightvote"]:
@@ -891,12 +909,17 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     + str(which_model_radio)
                 )
 
-            return []
+            return [
+                gr.update(visible=False),
+                gr.update(visible=False),
+                gr.update(visible=True),
+            ]
             # return vote
 
         # On reset go to mode selection mode_screen
         gr.on(
-            triggers=[clear_btn.click, retry_btn.click],
+            triggers=[retry_btn.click],
+            # triggers=[clear_btn.click, retry_btn.click],
             fn=clear_history,
             inputs=conversations_state + chatbots + model_selectors + [textbox],
             # List of objects to clear
