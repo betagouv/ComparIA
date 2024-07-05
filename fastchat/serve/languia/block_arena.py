@@ -62,14 +62,6 @@ def set_global_vars_anony(enable_moderation_):
     enable_moderation = enable_moderation_
 
 
-def show_component():
-    return gr.update(visible=True)
-
-
-def enable_component():
-    return gr.update(interactive=True)
-
-
 def load_demo_arena(models_, url_params):
     global models
     models = models_
@@ -405,7 +397,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     value="registre",
                     custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Transposer en registre familier, courant, soutenu…</p>""",
                 )
-                creativite = FrButton(
+                creativite_btn = FrButton(
                     value="creativite",
                     custom_html="""<span class="fr-badge fr-badge--green-tilleul-verveine">Créativité</span><p>Jeux de mots, humour et expressions</p>""",
                 )
@@ -466,9 +458,9 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             textbox = FrInput(
                 show_label=False,
                 placeholder="Ecrivez votre premier message à l'arène ici",
-                # TODO: should be useless
-                elem_classes="fr-input",
                 scale=3,
+                # TODO:
+                # autofocus=True
             )
             send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
             # FIXME: visible=false not working?
@@ -503,20 +495,96 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             # # tie_btn = gr.Button(value="🤝  Les deux se valent")
             # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
+# TODO: render=false?
     with gr.Column(visible=False) as supervote_area:
-        gr.Markdown(
-            value="### Pourquoi ce choix de modèle ?\nSélectionnez vos préférences (facultatif)"
-        )
-        with gr.Row():
-            # TODO: refacto
-            ressenti_checkbox = gr.CheckboxGroup(
-                ["Lisible", "Impressionné·e", "Facile à comprendre"],
-                label="ressenti",
-                info="Quel a été votre ressenti ?",
+
+# TODO: render=false?
+# TODO: move to another file
+        with gr.Column() as positive_supervote:
+            gr.Markdown(
+                value="### Pourquoi ce choix de modèle ?\nSélectionnez vos préférences (facultatif)"
             )
-            # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
-            # ressenti_checkbox = gr.CheckboxGroup(["Lisible", "Impressionné·e", "Facile à comprendre"], label="ressenti", info="Quel a été votre ressenti ?")
-        comments_text = gr.TextArea(placeholder="Ajoutez plus de détails ici")
+            # TODO: checkboxes tuple
+            ressenti_checkbox = gr.CheckboxGroup(
+                [
+                    "Impressionné·e",
+                    "Complet",
+                    "Facile à comprendre",
+                    "Taille des réponses adaptées",
+                ],
+                label="ressenti",
+                info="Ressenti général",
+            )
+            pertinence_checkbox = gr.CheckboxGroup(
+                [
+                    "Consignes respectées",
+                    "Cohérent par rapport au contexte",
+                    "Le modèle ne s'est pas trompé",
+                ],
+                label="pertinence",
+                info="Pertinence des réponses",
+            )
+            comprehension_checkbox = gr.CheckboxGroup(
+                [
+                    "Syntaxe adaptée",
+                    "Richesse du vocabulaire",
+                    "Utilisation correcte des expressions",
+                ],
+                label="comprehension",
+                info="Compréhension et expression",
+            )
+            originalite_checkbox = gr.CheckboxGroup(
+                ["Créatif", "Expressif", "Drôle"],
+                label="originalite",
+                info="Créativité et originalité",
+            )
+
+# TODO: render=false?
+# TODO: move to another file
+        with gr.Column() as negative_supervote:
+            gr.Markdown(
+                value="### Pourquoi êtes-vous insatisfait·e des deux modèles ?\nSélectionnez autant de préférences que vous souhaitez"
+            )
+            ressenti_checkbox = gr.CheckboxGroup(
+                [
+                    "Trop court",
+                    "Trop long",
+                    "Pas utile",
+                    "Nocif ou offensant",
+                ],
+                label="ressenti",
+                info="Ressenti général",
+            )
+            pertinence_checkbox = gr.CheckboxGroup(
+                [
+                    "Incohérentes par rapport au contexte",
+                    "Factuellement incorrectes",
+                    "Imprécises",
+                ],
+                label="pertinence",
+                info="Pertinence des réponses",
+            )
+            comprehension_checkbox = gr.CheckboxGroup(
+                [
+                    "Faible qualité de syntaxe",
+                    "Pauvreté du vocabulaire",
+                    "Mauvaise utilisation des expressions",
+                ],
+                label="comprehension",
+                info="Compréhension et expression",
+            )
+            originalite_checkbox = gr.CheckboxGroup(
+                ["Réponses banales", "Réponses superficielles"],
+                label="originalite",
+                info="Créativité et originalité",
+            )
+        comments_text = FrInput(
+            label="Détails supplémentaires",
+            # TODO:
+            # info=,
+            # autofocus=True,
+            placeholder="Ajoutez plus de précisions ici",
+        )
         final_send_btn = gr.Button(value="Envoyer mes préférences")
 
         with gr.Row():
@@ -559,6 +627,12 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         label="Max output tokens",
     )
 
+    def show_component():
+        return gr.update(visible=True)
+
+    def enable_component():
+        return gr.update(interactive=True)
+
     # Register listeners
     def register_listeners():
         # Step 0
@@ -567,9 +641,9 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             inputs=[accept_tos_checkbox],
             outputs=start_arena_btn,
             # doesn't work
-            scroll_to_output=True,
+            # scroll_to_output=True,
         )
-        def scroll_to_enter_arena(accept_tos_checkbox):
+        def accept_tos_to_enter_arena(accept_tos_checkbox):
             # Enable if checked
             return gr.update(interactive=accept_tos_checkbox)
 
@@ -615,7 +689,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             inputs=[],
             outputs=[free_mode_btn, guided_mode_btn, send_area, guided_area],
             # TODO: scroll_to_output?
-            scroll_to_output=True,
         )
         def guided_mode():
             print(guided_mode_btn.elem_classes)
@@ -634,12 +707,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
         # TODO: refacto into RadioTile
         # FIXME: selected logic...
-        # @
-        # @registre.click([registre], [send_area, textbox])
-        # @creativite.click([creativite], [send_area, textbox])
-        # @pedagogie.click([pedagogie], [send_area, textbox])
-        # @regional.click([regional], [send_area, textbox])
-        # @variete.click([variete], [send_area, textbox])
         def set_guided_prompt(event: gr.EventData):
             chosen_guide = event.target.value
             if chosen_guide == "maniere":
@@ -667,7 +734,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 regional.click,
                 variete.click,
                 pedagogie.click,
-                creativite.click,
+                creativite_btn.click,
             ],
             fn=set_guided_prompt,
             inputs=[],
@@ -747,8 +814,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         @conclude_btn.click(
             inputs=[],
             outputs=[chat_area, send_area, vote_area],
-            # TODO: check if scroll_to_output is useful?
-            scroll_to_output=True,
+            # TODO: scroll_to_output?
         )
         def show_vote_area():
             # return {
@@ -764,7 +830,24 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 gr.update(visible=True),
             ]
 
-        which_model_radio.change(show_component, [], [supervote_area])
+        @which_model_radio.change(inputs=
+            [which_model_radio],outputs=
+            [supervote_area, positive_supervote, negative_supervote],
+        )
+        def build_supervote_area(vote_radio):
+            if vote_radio == "bothbad":
+                return (
+                    gr.update(visible=True),
+                    gr.update(visible=False),
+                    gr.update(visible=True),
+                )
+            else:
+                print(vote_radio)
+                return (
+                    gr.update(visible=True),
+                    gr.update(visible=True),
+                    gr.update(visible=False),
+                )
 
         # Step 3
         @final_send_btn.click(
