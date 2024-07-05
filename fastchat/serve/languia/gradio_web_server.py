@@ -37,7 +37,10 @@ if os.getenv("SENTRY_DSN"):
     # Set traces_sample_rate to 1.0 to capture 100%
     # of transactions for performance monitoring.
     # We recommend adjusting this value in production.
-    traces_sample_rate = 1.0
+    if os.getenv("SENTRY_SAMPLE_RATE"):
+        traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
+    else:
+        traces_sample_rate = 0.2
     logger.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
     if os.getenv("SENTRY_ENV"):
         sentry_env = os.getenv("SENTRY_ENV")
