@@ -483,7 +483,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     with gr.Column(visible=False) as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
-            which_model_radio = gr.Radio(
+            which_model_radio = gr.Radio(show_label=False,
                 choices=[
                     ("Modèle A", "leftvote"),
                     ("Modèle B", "rightvote"),
@@ -502,7 +502,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         # TODO: move to another file
         with gr.Column() as positive_supervote:
             gr.Markdown(
-                value="### Pourquoi ce choix de modèle ?\nSélectionnez vos préférences (facultatif)"
+                value="### Pourquoi ce choix de modèle ?\nSélectionnez autant de préférences que vous souhaitez"
             )
             # TODO: checkboxes tuple
             ressenti_checkbox = gr.CheckboxGroup(
@@ -513,6 +513,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     "Taille des réponses adaptées",
                 ],
                 label="ressenti",
+                show_label=False,
                 info="Ressenti général",
             )
             pertinence_checkbox = gr.CheckboxGroup(
@@ -522,6 +523,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     "Le modèle ne s'est pas trompé",
                 ],
                 label="pertinence",
+                show_label=False,
                 info="Pertinence des réponses",
             )
             comprehension_checkbox = gr.CheckboxGroup(
@@ -531,12 +533,14 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     "Utilisation correcte des expressions",
                 ],
                 label="comprehension",
+                show_label=False,
                 info="Compréhension et expression",
             )
             originalite_checkbox = gr.CheckboxGroup(
                 ["Créatif", "Expressif", "Drôle"],
                 label="originalite",
                 info="Créativité et originalité",
+                show_label=False,
             )
 
         # TODO: render=false?
