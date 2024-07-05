@@ -357,7 +357,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             visible=False,
         )
 
-    with gr.Column(visible=False) as mode_screen:
+    with gr.Column(visible=False, elem_id="mode-screen") as mode_screen:
         mode_html = gr.HTML(
             """
         <div class="fr-notice fr-notice--info">

@@ -201,7 +201,9 @@ body {
 		border-bottom: 4px var(--border-default-blue-france) solid;
 	} */
 
-
+#mode-screen {
+    margin-bottom: 30rem;
+}
 """
 
 with open("./assets/dsfr.css", encoding="utf-8") as css_file:
