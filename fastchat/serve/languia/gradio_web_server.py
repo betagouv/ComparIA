@@ -31,24 +31,6 @@ import sentry_sdk
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
-if os.getenv("SENTRY_DSN"):
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    if os.getenv("SENTRY_SAMPLE_RATE"):
-        traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
-    else:
-        traces_sample_rate = 0.2
-    logger.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
-    if os.getenv("SENTRY_ENV"):
-        sentry_env = os.getenv("SENTRY_ENV")
-    else:
-        sentry_env = "development"
-        sentry_sdk.init(
-            dsn=os.getenv("SENTRY_DSN"),
-            environment=sentry_env,
-            traces_sample_rate=traces_sample_rate,
-        )
 
 
 def load_demo(url_params, request: gr.Request):
@@ -273,6 +255,24 @@ if __name__ == "__main__":
     #     api_open=False,
     # )
 
+    if os.getenv("SENTRY_DSN"):
+        # Set traces_sample_rate to 1.0 to capture 100%
+        # of transactions for performance monitoring.
+        # We recommend adjusting this value in production.
+        if os.getenv("SENTRY_SAMPLE_RATE"):
+            traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
+        else:
+            traces_sample_rate = 0.2
+        logger.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
+        if os.getenv("SENTRY_ENV"):
+            sentry_env = os.getenv("SENTRY_ENV")
+        else:
+            sentry_env = "development"
+            sentry_sdk.init(
+                dsn=os.getenv("SENTRY_DSN"),
+                environment=sentry_env,
+                traces_sample_rate=traces_sample_rate,
+            )
     # Better use gr.set_static_paths(paths=["test/test_files/"])?
     # use gradio_root_path?
     # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
