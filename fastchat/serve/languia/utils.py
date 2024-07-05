@@ -142,7 +142,7 @@ def add_chosen_badge(side, which_model_radio):
 
 
 def build_reveal_html(model_a, model_b, which_model_radio):
-    reveal_html = f"""<div><div class="fr-tile><h2>Modèle A : {model_a}</h2>"""
+    reveal_html = f"""<div><div class="fr-tile"><h2>Modèle A : {model_a}</h2>"""
     reveal_html += add_chosen_badge("a", which_model_radio)
     reveal_html += f"""</div>
     <div class="fr-tile><h2>Modèle B : {model_b}</h2>
