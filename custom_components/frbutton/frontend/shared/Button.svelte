@@ -65,9 +65,16 @@
 		box-shadow: var(--button-shadow);
 		padding: var(--size-0-5) var(--size-2);
 		text-align: center;
-	    height: 30rem;
+	    /* height: 30rem; */
+		border: 1px var(--border-default-flat-grey) solid;
+		border-bottom: 4px var(--border-default-blue-france-sun) solid;
 	}
-
+	button.selected,
+	a.selected {
+		background-color: var(--background-flat-grey);
+		border-bottom: 4px var(--border-default-flat-grey) solid;
+	}
+	
 	button:hover,
 	button[disabled],
 	a:hover,
@@ -91,11 +98,11 @@
 		display: none;
 	}
 
-	.primary {
+	/* .primary {
 		border: var(--button-border-width) solid var(--button-primary-border-color);
 		background: var(--button-primary-background-fill);
 		color: var(--button-primary-text-color);
-	}
+	} */
 	.primary:hover,
 	.primary[disabled] {
 		border-color: var(--button-primary-border-color-hover);
@@ -103,12 +110,12 @@
 		color: var(--button-primary-text-color-hover);
 	}
 
-	.secondary {
+	/* .secondary {
 		border: var(--button-border-width) solid
 			var(--button-secondary-border-color);
 		background: var(--button-secondary-background-fill);
 		color: var(--button-secondary-text-color);
-	}
+	} */
 
 	.secondary:hover,
 	.secondary[disabled] {
