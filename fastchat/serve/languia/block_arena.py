@@ -495,11 +495,11 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             # # tie_btn = gr.Button(value="🤝  Les deux se valent")
             # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-# TODO: render=false?
+    # TODO: render=false?
     with gr.Column(visible=False) as supervote_area:
 
-# TODO: render=false?
-# TODO: move to another file
+        # TODO: render=false?
+        # TODO: move to another file
         with gr.Column() as positive_supervote:
             gr.Markdown(
                 value="### Pourquoi ce choix de modèle ?\nSélectionnez vos préférences (facultatif)"
@@ -539,8 +539,8 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 info="Créativité et originalité",
             )
 
-# TODO: render=false?
-# TODO: move to another file
+        # TODO: render=false?
+        # TODO: move to another file
         with gr.Column() as negative_supervote:
             gr.Markdown(
                 value="### Pourquoi êtes-vous insatisfait·e des deux modèles ?\nSélectionnez autant de préférences que vous souhaitez"
@@ -830,9 +830,9 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 gr.update(visible=True),
             ]
 
-        @which_model_radio.change(inputs=
-            [which_model_radio],outputs=
-            [supervote_area, positive_supervote, negative_supervote],
+        @which_model_radio.change(
+            inputs=[which_model_radio],
+            outputs=[supervote_area, positive_supervote, negative_supervote],
         )
         def build_supervote_area(vote_radio):
             if vote_radio == "bothbad":

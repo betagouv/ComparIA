@@ -137,8 +137,8 @@ parser.add_argument(
     "--gradio-root-path",
     type=str,
     help="Sets the gradio root path, eg /abc/def. Useful when running behind a reverse-proxy or at a custom URL path prefix",
-    # FIXME: try no to commit this...
-    default="/app"
+    default="/app",
+    # TODO: fix dev mode
 )
 parser.add_argument(
     "--debug",
@@ -176,6 +176,11 @@ if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
 
 
 custom_css = """
+body {
+    width: 80% !important;
+    margin: auto !important;
+}
+
 #send-area {
     position: fixed;
     padding: 3em 20%;
@@ -186,9 +191,17 @@ custom_css = """
     border-top: solid 1px var(--border-default-grey);
     z-index: 100;
   }
-#free-mode.selected, #guided-mode.selected, #guided-area button.selected {
+
+#arena {
+    width: 80% !important;
+    margin: auto;
+}
+
+/* #free-mode.selected, #guided-mode.selected, #guided-area button.selected {
 		border-bottom: 4px var(--border-default-blue-france) solid;
-	}
+	} */
+
+
 """
 
 with open("./assets/dsfr.css", encoding="utf-8") as css_file:
@@ -197,10 +210,11 @@ with open("./assets/dsfr.css", encoding="utf-8") as css_file:
 css = css_dsfr + custom_css
 
 with gr.Blocks(
-    title="LANGU:IA, l'arène francophone de classement de modèles de langage par préférences humaines",
+    title="LANGU:IA — L'arène francophone de comparaison de modèles conversationnels",
     theme=DSFR(),
     css=css,
     head=head_js,
+    # elem_classes=""
 ) as demo:
     # TODO: skiplinks
 
@@ -208,8 +222,17 @@ with gr.Blocks(
 
     # Tab was needed for "selected" to work
     # with gr.Tab"Leaderboard", id=6):
-    with gr.Blocks(elem_id="main-component", elem_classes="fr-container") as pages:
-        with gr.Blocks(elem_id="arena", elem_classes="fr-grid-row") as arena:
+    with gr.Blocks(
+        elem_id="main-component",
+        elem_classes="fr-container",
+        # TODO: to test
+        #  fill_height=True
+        # Delete cache every second
+        # delete_cache=(1,1),
+    ) as pages:
+
+        with gr.Column(elem_id="arena", elem_classes="") as arena:
+            # with gr.Blocks(elem_id="arena", elem_classes="fr-grid-row") as arena:
             two_models_arena = build_arena(models)
 
         if args.elo_results_file:
@@ -242,7 +265,7 @@ if __name__ == "__main__":
     # demo = demo.queue(
     #     default_concurrency_limit=args.concurrency_count,
     #     status_update_rate=10,
-        
+
     #     api_open=False,
     # )
 
@@ -257,11 +280,12 @@ if __name__ == "__main__":
         ],
         server_name=args.host,
         server_port=args.port,
-        share=False,
         max_threads=200,
         auth=auth,
         root_path=args.gradio_root_path,
-        # TODO: choose if show api
+        # TODO:
+        # share=args.share,
+        share=False,
         show_api=args.debug,
         debug=args.debug,
         show_error=args.debug,
