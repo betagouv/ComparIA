@@ -66,6 +66,7 @@ def get_matomo_js(matomo_url, matomo_id):
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
+  _paq.push(['HeatmapSessionRecording::enable'])
   (function() {{
     var u="{matomo_url}/";
     _paq.push(['setTrackerUrl', u+'matomo.php']);
