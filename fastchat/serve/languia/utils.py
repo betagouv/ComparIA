@@ -49,15 +49,15 @@ header_html = """
 </header>
 """
 
-
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
         return 0
-    weight = sampling_weights.get(model, 0)
+    # Give a 1 weight if model not in weights
+    weight = sampling_weights.get(model, 1)
+    # weight = sampling_weights.get(model, 0)
     if model in sampling_boost_models:
         weight *= 5
     return weight
-
 
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
