@@ -186,7 +186,11 @@ body {
 }
 
 .built-with {
-    display: none;
+    display: none !important;
+}
+
+.icon-white img {
+    filter: invert(100%);
 }
 """
 

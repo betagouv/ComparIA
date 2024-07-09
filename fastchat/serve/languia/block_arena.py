@@ -467,7 +467,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             retry_btn = gr.Button(
                 icon="assets/icons/system/refresh-line.svg",
                 value="",
-                elem_classes="fr-btn",
+                elem_classes="fr-btn icon-white",
                 visible=False,
             )
         with gr.Row():
