@@ -247,9 +247,13 @@ if __name__ == "__main__":
             )
     # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
     # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
-    logger.info("Allowing assets absolute path: "+assets_absolute_path)
+    logger.info("Allowing assets absolute path: " + assets_absolute_path)
     demo.launch(
-        allowed_paths=[f"{assets_absolute_path}/"],
+        allowed_paths=[
+            f"{assets_absolute_path}/fonts",
+            f"{assets_absolute_path}/icons",
+            f"{assets_absolute_path}/js",
+        ],
         server_name=args.host,
         server_port=args.port,
         max_threads=200,
