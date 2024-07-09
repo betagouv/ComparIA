@@ -601,14 +601,14 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             elem_classes="fr-btn", value="Envoyer mes préférences"
         )
 
-        with gr.Row():
+        # with gr.Row():
             # dsfr: These 2 should just be normal links...
-            opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
+            # opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
 
             # clear_btn = gr.Button(value="Recommencer sans voter")
 
             # dsfr: These 2 should just be normal links...
-            leaderboard_btn = gr.Button(value="Liste des modèles")
+            # leaderboard_btn = gr.Button(value="Liste des modèles")
 
     results_area = gr.HTML(visible=False)
     # with gr.Row(visible=False) as results_area:
