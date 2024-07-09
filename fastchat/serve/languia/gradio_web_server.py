@@ -155,48 +155,11 @@ if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
     head_js += get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
 
 
-custom_css = """
-body {
-    width: 80% !important;
-    margin: auto !important;
-}
-
-#send-area {
-    position: fixed;
-    padding: 3em 20%;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    background-color: var(--background-alt-grey);
-    border-top: solid 1px var(--border-default-grey);
-    z-index: 100;
-  }
-
-#arena {
-    width: 80% !important;
-    margin: auto;
-}
-
-/* #free-mode.selected, #guided-mode.selected, #guided-area button.selected {
-		border-bottom: 4px var(--border-default-blue-france) solid;
-	} */
-
-#mode-screen {
-    margin-bottom: 30rem;
-}
-
-.built-with {
-    display: none !important;
-}
-
-.icon-white img {
-    filter: invert(100%);
-}
-"""
-
 with open("./assets/dsfr.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
-# css = css_dsfr
+with open("./assets/custom.css", encoding="utf-8") as css_file:
+    custom_css = css_file.read()
+
 css = css_dsfr + custom_css
 
 with gr.Blocks(
