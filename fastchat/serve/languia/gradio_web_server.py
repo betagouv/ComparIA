@@ -249,7 +249,7 @@ if __name__ == "__main__":
     # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
     logger.info("Allowing assets absolute path: "+assets_absolute_path)
     demo.launch(
-        allowed_paths=[f"{assets_absolute_path}"],
+        allowed_paths=[f"{assets_absolute_path}/"],
         server_name=args.host,
         server_port=args.port,
         max_threads=200,
