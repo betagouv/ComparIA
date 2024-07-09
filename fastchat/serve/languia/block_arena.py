@@ -698,7 +698,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         @free_mode_btn.click(
             inputs=[],
             # js?
-            outputs=[guided_mode_btn, free_mode_btn, send_area, guided_area],
+            outputs=[guided_mode_btn, free_mode_btn, send_area, guided_area, mode_screen],
         )
         def free_mode():
             print("chose free mode!")
@@ -707,11 +707,12 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 gr.update(elem_classes="selected"),
                 gr.update(visible=True),
                 gr.update(visible=False),
+                gr.update(elem_classes="send-area-enabled"),
             ]
 
         @guided_mode_btn.click(
             inputs=[],
-            outputs=[free_mode_btn, guided_mode_btn, send_area, guided_area],
+            outputs=[free_mode_btn, guided_mode_btn, send_area, guided_area, mode_screen] 
             # TODO: scroll_to_output?
         )
         def guided_mode():
@@ -725,6 +726,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     gr.update(elem_classes="selected"),
                     gr.update(visible=False),
                     gr.update(visible=True),
+                    gr.update(elem_classes="send-area-enabled"),
                 ]
 
         # Step 1.1

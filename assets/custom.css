@@ -24,8 +24,8 @@ body {
 		border-bottom: 4px var(--border-default-blue-france) solid;
 	} */
 
-#mode-screen {
-    margin-bottom: 30rem;
+#mode-screen.send-area-enabled {
+    margin-bottom: 10rem;
 }
 
 .built-with {
