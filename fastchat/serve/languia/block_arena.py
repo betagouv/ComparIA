@@ -424,7 +424,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
             for i in range(num_sides):
-                label = "Model A" if i == 0 else "Model B"
+                label = "Modèle A" if i == 0 else "Modèle B"
                 with gr.Column():
                     # {likeable}
                     # placeholder
