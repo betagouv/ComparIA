@@ -49,6 +49,7 @@ header_html = """
 </header>
 """
 
+
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
         return 0
@@ -58,6 +59,7 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
     if model in sampling_boost_models:
         weight *= 5
     return weight
+
 
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
@@ -140,29 +142,33 @@ def add_chosen_badge(side, which_model_radio):
     else:
         return ""
 
+
 def get_model_card(model_name):
-  model = dict()
-  model.is_open = True
-  model.size = "Gabarit moyen"
-  model.license = "Licence MIT"
-  model.link = "https://example.org"
-  return model
+    model = dict()
+    model["is_open"] = True
+    model["size"] = "Gabarit moyen"
+    model["license"] = "Licence MIT"
+    model["link"] = "https://example.org"
+    return model
+
 
 # TODO: refacto to custom component?
 def build_model_card(model_name):
-  model = get_model_card(model_name)
-  model_openness = ("Modèle ouvert" if model.is_open else "Modèle fermé") 
-  template = f'''
+    model = get_model_card(model_name)
+    model_openness = "Modèle ouvert" if model["is_open"] else "Modèle fermé"
+    template = f"""
   <p><span class="fr-icon-stack" aria-hidden="true"></span> {model_openness}</p>
-  <p><span class="fr-icon-ruler" aria-hidden="true"></span> {model.size}</p>
-  <p><span class="fr-icon-copyright-fill" aria-hidden="true"></span> {model.license}</p>
-  <p><a class="fr-btn" href="{model.link}">En savoir plus</a></p>" 
-  '''
-  return template
+  <p><span class="fr-icon-ruler" aria-hidden="true"></span> {model['size']}</p>
+  <p><span class="fr-icon-copyright-fill" aria-hidden="true"></span> {model['license']}</p>
+  <p><a class="fr-btn fr-btn--secondary" href="{model['link']}">En savoir plus</a></p>
+  """
+  # note: "En savoir plus" ne devrait être qu'un lien
+    return template
+
 
 def build_reveal_html(model_a, model_b, which_model_radio):
-    reveal_html = f"""<div><h2>Merci pour votre vote !<br />
-Découvrez les modèles avec lesquels vous venez de discuter :</h2>
+    reveal_html = f"""<div><h3>Merci pour votre vote !<br />
+Découvrez les modèles avec lesquels vous venez de discuter :</h3>
 <div class="fr-tile"><h2>{model_a}</h2>"""
     reveal_html += add_chosen_badge("a", which_model_radio)
     reveal_html += build_model_card(model_a)
@@ -173,5 +179,4 @@ Découvrez les modèles avec lesquels vous venez de discuter :</h2>
     reveal_html += build_model_card(model_b)
     reveal_html += "</div></div>"
 
-    print(reveal_html)
     return reveal_html
