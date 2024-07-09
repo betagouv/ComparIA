@@ -32,7 +32,6 @@ import sentry_sdk
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 
-
 def load_demo(url_params, request: gr.Request):
     global models, all_models
 
@@ -117,8 +116,6 @@ parser.add_argument(
     "--gradio-root-path",
     type=str,
     help="Sets the gradio root path, eg /abc/def. Useful when running behind a reverse-proxy or at a custom URL path prefix",
-    default="/app",
-    # TODO: fix dev mode
 )
 parser.add_argument(
     "--debug",
@@ -133,6 +130,14 @@ if env_debug:
     if env_debug.lower() == "true":
         args.debug = True
 logger.info(f"args: {args}")
+
+if not args.debug:
+    assets_absolute_path = "/app/assets"
+else:
+    assets_absolute_path = (
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        + "/assets"
+    )
 
 # Set global variables
 set_global_vars(args.controller_url, args.moderate, False)
@@ -240,15 +245,11 @@ if __name__ == "__main__":
                 environment=sentry_env,
                 traces_sample_rate=traces_sample_rate,
             )
-    # Better use gr.set_static_paths(paths=["test/test_files/"])?
-    # use gradio_root_path?
+    # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
     # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
+    logger.info("Allowing assets absolute path: "+assets_absolute_path)
     demo.launch(
-        allowed_paths=[
-            f"{args.gradio_root_path}/assets/fonts",
-            f"{args.gradio_root_path}/assets/icons",
-            f"{args.gradio_root_path}/assets/js",
-        ],
+        allowed_paths=[f"{assets_absolute_path}"],
         server_name=args.host,
         server_port=args.port,
         max_threads=200,
