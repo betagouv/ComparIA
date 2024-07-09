@@ -25,7 +25,7 @@ body {
 	} */
 
 #mode-screen.send-area-enabled {
-    margin-bottom: 10rem;
+    margin-bottom: 12rem;
 }
 
 .built-with {
@@ -55,3 +55,13 @@ background-image: url("file=assets/../icons/misc/stack.svg");
 .fr-icon-ruler::before {
 background-image: url("file=assets/icons/misc/ruler.svg");
 }
+
+.fr-icon-copyright-fill::before,
+.fr-icon-copyright-fill::after {
+  -webkit-mask-image: url("file=assets/icons/business/copyright-fill.svg");
+  mask-image: url("file=assets/icons/business/copyright-fill.svg");
+}
+
+.fr-icon-copyright-fill::before {
+  background-image: url("file=assets/icons/business/copyright-fill.svg");
+  }
