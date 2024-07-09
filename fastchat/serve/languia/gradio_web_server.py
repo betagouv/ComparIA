@@ -293,7 +293,8 @@ if __name__ == "__main__":
         root_path=args.gradio_root_path,
         # TODO:
         # share=args.share,
-        share=False,
+        share=args.debug,
+        # share=False,
         show_api=args.debug,
         debug=args.debug,
         show_error=args.debug,
