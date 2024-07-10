@@ -20,6 +20,10 @@ body {
     margin: auto;
 }
 
+.fr-header__brand {
+  filter: none !important;
+}
+
 /* #free-mode.selected, #guided-mode.selected, #guided-area button.selected {
 		border-bottom: 4px var(--border-default-blue-france) solid;
 	} */
