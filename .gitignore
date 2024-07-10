@@ -1,14 +1,20 @@
 # Python
 __pycache__
 *.pyc
+*.pyi
 *.egg-info
-dist
+# dist
 .venv
+venv
+
+# JS
+node_modules
 
 # Log
 *.log
 *.log.*
-*.json
+data/
+
 !playground/deepspeed_config_s2.json
 !playground/deepspeed_config_s3.json
 
@@ -34,3 +40,8 @@ build
 serve_images
 val2014
 vqa_examples
+docker/.env
+
+# Secrets
+model-info-file.json
+register-api-endpoint-file.json
