@@ -177,7 +177,8 @@ with gr.Blocks(
     # TODO: skiplinks
 
     if os.getenv("GIT_COMMIT"):
-        header_html += f"<!-- Git commit: {os.getenv("GIT_COMMIT")} -->"
+        git_commit = os.getenv("GIT_COMMIT")
+        header_html += f"<!-- Git commit: {git_commit} -->"
 
     gr.HTML(header_html, elem_id="header_html")
 
