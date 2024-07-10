@@ -32,14 +32,14 @@ from fastchat.serve.languia.block_conversation import (
     get_model_description_md,
 )
 
-from fastchat.serve.languia.actions import vote_last_response
+from fastchat.utils import build_logger, moderation_filter
 
-from fastchat.utils import (
-    build_logger,
-    moderation_filter,
+from fastchat.serve.languia.utils import (
+    get_battle_pair,
+    build_reveal_html,
+    stepper_html,
+    vote_last_response,
 )
-
-from fastchat.serve.languia.utils import get_battle_pair, build_reveal_html, stepper_html
 
 from gradio_frbutton import FrButton
 from gradio_frinput import FrInput
@@ -483,12 +483,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     with gr.Column(visible=False) as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
-            which_model_radio = gr.Radio(show_label=False,
+            which_model_radio = gr.Radio(
+                show_label=False,
                 choices=[
                     ("Modèle A", "leftvote"),
                     ("Modèle B", "rightvote"),
                     ("Aucun des deux", "bothbad"),
-                ]
+                ],
             )
             # leftvote_btn = gr.Button(value="👈  A est mieux")
             # rightvote_btn = gr.Button(value="👉  B est mieux")
@@ -602,13 +603,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         )
 
         # with gr.Row():
-            # dsfr: These 2 should just be normal links...
-            # opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
+        # dsfr: These 2 should just be normal links...
+        # opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
 
-            # clear_btn = gr.Button(value="Recommencer sans voter")
+        # clear_btn = gr.Button(value="Recommencer sans voter")
 
-            # dsfr: These 2 should just be normal links...
-            # leaderboard_btn = gr.Button(value="Liste des modèles")
+        # dsfr: These 2 should just be normal links...
+        # leaderboard_btn = gr.Button(value="Liste des modèles")
 
     results_area = gr.HTML(visible=False)
     # with gr.Row(visible=False) as results_area:
@@ -698,7 +699,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         @free_mode_btn.click(
             inputs=[],
             # js?
-            outputs=[guided_mode_btn, free_mode_btn, send_area, guided_area, mode_screen],
+            outputs=[
+                guided_mode_btn,
+                free_mode_btn,
+                send_area,
+                guided_area,
+                mode_screen,
+            ],
         )
         def free_mode():
             print("chose free mode!")
@@ -712,7 +719,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
         @guided_mode_btn.click(
             inputs=[],
-            outputs=[free_mode_btn, guided_mode_btn, send_area, guided_area, mode_screen] 
+            outputs=[
+                free_mode_btn,
+                guided_mode_btn,
+                send_area,
+                guided_area,
+                mode_screen,
+            ],
             # TODO: scroll_to_output?
         )
         def guided_mode():
