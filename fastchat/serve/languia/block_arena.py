@@ -455,11 +455,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         with gr.Row():
             # TODO: redevelop FrInput from Textbox and not SimpleTextbox
-            textbox = FrInput(
+            textbox = gr.Textbox(
                 show_label=False,
                 placeholder="Ecrivez votre premier message à l'arène ici",
-                scale=3,
-                # TODO:
+                scale=10,
+                lines=2,
+                max_lines=7,
+                # not working
                 # autofocus=True
             )
             send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
@@ -469,6 +471,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 value="",
                 elem_classes="fr-btn icon-white",
                 visible=False,
+                scale=1,
             )
         with gr.Row():
             # FIXME: visible=false not working?
@@ -591,7 +594,8 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             originalite_checkbox,
         ]
 
-        comments_text = FrInput(
+        comments_text = gr.Textbox(
+            elem_classes="fr-input",
             label="Détails supplémentaires",
             # TODO:
             # info=,
