@@ -176,6 +176,9 @@ with gr.Blocks(
 ) as demo:
     # TODO: skiplinks
 
+    if os.getenv("GIT_COMMIT"):
+        header_html += f"<!-- Git commit: {os.getenv("GIT_COMMIT")} -->"
+
     gr.HTML(header_html, elem_id="header_html")
 
     # Tab was needed for "selected" to work

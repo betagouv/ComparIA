@@ -66,7 +66,7 @@ def load_demo_arena(models_, url_params):
     models = models_
 
     conversations_state = (None,) * num_sides
-    # FIXME: What does it do???
+    # FIXME: to delete
     selector_updates = (
         gr.Markdown(visible=True),
         gr.Markdown(visible=True),
