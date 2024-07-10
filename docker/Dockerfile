@@ -2,9 +2,6 @@ FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04 AS build
 # FROM debian:11-slim
 # FROM python:3.9-slim
 
-ARG GIT_COMMIT
-ENV GIT_COMMIT=$GIT_COMMIT
-
 RUN apt-get update -y && apt-get install -y python3.9 python3.9-distutils curl
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 # TODO: virtualenv
@@ -30,6 +27,9 @@ COPY --from=custom_components /custom_components/frbutton/dist/gradio_frbutton-0
 RUN pip3 install /gradio_frbutton-0.0.1-py3-none-any.whl
 COPY --from=custom_components /custom_components/frinput/dist/gradio_frinput-0.0.1-py3-none-any.whl /gradio_frinput-0.0.1-py3-none-any.whl
 RUN pip3 install /gradio_frinput-0.0.1-py3-none-any.whl
+
+ARG GIT_COMMIT
+ENV GIT_COMMIT=$GIT_COMMIT
 
 WORKDIR /app
 COPY . /app
