@@ -122,6 +122,10 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
 ):
+    
+    if len(models) == 0:
+        raise ValueError("Model list doesn't contain any model")
+
     if len(models) == 1:
         return models[0], models[0]
 
