@@ -284,7 +284,6 @@ def clear_history(
 ):
     logger.info(f"clear_history (anony). ip: {get_ip(request)}")
     #     + chatbots
-    # + model_selectors
     # + [textbox]
     # + [chat_area]
     # + [vote_area]
@@ -295,8 +294,6 @@ def clear_history(
         None,
         None,
         None,
-        # "",
-        # "",
         "",
         gr.update(visible=False),
         gr.update(visible=False),
@@ -448,9 +445,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                         show_copy_button=False,
                     )
 
-                    # model_selectors[i] = gr.Markdown(
-                    #     anony_names[i], elem_id="model_selector_md"
-                    # )
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         with gr.Row():
@@ -620,17 +614,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
 
     results_area = gr.HTML(visible=False)
-    # with gr.Row(visible=False) as results_area:
-
-    # for i in range(num_sides):
-    #     with gr.Column():
-    #         gr.HTML("Modèle A : "+str(conversations_state[0].model_name))
-    #         gr.HTML("Modèle B : "+str(conversations_state[1].model_name))
-
-    # gr.Markdown(
-    #     get_model_description_md(models), elem_id="model_description_markdown"
-    # )
-
+    
     # TODO: get rid
     temperature = gr.Slider(
         visible=False,
@@ -659,12 +643,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         interactive=False,
         label="Max output tokens",
     )
-
-    def show_component():
-        return gr.update(visible=True)
-
-    def enable_component():
-        return gr.update(interactive=True)
 
     # Register listeners
     def register_listeners():
@@ -806,6 +784,9 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 return gr.update(interactive=False)
             else:
                 return gr.update(interactive=True)
+
+        def enable_component():
+            return gr.update(interactive=True)
 
         gr.on(
             triggers=[textbox.submit, send_btn.click],
@@ -959,8 +940,8 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
         # On reset go to mode selection mode_screen
         gr.on(
-            # triggers=[retry_btn.click],
-            triggers=[clear_btn.click, retry_btn.click],
+            triggers=[retry_btn.click],
+            # triggers=[clear_btn.click, retry_btn.click],
             fn=clear_history,
             inputs=conversations_state + chatbots + [textbox],
             # inputs=conversations_state + chatbots + model_selectors + [textbox],

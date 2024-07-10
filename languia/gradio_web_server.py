@@ -126,15 +126,12 @@ with gr.Blocks(
     # elem_classes=""
 ) as demo:
     # TODO: skiplinks
-
     if os.getenv("GIT_COMMIT"):
         git_commit = os.getenv("GIT_COMMIT")
         header_html += f"<!-- Git commit: {git_commit} -->"
 
     gr.HTML(header_html, elem_id="header_html")
 
-    # Tab was needed for "selected" to work
-    # with gr.Tab"Leaderboard", id=6):
     with gr.Blocks(
         elem_id="main-component",
         elem_classes="fr-container",
