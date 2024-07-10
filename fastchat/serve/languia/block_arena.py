@@ -562,6 +562,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 ],
                 label="ressenti",
                 info="Ressenti général",
+                show_label=False
             )
             pertinence_checkbox = gr.CheckboxGroup(
                 [
@@ -571,6 +572,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 ],
                 label="pertinence",
                 info="Pertinence des réponses",
+                show_label=False
             )
             comprehension_checkbox = gr.CheckboxGroup(
                 [
@@ -580,11 +582,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 ],
                 label="comprehension",
                 info="Compréhension et expression",
+                show_label=False
             )
             originalite_checkbox = gr.CheckboxGroup(
                 ["Réponses banales", "Réponses superficielles"],
                 label="originalite",
                 info="Créativité et originalité",
+                show_label=False
             )
 
         supervote_checkboxes = [
@@ -684,14 +688,12 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             global tos_accepted
             tos_accepted = accept_tos_checkbox
             if tos_accepted:
-                print("ToS accepted!")
                 return (
                     gr.update(visible=False),
                     gr.update(visible=True),
                     gr.update(visible=True),
                 )
             else:
-                print("ToS not accepted!")
                 return (gr.skip(), gr.skip(), gr.skip())
 
         # TODO: fix js output
@@ -712,7 +714,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             ],
         )
         def free_mode():
-            print("chose free mode!")
             return [
                 gr.update(elem_classes=""),
                 gr.update(elem_classes="selected"),
@@ -733,11 +734,10 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             # TODO: scroll_to_output?
         )
         def guided_mode():
-            print(guided_mode_btn.elem_classes)
+            # print(guided_mode_btn.elem_classes)
             if "selected" in guided_mode_btn.elem_classes:
                 return [gr.skip() * 4]
             else:
-                print("chose guided mode!")
                 return [
                     gr.update(elem_classes=""),
                     gr.update(elem_classes="selected"),
@@ -765,7 +765,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             elif chosen_guide == "variete":
                 preprompt = """Que veut dire "se sécher les dents" en Québécois ?"""
             else:
-                print(chosen_guide)
                 logger.error("Error, chosen guided prompt not listed")
 
             return [gr.update(visible=True), gr.update(value=preprompt)]
@@ -887,7 +886,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                     gr.update(visible=True),
                 )
             else:
-                print(vote_radio)
                 return (
                     gr.update(visible=True),
                     gr.update(visible=True),
