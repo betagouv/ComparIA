@@ -23,7 +23,7 @@ from fastchat.constants import (
 
 # from fastchat.model.model_adapter import get_conversation_template
 
-from fastchat.serve.languia.block_conversation import (
+from languia.block_conversation import (
     # TODO: to import/replace State and bot_response?
     ConversationState,
     bot_response,
@@ -34,7 +34,7 @@ from fastchat.serve.languia.block_conversation import (
 
 from fastchat.utils import build_logger, moderation_filter
 
-from fastchat.serve.languia.utils import (
+from languia.utils import (
     get_battle_pair,
     build_reveal_html,
     stepper_html,
@@ -61,7 +61,7 @@ def set_global_vars_anony(enable_moderation_):
     enable_moderation = enable_moderation_
 
 
-def load_demo_arena(models_, url_params):
+def load_demo_arena(models_):
     global models
     models = models_
 
@@ -610,14 +610,14 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             elem_classes="fr-btn", value="Envoyer mes préférences"
         )
 
-        # with gr.Row():
-        # dsfr: These 2 should just be normal links...
-        # opinion_btn = gr.Button(value="Donner mon avis sur l'arène")
+    with gr.Row():
+        # dsfr: This should just be a normal link...
+        opinion_btn = gr.HTML(value='''<a class="fr-btn" href="#" disabled>Donner mon avis sur l'arène</a>''')
 
-        # clear_btn = gr.Button(value="Recommencer sans voter")
+        clear_btn = gr.Button(value="Recommencer sans voter")
 
-        # dsfr: These 2 should just be normal links...
-        # leaderboard_btn = gr.Button(value="Liste des modèles")
+        # dsfr: This should just be a normal link...
+        leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
 
     results_area = gr.HTML(visible=False)
     # with gr.Row(visible=False) as results_area:
@@ -959,8 +959,8 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
         # On reset go to mode selection mode_screen
         gr.on(
-            triggers=[retry_btn.click],
-            # triggers=[clear_btn.click, retry_btn.click],
+            # triggers=[retry_btn.click],
+            triggers=[clear_btn.click, retry_btn.click],
             fn=clear_history,
             inputs=conversations_state + chatbots + [textbox],
             # inputs=conversations_state + chatbots + model_selectors + [textbox],

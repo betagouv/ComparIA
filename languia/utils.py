@@ -7,7 +7,7 @@ import time
 
 import json
 
-from fastchat.serve.languia.block_conversation import get_conv_log_filename, get_ip
+from languia.block_conversation import get_conv_log_filename, get_ip
 
 from fastchat.serve.remote_logger import get_remote_logger
 

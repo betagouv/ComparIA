@@ -105,7 +105,7 @@ class ConversationState:
             base.update({"has_csam_image": self.has_csam_image})
         return base
 
-
+# TODO: remove
 def set_global_vars(controller_url_, enable_moderation_, use_remote_storage_):
     global controller_url, enable_moderation, use_remote_storage
     controller_url = controller_url_
