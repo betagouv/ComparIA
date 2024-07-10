@@ -610,14 +610,14 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             elem_classes="fr-btn", value="Envoyer mes préférences"
         )
 
-    with gr.Row():
-        # dsfr: This should just be a normal link...
-        opinion_btn = gr.HTML(value='''<a class="fr-btn" href="#" disabled>Donner mon avis sur l'arène</a>''')
+    # with gr.Row():
+    #     # dsfr: This should just be a normal link...
+    #     opinion_btn = gr.HTML(value='''<a class="fr-btn disabled" href="#" >Donner mon avis sur l'arène</a>''')
 
-        clear_btn = gr.Button(value="Recommencer sans voter")
+    #     clear_btn = gr.Button(value="Recommencer sans voter")
 
-        # dsfr: This should just be a normal link...
-        leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
+    #     # dsfr: This should just be a normal link...
+    #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
 
     results_area = gr.HTML(visible=False)
     # with gr.Row(visible=False) as results_area:
