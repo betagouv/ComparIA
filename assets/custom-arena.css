@@ -52,20 +52,31 @@ background-image: url("file=assets/extra-icons/stack.svg");
 
 .fr-icon-ruler::before,
 .fr-icon-ruler::after {
-  -webkit-mask-image: url("assets/extra-icons/ruler.svg");
-  mask-image: url("assets/extra-icons/ruler.svg");
+  -webkit-mask-image: url("file=assets/extra-icons/ruler.svg");
+  mask-image: url("file=assets/extra-icons/ruler.svg");
 }
 
 .fr-icon-ruler::before {
-background-image: url("assets/extra-icons/misc/ruler.svg");
+background-image: url("file=assets/extra-icons/misc/ruler.svg");
 }
 
 .fr-icon-copyright-line::before,
 .fr-icon-copyright-line::after {
-  -webkit-mask-image: url("assets/dsfr/icons/business/copyright-line.svg");
-  mask-image: url("assets/dsfr/icons/business/copyright-line.svg");
+  -webkit-mask-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
+  mask-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
 }
 
 .fr-icon-copyright-line::before {
-  background-image: url("assets/dsfr/icons/business/copyright-line.svg");
+  background-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
   }
+
+.fr-icon-home-4-line::before,
+.fr-icon-home-4-line::after {
+  -webkit-mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+  mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+}
+
+.fr-icon-home-4-line::before,
+.fr-icon-home-4-line::after {
+  background-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+}
