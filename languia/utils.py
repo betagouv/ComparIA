@@ -7,8 +7,6 @@ import time
 
 import json
 
-from languia.block_conversation import get_conv_log_filename, get_ip
-
 from fastchat.serve.remote_logger import get_remote_logger
 
 from fastchat.utils import (
@@ -16,14 +14,30 @@ from fastchat.utils import (
     # moderation_filter,
 )
 
+import datetime
+from fastchat.constants import LOGDIR
+import requests
+
+from fastchat.model.model_registry import get_model_info, model_info
+
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
+
+
+def get_ip(request: gr.Request):
+    if "cf-connecting-ip" in request.headers:
+        ip = request.headers["cf-connecting-ip"]
+    elif "x-forwarded-for" in request.headers:
+        ip = request.headers["x-forwarded-for"]
+    else:
+        ip = request.client.host
+    return ip
 
 
 def vote_last_response(
     conversations_state,
     vote_type,
     # _model_selectors,
-    details: [],
+    details: list,
     request: gr.Request,
 ):
     logger.info(f"{vote_type}_vote (anony). ip: {get_ip(request)}")
@@ -122,7 +136,7 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
 ):
-    
+
     if len(models) == 0:
         raise ValueError("Model list doesn't contain any model")
 
@@ -224,7 +238,7 @@ def build_model_card(model_name):
   <p><span class="fr-icon-copyright-line" aria-hidden="true"></span> {model['license']}</p>
   <p><a class="fr-btn fr-btn--secondary" href="{model['link']}">En savoir plus</a></p>
   """
-  # note: "En savoir plus" ne devrait être qu'un lien
+    # note: "En savoir plus" ne devrait être qu'un lien
     return template
 
 
@@ -242,3 +256,85 @@ Découvrez les modèles avec lesquels vous venez de discuter :</h3>
     reveal_html += "</div></div>"
 
     return reveal_html
+
+
+def get_model_description_md(models):
+    model_description_md = """
+| | | |
+| ---- | ---- | ---- |
+"""
+    ct = 0
+    visited = set()
+    for i, name in enumerate(models):
+        minfo = get_model_info(name)
+        if minfo.simple_name in visited:
+            continue
+        visited.add(minfo.simple_name)
+        one_model_md = f"[{minfo.simple_name}]({minfo.link}): {minfo.description}"
+
+        if ct % 3 == 0:
+            model_description_md += "|"
+        model_description_md += f" {one_model_md} |"
+        if ct % 3 == 2:
+            model_description_md += "\n"
+        ct += 1
+    return model_description_md
+
+
+def get_conv_log_filename(is_vision=False, has_csam_image=False):
+    t = datetime.datetime.now()
+    conv_log_filename = f"{t.year}-{t.month:02d}-{t.day:02d}-conv.json"
+    if is_vision and not has_csam_image:
+        name = os.path.join(LOGDIR, f"vision-tmp-{conv_log_filename}")
+    elif is_vision and has_csam_image:
+        name = os.path.join(LOGDIR, f"vision-csam-{conv_log_filename}")
+    else:
+        name = os.path.join(LOGDIR, conv_log_filename)
+
+    return name
+
+
+def get_model_list(controller_url, register_api_endpoint_file, vision_arena):
+
+    # Add models from the controller
+    if controller_url:
+        ret = requests.post(controller_url + "/refresh_all_workers")
+        assert ret.status_code == 200
+
+        if vision_arena:
+            ret = requests.post(controller_url + "/list_multimodal_models")
+            models = ret.json()["models"]
+        else:
+            ret = requests.post(controller_url + "/list_language_models")
+            models = ret.json()["models"]
+    else:
+        models = []
+
+    # Add models from the API providers
+    if register_api_endpoint_file:
+        api_endpoint_info = json.load(open(register_api_endpoint_file))
+        for mdl, mdl_dict in api_endpoint_info.items():
+            mdl_vision = mdl_dict.get("vision-arena", False)
+            mdl_text = mdl_dict.get("text-arena", True)
+            if vision_arena and mdl_vision:
+                models.append(mdl)
+            if not vision_arena and mdl_text:
+                models.append(mdl)
+
+    # Remove anonymous models
+    models = list(set(models))
+    visible_models = models.copy()
+    for mdl in models:
+        if mdl not in api_endpoint_info:
+            continue
+        mdl_dict = api_endpoint_info[mdl]
+        if mdl_dict["anony_only"]:
+            visible_models.remove(mdl)
+
+    # Sort models and add descriptions
+    priority = {k: f"___{i:03d}" for i, k in enumerate(model_info)}
+    models.sort(key=lambda x: priority.get(x, x))
+    visible_models.sort(key=lambda x: priority.get(x, x))
+    logger.info(f"All models: {models}")
+    logger.info(f"Visible models: {visible_models}")
+    return visible_models, models

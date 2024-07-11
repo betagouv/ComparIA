@@ -27,14 +27,12 @@ from languia.block_conversation import (
     # TODO: to import/replace State and bot_response?
     ConversationState,
     bot_response,
-    get_conv_log_filename,
-    get_ip,
-    get_model_description_md,
 )
 
 from fastchat.utils import build_logger, moderation_filter
 
 from languia.utils import (
+    get_ip,
     get_battle_pair,
     build_reveal_html,
     stepper_html,
@@ -46,15 +44,7 @@ from gradio_frinput import FrInput
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
-# TODO: move to constants.py or hardcode it
-num_sides = 2
-enable_moderation = False
-
-anony_names = ["", ""]
-models = []
-
-tos_accepted = False
-
+from languia import config
 
 def set_global_vars_anony(enable_moderation_):
     global enable_moderation
@@ -65,7 +55,7 @@ def load_demo_arena(models_):
     global models
     models = models_
 
-    conversations_state = (None,) * num_sides
+    conversations_state = (None,) * config.num_sides
     # FIXME: to delete
     selector_updates = (
         gr.Markdown(visible=True),
@@ -96,7 +86,7 @@ def add_text(
         assert conversations_state[1] is None
 
         model_left, model_right = get_battle_pair(
-            models,
+            config.models,
             BATTLE_TARGETS,
             OUTAGE_MODELS,
             SAMPLING_WEIGHTS,
@@ -124,7 +114,7 @@ def add_text(
     #         + [""]
     #     )
 
-    model_list = [conversations_state[i].model_name for i in range(num_sides)]
+    model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
     # turn on moderation in battle mode
     all_conv_text_left = conversations_state[0].conv.get_prompt()
     all_conv_text_right = conversations_state[0].conv.get_prompt()
@@ -140,7 +130,7 @@ def add_text(
     conv = conversations_state[0].conv
     if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
         logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
-        for i in range(num_sides):
+        for i in range(config.num_sides):
             conversations_state[i].skip_next = True
             # FIXME: fix return value
         return (
@@ -155,7 +145,7 @@ def add_text(
 
     text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
     # TODO: what do?
-    for i in range(num_sides):
+    for i in range(config.num_sides):
         # post_processed_text = _prepare_text_with_image(conversations_state[i], text, csam_flag=False)
         post_processed_text = text
         conversations_state[i].conv.append_message(
@@ -211,7 +201,7 @@ def bot_response_multi(
 
     conversations_state = [state0, state1]
     gen = []
-    for i in range(num_sides):
+    for i in range(config.num_sides):
         gen.append(
             bot_response(
                 conversations_state[i],
@@ -225,7 +215,7 @@ def bot_response_multi(
         )
 
     is_stream_batch = []
-    for i in range(num_sides):
+    for i in range(config.num_sides):
         is_stream_batch.append(
             conversations_state[i].model_name
             in [
@@ -238,12 +228,12 @@ def bot_response_multi(
                 "gemma-1.1-7b-it",
             ]
         )
-    chatbots = [None] * num_sides
+    chatbots = [None] * config.num_sides
     iters = 0
     while True:
         stop = True
         iters += 1
-        for i in range(num_sides):
+        for i in range(config.num_sides):
             try:
                 # yield gemini fewer times as its chunk size is larger
                 # otherwise, gemini will stream too fast
@@ -258,18 +248,17 @@ def bot_response_multi(
             break
 
 
-def check_for_tos_cookie(request: gr.Request):
-    global tos_accepted
-    if request:
-        cookies_kv = request.headers["cookie"].split(";")
-        for cookie_kv in cookies_kv:
-            cookie_key, cookie_value = cookie_kv.split("=")
-            if cookie_key == "languia_tos_accepted":
-                if cookie_value == "1":
-                    tos_accepted = True
-                    return tos_accepted
+# def check_for_tos_cookie(request: gr.Request):
+#     if request:
+#         cookies_kv = request.headers["cookie"].split(";")
+#         for cookie_kv in cookies_kv:
+#             cookie_key, cookie_value = cookie_kv.split("=")
+#             if cookie_key == "languia_tos_accepted":
+#                 if cookie_value == "1":
+#                     tos_accepted = True
+#                     return tos_accepted
 
-    return tos_accepted
+#     return tos_accepted
 
 
 def clear_history(
@@ -305,10 +294,10 @@ def clear_history(
 # build_arena_demo?
 def build_arena(models):
     # conversations_state = [ConversationState() for _ in range(num_sides)]
-    conversations_state = [gr.State() for _ in range(num_sides)]
+    conversations_state = [gr.State() for _ in range(config.num_sides)]
     # model_selectors = [None] * num_sides
     # TODO: allow_flagging?
-    chatbots = [None] * num_sides
+    chatbots = [None] * config.num_sides
 
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
@@ -420,7 +409,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
 
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
-            for i in range(num_sides):
+            for i in range(config.num_sides):
                 label = "Modèle A" if i == 0 else "Modèle B"
                 with gr.Column():
                     # {likeable}
@@ -663,7 +652,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             outputs=[start_screen, stepper_block, mode_screen],
         )
         def check_tos(accept_tos_checkbox, request: gr.Request):
-            global tos_accepted
             tos_accepted = accept_tos_checkbox
             if tos_accepted:
                 return (

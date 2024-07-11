@@ -26,25 +26,25 @@ from fastchat.constants import (
 from fastchat.model.model_adapter import (
     get_conversation_template,
 )
-from fastchat.model.model_registry import get_model_info, model_info
 from fastchat.serve.api_provider import get_api_provider_stream_iter
 from fastchat.serve.remote_logger import get_remote_logger
 from fastchat.utils import (
     build_logger,
 )
 
+from fastchat.model.model_registry import model_info
+
+from languia.utils import get_ip, get_conv_log_filename
+from languia import config
+
 logger = build_logger("gradio_web_server", "gradio_web_server.log")
 
-headers = {"User-Agent": "FastChat Client"}
 
 no_change_btn = gr.Button()
 enable_btn = gr.Button(interactive=True, visible=True)
 disable_btn = gr.Button(interactive=False)
 invisible_btn = gr.Button(interactive=False, visible=False)
 
-controller_url = None
-enable_moderation = False
-use_remote_storage = False
 
 
 # JSON file format of API-based models:
@@ -60,8 +60,6 @@ use_remote_storage = False
 #
 #  - "api_type" can be one of the following: openai, anthropic, gemini, or mistral. For custom APIs, add a new type and implement it accordingly.
 #  - "anony_only" indicates whether to display this model in anonymous mode only.
-
-api_endpoint_info = {}
 
 
 class ConversationState:
@@ -105,84 +103,7 @@ class ConversationState:
             base.update({"has_csam_image": self.has_csam_image})
         return base
 
-# TODO: remove
-def set_global_vars(controller_url_, enable_moderation_, use_remote_storage_):
-    global controller_url, enable_moderation, use_remote_storage
-    controller_url = controller_url_
-    enable_moderation = enable_moderation_
-    use_remote_storage = use_remote_storage_
-
-
-def get_conv_log_filename(is_vision=False, has_csam_image=False):
-    t = datetime.datetime.now()
-    conv_log_filename = f"{t.year}-{t.month:02d}-{t.day:02d}-conv.json"
-    if is_vision and not has_csam_image:
-        name = os.path.join(LOGDIR, f"vision-tmp-{conv_log_filename}")
-    elif is_vision and has_csam_image:
-        name = os.path.join(LOGDIR, f"vision-csam-{conv_log_filename}")
-    else:
-        name = os.path.join(LOGDIR, conv_log_filename)
-
-    return name
-
-
-def get_model_list(controller_url, register_api_endpoint_file, vision_arena):
-    global api_endpoint_info
-
-    # Add models from the controller
-    if controller_url:
-        ret = requests.post(controller_url + "/refresh_all_workers")
-        assert ret.status_code == 200
-
-        if vision_arena:
-            ret = requests.post(controller_url + "/list_multimodal_models")
-            models = ret.json()["models"]
-        else:
-            ret = requests.post(controller_url + "/list_language_models")
-            models = ret.json()["models"]
-    else:
-        models = []
-
-    # Add models from the API providers
-    if register_api_endpoint_file:
-        api_endpoint_info = json.load(open(register_api_endpoint_file))
-        for mdl, mdl_dict in api_endpoint_info.items():
-            mdl_vision = mdl_dict.get("vision-arena", False)
-            mdl_text = mdl_dict.get("text-arena", True)
-            if vision_arena and mdl_vision:
-                models.append(mdl)
-            if not vision_arena and mdl_text:
-                models.append(mdl)
-
-    # Remove anonymous models
-    models = list(set(models))
-    visible_models = models.copy()
-    for mdl in models:
-        if mdl not in api_endpoint_info:
-            continue
-        mdl_dict = api_endpoint_info[mdl]
-        if mdl_dict["anony_only"]:
-            visible_models.remove(mdl)
-
-    # Sort models and add descriptions
-    priority = {k: f"___{i:03d}" for i, k in enumerate(model_info)}
-    models.sort(key=lambda x: priority.get(x, x))
-    visible_models.sort(key=lambda x: priority.get(x, x))
-    logger.info(f"All models: {models}")
-    logger.info(f"Visible models: {visible_models}")
-    return visible_models, models
-
-
-def get_ip(request: gr.Request):
-    if "cf-connecting-ip" in request.headers:
-        ip = request.headers["cf-connecting-ip"]
-    elif "x-forwarded-for" in request.headers:
-        ip = request.headers["x-forwarded-for"]
-    else:
-        ip = request.client.host
-    return ip
-
-
+# TODO: move to utils?
 def model_worker_stream_iter(
     conv,
     model_name,
@@ -215,7 +136,7 @@ def model_worker_stream_iter(
     # Stream output
     response = requests.post(
         worker_addr + "/worker_generate_stream",
-        headers=headers,
+        headers=config.headers,
         json=gen_params,
         stream=True,
         timeout=WORKER_API_TIMEOUT,
@@ -272,7 +193,7 @@ def bot_response(
 
     conv, model_name = state.conv, state.model_name
     model_api_dict = (
-        api_endpoint_info[model_name] if model_name in api_endpoint_info else None
+        config.api_endpoint_info[model_name] if model_name in config.api_endpoint_info else None
     )
 
     if model_api_dict is None:
@@ -408,7 +329,7 @@ def bot_response(
     logger.info(f"{output}")
 
     conv.save_new_images(
-        has_csam_images=state.has_csam_image, use_remote_storage=use_remote_storage
+        has_csam_images=state.has_csam_image, use_remote_storage=config.use_remote_storage
     )
 
     filename = get_conv_log_filename(
@@ -433,25 +354,3 @@ def bot_response(
         fout.write(json.dumps(data) + "\n")
     get_remote_logger().log(data)
 
-
-def get_model_description_md(models):
-    model_description_md = """
-| | | |
-| ---- | ---- | ---- |
-"""
-    ct = 0
-    visited = set()
-    for i, name in enumerate(models):
-        minfo = get_model_info(name)
-        if minfo.simple_name in visited:
-            continue
-        visited.add(minfo.simple_name)
-        one_model_md = f"[{minfo.simple_name}]({minfo.link}): {minfo.description}"
-
-        if ct % 3 == 0:
-            model_description_md += "|"
-        model_description_md += f" {one_model_md} |"
-        if ct % 3 == 2:
-            model_description_md += "\n"
-        ct += 1
-    return model_description_md
