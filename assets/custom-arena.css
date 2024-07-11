@@ -1,0 +1,71 @@
+
+body {
+    width: 80% !important;
+    margin: auto !important;
+}
+
+#send-area {
+    position: fixed;
+    padding: 3em 20%;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    background-color: var(--background-alt-grey);
+    border-top: solid 1px var(--border-default-grey);
+    z-index: 100;
+  }
+
+#arena {
+    width: 80% !important;
+    margin: auto;
+}
+
+.fr-header__brand {
+  filter: none !important;
+}
+
+/* #free-mode.selected, #guided-mode.selected, #guided-area button.selected {
+		border-bottom: 4px var(--border-default-blue-france) solid;
+	} */
+
+#mode-screen.send-area-enabled {
+    margin-bottom: 12rem;
+}
+
+.built-with {
+    display: none !important;
+}
+
+.icon-white img {
+    filter: invert(100%);
+}
+
+.fr-icon-stack::before,
+.fr-icon-stack::after {
+  -webkit-mask-image: url("file=assets/extra-icons/stack.svg");
+  mask-image: url("file=assets/extra-icons/stack.svg");
+}
+
+.fr-icon-stack::before {
+background-image: url("file=assets/extra-icons/stack.svg");
+}
+
+.fr-icon-ruler::before,
+.fr-icon-ruler::after {
+  -webkit-mask-image: url("assets/extra-icons/ruler.svg");
+  mask-image: url("assets/extra-icons/ruler.svg");
+}
+
+.fr-icon-ruler::before {
+background-image: url("assets/extra-icons/misc/ruler.svg");
+}
+
+.fr-icon-copyright-line::before,
+.fr-icon-copyright-line::after {
+  -webkit-mask-image: url("assets/dsfr/icons/business/copyright-line.svg");
+  mask-image: url("assets/dsfr/icons/business/copyright-line.svg");
+}
+
+.fr-icon-copyright-line::before {
+  background-image: url("assets/dsfr/icons/business/copyright-line.svg");
+  }

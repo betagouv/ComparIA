@@ -364,13 +364,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 free_mode_btn = FrButton(
                     custom_html="<h3>Mode libre</h3><p>Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>",
                     elem_id="free-mode",
-                    icon="assets/artwork/pictograms/misc/conclusion.svg",
+                    icon="assets/extra-artwork/conclusion.svg",
                 )
             with gr.Column():
                 guided_mode_btn = FrButton(
                     elem_id="guided-mode",
                     custom_html="<h3>Mode inspiré</h3><p>Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>",
-                    icon="assets/artwork/pictograms/misc/innovation.svg",
+                    icon="assets/extra-artwork/innovation.svg",
                 )
 
         with gr.Column(

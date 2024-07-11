@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
-# from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 import sentry_sdk
@@ -15,14 +15,14 @@ from languia import config
 
 app = FastAPI()
 # os.makedirs("static", exist_ok=True)
-# app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
-        "models.html", {"request": request, "models": config.all_models})
+        "models.html", {"request": request, "config": config})
 
 
 env_debug = os.getenv("LANGUIA_DEBUG")
@@ -43,6 +43,7 @@ else:
     )
 
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
+gr.set_static_paths(paths=["assets/"])
 # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
 logging.info("Allowing assets absolute path: " + assets_absolute_path)
 
@@ -61,7 +62,6 @@ app = gr.mount_gradio_app(
     app,
     demo,
     path="/arena",
-    root_path="/arena",
     allowed_paths=[
         assets_absolute_path
     ],

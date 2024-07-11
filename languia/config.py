@@ -7,7 +7,6 @@ import json
 num_sides = 2
 enable_moderation = False
 
-# TODO: move to config.py
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--controller-url",
@@ -46,7 +45,6 @@ parser.add_argument(
 args, unknown = parser.parse_known_args()
 # args = parser.parse_args()
 
-# TODO: move to config.py
 controller_url = args.controller_url
 enable_moderation = False
 use_remote_storage = False
@@ -55,19 +53,17 @@ register_api_endpoint_file = args.register_api_endpoint_file
 # load_js is before loading demo, head_js is on main component render, maybe group it or do head_js later?
 # load_js = get_window_url_params_js
 
-# TODO: move to config.py
 head_js = """
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script type="module" src="file=assets/js/dsfr.module.js"></script>
-<script type="text/javascript" nomodule src="file=assets/js/dsfr.nomodule.js"></script>
+<script type="module" src="file=assets/dsfr/dsfr.module.js"></script>
+<script type="text/javascript" nomodule src="file=assets/dsfr/dsfr.nomodule.js"></script>
 """
 if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
     head_js += get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
 
 
-with open("./assets/dsfr.css", encoding="utf-8") as css_file:
+with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
-with open("./assets/custom.css", encoding="utf-8") as css_file:
+with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
     custom_css = css_file.read()
 
 css = css_dsfr + custom_css
