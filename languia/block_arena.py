@@ -450,7 +450,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
             # FIXME: visible=false not working?
             retry_btn = gr.Button(
-                icon="assets/icons/system/refresh-line.svg",
+                icon="assets/dsfr/icons/system/refresh-line.svg",
                 value="",
                 elem_classes="fr-btn icon-white",
                 visible=False,
