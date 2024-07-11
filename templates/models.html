@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Liste des modèles</title>
-</head>
-
-<body>
-</body>
-
-</html>
+{% block content %}
+{% for model in config.models %}
+{{ model }}
+{% endfor %}
+{% endblock %}

@@ -85,42 +85,9 @@ def stepper_html(title, step, total_steps):
 
 </div>"""
 
-
-header_html = """
-    <header role="banner" class="">
-  <div class="fr-header__body">
-    <div class="">
-      <div class="fr-header__body-row">
-        <div class="fr-header__brand fr-enlarge-link">
-          <div class="fr-header__brand-top">
-            <div class="fr-header__logo">
-              <p class="fr-logo">
-                République
-                <br>Française
-              </p>
-            </div>
-          </div>
-          <div class="fr-header__service">
-            <a href="/" title="Accueil - LANGU:IA">
-              <p class="fr-header__service-title">LANGU:IA
-              <span class="fr-badge fr-badge--success fr-badge--no-icon">Beta</span>
-              </p>
-            </a>
-
-            <p class="fr-header__service-tagline">L'arène francophone de comparaison de modèles conversationnels</p>
-          </div>
-
-        </div>
-        <div class="fr-header__tools">
-          <a title="À propos - ouvre une nouvelle fenêtre" href="https://beta.gouv.fr/startups/languia.html" target="_blank" rel="noopener external" class="fr-link fr-link--icon-right">À propos</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</header>
-"""
-
+# Use starlette's jinja templating? Or static files
+with open("./templates/header.html", encoding="utf-8") as header_file:
+    header_html = header_file.read()
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
