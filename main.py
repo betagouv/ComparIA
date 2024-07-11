@@ -72,7 +72,7 @@ demo = demo.queue(
 app = gr.mount_gradio_app(
     app,
     demo,
-    path="/arena",
+    path="/arene",
     allowed_paths=[assets_absolute_path],
 )
 
@@ -80,7 +80,7 @@ app = gr.mount_gradio_app(
 async def home(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "config": config})
 
-@app.get("/models", response_class=HTMLResponse)
+@app.get("/modeles", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
         "models.html", {"request": request, "config": config}
