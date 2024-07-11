@@ -14,58 +14,10 @@ import gradio as gr
 from languia import config
 
 app = FastAPI()
-# os.makedirs("static", exist_ok=True)
+
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 templates = Jinja2Templates(directory="templates")
-
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    return templates.TemplateResponse(
-        "models.html", {"request": request, "config": config})
-
-
-env_debug = os.getenv("LANGUIA_DEBUG")
-
-if env_debug:
-    if env_debug.lower() == "true":
-        debug = True
-    else: debug = False
-else: debug = False
-
-
-if not debug:
-    assets_absolute_path = "/app/assets"
-else:
-    assets_absolute_path = (
-        os.path.dirname(__file__)
-        + "/assets"
-    )
-
-# TODO: use gr.set_static_paths(paths=["test/test_files/"])?
-gr.set_static_paths(paths=["assets/"])
-# Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
-logging.info("Allowing assets absolute path: " + assets_absolute_path)
-
-# Set authorization credentials
-auth = None
-
-# TODO: Re-enable / Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
-demo = demo.queue(
-    default_concurrency_limit=10,
-    status_update_rate=10,
-
-    api_open=False,
-)
-
-app = gr.mount_gradio_app(
-    app,
-    demo,
-    path="/arena",
-    allowed_paths=[
-        assets_absolute_path
-    ],
-)
 
 if os.getenv("SENTRY_DSN"):
     # Set traces_sample_rate to 1.0 to capture 100%
@@ -85,5 +37,53 @@ if os.getenv("SENTRY_DSN"):
             environment=sentry_env,
             traces_sample_rate=traces_sample_rate,
         )
+
+env_debug = os.getenv("LANGUIA_DEBUG")
+
+if env_debug:
+    if env_debug.lower() == "true":
+        debug = True
+    else:
+        debug = False
+else:
+    debug = False
+
+
+if not debug:
+    assets_absolute_path = "/app/assets"
+else:
+    assets_absolute_path = os.path.dirname(__file__) + "/assets"
+
+# TODO: use gr.set_static_paths(paths=["test/test_files/"])?
+gr.set_static_paths(paths=["assets/"])
+# Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
+logging.info("Allowing assets absolute path: " + assets_absolute_path)
+
+# Set authorization credentials
+auth = None
+
+# TODO: Re-enable / Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
+demo = demo.queue(
+    default_concurrency_limit=10,
+    status_update_rate=10,
+    api_open=False,
+)
+
+app = gr.mount_gradio_app(
+    app,
+    demo,
+    path="/arena",
+    allowed_paths=[assets_absolute_path],
+)
+
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request, "config": config})
+
+@app.get("/models", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse(
+        "models.html", {"request": request, "config": config}
+    )
 
 app = SentryAsgiMiddleware(app)
