@@ -86,7 +86,7 @@ def stepper_html(title, step, total_steps):
 </div>"""
 
 # Use starlette's jinja templating? Or static files
-with open("./templates/header.html", encoding="utf-8") as header_file:
+with open("./templates/header-arena.html", encoding="utf-8") as header_file:
     header_html = header_file.read()
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):

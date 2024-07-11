@@ -26,11 +26,17 @@
     <script type="module" src="assets/dsfr/dsfr.module.min.js"></script>
     <script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.min.js"></script>
     
-{% include 'header.html' %}
-    
-{% block content %}
-{% endblock %}
-    
+{% include 'header-main.html' %}
+<main id="content" role="main">
+
+    <div class="fr-container">
+
+        {% block content %}
+        {% endblock %}
+    </div>
+</main>
+
+    <footer id="footer" class="fr-footer" role="contentinfo"></footer>
 </body>
 
 </html>
