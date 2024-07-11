@@ -1,8 +1,10 @@
 import os
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
@@ -76,14 +78,38 @@ app = gr.mount_gradio_app(
     allowed_paths=[assets_absolute_path],
 )
 
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request, "config": config})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "config": config}
+    )
+
+
+from fastchat.model.model_registry import get_model_info
+
+models_info = [get_model_info(model) for model in config.models]
+
 
 @app.get("/modeles", response_class=HTMLResponse)
-async def home(request: Request):
+async def models(request: Request):
     return templates.TemplateResponse(
-        "models.html", {"request": request, "config": config}
+        "models.html",
+        {"request": request, "config": config, "models_info": models_info},
     )
+
+
+# FIXME:
+# @app.exception_handler(StarletteHTTPException)
+# async def http_exception_handler(request, exc):
+#     return FileResponse("templates/50x.html", status_code=exc)
+
+
+@app.exception_handler(StarletteHTTPException)
+async def not_found_handler(request, exc):
+    return templates.TemplateResponse(
+        "404.html", {"request": request, "config": config}, status_code=404
+    )
+
 
 app = SentryAsgiMiddleware(app)
