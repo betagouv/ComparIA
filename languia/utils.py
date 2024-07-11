@@ -18,7 +18,7 @@ import datetime
 from fastchat.constants import LOGDIR
 import requests
 
-from fastchat.model.model_registry import get_model_info, model_info
+from fastchat.model.model_registry import get_model_info
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
@@ -299,9 +299,9 @@ def get_model_list(controller_url, register_api_endpoint_file, vision_arena):
             visible_models.remove(mdl)
 
     # Sort models and add descriptions
-    priority = {k: f"___{i:03d}" for i, k in enumerate(model_info)}
-    models.sort(key=lambda x: priority.get(x, x))
-    visible_models.sort(key=lambda x: priority.get(x, x))
+    # priority = {k: f"___{i:03d}" for i, k in enumerate(model_info)}
+    # models.sort(key=lambda x: priority.get(x, x))
+    # visible_models.sort(key=lambda x: priority.get(x, x))
     logger.info(f"All models: {models}")
     logger.info(f"Visible models: {visible_models}")
     return visible_models, models

@@ -11,12 +11,11 @@
     <link rel="icon" href="assets/dsfr/favicon/favicon.svg" type="image/svg+xml">
     <link rel="shortcut icon" href="assets/dsfr/favicon/favicon.ico" type="image/x-icon"><!-- 32×32 -->
     <link rel="manifest" href="assets/dsfr/favicon/manifest.webmanifest" crossorigin="use-credentials">
-    <!-- Modifier les chemins relatifs des favicons en fonction de la structure du projet -->
     <!-- Dans le fichier manifest.webmanifest aussi, modifier les chemins vers les images -->
     <title>Accueil - LANGU:IA</title>
     <script type="text/javascript">
 
-    {{ config.head_js }}
+        { { config.head_js } }
 
     </script>
 </head>
@@ -25,18 +24,18 @@
     <!-- Script en version es6 module et nomodule pour les navigateurs le ne supportant pas -->
     <script type="module" src="assets/dsfr/dsfr.module.min.js"></script>
     <script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.min.js"></script>
-    
-{% include 'header-main.html' %}
-<main id="content" role="main">
 
-    <div class="fr-container">
+    {% include 'header-main.html' %}
+    <main id="content" role="main">
 
-        {% block content %}
-        {% endblock %}
-    </div>
-</main>
+        <div class="fr-container">
 
-    <footer id="footer" class="fr-footer" role="contentinfo"></footer>
+            {% block content %}
+            {% endblock %}
+        </div>
+    </main>
+
+    <!-- <footer id="footer" class="fr-footer" role="contentinfo"></footer> -->
 </body>
 
 </html>
