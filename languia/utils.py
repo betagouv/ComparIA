@@ -221,7 +221,7 @@ def build_model_card(model_name):
     template = f"""
   <p><span class="fr-icon-stack" aria-hidden="true"></span> {model_openness}</p>
   <p><span class="fr-icon-ruler" aria-hidden="true"></span> {model['size']}</p>
-  <p><span class="fr-icon-copyright-fill" aria-hidden="true"></span> {model['license']}</p>
+  <p><span class="fr-icon-copyright-line" aria-hidden="true"></span> {model['license']}</p>
   <p><a class="fr-btn fr-btn--secondary" href="{model['link']}">En savoir plus</a></p>
   """
   # note: "En savoir plus" ne devrait être qu'un lien

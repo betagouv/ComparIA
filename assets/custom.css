@@ -60,12 +60,12 @@ background-image: url("file=assets/../icons/misc/stack.svg");
 background-image: url("file=assets/icons/misc/ruler.svg");
 }
 
-.fr-icon-copyright-fill::before,
-.fr-icon-copyright-fill::after {
-  -webkit-mask-image: url("file=assets/icons/business/copyright-fill.svg");
-  mask-image: url("file=assets/icons/business/copyright-fill.svg");
+.fr-icon-copyright-line::before,
+.fr-icon-copyright-line::after {
+  -webkit-mask-image: url("file=assets/icons/business/copyright-line.svg");
+  mask-image: url("file=assets/icons/business/copyright-line.svg");
 }
 
-.fr-icon-copyright-fill::before {
-  background-image: url("file=assets/icons/business/copyright-fill.svg");
+.fr-icon-copyright-line::before {
+  background-image: url("file=assets/icons/business/copyright-line.svg");
   }
