@@ -99,10 +99,17 @@ async def models(request: Request):
     )
 
 
-# FIXME:
-# @app.exception_handler(StarletteHTTPException)
-# async def http_exception_handler(request, exc):
-#     return FileResponse("templates/50x.html", status_code=exc)
+@app.get("/a-propos", response_class=HTMLResponse)
+async def about(request: Request):
+    return templates.TemplateResponse(
+        "about.html",
+        {"request": request, "config": config},
+    )
+
+
+@app.exception_handler(500)
+async def http_exception_handler(request, exc):
+    return FileResponse("templates/50x.html", status_code=500)
 
 
 @app.exception_handler(StarletteHTTPException)
