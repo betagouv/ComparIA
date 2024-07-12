@@ -1,26 +1,32 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="fr-grid-row fr-grid-row--gutters fr-mt-1w">
-    {% for model in models_info %}
-    <div class="fr-col">
-        <!-- <div class="fr-col fr-col-md-6"> -->
-        <div class="fr-card fr-enlarge-link">
-            <div class="fr-card__body">
-                <div class="fr-card__content">
-                    <p class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mb-1w">Modèle ouvert</p>
-                    <h3 class="fr-card__title"><a href="#" data-fr-opened="false" aria-controls="fr-modal-1">{{
-                            model.simple_name }}</a></h3>
-                    <p class="fr-card__desc">{{ model.description }}</p>
-                    <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
+
+<main id="content" role="main">
+
+    <div class="fr-container">
+        <div class="fr-grid-row fr-grid-row--gutters fr-mt-1w">
+            {% for model in models_info %}
+            <div class="fr-col">
+                <!-- <div class="fr-col fr-col-md-6"> -->
+                <div class="fr-card fr-enlarge-link">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
+                            <p class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mb-1w">Modèle ouvert</p>
+                            <h3 class="fr-card__title"><a href="#" data-fr-opened="false" aria-controls="fr-modal-1">{{
+                                    model.simple_name }}</a></h3>
+                            <p class="fr-card__desc">{{ model.description }}</p>
+                            <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
                         class="fr-link--icon-right fr-link">    En savoir plus</a> -->
+                        </div>
+                    </div>
                 </div>
             </div>
+
+            {% endfor %}
         </div>
     </div>
-
-    {% endfor %}
-</div>
+</main>
 
 <!-- Modale Simple
      La balise <dialog> peut être placée n'importe où sur la page, toutefois
