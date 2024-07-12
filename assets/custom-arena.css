@@ -32,6 +32,10 @@ body {
     margin-bottom: 12rem;
 }
 
+.mission {
+  color: var(--text-default-info) !important;
+}
+
 .built-with {
     display: none !important;
 }

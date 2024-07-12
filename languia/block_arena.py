@@ -46,6 +46,7 @@ logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 from languia import config
 
+
 def set_global_vars_anony(enable_moderation_):
     global enable_moderation
     enable_moderation = enable_moderation_
@@ -349,16 +350,18 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     with gr.Column(visible=False, elem_id="mode-screen") as mode_screen:
         mode_html = gr.HTML(
             """
-        <div class="fr-notice fr-notice--info">
+        <div class="fr-notice fr-notice--info"> 
             <div class="fr-container">
-                    <div class="fr-notice__body">
-                                <p class="fr-notice__title">Discutez d'un sujet que vous connaissez ou qui vous intéresse puis évaluez les réponses des modèles</p>
+                    <div class="fr-notice__body mission" >
+                        <p class="fr-notice__title mission">Votre mission : discutez avec deux modèles anonymes puis votez pour celui que vous préférez</p>
                     </div>
             </div>
         </div>"""
         )
-        gr.Markdown("#### Comment voulez-vous commencer la conversation ?")
-        gr.Markdown("_(Sélectionnez un des deux modes)_")
+        gr.Markdown(
+            """#### Comment voulez-vous commencer la conversation ?
+                    _(Sélectionnez un des deux modes)_"""
+        )
         with gr.Row():
             with gr.Column():
                 free_mode_btn = FrButton(
@@ -433,7 +436,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                         # Could we show it? Useful...
                         show_copy_button=False,
                     )
-
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         with gr.Row():
@@ -545,7 +547,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 ],
                 label="ressenti",
                 info="Ressenti général",
-                show_label=False
+                show_label=False,
             )
             pertinence_checkbox = gr.CheckboxGroup(
                 [
@@ -555,7 +557,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 ],
                 label="pertinence",
                 info="Pertinence des réponses",
-                show_label=False
+                show_label=False,
             )
             comprehension_checkbox = gr.CheckboxGroup(
                 [
@@ -565,13 +567,13 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
                 ],
                 label="comprehension",
                 info="Compréhension et expression",
-                show_label=False
+                show_label=False,
             )
             originalite_checkbox = gr.CheckboxGroup(
                 ["Réponses banales", "Réponses superficielles"],
                 label="originalite",
                 info="Créativité et originalité",
-                show_label=False
+                show_label=False,
             )
 
         supervote_checkboxes = [
@@ -603,7 +605,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
 
     results_area = gr.HTML(visible=False)
-    
+
     # TODO: get rid
     temperature = gr.Slider(
         visible=False,
