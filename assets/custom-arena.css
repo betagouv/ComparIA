@@ -1,6 +1,6 @@
 
 body {
-    width: 80% !important;
+    /* width: 80% !important; */
     margin: auto !important;
 }
 
@@ -16,7 +16,7 @@ body {
   }
 
 #arena {
-    width: 80% !important;
+    /* width: 80% !important; */
     margin: auto;
 }
 

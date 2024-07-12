@@ -7,14 +7,13 @@ import gradio as gr
 from languia.block_arena import (
     build_arena,
     load_demo_arena,
-    set_global_vars_anony,
 )
 
 from languia import config
 
 # from fastchat.serve.monitor.monitor import build_leaderboard_tab
 from fastchat.utils import build_logger
-from languia.utils import header_html, get_ip
+from languia.utils import get_ip
 
 import os
 
@@ -38,27 +37,23 @@ with gr.Blocks(
     # elem_classes=""
 ) as demo:
     # TODO: skiplinks
-    if os.getenv("GIT_COMMIT"):
-        git_commit = os.getenv("GIT_COMMIT")
-        header_html += f"<!-- Git commit: {git_commit} -->"
-
-    gr.HTML(header_html, elem_id="header_html")
 
     with gr.Blocks(
-        elem_id="main-component",
-        elem_classes="fr-container",
+        # elem_id="main-component",
+        elem_id="arena",
+        # elem_classes="fr-container",
         # TODO: to test
         #  fill_height=True
         # Delete cache every second
         # delete_cache=(1,1),
     ) as pages:
 
-        with gr.Column(elem_id="arena", elem_classes="") as arena:
+        # with gr.Column(elem_id="arena", elem_classes="") as arena:
             # with gr.Blocks(elem_id="arena", elem_classes="fr-grid-row") as arena:
-            two_models_arena = build_arena(config.models)
+        two_models_arena = build_arena(config.models)
 
     demo.load(
         load_demo,
         # [url_params],
-        # js=load_js,
+        # js=load_js,   
     )

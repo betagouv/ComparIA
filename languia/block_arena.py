@@ -35,6 +35,8 @@ from languia.utils import (
     get_ip,
     get_battle_pair,
     build_reveal_html,
+    start_screen_html,
+    header_html,
     stepper_html,
     vote_last_response,
 )
@@ -57,13 +59,8 @@ def load_demo_arena(models_):
     models = models_
 
     conversations_state = (None,) * config.num_sides
-    # FIXME: to delete
-    selector_updates = (
-        gr.Markdown(visible=True),
-        gr.Markdown(visible=True),
-    )
 
-    return conversations_state + selector_updates
+    return conversations_state
 
 
 def add_text(
@@ -303,32 +300,18 @@ def build_arena(models):
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
     # if not tos_cookie:
-
+    header = gr.HTML(start_screen_html, elem_id="header_html")
+    
     with gr.Column(elem_classes="fr-container") as start_screen:
-        # TODO: titre en bleu
-        gr.Markdown(
-            """
-# Bienvenue dans l'arène LANGU:IA
-###### Notre mission
 
-Donner accès à différents modèles de langage (LLMs) conversationnels
-
-###### Les règles de l'arène
-
-Posez une question. Deux modèles vous répondent en temps réel.
-Choisissez le modèle que vous préférez.
-Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiques.
-
-###### Nos objectifs
-
-**Diversité des langues** : Exprimez vous librement : vous parlez breton, occitan, basque, corse, créole ? Posez vos questions dans les dialectes, langues, argots ou registres que vous souhaitez !
-
-**Identification des biais** : Posez des questions sur des domaines ou des tâches que vous maîtrisez. Constatez-vous certains partis-pris des modèles ?
-        """
-        )
         # TODO: DSFRize
+        accept_waiver_checkbox = gr.Checkbox(
+            label="J'ai compris que mes données transmises à l'arène seront mises à disposition à des fins de recherche",
+            show_label=True,
+            elem_classes="",
+        )
         accept_tos_checkbox = gr.Checkbox(
-            label="Conditions générales d'utilisation",
+            label="J'accepte les conditions générales d'utilisation",
             show_label=True,
             elem_classes="",
         )
@@ -348,7 +331,7 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
         )
 
     with gr.Column(visible=False, elem_id="mode-screen") as mode_screen:
-        mode_html = gr.HTML(
+        gr.HTML(
             """
         <div class="fr-notice fr-notice--info"> 
             <div class="fr-container">
@@ -639,24 +622,26 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
     def register_listeners():
         # Step 0
 
-        @accept_tos_checkbox.change(
-            inputs=[accept_tos_checkbox],
+        @gr.on(
+            triggers=[accept_tos_checkbox.change, accept_waiver_checkbox.change],
+            inputs=[accept_tos_checkbox, accept_waiver_checkbox],
             outputs=start_arena_btn,
-            # doesn't work
-            # scroll_to_output=True,
         )
-        def accept_tos_to_enter_arena(accept_tos_checkbox):
-            # Enable if checked
-            return gr.update(interactive=accept_tos_checkbox)
+        def accept_tos_to_enter_arena(accept_tos_checkbox, accept_waiver_checkbox):
+            # Enable if both checked
+            return gr.update(
+                interactive=(accept_tos_checkbox and accept_waiver_checkbox)
+            )
 
         @start_arena_btn.click(
-            inputs=[accept_tos_checkbox],
-            outputs=[start_screen, stepper_block, mode_screen],
+            inputs=[],
+            outputs=[header, start_screen, stepper_block, mode_screen],
         )
-        def check_tos(accept_tos_checkbox, request: gr.Request):
+        def enter_arena(request: gr.Request):
             tos_accepted = accept_tos_checkbox
             if tos_accepted:
                 return (
+                    gr.HTML(header_html),
                     gr.update(visible=False),
                     gr.update(visible=True),
                     gr.update(visible=True),
@@ -664,10 +649,6 @@ Découvrez l'identité des modèles et apprenez-en plus sur leurs caractéristiq
             else:
                 return (gr.skip(), gr.skip(), gr.skip())
 
-        # TODO: fix js output
-        # start_arena_btn.click(
-        #     accept_tos, inputs=[], outputs=[start_screen, mode_screen], js=accept_tos_js
-        # )
         # Step 1
 
         @free_mode_btn.click(
