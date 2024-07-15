@@ -14,7 +14,15 @@ body {
     border-top: solid 1px var(--border-default-grey);
     z-index: 100;
   }
-
+.app {
+  max-width: none !important;
+  /* max-width: none; */
+}
+/* Only for landing? */
+.fr-header {
+  filter: none;
+  /* filter: drop-shadow(var(--raised-shadow)); */
+}
 #arena {
     /* width: 80% !important; */
     margin: auto;

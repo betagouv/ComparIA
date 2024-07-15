@@ -301,7 +301,7 @@ def build_arena(models):
     # tos_cookie = check_for_tos_cookie(request)
     # if not tos_cookie:
     header = gr.HTML(start_screen_html, elem_id="header_html")
-    
+
     with gr.Column(elem_classes="fr-container") as start_screen:
 
         # TODO: DSFRize
@@ -327,6 +327,7 @@ def build_arena(models):
         stepper_block = gr.HTML(
             stepper_html("Choix du mode de conversation", 1, 4),
             elem_id="stepper_html",
+            elem_classes="fr-container",
             visible=False,
         )
 
@@ -451,7 +452,7 @@ def build_arena(models):
                 interactive=False,
             )
 
-    with gr.Column(visible=False) as vote_area:
+    with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
             which_model_radio = gr.Radio(
@@ -468,7 +469,7 @@ def build_arena(models):
             # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
     # TODO: render=false?
-    with gr.Column(visible=False) as supervote_area:
+    with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
 
         # TODO: render=false?
         # TODO: move to another file
@@ -587,7 +588,7 @@ def build_arena(models):
     #     # dsfr: This should just be a normal link...
     #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
 
-    results_area = gr.HTML(visible=False)
+    results_area = gr.HTML(visible=False, elem_classes="fr-container")
 
     # TODO: get rid
     temperature = gr.Slider(

@@ -41,7 +41,7 @@ with gr.Blocks(
     with gr.Blocks(
         # elem_id="main-component",
         elem_id="arena",
-        # elem_classes="fr-container",
+        elem_classes="fr-container",
         # TODO: to test
         #  fill_height=True
         # Delete cache every second
