@@ -1,0 +1,94 @@
+
+body {
+    /* width: 80% !important; */
+    margin: auto !important;
+}
+
+#send-area {
+    position: fixed;
+    padding: 3em 20%;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    background-color: var(--background-alt-grey);
+    border-top: solid 1px var(--border-default-grey);
+    z-index: 100;
+  }
+.app {
+  max-width: none !important;
+  /* max-width: none; */
+}
+/* Only for landing? */
+.fr-header {
+  filter: none;
+  /* filter: drop-shadow(var(--raised-shadow)); */
+}
+#arena {
+    /* width: 80% !important; */
+    margin: auto;
+}
+
+.fr-header__brand {
+  filter: none !important;
+}
+
+/* #free-mode.selected, #guided-mode.selected, #guided-area button.selected {
+		border-bottom: 4px var(--border-default-blue-france) solid;
+	} */
+
+#mode-screen.send-area-enabled {
+    margin-bottom: 12rem;
+}
+
+.mission {
+  color: var(--text-default-info) !important;
+}
+
+.built-with {
+    display: none !important;
+}
+
+.icon-white img {
+    filter: invert(100%);
+}
+
+.fr-icon-stack::before,
+.fr-icon-stack::after {
+  -webkit-mask-image: url("file=assets/extra-icons/stack.svg");
+  mask-image: url("file=assets/extra-icons/stack.svg");
+}
+
+.fr-icon-stack::before {
+background-image: url("file=assets/extra-icons/stack.svg");
+}
+
+.fr-icon-ruler::before,
+.fr-icon-ruler::after {
+  -webkit-mask-image: url("file=assets/extra-icons/ruler.svg");
+  mask-image: url("file=assets/extra-icons/ruler.svg");
+}
+
+.fr-icon-ruler::before {
+background-image: url("file=assets/extra-icons/misc/ruler.svg");
+}
+
+.fr-icon-copyright-line::before,
+.fr-icon-copyright-line::after {
+  -webkit-mask-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
+  mask-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
+}
+
+.fr-icon-copyright-line::before {
+  background-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
+  }
+
+.fr-icon-home-4-line::before,
+.fr-icon-home-4-line::after {
+  -webkit-mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+  mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+}
+
+.fr-icon-home-4-line::before,
+.fr-icon-home-4-line::after {
+  background-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+}
