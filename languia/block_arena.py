@@ -702,20 +702,60 @@ def build_arena(models):
         def set_guided_prompt(event: gr.EventData):
             chosen_guide = event.target.value
             if chosen_guide == "maniere":
-                preprompt = "Tu es Victor Hugo. Explique moi synthétiquement ce qu'est un LLM dans ton style d'écriture."
+                preprompts = [
+                    "Tu es Victor Hugo. Explique moi synthétiquement ce qu'est un LLM dans ton style d'écriture.",
+                    "Tu es Voltaire, explique moi ce qu'est le deep learning à ta manière.",
+                    "Tu es Francis Ponge, décris moi l’ordinateur à ta manière.",
+                    "Ecris une scène d'amour à la manière de Michel Audiard entre un homme éco-anxieux et une femme pilote d'avion.",
+                ]
             elif chosen_guide == "registre":
-                preprompt = "Parle argot wsh"
+                preprompts = [
+                    "Transcris cette phrase dans un langage familier comme si tu parlais à un ami proche : “La soirée s'annonçait sous les auspices d'une promenade tranquille au clair de lune.”",
+                    "Invente une phrase et écris-la trois fois: d’abord sur un ton tragique puis sur un ton lyrique et enfin sur un ton absurde.",
+                    "Réécris ce passage dans un style courant, comme si tu parlais à un collègue au travail : “L’OSI mène actuellement des travaux pour aboutir à une définition claire de l’IA open source, et qui pourraient mener à la proposition de nouvelles licences types”.",
+                    "Transforme cette phrase en un style soutenu et formel, tel que tu pourrais le lire dans un document officiel : “Je suis malade et ne pourrai pas travailler aujourd’hui. La réunion est reportée à la semaine prochaine.",
+                    """Adapte ce texte dans un langage populaire, comme si tu t’adressais à un public jeune, curieux, enthousiaste : "Le capitaine du vaisseau interstellaire manœuvra habilement à travers le champ d'astéroïdes." """,
+                ]
             elif chosen_guide == "creativite":
-                preprompt = "Raconte-moi ta meilleure blague."
+                preprompts = [
+                    "Donne moi un moyen mnémotechnique pour retenir l'ordre des planètes",
+                    "Pourquoi les français font-ils des blagues sur les belges ?",
+                    "De qui les français sont-ils les belges, niveau blague ?",
+                ]
             elif chosen_guide == "pedagogie":
-                preprompt = "Explique moi simplement ce qu'est la température d'un LLM"
+                preprompts = [
+                    "Explique de manière simple et accessible la différence entre l'inflation et la déflation à un enfant de 10 ans",
+                    "Explique de manière simple et accessible à un enfant de 10 ans les enjeux du traité sur l’espace ratifié à l’ONU en 1967",
+                    "Explique le concept de l'économie d'échelle en donnant des exemples de la vie courante ",
+                    "Utilise une métaphore pour expliquer le concept d’apprentissage profond de manière simple et compréhensible",
+                    "Détaille les étapes simples pour comprendre le concept de la photosynthèse comme si tu l'expliquais à un débutant.",
+                    "Explique le concept de l'empathie en utilisant des exemples concrets tirés de la vie quotidienne",
+                ]
             elif chosen_guide == "regional":
-                preprompt = "Quoque ch'est qu'te berdoules ? Réponds en Chtimi."
+                preprompts = [
+                    "Raconte ein tiot conte in picard avéc des personnages du village.",
+                    "Wann ich dir so schwätz, verstehsch mich? Réponds en alsacien",
+                    "Cocorico en louchebem ça donne quoi ?",
+                    "Ecris un tiot poème in ch'ti sus l'biauté d'la nature. Propose aussi une traduction en français de ta réponse.",
+                    "Pòtès escriure un pichon poèma en occitan sus lo passatge de las sasons? Propose une traduction en français après la réponse en occitan.",
+                    "Kannst du e chürzi Gedicht uf Elsässisch schriibe über d’Schönheit vo dr Natur? Réponds à la fois en alsacien et en français.",
+                    "Quoque ch'est qu'te berdoules ? Réponds en Chtimi.",
+                ]
             elif chosen_guide == "variete":
-                preprompt = """Que veut dire "se sécher les dents" en Québécois ?"""
+                preprompts = [
+                    """Que veut dire "se sécher les dents" en Québécois ?""",
+                    "Quel est le système de transport public le mieux conçu entre la Belgique, le Canada, la France, de la Suisse et des autres pays francophones ?",
+                    "Il y a la sécurité sociale en France, c'est pareil en Belgique et en Suisse?",
+                    "La nouvelle vague, c’est que en France ?",
+                    "J’ai raté la votation de la semaine dernière. Je viens d’où ?",
+                    "Si je parle BD tu penses à quel pays ?",
+                    "Gérard Depardieu est il belge ou français ?",
+                    "La chanson française, c'est quoi au juste ? Donne moi des exemples variés.",
+                ]
             else:
                 logger.error("Error, chosen guided prompt not listed")
 
+            preprompt = preprompts[np.random.randint(len(preprompts))]
             return [gr.update(visible=True), gr.update(value=preprompt)]
 
         gr.on(
