@@ -7,13 +7,19 @@ import json
 num_sides = 2
 enable_moderation = False
 
-parser = argparse.ArgumentParser()
-parser.add_argument(
-    "--controller-url",
-    type=str,
-    default="http://localhost:21001",
-    help="The address of the controller",
-)
+# parser = argparse.ArgumentParser()
+# parser.add_argument(
+#     "--controller-url",
+#     type=str,
+#     default="http://localhost:21001",
+#     help="The address of the controller",
+# )
+# parser.add_argument(
+#     "--register-api-endpoint-file",
+#     type=str,
+#     help="Register API-based model endpoints from a JSON file",
+#     default="register-api-endpoint-file.json",
+# )
 # parser.add_argument(
 #     "--concurrency-count",
 #     type=int,
@@ -30,25 +36,29 @@ parser.add_argument(
 # parser.add_argument(
 #     "--random-questions", type=str, help="Load random questions from a JSON file"
 # )
-parser.add_argument(
-    "--register-api-endpoint-file",
-    type=str,
-    help="Register API-based model endpoints from a JSON file",
-    default="register-api-endpoint-file.json",
-)
 # parser.add_argument(
 #     "--elo-results-file", type=str, help="Load leaderboard results and plots"
 # )
 # parser.add_argument(
 #     "--leaderboard-table-file", type=str, help="Load leaderboard results and plots"
 # )
-args, unknown = parser.parse_known_args()
+# args, unknown = parser.parse_known_args()
 # args = parser.parse_args()
 
-controller_url = args.controller_url
+if os.getenv("LANGUIA_CONTROLLER_URL"):
+    controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
+else:
+    controller_url="http://localhost:21001"
+    
+if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
+    register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
+else:
+    register_api_endpoint_file="register-api-endpoint-file.json"
+
+# controller_url = args.controller_url
+# register_api_endpoint_file = args.register_api_endpoint_file
 enable_moderation = False
 use_remote_storage = False
-register_api_endpoint_file = args.register_api_endpoint_file
 
 # load_js is before loading demo, head_js is on main component render, maybe group it or do head_js later?
 # load_js = get_window_url_params_js
