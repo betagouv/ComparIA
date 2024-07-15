@@ -130,7 +130,8 @@ class BaseModelAdapter:
         )
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
-        return get_conv_template("one_shot")
+        # languia: Temporarily changing to zero shot
+        return get_conv_template("zero_shot")
 
 
 # A global registry for all model adapters
