@@ -619,6 +619,7 @@ with gr.Blocks(
             triggers=[accept_tos_checkbox.change, accept_waiver_checkbox.change],
             inputs=[accept_tos_checkbox, accept_waiver_checkbox],
             outputs=start_arena_btn,
+            api_name=False,
         )
         def accept_tos_to_enter_arena(accept_tos_checkbox, accept_waiver_checkbox):
             # Enable if both checked
@@ -629,6 +630,7 @@ with gr.Blocks(
         @start_arena_btn.click(
             inputs=[],
             outputs=[header, start_screen, stepper_block, mode_screen],
+            api_name=False,
         )
         def enter_arena(request: gr.Request):
             tos_accepted = accept_tos_checkbox
@@ -654,6 +656,7 @@ with gr.Blocks(
                 guided_area,
                 mode_screen,
             ],
+            api_name=False,
         )
         def free_mode():
             return [
@@ -673,6 +676,7 @@ with gr.Blocks(
                 guided_area,
                 mode_screen,
             ],
+            api_name=False,
             # TODO: scroll_to_output?
         )
         def guided_mode():
@@ -763,6 +767,7 @@ with gr.Blocks(
             fn=set_guided_prompt,
             inputs=[],
             outputs=[send_area, textbox],
+            api_name=False,
         )
 
         # @guided_prompt.change(inputs=guided_prompt, outputs=[send_area, textbox])
@@ -782,7 +787,7 @@ with gr.Blocks(
 
         # Step 2
 
-        @textbox.change(inputs=textbox, outputs=send_btn)
+        @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
         def change_send_btn_state(textbox):
             if textbox == "":
                 return gr.update(interactive=False)
@@ -795,6 +800,7 @@ with gr.Blocks(
         gr.on(
             triggers=[textbox.submit, send_btn.click],
             fn=add_text,
+            api_name=False,
             inputs=conversations_state + [textbox],
             # inputs=conversations_state + model_selectors + [textbox],
             outputs=conversations_state
@@ -807,11 +813,15 @@ with gr.Blocks(
             + [retry_btn]
             + [conclude_btn],
         ).then(
-            bot_response_multi,
-            conversations_state + [temperature, top_p, max_output_tokens],
-            conversations_state + chatbots,
+            fn=bot_response_multi,
+            inputs=conversations_state + [temperature, top_p, max_output_tokens],
+            outputs=conversations_state + chatbots,
+            api_name=False, 
         ).then(
-            enable_component, [], [conclude_btn]
+            fn=enable_component,
+            inputs=[],
+            outputs=[conclude_btn],
+            api_name=False,
         )
 
         def intermediate_like(state0, state1, event: gr.LikeData, request: gr.Request):
@@ -836,12 +846,23 @@ with gr.Blocks(
                 request,
             )
 
-        chatbots[0].like(intermediate_like, conversations_state, [])
-        chatbots[1].like(intermediate_like, conversations_state, [])
+        chatbots[0].like(
+            fn=intermediate_like,
+            inputs=conversations_state,
+            outputs=[],
+            api_name=False,
+        )
+        chatbots[1].like(
+            fn=intermediate_like,
+            inputs=conversations_state,
+            outputs=[],
+            api_name=False,
+        )
 
         @conclude_btn.click(
             inputs=[],
             outputs=[stepper_block, chat_area, send_area, vote_area],
+            api_name=False,
             # TODO: scroll_to_output?
         )
         def show_vote_area():
@@ -862,6 +883,7 @@ with gr.Blocks(
         @which_model_radio.change(
             inputs=[which_model_radio],
             outputs=[supervote_area, positive_supervote, negative_supervote],
+            api_name=False,
         )
         def build_supervote_area(vote_radio):
             if vote_radio == "bothbad":
@@ -892,6 +914,7 @@ with gr.Blocks(
                 supervote_area,
                 results_area,
             ],
+            api_name=False,
         )
         def vote_preferences(
             state0,
@@ -945,6 +968,7 @@ with gr.Blocks(
         # On reset go to mode selection mode_screen
         gr.on(
             triggers=[retry_btn.click],
+            api_name=False,
             # triggers=[clear_btn.click, retry_btn.click],
             fn=clear_history,
             inputs=conversations_state + chatbots + [textbox],

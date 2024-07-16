@@ -61,7 +61,7 @@ app = gr.mount_gradio_app(
     path="/arene",
     root_path="/arene",
     allowed_paths=[config.assets_absolute_path],
-    show_error=config.debug
+    show_error=config.debug,
 )
 
 

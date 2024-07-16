@@ -44,7 +44,7 @@ body {
   color: var(--text-default-info) !important;
 }
 
-.built-with {
+.built-with, .show-api {
     display: none !important;
 }
 
