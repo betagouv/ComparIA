@@ -186,48 +186,20 @@ def get_matomo_js(matomo_url, matomo_id):
     """
     return js
 
+from jinja2 import Template
 
-def add_chosen_badge(side, which_model_radio):
-    if (side == "a" and which_model_radio == "leftvote") or (
-        side == "b" and which_model_radio == "rightvote"
-    ):
-        return """
-         <span class="fr-badge fr-badge--success">Votre choix</span>
-         """
-    else:
-        return ""
-
-
-# TODO: refacto to jinja
-def build_model_card(model_name, models):
-    model = models[model_name]
-    model_openness = "Modèle ouvert" if model["is_open"] else "Modèle fermé"
-    template = f"""
-  <p><span class="fr-icon-stack" aria-hidden="true"></span> {model_openness}</p>
-  <p><span class="fr-icon-ruler" aria-hidden="true"></span> {model['size']}</p>
-  <p><span class="fr-icon-copyright-line" aria-hidden="true"></span> {model['license']}</p>
-  <p><a class="fr-btn fr-btn--secondary" href="{model['link']}">En savoir plus</a></p>
-  """
-    # note: "En savoir plus" ne devrait être qu'un lien
-    return template
-
-
+def get_model_openness(distribution):
+    return "Modèle ouvert" if distribution == "open-weights" else "Propriétaire"
+    
 def build_reveal_html(model_a, model_b, which_model_radio):
-    reveal_html = f"""<div><h3>Merci pour votre vote !<br />
-Découvrez les modèles avec lesquels vous venez de discuter :</h3>
-<div class="fr-grid-row fr-grid-row--gutters">
-<div class="fr-tile fr-col-md-6 fr-col-12"><h2>{model_a}</h2>"""
-    reveal_html += add_chosen_badge("a", which_model_radio)
-    reveal_html += build_model_card(model_a)
-    reveal_html += f"""</div>
-    <div class="fr-tile fr-col-md-6 fr-col-12"><h2>{model_b}</h2>
-    """
-    reveal_html += add_chosen_badge("b", which_model_radio)
-    reveal_html += build_model_card(model_b)
-    reveal_html += "</div></div></div>"
-
-    return reveal_html
-
+    template = Template(source="../templates/reveal.html")
+    
+    return template.render(
+        model_a=model_a,
+        model_b=model_b,
+        which_model_radio=which_model_radio,
+        get_model_openness=get_model_openness
+    )
 
 def get_conv_log_filename(is_vision=False, has_csam_image=False):
     t = datetime.datetime.now()
@@ -242,9 +214,9 @@ def get_conv_log_filename(is_vision=False, has_csam_image=False):
     return name
 
 
-def get_model_extra_info(name: str, models: dict):
-    if name in models:
-        return models[name]
+def get_model_extra_info(name: str, models_extra_info: dict):
+    if (str.lower(name) in models_extra_info):
+        return models_extra_info[str.lower(name)]
     else:
         # To fix this, please complete `models-extra-info.json` to register your model
         return (
@@ -256,7 +228,7 @@ def get_model_extra_info(name: str, models: dict):
                 "dataset": "private",
                 "conditions": "restricted",
             },
-        )
+    ) 
 
 
 def get_model_list(controller_url, register_api_endpoint_file, vision_arena):

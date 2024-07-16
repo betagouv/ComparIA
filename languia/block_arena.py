@@ -39,6 +39,7 @@ from languia.utils import (
     header_html,
     stepper_html,
     vote_last_response,
+    get_model_extra_info
 )
 
 from gradio_frbutton import FrButton
@@ -960,7 +961,7 @@ with gr.Blocks(
                 gr.update(
                     visible=True,
                     value=build_reveal_html(
-                        state0.model_name, state1.model_name, which_model_radio
+                        get_model_extra_info(state0.model_name, config.models_extra_info), get_model_extra_info(state1.model_name, config.models_extra_info), which_model_radio
                     ),
                 ),
             ]
