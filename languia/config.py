@@ -63,6 +63,7 @@ models, all_models = get_model_list(
 
 api_endpoint_info = json.load(open(register_api_endpoint_file))
 
+models_extra_info = json.load(open("./models-extra-info.json"))
 
 headers = {"User-Agent": "FastChat Client"}
 controller_url = None

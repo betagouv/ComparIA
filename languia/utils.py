@@ -18,8 +18,6 @@ import datetime
 from fastchat.constants import LOGDIR
 import requests
 
-from fastchat.model.model_registry import get_model_info
-
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 
@@ -196,18 +194,9 @@ def add_chosen_badge(side, which_model_radio):
         return ""
 
 
-def get_model_card(model_name):
-    model = dict()
-    model["is_open"] = True
-    model["size"] = "Gabarit moyen"
-    model["license"] = "Licence MIT"
-    model["link"] = "https://example.org"
-    return model
-
-
-# TODO: refacto to custom component?
-def build_model_card(model_name):
-    model = get_model_card(model_name)
+# TODO: refacto to jinja
+def build_model_card(model_name, models):
+    model = models[model_name]
     model_openness = "Modèle ouvert" if model["is_open"] else "Modèle fermé"
     template = f"""
   <p><span class="fr-icon-stack" aria-hidden="true"></span> {model_openness}</p>
@@ -222,15 +211,16 @@ def build_model_card(model_name):
 def build_reveal_html(model_a, model_b, which_model_radio):
     reveal_html = f"""<div><h3>Merci pour votre vote !<br />
 Découvrez les modèles avec lesquels vous venez de discuter :</h3>
-<div class="fr-tile"><h2>{model_a}</h2>"""
+<div class="fr-grid-row fr-grid-row--gutters">
+<div class="fr-tile fr-col-md-6 fr-col-12"><h2>{model_a}</h2>"""
     reveal_html += add_chosen_badge("a", which_model_radio)
     reveal_html += build_model_card(model_a)
     reveal_html += f"""</div>
-    <div class="fr-tile"><h2>{model_b}</h2>
+    <div class="fr-tile fr-col-md-6 fr-col-12"><h2>{model_b}</h2>
     """
     reveal_html += add_chosen_badge("b", which_model_radio)
     reveal_html += build_model_card(model_b)
-    reveal_html += "</div></div>"
+    reveal_html += "</div></div></div>"
 
     return reveal_html
 
@@ -246,6 +236,23 @@ def get_conv_log_filename(is_vision=False, has_csam_image=False):
         name = os.path.join(LOGDIR, conv_log_filename)
 
     return name
+
+
+def get_model_extra_info(name: str, models: dict):
+    if name in models:
+        return models[name]
+    else:
+        # To fix this, please complete `models-extra-info.json` to register your model
+        return (
+            {
+                "simple_name": "Autre",
+                "organisation": "Autre",
+                "friendly_size": "M",
+                "distribution": "open-weights",
+                "dataset": "private",
+                "conditions": "restricted",
+            },
+        )
 
 
 def get_model_list(controller_url, register_api_endpoint_file, vision_arena):

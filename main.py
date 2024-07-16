@@ -72,16 +72,11 @@ async def home(request: Request):
     )
 
 
-from fastchat.model.model_registry import get_model_info
-
-models_info = [get_model_info(model) for model in config.models]
-
-
 @app.get("/modeles", response_class=HTMLResponse)
 async def models(request: Request):
     return templates.TemplateResponse(
         "models.html",
-        {"request": request, "config": config, "models_info": models_info},
+        {"request": request, "config": config, "models_info": config.models_extra_info},
     )
 
 
