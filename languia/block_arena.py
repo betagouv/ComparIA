@@ -356,6 +356,7 @@ with gr.Blocks(
             visible=False, elem_id="guided-area", elem_classes=""
         ) as guided_area:
             gr.Markdown("##### Sélectionnez un thème que vous aimeriez explorer :")
+            # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2 
             with gr.Row():
                 maniere = FrButton(
                     value="maniere",

@@ -235,29 +235,6 @@ Découvrez les modèles avec lesquels vous venez de discuter :</h3>
     return reveal_html
 
 
-def get_model_description_md(models):
-    model_description_md = """
-| | | |
-| ---- | ---- | ---- |
-"""
-    ct = 0
-    visited = set()
-    for i, name in enumerate(models):
-        minfo = get_model_info(name)
-        if minfo.simple_name in visited:
-            continue
-        visited.add(minfo.simple_name)
-        one_model_md = f"[{minfo.simple_name}]({minfo.link}): {minfo.description}"
-
-        if ct % 3 == 0:
-            model_description_md += "|"
-        model_description_md += f" {one_model_md} |"
-        if ct % 3 == 2:
-            model_description_md += "\n"
-        ct += 1
-    return model_description_md
-
-
 def get_conv_log_filename(is_vision=False, has_csam_image=False):
     t = datetime.datetime.now()
     conv_log_filename = f"{t.year}-{t.month:02d}-{t.day:02d}-conv.json"
