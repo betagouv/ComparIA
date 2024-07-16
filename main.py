@@ -9,7 +9,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
-from languia.gradio_web_server import demo
+from languia.block_arena import demo
 import logging
 import gradio as gr
 
@@ -40,31 +40,15 @@ if os.getenv("SENTRY_DSN"):
             traces_sample_rate=traces_sample_rate,
         )
 
-env_debug = os.getenv("LANGUIA_DEBUG")
-
-if env_debug:
-    if env_debug.lower() == "true":
-        debug = True
-    else:
-        debug = False
-else:
-    debug = False
-
-
-if not debug:
-    assets_absolute_path = "/app/assets"
-else:
-    assets_absolute_path = os.path.dirname(__file__) + "/assets"
-
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
 gr.set_static_paths(paths=["assets/"])
 # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
-logging.info("Allowing assets absolute path: " + assets_absolute_path)
+logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 
 # Set authorization credentials
 auth = None
 
-# TODO: Re-enable / Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
+# Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
 demo = demo.queue(
     default_concurrency_limit=10,
     status_update_rate=10,
@@ -76,7 +60,8 @@ app = gr.mount_gradio_app(
     demo,
     path="/arene",
     root_path="/arene",
-    allowed_paths=[assets_absolute_path],
+    allowed_paths=[config.assets_absolute_path],
+    show_error=config.debug
 )
 
 

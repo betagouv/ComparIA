@@ -85,6 +85,7 @@ def stepper_html(title, step, total_steps):
 
 </div>"""
 
+
 # Use starlette's jinja templating? Or static files
 with open("./templates/header-arena.html", encoding="utf-8") as header_file:
     header_html = header_file.read()
@@ -96,6 +97,7 @@ with open("./templates/header-arena.html", encoding="utf-8") as header_file:
 
 with open("./templates/start-screen.html", encoding="utf-8") as start_screen_file:
     start_screen_html = start_screen_file.read()
+
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
@@ -165,7 +167,7 @@ def get_matomo_js(matomo_url, matomo_id):
     return f"""
     <!-- Matomo -->
 <script>
-  var _paq = window._paq = window._paq || [];
+  var _paq = wind               ow._paq = window._paq || [];
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
   _paq.push(['trackPageView']);
   _paq.push(['enableLinkTracking']);
@@ -313,3 +315,60 @@ def get_model_list(controller_url, register_api_endpoint_file, vision_arena):
     logger.info(f"All models: {models}")
     logger.info(f"Visible models: {visible_models}")
     return visible_models, models
+
+
+def is_limit_reached(model_name, ip):
+    monitor_url = "http://localhost:9090"
+    try:
+        ret = requests.get(
+            f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
+        )
+        obj = ret.json()
+        return obj
+    except Exception as e:
+        logger.info(f"monitor error: {e}")
+        return None
+
+
+# Not used
+# def model_worker_stream_iter(
+#     conv,
+#     model_name,
+#     worker_addr,
+#     prompt,
+#     temperature,
+#     repetition_penalty,
+#     top_p,
+#     max_new_tokens,
+#     images,
+# ):
+#     # Make requests
+#     gen_params = {
+#         "model": model_name,
+#         "prompt": prompt,
+#         "temperature": temperature,
+#         "repetition_penalty": repetition_penalty,
+#         "top_p": top_p,
+#         "max_new_tokens": max_new_tokens,
+#         "stop": conv.stop_str,
+#         "stop_token_ids": conv.stop_token_ids,
+#         "echo": False,
+#     }
+
+#     logger.info(f"==== request ====\n{gen_params}")
+
+#     if len(images) > 0:
+#         gen_params["images"] = images
+
+#     # Stream output
+#     response = requests.post(
+#         worker_addr + "/worker_generate_stream",
+#         headers=config.headers,
+#         json=gen_params,
+#         stream=True,
+#         timeout=WORKER_API_TIMEOUT,
+#     )
+#     for chunk in response.iter_lines(decode_unicode=False, delimiter=b"\0"):
+#         if chunk:
+#             data = json.loads(chunk.decode())
+#             yield data

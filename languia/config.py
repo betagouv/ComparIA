@@ -7,6 +7,23 @@ import json
 num_sides = 2
 enable_moderation = False
 
+
+env_debug = os.getenv("LANGUIA_DEBUG")
+
+if env_debug:
+    if env_debug.lower() == "true":
+        debug = True
+    else:
+        debug = False
+else:
+    debug = False
+
+if not debug:
+    assets_absolute_path = "/app/assets"
+else:
+    assets_absolute_path = os.path.dirname(__file__) + "/assets"
+
+
 # parser = argparse.ArgumentParser()
 # parser.add_argument(
 #     "--controller-url",

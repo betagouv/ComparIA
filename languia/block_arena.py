@@ -49,20 +49,6 @@ logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 from languia import config
 
 
-def set_global_vars_anony(enable_moderation_):
-    global enable_moderation
-    enable_moderation = enable_moderation_
-
-
-def load_demo_arena(models_):
-    global models
-    models = models_
-
-    conversations_state = (None,) * config.num_sides
-
-    return conversations_state
-
-
 def add_text(
     # state0: ConversationState,
     # state1: ConversationState,
@@ -289,9 +275,15 @@ def clear_history(
     ]
 
 
-# build_arena_demo?
-def build_arena(models):
-    # conversations_state = [ConversationState() for _ in range(num_sides)]
+from themes.dsfr import DSFR
+
+with gr.Blocks(
+    title="LANGU:IA – L'arène francophone de comparaison de modèles conversationnels",
+    theme=DSFR(),
+    css=config.css,
+    head=config.head_js,
+    # elem_classes=""
+) as demo:
     conversations_state = [gr.State() for _ in range(config.num_sides)]
     # model_selectors = [None] * num_sides
     # TODO: allow_flagging?
@@ -964,6 +956,3 @@ def build_arena(models):
         )
 
     register_listeners()
-
-    return conversations_state
-    # return conversations_state + model_selectors
