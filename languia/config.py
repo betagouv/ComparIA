@@ -45,8 +45,8 @@ else:
 # we can also load js normally (no in <head>)
 arena_head_js = (
     """
-<script type="module" src="assets/dsfr/dsfr.module.js"></script>
-<script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.js"></script>
+<script type="module" src="file=assets/dsfr/dsfr.module.js"></script>
+<script type="text/javascript" nomodule src="file=assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
 )
