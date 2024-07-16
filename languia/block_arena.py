@@ -281,7 +281,7 @@ with gr.Blocks(
     title="LANGU:IA – L'arène francophone de comparaison de modèles conversationnels",
     theme=DSFR(),
     css=config.css,
-    head=config.head_js,
+    head=config.arena_head_js,
     # elem_classes=""
 ) as demo:
     conversations_state = [gr.State() for _ in range(config.num_sides)]

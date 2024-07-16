@@ -37,15 +37,27 @@ else:
 enable_moderation = False
 use_remote_storage = False
 
-# load_js is before loading demo, head_js is on main component render, maybe group it or do head_js later?
-
-head_js = """
-<script type="module" src="file=assets/dsfr/dsfr.module.js"></script>
-<script type="text/javascript" nomodule src="file=assets/dsfr/dsfr.nomodule.js"></script>
-"""
 if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
-    head_js += get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
+    matomo_js = get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
+else:
+    matomo_js = ""
 
+# we can also load js normally (no in <head>)
+arena_head_js = (
+    """
+<script type="module" src="assets/dsfr/dsfr.module.js"></script>
+<script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.js"></script>
+"""
+    + matomo_js
+)
+
+site_head_js = (
+    """
+<script type="module" src="assets/dsfr/dsfr.module.js"></script>
+<script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.js"></script>
+"""
+    + matomo_js
+)
 
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
