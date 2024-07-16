@@ -323,7 +323,7 @@ with gr.Blocks(
             visible=False,
         )
 
-    with gr.Column(visible=False, elem_id="mode-screen") as mode_screen:
+    with gr.Column(visible=False, elem_id="mode-screen", elem_classes="fr-container") as mode_screen:
         gr.HTML(
             """
         <div class="fr-notice fr-notice--info"> 
@@ -664,7 +664,7 @@ with gr.Blocks(
                 gr.update(elem_classes="selected"),
                 gr.update(visible=True),
                 gr.update(visible=False),
-                gr.update(elem_classes="send-area-enabled"),
+                gr.update(elem_classes="fr-container send-area-enabled"),
             ]
 
         @guided_mode_btn.click(
@@ -689,7 +689,7 @@ with gr.Blocks(
                     gr.update(elem_classes="selected"),
                     gr.update(visible=False),
                     gr.update(visible=True),
-                    gr.update(elem_classes="send-area-enabled"),
+                    gr.update(elem_classes="fr-container send-area-enabled"),
                 ]
 
         # Step 1.1
