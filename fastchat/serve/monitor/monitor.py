@@ -794,7 +794,7 @@ def build_demo(elo_results_file, leaderboard_table_file):
 
     text_size = gr.themes.sizes.text_lg
     # load theme from theme.json
-    theme = gr.themes.Default.load("theme.json")
+    theme = gr.themes.Default.load("themes/theme.json")
     # set text size to large
     theme.text_size = text_size
     theme.set(

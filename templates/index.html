@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    #welcome {
+        background-color: var(--background-contrast-info);
+        text-align: center;
+    }
+
+    #welcome h2 {
+        color: var(--text-action-high-blue-france);
+    }
+</style>
+
+<main id="content" role="main">
+    <div class="fr-container--fluid" id="welcome">
+        <div class="fr-container fr-mt-4w fr-mb-3w">
+            <h2>Comparez des modèles conversationnels sur les enjeux de diversité
+                linguistique et culturelle</h2>
+            <p>
+                L’arène LANGUIA est la plateforme francophone de comparaison de modèles conversationnels
+            </p>
+
+            <div><a href="/arene" class="fr-btn">Commencer une conversation</a></div>
+        </div>
+    </div>
+
+    <div class="fr-container fr-mt-4w">
+
+        <h3>L'arène</h3>
+        <p>
+            L'arène LANGUIA permet aux utilisateurs de comparer les réponses générées par différents modèles de langage
+            en
+            français. Posez une question, obtenez des réponses de deux modèles anonymes, et votez pour votre réponse
+            préférée.
+            Ce processus aide à créer des jeux de données de préférences humaines, essentiels pour améliorer les
+            performances
+            des modèles sur des tâches en français.
+        </p>
+        <h3>
+            Le constat
+        </h3>
+        <p>
+            Les modèles de langage actuels sont majoritairement entraînés sur des données anglo-saxonnes, ce qui pose
+            des
+            défis
+            pour la représentation des langues et cultures françaises et francophones. Cela participe de l’effort pour
+            faciliter
+            l’accès à des jeux de données francophones pour l'entraînement, la spécialisation et l’évaluation des
+            modèles.
+        </p>
+        <h3>
+            Qui sommes-nous
+        </h3>
+        <p>
+            L’équipe LANGU:IA, portée par l’Atelier Numérique du Ministère de la Culture, a pour ambition de
+            sensibiliser
+            les
+            citoyens aux enjeux de l'intelligence artificielle et de promouvoir les langues et cultures françaises et
+            francophones auprès des acteurs de l’écosystème.</p>
+        <p> Ce projet vise à mettre à disposition de tous un outil de comparaison de modèles permettant de questionner
+            leur
+            capacité à répondre à des tâches exprimées en français.
+        </p>
+    </div>
+</main>
+{% endblock %}

@@ -1,5 +1,5 @@
 {
-  "microsoft/Phi-3-mini-4k-instruct": {
+  "phi-3-mini-4k-instruct": {
     "api_base": "https://api-inference.huggingface.co/v1/",
     "api_type": "openai",
     "api_key": "",

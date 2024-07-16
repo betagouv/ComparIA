@@ -1,0 +1,96 @@
+/*!
+ * DSFR v1.11.2 | SPDX-License-Identifier: MIT | License-Filename: LICENSE.md | restricted use (see terms and conditions)
+ */
+@media (min-width: 36em) {
+  /*! media sm */
+}
+@media (min-width: 48em) {
+  /*! media md */
+}
+@media (min-width: 62em) {
+  /*! media lg */
+}
+@media (min-width: 78em) {
+  /*! media xl */
+}
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+  /**
+  * reset des marges dans l'alerte
+  */
+  .fr-alert::before,
+  .fr-alert::after {
+    background-color: transparent;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .fr-alert__title,
+  .fr-alert p {
+    margin: 0 0 0.25rem;
+  }
+
+  .fr-alert--info::before {
+    background-image: url("../../icons/system/fr--info-fill.svg");
+  }
+
+  .fr-alert--success::before {
+    background-image: url("../../icons/system/fr--success-fill.svg");
+  }
+
+  .fr-alert--error::before {
+    background-image: url("../../icons/system/fr--error-fill.svg");
+  }
+
+  .fr-alert--warning::before {
+    background-image: url("../../icons/system/fr--warning-fill.svg");
+  }
+
+  .fr-alert .fr-btn--close::before,
+  .fr-alert .fr-btn--close::after {
+    background-color: transparent;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-image: url("../../icons/system/close-line.svg");
+    width: 1rem;
+    height: 1rem;
+  }
+
+  /**
+  * reset des marges dans l'alerte
+  */
+  .fr-alert .fr-link--close::before,
+  .fr-alert .fr-link--close::after {
+    background-color: transparent;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    background-image: url("../../icons/system/close-line.svg");
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .fr-alert {
+    background-image: linear-gradient(0deg, #3a3a3a, #3a3a3a), linear-gradient(0deg, #3a3a3a, #3a3a3a), linear-gradient(0deg, #3a3a3a, #3a3a3a), linear-gradient(0deg, #3a3a3a, #3a3a3a), linear-gradient(0deg, #3a3a3a, #3a3a3a);
+  }
+
+  .fr-alert::before {
+    color: #fff;
+  }
+
+  .fr-alert--info {
+    background-image: linear-gradient(0deg, #0063cb, #0063cb), linear-gradient(0deg, #0063cb, #0063cb), linear-gradient(0deg, #0063cb, #0063cb), linear-gradient(0deg, #0063cb, #0063cb), linear-gradient(0deg, #0063cb, #0063cb);
+  }
+
+  .fr-alert--error {
+    background-image: linear-gradient(0deg, #ce0500, #ce0500), linear-gradient(0deg, #ce0500, #ce0500), linear-gradient(0deg, #ce0500, #ce0500), linear-gradient(0deg, #ce0500, #ce0500), linear-gradient(0deg, #ce0500, #ce0500);
+  }
+
+  .fr-alert--success {
+    background-image: linear-gradient(0deg, #18753c, #18753c), linear-gradient(0deg, #18753c, #18753c), linear-gradient(0deg, #18753c, #18753c), linear-gradient(0deg, #18753c, #18753c), linear-gradient(0deg, #18753c, #18753c);
+  }
+
+  .fr-alert--warning {
+    background-image: linear-gradient(0deg, #b34000, #b34000), linear-gradient(0deg, #b34000, #b34000), linear-gradient(0deg, #b34000, #b34000), linear-gradient(0deg, #b34000, #b34000), linear-gradient(0deg, #b34000, #b34000);
+  }
+}
