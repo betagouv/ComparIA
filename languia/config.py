@@ -1,8 +1,9 @@
 from languia.utils import get_model_list, get_matomo_js, get_model_extra_info
 
 import os
-import argparse
+import sentry_sdk
 import json
+import logging
 
 num_sides = 2
 enable_moderation = False
@@ -23,6 +24,47 @@ if not debug:
 else:
     assets_absolute_path = os.path.dirname(__file__) + "/assets"
 
+if os.getenv("SENTRY_SAMPLE_RATE"):
+    traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
+else:
+    traces_sample_rate = 0.2
+
+if os.getenv("SENTRY_DSN"):
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for performance monitoring.
+    # We recommend adjusting this value in production.
+    if os.getenv("SENTRY_ENV"):
+        sentry_env = os.getenv("SENTRY_ENV")
+    else:
+        sentry_env = "development"
+    sentry_sdk.init(
+        dsn=os.getenv("SENTRY_DSN"),
+        environment=sentry_env,
+        traces_sample_rate=traces_sample_rate,
+    )
+    logging.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
+
+if os.getenv('SENTRY_FRONT_DSN'):
+    sentry_js = f"""
+    <script src="{ os.getenv('SENTRY_FRONT_DSN') }" crossorigin="anonymous"></script>
+    <script>"""
+    # sentry_js += """
+    # Sentry.onLoad(function() {
+    #     Sentry.init({
+    #     // Performance Monitoring
+    # """
+    # sentry_js += f"""
+    #   tracesSampleRate: {traces_sample_rate},
+    #   // Session Replay
+    #   replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    #   replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+    #   """
+    # sentry_js += """
+    #     });
+    # });
+    # </script>"""
+else:
+    sentry_js = ""
 
 if os.getenv("LANGUIA_CONTROLLER_URL"):
     controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
@@ -44,7 +86,8 @@ else:
 
 # we can also load js normally (no in <head>)
 arena_head_js = (
-    """
+    sentry_js
+    + """
 <script type="module" src="file=assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="file=assets/dsfr/dsfr.nomodule.js"></script>
 """
@@ -52,7 +95,9 @@ arena_head_js = (
 )
 
 site_head_js = (
-    """
+    # sentry_js
+    # +
+      """
 <script type="module" src="assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.js"></script>
 """
@@ -75,7 +120,9 @@ models, all_models = get_model_list(
 
 api_endpoint_info = json.load(open(register_api_endpoint_file))
 
-all_models_extra_info = {k.lower(): v for k, v in json.load(open("./models-extra-info.json")).items()}
+all_models_extra_info = {
+    k.lower(): v for k, v in json.load(open("./models-extra-info.json")).items()
+}
 
 headers = {"User-Agent": "FastChat Client"}
 controller_url = None

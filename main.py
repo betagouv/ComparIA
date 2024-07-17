@@ -21,25 +21,6 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 templates = Jinja2Templates(directory="templates")
 
-if os.getenv("SENTRY_DSN"):
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    if os.getenv("SENTRY_SAMPLE_RATE"):
-        traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
-    else:
-        traces_sample_rate = 0.2
-    logging.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
-    if os.getenv("SENTRY_ENV"):
-        sentry_env = os.getenv("SENTRY_ENV")
-    else:
-        sentry_env = "development"
-        sentry_sdk.init(
-            dsn=os.getenv("SENTRY_DSN"),
-            environment=sentry_env,
-            traces_sample_rate=traces_sample_rate,
-        )
-
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
 gr.set_static_paths(paths=["assets/"])
 # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
