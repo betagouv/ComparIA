@@ -716,6 +716,7 @@ with gr.Blocks(
                     "Réécris ce passage dans un style courant, comme si tu parlais à un collègue au travail : “L’OSI mène actuellement des travaux pour aboutir à une définition claire de l’IA open source, et qui pourraient mener à la proposition de nouvelles licences types”.",
                     "Transforme cette phrase en un style soutenu et formel, tel que tu pourrais le lire dans un document officiel : “Je suis malade et ne pourrai pas travailler aujourd’hui. La réunion est reportée à la semaine prochaine.",
                     """Adapte ce texte dans un langage populaire, comme si tu t’adressais à un public jeune, curieux, enthousiaste : "Le capitaine du vaisseau interstellaire manœuvra habilement à travers le champ d'astéroïdes." """,
+                    """Retranscris moi en langage soutenu cette strophe de la chanson "Wesh alors" de Jul: "Wesh le sang, wesh la honda /\nMes sons tournent à la Jonque' / Tu m'as trahis mais t'es un bon gars / J'suis en fumette mais j'me trompe pas" """,
                 ]
             elif chosen_guide == "creativite":
                 preprompts = [
