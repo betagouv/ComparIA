@@ -40,10 +40,13 @@ from languia.utils import (
     stepper_html,
     vote_last_response,
     get_model_extra_info,
+    count_tokens,
+    get_llm_impact,
 )
 
 from gradio_frbutton import FrButton
-from gradio_frinput import FrInput
+
+# from gradio_frinput import FrInput
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
@@ -958,12 +961,26 @@ with gr.Blocks(
                 )
             # model_a =  config.models_extra_info[state0.model_name.lower()]
             # model_b =  config.models_extra_info[state1.model_name.lower()]
-            model_a = get_model_extra_info(state0.model_name, config.all_models_extra_info)
-            model_b = get_model_extra_info(state1.model_name, config.all_models_extra_info)
+            model_a = get_model_extra_info(
+                state0.model_name, config.all_models_extra_info
+            )
+            model_b = get_model_extra_info(
+                state1.model_name, config.all_models_extra_info
+            )
 
+            # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
+            model_a_tokens = count_tokens(state0.conv.messages, "Assistant")
+            model_b_tokens = count_tokens(state1.conv.messages, "Assistant")
+
+            model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens)
+            model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens)
 
             reveal_html = build_reveal_html(
-                model_a=model_a, model_b=model_b, which_model_radio=which_model_radio
+                model_a=model_a,
+                model_b=model_b,
+                which_model_radio=which_model_radio,
+                model_a_impact=model_a_impact,
+                model_b_impact=model_b_impact,
             )
             return [
                 gr.update(value=stepper_html("Révélation des modèles", 4, 4)),

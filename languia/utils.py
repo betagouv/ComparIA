@@ -18,6 +18,8 @@ import datetime
 from fastchat.constants import LOGDIR
 import requests
 
+from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
+
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 
@@ -190,18 +192,22 @@ def get_matomo_js(matomo_url, matomo_id):
 from jinja2 import Template
 
 
-def build_reveal_html(model_a, model_b, which_model_radio):
+def build_reveal_html(
+    model_a, model_b, which_model_radio, model_a_impact, model_b_impact
+):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
     chosen_model = None
     if which_model_radio == "leftvote":
         chosen_model = "model-a"
-    if which_model_radio == "rigjtvote":
+    if which_model_radio == "rightvote":
         chosen_model = "model-b"
     return template.render(
         model_a=model_a,
         model_b=model_b,
         chosen_model=chosen_model,
+        model_a_impact=model_a_impact,
+        model_b_impact=model_b_impact,
     )
 
 
@@ -302,6 +308,31 @@ def is_limit_reached(model_name, ip):
     except Exception as e:
         logger.info(f"monitor error: {e}")
         return None
+
+
+def count_tokens(messages, role) -> int:
+    """Count tokens (assuming 4 per message) for a specific role."""
+    return sum(len(msg[1]) * 4 for msg in messages if msg[0] == role)
+
+
+def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
+    """Compute or fallback to estimated impact for an LLM."""
+    # TODO: add request latency
+    impact = llm_impacts("huggingface_hub", model_name, token_count, None)
+    # FIXME: most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
+    # model_active_parameter_count: ValueOrRange,
+    # model_total_parameter_count: ValueOrRange,
+    if impact is None:
+        # FIXME: Fallback using friendly size (XS, S, M, L) to estimate parameters
+        size_to_params = {"XS": 3, "S": 7, "M": 13, "L": 35}
+        params = size_to_params[model_extra_info["friendly_size"]]
+        # TODO: add request latency
+        impact = compute_llm_impacts(
+            model_active_parameter_count=params,
+            model_total_parameter_count=params,
+            output_token_count=token_count,
+        )
+    return impact
 
 
 # Not used

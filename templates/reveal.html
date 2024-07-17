@@ -2,41 +2,46 @@
     <h3>Merci pour votre vote !<br />
         Découvrez les modèles avec lesquels vous venez de discuter :</h3>
     <div class="fr-grid-row fr-grid-row--gutters">
-        {% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
-        <div class="fr-tile fr-col-md-6 fr-col-12">
-            <h3>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20" height="20" /></h3>
+        {% for model, side, impact in [(model_a, 'model-a', model_a_impact), (model_b, 'model-b', model_b_impact)] %}
+        
+        <div class="fr-tile fr-col-md-6 fr-col-12 fr-enlarge-link">
+            <h3><a href="#" data-fr-opened="false"
+                aria-controls="fr-modal-{{ side }}">{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}"
+                    width="20" height="20" /></a></h3>
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success">Votre choix</span>
             {% endif %}
-            <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{ model['friendly_size']
+            <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{
+                    model['friendly_size']
                     }}</span></p>
             <p>{{ model['excerpt'] }}</p>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
-                    <h4>Transparence</h4>
+                    <h5>Transparence</h5>
                     <p><span class="fr-icon-stack" aria-hidden="true">Code source</span><br />{% if
-                        model['distribution'] == "open-weights" %}<span class="fr-badge">Poids communiqués</span>{%
-                        else %}<span class="fr-badge">Propriétaire</span>{% endif %}</p>
+                        model['distribution'] == "open-weights" %}<span class="fr-badge fr-badge--blue-cumulus">Poids communiqués</span>{%
+                        else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif %}</p>
                     <p><span class="fr-icon-stack" aria-hidden="true">Corpus d'entrainement</span><br />{% if
-                        model['dataset'] == "private" %}<span class="fr-badge">Non communiqué</span>{% else %}<span
-                            class="fr-badge">Public</span>{% endif %}</p>
+                        model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non communiqué</span>{% else %}<span
+                            class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</p>
                 </div>
                 <div class="fr-col-12 fr-col-md-6">
-                    <h4>Utilisation</h4>
+                    <h5>Utilisation</h5>
                     <p><span class="fr-icon-stack" aria-hidden="true">Distribution</span><br />{% if
-                        model['distribution'] == "open-weights" %}<span class="fr-badge">Téléchargeable</span>{%
-                        else %}<span class="fr-badge">API uniquement</span>{% endif %}</p>
+                        model['distribution'] == "open-weights" %}<span class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span>{%
+                        else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{% endif %}</p>
                     <p><span class="fr-icon-stack" aria-hidden="true">Conditions d'usage</span><br />{% if
-                        model['conditions'] == "restricted" %}<span class="fr-badge">Sous conditions</span>{% else
-                        %}<span class="fr-badge">Libre</span>{% endif %}</p>
+                        model['conditions'] == "restricted" %}<span class="fr-badge fr-badge--yellow-moutarde">Sous conditions</span>{% else
+                        %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %}</p>
                 </div>
             </div>
-            <h4>Ma conversation correspond à :</h4>
-            <div>
-                <!-- TODO: ecologits -->
-                <div class="fr-tile">-</div>
+            <h5>Ma conversation correspond à :</h5>
+            <div class="fr-grid-row">
+                <div class="fr-tile fr-col-3"><strong>{{ '%0.2f'| format(impact.energy.value*100|float) }}</strong> <i>wattheures</i></div>
+                <div class="fr-container fr-col">Emissions de CO2 : <strong>{{ '%0.2f'| format(impact.gwp.value*100|float) }}g</strong></div>
             </div>
-            <p><a class="fr-btn fr-btn--secondary" href="#" data-fr-opened="false" aria-controls="fr-modal-{{ side }}">En savoir plus</a></p>
+            <p><a class="fr-btn fr-btn--secondary" href="#" data-fr-opened="false"
+                    aria-controls="fr-modal-{{ side }}">En savoir plus</a></p>
         </div>
         {% endfor %}
     </div>
@@ -56,6 +61,7 @@
                         <h1 id="fr-modal-title-fr-modal-{{ side }}" class="fr-modal__title"><span
                                 class="fr-icon-arrow-right-line fr-icon--lg"></span>{{ model['simple_name'] }}</h1>
                         <p>{{ model['description'] }}</p>
+                        <a href="../models" class="fr-button">Découvrir tous les modèles</a>
                     </div>
                 </div>
             </div>
