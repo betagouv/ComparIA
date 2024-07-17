@@ -186,17 +186,24 @@ def get_matomo_js(matomo_url, matomo_id):
     """
     return js
 
+
 from jinja2 import Template
+
 
 def build_reveal_html(model_a, model_b, which_model_radio):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
-    
+    chosen_model = None
+    if which_model_radio == "leftvote":
+        chosen_model = "model-a"
+    if which_model_radio == "rigjtvote":
+        chosen_model = "model-b"
     return template.render(
         model_a=model_a,
         model_b=model_b,
-        which_model_radio=which_model_radio,
+        chosen_model=chosen_model,
     )
+
 
 def get_conv_log_filename(is_vision=False, has_csam_image=False):
     t = datetime.datetime.now()
@@ -213,13 +220,14 @@ def get_conv_log_filename(is_vision=False, has_csam_image=False):
 
 def get_model_extra_info(name: str, models_extra_info: dict):
     # Maybe put orgs countries in an array here
-    if (str.lower(name) in models_extra_info):
+    if str.lower(name) in models_extra_info:
         model = models_extra_info[str.lower(name)]
-        if 'excerpt' not in model and 'description' in model:
-            if len(model['description']) > 140:
-                model['excerpt'] =  model['description'][0:139] + "…"
+        if "excerpt" not in model and "description" in model:
+            if len(model["description"]) > 140:
+                model["excerpt"] = model["description"][0:139] + "…"
             else:
-                model['excerpt'] =  model['description']
+                model["excerpt"] = model["description"]
+        return model
     else:
         # To fix this, please complete `models-extra-info.json` to register your model
         return (
@@ -232,9 +240,9 @@ def get_model_extra_info(name: str, models_extra_info: dict):
                 "conditions": "restricted",
                 "description": "Un modèle open source, probablement disponible via Hugging Face.",
                 "excerpt": "Un modèle open source",
-                "icon_path": "huggingface.png"
+                "icon_path": "huggingface.png",
             },
-    ) 
+        )
 
 
 def get_model_list(controller_url, register_api_endpoint_file, vision_arena):

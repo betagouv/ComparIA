@@ -2,10 +2,10 @@
     <h3>Merci pour votre vote !<br />
         Découvrez les modèles avec lesquels vous venez de discuter :</h3>
     <div class="fr-grid-row fr-grid-row--gutters">
-        {% for model, side in [(model_a, 'leftvote'), (model_b, 'rightvote')] %}
+        {% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
         <div class="fr-tile fr-col-md-6 fr-col-12">
-            <h2>{{ model["simple_name"] }} <img src="file=assets/orgs/{{ model['icon_path'] }}" /></h2>
-            {% if which_model_radio == side %}
+            <h3>{{ model["simple_name"] }} <img src="file=assets/orgs/{{ model['icon_path'] }}" /></h3>
+            {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success">Votre choix</span>
             {% endif %}
             <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">{{ model['friendly_size']
@@ -36,7 +36,7 @@
                 <!-- TODO: ecologits -->
                 <div class="fr-tile">-</div>
             </div>
-            <p><a class="fr-btn fr-btn--secondary" href="{{ model['link'] }}">En savoir plus</a></p>
+            <p><a class="fr-btn fr-btn--secondary" href="#" data-fr-opened="false" aria-controls="fr-modal-{{ side }}">En savoir plus</a></p>
         </div>
         {% endfor %}
     </div>

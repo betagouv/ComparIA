@@ -77,8 +77,6 @@ api_endpoint_info = json.load(open(register_api_endpoint_file))
 
 all_models_extra_info = {k.lower(): v for k, v in json.load(open("./models-extra-info.json")).items()}
 
-models_extra_info = [get_model_extra_info(model, all_models_extra_info) for model in models]
-print(models_extra_info)
 headers = {"User-Agent": "FastChat Client"}
 controller_url = None
 enable_moderation = False

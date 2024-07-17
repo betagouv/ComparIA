@@ -39,7 +39,7 @@ from languia.utils import (
     header_html,
     stepper_html,
     vote_last_response,
-    get_model_extra_info
+    get_model_extra_info,
 )
 
 from gradio_frbutton import FrButton
@@ -324,7 +324,9 @@ with gr.Blocks(
             visible=False,
         )
 
-    with gr.Column(visible=False, elem_id="mode-screen", elem_classes="fr-container") as mode_screen:
+    with gr.Column(
+        visible=False, elem_id="mode-screen", elem_classes="fr-container"
+    ) as mode_screen:
         gr.HTML(
             """
         <div class="fr-notice fr-notice--info"> 
@@ -357,7 +359,7 @@ with gr.Blocks(
             visible=False, elem_id="guided-area", elem_classes=""
         ) as guided_area:
             gr.Markdown("##### Sélectionnez un thème que vous aimeriez explorer :")
-            # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2 
+            # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
             with gr.Row():
                 maniere = FrButton(
                     value="maniere",
@@ -818,7 +820,7 @@ with gr.Blocks(
             fn=bot_response_multi,
             inputs=conversations_state + [temperature, top_p, max_output_tokens],
             outputs=conversations_state + chatbots,
-            api_name=False, 
+            api_name=False,
         ).then(
             fn=enable_component,
             inputs=[],
@@ -953,19 +955,19 @@ with gr.Blocks(
                     'Model selection was neither "bothbad", "leftvote" or "rightvote", got: '
                     + str(which_model_radio)
                 )
-
+            # model_a =  config.models_extra_info[state0.model_name.lower()]
+            # model_b =  config.models_extra_info[state1.model_name.lower()]
+            model_a = get_model_extra_info(state0.model_name), config.all_models_extra_info)
+            model_b = get_model_extra_info(state1.model_name, config.all_models_extra_info)
+            reveal_html = build_reveal_html(
+                model_a=model_a, model_b=model_b, which_model_radio=which_model_radio
+            )
             return [
                 gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
                 gr.update(visible=False),
                 gr.update(visible=False),
-                gr.update(
-                    visible=True,
-                    value=build_reveal_html(
-                        get_model_extra_info(state0.model_name, config.models_extra_info), get_model_extra_info(state1.model_name, config.models_extra_info), which_model_radio
-                    ),
-                ),
+                gr.update(visible=True, value=reveal_html),
             ]
-            # return vote
 
         # On reset go to mode selection mode_screen
         gr.on(
