@@ -4,7 +4,7 @@
     <div class="fr-grid-row fr-grid-row--gutters">
         {% for model, side in [(model_a, 'leftvote'), (model_b, 'rightvote')] %}
         <div class="fr-tile fr-col-md-6 fr-col-12">
-            <h2>{{ model["simple_name"] }} <img src="{{ model['icon_path'] }}" /></h2>
+            <h2>{{ model["simple_name"] }} <img src="file=assets/orgs/{{ model['icon_path'] }}" /></h2>
             {% if which_model_radio == side %}
             <span class="fr-badge fr-badge--success">Votre choix</span>
             {% endif %}
