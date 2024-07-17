@@ -957,8 +957,10 @@ with gr.Blocks(
                 )
             # model_a =  config.models_extra_info[state0.model_name.lower()]
             # model_b =  config.models_extra_info[state1.model_name.lower()]
-            model_a = get_model_extra_info(state0.model_name), config.all_models_extra_info)
+            model_a = get_model_extra_info(state0.model_name, config.all_models_extra_info)
             model_b = get_model_extra_info(state1.model_name, config.all_models_extra_info)
+
+
             reveal_html = build_reveal_html(
                 model_a=model_a, model_b=model_b, which_model_radio=which_model_radio
             )
