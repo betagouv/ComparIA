@@ -306,11 +306,14 @@ with gr.Blocks(
             show_label=True,
             elem_classes="",
         )
+        # FIXME: custom component for checkboxes
         accept_tos_checkbox = gr.Checkbox(
-            label="J'accepte les conditions générales d'utilisation",
+            label="J'accepte les conditions générales d'utilisation :",
             show_label=True,
-            elem_classes="",
+            elem_id="accept_tos_checkbox",
         )
+        gr.HTML(elem_id="accept_tos_label", value="""Voir les <a href="/cgu" target="_blank">conditions générales d'utilisation</a>.""")
+
         start_arena_btn = gr.Button(
             value="C'est parti",
             scale=0,
