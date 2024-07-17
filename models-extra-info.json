@@ -1,7 +1,8 @@
 {
-  "Aya23": {
+  "Aya23-35B": {
     "simple_name": "Aya23-35B",
     "organisation": "Cohere",
+    "icon_path": "cohere.png",
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
@@ -10,6 +11,7 @@
   "Gemma-2-9B-it": {
     "simple_name": "Gemma-2-9B-it",
     "organisation": "Google",
+    "icon_path": "google.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
@@ -18,6 +20,7 @@
   "Gemini 1.5 Pro API-0409-Preview": {
     "simple_name": "Gemini 1.5 Pro API-0409-Preview",
     "organisation": "Google",
+    "icon_path": "google.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
@@ -26,6 +29,7 @@
   "GPT-4-Turbo-2024-04-09": {
     "simple_name": "GPT-4-Turbo-2024-04-09",
     "organisation": "OpenAI",
+    "icon_path": "openai.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
@@ -34,6 +38,7 @@
   "Llama-2-13b-chat": {
     "simple_name": "Llama-2-13b-chat",
     "organisation": "Meta",
+    "icon_path": "meta.png",
     "friendly_size": "S",
     "dataset": "private",
     "distribution": "open-weights",
@@ -42,7 +47,8 @@
   "Zephyr-ORPO-141b-A35b-v0.1": {
     "simple_name": "Zephyr-ORPO-141b-A35b-v0.1",
     "organisation": "Hugging Face",
-    "friendly_size": "",
+    "friendly_size": "L",
+    "icon_path": "huggingface.png",
     "distribution": "open-weights",
     "dataset": "private",
     "conditions": "restricted"
@@ -50,6 +56,7 @@
   "Mistral-Large-2402": {
     "simple_name": "Mistral-Large-2402",
     "organisation": "Mistral",
+    "icon_path": "mistral.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
@@ -58,6 +65,7 @@
   "GPT-3.5-Turbo-0613": {
     "simple_name": "GPT-3.5-Turbo-0613",
     "organisation": "OpenAI",
+    "icon_path": "openai.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
@@ -66,6 +74,7 @@
   "CroissantLLMChat-v0.1": {
     "simple_name": "CroissantLLMChat-v0.1",
     "organisation": "ILLUIN",
+    "icon_path": "illuin.png",
     "friendly_size": "XS",
     "distribution": "open-weights",
     "dataset": "public",
@@ -74,6 +83,7 @@
   "Phi-3-Mini-4k-Instruct": {
     "simple_name": "Phi-3-Mini-4k-Instruct",
     "organisation": "Microsoft",
+    "icon_path": "microsoft.png",
     "friendly_size": "XS",
     "distribution": "open-weights",
     "dataset": "private",
@@ -82,6 +92,7 @@
   "Vicuna-13B": {
     "simple_name": "Vicuna-13B",
     "organisation": "Meta",
+    "icon_path": "meta.png",
     "friendly_size": "S",
     "dataset": "private",
     "distribution": "open-weights",
@@ -90,14 +101,16 @@
   "Mixtral-8x7B-Instruct-v0.1": {
     "simple_name": "Mixtral-8x7B",
     "organisation": "Mistral",
+    "icon_path": "mistral.png",
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
     "conditions": "restricted"
   },
-  "Llama-3-70b-Instruct": {
+  "Meta-Llama-3-70B-Instruct": {
     "simple_name": "Llama-3-70b",
     "organisation": "Meta",
+    "icon_path": "meta.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "open-weights",
@@ -106,14 +119,16 @@
   "Qwen1.5-32B-Chat": {
     "simple_name": "Qwen1.5-32B",
     "organisation": "Alibaba",
+    "icon_path": "alibaba.png",
     "friendly_size": "M",
     "dataset": "private",
     "distribution": "open-weights",
     "conditions": "restricted"
   },
-  "Llama-3-8b-Instruct": {
-    "simple_name": "Llama 3 8b",
+  "Meta-Llama-3-8B-Instruct": {
+    "simple_name": "Llama-3-8b",
     "organisation": "Meta",
+    "icon_path": "meta.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
@@ -122,6 +137,7 @@
   "Vicuna-33B": {
     "simple_name": "Vicuna-33B",
     "organisation": "LMSYS",
+    "icon_path": "lmsys.png",
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
@@ -130,6 +146,7 @@
   "Alpaca-13B": {
     "simple_name": "Alpaca-13B",
     "organisation": "Stanford",
+    "icon_path": "stanford.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
@@ -138,6 +155,7 @@
   "Mistral-7B-Instruct-v0.3": {
     "simple_name": "Mistral-7B",
     "organisation": "Mistral",
+    "icon_path": "mistral.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
@@ -146,6 +164,7 @@
   "Qwen2-7B-Instruct-GPTQ-Int8": {
     "simple_name": "Qwen2-7B",
     "organisation": "Alibaba",
+    "icon_path": "alibaba.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
@@ -154,6 +173,7 @@
   "Command R+": {
     "simple_name": "Command R+",
     "organisation": "Cohere",
+    "icon_path": "cohere.png",
     "friendly_size": "L",
     "distribution": "open-weights",
     "dataset": "private",
@@ -162,6 +182,7 @@
   "Claude 3 Opus": {
     "simple_name": "Claude 3 Opus",
     "organisation": "Anthropic",
+    "icon_path": "anthropic.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
@@ -170,6 +191,7 @@
   "Aya23-8B": {
     "simple_name": "Aya23-8B",
     "organisation": "Cohere",
+    "icon_path": "cohere.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
@@ -178,6 +200,7 @@
   "Command R": {
     "simple_name": "Command R",
     "organisation": "Cohere",
+    "icon_path": "cohere.png",
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
@@ -186,6 +209,7 @@
   "Albert MFS": {
     "simple_name": "Albert MFS",
     "organisation": "Albert",
+    "icon_path": "marianne.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "communiqué",
@@ -194,6 +218,7 @@
   "Gemma 2-27b-it": {
     "simple_name": "Gemma 2-27b-it",
     "organisation": "Google",
+    "icon_path": "google.png",
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
@@ -202,6 +227,7 @@
   "Qwen2-72b-instruct": {
     "simple_name": "Qwen2-72b-instruct",
     "organisation": "Alibaba",
+    "icon_path": "alibaba.png",
     "friendly_size": "L",
     "distribution": "open-weights",
     "dataset": "private",
@@ -210,6 +236,7 @@
   "Qwen2-57B-A14B-Instruct": {
     "simple_name": "Qwen2-57B-A14B-Instruct",
     "organisation": "Alibaba",
+    "icon_path": "alibaba.png",
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
@@ -218,6 +245,7 @@
   "Phi-3-small-8k-Instruct": {
     "simple_name": "Phi-3-small-8k-Instruct",
     "organisation": "Microsoft",
+    "icon_path": "microsoft.png",
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
@@ -226,6 +254,7 @@
   "Claude 3.5 Sonnet": {
     "simple_name": "Claude 3.5 Sonnet",
     "organisation": "Anthropic",
+    "icon_path": "anthropic.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
