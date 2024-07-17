@@ -69,6 +69,14 @@ async def about(request: Request):
     )
 
 
+@app.get("/cgu", response_class=HTMLResponse)
+async def tos(request: Request):
+    return templates.TemplateResponse(
+        "tos.html",
+        {"request": request, "config": config},
+    )
+
+
 @app.exception_handler(500)
 async def http_exception_handler(request, exc):
     return FileResponse("templates/50x.html", status_code=500)

@@ -44,6 +44,7 @@ if os.getenv("SENTRY_DSN"):
     )
     logging.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
 
+# TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
 if os.getenv('SENTRY_FRONT_DSN'):
     sentry_js = f"""
     <script src="{ os.getenv('SENTRY_FRONT_DSN') }" crossorigin="anonymous"></script>
