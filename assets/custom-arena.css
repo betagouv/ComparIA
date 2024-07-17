@@ -51,6 +51,10 @@ body {
     display: none !important;
 }
 
+.model-icon {
+  display: inline;
+}
+
 .icon-white img {
     filter: invert(100%);
 }

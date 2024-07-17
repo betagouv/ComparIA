@@ -4,11 +4,11 @@
     <div class="fr-grid-row fr-grid-row--gutters">
         {% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
         <div class="fr-tile fr-col-md-6 fr-col-12">
-            <h3>{{ model["simple_name"] }} <img src="file=assets/orgs/{{ model['icon_path'] }}" /></h3>
+            <h3>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20" height="20" /></h3>
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success">Votre choix</span>
             {% endif %}
-            <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">{{ model['friendly_size']
+            <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{ model['friendly_size']
                     }}</span></p>
             <p>{{ model['excerpt'] }}</p>
             <div class="fr-grid-row">
