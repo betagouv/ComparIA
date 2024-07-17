@@ -8,26 +8,26 @@
             {% if which_model_radio == side %}
             <span class="fr-badge fr-badge--success">Votre choix</span>
             {% endif %}
-            <p>{{ model['organisation'] }}, {{ model['country']'] }} <span class="fr-badge">{{ model['friendly_size']
+            <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">{{ model['friendly_size']
                     }}</span></p>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
                     <h4>Transparence</h4>
                     <p><span class="fr-icon-stack" aria-hidden="true">Code source</span><br />{% if
                         model['distribution'] == "open-weights" %}<span class="fr-badge">Poids communiqués</span>{%
-                        else}<span class="fr-badge">Propriétaire</span>{% endif %}</p>
+                        else %}<span class="fr-badge">Propriétaire</span>{% endif %}</p>
                     <p><span class="fr-icon-stack" aria-hidden="true">Corpus d'entrainement</span><br />{% if
-                        model['dataset'] == "private" %}<span class="fr-badge">Non communiqué</span>{% else}<span
+                        model['dataset'] == "private" %}<span class="fr-badge">Non communiqué</span>{% else %}<span
                             class="fr-badge">Public</span>{% endif %}</p>
                 </div>
                 <div class="fr-col-12 fr-col-md-6">
                     <h4>Utilisation</h4>
                     <p><span class="fr-icon-stack" aria-hidden="true">Distribution</span><br />{% if
                         model['distribution'] == "open-weights" %}<span class="fr-badge">Téléchargeable</span>{%
-                        else}<span class="fr-badge">API uniquement</span>{% endif %}</p>
+                        else %}<span class="fr-badge">API uniquement</span>{% endif %}</p>
                     <p><span class="fr-icon-stack" aria-hidden="true">Conditions d'usage</span><br />{% if
-                        model['conditions'] == "restricted" %}<span class="fr-badge">Sous conditions</span>{% else}<span
-                            class="fr-badge">Libre</span>{% endif %}</p>
+                        model['conditions'] == "restricted" %}<span class="fr-badge">Sous conditions</span>{% else
+                        %}<span class="fr-badge">Libre</span>{% endif %}</p>
                 </div>
             </div>
             <h4>Ma conversation correspond à :</h4>
@@ -61,3 +61,4 @@
         </div>
     </div>
 </dialog>
+{% endfor %}

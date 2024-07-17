@@ -188,17 +188,14 @@ def get_matomo_js(matomo_url, matomo_id):
 
 from jinja2 import Template
 
-def get_model_openness(distribution):
-    return "Modèle ouvert" if distribution == "open-weights" else "Propriétaire"
-    
 def build_reveal_html(model_a, model_b, which_model_radio):
-    template = Template(source="../templates/reveal.html")
+    source = open("templates/reveal.html", "r", encoding="utf-8").read()
+    template = Template(source)
     
     return template.render(
         model_a=model_a,
         model_b=model_b,
         which_model_radio=which_model_radio,
-        get_model_openness=get_model_openness
     )
 
 def get_conv_log_filename(is_vision=False, has_csam_image=False):
