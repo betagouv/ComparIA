@@ -97,7 +97,8 @@
     "friendly_size": "XS",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "free"
+    "conditions": "free",
+    "description": "Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
   },
   "Vicuna-13B": {
     "simple_name": "Vicuna-13B",
@@ -117,7 +118,21 @@
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "restricted"
+    "conditions": "restricted",
+    "description": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol. Grâce à l’architecture SMoE (sparse mixture of experts), seule une fraction des paramètres est activée pour chaque inférence, réduisant ainsi les coûts et la latence.",
+    "excerpt": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol."
+  },
+  "Mixtral-8x22B-Instruct-v0.1": {
+    "simple_name": "Mixtral-8x22B",
+    "organisation": "Mistral",
+    "country": "France",
+    "icon_path": "mistral.png",
+    "friendly_size": "L",
+    "distribution": "open-weights",
+    "dataset": "private",
+    "conditions": "restricted",
+    "excerpt": "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût.",
+    "description": "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût. Seuls 39Mds de paramètres sont actifs sur 141Mds. La fenêtre contextuelle de 64000 tokens permet de rappeler des informations précises à partir de grands documents."
   },
   "Meta-Llama-3-70B-Instruct": {
     "simple_name": "Llama-3-70b",
@@ -127,7 +142,9 @@
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "open-weights",
-    "conditions": "Sous condition"
+    "conditions": "Sous condition",
+    "excerpt": "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens",
+    "description": "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il supporte un contexte de 8000 tokens."
   },
   "Qwen1.5-32B-Chat": {
     "simple_name": "Qwen1.5-32B",
@@ -147,7 +164,8 @@
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "Sous condition"
+    "conditions": "Sous condition",
+    "description": "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité."
   },
   "Vicuna-33B": {
     "simple_name": "Vicuna-33B",
@@ -187,7 +205,8 @@
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "free"
+    "conditions": "free",
+    "description": "Petit frère de la famille Qwen2, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes"
   },
   "Command R+": {
     "simple_name": "Command R+",
@@ -271,6 +290,7 @@
   },
   "Phi-3-small-8k-Instruct": {
     "simple_name": "Phi-3-small-8k-Instruct",
+    "description": "Grand frère de la famille Phi3, ce modèle supporte un contexte de 8000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.",
     "organisation": "Microsoft",
     "country": "États-Unis",
     "icon_path": "microsoft.png",

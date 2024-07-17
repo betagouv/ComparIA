@@ -10,6 +10,7 @@
             {% endif %}
             <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">{{ model['friendly_size']
                     }}</span></p>
+            <p>{{ model['excerpt'] }}</p>
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
                     <h4>Transparence</h4>
@@ -53,8 +54,8 @@
                     </div>
                     <div class="fr-modal__content">
                         <h1 id="fr-modal-title-fr-modal-{{ side }}" class="fr-modal__title"><span
-                                class="fr-icon-arrow-right-line fr-icon--lg"></span>{{ side }}</h1>
-                        <p>{{ side }}</p>
+                                class="fr-icon-arrow-right-line fr-icon--lg"></span>{{ model['simple_name'] }}</h1>
+                        <p>{{ model['description'] }}</p>
                     </div>
                 </div>
             </div>

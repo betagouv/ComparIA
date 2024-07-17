@@ -212,8 +212,14 @@ def get_conv_log_filename(is_vision=False, has_csam_image=False):
 
 
 def get_model_extra_info(name: str, models_extra_info: dict):
+    # Maybe put orgs countries in an array here
     if (str.lower(name) in models_extra_info):
-        return models_extra_info[str.lower(name)]
+        model = models_extra_info[str.lower(name)]
+        if 'excerpt' not in model and 'description' in model:
+            if len(model['description']) > 140:
+                model['excerpt'] =  model['description'][0:139] + "…"
+            else:
+                model['excerpt'] =  model['description']
     else:
         # To fix this, please complete `models-extra-info.json` to register your model
         return (
@@ -224,6 +230,9 @@ def get_model_extra_info(name: str, models_extra_info: dict):
                 "distribution": "open-weights",
                 "dataset": "private",
                 "conditions": "restricted",
+                "description": "Un modèle open source, probablement disponible via Hugging Face.",
+                "excerpt": "Un modèle open source",
+                "icon_path": "huggingface.png"
             },
     ) 
 
