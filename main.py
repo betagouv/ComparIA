@@ -52,12 +52,11 @@ async def home(request: Request):
         "index.html", {"request": request, "config": config}
     )
 
-
 @app.get("/modeles", response_class=HTMLResponse)
 async def models(request: Request):
     return templates.TemplateResponse(
         "models.html",
-        {"request": request, "config": config, "models_info": config.models_extra_info},
+        {"request": request, "config": config, "models": config.models_extra_info},
     )
 
 

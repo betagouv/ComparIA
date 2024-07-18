@@ -20,6 +20,8 @@ import requests
 
 from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
 
+from slugify import slugify
+
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 
@@ -202,12 +204,28 @@ def build_reveal_html(
         chosen_model = "model-a"
     if which_model_radio == "rightvote":
         chosen_model = "model-b"
+
+    size_desc = {
+        "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
+        "S": "Un modèle de petit gabarit (7 à 20 milliards de paramètres) est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
+        "M": "Les modèles moyens, entre 20 et 70 milliards de paramètres, offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+        "L": "Les grands modèles, avec plus de 70 milliards de paramètres, sont les plus complexes et nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
+    }
+    license_desc = {
+        "MIT": "La licence MIT est une licence de logiciel libre permissive: elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur.",
+        "Apache 2.0": "Cette licence permet d'utiliser, modifier et distribuer librement, même à des fins commerciales. Outre la liberté d’utilisation, elle garantit la protection juridique en incluant une clause de non-atteinte aux brevets et la transparence : toutes les modifications doivent être documentées et sont donc traçables.",
+        "Gemma": "Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagée avec la communauté sous la même licence, favorisant ainsi la collaboration et la transparence dans le développement logiciel.",
+        "Meta Llama 2 Community": "Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta.",
+        "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
+    }
     return template.render(
         model_a=model_a,
         model_b=model_b,
         chosen_model=chosen_model,
         model_a_impact=model_a_impact,
         model_b_impact=model_b_impact,
+        size_desc=size_desc,
+        license_desc=license_desc,
     )
 
 
@@ -224,31 +242,53 @@ def get_conv_log_filename(is_vision=False, has_csam_image=False):
     return name
 
 
-def get_model_extra_info(name: str, models_extra_info: dict):
+def build_model_extra_info(name: str, all_models_extra_info_json: dict):
     # Maybe put orgs countries in an array here
-    if str.lower(name) in models_extra_info:
-        model = models_extra_info[str.lower(name)]
+    std_name = slugify(name.lower())
+    if std_name in all_models_extra_info_json:
+        model = all_models_extra_info_json[std_name]
+        # TODO: Should use a dict instead
+        model["id"] = std_name
         if "excerpt" not in model and "description" in model:
-            if len(model["description"]) > 140:
-                model["excerpt"] = model["description"][0:139] + "…"
+            if len(model["description"]) > 350:
+                model["excerpt"] = model["description"][0:349] + "…"
             else:
                 model["excerpt"] = model["description"]
+
+        # FIXME: fix this...
+        if "params" not in model:
+            size_to_params = {"XS": 3, "S": 7, "M": 13, "L": 35}
+            model["params"] = size_to_params[model["friendly_size"]]
+
+        # Let's suppose q8
+        # TODO: give a range?
+        # FIXME: Fix for MoE
+        model["required_ram"] = model["params"]
+
         return model
-    else:
         # To fix this, please complete `models-extra-info.json` to register your model
-        return (
-            {
-                "simple_name": "Autre",
-                "organisation": "Autre",
-                "friendly_size": "M",
-                "distribution": "open-weights",
-                "dataset": "private",
-                "conditions": "restricted",
-                "description": "Un modèle open source, probablement disponible via Hugging Face.",
-                "excerpt": "Un modèle open source",
-                "icon_path": "huggingface.png",
-            },
-        )
+    return (
+        {
+            "id": "other",
+            "simple_name": "Autre",
+            "organisation": "Autre",
+            "friendly_size": "M",
+            "distribution": "open-weights",
+            "dataset": "private",
+            "conditions": "restricted",
+            "description": "Un modèle open source disponible via Hugging Face.",
+            "excerpt": "Un modèle open source",
+            "icon_path": "huggingface.png",
+            "license": "Autre",
+        },
+    )
+
+
+def get_model_extra_info(name: str, models_extra_info: list):
+    std_name = slugify(name.lower())
+    for model in models_extra_info:
+        if model["id"] == std_name:
+            return model
 
 
 def get_model_list(controller_url, register_api_endpoint_file, vision_arena):

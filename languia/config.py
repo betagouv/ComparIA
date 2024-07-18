@@ -1,9 +1,10 @@
-from languia.utils import get_model_list, get_matomo_js, get_model_extra_info
+from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
 import os
 import sentry_sdk
 import json
 import logging
+from slugify import slugify
 
 num_sides = 2
 enable_moderation = False
@@ -121,9 +122,12 @@ models, all_models = get_model_list(
 
 api_endpoint_info = json.load(open(register_api_endpoint_file))
 
-all_models_extra_info = {
-    k.lower(): v for k, v in json.load(open("./models-extra-info.json")).items()
-}
+# TODO: to CSV
+
+all_models_extra_info_json = {slugify(k.lower()): v for k, v in json.load(open("./models-extra-info.json")).items()}
+
+models_extra_info = [build_model_extra_info(model, all_models_extra_info_json) for model in models]
+print(models_extra_info)
 
 headers = {"User-Agent": "FastChat Client"}
 controller_url = None

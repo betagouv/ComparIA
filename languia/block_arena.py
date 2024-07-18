@@ -312,7 +312,7 @@ with gr.Blocks(
             show_label=True,
             elem_id="accept_tos_checkbox",
         )
-        gr.HTML(elem_id="accept_tos_label", value="""Voir les <a href="/cgu" target="_blank">conditions générales d'utilisation</a>.""")
+        gr.HTML(elem_id="accept_tos_label", value="""<a href="/cgu" target="_blank">Conditions générales d'utilisation</a>.""")
 
         start_arena_btn = gr.Button(
             value="C'est parti",
@@ -588,7 +588,7 @@ with gr.Blocks(
     #     clear_btn = gr.Button(value="Recommencer sans voter")
 
     #     # dsfr: This should just be a normal link...
-    #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
+    #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/modeles">Liste des modèles</a>')
 
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
 
@@ -964,13 +964,9 @@ with gr.Blocks(
                 )
             # model_a =  config.models_extra_info[state0.model_name.lower()]
             # model_b =  config.models_extra_info[state1.model_name.lower()]
-            model_a = get_model_extra_info(
-                state0.model_name, config.all_models_extra_info
-            )
-            model_b = get_model_extra_info(
-                state1.model_name, config.all_models_extra_info
-            )
-
+            model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
+            model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
+            
             # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
             model_a_tokens = count_tokens(state0.conv.messages, "Assistant")
             model_b_tokens = count_tokens(state1.conv.messages, "Assistant")
