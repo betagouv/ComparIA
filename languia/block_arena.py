@@ -450,7 +450,7 @@ with gr.Blocks(
                         # TODO: move label
                         label=label,
                         elem_classes="chatbot",
-                        # Could we show it? Useful...
+                        # Should we show it?
                         show_copy_button=False,
                     )
 
@@ -470,7 +470,8 @@ with gr.Blocks(
             retry_btn = gr.Button(
                 icon="assets/dsfr/icons/system/refresh-line.svg",
                 value="",
-                elem_classes="fr-btn icon-white",
+                elem_classes="fr-btn fr-btn--secondary",
+                # elem_classes="fr-btn icon-white",
                 visible=False,
                 scale=1,
             )
