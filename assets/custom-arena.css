@@ -1,31 +1,33 @@
-
 body {
-    /* width: 80% !important; */
-    margin: auto !important;
+  /* width: 80% !important; */
+  margin: auto !important;
 }
 
 #send-area {
-    position: fixed;
-    padding: 1em 20%;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    background-color: var(--background-alt-grey);
-    border-top: solid 1px var(--border-default-grey);
-    z-index: 100;
-  }
+  position: fixed;
+  padding: 1em 20%;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background-color: var(--background-alt-grey);
+  border-top: solid 1px var(--border-default-grey);
+  z-index: 100;
+}
+
 .app {
   max-width: none !important;
   /* max-width: none; */
 }
+
 /* Only for landing? */
 .fr-header {
   filter: none;
   /* filter: drop-shadow(var(--raised-shadow)); */
 }
+
 #arena {
-    /* width: 80% !important; */
-    margin: auto;
+  /* width: 80% !important; */
+  margin: auto;
 }
 
 .fr-header__brand {
@@ -37,18 +39,20 @@ body {
 	} */
 
 #mode-screen.send-area-enabled {
-    margin-bottom: 12rem;
+  margin-bottom: 12rem;
 }
+
 #chat-area {
-    margin-bottom: 5rem;
+  margin-bottom: 5rem;
 }
 
 .mission {
   color: var(--text-default-info) !important;
 }
 
-.built-with, .show-api {
-    display: none !important;
+.built-with,
+.show-api {
+  display: none !important;
 }
 
 .model-icon {
@@ -56,7 +60,7 @@ body {
 }
 
 .icon-white img {
-    filter: invert(100%);
+  filter: invert(100%);
 }
 
 .fr-icon-stack::before,
@@ -66,7 +70,7 @@ body {
 }
 
 .fr-icon-stack::before {
-background-image: url("file=assets/extra-icons/stack.svg");
+  background-image: url("file=assets/extra-icons/stack.svg");
 }
 
 .fr-icon-ruler::before,
@@ -76,7 +80,7 @@ background-image: url("file=assets/extra-icons/stack.svg");
 }
 
 .fr-icon-ruler::before {
-background-image: url("file=assets/extra-icons/misc/ruler.svg");
+  background-image: url("file=assets/extra-icons/misc/ruler.svg");
 }
 
 .fr-icon-copyright-line::before,
@@ -87,7 +91,7 @@ background-image: url("file=assets/extra-icons/misc/ruler.svg");
 
 .fr-icon-copyright-line::before {
   background-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
-  }
+}
 
 .fr-icon-home-4-line::before,
 .fr-icon-home-4-line::after {
