@@ -110,6 +110,10 @@ body {
 
 }
 
+#start_screen ol li::marker {
+  font-size: 1.5rem;
+}
+
 /* Temporary fixes for dark mode in arena: enforce clear mode */
 /* .dark .fr-label {
   color: var(--text-default-grey) !important;
