@@ -109,6 +109,9 @@ body {
   color: var(--text-action-high-blue-france) !important;
 
 }
+#start_screen ol {
+  list-style-position: outside;
+}
 
 #start_screen ol li::marker {
   font-size: 1.5rem;
@@ -121,4 +124,32 @@ body {
 body.dark {
   --body-background-fill: var(--background-default-grey);
   --body-text-color: var(--text-default-grey) !important;
+}
+
+.fr-icon-discuss-line::before,
+.fr-icon-discuss-line::after {
+  color: var(--text-action-high-blue-france);
+  background-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
+  mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
+
+}
+
+.fr-icon-chat-delete-line::before,
+.fr-icon-chat-delete-line::after {
+  color: var(--text-action-high-blue-france);
+  background-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
+  mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
+}
+
+.fr-icon-pass-expired-line::before,
+.fr-icon-pass-expired-line::after {
+  color: var(--text-action-high-blue-france);
+  background-image: url("file=assets/extra-icons/pass-expired.svg");
+
+  -webkit-mask-image: url("file=assets/extra-icons/pass-expired.svg");
+  mask-image: url("file=assets/extra-icons/pass-expired.svg");
 }
