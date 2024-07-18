@@ -5,8 +5,7 @@
         {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b, 'model-b', model_b_impact, model_b_running_eq)] %}
 
         <div class="fr-tile fr-col-md-6 fr-col-12 fr-enlarge-link">
-            <h3><a href="#" data-fr-opened="false" aria-controls="fr-modal-{{ side }}">{{ model["simple_name"] }} <img
-                        class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20" height="20" /></a>
+            <h3><a href="#" data-fr-opened="false" aria-controls="fr-modal-{{ side }}">{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20" height="20" /></a>
             </h3>
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success">Votre choix</span>
@@ -14,7 +13,7 @@
             <p>{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{
                     model['friendly_size']
                     }}</span></p>
-            <p>{{ model['excerpt'] }}</p>
+        <!-- <p>{{ model['excerpt'] }}</p> -->
             <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
                     <h5>Transparence</h5>
