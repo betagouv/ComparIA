@@ -340,7 +340,7 @@ with gr.Blocks(
         <div class="fr-notice fr-notice--info"> 
             <div class="fr-container">
                     <div class="fr-notice__body mission" >
-                        <p class="fr-notice__title mission">Votre mission : discutez avec deux modèles anonymes puis votez pour celui que vous préférez</p>
+                        <p class="fr-notice__title mission">Discutez d’un sujet qui vous intéresse puis évaluez les réponses des modèles.</p>
                     </div>
             </div>
         </div>"""
@@ -417,7 +417,7 @@ with gr.Blocks(
                         # No difference
                         # bubble_full_width=False,
                         layout="panel",  # or "bubble"
-                        likeable=True,
+                        likeable=False,
                         # TODO: move label
                         label=label,
                         elem_classes="chatbot",
@@ -432,7 +432,6 @@ with gr.Blocks(
                 show_label=False,
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 scale=10,
-                lines=2,
                 max_lines=7,
                 # not working
                 # autofocus=True
@@ -837,40 +836,40 @@ with gr.Blocks(
             api_name=False,
         )
 
-        def intermediate_like(state0, state1, event: gr.LikeData, request: gr.Request):
-            # TODO: add model name?
-            details = {"message": event.value["value"]}
+        # def intermediate_like(state0, state1, event: gr.LikeData, request: gr.Request):
+        #     # TODO: add model name?
+        #     details = {"message": event.value["value"]}
 
-            vote_type = "intermediate_"
-            if event.liked:
-                vote_type += "like_"
-            else:
-                vote_type += "dislike_"
-            if event.target == chatbots[0]:
-                vote_type += "left"
-            elif event.target == chatbots[1]:
-                vote_type += "right"
-            else:
-                logger.error("Like event for unknown chat")
-            vote_last_response(
-                [state0, state1],
-                vote_type,
-                details,
-                request,
-            )
+        #     vote_type = "intermediate_"
+        #     if event.liked:
+        #         vote_type += "like_"
+        #     else:
+        #         vote_type += "dislike_"
+        #     if event.target == chatbots[0]:
+        #         vote_type += "left"
+        #     elif event.target == chatbots[1]:
+        #         vote_type += "right"
+        #     else:
+        #         logger.error("Like event for unknown chat")
+        #     vote_last_response(
+        #         [state0, state1],
+        #         vote_type,
+        #         details,
+        #         request,
+        #     )
 
-        chatbots[0].like(
-            fn=intermediate_like,
-            inputs=conversations_state,
-            outputs=[],
-            api_name=False,
-        )
-        chatbots[1].like(
-            fn=intermediate_like,
-            inputs=conversations_state,
-            outputs=[],
-            api_name=False,
-        )
+        # chatbots[0].like(
+        #     fn=intermediate_like,
+        #     inputs=conversations_state,
+        #     outputs=[],
+        #     api_name=False,
+        # )
+        # chatbots[1].like(
+        #     fn=intermediate_like,
+        #     inputs=conversations_state,
+        #     outputs=[],
+        #     api_name=False,
+        # )
 
         @conclude_btn.click(
             inputs=[],
