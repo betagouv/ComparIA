@@ -15,6 +15,8 @@ import gradio as gr
 
 from languia import config
 
+from languia.utils import size_desc, license_desc
+
 app = FastAPI()
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
@@ -56,7 +58,7 @@ async def home(request: Request):
 async def models(request: Request):
     return templates.TemplateResponse(
         "models.html",
-        {"request": request, "config": config, "models": config.models_extra_info},
+        {"request": request, "config": config, "models": config.models_extra_info, "size_desc": size_desc, "license_desc": license_desc},
     )
 
 

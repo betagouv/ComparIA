@@ -54,6 +54,7 @@
     </div>
 </div>
 
+<!-- TODO: factorize -->
 {% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
 <dialog aria-labelledby="fr-modal-title-modal-{{ side }}" role="dialog" id="fr-modal-{{ side }}" class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
@@ -115,7 +116,7 @@
                                         href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
                                         rel="noopener external" target="_blank">🧮 EcoLogits Calculator</a></p>
                             <p><a href="{{ model['url']|default('#') }}" rel="noopener external"
-                                    target="_blank"></a>Pour en savoir plus sur ce modèle</a></p>
+                                    target="_blank">Pour en savoir plus sur ce modèle</a></p>
                         </div>
                         <p>
                             <a href="../modeles" class="fr-btn fr-mt-2w">Découvrir tous les modèles</a>
