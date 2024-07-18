@@ -612,16 +612,16 @@ with gr.Blocks(
             elem_classes="fr-btn", value="Envoyer mes préférences"
         )
 
-    # with gr.Row():
-    #     # dsfr: This should just be a normal link...
-    #     opinion_btn = gr.HTML(value='''<a class="fr-btn disabled" href="#" >Donner mon avis sur l'arène</a>''')
-
-    #     clear_btn = gr.Button(value="Recommencer sans voter")
-
-    #     # dsfr: This should just be a normal link...
-    #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/modeles">Liste des modèles</a>')
-
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
+
+    with gr.Row(visible=False) as feedback_row:
+        # dsfr: This should just be a normal link...
+        opinion_btn = gr.HTML(value='''<a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>''')
+
+        # clear_btn = gr.Button(value="Recommencer sans voter")
+
+        # dsfr: This should just be a normal link...
+        leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="../modeles">Liste des modèles</a>')
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -758,8 +758,8 @@ with gr.Blocks(
             elif chosen_guide == "creativite":
                 preprompts = [
                     "Donne moi un moyen mnémotechnique pour retenir l'ordre des planètes",
-                    "Pourquoi les français font-ils des blagues sur les belges ?",
-                    "De qui les français sont-ils les belges, niveau blague ?",
+                    # "Pourquoi les français font-ils des blagues sur les belges ?",
+                    # "De qui les français sont-ils les belges, niveau blague ?",
                 ]
             elif chosen_guide == "pedagogie":
                 preprompts = [
@@ -954,6 +954,7 @@ with gr.Blocks(
                 stepper_block,
                 vote_area,
                 supervote_area,
+                feedback_row,
                 results_area,
             ],
             api_name=False,
@@ -1021,6 +1022,7 @@ with gr.Blocks(
                 gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
                 gr.update(visible=False),
                 gr.update(visible=False),
+                gr.update(visible=True),
                 gr.update(visible=True, value=reveal_html),
             ]
 
