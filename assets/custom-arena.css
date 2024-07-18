@@ -99,3 +99,18 @@ background-image: url("file=assets/extra-icons/misc/ruler.svg");
 .fr-icon-home-4-line::after {
   background-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
 }
+
+#start_screen h4 {
+  /* Not DSFR compliant */
+  color: var(--text-action-high-blue-france) !important;
+
+}
+
+/* Temporary fixes for dark mode in arena: enforce clear mode */
+/* .dark .fr-label {
+  color: var(--text-default-grey) !important;
+} */
+body.dark {
+  --body-background-fill: var(--background-default-grey);
+  --body-text-color: var(--text-default-grey) !important;
+}
