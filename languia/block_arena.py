@@ -349,7 +349,7 @@ with gr.Blocks(
             scale=0,
             # TODO: à centrer
             elem_id="start_arena_btn",
-            elem_classes="fr-btn",
+            elem_classes="fr-btn fr-mx-auto",
             interactive=False,
         )
 
@@ -374,9 +374,9 @@ with gr.Blocks(
             </div>
         </div>"""
         )
-        gr.Markdown(
-            """#### Comment voulez-vous commencer la conversation ?
-                    _(Sélectionnez un des deux modes)_"""
+        gr.HTML(
+            """<div class="text-center"><h4 class="fr-mb-1v">Comment voulez-vous commencer la conversation ?</h4>
+            <p><em>(Sélectionnez un des deux modes)</em></p>"""
         )
         with gr.Row():
             with gr.Column():
