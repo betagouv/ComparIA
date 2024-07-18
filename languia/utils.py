@@ -207,8 +207,15 @@ license_desc = {
     "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
 }
 
+
 def build_reveal_html(
-    model_a, model_b, which_model_radio, model_a_impact, model_b_impact
+    model_a,
+    model_b,
+    which_model_radio,
+    model_a_impact,
+    model_b_impact,
+    model_a_running_eq,
+    model_b_running_eq,
 ):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
@@ -226,7 +233,17 @@ def build_reveal_html(
         model_b_impact=model_b_impact,
         size_desc=size_desc,
         license_desc=license_desc,
+        model_a_running_eq=model_a_running_eq,
+        model_b_running_eq=model_b_running_eq,
     )
+
+
+def running_eq(impact):
+    energy_in_kJ = impact.energy.value / 0.2777777778
+    # running 1 km at 10 km/h with a weight of 70 kg
+    running_eq = energy_in_kJ / 294
+    # in km
+    return running_eq
 
 
 def get_conv_log_filename(is_vision=False, has_csam_image=False):

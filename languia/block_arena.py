@@ -42,6 +42,7 @@ from languia.utils import (
     get_model_extra_info,
     count_tokens,
     get_llm_impact,
+    running_eq
 )
 
 from gradio_frbutton import FrButton
@@ -286,6 +287,7 @@ with gr.Blocks(
     theme=DSFR(),
     css=config.css,
     head=config.arena_head_js,
+    
     # elem_classes=""
 ) as demo:
     conversations_state = [gr.State() for _ in range(config.num_sides)]
@@ -974,12 +976,17 @@ with gr.Blocks(
             model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens)
             model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens)
 
+            model_a_running_eq = running_eq(model_a_impact)
+            model_b_running_eq = running_eq(model_b_impact)
+            
             reveal_html = build_reveal_html(
                 model_a=model_a,
                 model_b=model_b,
                 which_model_radio=which_model_radio,
                 model_a_impact=model_a_impact,
                 model_b_impact=model_b_impact,
+                model_a_running_eq=model_a_running_eq,
+                model_b_running_eq=model_b_running_eq
             )
             return [
                 gr.update(value=stepper_html("Révélation des modèles", 4, 4)),

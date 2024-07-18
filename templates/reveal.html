@@ -2,7 +2,7 @@
     <h3>Merci pour votre vote !<br />
         Découvrez les modèles avec lesquels vous venez de discuter :</h3>
     <div class="fr-grid-row fr-grid-row--gutters">
-        {% for model, side, impact in [(model_a, 'model-a', model_a_impact), (model_b, 'model-b', model_b_impact)] %}
+        {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b, 'model-b', model_b_impact, model_b_running_eq)] %}
 
         <div class="fr-tile fr-col-md-6 fr-col-12 fr-enlarge-link">
             <h3><a href="#" data-fr-opened="false" aria-controls="fr-modal-{{ side }}">{{ model["simple_name"] }} <img
@@ -41,11 +41,12 @@
             </div>
             <h5>Ma conversation correspond à :</h5>
             <div class="fr-grid-row">
-                <div class="fr-tile fr-col-3"><strong>{{ '%0.2f'| format(impact.energy.value*100|float) }}</strong>
+                <div class="fr-tile fr-col-3 text-center"><strong>{{ '%0.2f'| format(impact.energy.value*100|float) }}</strong><br />
                     <i>wattheures</i>
                 </div>
                 <div class="fr-container fr-col">Emissions de CO2 : <strong>{{ '%0.2f'|
-                        format(impact.gwp.value*100|float) }}g</strong></div>
+                        format(impact.gwp.value*100|float) }} g</strong><br />
+                    Équivalent à <strong>{{ '%0.2f'| format(running_eq) }} km de course à pied</strong></div>
             </div>
             <p><a class="fr-btn fr-btn--secondary" href="#" data-fr-opened="false"
                     aria-controls="fr-modal-{{ side }}">En savoir plus</a></p>
