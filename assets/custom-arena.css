@@ -138,8 +138,8 @@ body.dark {
 
 .fr-icon-chat-delete-line::before,
 .fr-icon-chat-delete-line::after {
-  /* background-color: var(--text-action-high-blue-france); */
-  background-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
+  background-color: var(--text-action-high-blue-france);
+  /* background-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg"); */
 
   -webkit-mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
   mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
