@@ -69,13 +69,6 @@ def vote_last_response(
     # yield names + ("",)
 
 
-accept_tos_js = """
-function () {
-  document.cookie="languia_tos_accepted=1"
-}
-"""
-
-
 def stepper_html(title, step, total_steps):
     return f"""
     <div class="fr-stepper">

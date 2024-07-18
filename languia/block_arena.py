@@ -42,7 +42,7 @@ from languia.utils import (
     get_model_extra_info,
     count_tokens,
     get_llm_impact,
-    running_eq
+    running_eq,
 )
 
 from gradio_frbutton import FrButton
@@ -287,7 +287,35 @@ with gr.Blocks(
     theme=DSFR(),
     css=config.css,
     head=config.arena_head_js,
-    
+    analytics_enabled=False,
+    delete_cache=(1, 1) if config.debug else None,
+    # Dirty hack for accepting ToS
+    js="""function() {
+
+    const acceptWaiverCheckbox = document.getElementById('accept_waiver');
+
+    const acceptTosCheckbox = document.getElementById('accept_tos');
+
+    const startArenaBtn = document.getElementById('start_arena_btn');
+
+    function checkAndEnableButton() {
+        const shouldEnable = acceptWaiverCheckbox.checked && acceptTosCheckbox.checked;
+
+        startArenaBtn.disabled = !shouldEnable;
+    }
+
+    acceptWaiverCheckbox.addEventListener('change', function() {
+        checkAndEnableButton();
+    });
+
+    acceptTosCheckbox.addEventListener('change', function() {
+        checkAndEnableButton();
+    });
+
+    // Initial check
+    checkAndEnableButton();
+}
+""",
     # elem_classes=""
 ) as demo:
     conversations_state = [gr.State() for _ in range(config.num_sides)]
@@ -303,23 +331,24 @@ with gr.Blocks(
     with gr.Column(elem_classes="fr-container") as start_screen:
 
         # TODO: DSFRize
-        accept_waiver_checkbox = gr.Checkbox(
-            label="J'ai compris que mes données transmises à l'arène seront mises à disposition à des fins de recherche",
-            show_label=True,
-            elem_classes="",
-        )
-        # FIXME: custom component for checkboxes
-        accept_tos_checkbox = gr.Checkbox(
-            label="J'accepte les conditions générales d'utilisation :",
-            show_label=True,
-            elem_id="accept_tos_checkbox",
-        )
-        gr.HTML(elem_id="accept_tos_label", value="""<a href="/cgu" target="_blank">Conditions générales d'utilisation</a>.""")
+        # accept_waiver_checkbox = gr.Checkbox(
+        #     label="J'ai compris que mes données transmises à l'arène seront mises à disposition à des fins de recherche",
+        #     show_label=True,
+        #     elem_classes="",
+        # )
+        # # FIXME: custom component for checkboxes
+        # accept_tos_checkbox = gr.Checkbox(
+        #     label="J'accepte les conditions générales d'utilisation :",
+        #     show_label=True,
+        #     elem_id="accept_tos_checkbox",
+        # )
+        # gr.HTML(elem_id="accept_tos_label", value="""<a href="/cgu" target="_blank">Conditions générales d'utilisation</a>.""")
 
         start_arena_btn = gr.Button(
             value="C'est parti",
             scale=0,
             # TODO: à centrer
+            elem_id="start_arena_btn",
             elem_classes="fr-btn",
             interactive=False,
         )
@@ -626,17 +655,17 @@ with gr.Blocks(
     def register_listeners():
         # Step 0
 
-        @gr.on(
-            triggers=[accept_tos_checkbox.change, accept_waiver_checkbox.change],
-            inputs=[accept_tos_checkbox, accept_waiver_checkbox],
-            outputs=start_arena_btn,
-            api_name=False,
-        )
-        def accept_tos_to_enter_arena(accept_tos_checkbox, accept_waiver_checkbox):
-            # Enable if both checked
-            return gr.update(
-                interactive=(accept_tos_checkbox and accept_waiver_checkbox)
-            )
+        # @gr.on(
+        #     triggers=[accept_tos_checkbox.change, accept_waiver_checkbox.change],
+        #     inputs=[accept_tos_checkbox, accept_waiver_checkbox],
+        #     outputs=start_arena_btn,
+        #     api_name=False,
+        # )
+        # def accept_tos_to_enter_arena(accept_tos_checkbox, accept_waiver_checkbox):
+        #     # Enable if both checked
+        #     return gr.update(
+        #         interactive=(accept_tos_checkbox and accept_waiver_checkbox)
+        #     )
 
         @start_arena_btn.click(
             inputs=[],
@@ -644,16 +673,16 @@ with gr.Blocks(
             api_name=False,
         )
         def enter_arena(request: gr.Request):
-            tos_accepted = accept_tos_checkbox
-            if tos_accepted:
-                return (
-                    gr.HTML(header_html),
-                    gr.update(visible=False),
-                    gr.update(visible=True),
-                    gr.update(visible=True),
-                )
-            else:
-                return (gr.skip(), gr.skip(), gr.skip())
+            # tos_accepted = accept_tos_checkbox
+            # if tos_accepted:
+            return (
+                gr.HTML(header_html),
+                gr.update(visible=False),
+                gr.update(visible=True),
+                gr.update(visible=True),
+            )
+            # else:
+            #     return (gr.skip(), gr.skip(), gr.skip())
 
         # Step 1
 
@@ -967,7 +996,7 @@ with gr.Blocks(
             # model_b =  config.models_extra_info[state1.model_name.lower()]
             model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
             model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
-            
+
             # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
             model_a_tokens = count_tokens(state0.conv.messages, "Assistant")
             model_b_tokens = count_tokens(state1.conv.messages, "Assistant")
@@ -977,7 +1006,7 @@ with gr.Blocks(
 
             model_a_running_eq = running_eq(model_a_impact)
             model_b_running_eq = running_eq(model_b_impact)
-            
+
             reveal_html = build_reveal_html(
                 model_a=model_a,
                 model_b=model_b,
@@ -985,7 +1014,7 @@ with gr.Blocks(
                 model_a_impact=model_a_impact,
                 model_b_impact=model_b_impact,
                 model_a_running_eq=model_a_running_eq,
-                model_b_running_eq=model_b_running_eq
+                model_b_running_eq=model_b_running_eq,
             )
             return [
                 gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
