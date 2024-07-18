@@ -53,6 +53,12 @@ logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 from languia import config
 
+# // Enable navigation prompt
+# window.onbeforeunload = function() {
+#     return true;
+# };
+# // Remove navigation prompt
+# window.onbeforeunload = null;
 
 def add_text(
     # state0: ConversationState,
@@ -437,12 +443,14 @@ with gr.Blocks(
                     #         placeholder
                     # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
                     chatbots[i] = gr.Chatbot(
+                        elem_id=f"chatbot-{i}",
+                        container=False,
                         # container: bool = True par défaut,
                         # min_width=
                         # height=
                         # Doesn't seem to work, is it because it always has at least our message?
                         # Note: supports HTML, use it!
-                        placeholder="**En chargement**",
+                        placeholder="<em>Veuillez écrire au modèle</em>",
                         # No difference
                         # bubble_full_width=False,
                         layout="panel",  # or "bubble"
@@ -618,7 +626,7 @@ with gr.Blocks(
         # dsfr: This should just be a normal link...
         opinion_btn = gr.HTML(value='''<a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>''')
 
-        # clear_btn = gr.Button(value="Recommencer sans voter")
+    # clear_btn = gr.Button(value="Recommencer sans voter")
 
         # dsfr: This should just be a normal link...
         leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="../modeles">Liste des modèles</a>')
