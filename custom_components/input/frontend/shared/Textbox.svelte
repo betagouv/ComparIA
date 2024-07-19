@@ -10,6 +10,14 @@
 	import { fade } from "svelte/transition";
 	import type { SelectData } from "@gradio/utils";
 
+	
+	import '@gouvfr/dsfr/dist/scheme/scheme.css';
+    import '@gouvfr/dsfr/dist/core/core.css';
+    import '@gouvfr/dsfr/dist/component/form/form.css';
+    import '@gouvfr/dsfr/dist/component/link/link.css';
+    import '@gouvfr/dsfr/dist/component/button/button.css';
+    import '@gouvfr/dsfr/dist/component/input/input.css';
+
 	export let value = "";
 	export let value_is_output = false;
 	export let lines = 1;
@@ -187,7 +195,7 @@
 			<input
 				data-testid="textbox"
 				type="text"
-				class="scroll-hide"
+				class="scroll-hide fr-input"
 				dir={rtl ? "rtl" : "ltr"}
 				bind:value
 				bind:this={el}
@@ -252,7 +260,7 @@
 		<textarea
 			data-testid="textbox"
 			use:text_area_resize={value}
-			class="scroll-hide"
+			class="scroll-hide fr-input"
 			dir={rtl ? "rtl" : "ltr"}
 			bind:value
 			bind:this={el}
