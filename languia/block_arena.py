@@ -168,7 +168,7 @@ def add_text(
         # send_btn
         + [gr.update(interactive=False)]
         # retry_btn
-        + [gr.update(visible=True)]
+        # + [gr.update(visible=True)]
         # conclude_btn
         + [gr.update(visible=True, interactive=True)]
     )
@@ -475,14 +475,14 @@ with gr.Blocks(
             )
             send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
             # FIXME: visible=false not working?
-            retry_btn = gr.Button(
-                icon="assets/dsfr/icons/system/refresh-line.svg",
-                value="",
-                elem_classes="fr-btn fr-btn--secondary",
-                # elem_classes="fr-btn icon-white",
-                visible=False,
-                scale=1,
-            )
+            # retry_btn = gr.Button(
+            #     icon="assets/dsfr/icons/system/refresh-line.svg",
+            #     value="",
+            #     elem_classes="fr-btn fr-btn--secondary",
+            #     # elem_classes="fr-btn icon-white",
+            #     visible=False,
+            #     scale=1,
+            # )
         with gr.Row():
             # FIXME: visible=false not working?
             conclude_btn = gr.Button(
@@ -860,7 +860,7 @@ with gr.Blocks(
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            + [retry_btn]
+            # + [retry_btn]
             + [conclude_btn],
         ).then(
             fn=bot_response_multi,
@@ -1035,17 +1035,17 @@ with gr.Blocks(
             ]
 
         # On reset go to mode selection mode_screen
-        gr.on(
-            triggers=[retry_btn.click],
-            api_name=False,
-            # triggers=[clear_btn.click, retry_btn.click],
-            fn=clear_history,
-            inputs=conversations_state + chatbots + [textbox],
-            # inputs=conversations_state + chatbots + model_selectors + [textbox],
-            # List of objects to clear
-            outputs=conversations_state + chatbots
-            # + model_selectors
-            + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
-        )
+        # gr.on(
+        #     triggers=[retry_btn.click],
+        #     api_name=False,
+        #     # triggers=[clear_btn.click, retry_btn.click],
+        #     fn=clear_history,
+        #     inputs=conversations_state + chatbots + [textbox],
+        #     # inputs=conversations_state + chatbots + model_selectors + [textbox],
+        #     # List of objects to clear
+        #     outputs=conversations_state + chatbots
+        #     # + model_selectors
+        #     + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
+        # )
 
     register_listeners()
