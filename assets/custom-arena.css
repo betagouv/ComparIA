@@ -3,21 +3,46 @@ body {
   margin: auto !important;
 }
 
-#send-area {
-  position: fixed;
-  padding: 1em 20%;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  background-color: var(--background-alt-grey);
-  border-top: solid 1px var(--border-default-grey);
-  z-index: 100;
+/* Temporary fixes for dark mode in arena: enforce clear mode */
+/* .dark .fr-label {
+  color: var(--text-default-grey) !important;
+} */
+body.dark {
+  color: var(--body-text-color) !important;
+  background-color: var(--background-default-grey) !important;
+  --body-background-fill: var(--background-default-grey);
+  --body-text-color: var(--text-default-grey);
 }
+.dark textarea, .dark input, .dark .padded {
+  color: var(--body-text-color) !important;
+  background-color: var(--background-default-grey) !important;
+  /* border-width: 1px !important; */
+}
+
+.dark p {
+  color: var(--body-text-color);
+}
+
+/* Utility classes */
+
+.icon-white img {
+  filter: invert(100%);
+}
+
+.text-center {
+  text-align: center;
+}
+.underline {
+  --underline-hover-width: var(--underline-max-width);
+}
+/* General */
 
 .app {
   max-width: none !important;
   /* max-width: none; */
 }
+
+/* Screen by screen */
 
 /* Only for landing? */
 .fr-header {
@@ -26,17 +51,31 @@ body {
 }
 
 #arena {
-  /* width: 80% !important; */
   margin: auto;
 }
 
 .fr-header__brand {
   filter: none !important;
 }
+#send-area {
+  position: fixed;
+  padding: 1em 20%;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background-color: var(--background-alt-grey);
+  /* border-top: solid 1px var(--border-default-grey); */
+  z-index: 100;
+}
 
-/* #free-mode.selected, #guided-mode.selected, #guided-area button.selected {
-		border-bottom: 4px var(--border-default-blue-france) solid;
-	} */
+
+#free-mode, #guided-mode {
+  border: 1px var(--border-default-grey) solid;
+}
+#free-mode.selected, #guided-mode.selected, #guided-area button.selected {
+		border-bottom: 5px var(--border-action-high-blue-france) solid;
+    background-color: var(--active-tint);
+	}
 
 #mode-screen.send-area-enabled {
   margin-bottom: 12rem;
@@ -59,9 +98,19 @@ body {
   display: inline;
 }
 
-.icon-white img {
-  filter: invert(100%);
+#start_screen h4, #free-mode h4, #guided-mode h4 {
+  /* Not DSFR compliant */
+  color: var(--text-action-high-blue-france) !important;
+
 }
+#start_screen ol {
+  list-style-position: outside;
+}
+
+#start_screen ol li::marker {
+  font-size: 1.5rem;
+}
+/* Icons */
 
 .fr-icon-stack::before,
 .fr-icon-stack::after {
@@ -104,28 +153,6 @@ body {
   background-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
 }
 
-#start_screen h4 {
-  /* Not DSFR compliant */
-  color: var(--text-action-high-blue-france) !important;
-
-}
-#start_screen ol {
-  list-style-position: outside;
-}
-
-#start_screen ol li::marker {
-  font-size: 1.5rem;
-}
-
-/* Temporary fixes for dark mode in arena: enforce clear mode */
-/* .dark .fr-label {
-  color: var(--text-default-grey) !important;
-} */
-body.dark {
-  --body-background-fill: var(--background-default-grey);
-  --body-text-color: var(--text-default-grey) !important;
-}
-
 .fr-icon-discuss-line::before,
 .fr-icon-discuss-line::after {
   background-color: var(--text-action-high-blue-france);
@@ -152,8 +179,4 @@ body.dark {
 
   -webkit-mask-image: url("file=assets/extra-icons/pass-expired.svg");
   mask-image: url("file=assets/extra-icons/pass-expired.svg");
-}
-
-.text-center {
-  text-align: center;
 }
