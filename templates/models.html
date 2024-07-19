@@ -13,7 +13,8 @@
                         <div class="fr-card__content">
                             <p class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mb-1w">Modèle ouvert</p>
                             <h3 class="fr-card__title"><a href="#" data-fr-opened="false" aria-controls="fr-modal-{{ model['id'] }}">{{
-                                model['simple_name'] }}</a></h3>
+                                model['simple_name'] }} <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20"
+                                height="20" /></a></h3>
                             <!-- <p class="fr-card__desc">{{ model['excerpt'] }}</p> -->
                             <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
                         class="fr-link--icon-right fr-link">    En savoir plus</a> -->
@@ -26,12 +27,6 @@
         </div>
     </div>
 </main>
-
-<!-- Modale Simple
-     La balise <dialog> peut être placée n'importe où sur la page, toutefois
-     nous vous conseillons, si vous en avez la possibilité,
-     d'en faire un enfant direct de la balise <body>
--->
 
 {% for model in models %}
 <dialog aria-labelledby="fr-modal-title-modal-{{ model['id'] }}" role="dialog" id="fr-modal-{{ model['id'] }}" class="fr-modal">

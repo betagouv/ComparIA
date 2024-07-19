@@ -13,21 +13,23 @@ body.dark {
   --body-background-fill: var(--background-default-grey);
   --body-text-color: var(--text-default-grey);
 }
-.dark textarea, .dark input, .dark .padded {
+/* .dark textarea, .dark input, .dark .padded {
   color: var(--body-text-color) !important;
   background-color: var(--background-default-grey) !important;
-  /* border-width: 1px !important; */
-}
+} */
 
 .dark p {
   color: var(--body-text-color);
 }
 
 /* Utility classes */
-
+/* 
 .icon-white img {
   filter: invert(100%);
-}
+} */
+/* .icon-blue img {
+  filter: 
+} */
 
 .text-center {
   text-align: center;
@@ -180,3 +182,11 @@ body.dark {
   -webkit-mask-image: url("file=assets/extra-icons/pass-expired.svg");
   mask-image: url("file=assets/extra-icons/pass-expired.svg");
 }
+
+/* .fr-icon-refresh-line::before, 
+.fr-icon-refresh-line::after {
+  background-color: var(--text-action-high-blue-france);
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/refresh-line.svg");
+  mask-image: url("file=assets/dsfr/system/refresh-line.svg");
+} */

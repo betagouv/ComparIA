@@ -20,6 +20,7 @@ from languia.utils import size_desc, license_desc
 app = FastAPI()
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+# app.mount("/arene/custom_components", StaticFiles(directory="custom_components"), name="custom_components")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -44,6 +45,8 @@ app = gr.mount_gradio_app(
     path="/arene",
     root_path="/arene",
     allowed_paths=[config.assets_absolute_path],
+    # allowed_paths=[config.assets_absolute_path, "/tmp"],
+    # allowed_paths=[config.assets_absolute_path, "/tmp", "custom_components"],
     show_error=config.debug,
 )
 
