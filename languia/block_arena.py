@@ -47,7 +47,7 @@ from languia.utils import (
 
 from gradio_frbutton import FrButton
 
-# from gradio_frinput import FrInput
+# from custom_components.input.backend.gradio_nostyleinput import NoStyleInput
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
@@ -59,6 +59,7 @@ from languia import config
 # };
 # // Remove navigation prompt
 # window.onbeforeunload = null;
+
 
 def add_text(
     # state0: ConversationState,
@@ -294,7 +295,8 @@ with gr.Blocks(
     css=config.css,
     head=config.arena_head_js,
     analytics_enabled=False,
-    delete_cache=(1, 1) if config.debug else None,
+    # Doesn't work with uvicorn
+    # delete_cache=(1, 1) if config.debug else None,
     # Dirty hack for accepting ToS
     js="""function() {
 
@@ -381,27 +383,35 @@ with gr.Blocks(
         </div>"""
         )
         gr.HTML(
-            """<div class="text-center"><h4 class="fr-mb-1v">Comment voulez-vous commencer la conversation ?</h4>
-            <p><em>(Sélectionnez un des deux modes)</em></p>"""
+            """<div class="text-center fr-mt-4w fr-mb-2w fr-grid-row fr-grid-row--center"><h4 class="fr-mb-1v fr-col-12">Comment voulez-vous commencer la conversation ?</h4>
+            <p class="fr-col-12"><em>(Sélectionnez un des deux modes)</em></p></div>"""
         )
-        with gr.Row():
-            with gr.Column():
-                free_mode_btn = FrButton(
-                    custom_html="<h3>Mode libre</h3><p>Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>",
-                    elem_id="free-mode",
-                    icon="assets/extra-artwork/conclusion.svg",
-                )
-            with gr.Column():
-                guided_mode_btn = FrButton(
-                    elem_id="guided-mode",
-                    custom_html="<h3>Mode inspiré</h3><p>Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>",
-                    icon="assets/extra-artwork/innovation.svg",
-                )
+        with gr.Row(
+            elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-col-12"
+        ):
+            mode_selection_classes = "fr-col-12 fr-col-md-4 fr-p-4w"
+            free_mode_btn = FrButton(
+                custom_html="""<h4>Mode libre</h4><p class="fr-text--lg">Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>""",
+                elem_id="free-mode",
+                elem_classes="fr-ml-auto " + mode_selection_classes,
+                icon="assets/extra-artwork/conclusion.svg",
+            )
+            guided_mode_btn = FrButton(
+                elem_classes="fr-mr-auto " + mode_selection_classes,
+                elem_id="guided-mode",
+                custom_html="""<h4>Mode inspiré</h4><p class="fr-text--lg">Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>""",
+                icon="assets/extra-artwork/innovation.svg",
+            )
 
         with gr.Column(
-            visible=False, elem_id="guided-area", elem_classes=""
+            visible=False,
+            elem_id="guided-area",
+            elem_classes="fr-grid-row fr-grid-row--center",
         ) as guided_area:
-            gr.Markdown("##### Sélectionnez un thème que vous aimeriez explorer :")
+            gr.Markdown(
+                elem_classes="text-center fr-mt-4w fr-mb-2w fr-col-12",
+                value="##### Sélectionnez un thème que vous aimeriez explorer :",
+            )
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
             with gr.Row():
                 maniere = FrButton(
@@ -462,25 +472,31 @@ with gr.Blocks(
                         show_copy_button=False,
                     )
 
+    # with gr.Column(elem_id="send-area", elem_classes="fr-grid-row", visible=False) as send_area:
     with gr.Column(elem_id="send-area", visible=False) as send_area:
-        with gr.Row():
+        with gr.Row(elem_classes="fr-grid-row"):
             # TODO: redevelop FrInput from Textbox and not SimpleTextbox
             textbox = gr.Textbox(
+                # textbox = NoStyleInput(
                 show_label=False,
                 placeholder="Ecrivez votre premier message à l'arène ici",
-                scale=10,
                 max_lines=7,
+                elem_classes="fr-input fr-col-12 fr-col-md-10",
+                container=False,
                 # not working
                 # autofocus=True
             )
-            send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
+            send_btn = gr.Button(
+                value="Envoyer", elem_classes="fr-btn fr-col-6 fr-col-md-1"
+            )
             # FIXME: visible=false not working?
             # retry_btn = gr.Button(
             #     icon="assets/dsfr/icons/system/refresh-line.svg",
             #     value="",
-            #     elem_classes="fr-btn fr-btn--secondary",
-            #     # elem_classes="fr-btn icon-white",
+            #     elem_classes="icon-blue fr-btn fr-btn--secondary",
+            #     # elem_classes="fr-icon-refresh-line",
             #     visible=False,
+            #     # render=False,
             #     scale=1,
             # )
         with gr.Row():
@@ -624,12 +640,16 @@ with gr.Blocks(
 
     with gr.Row(visible=False) as feedback_row:
         # dsfr: This should just be a normal link...
-        opinion_btn = gr.HTML(value='''<a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>''')
+        opinion_btn = gr.HTML(
+            value="""<a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>"""
+        )
 
-    # clear_btn = gr.Button(value="Recommencer sans voter")
+        # clear_btn = gr.Button(value="Recommencer sans voter")
 
         # dsfr: This should just be a normal link...
-        leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="../modeles">Liste des modèles</a>')
+        leaderboard_btn = gr.HTML(
+            value='<a class="fr-btn" href="../modeles">Liste des modèles</a>'
+        )
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -699,8 +719,8 @@ with gr.Blocks(
             inputs=[],
             # js?
             outputs=[
-                guided_mode_btn,
                 free_mode_btn,
+                guided_mode_btn,
                 send_area,
                 guided_area,
                 mode_screen,
@@ -709,8 +729,10 @@ with gr.Blocks(
         )
         def free_mode():
             return [
-                gr.update(elem_classes=""),
-                gr.update(elem_classes="selected"),
+                gr.update(
+                    elem_classes="fr-ml-auto " + mode_selection_classes + " selected"
+                ),
+                gr.update(elem_classes="fr-mr-auto " + mode_selection_classes),
                 gr.update(visible=True),
                 gr.update(visible=False),
                 gr.update(elem_classes="fr-container send-area-enabled"),
@@ -734,8 +756,12 @@ with gr.Blocks(
                 return [gr.skip() * 4]
             else:
                 return [
-                    gr.update(elem_classes=""),
-                    gr.update(elem_classes="selected"),
+                    gr.update(elem_classes="fr-ml-auto " + mode_selection_classes),
+                    gr.update(
+                        elem_classes="fr-mr-auto "
+                        + mode_selection_classes
+                        + " selected"
+                    ),
                     gr.update(visible=False),
                     gr.update(visible=True),
                     gr.update(elem_classes="fr-container send-area-enabled"),
