@@ -443,35 +443,6 @@ with gr.Blocks(
             #     choices=["Chtimi ?", "Québécois ?"], elem_classes="", visible=False
             # )
 
-    with gr.Group(elem_id="chat-area", visible=False) as chat_area:
-        with gr.Row():
-            for i in range(config.num_sides):
-                label = "Modèle A" if i == 0 else "Modèle B"
-                with gr.Column():
-                    # {likeable}
-                    # placeholder
-                    #         placeholder
-                    # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
-                    chatbots[i] = gr.Chatbot(
-                        elem_id=f"chatbot-{i}",
-                        container=False,
-                        # container: bool = True par défaut,
-                        # min_width=
-                        # height=
-                        # Doesn't seem to work, is it because it always has at least our message?
-                        # Note: supports HTML, use it!
-                        placeholder="<em>Veuillez écrire au modèle</em>",
-                        # No difference
-                        # bubble_full_width=False,
-                        layout="panel",  # or "bubble"
-                        likeable=False,
-                        # TODO: move label
-                        label=label,
-                        elem_classes="chatbot",
-                        # Should we show it?
-                        show_copy_button=False,
-                    )
-
     # with gr.Column(elem_id="send-area", elem_classes="fr-grid-row", visible=False) as send_area:
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         with gr.Row(elem_classes="fr-grid-row"):
@@ -508,6 +479,35 @@ with gr.Blocks(
                 visible=False,
                 interactive=False,
             )
+
+    with gr.Group(elem_id="chat-area", visible=False) as chat_area:
+        with gr.Row():
+            for i in range(config.num_sides):
+                label = "Modèle A" if i == 0 else "Modèle B"
+                with gr.Column():
+                    # {likeable}
+                    # placeholder
+                    #         placeholder
+                    # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
+                    chatbots[i] = gr.Chatbot(
+                        elem_id=f"chatbot-{i}",
+                        container=False,
+                        # container: bool = True par défaut,
+                        # min_width=
+                        # height=
+                        # Doesn't seem to work, is it because it always has at least our message?
+                        # Note: supports HTML, use it!
+                        placeholder="<em>Veuillez écrire au modèle</em>",
+                        # No difference
+                        # bubble_full_width=False,
+                        layout="panel",  # or "bubble"
+                        likeable=False,
+                        # TODO: move label
+                        label=label,
+                        elem_classes="chatbot",
+                        # Should we show it?
+                        show_copy_button=False,
+                    )
 
     with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
