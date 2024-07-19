@@ -45,46 +45,27 @@
 	export let interactive: boolean;
 </script>
 
-<Block
-	{visible}
-	{elem_id}
-	{elem_classes}
-	{scale}
-	{min_width}
-	allow_overflow={false}
-	padding={container}
->
-	{#if loading_status}
-		<StatusTracker
-			autoscroll={gradio.autoscroll}
-			i18n={gradio.i18n}
-			{...loading_status}
-			on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
-		/>
-	{/if}
-
-	<TextBox
-		bind:value
-		bind:value_is_output
-		{label}
-		{info}
-		{show_label}
-		{lines}
-		{type}
-		{rtl}
-		{text_align}
-		max_lines={!max_lines ? lines + 1 : max_lines}
-		{placeholder}
-		{show_copy_button}
-		{autofocus}
-		{container}
-		{autoscroll}
-		on:change={() => gradio.dispatch("change", value)}
-		on:input={() => gradio.dispatch("input")}
-		on:submit={() => gradio.dispatch("submit")}
-		on:blur={() => gradio.dispatch("blur")}
-		on:select={(e) => gradio.dispatch("select", e.detail)}
-		on:focus={() => gradio.dispatch("focus")}
-		disabled={!interactive}
-	/>
-</Block>
+<TextBox
+	bind:value
+	bind:value_is_output
+	{label}
+	{info}
+	{show_label}
+	{lines}
+	{type}
+	{rtl}
+	{text_align}
+	max_lines={!max_lines ? lines + 1 : max_lines}
+	{placeholder}
+	{show_copy_button}
+	{autofocus}
+	{container}
+	{autoscroll}
+	on:change={() => gradio.dispatch("change", value)}
+	on:input={() => gradio.dispatch("input")}
+	on:submit={() => gradio.dispatch("submit")}
+	on:blur={() => gradio.dispatch("blur")}
+	on:select={(e) => gradio.dispatch("select", e.detail)}
+	on:focus={() => gradio.dispatch("focus")}
+	disabled={!interactive}
+/>
