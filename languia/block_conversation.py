@@ -159,7 +159,7 @@ def bot_response(
             state,
         )
 
-    html_code = '<em>En attente de la réponse…</em>'
+    html_code = '<br /><em>En attente de la réponse…</em>'
 
     # conv.update_last_message("▌")
     conv.update_last_message(html_code)
