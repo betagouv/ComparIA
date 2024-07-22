@@ -456,7 +456,7 @@ with gr.Blocks(
                 show_label=False,
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,
-                elem_classes="fr-input fr-col-12 fr-col-md-10",
+                elem_classes="fr-input fr-col-12 fr-col-md-9",
                 container=False,
                 # not working
                 # autofocus=True
