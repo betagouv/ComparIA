@@ -3,8 +3,8 @@ Chatbot Arena (battle) tab.
 Users chat with two anonymous models.
 """
 
-import json
-import time
+# import json
+# import time
 
 import gradio as gr
 import numpy as np
@@ -161,14 +161,16 @@ def add_text(
         conversations_state
         # 2 chatbots
         + [x.to_gradio_chatbot() for x in conversations_state]
-        # text
-        + [""]
+        # textbox
+        # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
+        + [gr.update(placeholder="Continuer à discuter avec les deux modèles")]
         # stepper_block
         + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
         # mode_screen
         + [gr.update(visible=False)]
         # chat_area
         + [gr.update(visible=True)]
+
         # send_btn
         + [gr.update(interactive=False)]
         # retry_btn
@@ -474,6 +476,7 @@ with gr.Blocks(
             # )
         with gr.Row():
             # FIXME: visible=false not working?
+            # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire 
             conclude_btn = gr.Button(
                 value="Terminer et donner mon avis",
                 scale=1,
