@@ -34,6 +34,9 @@
 	export let autofocus = false;
 	export let text_align: "left" | "right" | undefined = undefined;
 	export let autoscroll = true;
+	export let visible = true;
+	export let elem_id = "";
+	export let elem_classes: string[] = [];
 
 	let el: HTMLTextAreaElement | HTMLInputElement;
 	let copied = false;
@@ -195,7 +198,9 @@
 			<input
 				data-testid="textbox"
 				type="text"
-				class="scroll-hide fr-input"
+				id={elem_id}
+				class:hidden={visible === false}
+				class="scroll-hide fr-input {elem_classes.join(' ')}"
 				dir={rtl ? "rtl" : "ltr"}
 				bind:value
 				bind:this={el}

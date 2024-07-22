@@ -33,8 +33,8 @@
 	export let max_lines: number;
 	export let type: "text" | "password" | "email" = "text";
 	export let container = true;
-	export let scale: number | null = null;
-	export let min_width: number | undefined = undefined;
+	// export let scale: number | null = null;
+	// export let min_width: number | undefined = undefined;
 	export let show_copy_button = false;
 	export let loading_status: LoadingStatus | undefined = undefined;
 	export let value_is_output = false;
@@ -45,9 +45,21 @@
 	export let interactive: boolean;
 </script>
 
+{#if loading_status}
+	<StatusTracker
+		autoscroll={gradio.autoscroll}
+		i18n={gradio.i18n}
+		{...loading_status}
+		on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
+	/>
+{/if}
+
 <TextBox
 	bind:value
 	bind:value_is_output
+	{elem_id}
+	{elem_classes}
+	{visible}
 	{label}
 	{info}
 	{show_label}
