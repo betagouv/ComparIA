@@ -116,7 +116,7 @@ def add_text(
     model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
     # turn on moderation in battle mode
     all_conv_text_left = conversations_state[0].conv.get_prompt()
-    all_conv_text_right = conversations_state[0].conv.get_prompt()
+    all_conv_text_right = conversations_state[1].conv.get_prompt()
     all_conv_text = (
         all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
     )
