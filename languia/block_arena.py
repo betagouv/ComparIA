@@ -499,7 +499,6 @@ with gr.Blocks(
                     # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
                     chatbots[i] = gr.Chatbot(
                         elem_id=f"chatbot-{i}",
-                        container=False,
                         # min_width=
                         # height=
                         # Doesn't show because it always has at least our message
@@ -510,8 +509,9 @@ with gr.Blocks(
                         layout="panel",  # or "bubble"
                         likeable=False,
                         label=label,
-                        # doesn't work
+                        # FIXME: UserWarning: show_label has no effect when container is False.
                         show_label=True,
+                        container=False,
                         elem_classes="chatbot",
                         # Should we show it?
                         show_copy_button=False,
