@@ -439,7 +439,7 @@ with gr.Blocks(
                     custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Parler en Occitan, Alsacien, Basque, Picard…</p>""",
                 )
                 variete = FrButton(
-            value="variet   e",
+                    value="variete",
                     custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Est-ce différent en Québécois, Belge, Suisse, Antillais…</p>""",
                 )
             # guided_prompt = gr.Radio(
