@@ -24,7 +24,7 @@
     "license": "Apache 2.0"
   },
   "Phi-3-Mini-4k-Instruct": {
-    "simple_name": "Phi-3-Mini-4k-Instruct",
+    "simple_name": "Phi-3-Mini",
     "organisation": "Microsoft",
     "country": "États-Unis",
     "params": 3.8,
@@ -38,6 +38,8 @@
   "Mixtral-8x7B-Instruct-v0.1": {
     "simple_name": "Mixtral-8x7B",
     "organisation": "Mistral",
+    "active_params": 14,
+    "total_params": 56,
     "country": "France",
     "icon_path": "mistral.png",
     "friendly_size": "M",
