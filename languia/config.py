@@ -9,6 +9,8 @@ from slugify import slugify
 num_sides = 2
 enable_moderation = False
 
+if os.getenv("GIT_COMMIT"):
+    git_commit = os.getenv("GIT_COMMIT")
 
 env_debug = os.getenv("LANGUIA_DEBUG")
 
