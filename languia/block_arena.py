@@ -163,7 +163,7 @@ def add_text(
         + [x.to_gradio_chatbot() for x in conversations_state]
         # textbox
         # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
-        + [gr.update(placeholder="Continuer à discuter avec les deux modèles")]
+        + [gr.update(value="",placeholder="Continuer à discuter avec les deux modèles")]
         # stepper_block
         + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
         # mode_screen
@@ -455,6 +455,7 @@ with gr.Blocks(
             # textbox = gr.Textbox(
             textbox = FrInput(
                 show_label=False,
+                lines=1,
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,
                 elem_classes="fr-input fr-col-12 fr-col-md-9",
@@ -498,18 +499,18 @@ with gr.Blocks(
                     chatbots[i] = gr.Chatbot(
                         elem_id=f"chatbot-{i}",
                         container=False,
-                        # container: bool = True par défaut,
                         # min_width=
                         # height=
-                        # Doesn't seem to work, is it because it always has at least our message?
+                        # Doesn't show because it always has at least our message
                         # Note: supports HTML, use it!
                         placeholder="<em>Veuillez écrire au modèle</em>",
                         # No difference
                         # bubble_full_width=False,
                         layout="panel",  # or "bubble"
                         likeable=False,
-                        # TODO: move label
                         label=label,
+                        # doesn't work
+                        show_label=True,
                         elem_classes="chatbot",
                         # Should we show it?
                         show_copy_button=False,
@@ -749,7 +750,7 @@ with gr.Blocks(
             outputs=[
                 free_mode_btn,
                 guided_mode_btn,
-                send_area,
+                # send_area,
                 guided_area,
                 mode_screen,
             ],
@@ -768,7 +769,8 @@ with gr.Blocks(
                         + mode_selection_classes
                         + " selected"
                     ),
-                    gr.update(visible=False),
+                    # send_area
+                    # gr.update(visible=False),
                     gr.update(visible=True),
                     gr.update(elem_classes="fr-container send-area-enabled"),
                 ]
