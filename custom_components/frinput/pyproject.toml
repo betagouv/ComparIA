@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "gradio_frinput"
-version = "0.0.1"
+version = "0.0.3"
 description = "DSFR Input component"
 readme = "README.md"
 license = "etalab-2.0"

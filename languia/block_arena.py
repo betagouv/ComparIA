@@ -458,6 +458,7 @@ with gr.Blocks(
                 lines=1,
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,
+                # TODO: raise fr-col-md to 10 ?
                 elem_classes="fr-input fr-col-12 fr-col-md-9",
                 container=False,
                 # not working
