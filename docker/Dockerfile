@@ -6,12 +6,11 @@ RUN apt-get update -y && apt-get install -y python3.9 python3.9-distutils curl
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 # TODO: virtualenv
 RUN python3.9 get-pip.py
-RUN pip3 install fschat
 RUN pip3 install fschat[model_worker,webui]
-RUN pip3 install openai plotly pydantic-settings sentry-sdk
+RUN pip3 install openai plotly pydantic-settings sentry-sdk gradio==4.38.1
 
 # Specific to LANGU:IA: install required Gradio Custom Components
-FROM python:3.9-slim as custom_components
+FROM python:3.9-slim AS custom_components
 RUN apt update && apt install -y nodejs npm
 RUN pip3 install gradio
 COPY ./custom_components/ /custom_components/
