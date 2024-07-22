@@ -360,9 +360,16 @@ def is_limit_reached(model_name, ip):
         return None
 
 
-def count_tokens(messages, role) -> int:
-    """Count tokens (assuming 4 per message) for a specific role."""
-    return sum(len(msg[1]) * 4 for msg in messages if msg[0] == role)
+def count_output_tokens(messages) -> int:
+    """Count output tokens (assuming 4 per message)."""
+    # FIXME: use standardized roles instead...
+    for msg in messages:
+        if msg[0] not in ["Assistant", "[/INST]", "Human", "[INST]"]:
+            logger.info("Found weird role: " + msg[0])
+
+    return sum(
+        len(msg[1]) * 4 for msg in messages if msg[0] in ["Assistant", "[/INST]"]
+    )
 
 
 def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
