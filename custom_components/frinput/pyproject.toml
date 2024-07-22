@@ -14,7 +14,10 @@ readme = "README.md"
 license = "etalab-2.0"
 requires-python = ">=3.8"
 authors = [{ name = "YOUR NAME", email = "YOUREMAIL@domain.com" }]
-keywords = ["gradio-custom-component", "gradio-template-SimpleTextbox", "dsfr"]
+keywords = [
+  "gradio-custom-component",
+  "gradio-template-Textbox"
+]
 # Add dependencies here
 dependencies = ["gradio>=4.0,<5.0"]
 classifiers = [
@@ -45,7 +48,7 @@ classifiers = [
 dev = ["build", "twine"]
 
 [tool.hatch.build]
-artifacts = ["/backend/gradio_frinput/templates", "*.pyi", "/home/hadrien/git/languia/venv/lib64/python3.11/site-packages/gradio_frinput/templates"]
+artifacts = ["/backend/gradio_frinput/templates", "*.pyi"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["/backend/gradio_frinput"]

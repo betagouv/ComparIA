@@ -47,7 +47,7 @@ from languia.utils import (
 
 from gradio_frbutton import FrButton
 
-# from custom_components.input.backend.gradio_nostyleinput import NoStyleInput
+from custom_components.frinput.backend.gradio_frinput import FrInput
 
 logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
@@ -436,7 +436,7 @@ with gr.Blocks(
                     custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Parler en Occitan, Alsacien, Basque, Picard…</p>""",
                 )
                 variete = FrButton(
-                    value="variete",
+            value="variet   e",
                     custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Est-ce différent en Québécois, Belge, Suisse, Antillais…</p>""",
                 )
             # guided_prompt = gr.Radio(
@@ -446,9 +446,8 @@ with gr.Blocks(
     # with gr.Column(elem_id="send-area", elem_classes="fr-grid-row", visible=False) as send_area:
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         with gr.Row(elem_classes="fr-grid-row"):
-            # TODO: redevelop FrInput from Textbox and not SimpleTextbox
-            textbox = gr.Textbox(
-                # textbox = NoStyleInput(
+            # textbox = gr.Textbox(
+            textbox = FrInput(
                 show_label=False,
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,

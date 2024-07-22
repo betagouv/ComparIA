@@ -1,25 +1,26 @@
 {
   "name": "gradio_frinput",
-  "version": "0.2.6",
+  "version": "0.6.7",
   "description": "Gradio UI packages",
   "type": "module",
   "author": "",
   "license": "ISC",
   "private": false,
   "main_changeset": true,
+  "main": "Index.svelte",
   "exports": {
     ".": "./Index.svelte",
     "./example": "./Example.svelte",
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "^1.12.0",
-    "@gradio/atoms": "0.7.4",
-    "@gradio/icons": "0.4.1",
-    "@gradio/statustracker": "0.6.0",
-    "@gradio/utils": "0.4.2"
+    "@gouvfr/dsfr": "^1.12.1",
+    "@gradio/atoms": "0.7.6",
+    "@gradio/icons": "0.6.0",
+    "@gradio/statustracker": "0.7.1",
+    "@gradio/utils": "0.5.1"
   },
   "devDependencies": {
-    "@gradio/preview": "0.9.1"
+    "@gradio/preview": "0.10.1"
   }
 }
