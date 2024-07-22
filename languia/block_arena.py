@@ -409,12 +409,13 @@ with gr.Blocks(
             )
 
         with gr.Column(
-            visible=False,
             elem_id="guided-area",
-            elem_classes="fr-grid-row fr-grid-row--center",
+            # elem_classes="fr-grid-row" messes with visible=False...
+            # elem_classes="fr-grid-row fr-grid-row--center",
+            visible=False
         ) as guided_area:
             gr.Markdown(
-                elem_classes="text-center fr-mt-4w fr-mb-2w fr-col-12",
+                elem_classes="text-center fr-mt-4w fr-mb-2w",
                 value="##### Sélectionnez un thème que vous aimeriez explorer :",
             )
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
