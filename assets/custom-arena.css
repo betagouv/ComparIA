@@ -35,6 +35,40 @@ body.dark {
   background-color: var(--background-default-grey) !important;
 }
 
+/* Gradio overrides */
+label,
+fieldset {
+  background-color: var(--background-default-grey) !important;
+  border: none;
+}
+
+.form {
+  border: none;
+}
+
+/* Radio button as DSFR-ish selectable tiles */
+.radio-tiles label.selected {
+  box-shadow: 0 5px var(--border-action-high-blue-france);
+  background-color: var(--background-default-grey-active) !important;
+}
+
+.radio-tiles label { 
+  border: 2px var(--border-default-grey) solid;
+  -moz-box-shadow: 0 5px var(--border-action-high-grey);
+  box-shadow: 0 5px var(--border-action-high-grey);
+  margin: 0 auto;
+  display: block;
+  padding: 2rem 5rem;
+  align-content: center;
+  color: var(--text-action-high-blue-france);
+  font-weight: 700;
+  font-size: larger;
+  }
+
+.radio-tiles input {
+  display: none;
+}
+
 /* Utility classes */
 /* 
 .icon-white img {
@@ -65,7 +99,7 @@ body.dark {
 
 /* Screen by screen */
 
-/* Only for landing? */
+/* TODO: correctly reenable drop shadows when needed */
 .fr-header {
   filter: none;
   /* filter: drop-shadow(var(--raised-shadow)); */

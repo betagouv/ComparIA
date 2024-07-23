@@ -520,7 +520,7 @@ with gr.Blocks(
     with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
-            which_model_radio = gr.Radio(
+            which_model_radio = gr.Radio(elem_classes="radio-tiles",
                 show_label=False,
                 choices=[
                     ("Modèle A", "leftvote"),
