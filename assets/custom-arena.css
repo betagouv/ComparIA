@@ -47,6 +47,7 @@ body.dark {
 .text-center {
   text-align: center;
 }
+
 .text-left {
   text-align: left;
 }
@@ -143,6 +144,7 @@ body.dark {
 #chat-area button {
   padding: 2rem;
 }
+
 #chat-area .bot button,
 #chat-area .bot button:hover,
 #chat-area .bot button:active {
@@ -185,29 +187,36 @@ body.dark {
   color: var(--text-active-grey);
 }
 
-#chat-area .chatbot ol, #chat-area .chatbot ul {
-  font-size: initial !important ;
+#chat-area .chatbot ol,
+#chat-area .chatbot ul {
+  font-size: initial !important;
+  color: var(--text-active-grey);
 }
 
 /* TODO: test if needed in light mode */
 #chat-area .message-wrap,
-#chat-area .message-row, #chat-area .flex-wrap, #chat-area .styler   {
+#chat-area .message-row,
+#chat-area .flex-wrap,
+#chat-area .styler {
   background-color: var(--background-default-grey);
 }
 
-#chat-area, #chat-area .flex-wrap {
-    border: none !important;
-    box-shadow: none !important;
+#chat-area,
+#chat-area .flex-wrap {
+  border: none !important;
+  box-shadow: none !important;
 }
 
 #chat-area #chatbot-0 .message.bot .chatbot::before {
   content: "Modèle A";
   background-color: var(--blue-france-975-75);
 }
+
 #chat-area #chatbot-1 .message.bot .chatbot::before {
   content: "Modèle B";
   background-color: var(--blue-france-975-75);
 }
+
 #chat-area .message.bot .chatbot::before {
   text-align: left;
   /* background-color: var(--blue-fr ance-975-75); */
@@ -216,7 +225,7 @@ body.dark {
   left: 1.5rem; */
   font-size: 1.5rem;
   font-weight: 700;
-  
+
   /* Not DSFR compliant */
   color: var(--text-action-high-blue-france);
 }
@@ -255,13 +264,10 @@ body.dark {
 
 .fr-icon-home-4-line::before,
 .fr-icon-home-4-line::after {
+  background-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+
   -webkit-mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
   mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
-}
-
-.fr-icon-home-4-line::before,
-.fr-icon-home-4-line::after {
-  background-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
 }
 
 .fr-icon-discuss-line::before,
@@ -299,3 +305,38 @@ body.dark {
   -webkit-mask-image: url("file=assets/dsfr/icons/system/refresh-line.svg");
   mask-image: url("file=assets/dsfr/system/refresh-line.svg");
 } */
+
+.fr-icon-code-view::before {
+  background-image: url("file=assets/dsfr/icons/editor/code-view.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/editor/code-view.svg");
+  mask-image: url("file=assets/dsfr/icons/editor/code-view.svg");
+}
+
+.fr-icon-table-2::before {
+  background-image: url("file=assets/dsfr/icons/editor/table-2.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/editor/table-2.svg");
+  mask-image: url("file=assets/dsfr/icons/editor/table-2.svg");
+}
+
+.fr-icon-equalizer-line {
+  background-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
+  mask-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
+}
+
+.fr-icon-article-line {
+  background-image: url("file=assets/dsfr/icons/document/article-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/document/article-line.svg");
+  mask-image: url("file=assets/dsfr/icons/document/article-line");
+}
+
+.fr-icon-leaf-line {
+  background-image: url("file=assets/dsfr/icons/other/leaf-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/other/leaf-line.svg");
+  mask-image: url("file=assets/dsfr/icons/other/leaf-line.svg");
+}
