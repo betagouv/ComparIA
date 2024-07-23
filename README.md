@@ -5,3 +5,9 @@ L'arène LANGU:IA consiste à comparer grâce à un dispositif interactif et lud
 Elle est basée sur [Gradio](https://www.gradio.app/) et [FastChat](https://github.com/lm-sys/FastChat/), le code de l'arène Chatbot Arena par LMSYS.
 
 <https://beta.gouv.fr/startups/languia.html>
+
+## Lancer l'arène
+
+1. Personnaliser le fichier `register-api-endpoint-file.json` avec des clés d'API valides
+2.a. Avec Docker : `cd docker/; docker compose up -d`
+2.b. Sans Docker (mode debug) :  `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` ou simplement `uvicorn main:app`
