@@ -152,11 +152,15 @@ body.dark {
     /* --hover-tint: var(--background-alt-blue-france); */
 }
 
+/* #chat-area #chatbot-0 .user-row {
+  display: none;
+} */
+
 #chat-area .user button,
 #chat-area .user button:hover,
 #chat-area .user button:active {
-  margin-left: -40px;
-  width: calc(100% + 40px);
+  /* margin-left: -40px;
+  width: calc(100% + 40px); */
   background-color: var(--background-alt-grey);
   --hover-tint: var(--background-alt-grey);
   border-radius: 0.75rem;
@@ -212,9 +216,6 @@ body.dark {
   color: var(--text-action-high-blue-france);
 }
 
-#chat-area #chatbot-0 .user-row {
-  display: none;
-}
 /* Icons */
 
 .fr-icon-stack::before,
