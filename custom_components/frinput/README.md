@@ -10,7 +10,7 @@ app_file: space.py
 ---
 
 # `gradio_frinput`
-<img alt="Static Badge" src="https://img.shields.io/badge/version%20-%200.0.1%20-%20orange">  
+<img alt="Static Badge" src="https://img.shields.io/badge/version%20-%200.0.3%20-%20orange">  
 
 DSFR Input component
 

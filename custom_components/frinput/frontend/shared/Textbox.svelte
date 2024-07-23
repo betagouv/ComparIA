@@ -23,10 +23,10 @@
 	export let lines = 1;
 	export let placeholder = "Type here...";
 	export let label: string;
-	export let info: string | undefined = undefined;
+	// export let info: string | undefined = undefined;
 	export let disabled = false;
 	export let show_label = true;
-	export let container = true;
+	// export let container = true;
 	export let max_lines: number;
 	export let type: "text" | "password" | "email" = "text";
 	export let show_copy_button = false;
@@ -190,8 +190,7 @@
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<label class:container>
-	<BlockTitle {show_label} {info}>{label}</BlockTitle>
+<label class="container fr-label">{#if show_label}{label}{/if}
 
 	{#if lines === 1 && max_lines === 1}
 		{#if type === "text"}
@@ -282,6 +281,3 @@
 		/>
 	{/if}
 </label>
-
-<style>
-</style>

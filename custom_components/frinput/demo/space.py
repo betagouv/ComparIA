@@ -21,7 +21,7 @@ with gr.Blocks(
 # `gradio_frinput`
 
 <div style="display: flex; gap: 7px;">
-<img alt="Static Badge" src="https://img.shields.io/badge/version%20-%200.0.1%20-%20orange">  
+<img alt="Static Badge" src="https://img.shields.io/badge/version%20-%200.0.3%20-%20orange">  
 </div>
 
 DSFR Input component
