@@ -47,6 +47,9 @@ body.dark {
 .text-center {
   text-align: center;
 }
+.text-left {
+  text-align: left;
+}
 
 .underline {
   --underline-hover-width: var(--underline-max-width);
@@ -120,19 +123,20 @@ body.dark {
   display: inline;
 }
 
-#start_screen h4,
+#start-screen h4,
 #free-mode h4,
-#guided-mode h4 {
+#guided-mode h4,
+#reveal-screen h4 {
   /* Not DSFR compliant */
   color: var(--text-action-high-blue-france) !important;
 
 }
 
-#start_screen ol {
+#start-screen ol {
   list-style-position: outside;
 }
 
-#start_screen ol li::marker {
+#start-screen ol li::marker {
   font-size: 1.5rem;
 }
 
@@ -193,7 +197,7 @@ body.dark {
 
 #chat-area, #chat-area .flex-wrap {
     border: none !important;
-    box-shadow: none;
+    box-shadow: none !important;
 }
 
 #chat-area #chatbot-0 .message.bot .chatbot::before {

@@ -649,16 +649,14 @@ with gr.Blocks(
 
     with gr.Row(visible=False) as feedback_row:
         # dsfr: This should just be a normal link...
-        opinion_btn = gr.HTML(
-            value="""<a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>"""
-        )
-
-        # clear_btn = gr.Button(value="Recommencer sans voter")
-
-        # dsfr: This should just be a normal link...
-        leaderboard_btn = gr.HTML(
-            value='<a class="fr-btn" href="../modeles">Liste des modèles</a>'
-        )
+        # feedback_btns = 
+        gr.HTML(
+            value="""
+            <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
+            <a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>
+            <a class="fr-btn fr-btn--secondary" href="../modeles">Liste des modèles</a>
+            </div>
+        """)
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -869,8 +867,6 @@ with gr.Blocks(
         #             gr.update(value="Quoque ch'est qu'te berdoules ?"),
         #         ]
 
-        # TODO: refacto so that it clears any object / trashes the state except ToS
-
         # Step 2
 
         @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
@@ -909,41 +905,6 @@ with gr.Blocks(
             outputs=[conclude_btn],
             api_name=False,
         )
-
-        # def intermediate_like(state0, state1, event: gr.LikeData, request: gr.Request):
-        #     # TODO: add model name?
-        #     details = {"message": event.value["value"]}
-
-        #     vote_type = "intermediate_"
-        #     if event.liked:
-        #         vote_type += "like_"
-        #     else:
-        #         vote_type += "dislike_"
-        #     if event.target == chatbots[0]:
-        #         vote_type += "left"
-        #     elif event.target == chatbots[1]:
-        #         vote_type += "right"
-        #     else:
-        #         logger.error("Like event for unknown chat")
-        #     vote_last_response(
-        #         [state0, state1],
-        #         vote_type,
-        #         details,
-        #         request,
-        #     )
-
-        # chatbots[0].like(
-        #     fn=intermediate_like,
-        #     inputs=conversations_state,
-        #     outputs=[],
-        #     api_name=False,
-        # )
-        # chatbots[1].like(
-        #     fn=intermediate_like,
-        #     inputs=conversations_state,
-        #     outputs=[],
-        #     api_name=False,
-        # )
 
         @conclude_btn.click(
             inputs=[],
