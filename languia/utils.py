@@ -368,7 +368,16 @@ def count_output_tokens(messages) -> int:
             logger.info("Found weird role: " + msg[0])
 
     return sum(
-        len(msg[1]) * 4 for msg in messages if msg[0] in ["Assistant", "[/INST]"]
+        len(msg[1]) * 4
+        for msg in messages
+        if msg[0]
+        in [
+            "Assistant",
+            "assistant",
+            "[/INST]",
+            "<|assistant|>",
+            "<|im_start|>assistant",
+        ]
     )
 
 
