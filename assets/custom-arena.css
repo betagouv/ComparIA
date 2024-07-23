@@ -193,6 +193,7 @@ body.dark {
 
 #chat-area, #chat-area .flex-wrap {
     border: none !important;
+    box-shadow: none;
 }
 
 #chat-area #chatbot-0 .message.bot .chatbot::before {
