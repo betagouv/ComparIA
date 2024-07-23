@@ -320,21 +320,21 @@ body.dark {
   mask-image: url("file=assets/dsfr/icons/editor/table-2.svg");
 }
 
-.fr-icon-equalizer-line {
+.fr-icon-equalizer-line::before {
   background-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
 
   -webkit-mask-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
   mask-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
 }
 
-.fr-icon-article-line {
+.fr-icon-article-line::before {
   background-image: url("file=assets/dsfr/icons/document/article-line.svg");
 
   -webkit-mask-image: url("file=assets/dsfr/icons/document/article-line.svg");
   mask-image: url("file=assets/dsfr/icons/document/article-line");
 }
 
-.fr-icon-leaf-line {
+.fr-icon-leaf-line::before {
   background-image: url("file=assets/dsfr/icons/other/leaf-line.svg");
 
   -webkit-mask-image: url("file=assets/dsfr/icons/other/leaf-line.svg");
