@@ -509,8 +509,8 @@ with gr.Blocks(
                         layout="panel",  # or "bubble"
                         likeable=False,
                         label=label,
-                        # FIXME: UserWarning: show_label has no effect when container is False.
-                        show_label=True,
+                        # UserWarning: show_label has no effect when container is False.
+                        show_label=False,
                         container=False,
                         elem_classes="chatbot",
                         # Should we show it?
@@ -632,9 +632,10 @@ with gr.Blocks(
             originalite_checkbox,
         ]
 
-        comments_text = gr.Textbox(
-            elem_classes="fr-input",
+        comments_text = FrInput(
+            # elem_classes="fr-input",
             label="Détails supplémentaires",
+            show_label=True,
             # TODO:
             # info=,
             # autofocus=True,
