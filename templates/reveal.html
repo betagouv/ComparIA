@@ -1,4 +1,4 @@
-<div class="fr-container" id="reveal-screen ">
+<div class="fr-container" id="reveal-screen">
     <h3 class="text-center">Merci pour votre vote !<br />
         Découvrez les modèles avec lesquels vous venez de discuter :</h3>
     <div class="fr-grid-row fr-grid-row--gutters">
@@ -45,7 +45,8 @@
                 </div>
                 <div class="fr-container fr-col-12 fr-col-md-9">Emissions de CO2 : <strong>{{ '%0.2f'|
                         format(impact.gwp.value*100|float) }} g</strong><br />
-                    Équivalent à <strong>{{ (running_eq*100)|int }} m de course à pied</strong></div>
+                    Équivalent à <strong>{{ '%0.2f'|
+                        format(running_eq*1000|float) }} m de course à pied</strong></div>
             </div>
             <div class="fr-grid-row fr-mt-4w"><button class="fr-btn fr-btn--secondary" data-fr-opened="false"
                     aria-controls="fr-modal-{{ side }}">En savoir plus</button></div>
