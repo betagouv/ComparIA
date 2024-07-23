@@ -249,7 +249,7 @@ body.dark {
 }
 
 .fr-icon-ruler::before {
-  background-image: url("file=assets/extra-icons/misc/ruler.svg");
+  background-image: url("file=assets/extra-icons/ruler.svg");
 }
 
 .fr-icon-copyright-line::before,
