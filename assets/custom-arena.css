@@ -176,6 +176,7 @@ fieldset {
 }
 
 #chat-area button {
+  cursor: default;
   padding: 2rem;
 }
 
