@@ -190,7 +190,7 @@
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<label class="container fr-label {elem_classes.join(' ')}">{#if show_label}{label}{/if}
+<label class="container fr-label">{#if show_label}{label}{/if}
 
 	{#if lines === 1 && max_lines === 1}
 		{#if type === "text"}
@@ -199,7 +199,7 @@
 				type="text"
 				id={elem_id}
 				class:hidden={visible === false}
-				class="scroll-hide fr-input"
+				class="scroll-hide fr-input {elem_classes.join(' ')}"
 				dir={rtl ? "rtl" : "ltr"}
 				bind:value
 				bind:this={el}

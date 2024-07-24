@@ -61,6 +61,7 @@
 	{elem_classes}
 	{visible}
 	{label}
+	{info}
 	{show_label}
 	{lines}
 	{type}
@@ -70,6 +71,7 @@
 	{placeholder}
 	{show_copy_button}
 	{autofocus}
+	{container}
 	{autoscroll}
 	on:change={() => gradio.dispatch("change", value)}
 	on:input={() => gradio.dispatch("input")}
