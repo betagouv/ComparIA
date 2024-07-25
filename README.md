@@ -8,6 +8,7 @@ Elle est basée sur [Gradio](https://www.gradio.app/) et [FastChat](https://gith
 
 ## Lancer l'arène
 
-1. Personnaliser le fichier `register-api-endpoint-file.json` avec des clés d'API valides
-2.a. Avec Docker : `cd docker/; docker compose up -d`
-2.b. Sans Docker (mode debug) :  `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` ou simplement `uvicorn main:app`
+1. Personnaliser le fichier `register-api-endpoint-file.json` avec des clés d'API valide
+
+    - Avec Docker : `cd docker/; docker compose up -d`
+    - Sans Docker (mode debug) :  `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` ou simplement `uvicorn main:app`
