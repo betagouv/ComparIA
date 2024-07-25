@@ -267,10 +267,18 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
             else:
                 model["excerpt"] = model["description"]
 
-        # FIXME: fix this...
         if "params" not in model:
-            size_to_params = {"XS": 3, "S": 7, "M": 13, "L": 35}
-            model["params"] = size_to_params[model["friendly_size"]]
+            if "total_params" in model:
+                model["params"] = model["total_params"]
+            else:
+                # FIXME: handle this better...
+                logger.warn(
+                    "Params not found for model "
+                    + std_name
+                    + ", infering from friendly size (when closed model for example)"
+                )
+                size_to_params = {"XS": 3, "S": 7, "M": 35, "L": 70}
+                model["params"] = size_to_params[model["friendly_size"]]
 
         # Let's suppose q8
         # TODO: give a range?
@@ -386,20 +394,29 @@ def count_output_tokens(messages) -> int:
 def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
     """Compute or fallback to estimated impact for an LLM."""
     # TODO: add request latency
-    impact = llm_impacts("huggingface_hub", model_name, token_count, None)
     # FIXME: most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
     # model_active_parameter_count: ValueOrRange,
     # model_total_parameter_count: ValueOrRange,
+    impact = llm_impacts("huggingface_hub", model_name, token_count, None)
     if impact is None:
-        # FIXME: Fallback using friendly size (XS, S, M, L) to estimate parameters
-        size_to_params = {"XS": 3, "S": 7, "M": 13, "L": 35}
-        params = size_to_params[model_extra_info["friendly_size"]]
-        # TODO: add request latency
-        impact = compute_llm_impacts(
-            model_active_parameter_count=params,
-            model_total_parameter_count=params,
-            output_token_count=token_count,
-        )
+        # logger.info("impact is None for " + model_name + ", deducing from params")
+        if "active_params" in model_extra_info and "total_params" in model_extra_info:    
+            # TODO: add request latency
+            impact = compute_llm_impacts(
+                model_active_parameter_count=model_extra_info["active_params"],
+                model_total_parameter_count=model_extra_info["total_params"],
+                output_token_count=token_count,
+            )
+        else:
+            if "params" in model_extra_info:
+                # TODO: add request latency
+                impact = compute_llm_impacts(
+                    model_active_parameter_count=model_extra_info["params"],
+                    model_total_parameter_count=model_extra_info["params"],
+                    output_token_count=token_count,
+                )
+            else:
+                logger.warn("impact is None for " + model_name + ", and no params, closed model did not match ecologits list?")
     return impact
 
 
