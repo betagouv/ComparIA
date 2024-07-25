@@ -508,13 +508,12 @@ with gr.Blocks(
             #     # render=False,
             #     scale=1,
             # )
-        with gr.Row():
+        with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             # FIXME: visible=false not working?
             # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire 
             conclude_btn = gr.Button(
                 value="Terminer et donner mon avis",
-                scale=1,
-                elem_classes="fr-btn",
+                elem_classes="fr-btn fr-col-12 fr-col-md-4",
                 visible=False,
                 interactive=False,
             )
