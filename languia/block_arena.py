@@ -304,6 +304,7 @@ with gr.Blocks(
     # delete_cache=(1, 1) if config.debug else None,
     # Dirty hack for accepting ToS
     js="""function() {
+// start_arena_btn code: check for ToS+Waiver
 
     const acceptWaiverCheckbox = document.getElementById('accept_waiver');
 
@@ -327,7 +328,37 @@ with gr.Blocks(
 
     // Initial check
     checkAndEnableButton();
+// scroll to guided area if selected    
+
+  const scrollButton = document.getElementById('guided-mode');
+  const targetElement = document.getElementById('guided-area');
+
+  // only works on second click :(
+  scrollButton.addEventListener('click', () => {
+    targetElement.scrollIntoView({ 
+      behavior: 'smooth'
+    });
+  });
+
+// // scroll to last prompt
+//   var left = document.querySelector('#chatbot-0 .user'); 
+//   var last_left = left.items(left.length-1);
+//   var right = document.querySelector('#chatbot-1 .user'); 
+//   var last_right = right.items(right.length-1);
+//   const sendButton = document.getElementById('send-btn');
+// 
+//   // FIXME: only when our prompt is added to chat
+//   sendButton.addEventListener('click', () => {
+//     last_left.scrollIntoView({ 
+//       behavior: 'smooth'
+//     });
+//     last_right.scrollIntoView({ 
+//       behavior: 'smooth'
+//     });
+//   });
+
 }
+
 """,
     # elem_classes=""
 ) as demo:
