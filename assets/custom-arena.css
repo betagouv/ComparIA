@@ -50,7 +50,7 @@ fieldset {
 }
 
 /* Radio button as DSFR-ish selectable tiles */
-.radio-tiles label.selected, .radio-tiles button.selected {
+.radio-tiles label.selected, .radio-tiles button:focus {
   box-shadow: 0 5px var(--border-action-high-blue-france);
   background-color: var(--background-default-grey-active) !important;
 }

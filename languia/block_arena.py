@@ -163,14 +163,17 @@ def add_text(
         + [x.to_gradio_chatbot() for x in conversations_state]
         # textbox
         # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
-        + [gr.update(value="",placeholder="Continuer à discuter avec les deux modèles")]
+        + [
+            gr.update(
+                value="", placeholder="Continuer à discuter avec les deux modèles"
+            )
+        ]
         # stepper_block
         + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
         # mode_screen
         + [gr.update(visible=False)]
         # chat_area
         + [gr.update(visible=True)]
-
         # send_btn
         + [gr.update(interactive=False)]
         # retry_btn
@@ -443,15 +446,14 @@ with gr.Blocks(
             elem_id="guided-area",
             # elem_classes="fr-grid-row" messes with visible=False...
             # elem_classes="fr-grid-row fr-grid-row--center",
-            visible=False
+            visible=False,
         ) as guided_area:
             gr.Markdown(
                 elem_classes="text-center fr-mt-4w fr-mb-2w",
                 value="##### Sélectionnez un thème que vous aimeriez explorer :",
             )
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
-            with gr.Row(
-                    elem_classes="radio-tiles"):
+            with gr.Row(elem_classes="radio-tiles"):
                 maniere = FrButton(
                     value="maniere",
                     custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>""",
@@ -464,7 +466,7 @@ with gr.Blocks(
                     value="creativite",
                     custom_html="""<span class="fr-badge fr-badge--green-tilleul-verveine">Créativité</span><p>Jeux de mots, humour et expressions</p>""",
                 )
-            with gr.Row():
+            with gr.Row(elem_classes="radio-tiles"):
                 pedagogie = FrButton(
                     value="pedagogie",
                     custom_html="""<span class="fr-badge fr-badge--blue-cumulus">Pédagogie</span><p>Expliquer simplement un concept</p>""",
@@ -511,7 +513,7 @@ with gr.Blocks(
             # )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             # FIXME: visible=false not working?
-            # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire 
+            # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire
             conclude_btn = gr.Button(
                 value="Terminer et donner mon avis",
                 elem_classes="fr-btn fr-col-12 fr-col-md-4",
@@ -551,7 +553,8 @@ with gr.Blocks(
     with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
-            which_model_radio = gr.Radio(elem_classes="radio-tiles",
+            which_model_radio = gr.Radio(
+                elem_classes="radio-tiles",
                 show_label=False,
                 choices=[
                     ("Modèle A", "leftvote"),
@@ -680,14 +683,15 @@ with gr.Blocks(
 
     with gr.Row(visible=False) as feedback_row:
         # dsfr: This should just be a normal link...
-        # feedback_btns = 
+        # feedback_btns =
         gr.HTML(
             value="""
             <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
             <a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>
             <a class="fr-btn fr-btn--secondary" href="../modeles">Liste des modèles</a>
             </div>
-        """)
+        """
+        )
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -1036,8 +1040,12 @@ with gr.Blocks(
             model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
 
             # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-            model_a_tokens = count_output_tokens(state0.conv.roles, state0.conv.messages)
-            model_b_tokens = count_output_tokens(state1.conv.roles, state1.conv.messages)
+            model_a_tokens = count_output_tokens(
+                state0.conv.roles, state0.conv.messages
+            )
+            model_b_tokens = count_output_tokens(
+                state1.conv.roles, state1.conv.messages
+            )
 
             model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens)
             model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens)
