@@ -566,113 +566,114 @@ with gr.Blocks(
             # # tie_btn = gr.Button(value="🤝  Les deux se valent")
             # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-    with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
+    # with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
+        with gr.Column(visible=False) as supervote_area:
 
-        # TODO: render=false?
-        # TODO: move to another file?
-        with gr.Column() as positive_supervote:
-            gr.Markdown(
-                value="### Pourquoi ce choix de modèle ?\nSélectionnez autant de préférences que vous souhaitez"
-            )
-            # TODO: checkboxes tuple
-            ressenti_checkbox = gr.CheckboxGroup(
-                [
-                    "Impressionné·e",
-                    "Complet",
-                    "Facile à comprendre",
-                    "Taille des réponses adaptées",
-                ],
-                label="ressenti",
-                show_label=False,
-                info="Ressenti général",
-            )
-            pertinence_checkbox = gr.CheckboxGroup(
-                [
-                    "Consignes respectées",
-                    "Cohérent par rapport au contexte",
-                    "Le modèle ne s'est pas trompé",
-                ],
-                label="pertinence",
-                show_label=False,
-                info="Pertinence des réponses",
-            )
-            comprehension_checkbox = gr.CheckboxGroup(
-                [
-                    "Syntaxe adaptée",
-                    "Richesse du vocabulaire",
-                    "Utilisation correcte des expressions",
-                ],
-                label="comprehension",
-                show_label=False,
-                info="Compréhension et expression",
-            )
-            originalite_checkbox = gr.CheckboxGroup(
-                ["Créatif", "Expressif", "Drôle"],
-                label="originalite",
-                info="Créativité et originalité",
-                show_label=False,
-            )
+            # TODO: render=false?
+            # TODO: move to another file?
+            with gr.Column() as positive_supervote:
+                gr.Markdown(
+                    value="### Pourquoi ce choix de modèle ?\nSélectionnez autant de préférences que vous souhaitez"
+                )
+                # TODO: checkboxes tuple
+                ressenti_checkbox = gr.CheckboxGroup(
+                    [
+                        "Impressionné·e",
+                        "Complet",
+                        "Facile à comprendre",
+                        "Taille des réponses adaptées",
+                    ],
+                    label="ressenti",
+                    show_label=False,
+                    info="Ressenti général",
+                )
+                pertinence_checkbox = gr.CheckboxGroup(
+                    [
+                        "Consignes respectées",
+                        "Cohérent par rapport au contexte",
+                        "Le modèle ne s'est pas trompé",
+                    ],
+                    label="pertinence",
+                    show_label=False,
+                    info="Pertinence des réponses",
+                )
+                comprehension_checkbox = gr.CheckboxGroup(
+                    [
+                        "Syntaxe adaptée",
+                        "Richesse du vocabulaire",
+                        "Utilisation correcte des expressions",
+                    ],
+                    label="comprehension",
+                    show_label=False,
+                    info="Compréhension et expression",
+                )
+                originalite_checkbox = gr.CheckboxGroup(
+                    ["Créatif", "Expressif", "Drôle"],
+                    label="originalite",
+                    info="Créativité et originalité",
+                    show_label=False,
+                )
 
-        # TODO: render=false?
-        # TODO: move to another file
-        with gr.Column() as negative_supervote:
-            gr.Markdown(
-                value="### Pourquoi êtes-vous insatisfait·e des deux modèles ?\nSélectionnez autant de préférences que vous souhaitez"
-            )
-            ressenti_checkbox = gr.CheckboxGroup(
-                [
-                    "Trop court",
-                    "Trop long",
-                    "Pas utile",
-                    "Nocif ou offensant",
-                ],
-                label="ressenti",
-                info="Ressenti général",
-                show_label=False,
-            )
-            pertinence_checkbox = gr.CheckboxGroup(
-                [
-                    "Incohérentes par rapport au contexte",
-                    "Factuellement incorrectes",
-                    "Imprécises",
-                ],
-                label="pertinence",
-                info="Pertinence des réponses",
-                show_label=False,
-            )
-            comprehension_checkbox = gr.CheckboxGroup(
-                [
-                    "Faible qualité de syntaxe",
-                    "Pauvreté du vocabulaire",
-                    "Mauvaise utilisation des expressions",
-                ],
-                label="comprehension",
-                info="Compréhension et expression",
-                show_label=False,
-            )
-            originalite_checkbox = gr.CheckboxGroup(
-                ["Réponses banales", "Réponses superficielles"],
-                label="originalite",
-                info="Créativité et originalité",
-                show_label=False,
-            )
+            # TODO: render=false?
+            # TODO: move to another file
+            with gr.Column() as negative_supervote:
+                gr.Markdown(
+                    value="### Pourquoi êtes-vous insatisfait·e des deux modèles ?\nSélectionnez autant de préférences que vous souhaitez"
+                )
+                ressenti_checkbox = gr.CheckboxGroup(
+                    [
+                        "Trop court",
+                        "Trop long",
+                        "Pas utile",
+                        "Nocif ou offensant",
+                    ],
+                    label="ressenti",
+                    info="Ressenti général",
+                    show_label=False,
+                )
+                pertinence_checkbox = gr.CheckboxGroup(
+                    [
+                        "Incohérentes par rapport au contexte",
+                        "Factuellement incorrectes",
+                        "Imprécises",
+                    ],
+                    label="pertinence",
+                    info="Pertinence des réponses",
+                    show_label=False,
+                )
+                comprehension_checkbox = gr.CheckboxGroup(
+                    [
+                        "Faible qualité de syntaxe",
+                        "Pauvreté du vocabulaire",
+                        "Mauvaise utilisation des expressions",
+                    ],
+                    label="comprehension",
+                    info="Compréhension et expression",
+                    show_label=False,
+                )
+                originalite_checkbox = gr.CheckboxGroup(
+                    ["Réponses banales", "Réponses superficielles"],
+                    label="originalite",
+                    info="Créativité et originalité",
+                    show_label=False,
+                )
 
-        supervote_checkboxes = [
-            ressenti_checkbox,
-            pertinence_checkbox,
-            comprehension_checkbox,
-            originalite_checkbox,
-        ]
+            supervote_checkboxes = [
+                ressenti_checkbox,
+                pertinence_checkbox,
+                comprehension_checkbox,
+                originalite_checkbox,
+            ]
 
-        comments_text = FrInput(
-            # elem_classes="fr-input",
-            label="Détails supplémentaires",
-            show_label=True,
-            # TODO:
-            # info=,
-            # autofocus=True,
-            placeholder="Ajoutez plus de précisions ici",
-        )
+            comments_text = FrInput(
+                # elem_classes="fr-input",
+                label="Détails supplémentaires",
+                show_label=True,
+                # TODO:
+                # info=,
+                # autofocus=True,
+                placeholder="Ajoutez plus de précisions ici",
+            )
 
     with gr.Column(
         elem_classes="arena-footer fr-container--fluid", visible=False
@@ -999,7 +1000,7 @@ with gr.Blocks(
             inputs=[],
             outputs=[stepper_block]
             + [vote_area]
-            + [supervote_area]
+            # + [supervote_area]
             + [chat_area]
             + [send_area]
             + [buttons_footer],
@@ -1010,7 +1011,7 @@ with gr.Blocks(
                 # vote_area
                 + [gr.update(visible=False)]
                 # supervote_area
-                + [gr.update(visible=False)]
+                # + [gr.update(visible=False)]
                 # chat_area
                 + [gr.update(visible=True)]
                 # send_area
