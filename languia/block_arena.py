@@ -674,11 +674,19 @@ with gr.Blocks(
             placeholder="Ajoutez plus de précisions ici",
         )
 
-    with gr.Column(elem_classes="arena-footer fr-container--fluid"):
-        return_btn = gr.Button(elem_classes="fr-btn fr-btn--secondary", value="Retour")
-        final_send_btn = gr.Button(
-            elem_classes="fr-btn", value="Envoyer mes préférences"
-        )
+    with gr.Column(
+        elem_classes="arena-footer fr-container--fluid", visible=False
+    ) as buttons_footer:
+        with gr.Row(elem_classes="fr-grid-row fr-container fr-mt-4w"):
+            return_btn = gr.Button(
+                elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-1",
+                value="Retour",
+            )
+            final_send_btn = gr.Button(
+                elem_classes="fr-btn fr-col-12 fr-col-md-3 fr-col-offset-md-2",
+                value="Envoyer mes préférences",
+                interactive=False
+            )
 
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
 
@@ -944,7 +952,7 @@ with gr.Blocks(
 
         @conclude_btn.click(
             inputs=[],
-            outputs=[stepper_block, chat_area, send_area, vote_area],
+            outputs=[stepper_block, chat_area, send_area, vote_area, buttons_footer],
             api_name=False,
             # TODO: scroll_to_output?
         )
@@ -961,11 +969,12 @@ with gr.Blocks(
                 gr.update(visible=False),
                 gr.update(visible=False),
                 gr.update(visible=True),
+                gr.update(visible=True),
             ]
 
         @which_model_radio.change(
             inputs=[which_model_radio],
-            outputs=[supervote_area, positive_supervote, negative_supervote],
+            outputs=[supervote_area, positive_supervote, negative_supervote, final_send_btn],
             api_name=False,
         )
         def build_supervote_area(vote_radio):
@@ -974,12 +983,14 @@ with gr.Blocks(
                     gr.update(visible=True),
                     gr.update(visible=False),
                     gr.update(visible=True),
+                    gr.update(interactive=True)
                 )
             else:
                 return (
                     gr.update(visible=True),
                     gr.update(visible=True),
                     gr.update(visible=False),
+                    gr.update(interactive=True)
                 )
 
         # Step 3
@@ -991,7 +1002,7 @@ with gr.Blocks(
             + [supervote_area]
             + [chat_area]
             + [send_area]
-            # + [buttons_footer],
+            + [buttons_footer],
         )
         def return_to_chat():
             return (
@@ -1005,7 +1016,7 @@ with gr.Blocks(
                 # send_area
                 + [gr.update(visible=True)]
                 # buttons_footer
-                # + [gr.update(visible=False)]
+                + [gr.update(visible=False)]
             )
 
         @final_send_btn.click(
@@ -1022,6 +1033,7 @@ with gr.Blocks(
                 supervote_area,
                 feedback_row,
                 results_area,
+                buttons_footer,
             ],
             api_name=False,
         )
@@ -1094,6 +1106,7 @@ with gr.Blocks(
                 gr.update(visible=False),
                 gr.update(visible=True),
                 gr.update(visible=True, value=reveal_html),
+                gr.update(visible=False),
             ]
 
         # On reset go to mode selection mode_screen
