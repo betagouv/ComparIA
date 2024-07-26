@@ -16,14 +16,15 @@
     {{ config.site_head_js | safe }}
     {% block extra_styles %}
     {% endblock %}
-</head>
+</head>     
 
 <body>
     {% include 'header-main.html' %}
 
     {% block content %}
     {% endblock %}
-    <!-- <footer id="footer" class="fr-footer" role="contentinfo"></footer> -->
+    
+    {% include 'footer.html' %}
 </body>
 
 </html>

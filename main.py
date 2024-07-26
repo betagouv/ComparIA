@@ -57,11 +57,18 @@ async def home(request: Request):
         "index.html", {"request": request, "config": config}
     )
 
+
 @app.get("/modeles", response_class=HTMLResponse)
 async def models(request: Request):
     return templates.TemplateResponse(
         "models.html",
-        {"request": request, "config": config, "models": config.models_extra_info, "size_desc": size_desc, "license_desc": license_desc},
+        {
+            "request": request,
+            "config": config,
+            "models": config.models_extra_info,
+            "size_desc": size_desc,
+            "license_desc": license_desc,
+        },
     )
 
 
@@ -69,6 +76,22 @@ async def models(request: Request):
 async def about(request: Request):
     return templates.TemplateResponse(
         "about.html",
+        {"request": request, "config": config},
+    )
+
+
+@app.get("/mentions-legales", response_class=HTMLResponse)
+async def legal(request: Request):
+    return templates.TemplateResponse(
+        "legal.html",
+        {"request": request, "config": config},
+    )
+
+
+@app.get("/donnees-personnelles", response_class=HTMLResponse)
+async def policy(request: Request):
+    return templates.TemplateResponse(
+        "policy.html",
         {"request": request, "config": config},
     )
 
