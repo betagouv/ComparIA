@@ -368,24 +368,13 @@ def is_limit_reached(model_name, ip):
         return None
 
 
-def count_output_tokens(messages) -> int:
+def count_output_tokens(roles,  messages) -> int:
     """Count output tokens (assuming 4 per message)."""
-    # FIXME: use standardized roles instead...
-    for msg in messages:
-        if msg[0] not in ["Assistant", "[/INST]", "Human", "[INST]"]:
-            logger.info("Found weird role: " + msg[0])
 
     return sum(
         len(msg[1]) * 4
         for msg in messages
-        if msg[0]
-        in [
-            "Assistant",
-            "assistant",
-            "[/INST]",
-            "<|assistant|>",
-            "<|im_start|>assistant",
-        ]
+        if msg[0] == roles[1]
     )
 
 

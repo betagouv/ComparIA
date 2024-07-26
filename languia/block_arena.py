@@ -1035,8 +1035,8 @@ with gr.Blocks(
             model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
 
             # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-            model_a_tokens = count_output_tokens(state0.conv.messages)
-            model_b_tokens = count_output_tokens(state1.conv.messages)
+            model_a_tokens = count_output_tokens(state0.conv.roles, state0.conv.messages)
+            model_b_tokens = count_output_tokens(state1.conv.roles, state1.conv.messages)
 
             model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens)
             model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens)
