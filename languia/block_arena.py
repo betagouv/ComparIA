@@ -363,7 +363,6 @@ with gr.Blocks(
 }
 
 """,
-    # elem_classes=""
 ) as demo:
     conversations_state = [gr.State() for _ in range(config.num_sides)]
     # model_selectors = [None] * num_sides
@@ -400,7 +399,7 @@ with gr.Blocks(
             interactive=False,
         )
 
-    with gr.Row() as stepper_row:
+    with gr.Row(elem_id="stepper-row", elem_classes="raised fr-mb-2w") as stepper_row:
         stepper_block = gr.HTML(
             stepper_html("Choix du mode de conversation", 1, 4),
             elem_id="stepper_html",
@@ -554,7 +553,7 @@ with gr.Blocks(
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
             which_model_radio = gr.Radio(
-                elem_classes="radio-tiles",
+                elem_classes="radio-tiles bolder",
                 show_label=False,
                 choices=[
                     ("Modèle A", "leftvote"),
@@ -570,7 +569,7 @@ with gr.Blocks(
     with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
 
         # TODO: render=false?
-        # TODO: move to another file
+        # TODO: move to another file?
         with gr.Column() as positive_supervote:
             gr.Markdown(
                 value="### Pourquoi ce choix de modèle ?\nSélectionnez autant de préférences que vous souhaitez"
@@ -674,12 +673,12 @@ with gr.Blocks(
             # autofocus=True,
             placeholder="Ajoutez plus de précisions ici",
         )
+
+    with gr.Column(elem_classes="arena-footer fr-container--fluid"):
+        return_btn = gr.Button(elem_classes="fr-btn fr-btn--secondary", value="Retour")
         final_send_btn = gr.Button(
             elem_classes="fr-btn", value="Envoyer mes préférences"
         )
-
-    with gr.Column():
-        return_btn = gr.Button(elem_classes="fr-btn fr-btn-secondary")
 
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
 
