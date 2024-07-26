@@ -8,7 +8,7 @@
             <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20"  />
             </h4>
             {% if chosen_model == side %}
-            <span class="fr-badge fr-badge--success">Votre choix</span>
+            <span class="fr-badge fr-badge--success your-choice">Votre choix</span>
             {% endif %}
             <p class="fr-mb-4w">{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{
                     model['friendly_size']
