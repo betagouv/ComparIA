@@ -450,7 +450,8 @@ with gr.Blocks(
                 value="##### Sélectionnez un thème que vous aimeriez explorer :",
             )
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
-            with gr.Row():
+            with gr.Row(
+                    elem_classes="radio-tiles"):
                 maniere = FrButton(
                     value="maniere",
                     custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>""",

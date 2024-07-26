@@ -50,18 +50,18 @@ fieldset {
 }
 
 /* Radio button as DSFR-ish selectable tiles */
-.radio-tiles label.selected {
+.radio-tiles label.selected, .radio-tiles button.selected {
   box-shadow: 0 5px var(--border-action-high-blue-france);
   background-color: var(--background-default-grey-active) !important;
 }
 
-.radio-tiles label { 
+.radio-tiles label, .radio-tiles button { 
   border: 2px var(--border-default-grey) solid;
   -moz-box-shadow: 0 5px var(--border-action-high-grey);
   box-shadow: 0 5px var(--border-action-high-grey);
   margin: 0 auto;
   display: block;
-  padding: 2rem 5rem;
+  padding: 20px 50px;
   align-content: center;
   color: var(--text-action-high-blue-france);
   font-weight: 700;
