@@ -7,7 +7,8 @@ body {
   /* padding: var(--size-4) var(--size-8); */
 }
 
-.hidden {
+/* Bug when fr-grid-row or other changes display property  */
+.hidden, .hide {
   display: none !important;
 }
 
