@@ -5,7 +5,7 @@
         {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b, 'model-b', model_b_impact, model_b_running_eq)] %}
 
         <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w">
-            <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20" height="20" />
+            <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20"  />
             </h4>
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success">Votre choix</span>
@@ -69,7 +69,7 @@
                     <div class="fr-modal__content fr-mb-4w">
                         <h4 id="fr-modal-title-modal-{{ side }}" class="fr-modal__title">{{ model['simple_name'] }}
                             <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20"
-                                height="20" />
+                                 />
                         </h4>
                         <p><span class="fr-badge">Taille {{
                                 model['friendly_size']
