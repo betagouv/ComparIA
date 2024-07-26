@@ -5,6 +5,8 @@ import gradio as gr
 
 import time
 
+from random import randrange
+
 import json
 
 from fastchat.serve.remote_logger import get_remote_logger
@@ -243,13 +245,9 @@ def running_eq(impact):
 
 def get_conv_log_filename(is_vision=False, has_csam_image=False):
     t = datetime.datetime.now()
-    conv_log_filename = f"{t.year}-{t.month:02d}-{t.day:02d}-conv.json"
-    if is_vision and not has_csam_image:
-        name = os.path.join(LOGDIR, f"vision-tmp-{conv_log_filename}")
-    elif is_vision and has_csam_image:
-        name = os.path.join(LOGDIR, f"vision-csam-{conv_log_filename}")
-    else:
-        name = os.path.join(LOGDIR, conv_log_filename)
+    random = randrange(10000)
+    conv_log_filename = f"{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{t.second:02d}-{t.microsecond:02d}-{random}-conv.json"
+    name = os.path.join(LOGDIR, conv_log_filename)
 
     return name
 

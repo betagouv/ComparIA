@@ -217,14 +217,11 @@ def bot_response(
     finish_tstamp = time.time()
     logger.info(f"{output}")
 
-    conv.save_new_images(
-        has_csam_images=state.has_csam_image,
-        use_remote_storage=config.use_remote_storage,
-    )
-
+# FIXME: use conv_id in filename?
     filename = get_conv_log_filename(
         is_vision=state.is_vision, has_csam_image=state.has_csam_image
     )
+    logger.info(f"Saving to: {filename}")
 
     with open(filename, "a") as fout:
         data = {
