@@ -567,7 +567,6 @@ with gr.Blocks(
             # # tie_btn = gr.Button(value="🤝  Les deux se valent")
             # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-    # TODO: render=false?
     with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
 
         # TODO: render=false?
@@ -678,6 +677,9 @@ with gr.Blocks(
         final_send_btn = gr.Button(
             elem_classes="fr-btn", value="Envoyer mes préférences"
         )
+
+    with gr.Column():
+        return_btn = gr.Button(elem_classes="fr-btn fr-btn-secondary")
 
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
 
@@ -982,6 +984,31 @@ with gr.Blocks(
                 )
 
         # Step 3
+
+        @return_btn.click(
+            inputs=[],
+            outputs=[stepper_block]
+            + [vote_area]
+            + [supervote_area]
+            + [chat_area]
+            + [send_area]
+            # + [buttons_footer],
+        )
+        def return_to_chat():
+            return (
+                [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
+                # vote_area
+                + [gr.update(visible=False)]
+                # supervote_area
+                + [gr.update(visible=False)]
+                # chat_area
+                + [gr.update(visible=True)]
+                # send_area
+                + [gr.update(visible=True)]
+                # buttons_footer
+                # + [gr.update(visible=False)]
+            )
+
         @final_send_btn.click(
             inputs=(
                 [conversations_state[0]]
