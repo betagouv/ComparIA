@@ -71,12 +71,12 @@
                             </div>
                             <div class="fr-col-12 fr-col-md-6">
                                 <h5>Utilisation</h5>
-                                <p><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true"> Distribution</span><br />{% if
+                                <p><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true"> Distribution</span><div class="fr-ml-7v">{% if
                                     model['distribution'] == "open-weights" %}<span
                                         class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
                                         class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
                                     else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
-                                    endif %}</p>
+                                    endif %}</p></div>
                                 <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions d'usage</span></p><div class="fr-ml-7v">{% if
                                     model['conditions'] == "restricted" %}<span
                                         class="fr-badge fr-badge--yellow-moutarde">Sous conditions</span>{% else

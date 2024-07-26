@@ -2,10 +2,12 @@
     <h3 class="text-center">Merci pour votre vote !<br />
         Découvrez les modèles avec lesquels vous venez de discuter :</h3>
     <div class="fr-grid-row fr-grid-row--gutters">
-        {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b, 'model-b', model_b_impact, model_b_running_eq)] %}
+        {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b,
+        'model-b', model_b_impact, model_b_running_eq)] %}
 
         <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w">
-            <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20"  />
+            <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}"
+                    width="20" />
             </h4>
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success your-choice">Votre choix</span>
@@ -13,26 +15,34 @@
             <p class="fr-mb-4w">{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{
                     model['friendly_size']
                     }}</span></p>
-        <!-- <p>{{ model['excerpt'] }}</p> -->
-        <div class="fr-grid-row">
+            <!-- <p>{{ model['excerpt'] }}</p> -->
+            <div class="fr-grid-row">
                 <div class="fr-col-12 fr-col-md-6">
                     <h5>Transparence</h5>
-                    <p class="fr-mt-2w"><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span></p><div class="fr-ml-7v">{% if
+                    <p class="fr-mt-2w"><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span>
+                    </p>
+                    <div class="fr-ml-7v">{% if
                         model['distribution'] == "open-weights" %}<span class="fr-badge fr-badge--blue-cumulus">Poids
                             communiqués</span>{%
                         else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif %}</div>
-                    <p class="fr-mt-2w"><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus d'entrainement</span></p><div class="fr-ml-7v">{% if
+                    <p class="fr-mt-2w"><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus
+                            d'entrainement</span></p>
+                    <div class="fr-ml-7v">{% if
                         model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
                             communiqué</span>{% else %}<span
                             class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</div>
                 </div>
                 <div class="fr-col-12 fr-col-md-6">
                     <h5>Utilisation</h5>
-                    <p class="fr-mt-2w"><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true"> Distribution</span></p><div class="fr-ml-7v">{% if
+                    <p class="fr-mt-2w"><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true">
+                            Distribution</span></p>
+                    <div class="fr-ml-7v">{% if
                         model['distribution'] == "open-weights" %}<span
                             class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span>{%
                         else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{% endif %}</div>
-                    <p class="fr-mt-2w"><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions d'usage</span></p><div class="fr-ml-7v">{% if
+                    <p class="fr-mt-2w"><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions
+                            d'usage</span></p>
+                    <div class="fr-ml-7v">{% if
                         model['conditions'] == "restricted" %}<span class="fr-badge fr-badge--yellow-moutarde">Sous
                             conditions</span>{% else
                         %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %}</div>
@@ -40,7 +50,8 @@
             </div>
             <h5 class="fr-mt-4w">Ma conversation correspond à :</h5>
             <div class="fr-grid-row fr-grid-row--middle">
-                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-3 text-center"><strong class="fr-text--lead">{{ '%0.2f'| format(impact.energy.value*100|float) }}</strong><br />
+                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-3 text-center"><strong class="fr-text--lead">{{ '%0.2f'|
+                        format(impact.energy.value*100|float) }}</strong><br />
                     <i>wattheures</i>
                 </div>
                 <div class="fr-container fr-col-12 fr-col-md-9">Emissions de CO2 : <strong>{{ '%0.2f'|
@@ -57,19 +68,18 @@
 
 <!-- TODO: factorize -->
 {% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
-<dialog aria-labelledby="fr-modal-title-modal-{{ side }}"  role="dialog" id="fr-modal-{{ side }}" class="fr-modal">
+<dialog aria-labelledby="fr-modal-title-modal-{{ side }}" role="dialog" id="fr-modal-{{ side }}" class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-8">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
-                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"                       
+                        <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
                             aria-controls="fr-modal-{{ side }}">Fermer</button>
                     </div>
                     <div class="fr-modal__content fr-mb-4w">
                         <h4 id="fr-modal-title-modal-{{ side }}" class="fr-modal__title">{{ model['simple_name'] }}
-                            <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20"
-                                 />
+                            <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20" />
                         </h4>
                         <p><span class="fr-badge">Taille {{
                                 model['friendly_size']
@@ -80,12 +90,15 @@
                         <div class="fr-grid-row">
                             <div class="fr-col-12 fr-col-md-6">
                                 <h5>Transparence</h5>
-                                <p><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span></p><div class="fr-ml-7v">{% if
+                                <p><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span></p>
+                                <div class="fr-ml-7v">{% if
                                     model['distribution'] == "open-weights" %}<span
                                         class="fr-badge fr-badge--blue-cumulus">Poids communiqués</span>{%
                                     else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif
                                     %}</div>
-                                <p><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus d'entrainement</span></p><div class="fr-ml-7v">{%
+                                <p><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus
+                                        d'entrainement</span></p>
+                                <div class="fr-ml-7v">{%
                                     if
                                     model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
                                         communiqué</span>{% else %}<span
@@ -93,31 +106,38 @@
                             </div>
                             <div class="fr-col-12 fr-col-md-6">
                                 <h5>Utilisation</h5>
-                                <p><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true"> Distribution</span><br />{% if
-                                    model['distribution'] == "open-weights" %}<span
-                                        class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
-                                        class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
-                                    else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
-                                    endif %}</p>
-                                <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions d'usage</span></p><div class="fr-ml-7v">{% if
+                                <div><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true">
+                                        Distribution</span>
+                                    <div class="fr-ml-7v">{% if
+                                        model['distribution'] == "open-weights" %}<span
+                                            class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
+                                            class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
+                                        else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
+                                        endif %}</div>
+                                </div>
+                                <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions
+                                        d'usage</span></p>
+                                <div class="fr-ml-7v">{% if
                                     model['conditions'] == "restricted" %}<span
                                         class="fr-badge fr-badge--yellow-moutarde">Sous conditions</span>{% else
                                     %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %} <span
                                         class="fr-badge fr-badge--blue-cumulus">Licence {{ model['license'] }}</span>
-                                        </div>
+                                </div>
                             </div>
-                            <h5>Détails</h5>
-                            <p><span class="fr-icon-ruler fr-mb-1v" aria-hidden="true"> <strong>Taille {{ model["friendly_size"]
+                            <h5 class="fr-mt-4w">Détails</h5>
+                            <p><span class="fr-icon-ruler fr-mb-1v" aria-hidden="true"> <strong>Taille {{
+                                        model["friendly_size"]
                                         }}</strong> : {{ size_desc[model["friendly_size"]] }}</span>
-                            <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> <strong>Licence {{ model["license"]
+                            <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> <strong>Licence {{
+                                        model["license"]
                                         }}</strong> : {{ license_desc[model["license"]]|default("Les informations de
                                     licence n'ont pas été remplies pour ce modèle.") }}</span>
                             <p><span class="fr-icon-leaf-line fr-mb-1v" aria-hidden="true"> <strong>Indicateurs
                                         environnementaux</strong> : rendez-vous sur <a
                                         href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
                                         rel="noopener external" target="_blank">🧮 EcoLogits Calculator</a></p>
-                            <p><a href="{{ model['url']|default('#') }}" rel="noopener external"
-                                    target="_blank">Pour en savoir plus sur ce modèle, rendez-vous sur la page du modèle</a></p>
+                            <p><a href="{{ model['url']|default('#') }}" rel="noopener external" target="_blank">Pour en
+                                    savoir plus sur ce modèle, rendez-vous sur la page du modèle</a></p>
                         </div>
                         <p>
                             <a href="../modeles" class="fr-btn fr-mt-2w">Découvrir tous les modèles</a>
