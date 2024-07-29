@@ -71,10 +71,10 @@ if os.getenv('SENTRY_FRONT_DSN'):
 else:
     sentry_js = ""
 
-if os.getenv("LANGUIA_CONTROLLER_URL"):
-    controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
-else:
-    controller_url = "http://localhost:21001"
+# if os.getenv("LANGUIA_CONTROLLER_URL"):
+#     controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
+# else:
+#     controller_url = "http://localhost:21001"
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
     register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
@@ -117,7 +117,7 @@ with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
 css = css_dsfr + custom_css
 
 models, all_models = get_model_list(
-    controller_url,
+    None,
     # TODO: directly pass api_endpoint_info instead
     register_api_endpoint_file,
     vision_arena=False,
