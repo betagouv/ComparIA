@@ -216,8 +216,7 @@ def bot_response(
 
     finish_tstamp = time.time()
     logger.info(f"{output}")
-
-# FIXME: use conv_id in filename?
+    
     filename = get_conv_log_filename(
         is_vision=state.is_vision, has_csam_image=state.has_csam_image
     )
