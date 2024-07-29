@@ -399,7 +399,7 @@ with gr.Blocks(
             interactive=False,
         )
 
-    with gr.Row(elem_id="stepper-row", elem_classes="raised fr-mb-2w") as stepper_row:
+    with gr.Row(elem_id="stepper-row", elem_classes="raised fr-pb-2w") as stepper_row:
         stepper_block = gr.HTML(
             stepper_html("Choix du mode de conversation", 1, 4),
             elem_id="stepper_html",

@@ -12,6 +12,11 @@ body {
   display: none !important;
 }
 
+/* --raised-shadow: 0 1px 3px var(--shadow-color); */
+/* .raised {
+  filter: drop-shadow(var(--raised-shadow));
+} */
+
 /* Temporary fixes for dark mode in arena: enforce clear mode */
 /* .dark .fr-label {
   color: var(--text-default-grey) !important;
