@@ -1,4 +1,5 @@
 import os
+import traceback
 import json
 from psycopg2 import sql
 import psycopg2
@@ -25,7 +26,8 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
     type TEXT,
     conv_id TEXT UNIQUE,
     models TEXT,
-    state JSONB,
+    state_a JSONB,
+    state_b JSONB,
     ip TEXT,
     details JSONB
 );
@@ -49,8 +51,8 @@ for filename in os.listdir(json_directory):
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
                         """
-                    INSERT INTO conversation_logs (tstamp, type, conv_id, models, state, ip, details)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s);
+                    INSERT INTO conversation_logs (tstamp, type, conv_id, models, state_a, state_b, ip, details)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
                     """
                     )
 
@@ -63,13 +65,15 @@ for filename in os.listdir(json_directory):
                         else:
                             return None
 
+                    states = data.get("conversations_state", {})
                     # Extract values from JSON
                     tstamp = datetime.fromtimestamp(data.get("tstamp"))
                     type_ = data.get("type")
                     conv_id = build_conv_id(data)
                     models = data.get("models", None)
                     # model = data.get("model", None)
-                    state = json.dumps(data.get("conversation_state", {}))
+                    state_a = json.dumps(states[0])
+                    state_b = json.dumps(states[1])
                     ip = data.get("ip", None)
                     details = json.dumps(data.get("details", {}))
 
@@ -81,7 +85,8 @@ for filename in os.listdir(json_directory):
                             type_,
                             conv_id,
                             models,
-                            state,
+                            state_a,
+                            state_b,
                             ip,
                             details,
                         ),
@@ -90,6 +95,7 @@ for filename in os.listdir(json_directory):
 
                 except Exception as e:
                     print(f"An error occurred: {e}")
+                    print(traceback.format_exc())
                     # continue
 
 # Commit changes and close the connection
