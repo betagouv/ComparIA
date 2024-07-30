@@ -13,4 +13,6 @@ services:
     volumes:
       - ../data:/data
       - ../register-api-endpoint-file.json:/register-api-endpoint-file.json
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+      # Dev config
+      - ../:/app
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
