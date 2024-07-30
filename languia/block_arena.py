@@ -1088,9 +1088,11 @@ with gr.Blocks(
             model_b_tokens = count_output_tokens(
                 state1.conv.roles, state1.conv.messages
             )
-
-            model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens)
-            model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens)
+            # TODO:
+            # request_latency_a = state0.conv.finish_tstamp - state0.conv.start_tstamp
+            # request_latency_b = state1.conv.finish_tstamp - state1.conv.start_tstamp
+            model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens, None)
+            model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens, None)
 
             model_a_running_eq = running_eq(model_a_impact)
             model_b_running_eq = running_eq(model_b_impact)

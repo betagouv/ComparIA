@@ -373,13 +373,13 @@ def count_output_tokens(roles, messages) -> int:
     return sum(len(msg[1]) * 4 for msg in messages if msg[0] == roles[1])
 
 
-def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
+def get_llm_impact(model_extra_info, model_name: str, token_count: int, request_latency: float) -> dict:
     """Compute or fallback to estimated impact for an LLM."""
     # TODO: add request latency
     # FIXME: most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
     # model_active_parameter_count: ValueOrRange,
     # model_total_parameter_count: ValueOrRange,
-    impact = llm_impacts("huggingface_hub", model_name, token_count, None)
+    impact = llm_impacts("huggingface_hub", model_name, token_count, request_latency)
     if impact is None:
         # logger.info("impact is None for " + model_name + ", deducing from params")
         if "active_params" in model_extra_info and "total_params" in model_extra_info:
@@ -396,6 +396,7 @@ def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
                     model_active_parameter_count=model_extra_info["params"],
                     model_total_parameter_count=model_extra_info["params"],
                     output_token_count=token_count,
+                    request_latency=request_latency
                 )
             else:
                 logger.warn(
