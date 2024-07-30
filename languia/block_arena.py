@@ -47,12 +47,8 @@ from languia.utils import (
     running_eq,
 )
 
-from gradio_frbutton import FrButton
-
-# from custom_components.frbutton.backend.gradio_frbutton import FrButton
-from gradio_frinput import FrInput
-
-# from custom_components.frinput.backend.gradio_frinput import FrInput
+from custom_components.frbutton.backend.gradio_frbutton import FrButton
+from custom_components.frinput.backend.gradio_frinput import FrInput
 
 
 from languia import config
@@ -145,11 +141,10 @@ def add_text(
 
     text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
     # TODO: what do?
+
     for i in range(config.num_sides):
-        # post_processed_text = _prepare_text_with_image(conversations_state[i], text, csam_flag=False)
-        post_processed_text = text
         conversations_state[i].conv.append_message(
-            conversations_state[i].conv.roles[0], post_processed_text
+            conversations_state[i].conv.roles[0], text
         )
         conversations_state[i].conv.append_message(
             conversations_state[i].conv.roles[1], None
