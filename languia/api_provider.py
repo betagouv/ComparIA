@@ -77,16 +77,16 @@ def openai_api_stream_iter(
     )
 
     # Make requests for logging
-    text_messages = messages
+    # text_messages = messages
 
-    gen_params = {
-        "model": model_name,
-        "prompt": text_messages,
-        "temperature": temperature,
-        "top_p": top_p,
-        "max_new_tokens": max_new_tokens,
-    }
-    logging.info(f"==== request ====\n{gen_params}")
+    # gen_params = {
+    #     "model": model_name,
+    #     "prompt": text_messages,
+    #     "temperature": temperature,
+    #     "top_p": top_p,
+    #     "max_new_tokens": max_new_tokens,
+    # }
+    # logging.info(f"==== request ====\n{gen_params}")
 
     res = client.chat.completions.create(
         model=model_name,
@@ -135,28 +135,22 @@ def vertex_api_stream_iter(
 
     # Pass the Vertex endpoint and authentication to the OpenAI SDK
     PROJECT = project
-    client = openai.OpenAI(
-        base_url=api_base or "https://api.openai.com/v1", api_key=creds.token
-    )
+    client = openai.OpenAI(base_url=api_base, api_key=creds.token)
 
     # print(client.models.list())
     # project_id = os.environ.get("GCP_PROJECT_ID", None)
     # location = os.environ.get("GCP_LOCATION", None)
     # vertexai.init(project=project_id, location=location)
 
-    text_messages = []
-    for message in messages:
-        if type(message) == str:
-            text_messages.append(message)
 
-    gen_params = {
-        "model": model_name,
-        "prompt": text_messages,
-        "temperature": temperature,
-        "top_p": top_p,
-        "max_new_tokens": max_new_tokens,
-    }
-    logging.info(f"==== request ====\n{gen_params}")
+    # gen_params = {
+    #     "model": model_name,
+    #     "prompt": messages,
+    #     "temperature": temperature,
+    #     "top_p": top_p,
+    #     "max_new_tokens": max_new_tokens,
+    # }
+    # logging.info(f"==== request ====\n{gen_params}")
 
     # safety_settings = [
     #     generative_models.SafetySetting(
