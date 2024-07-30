@@ -375,17 +375,20 @@ def get_llm_impact(
         # logger.info("impact is None for " + model_name + ", deducing from params")
         if "active_params" in model_extra_info and "total_params" in model_extra_info:
             # TODO: add request latency
+            # FIXME: multiply by 1_000_000?
             impact = compute_llm_impacts(
-                model_active_parameter_count=model_extra_info["active_params"],
-                model_total_parameter_count=model_extra_info["total_params"],
+                model_active_parameter_count=int(model_extra_info["active_params"]),
+                model_total_parameter_count=int(model_extra_info["total_params"]),
                 output_token_count=token_count,
             )
         else:
             if "params" in model_extra_info:
                 # TODO: add request latency
+                print(model_extra_info["params"])
+            # FIXME: multiply by 1_000_000?
                 impact = compute_llm_impacts(
-                    model_active_parameter_count=model_extra_info["params"],
-                    model_total_parameter_count=model_extra_info["params"],
+                    model_active_parameter_count=int(model_extra_info["params"]),
+                    model_total_parameter_count=int(model_extra_info["params"]),
                     output_token_count=token_count,
                     request_latency=request_latency,
                 )
