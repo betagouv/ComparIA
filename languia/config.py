@@ -116,11 +116,10 @@ with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
 
 css = css_dsfr + custom_css
 
-models, all_models = get_model_list(
+models = get_model_list(
     None,
     # TODO: directly pass api_endpoint_info instead
     register_api_endpoint_file,
-    vision_arena=False,
 )
 
 api_endpoint_info = json.load(open(register_api_endpoint_file))

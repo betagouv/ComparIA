@@ -58,7 +58,6 @@ def vote_last_response(
         logger.info(json.dumps(data))
         fout.write(json.dumps(data) + "\n")
 
-
     # names = (
     #     "### Model A: " + conversations_state[0].model_name,
     #     "### Model B: " + conversations_state[1].model_name,
@@ -305,19 +304,15 @@ def get_model_extra_info(name: str, models_extra_info: list):
             return model
 
 
-def get_model_list(controller_url, register_api_endpoint_file, vision_arena):
+def get_model_list(controller_url, register_api_endpoint_file):
 
     # Add models from the controller
     if controller_url:
         ret = requests.post(controller_url + "/refresh_all_workers")
         assert ret.status_code == 200
 
-        if vision_arena:
-            ret = requests.post(controller_url + "/list_multimodal_models")
-            models = ret.json()["models"]
-        else:
-            ret = requests.post(controller_url + "/list_language_models")
-            models = ret.json()["models"]
+        ret = requests.post(controller_url + "/list_language_models")
+        models = ret.json()["models"]
     else:
         models = []
 
@@ -325,30 +320,12 @@ def get_model_list(controller_url, register_api_endpoint_file, vision_arena):
     if register_api_endpoint_file:
         api_endpoint_info = json.load(open(register_api_endpoint_file))
         for mdl, mdl_dict in api_endpoint_info.items():
-            mdl_vision = mdl_dict.get("vision-arena", False)
-            mdl_text = mdl_dict.get("text-arena", True)
-            if vision_arena and mdl_vision:
-                models.append(mdl)
-            if not vision_arena and mdl_text:
-                models.append(mdl)
+            models.append(mdl)
 
-    # Remove anonymous models
     models = list(set(models))
-    visible_models = models.copy()
-    for mdl in models:
-        if mdl not in api_endpoint_info:
-            continue
-        mdl_dict = api_endpoint_info[mdl]
-        if mdl_dict["anony_only"]:
-            visible_models.remove(mdl)
 
-    # Sort models and add descriptions
-    # priority = {k: f"___{i:03d}" for i, k in enumerate(model_info)}
-    # models.sort(key=lambda x: priority.get(x, x))
-    # visible_models.sort(key=lambda x: priority.get(x, x))
     logger.info(f"All models: {models}")
-    logger.info(f"Visible models: {visible_models}")
-    return visible_models, models
+    return models
 
 
 def is_limit_reached(model_name, ip):
@@ -370,7 +347,9 @@ def count_output_tokens(roles, messages) -> int:
     return sum(len(msg[1]) * 4 for msg in messages if msg[0] == roles[1])
 
 
-def get_llm_impact(model_extra_info, model_name: str, token_count: int, request_latency: float) -> dict:
+def get_llm_impact(
+    model_extra_info, model_name: str, token_count: int, request_latency: float
+) -> dict:
     """Compute or fallback to estimated impact for an LLM."""
     # TODO: add request latency
     # FIXME: most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
@@ -393,7 +372,7 @@ def get_llm_impact(model_extra_info, model_name: str, token_count: int, request_
                     model_active_parameter_count=model_extra_info["params"],
                     model_total_parameter_count=model_extra_info["params"],
                     output_token_count=token_count,
-                    request_latency=request_latency
+                    request_latency=request_latency,
                 )
             else:
                 logger.warn(
