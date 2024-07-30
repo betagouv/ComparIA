@@ -9,8 +9,6 @@ from random import randrange
 
 import json
 
-from fastchat.serve.remote_logger import get_remote_logger
-
 # from fastchat.utils import (
 #     # moderation_filter,
 # )
@@ -60,7 +58,6 @@ def vote_last_response(
         logger.info(json.dumps(data))
         fout.write(json.dumps(data) + "\n")
 
-    get_remote_logger().log(data)
 
     # names = (
     #     "### Model A: " + conversations_state[0].model_name,

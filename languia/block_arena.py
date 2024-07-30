@@ -13,12 +13,7 @@ from fastchat.constants import (
     MODERATION_MSG,
     CONVERSATION_LIMIT_MSG,
     SLOW_MODEL_MSG,
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     CONVERSATION_TURN_LIMIT,
-    SAMPLING_WEIGHTS,
-    BATTLE_TARGETS,
-    SAMPLING_BOOST_MODELS,
-    OUTAGE_MODELS,
 )
 
 # from fastchat.model.model_adapter import get_conversation_template
@@ -52,6 +47,14 @@ from custom_components.frinput.backend.gradio_frinput import FrInput
 
 
 from languia import config
+
+from languia.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    SAMPLING_WEIGHTS,
+    BATTLE_TARGETS,
+    SAMPLING_BOOST_MODELS,
+    OUTAGE_MODELS,
+)
 
 # // Enable navigation prompt
 # window.onbeforeunload = function() {
@@ -526,6 +529,8 @@ with gr.Blocks(
                     #         placeholder
                     # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
                     chatbots[i] = gr.Chatbot(
+                        # TODO:
+                        # type="messages",
                         elem_id=f"chatbot-{i}",
                         # min_width=
                         # height=
@@ -1086,8 +1091,12 @@ with gr.Blocks(
             # TODO:
             # request_latency_a = state0.conv.finish_tstamp - state0.conv.start_tstamp
             # request_latency_b = state1.conv.finish_tstamp - state1.conv.start_tstamp
-            model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens, None)
-            model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens, None)
+            model_a_impact = get_llm_impact(
+                model_a, state0.model_name, model_a_tokens, None
+            )
+            model_b_impact = get_llm_impact(
+                model_b, state1.model_name, model_b_tokens, None
+            )
 
             model_a_running_eq = running_eq(model_a_impact)
             model_b_running_eq = running_eq(model_b_impact)

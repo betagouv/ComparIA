@@ -45,3 +45,4 @@ docker/.env
 # Secrets
 model-info-file.json
 register-api-endpoint-file.json
+docker/.env
