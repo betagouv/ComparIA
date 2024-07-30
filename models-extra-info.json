@@ -66,6 +66,19 @@
     "description": "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût. Seuls 39Mds de paramètres sont actifs sur 141Mds. La fenêtre contextuelle de 64000 tokens permet de rappeler des informations précises à partir de grands documents.",
     "license": "Apache 2.0"
   },
+  "mistral-nemo-2407": {
+    "simple_name": "Mistral Nemo",
+    "params": 12,
+    "organisation": "Mistral",
+    "country": "France",
+    "icon_path": "mistral.png",
+  "friendly_size": "M",
+    "distribution": "open-weights",
+    "dataset": "private",
+    "conditions": "restricted",
+    "description": "",
+    "license": "Apache 2.0"
+  },
   "Meta-Llama-3-70B-Instruct": {
     "params": 70,
     "simple_name": "Llama-3-70b",
@@ -111,17 +124,32 @@
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "restricted"
+    "conditions": "restricted",
+    "description": ""
   },
-  "Gemini 1.5 Pro API-0409-Preview": {
-    "simple_name": "Gemini 1.5 Pro API-0409-Preview",
+  "gemini-1.5-pro-001": {
+    "simple_name": "Gemini 1.5 Pro",
     "organisation": "Google",
     "country": "États-Unis",
     "icon_path": "google.png",
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
-    "conditions": "restricted"
+    "conditions": "restricted",
+    "description": ""
+
+  },
+  "llama-3.1-405b": {
+    "simple_name": "Llama 3.1 405b",
+    "organisation": "Meta",
+    "country": "États-Unis",
+    "icon_path": "meta.svg",
+    "friendly_size": "L",
+    "dataset": "private",
+    "distribution": "open-weights",
+    "conditions": "restricted",
+    "description": "",
+    "params": 405
   },
   "GPT-4-Turbo-2024-04-09": {
     "simple_name": "GPT-4-Turbo-2024-04-09",
@@ -131,16 +159,6 @@
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "api-only",
-    "conditions": "restricted"
-  },
-  "Llama-2-13b-chat": {
-    "simple_name": "Llama-2-13b-chat",
-    "organisation": "Meta",
-    "country": "États-Unis",
-    "icon_path": "meta.svg",
-    "friendly_size": "S",
-    "dataset": "private",
-    "distribution": "open-weights",
     "conditions": "restricted"
   },
   "Zephyr-ORPO-141b-A35b-v0.1": {
