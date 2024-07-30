@@ -97,22 +97,6 @@ def add_text(
             ConversationState(model_name=model_right),
         ]
 
-    # FIXME: when submitting empty text
-    # if len(text) <= 0:
-    #     for i in range(num_sides):
-    #         conversations_state[i].skip_next = True
-    #     return (
-    #         # 2 conversations_state
-    #         conversations_state
-    #         # 2 chatbots
-    #         + [x.to_gradio_chatbot() for x in conversations_state]
-    #         # text
-    #         + [""]
-    #         + [visible_row]
-    #         # Slow warning
-    #         + [""]
-    #     )
-
     model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
     # turn on moderation in battle mode
     all_conv_text_left = conversations_state[0].conv.get_prompt()
@@ -120,11 +104,11 @@ def add_text(
     all_conv_text = (
         all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
     )
-    flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
-    if flagged:
-        logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
-        # overwrite the original text
-        text = MODERATION_MSG
+    # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
+    # if flagged:
+    #     logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
+    #     # overwrite the original text
+    #     text = MODERATION_MSG
 
     conv = conversations_state[0].conv
     if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
@@ -138,8 +122,8 @@ def add_text(
             # 2 chatbots
             + [x.to_gradio_chatbot() for x in conversations_state]
             # text
-            + [CONVERSATION_LIMIT_MSG]
-            + [gr.update(visible=True)]
+            # + [CONVERSATION_LIMIT_MSG]
+            # + [gr.update(visible=True)]
         )
 
     text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
@@ -160,25 +144,6 @@ def add_text(
         conversations_state
         # 2 chatbots
         + [x.to_gradio_chatbot() for x in conversations_state]
-        # textbox
-        # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
-        + [
-            gr.update(
-                value="", placeholder="Continuer à discuter avec les deux modèles"
-            )
-        ]
-        # stepper_block
-        + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
-        # mode_screen
-        + [gr.update(visible=False)]
-        # chat_area
-        + [gr.update(visible=True)]
-        # send_btn
-        + [gr.update(interactive=False)]
-        # retry_btn
-        # + [gr.update(visible=True)]
-        # conclude_btn
-        + [gr.update(visible=True, interactive=True)]
     )
 
 
@@ -925,21 +890,66 @@ with gr.Blocks(
         def enable_component():
             return gr.update(interactive=True)
 
+        def goto_chatbot():
+            # textbox
+
+            # FIXME: when submitting empty text
+            # if len(text) <= 0:
+            #     for i in range(num_sides):
+            #         conversations_state[i].skip_next = True
+            #     return (
+            #         # 2 conversations_state
+            #         conversations_state
+            #         # 2 chatbots
+            #         + [x.to_gradio_chatbot() for x in conversations_state]
+            #         # text
+            #         + [""]
+            #         + [visible_row]
+            #         # Slow warning
+            #         + [""]
+            #     )
+
+            # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
+            return (
+                [
+                    gr.update(
+                        value="",
+                        placeholder="Continuer à discuter avec les deux modèles",
+                    )
+                ]
+                # stepper_block
+                + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
+                # mode_screen
+                + [gr.update(visible=False)]
+                # chat_area
+                + [gr.update(visible=True)]
+                # send_btn
+                + [gr.update(interactive=False)]
+                # retry_btn
+                # + [gr.update(visible=True)]
+                # conclude_btn
+                + [gr.update(visible=True, interactive=True)]
+            )
+
         gr.on(
             triggers=[textbox.submit, send_btn.click],
             fn=add_text,
             api_name=False,
             inputs=conversations_state + [textbox],
             # inputs=conversations_state + model_selectors + [textbox],
-            outputs=conversations_state
-            + chatbots
-            + [textbox]
-            + [stepper_block]
-            + [mode_screen]
-            + [chat_area]
-            + [send_btn]
-            # + [retry_btn]
-            + [conclude_btn],
+            outputs=conversations_state + chatbots,
+        ).then(
+            fn=goto_chatbot,
+            inputs=[],
+            outputs=(
+                [textbox]
+                + [stepper_block]
+                + [mode_screen]
+                + [chat_area]
+                + [send_btn]
+                # + [retry_btn]
+                + [conclude_btn]
+            ),
         ).then(
             fn=bot_response_multi,
             inputs=conversations_state + [temperature, top_p, max_output_tokens],

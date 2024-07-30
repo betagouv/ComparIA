@@ -56,28 +56,26 @@ class ConversationState:
             sep="\n### ",
             stop_str="###",
         ).copy()
+
+        # TODO: get it from api
         self.conv_id = uuid.uuid4().hex
-        self.skip_next = False
+
         self.model_name = model_name
         self.oai_thread_id = None
-        self.is_vision = is_vision
+        # self.is_vision = is_vision
 
-        # NOTE(chris): This could be sort of a hack since it assumes the user only uploads one image. If they can upload multiple, we should store a list of image hashes.
-        self.has_csam_image = False
+        # self.conv.history
 
-        self.regen_support = True
-        if "browsing" in model_name:
-            self.regen_support = False
-        self.init_system_prompt(self.conv)
+    # def generate_response(history):
+    #     history.append(ChatMessage(role="user", content="What is the weather in San Francisco right now?"))
+    #     yield history
+    #     time.sleep(0.25)
+    #     history.append(ChatMessage(role="assistant",
+    #                                   content="In order to find the current weather in San Francisco, I will need to use my weather tool.")
+    #                                )
+    #     yield history
 
-    def init_system_prompt(self, conv):
-        system_prompt = conv.get_system_message()
-        if len(system_prompt) == 0:
-            return
-        current_date = datetime.datetime.now().strftime("%Y-%m-%d")
-        system_prompt = system_prompt.replace("{{currentDateTime}}", current_date)
-        conv.set_system_message(system_prompt)
-
+    # TODO: get rid
     def to_gradio_chatbot(self):
         return self.conv.to_gradio_chatbot()
 
@@ -89,9 +87,6 @@ class ConversationState:
                 "model_name": self.model_name,
             }
         )
-
-        if self.is_vision:
-            base.update({"has_csam_image": self.has_csam_image})
         return base
 
 
