@@ -24,10 +24,11 @@ from fastchat.constants import (
     SESSION_EXPIRATION_TIME,
 )
 from fastchat.conversation import Conversation, SeparatorStyle
+
 # from fastchat.model.model_adapter import (
 #     get_conversation_template,
 # )
-from fastchat.serve.api_provider import get_api_provider_stream_iter
+from languia.api_provider import get_api_provider_stream_iter
 
 
 from languia.utils import get_ip, get_conv_log_filename, is_limit_reached
@@ -43,18 +44,18 @@ invisible_btn = gr.Button(interactive=False, visible=False)
 
 class ConversationState:
     def __init__(self, model_name="", is_vision=False):
-        # TODO: use std OpenAI format instead 
+        # TODO: use std OpenAI format instead
         # self.conv = get_conversation_template(model_name)
         self.conv = Conversation(
-        name="zero_shot",
-        system_message=""
-        # system_message="A chat between a curious human and an artificial intelligence assistant. "
-        # "The assistant gives helpful, detailed, and polite answers to the human's questions.",
-        roles=("user", "assistant"),
-        sep_style=SeparatorStyle.ADD_COLON_SINGLE,
-        sep="\n### ",
-        stop_str="###",
-    )
+            name="zero_shot",
+            system_message="",
+            # system_message="A chat between a curious human and an artificial intelligence assistant. "
+            # "The assistant gives helpful, detailed, and polite answers to the human's questions.",
+            roles=("user", "assistant"),
+            sep_style=SeparatorStyle.ADD_COLON_SINGLE,
+            sep="\n### ",
+            stop_str="###",
+        ).copy()
         self.conv_id = uuid.uuid4().hex
         self.skip_next = False
         self.model_name = model_name
