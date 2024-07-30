@@ -5,16 +5,6 @@ import logging
 from gradio import ChatMessage
 import time
 
-def generate_response(history):
-    history.append(ChatMessage(role="user", content="What is the weather in San Francisco right now?"))
-    yield history
-    time.sleep(0.25)
-    history.append(ChatMessage(role="assistant",
-                               content="In order to find the current weather in San Francisco, I will need to use my weather tool.")
-                               )
-    yield history
-
-
     # def to_openai_api_messages(self):
     #     """Convert the conversation to OpenAI chat completion format."""
     #     if self.system_message == "":
@@ -53,7 +43,7 @@ def get_api_provider_stream_iter(
     elif model_api_dict["api_type"] == "vertex":
         prompt = conv.to_vertex_api_messages()
         stream_iter = vertex_api_stream_iter(
-            model_name, prompt, temperature, top_p, max_new_tokens
+            model_name, prompt, temperature, top_p, max_new_tokens, api_base=model_api_dict["api_base"]
         )
     else:
         raise NotImplementedError()
@@ -110,17 +100,39 @@ def openai_api_stream_iter(
             yield data
 
 
-def vertex_api_stream_iter(model_name, messages, temperature, top_p, max_new_tokens):
-    import vertexai
-    from vertexai import generative_models
-    from vertexai.generative_models import (
-        GenerationConfig,
-        GenerativeModel,
-        Image,
-    )
-    project_id = os.environ.get("GCP_PROJECT_ID", None)
-    location = os.environ.get("GCP_LOCATION", None)
-    vertexai.init(project=project_id, location=location)
+def vertex_api_stream_iter(api_base, model_name, messages, temperature, top_p, max_new_tokens):
+    # import vertexai
+    # from vertexai import generative_models
+    # from vertexai.generative_models import (
+    #     GenerationConfig,
+    #     GenerativeModel,
+    #     Image,
+    # )
+    # GOOGLE_APPLICATION_CREDENTIALS
+    if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+        logging.warn("No Google creds detected!")
+
+    import google.auth
+    import google.auth.transport.requests
+    import openai
+
+    # Programmatically get an access token
+    # creds, project = google.auth.default()
+    creds, project = google.auth.default(scopes=['https://www.googleapis.com/auth/cloud-platform'])
+    auth_req = google.auth.transport.requests.Request()
+    creds.refresh(auth_req)
+    # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
+
+    # Pass the Vertex endpoint and authentication to the OpenAI SDK
+    PROJECT = project
+    client = openai.OpenAI(
+        base_url=api_base or "https://api.openai.com/v1",
+        api_key = creds.token)  
+
+    # print(client.models.list())
+    # project_id = os.environ.get("GCP_PROJECT_ID", None)
+    # location = os.environ.get("GCP_LOCATION", None)
+    # vertexai.init(project=project_id, location=location)
 
     text_messages = []
     for message in messages:
