@@ -47,12 +47,8 @@ from languia.utils import (
     running_eq,
 )
 
-from gradio_frbutton import FrButton
-
-# from custom_components.frbutton.backend.gradio_frbutton import FrButton
-from gradio_frinput import FrInput
-
-# from custom_components.frinput.backend.gradio_frinput import FrInput
+from custom_components.frbutton.backend.gradio_frbutton import FrButton
+from custom_components.frinput.backend.gradio_frinput import FrInput
 
 
 from languia import config
@@ -145,11 +141,10 @@ def add_text(
 
     text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
     # TODO: what do?
+
     for i in range(config.num_sides):
-        # post_processed_text = _prepare_text_with_image(conversations_state[i], text, csam_flag=False)
-        post_processed_text = text
         conversations_state[i].conv.append_message(
-            conversations_state[i].conv.roles[0], post_processed_text
+            conversations_state[i].conv.roles[0], text
         )
         conversations_state[i].conv.append_message(
             conversations_state[i].conv.roles[1], None
@@ -1088,9 +1083,11 @@ with gr.Blocks(
             model_b_tokens = count_output_tokens(
                 state1.conv.roles, state1.conv.messages
             )
-
-            model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens)
-            model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens)
+            # TODO:
+            # request_latency_a = state0.conv.finish_tstamp - state0.conv.start_tstamp
+            # request_latency_b = state1.conv.finish_tstamp - state1.conv.start_tstamp
+            model_a_impact = get_llm_impact(model_a, state0.model_name, model_a_tokens, None)
+            model_b_impact = get_llm_impact(model_b, state1.model_name, model_b_tokens, None)
 
             model_a_running_eq = running_eq(model_a_impact)
             model_b_running_eq = running_eq(model_b_impact)
