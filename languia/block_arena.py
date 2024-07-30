@@ -461,7 +461,7 @@ with gr.Blocks(
                 # not working
                 # autofocus=True
             )
-            send_btn = gr.Button(
+            send_btn = gr.Button(interactive=False,
                 value="Envoyer", elem_classes="fr-btn fr-col-6 fr-col-md-1"
             )
             # FIXME: visible=false not working?
