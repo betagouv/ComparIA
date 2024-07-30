@@ -48,10 +48,10 @@ if os.getenv("SENTRY_DSN"):
     logging.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
 
 # TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
-if os.getenv("SENTRY_FRONT_DSN"):
-    sentry_js = f"""
-    <script src="{ os.getenv('SENTRY_FRONT_DSN') }" crossorigin="anonymous"></script>
-    """
+# if os.getenv("SENTRY_FRONT_DSN"):
+#     sentry_js = f"""
+#     <script src="{ os.getenv('SENTRY_FRONT_DSN') }" crossorigin="anonymous"></script>
+#     """
     # sentry_js += """
     # <script>
     # Sentry.onLoad(function() {
@@ -68,8 +68,8 @@ if os.getenv("SENTRY_FRONT_DSN"):
     #     });
     # });
     # </script>"""
-else:
-    sentry_js = ""
+# else:
+sentry_js = ""
 
 # if os.getenv("LANGUIA_CONTROLLER_URL"):
 #     controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
