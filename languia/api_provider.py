@@ -5,20 +5,21 @@ import logging
 from gradio import ChatMessage
 import time
 
-    # def to_openai_api_messages(self):
-    #     """Convert the conversation to OpenAI chat completion format."""
-    #     if self.system_message == "":
-    #         ret = []
-    #     else:
-    #         ret = [{"role": "system", "content": self.system_message}]
+# def to_openai_api_messages(self):
+#     """Convert the conversation to OpenAI chat completion format."""
+#     if self.system_message == "":
+#         ret = []
+#     else:
+#         ret = [{"role": "system", "content": self.system_message}]
 
-    #     for i, (_, msg) in enumerate(self.messages[self.offset :]):
-    #         if i % 2 == 0:
-    #             ret.append({"role": "user", "content": msg})
-    #         else:
-    #             if msg is not None:
-    #                 ret.append({"role": "assistant", "content": msg})
-    #     return ret
+#     for i, (_, msg) in enumerate(self.messages[self.offset :]):
+#         if i % 2 == 0:
+#             ret.append({"role": "user", "content": msg})
+#         else:
+#             if msg is not None:
+#                 ret.append({"role": "assistant", "content": msg})
+#     return ret
+
 
 def get_api_provider_stream_iter(
     conv,
@@ -32,18 +33,23 @@ def get_api_provider_stream_iter(
     if model_api_dict["api_type"] == "openai":
         prompt = conv.to_openai_api_messages()
         stream_iter = openai_api_stream_iter(
-            model_api_dict["model_name"],
-            prompt,
-            temperature,
-            top_p,
-            max_new_tokens,
+            model_name=model_api_dict["model_name"],
+            messages=prompt,
+            temperature=temperature,
+            top_p=top_p,
+            max_new_tokens=max_new_tokens,
             api_base=model_api_dict["api_base"],
             api_key=model_api_dict["api_key"],
         )
     elif model_api_dict["api_type"] == "vertex":
-        prompt = conv.to_vertex_api_messages()
+        prompt = conv.to_openai_api_messages()
         stream_iter = vertex_api_stream_iter(
-            model_name, prompt, temperature, top_p, max_new_tokens, api_base=model_api_dict["api_base"]
+            model_name=model_api_dict["model_name"],
+            messages=prompt,
+            temperature=temperature,
+            top_p=top_p,
+            max_new_tokens=max_new_tokens,
+            api_base=model_api_dict["api_base"],
         )
     else:
         raise NotImplementedError()
@@ -100,7 +106,9 @@ def openai_api_stream_iter(
             yield data
 
 
-def vertex_api_stream_iter(api_base, model_name, messages, temperature, top_p, max_new_tokens):
+def vertex_api_stream_iter(
+    api_base, model_name, messages, temperature, top_p, max_new_tokens
+):
     # import vertexai
     # from vertexai import generative_models
     # from vertexai.generative_models import (
@@ -118,7 +126,9 @@ def vertex_api_stream_iter(api_base, model_name, messages, temperature, top_p, m
 
     # Programmatically get an access token
     # creds, project = google.auth.default()
-    creds, project = google.auth.default(scopes=['https://www.googleapis.com/auth/cloud-platform'])
+    creds, project = google.auth.default(
+        scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
     auth_req = google.auth.transport.requests.Request()
     creds.refresh(auth_req)
     # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
@@ -126,8 +136,8 @@ def vertex_api_stream_iter(api_base, model_name, messages, temperature, top_p, m
     # Pass the Vertex endpoint and authentication to the OpenAI SDK
     PROJECT = project
     client = openai.OpenAI(
-        base_url=api_base or "https://api.openai.com/v1",
-        api_key = creds.token)  
+        base_url=api_base or "https://api.openai.com/v1", api_key=creds.token
+    )
 
     # print(client.models.list())
     # project_id = os.environ.get("GCP_PROJECT_ID", None)
@@ -183,7 +193,6 @@ def vertex_api_stream_iter(api_base, model_name, messages, temperature, top_p, m
                 "error_code": 0,
             }
             yield data
-
 
     # generator = GenerativeModel(model_name).generate_content(
     #     messages,

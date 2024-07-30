@@ -220,7 +220,7 @@ def bot_response(
     logger.info(f"{output}")
 
     filename = get_conv_log_filename(
-        is_vision=state.is_vision, has_csam_image=state.has_csam_image
+        # is_vision=state.is_vision, has_csam_image=state.has_csam_image
     )
     logger.info(f"Saving to: {filename}")
 

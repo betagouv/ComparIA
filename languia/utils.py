@@ -231,11 +231,13 @@ def build_reveal_html(
 
 
 def running_eq(impact):
-    energy_in_kJ = impact.energy.value / 0.2777777778
-    # running 1 km at 10 km/h with a weight of 70 kg
-    running_eq = energy_in_kJ / 294
-    # in km
-    return running_eq
+    if impact is not None:
+        energy_in_kJ = impact.energy.value / 0.2777777778
+        # running 1 km at 10 km/h with a weight of 70 kg
+        running_eq = energy_in_kJ / 294
+        # in km
+        return running_eq
+    return 0.0
 
 
 def get_conv_log_filename(is_vision=False, has_csam_image=False):
@@ -280,21 +282,20 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
 
         return model
         # To fix this, please complete `models-extra-info.json` to register your model
-    return (
-        {
-            "id": "other",
-            "simple_name": "Autre",
-            "organisation": "Autre",
-            "friendly_size": "M",
-            "distribution": "open-weights",
-            "dataset": "private",
-            "conditions": "restricted",
-            "description": "Un modèle open source disponible via Hugging Face.",
-            "excerpt": "Un modèle open source",
-            "icon_path": "huggingface.png",
-            "license": "Autre",
-        },
-    )
+    return {
+        "id": "other",
+        "simple_name": "Autre",
+        "organisation": "Autre",
+        "params": "7",
+        "friendly_size": "M",
+        "distribution": "open-weights",
+        "dataset": "private",
+        "conditions": "restricted",
+        "description": "Un modèle open source disponible via Hugging Face.",
+        "excerpt": "Un modèle open source",
+        "icon_path": "huggingface.png",
+        "license": "Autre",
+    }
 
 
 def get_model_extra_info(name: str, models_extra_info: list):
@@ -302,6 +303,20 @@ def get_model_extra_info(name: str, models_extra_info: list):
     for model in models_extra_info:
         if model["id"] == std_name:
             return model
+    return {
+        "id": "other",
+        "params": "7",
+        "simple_name": "Autre",
+        "organisation": "Autre",
+        "friendly_size": "M",
+        "distribution": "open-weights",
+        "dataset": "private",
+        "conditions": "restricted",
+        "description": "Un modèle open source disponible via Hugging Face.",
+        "excerpt": "Un modèle open source",
+        "icon_path": "huggingface.png",
+        "license": "Autre",
+    }
 
 
 def get_model_list(controller_url, register_api_endpoint_file):
