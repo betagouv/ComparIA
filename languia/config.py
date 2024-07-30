@@ -48,7 +48,7 @@ if os.getenv("SENTRY_DSN"):
     logging.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
 
 # TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
-if os.getenv('SENTRY_FRONT_DSN'):
+if os.getenv("SENTRY_FRONT_DSN"):
     sentry_js = f"""
     <script src="{ os.getenv('SENTRY_FRONT_DSN') }" crossorigin="anonymous"></script>
     """
@@ -102,7 +102,7 @@ arena_head_js = (
 site_head_js = (
     # sentry_js
     # +
-      """
+    """
 <script type="module" src="assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.js"></script>
 """
@@ -127,9 +127,14 @@ api_endpoint_info = json.load(open(register_api_endpoint_file))
 
 # TODO: to CSV
 
-all_models_extra_info_json = {slugify(k.lower()): v for k, v in json.load(open("./models-extra-info.json")).items()}
+all_models_extra_info_json = {
+    slugify(k.lower()): v
+    for k, v in json.load(open("./models-extra-info.json")).items()
+}
 
-models_extra_info = [build_model_extra_info(model, all_models_extra_info_json) for model in models]
+models_extra_info = [
+    build_model_extra_info(model, all_models_extra_info_json) for model in models
+]
 print(models_extra_info)
 
 headers = {"User-Agent": "FastChat Client"}

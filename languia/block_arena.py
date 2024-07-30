@@ -29,7 +29,9 @@ from languia.block_conversation import (
     bot_response,
 )
 
-from fastchat.utils import build_logger, moderation_filter
+from fastchat.utils import moderation_filter
+
+import logging as logger
 
 from languia.utils import (
     get_ip,
@@ -52,7 +54,6 @@ from gradio_frinput import FrInput
 
 # from custom_components.frinput.backend.gradio_frinput import FrInput
 
-logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 from languia import config
 
@@ -566,7 +567,7 @@ with gr.Blocks(
             # # tie_btn = gr.Button(value="🤝  Les deux se valent")
             # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-    # with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
+        # with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
         with gr.Column(visible=False) as supervote_area:
 
             # TODO: render=false?
@@ -686,7 +687,7 @@ with gr.Blocks(
             final_send_btn = gr.Button(
                 elem_classes="fr-btn fr-col-12 fr-col-md-3 fr-col-offset-md-2",
                 value="Envoyer mes préférences",
-                interactive=False
+                interactive=False,
             )
 
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
@@ -975,7 +976,12 @@ with gr.Blocks(
 
         @which_model_radio.change(
             inputs=[which_model_radio],
-            outputs=[supervote_area, positive_supervote, negative_supervote, final_send_btn],
+            outputs=[
+                supervote_area,
+                positive_supervote,
+                negative_supervote,
+                final_send_btn,
+            ],
             api_name=False,
         )
         def build_supervote_area(vote_radio):
@@ -984,26 +990,23 @@ with gr.Blocks(
                     gr.update(visible=True),
                     gr.update(visible=False),
                     gr.update(visible=True),
-                    gr.update(interactive=True)
+                    gr.update(interactive=True),
                 )
             else:
                 return (
                     gr.update(visible=True),
                     gr.update(visible=True),
                     gr.update(visible=False),
-                    gr.update(interactive=True)
+                    gr.update(interactive=True),
                 )
 
         # Step 3
 
         @return_btn.click(
             inputs=[],
-            outputs=[stepper_block]
-            + [vote_area]
+            outputs=[stepper_block] + [vote_area]
             # + [supervote_area]
-            + [chat_area]
-            + [send_area]
-            + [buttons_footer],
+            + [chat_area] + [send_area] + [buttons_footer],
         )
         def return_to_chat():
             return (

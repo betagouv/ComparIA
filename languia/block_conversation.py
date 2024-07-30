@@ -28,17 +28,14 @@ from fastchat.model.model_adapter import (
 )
 from fastchat.serve.api_provider import get_api_provider_stream_iter
 from fastchat.serve.remote_logger import get_remote_logger
-from fastchat.utils import (
-    build_logger,
-)
+
 
 from fastchat.model.model_registry import model_info
 
 from languia.utils import get_ip, get_conv_log_filename, is_limit_reached
 from languia import config
 
-logger = build_logger("gradio_web_server", "gradio_web_server.log")
-
+import logging as logger
 
 no_change_btn = gr.Button()
 enable_btn = gr.Button(interactive=True, visible=True)
@@ -159,7 +156,7 @@ def bot_response(
             state,
         )
 
-    html_code = '<br /><br /><em>En attente de la réponse…</em>'
+    html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
     # conv.update_last_message("▌")
     conv.update_last_message(html_code)
@@ -216,7 +213,7 @@ def bot_response(
 
     finish_tstamp = time.time()
     logger.info(f"{output}")
-    
+
     filename = get_conv_log_filename(
         is_vision=state.is_vision, has_csam_image=state.has_csam_image
     )

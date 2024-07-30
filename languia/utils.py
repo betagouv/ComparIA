@@ -11,10 +11,11 @@ import json
 
 from fastchat.serve.remote_logger import get_remote_logger
 
-from fastchat.utils import (
-    build_logger,
-    # moderation_filter,
-)
+# from fastchat.utils import (
+#     # moderation_filter,
+# )
+
+import logging as logger
 
 import datetime
 from fastchat.constants import LOGDIR
@@ -23,8 +24,6 @@ import requests
 from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
 
 from slugify import slugify
-
-logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 
 def get_ip(request: gr.Request):
@@ -368,14 +367,10 @@ def is_limit_reached(model_name, ip):
         return None
 
 
-def count_output_tokens(roles,  messages) -> int:
+def count_output_tokens(roles, messages) -> int:
     """Count output tokens (assuming 4 per message)."""
 
-    return sum(
-        len(msg[1]) * 4
-        for msg in messages
-        if msg[0] == roles[1]
-    )
+    return sum(len(msg[1]) * 4 for msg in messages if msg[0] == roles[1])
 
 
 def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
@@ -387,7 +382,7 @@ def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
     impact = llm_impacts("huggingface_hub", model_name, token_count, None)
     if impact is None:
         # logger.info("impact is None for " + model_name + ", deducing from params")
-        if "active_params" in model_extra_info and "total_params" in model_extra_info:    
+        if "active_params" in model_extra_info and "total_params" in model_extra_info:
             # TODO: add request latency
             impact = compute_llm_impacts(
                 model_active_parameter_count=model_extra_info["active_params"],
@@ -403,7 +398,11 @@ def get_llm_impact(model_extra_info, model_name: str, token_count: int) -> dict:
                     output_token_count=token_count,
                 )
             else:
-                logger.warn("impact is None for " + model_name + ", and no params, closed model did not match ecologits list?")
+                logger.warn(
+                    "impact is None for "
+                    + model_name
+                    + ", and no params, closed model did not match ecologits list?"
+                )
     return impact
 
 
