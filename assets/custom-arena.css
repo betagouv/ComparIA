@@ -8,14 +8,19 @@ body {
 }
 
 /* Bug when fr-grid-row or other changes display property  */
-.hidden, .hide {
+.hidden,
+.hide {
   display: none !important;
 }
 
 /* --raised-shadow: 0 1px 3px var(--shadow-color); */
-/* .raised {
-  filter: drop-shadow(var(--raised-shadow));
-} */
+#stepper-html {
+  background-color: var(--background-raised-grey);
+
+  /* filter: drop-shadow(var(--raised-shadow)); */
+  /* FIXME: used 3px to cancel out box shadow on top of stepper  */
+  filter: drop-shadow(0 3px 3px var(--shadow-color));
+}
 
 /* Temporary fixes for dark mode in arena: enforce clear mode */
 /* .dark .fr-label {
@@ -125,11 +130,11 @@ li.fr-nav__item {
 }
 
 /* TODO: correctly reenable drop shadows when needed */
-/* .fr-header {
+.fr-header {
   filter: none;
   border-bottom: 1px solid var(--border-default-grey);
-  filter: drop-shadow(var(--raised-shadow));
-} */
+  /* filter: drop-shadow(var(--raised-shadow)); */
+}
 
 #arena {
   margin: auto;

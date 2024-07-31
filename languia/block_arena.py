@@ -344,13 +344,13 @@ with gr.Blocks(
             interactive=False,
         )
 
-    with gr.Row(elem_id="stepper-row", elem_classes="raised fr-pb-2w") as stepper_row:
-        stepper_block = gr.HTML(
-            stepper_html("Choix du mode de conversation", 1, 4),
-            elem_id="stepper_html",
-            elem_classes="fr-container",
-            visible=False,
-        )
+    # with gr.Row(elem_id="stepper-row", elem_classes="fr-pb-2w") as stepper_row:
+    # with gr.Row(elem_id="stepper-row", elem_classes="raised fr-pb-2w") as stepper_row:
+    stepper_block = gr.HTML(
+        stepper_html("Choix du mode de conversation", 1, 4),
+        elem_id="stepper-html",
+        visible=False,
+    )
 
     with gr.Column(
         visible=False, elem_id="mode-screen", elem_classes="fr-container"
@@ -499,7 +499,7 @@ with gr.Blocks(
                     )
 
     with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
-        gr.Markdown(value="## Quel modèle avez-vous préféré ?")
+        gr.Markdown(elem_classes="fr-mt-2w", value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
             which_model_radio = gr.Radio(
                 elem_classes="radio-tiles bolder",

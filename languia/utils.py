@@ -40,7 +40,6 @@ def get_ip(request: gr.Request):
 def vote_last_response(
     conversations_state,
     vote_type,
-    # _model_selectors,
     details: list,
     request: gr.Request,
 ):
@@ -61,17 +60,13 @@ def vote_last_response(
         logger.info(json.dumps(data))
         fout.write(json.dumps(data) + "\n")
 
-    # names = (
-    #     "### Model A: " + conversations_state[0].model_name,
-    #     "### Model B: " + conversations_state[1].model_name,
-    # )
     return data
     # yield names + ("",)
 
 
 def stepper_html(title, step, total_steps):
     return f"""
-    <div class="fr-stepper">
+    <div class="fr-stepper fr-container fr-pb-2w">
     <h2 class="fr-stepper__title">
         {title}
         <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
