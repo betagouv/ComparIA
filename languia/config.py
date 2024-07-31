@@ -52,22 +52,22 @@ if os.getenv("SENTRY_DSN"):
 #     sentry_js = f"""
 #     <script src="{ os.getenv('SENTRY_FRONT_DSN') }" crossorigin="anonymous"></script>
 #     """
-    # sentry_js += """
-    # <script>
-    # Sentry.onLoad(function() {
-    #     Sentry.init({
-    #     // Performance Monitoring
-    # """
-    # sentry_js += f"""
-    #   tracesSampleRate: {traces_sample_rate},
-    #   // Session Replay
-    #   replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-    #   replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-    #   """
-    # sentry_js += """
-    #     });
-    # });
-    # </script>"""
+# sentry_js += """
+# <script>
+# Sentry.onLoad(function() {
+#     Sentry.init({
+#     // Performance Monitoring
+# """
+# sentry_js += f"""
+#   tracesSampleRate: {traces_sample_rate},
+#   // Session Replay
+#   replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+#   replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+#   """
+# sentry_js += """
+#     });
+# });
+# </script>"""
 # else:
 sentry_js = ""
 
@@ -140,6 +140,62 @@ headers = {"User-Agent": "FastChat Client"}
 controller_url = None
 enable_moderation = False
 use_remote_storage = False
+
+preprompts_table = {
+    "maniere": [
+        "Tu es Victor Hugo. Explique moi synthétiquement ce qu'est un LLM dans ton style d'écriture.",
+        "Tu es Voltaire, explique moi ce qu'est le deep learning à ta manière. Sois concis s’il te plait, pas plus de trois paragraphes !",
+        "Tu es Francis Ponge, décris moi l’ordinateur à ta manière.",
+        "Ecris une scène d'amour à la manière de Michel Audiard entre un homme éco-anxieux et une femme pilote d'avion.",
+        "Écris une fable à la manière de La Fontaine sur la justice sociale et la transition écologique.",
+        "Compose un monologue intérieur à la manière de Marguerite Duras, explorant les pensées et les émotions d'un personnage confronté à une décision difficile.",
+        "Rédige un discours d’une durée d’une minute trente à la manière d'Albert Camus, en utilisant des citations précises et une structure rigoureuse pour défendre les services publics.",
+    ],
+    "registre": [
+        """Retranscris moi en langage soutenu cette strophe de la chanson "Wesh alors" de Jul : "Wesh le sang, wesh la honda /\nMes sons tournent à la Jonque' / Tu m'as trahis mais t'es un bon gars / J'suis en fumette mais j'me trompe pas" """,
+        "Réécris ce passage dans un style courant, comme si tu parlais à un collègue au travail : “L’OSI mène actuellement des travaux pour aboutir à une définition claire de l’IA open source, et qui pourraient mener à la proposition de nouvelles licences types”.",
+        "Transcris-moi en langage courant cette strophe de la Ballade des dames du temps jadis “Où est la très sage Hélloïs / Pour qui châtré fut et puis moine / Pierre Esbaillart à Saint Denis / Pour son amour eut cette essoine / Semblablement, où est la reine / Qui commanda que Buridan / Fut jeté en un sac en Seine / Mais où sont les neiges d'antan?”",
+        "Transcris cette phrase dans un langage familier comme si tu parlais à un ami proche : “La soirée s'annonçait sous les auspices d'une promenade tranquille au clair de lune.”",
+        "Invente une phrase et écris-la trois fois: d’abord sur un ton tragique puis sur un ton lyrique et enfin sur un ton absurde.",
+    ],
+    "pedagogie": [
+        "Explique de manière simple et accessible la différence entre l'inflation et la déflation à un enfant de 10 ans",
+        "Nous venons de regarder la Guerre des étoiles. Explique de manière simple et accessible à un enfant de 10 ans les bases du droit de l’espace.",
+        "Explique le concept de l'empathie à un enfant de six ans en utilisant des exemples concrets tirés de la vie quotidienne. S’il te plait, sois concis !",
+        "Explique le concept de l'économie d'échelle à un enfant de six ans en donnant des exemples de la vie courante. S’il te plait, sois concis !",
+        "Utilise une métaphore pour expliquer le concept de l'intelligence artificielle de manière simple et compréhensible. S’il te plait, sois concis !",
+        "Utilise une métaphore pour expliquer le concept d’apprentissage automatique de manière simple et compréhensible ",
+        "Détaille les étapes pour expliquer le concept d’apprentissage profond de manière simple et compréhensible à un public de collégiens en 6e",
+        "Détaille les étapes simples pour comprendre le concept de la photosynthèse comme si tu l'expliquais à un débutant.",
+    ],
+    "creativite": [
+        "Donne moi un moyen mnémotechnique pour retenir l'ordre des planètes",
+        "Je cherche à améliorer ma diction et mon élocution. Génère dix phrases d’exercice de prononciation, avec un niveau de difficulté progressif.",
+        "Donne moi deux contrepèteries en français en m'expliquant la solution.",
+        "Je cherche un nom pour ma boulangerie, qui repose sur des jeux de mot en français. Donne moi tes trois propositions les plus pertinentes.",
+        "Je n’ai jamais compris l’expression “faire long feu”. Est-ce que tu peux m’expliquer en deux phrases ?",
+    ],
+    "regional": [
+        "Raconte ein tiot conte in picard avéc des personnages du village.",
+        "Wann ich dir so schwätz, verstehsch mich? Réponds en alsacien",
+        "Cocorico en louchebem ça donne quoi ?",
+        "Ecris un tiot poème in ch'ti sus l'biauté d'la nature. Propose aussi une traduction en français de ta réponse.",
+        "Pòtès escriure un pichon poèma en occitan sus lo passatge de las sasons? Propose une traduction en français après la réponse en occitan.",
+        "Kannst du e chürzi Gedicht uf Elsässisch schriibe über d’Schönheit vo dr Natur? Réponds à la fois en alsacien et en français.",
+        "Quoque ch'est qu'te berdoules ? Réponds en Chtimi.",
+    ],
+    "variete": [
+        # """Que veut dire "se sécher les dents" en Québécois ?""",
+        "Quel est le système de transport public le mieux conçu entre la Belgique, le Canada, la France, de la Suisse et des autres pays francophones ?",
+        "Il y a la sécurité sociale en France, c'est pareil en Belgique et en Suisse?",
+        "La nouvelle vague, c’est que en France ?",
+        "J’ai raté la votation de la semaine dernière. Je viens d’où ?",
+        "Si je parle BD tu penses à quel pays ?",
+        "Gérard Depardieu est il belge ou français ?",
+        "La chanson française, c'est quoi au juste ? Donne moi des exemples variés.",
+        "Quelles différences entre l’humour français et l’humour britannique ? Donne quelques exemples."
+    ],
+}
 
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
     os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 24000)
