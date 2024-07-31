@@ -103,6 +103,7 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
     return weight
 
 # TODO: add to outage_models for next n min when detected an error
+# TODO: simplify battle targets formula     
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
 ):
