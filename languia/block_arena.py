@@ -65,19 +65,14 @@ from languia.config import (
 
 
 def add_text(
-    # state0: ConversationState,
-    # state1: ConversationState,
     state0: gr.State,
     state1: gr.State,
-    # model_selector0: gr.Markdown,
-    # model_selector1: gr.Markdown,
     text: gr.Text,
     request: gr.Request,
 ):
     ip = get_ip(request)
     logger.info(f"add_text (anony). ip: {ip}. len: {len(text)}")
     conversations_state = [state0, state1]
-    # model_selectors = [model_selector0, model_selector1]
 
     # TODO: refacto and put init apart
     # Init conversations_state if necessary
@@ -96,35 +91,36 @@ def add_text(
             ConversationState(model_name=model_left),
             ConversationState(model_name=model_right),
         ]
+        # TODO: test here if models answer?
 
     model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
-    # turn on moderation in battle mode
-    all_conv_text_left = conversations_state[0].conv.get_prompt()
-    all_conv_text_right = conversations_state[1].conv.get_prompt()
-    all_conv_text = (
-        all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
-    )
+    # all_conv_text_left = conversations_state[0].conv.get_prompt()
+    # all_conv_text_right = conversations_state[1].conv.get_prompt()
+    # all_conv_text = (
+    #     all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
+    # )
+    # TODO: turn on moderation in battle mode
     # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
     # if flagged:
     #     logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
     #     # overwrite the original text
     #     text = MODERATION_MSG
 
-    conv = conversations_state[0].conv
-    if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
-        logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
-        for i in range(config.num_sides):
-            conversations_state[i].skip_next = True
-            # FIXME: fix return value
-        return (
-            # 2 conversations_state
-            conversations_state
-            # 2 chatbots
-            + [x.to_gradio_chatbot() for x in conversations_state]
-            # text
-            # + [CONVERSATION_LIMIT_MSG]
-            # + [gr.update(visible=True)]
-        )
+    # conv = conversations_state[0].conv
+    # if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
+    #     logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
+    #     for i in range(config.num_sides):
+    #         conversations_state[i].skip_next = True
+    #         # FIXME: fix return value
+    #     return (
+    #         # 2 conversations_state
+    #         conversations_state
+    #         # 2 chatbots
+    #         + [x.to_gradio_chatbot() for x in conversations_state]
+    #         # text
+    #         # + [CONVERSATION_LIMIT_MSG]
+    #         # + [gr.update(visible=True)]
+    #     )
 
     text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
     # TODO: what do?
@@ -133,12 +129,12 @@ def add_text(
         conversations_state[i].conv.append_message(
             conversations_state[i].conv.roles[0], text
         )
-        conversations_state[i].conv.append_message(
-            conversations_state[i].conv.roles[1], None
-        )
+        # Empty assistant message?
+        # conversations_state[i].conv.append_message(
+        #     conversations_state[i].conv.roles[1], None
+        # )
         conversations_state[i].skip_next = False
 
-    # TODO: refacto, load/init components and .then() add text
     return (
         # 2 conversations_state
         conversations_state
@@ -157,15 +153,15 @@ def bot_response_multi(
 ):
     logger.info(f"bot_response_multi (anony). ip: {get_ip(request)}")
 
-    if state0 is None or state0.skip_next:
-        # This generate call is skipped due to invalid inputs
-        yield (
-            state0,
-            state1,
-            state0.to_gradio_chatbot(),
-            state1.to_gradio_chatbot(),
-        )
-        return
+    # if state0 is None or state0.skip_next:
+    #     # This generate call is skipped due to invalid inputs
+    #     yield (
+    #         state0,
+    #         state1,
+    #         state0.to_gradio_chatbot(),
+    #         state1.to_gradio_chatbot(),
+    #     )
+    #     return
 
     conversations_state = [state0, state1]
     gen = []
@@ -792,7 +788,14 @@ with gr.Blocks(
 
         def set_guided_prompt(event: gr.EventData):
             chosen_guide = event.target.value
-            if chosen_guide in ['variete','regional',"pedagogie","creativite","registre","maniere"]:
+            if chosen_guide in [
+                "variete",
+                "regional",
+                "pedagogie",
+                "creativite",
+                "registre",
+                "maniere",
+            ]:
                 preprompts = config.preprompts_table[chosen_guide]
             else:
                 logger.error("Type of guided prompt not listed")

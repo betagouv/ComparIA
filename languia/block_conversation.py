@@ -116,9 +116,9 @@ def bot_response(
         if ret is not None and ret["is_limit_reached"]:
             error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
             logger.info(f"rate limit reached. ip: {ip}. error_msg: {ret['reason']}")
-            state.conv.update_last_message(error_msg)
-            yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-            return
+            # state.conv.update_last_message(error_msg)
+            # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
+            raise error_msg
 
     conv, model_name = state.conv, state.model_name
     model_api_dict = (
@@ -128,18 +128,7 @@ def bot_response(
     )
 
     if model_api_dict is None:
-        conv.update_last_message(SERVER_ERROR_MSG)
-        yield (
-            state,
-            state.to_gradio_chatbot(),
-            disable_btn,
-            disable_btn,
-            disable_btn,
-            enable_btn,
-            enable_btn,
-        )
-        return
-
+        raise (SERVER_ERROR_MSG)
     else:
         if use_recommended_config:
             recommended_config = model_api_dict.get("recommended_config", None)
@@ -164,56 +153,49 @@ def bot_response(
 
     # conv.update_last_message("▌")
     conv.update_last_message(html_code)
-    yield (state, state.to_gradio_chatbot()) + (disable_btn,) * 5
+    yield (state, state.to_gradio_chatbot())
 
-    try:
-        data = {"text": ""}
-        for i, data in enumerate(stream_iter):
-            if data["error_code"] == 0:
-                output = data["text"].strip()
-                # conv.update_last_message(output + "▌")
-                conv.update_last_message(output + html_code)
-                yield (state, state.to_gradio_chatbot()) + (disable_btn,) * 5
-            else:
-                output = data["text"] + f"\n\n(error_code: {data['error_code']})"
-                conv.update_last_message(output)
-                yield (state, state.to_gradio_chatbot()) + (
-                    disable_btn,
-                    disable_btn,
-                    disable_btn,
-                    enable_btn,
-                    enable_btn,
-                )
-                return
-        output = data["text"].strip()
-        conv.update_last_message(output)
-        yield (state, state.to_gradio_chatbot()) + (enable_btn,) * 5
-    except requests.exceptions.RequestException as e:
-        conv.update_last_message(
-            f"{SERVER_ERROR_MSG}\n\n"
-            f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
-        )
-        yield (state, state.to_gradio_chatbot()) + (
-            disable_btn,
-            disable_btn,
-            disable_btn,
-            enable_btn,
-            enable_btn,
-        )
-        return
-    except Exception as e:
-        conv.update_last_message(
-            f"{SERVER_ERROR_MSG}\n\n"
-            f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
-        )
-        yield (state, state.to_gradio_chatbot()) + (
-            disable_btn,
-            disable_btn,
-            disable_btn,
-            enable_btn,
-            enable_btn,
-        )
-        return
+    # try:
+    data = {"text": ""}
+    for i, data in enumerate(stream_iter):
+        if data["error_code"] == 0:
+            output = data["text"].strip()
+            # conv.update_last_message(output + "▌")
+            conv.update_last_message(output + html_code)
+            yield (state, state.to_gradio_chatbot())
+        else:
+            raise(data["text"] + f"\n\n(error_code: {data['error_code']})")
+            
+    output = data["text"].strip()
+    conv.update_last_message(output)
+    yield (state, state.to_gradio_chatbot())
+        # TODO: handle them great, or reboot arena saving initial prompt
+    # except requests.exceptions.RequestException as e:
+    #     conv.update_last_message(
+    #         f"{SERVER_ERROR_MSG}\n\n"
+    #         f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
+    #     )
+    #     yield (state, state.to_gradio_chatbot()) + (
+    #         disable_btn,
+    #         disable_btn,
+    #         disable_btn,
+    #         enable_btn,
+    #         enable_btn,
+    #     )
+    #     return
+    # except Exception as e:
+    #     conv.update_last_message(
+    #         f"{SERVER_ERROR_MSG}\n\n"
+    #         f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
+    #     )
+    #     yield (state, state.to_gradio_chatbot()) + (
+    #         disable_btn,
+    #         disable_btn,
+    #         disable_btn,
+    #         enable_btn,
+    #         enable_btn,
+    #     )
+    #     return
 
     finish_tstamp = time.time()
     logger.info(f"{output}")
