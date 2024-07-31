@@ -16,13 +16,14 @@ import json
 import logging as logger
 
 import datetime
-from fastchat.constants import LOGDIR
+
 import requests
 
 from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
 
 from slugify import slugify
 
+LOGDIR = os.getenv("LOGDIR", "./data")
 
 def get_ip(request: gr.Request):
     if "cf-connecting-ip" in request.headers:

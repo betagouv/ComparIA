@@ -12,7 +12,6 @@ import gradio as gr
 import requests
 
 from fastchat.constants import (
-    LOGDIR,
     WORKER_API_TIMEOUT,
     ErrorCode,
     MODERATION_MSG,
