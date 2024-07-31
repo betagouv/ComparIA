@@ -5,8 +5,8 @@ FROM python:3.9-slim AS base
 # RUN apt-get update -y && apt-get install -y python3.9 python3.9-distutils curl
 # RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 # RUN python3.9 get-pip.py
-RUN pip3 install fschat openai plotly pydantic-settings sentry-sdk gradio==4.38.1 ecologits huggingface-hub==0.23.5 python-slugify
-
+COPY ./requirements.txt /requirements.txt
+RUN pip3 install -r requirements.txt
 WORKDIR /app
 
 VOLUME /data

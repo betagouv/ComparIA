@@ -24,6 +24,7 @@ fonttools==4.53.1
 frozenlist==1.4.1
 fschat==0.2.36
 fsspec==2024.6.1
+google-auth==2.32.0
 gradio==4.38.1
 gradio_client==1.1.0
 h11==0.14.0
