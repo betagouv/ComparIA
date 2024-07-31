@@ -72,7 +72,7 @@
     "organisation": "Mistral",
     "country": "France",
     "icon_path": "mistral.png",
-  "friendly_size": "M",
+    "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
     "conditions": "restricted",
@@ -125,7 +125,18 @@
     "distribution": "open-weights",
     "dataset": "private",
     "conditions": "restricted",
-    "description": ""
+    "description": "Petit frère de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
+  },
+  "Gemma 2-27b-it": {
+    "simple_name": "Gemma 2-27b-it",
+    "organisation": "Google",
+    "country": "États-Unis",
+    "icon_path": "google.png",
+    "friendly_size": "M",
+    "distribution": "open-weights",
+    "dataset": "private",
+    "conditions": "restricted",
+    "description": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
   },
   "gemini-1.5-pro-001": {
     "simple_name": "Gemini 1.5 Pro",
@@ -136,8 +147,7 @@
     "dataset": "private",
     "distribution": "api-only",
     "conditions": "restricted",
-    "description": ""
-
+    "description": "Ce modèle est capable de traiter du texte mais aussi des images, des vidéos et de l'audio. Idéal pour des applications variées comme la génération de textes, la compréhension d'images, l'analyse de vidéos et la transcription d'audio."
   },
   "llama-3.1-405b": {
     "simple_name": "Llama 3.1 405b",
@@ -148,7 +158,7 @@
     "dataset": "private",
     "distribution": "open-weights",
     "conditions": "restricted",
-    "description": "",
+    "description": "Modèle le plus puissant de la famille Llama 3.1 avec 405 milliards de paramètres, il est doté de capacités accrues pour des tâches de programmation, de mathématique et de raisonnement.",
     "params": 405
   },
   "GPT-4-Turbo-2024-04-09": {
@@ -292,16 +302,6 @@
     "distribution": "open-weights",
     "dataset": "communiqué",
     "conditions": "free"
-  },
-  "Gemma 2-27b-it": {
-    "simple_name": "Gemma 2-27b-it",
-    "organisation": "Google",
-    "country": "États-Unis",
-    "icon_path": "google.png",
-    "friendly_size": "M",
-    "distribution": "open-weights",
-    "dataset": "private",
-    "conditions": "restricted"
   },
   "Qwen2-72b-instruct": {
     "simple_name": "Qwen2-72b-instruct",
