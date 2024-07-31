@@ -26,6 +26,8 @@ from slugify import slugify
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 def get_ip(request: gr.Request):
+    # TODO: remove
+    print("Headers:"+str(request.headers))
     if "cf-connecting-ip" in request.headers:
         ip = request.headers["cf-connecting-ip"]
     elif "x-forwarded-for" in request.headers:
