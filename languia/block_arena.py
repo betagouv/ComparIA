@@ -212,26 +212,11 @@ def bot_response_multi(
             break
 
 
-# def check_for_tos_cookie(request: gr.Request):
-#     if request:
-#         cookies_kv = request.headers["cookie"].split(";")
-#         for cookie_kv in cookies_kv:
-#             cookie_key, cookie_value = cookie_kv.split("=")
-#             if cookie_key == "languia_tos_accepted":
-#                 if cookie_value == "1":
-#                     tos_accepted = True
-#                     return tos_accepted
-
-#     return tos_accepted
-
-
 def clear_history(
     state0,
     state1,
     chatbot0,
     chatbot1,
-    # model_selector0,
-    # model_selector1,
     textbox,
     request: gr.Request,
 ):
