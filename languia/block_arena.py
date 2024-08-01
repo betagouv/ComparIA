@@ -63,6 +63,7 @@ from languia.config import (
 # // Remove navigation prompt
 # window.onbeforeunload = null;
 
+original_user_prompt = False
 
 def add_text(
     state0: gr.State,
@@ -198,27 +199,41 @@ def bot_response_multi(
                 stop = False
             except StopIteration:
                 pass
-            except requests.exceptions.RequestException or Exception as e:
+            except Exception as e:
                 logger.error(
                     f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling."
                 )
                 logger.debug(str(e))
                 gr.Warning(
-                    message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger et poser votre question de nouveau."
+                    message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
                 )
+                # conversations_state[0],conversations_state[1] = clear_history(
+                #     state0=conversations_state[0],
+                #     state1=conversations_state[1],
+                #     chatbot0=chatbots[0],
+                #     chatbot1=chatbots[1],
+                #     textbox=textbox,
+                #     request=request,
+                # )
+                global original_user_prompt
+                original_user_prompt = chatbots[0][0][0]
+                logger.info("Saving original prompt: " + original_user_prompt)
+                print(str(conversations_state[0].conv_id))
+                print(str(conversations_state[1].conv_id))
+                # Useful?
+                conversations_state[0],conversations_state[1], chatbots[0], chatbots[1] = None, None, "", ""
+                # conversations_state[0],conversations_state[1], chatbots[0], chatbots[1] = add_text(conversations_state[0], conversations_state[1], original_user_prompt, request=request)
+                # textbox = original_user_prompt
+                
+                # print("conversations_state[0]:" + str(conversations_state[0].conv))
+                return conversations_state[0], conversations_state[1], chatbots[0], chatbots[1]
+                
 
-                clear_history(
-                    conversations_state[0],
-                    conversations_state[1],
-                    chatbots[0],
-                    chatbots[1],
-                    textbox,
-                )
         yield conversations_state + chatbots
         if stop:
             break
 
-
+        
 def clear_history(
     state0,
     state1,
@@ -808,9 +823,6 @@ with gr.Blocks(
             else:
                 return gr.update(interactive=True)
 
-        def enable_component():
-            return gr.update(interactive=True)
-
         def goto_chatbot():
             # textbox
 
@@ -836,6 +848,18 @@ with gr.Blocks(
                 + [gr.update(visible=True, interactive=True)]
             )
 
+        def check_answers(state0, state1, request: gr.Request):
+            # Not set to none at all :'(
+            print(str(state0.conv_id))
+            print(str(state1.conv_id))
+            if original_user_prompt:
+                print("resetting")
+                return [state0] + [state1] + chatbots + [gr.skip()] + [original_user_prompt]
+
+            # enable conclude_btn
+            else: return [state0] + [state1] + chatbots + [gr.update(interactive=True)] + [textbox]
+
+
         gr.on(
             triggers=[textbox.submit, send_btn.click],
             fn=add_text,
@@ -859,11 +883,11 @@ with gr.Blocks(
             fn=bot_response_multi,
             inputs=conversations_state + [temperature, top_p, max_output_tokens],
             outputs=conversations_state + chatbots,
-            api_name=False,
+            api_name=False
         ).then(
-            fn=enable_component,
-            inputs=[],
-            outputs=[conclude_btn],
+            fn=check_answers,
+            inputs=conversations_state,
+            outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
             api_name=False,
         )
 
