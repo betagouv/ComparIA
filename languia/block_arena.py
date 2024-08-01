@@ -8,6 +8,7 @@ Users chat with two anonymous models.
 
 import gradio as gr
 import numpy as np
+import requests
 
 from fastchat.constants import (
     MODERATION_MSG,
@@ -153,17 +154,8 @@ def bot_response_multi(
 ):
     logger.info(f"bot_response_multi (anony). ip: {get_ip(request)}")
 
-    # if state0 is None or state0.skip_next:
-    #     # This generate call is skipped due to invalid inputs
-    #     yield (
-    #         state0,
-    #         state1,
-    #         state0.to_gradio_chatbot(),
-    #         state1.to_gradio_chatbot(),
-    #     )
-    #     return
-
     conversations_state = [state0, state1]
+
     gen = []
     for i in range(config.num_sides):
         gen.append(
@@ -207,6 +199,22 @@ def bot_response_multi(
                 stop = False
             except StopIteration:
                 pass
+            except requests.exceptions.RequestException or Exception as e:
+                logger.error(
+                    f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling."
+                )
+                logger.debug(str(e))
+                gr.Warning(
+                    message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger et poser votre question de nouveau."
+                )
+
+                clear_history(
+                    conversations_state[0],
+                    conversations_state[1],
+                    chatbots[0],
+                    chatbots[1],
+                    textbox,
+                )
         yield conversations_state + chatbots
         if stop:
             break
@@ -681,22 +689,14 @@ with gr.Blocks(
         label="Max output tokens",
     )
 
+    # TODO: move to another file listeners.py?
     # Register listeners
     def register_listeners():
+
         # Step 0
 
-        # @gr.on(
-        #     triggers=[accept_tos_checkbox.change, accept_waiver_checkbox.change],
-        #     inputs=[accept_tos_checkbox, accept_waiver_checkbox],
-        #     outputs=start_arena_btn,
-        #     api_name=False,
-        # )
-        # def accept_tos_to_enter_arena(accept_tos_checkbox, accept_waiver_checkbox):
-        #     # Enable if both checked
-        #     return gr.update(
-        #         interactive=(accept_tos_checkbox and accept_waiver_checkbox)
-        #     )
-
+        # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
+        # TODO: make a cool input-output js function to pass here instead of in main js
         @start_arena_btn.click(
             inputs=[],
             outputs=[header, start_screen, stepper_block, mode_screen],
@@ -802,21 +802,6 @@ with gr.Blocks(
             api_name=False,
         )
 
-        # @guided_prompt.change(inputs=guided_prompt, outputs=[send_area, textbox])
-        # def craft_guided_prompt(topic_choice):
-        #     if str(topic_choice) == "Québécois ?":
-        #         return [
-        #             gr.update(visible=True),
-        #             gr.update(value="Tu comprends-tu, quand je parle ?"),
-        #         ]
-        #     else:
-        #         return [
-        #             gr.update(visible=True),
-        #             gr.update(value="Quoque ch'est qu'te berdoules ?"),
-        #         ]
-
-        # Step 2
-
         @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
         def change_send_btn_state(textbox):
             if textbox == "":
@@ -829,22 +814,6 @@ with gr.Blocks(
 
         def goto_chatbot():
             # textbox
-
-            # FIXME: when submitting empty text
-            # if len(text) <= 0:
-            #     for i in range(num_sides):
-            #         conversations_state[i].skip_next = True
-            #     return (
-            #         # 2 conversations_state
-            #         conversations_state
-            #         # 2 chatbots
-            #         + [x.to_gradio_chatbot() for x in conversations_state]
-            #         # text
-            #         + [""]
-            #         + [visible_row]
-            #         # Slow warning
-            #         + [""]
-            #     )
 
             # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
             return (

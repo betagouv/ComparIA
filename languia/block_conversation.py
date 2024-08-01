@@ -105,6 +105,7 @@ def bot_response(
     top_p = float(top_p)
     max_new_tokens = int(max_new_tokens)
 
+# TODO: remove, shouldn't happen anymore
     if state.skip_next:
         # This generate call is skipped due to invalid inputs
         state.skip_next = False
@@ -155,7 +156,6 @@ def bot_response(
     conv.update_last_message(html_code)
     yield (state, state.to_gradio_chatbot())
 
-    # try:
     data = {"text": ""}
     for i, data in enumerate(stream_iter):
         if data["error_code"] == 0:
