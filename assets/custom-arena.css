@@ -16,11 +16,11 @@ body {
 /* --raised-shadow: 0 1px 3px var(--shadow-color); */
 #stepper-html {
   background-color: var(--background-raised-grey);
-
-  /* filter: drop-shadow(var(--raised-shadow)); */
-  /* FIXME: used 3px to cancel out box shadow on top of stepper  */
-  filter: drop-shadow(0 3px 3px var(--shadow-color));
+  filter: drop-shadow(var(--raised-shadow));
+  /* hide top drop shadow by getting it closer to the header */
+  top: -16px;
 }
+
 
 /* Temporary fixes for dark mode in arena: enforce clear mode */
 /* .dark .fr-label {
