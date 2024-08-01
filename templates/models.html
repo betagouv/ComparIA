@@ -1,21 +1,27 @@
 {% extends "base.html" %}
-
+{% block extra_styles %}
+<link rel="stylesheet" href="assets/dsfr/utility/icons/icons-media/icons-media.css">
+<link rel="stylesheet" href="assets/dsfr/utility/icons/icons-others/icons-others.css">
+<link rel="stylesheet" href="assets/dsfr/utility/icons/icons-document/icons-document.css">
+<link rel="stylesheet" href="assets/dsfr/utility/icons/icons-editor/icons-editor.css">
+<link rel="stylesheet" href="assets/extra-icons.css">
+{% endblock %}
 {% block content %}
 
 <main id="content" role="main">
 
     <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters fr-mt-1w">
-            {% for model in models_info %}
-            <div class="fr-col">
-                <!-- <div class="fr-col fr-col-md-6"> -->
+        <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+            {% for model in models %}
+            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 fr-col-lg-3">
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
                             <p class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mb-1w">Modèle ouvert</p>
-                            <h3 class="fr-card__title"><a href="#" data-fr-opened="false" aria-controls="fr-modal-1">{{
-                                    model.simple_name }}</a></h3>
-                            <p class="fr-card__desc">{{ model.description }}</p>
+                            <h3 class="fr-card__title"><a href="#" data-fr-opened="false" aria-controls="fr-modal-{{ model['id'] }}">{{
+                                model['simple_name'] }} <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20"
+                                 /></a></h3>
+                            <!-- <p class="fr-card__desc">{{ model['excerpt'] }}</p> -->
                             <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
                         class="fr-link--icon-right fr-link">    En savoir plus</a> -->
                         </div>
@@ -28,35 +34,74 @@
     </div>
 </main>
 
-<!-- Modale Simple
-     La balise <dialog> peut être placée n'importe où sur la page, toutefois
-     nous vous conseillons, si vous en avez la possibilité,
-     d'en faire un enfant direct de la balise <body>
--->
-
-<dialog aria-labelledby="fr-modal-title-modal-1" role="dialog" id="fr-modal-1" class="fr-modal">
+{% for model in models %}
+<dialog aria-labelledby="fr-modal-title-modal-{{ model['id'] }}" role="dialog" id="fr-modal-{{ model['id'] }}" class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
-            <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <div class="fr-col-12 fr-col-md-8">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
                         <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
-                            aria-controls="fr-modal-1">Fermer</button>
+                            aria-controls="fr-modal-{{ model['id'] }}">Fermer</button>
                     </div>
-                    <div class="fr-modal__content">
-                        <h1 id="fr-modal-title-modal-1" class="fr-modal__title"><span
-                                class="fr-icon-arrow-right-line fr-icon--lg"></span>Titre de la modale</h1>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas varius tortor nibh, sit
-                            amet tempor nibh finibus et. Aenean eu enim justo. Vestibulum aliquam hendrerit molestie.
-                            Mauris malesuada nisi sit amet augue accumsan tincidunt. Maecenas tincidunt, velit ac
-                            porttitor pulvinar, tortor eros facilisis libero, vitae commodo nunc quam et ligula. Ut nec
-                            ipsum sapien. Interdum et malesuada fames ac ante ipsum primis in faucibus. Integer id nisi
-                            nec nulla luctus lacinia non eu turpis. Etiam in ex imperdiet justo tincidunt egestas. Ut
-                            porttitor urna ac augue cursus tincidunt sit amet sed orci.</p>
+                    <div class="fr-modal__content fr-mb-4w">
+                        <h1 id="fr-modal-title-modal-{{ model['id'] }}" class="fr-modal__title">{{ model['simple_name'] }}
+                            <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20"
+                                 />
+                        </h1>
+                        <p><span class="fr-badge">Taille {{
+                                model['friendly_size']
+                                }}</span>{% if
+                                    model['distribution'] == "open-weights" %} <span class="fr-badge">{{ '%0.1f'| format(model['params']|float) }} milliards de paramètres</span>{% endif %} <span class="fr-badge">{{ model['organisation'] }}</span></p>
+                        <p>{{ model['description'] }}</p>
+                        <div class="fr-grid-row">
+                            <div class="fr-col-12 fr-col-md-6">
+                                <h5>Transparence</h5>
+                                <p><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span></p><div class="fr-ml-7v">{% if
+                                    model['distribution'] == "open-weights" %}<span
+                                        class="fr-badge fr-badge--blue-cumulus">Poids communiqués</span>{%
+                                    else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif
+                                    %}</div>
+                                <p><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus d'entrainement</span></p><div class="fr-ml-7v">{%
+                                    if
+                                    model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
+                                        communiqué</span>{% else %}<span
+                                        class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</div>
+                            </div>
+                            <div class="fr-col-12 fr-col-md-6">
+                                <h5>Utilisation</h5>
+                                <p><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true"> Distribution</span><div class="fr-ml-7v">{% if
+                                    model['distribution'] == "open-weights" %}<span
+                                        class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
+                                        class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
+                                    else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
+                                    endif %}</p></div>
+                                <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions d'usage</span></p><div class="fr-ml-7v">{% if
+                                    model['conditions'] == "restricted" %}<span
+                                        class="fr-badge fr-badge--yellow-moutarde">Sous conditions</span>{% else
+                                    %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %} <span
+                                        class="fr-badge fr-badge--blue-cumulus">Licence {{ model['license'] }}</span>
+                                        </div>
+                            </div>
+                            <h5>Détails</h5>
+                            <p><span class="fr-icon-ruler fr-mb-1v" aria-hidden="true"> <strong>Taille {{ model["friendly_size"]
+                                        }}</strong> : {{ size_desc[model["friendly_size"]] }}</span>
+                            <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> <strong>Licence {{ model["license"]
+                                        }}</strong> : {{ license_desc[model["license"]]|default("Les informations de
+                                    licence n'ont pas été remplies pour ce modèle.") }}</span>
+                            <p><span class="fr-icon-leaf-line fr-mb-1v" aria-hidden="true"> <strong>Indicateurs
+                                        environnementaux</strong> : rendez-vous sur <a
+                                        href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
+                                        rel="noopener external" target="_blank">🧮 EcoLogits Calculator</a></p>
+                            <p><a href="{{ model['url']|default('#') }}" rel="noopener external"
+                                    target="_blank">Pour en savoir plus sur ce modèle, rendez-vous sur la page du modèle</a></p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </dialog>
+{% endfor %}
+
 {% endblock %}

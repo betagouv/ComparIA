@@ -9,62 +9,30 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
-from languia.gradio_web_server import demo
+from languia.block_arena import demo
 import logging
 import gradio as gr
 
 from languia import config
 
+from languia.utils import size_desc, license_desc
+
 app = FastAPI()
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
+# app.mount("/arene/custom_components", StaticFiles(directory="custom_components"), name="custom_components")
 
 templates = Jinja2Templates(directory="templates")
-
-if os.getenv("SENTRY_DSN"):
-    # Set traces_sample_rate to 1.0 to capture 100%
-    # of transactions for performance monitoring.
-    # We recommend adjusting this value in production.
-    if os.getenv("SENTRY_SAMPLE_RATE"):
-        traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
-    else:
-        traces_sample_rate = 0.2
-    logging.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
-    if os.getenv("SENTRY_ENV"):
-        sentry_env = os.getenv("SENTRY_ENV")
-    else:
-        sentry_env = "development"
-        sentry_sdk.init(
-            dsn=os.getenv("SENTRY_DSN"),
-            environment=sentry_env,
-            traces_sample_rate=traces_sample_rate,
-        )
-
-env_debug = os.getenv("LANGUIA_DEBUG")
-
-if env_debug:
-    if env_debug.lower() == "true":
-        debug = True
-    else:
-        debug = False
-else:
-    debug = False
-
-
-if not debug:
-    assets_absolute_path = "/app/assets"
-else:
-    assets_absolute_path = os.path.dirname(__file__) + "/assets"
 
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
 gr.set_static_paths(paths=["assets/"])
 # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
-logging.info("Allowing assets absolute path: " + assets_absolute_path)
+logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 
 # Set authorization credentials
 auth = None
 
-# TODO: Re-enable / Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
+# Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
 demo = demo.queue(
     default_concurrency_limit=10,
     status_update_rate=10,
@@ -76,7 +44,10 @@ app = gr.mount_gradio_app(
     demo,
     path="/arene",
     root_path="/arene",
-    allowed_paths=[assets_absolute_path],
+    allowed_paths=[config.assets_absolute_path],
+    # allowed_paths=[config.assets_absolute_path, "/tmp"],
+    # allowed_paths=[config.assets_absolute_path, "/tmp", "custom_components"],
+    show_error=config.debug,
 )
 
 
@@ -87,16 +58,17 @@ async def home(request: Request):
     )
 
 
-from fastchat.model.model_registry import get_model_info
-
-models_info = [get_model_info(model) for model in config.models]
-
-
 @app.get("/modeles", response_class=HTMLResponse)
 async def models(request: Request):
     return templates.TemplateResponse(
         "models.html",
-        {"request": request, "config": config, "models_info": models_info},
+        {
+            "request": request,
+            "config": config,
+            "models": config.models_extra_info,
+            "size_desc": size_desc,
+            "license_desc": license_desc,
+        },
     )
 
 
@@ -104,6 +76,38 @@ async def models(request: Request):
 async def about(request: Request):
     return templates.TemplateResponse(
         "about.html",
+        {"request": request, "config": config},
+    )
+
+
+@app.get("/mentions-legales", response_class=HTMLResponse)
+async def legal(request: Request):
+    return templates.TemplateResponse(
+        "legal.html",
+        {"request": request, "config": config},
+    )
+
+
+@app.get("/donnees-personnelles", response_class=HTMLResponse)
+async def policy(request: Request):
+    return templates.TemplateResponse(
+        "policy.html",
+        {"request": request, "config": config},
+    )
+
+
+@app.get("/cgu", response_class=HTMLResponse)
+async def tos(request: Request):
+    return templates.TemplateResponse(
+        "tos.html",
+        {"request": request, "config": config},
+    )
+
+
+@app.get("/accessibilite", response_class=HTMLResponse)
+async def accessibility(request: Request):
+    return templates.TemplateResponse(
+        "accessibility.html",
         {"request": request, "config": config},
     )
 

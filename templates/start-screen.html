@@ -1,8 +1,8 @@
 <header id="header-navigation" role="banner" class="fr-header">
     <div class="fr-header__body">
         <div class="fr-container">
-            <div class="fr-header__body-row">
-                <div class="fr-header__brand fr-enlarge-link">
+            <div class="fr-header__body-row fr-grid-row">
+                <div class="fr-header__brand fr-enlarge-link fr-col-12 fr-col-lg-8">
                     <div class="fr-header__brand-top">
                         <div class="fr-header__logo">
                             <p class="fr-logo">
@@ -23,8 +23,8 @@
                     </div>
 
                 </div>
-                <div class="fr-header__tools">
-                    <a title="Donner mon avis sur l'arène - ouvre une nouvelle fenêtre" href="#" target="_blank"
+                <div class="fr-header__tools fr-col-12 fr-col-lg-4 fr-p-2w">
+                    <a title="Donner mon avis sur l'arène - ouvre une nouvelle fenêtre" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" target="_blank"
                         rel="noopener external" class="fr-link fr-link--icon-right">Donner mon avis sur l'arène</a>
                 </div>
             </div>
@@ -53,24 +53,50 @@
         </div>
     </div>
 </header>
-    <div class="fr-notice fr-notice--info">
-        <div class="fr-container">
-            <div class="fr-notice__body mission">
-                <p class="fr-notice__title mission">Votre mission : discutez avec deux modèles anonymes puis votez pour
-                    celui que vous préférez</p>
-            </div>
+<div class="fr-notice fr-notice--info fr-container fr-my-7w fr-mb-md-10w">
+
+    <div class="fr-container">
+        <div class="fr-notice__body mission">
+            <p class="fr-notice__title mission">Discutez d’un sujet qui vous intéresse puis évaluez les réponses des
+                modèles.</p>
         </div>
     </div>
-    <div class="fr-container">
-        <h4>Fonctionnement de l'arène</h4>
-        <ol>
-            <li>Posez une question en français</li>
-            <li>Deux modèles anonymes vous répondent</li>
-            <li>Votez pour le meilleur modèle</li>
-            <li>Découvrez l'identité des deux modèles</li>
-        </ol>
-        <h4>Bonnes pratiques</h4>
-        <p>Discutez aussi longtemps que vous le souhaitez avant de voter</p>
-        <p>Ne communiquez pas d'informations personnelles comme votre nom, prénom ou adresse</p>
-        <p>N'utilisez pas l'arène à des fins illégales, nuisibles, violentes, racistes ou sexuelles</p>
-    </div>
+</div>
+<div class="fr-container" id="start-screen">
+    <h4>Fonctionnement de l'arène</h4>
+    <ol class="fr-grid-row fr-ml-5w">
+        <li class="fr-col-12 fr-col-md-3 fr-pr-12w">Posez une question en français</li>
+        <li class="fr-col-12 fr-col-md-3 fr-pr-12w">Deux modèles anonymes vous répondent</li>
+        <li class="fr-col-12 fr-col-md-3 fr-pr-12w">Votez pour le meilleur modèle</li>
+        <li class="fr-col-12 fr-col-md-3 fr-pr-12w">Découvrez l'identité des deux modèles</li>
+    </ol>
+    <h4 class="fr-mt-4w">Bonnes pratiques</h4>
+    <p class="fr-icon-discuss-line"> Discutez aussi longtemps que vous le souhaitez avant de voter</p>
+    <p class="fr-icon-pass-expired-line"> Ne communiquez pas d'informations personnelles comme votre nom, prénom ou adresse</p>
+    <p class="fr-icon-chat-delete-line"> N'utilisez pas l'arène à des fins illégales, nuisibles, violentes, racistes ou sexuelles</p>
+
+    <fieldset class="fr-fieldset fr-mt-8w" aria-labelledby="accept_waiver accept_tos">
+        <div class="fr-fieldset__element">
+            <div class="fr-checkbox-group">
+                <!-- <div class="fr-checkbox-group fr-checkbox-group--sm"> -->
+                <input name="accept_waiver" id="accept_waiver" type="checkbox" aria-describedby="accept_waiver">
+                <label class="fr-label" for="accept_waiver">
+                    J’ai compris que mes données transmises à l’Arène seront mises à disposition publiquement à des fins
+                    de recherche
+                    <span class="fr-hint-text">Veuillez ne communiquer aucune information privée.</span>
+                </label>
+                <div class="fr-messages-group" id="accept_waiver" aria-live="assertive">
+                </div>
+            </div>
+        </div>
+        <div class="fr-fieldset__element">
+            <div class="fr-checkbox-group">
+                <input name="accept_tos" id="accept_tos" type="checkbox" aria-describedby="accept_tos">
+                <label class="fr-label" for="accept_tos">
+                J'accepte les&nbsp;<a href="/cgu" target="_blank" class="underline">conditions générales d'utilisation</a>
+                </label>
+                <div class="fr-messages-group" id="accept_waiver" aria-live="assertive">
+                </div>
+            </div>
+        </div>
+</div>

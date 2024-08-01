@@ -3,8 +3,8 @@ Chatbot Arena (battle) tab.
 Users chat with two anonymous models.
 """
 
-import json
-import time
+# import json
+# import time
 
 import gradio as gr
 import numpy as np
@@ -13,12 +13,7 @@ from fastchat.constants import (
     MODERATION_MSG,
     CONVERSATION_LIMIT_MSG,
     SLOW_MODEL_MSG,
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     CONVERSATION_TURN_LIMIT,
-    SAMPLING_WEIGHTS,
-    BATTLE_TARGETS,
-    SAMPLING_BOOST_MODELS,
-    OUTAGE_MODELS,
 )
 
 # from fastchat.model.model_adapter import get_conversation_template
@@ -29,7 +24,9 @@ from languia.block_conversation import (
     bot_response,
 )
 
-from fastchat.utils import build_logger, moderation_filter
+from fastchat.utils import moderation_filter
+
+import logging as logger
 
 from languia.utils import (
     get_ip,
@@ -39,28 +36,32 @@ from languia.utils import (
     header_html,
     stepper_html,
     vote_last_response,
+    get_model_extra_info,
+    count_output_tokens,
+    get_llm_impact,
+    running_eq,
 )
 
-from gradio_frbutton import FrButton
-from gradio_frinput import FrInput
+from custom_components.frbutton.backend.gradio_frbutton import FrButton
+from custom_components.frinput.backend.gradio_frinput import FrInput
 
-logger = build_logger("gradio_web_server_multi", "gradio_web_server_multi.log")
 
 from languia import config
 
+from languia.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    SAMPLING_WEIGHTS,
+    BATTLE_TARGETS,
+    SAMPLING_BOOST_MODELS,
+    OUTAGE_MODELS,
+)
 
-def set_global_vars_anony(enable_moderation_):
-    global enable_moderation
-    enable_moderation = enable_moderation_
-
-
-def load_demo_arena(models_):
-    global models
-    models = models_
-
-    conversations_state = (None,) * config.num_sides
-
-    return conversations_state
+# // Enable navigation prompt
+# window.onbeforeunload = function() {
+#     return true;
+# };
+# // Remove navigation prompt
+# window.onbeforeunload = null;
 
 
 def add_text(
@@ -96,34 +97,18 @@ def add_text(
             ConversationState(model_name=model_right),
         ]
 
-    # FIXME: when submitting empty text
-    # if len(text) <= 0:
-    #     for i in range(num_sides):
-    #         conversations_state[i].skip_next = True
-    #     return (
-    #         # 2 conversations_state
-    #         conversations_state
-    #         # 2 chatbots
-    #         + [x.to_gradio_chatbot() for x in conversations_state]
-    #         # text
-    #         + [""]
-    #         + [visible_row]
-    #         # Slow warning
-    #         + [""]
-    #     )
-
     model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
     # turn on moderation in battle mode
     all_conv_text_left = conversations_state[0].conv.get_prompt()
-    all_conv_text_right = conversations_state[0].conv.get_prompt()
+    all_conv_text_right = conversations_state[1].conv.get_prompt()
     all_conv_text = (
         all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
     )
-    flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
-    if flagged:
-        logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
-        # overwrite the original text
-        text = MODERATION_MSG
+    # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
+    # if flagged:
+    #     logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
+    #     # overwrite the original text
+    #     text = MODERATION_MSG
 
     conv = conversations_state[0].conv
     if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
@@ -137,17 +122,16 @@ def add_text(
             # 2 chatbots
             + [x.to_gradio_chatbot() for x in conversations_state]
             # text
-            + [CONVERSATION_LIMIT_MSG]
-            + [gr.update(visible=True)]
+            # + [CONVERSATION_LIMIT_MSG]
+            # + [gr.update(visible=True)]
         )
 
     text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
     # TODO: what do?
+
     for i in range(config.num_sides):
-        # post_processed_text = _prepare_text_with_image(conversations_state[i], text, csam_flag=False)
-        post_processed_text = text
         conversations_state[i].conv.append_message(
-            conversations_state[i].conv.roles[0], post_processed_text
+            conversations_state[i].conv.roles[0], text
         )
         conversations_state[i].conv.append_message(
             conversations_state[i].conv.roles[1], None
@@ -160,20 +144,6 @@ def add_text(
         conversations_state
         # 2 chatbots
         + [x.to_gradio_chatbot() for x in conversations_state]
-        # text
-        + [""]
-        # stepper_block
-        + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
-        # mode_screen
-        + [gr.update(visible=False)]
-        # chat_area
-        + [gr.update(visible=True)]
-        # send_btn
-        + [gr.update(interactive=False)]
-        # retry_btn
-        + [gr.update(visible=True)]
-        # conclude_btn
-        + [gr.update(visible=True, interactive=True)]
     )
 
 
@@ -289,9 +259,75 @@ def clear_history(
     ]
 
 
-# build_arena_demo?
-def build_arena(models):
-    # conversations_state = [ConversationState() for _ in range(num_sides)]
+from themes.dsfr import DSFR
+
+with gr.Blocks(
+    title="LANGU:IA – L'arène francophone de comparaison de modèles conversationnels",
+    theme=DSFR(),
+    css=config.css,
+    head=config.arena_head_js,
+    analytics_enabled=False,
+    # Doesn't work with uvicorn
+    # delete_cache=(1, 1) if config.debug else None,
+    # Dirty hack for accepting ToS
+    js="""function() {
+// start_arena_btn code: check for ToS+Waiver
+
+    const acceptWaiverCheckbox = document.getElementById('accept_waiver');
+
+    const acceptTosCheckbox = document.getElementById('accept_tos');
+
+    const startArenaBtn = document.getElementById('start_arena_btn');
+
+    function checkAndEnableButton() {
+        const shouldEnable = acceptWaiverCheckbox.checked && acceptTosCheckbox.checked;
+
+        startArenaBtn.disabled = !shouldEnable;
+    }
+
+    acceptWaiverCheckbox.addEventListener('change', function() {
+        checkAndEnableButton();
+    });
+
+    acceptTosCheckbox.addEventListener('change', function() {
+        checkAndEnableButton();
+    });
+
+    // Initial check
+    checkAndEnableButton();
+// scroll to guided area if selected    
+
+  const scrollButton = document.getElementById('guided-mode');
+  const targetElement = document.getElementById('guided-area');
+
+  // only works on second click :(
+  scrollButton.addEventListener('click', () => {
+    targetElement.scrollIntoView({ 
+      behavior: 'smooth'
+    });
+  });
+
+// // scroll to last prompt
+//   var left = document.querySelector('#chatbot-0 .user'); 
+//   var last_left = left.items(left.length-1);
+//   var right = document.querySelector('#chatbot-1 .user'); 
+//   var last_right = right.items(right.length-1);
+//   const sendButton = document.getElementById('send-btn');
+// 
+//   // FIXME: only when our prompt is added to chat
+//   sendButton.addEventListener('click', () => {
+//     last_left.scrollIntoView({ 
+//       behavior: 'smooth'
+//     });
+//     last_right.scrollIntoView({ 
+//       behavior: 'smooth'
+//     });
+//   });
+
+}
+
+""",
+) as demo:
     conversations_state = [gr.State() for _ in range(config.num_sides)]
     # model_selectors = [None] * num_sides
     # TODO: allow_flagging?
@@ -305,25 +341,29 @@ def build_arena(models):
     with gr.Column(elem_classes="fr-container") as start_screen:
 
         # TODO: DSFRize
-        accept_waiver_checkbox = gr.Checkbox(
-            label="J'ai compris que mes données transmises à l'arène seront mises à disposition à des fins de recherche",
-            show_label=True,
-            elem_classes="",
-        )
-        accept_tos_checkbox = gr.Checkbox(
-            label="J'accepte les conditions générales d'utilisation",
-            show_label=True,
-            elem_classes="",
-        )
+        # accept_waiver_checkbox = gr.Checkbox(
+        #     label="J'ai compris que mes données transmises à l'arène seront mises à disposition à des fins de recherche",
+        #     show_label=True,
+        #     elem_classes="",
+        # )
+        # # FIXME: custom component for checkboxes
+        # accept_tos_checkbox = gr.Checkbox(
+        #     label="J'accepte les conditions générales d'utilisation :",
+        #     show_label=True,
+        #     elem_id="accept_tos_checkbox",
+        # )
+        # gr.HTML(elem_id="accept_tos_label", value="""<a href="/cgu" target="_blank">Conditions générales d'utilisation</a>.""")
+
         start_arena_btn = gr.Button(
             value="C'est parti",
             scale=0,
             # TODO: à centrer
-            elem_classes="fr-btn",
+            elem_id="start_arena_btn",
+            elem_classes="fr-btn fr-mx-auto",
             interactive=False,
         )
 
-    with gr.Row() as stepper_row:
+    with gr.Row(elem_id="stepper-row", elem_classes="raised fr-pb-2w") as stepper_row:
         stepper_block = gr.HTML(
             stepper_html("Choix du mode de conversation", 1, 4),
             elem_id="stepper_html",
@@ -331,40 +371,52 @@ def build_arena(models):
             visible=False,
         )
 
-    with gr.Column(visible=False, elem_id="mode-screen") as mode_screen:
+    with gr.Column(
+        visible=False, elem_id="mode-screen", elem_classes="fr-container"
+    ) as mode_screen:
         gr.HTML(
             """
         <div class="fr-notice fr-notice--info"> 
             <div class="fr-container">
                     <div class="fr-notice__body mission" >
-                        <p class="fr-notice__title mission">Votre mission : discutez avec deux modèles anonymes puis votez pour celui que vous préférez</p>
+                        <p class="fr-notice__title mission">Discutez d’un sujet qui vous intéresse puis évaluez les réponses des modèles.</p>
                     </div>
             </div>
         </div>"""
         )
-        gr.Markdown(
-            """#### Comment voulez-vous commencer la conversation ?
-                    _(Sélectionnez un des deux modes)_"""
+        gr.HTML(
+            """<div class="text-center fr-mt-4w fr-mb-2w fr-grid-row fr-grid-row--center"><h4 class="fr-mb-1v fr-col-12">Comment voulez-vous commencer la conversation ?</h4>
+            <p class="fr-col-12"><em>(Sélectionnez un des deux modes)</em></p></div>"""
         )
-        with gr.Row():
-            with gr.Column():
-                free_mode_btn = FrButton(
-                    custom_html="<h3>Mode libre</h3><p>Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>",
-                    elem_id="free-mode",
-                    icon="assets/extra-artwork/conclusion.svg",
-                )
-            with gr.Column():
-                guided_mode_btn = FrButton(
-                    elem_id="guided-mode",
-                    custom_html="<h3>Mode inspiré</h3><p>Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>",
-                    icon="assets/extra-artwork/innovation.svg",
-                )
+        with gr.Row(
+            elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-col-12"
+        ):
+            mode_selection_classes = "fr-col-12 fr-col-md-4 fr-p-4w"
+            free_mode_btn = FrButton(
+                custom_html="""<h4>Mode libre</h4><p class="fr-text--lg">Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>""",
+                elem_id="free-mode",
+                elem_classes="fr-ml-auto " + mode_selection_classes,
+                icon="assets/extra-artwork/conclusion.svg",
+            )
+            guided_mode_btn = FrButton(
+                elem_classes="fr-mr-auto " + mode_selection_classes,
+                elem_id="guided-mode",
+                custom_html="""<h4>Mode inspiré</h4><p class="fr-text--lg">Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>""",
+                icon="assets/extra-artwork/innovation.svg",
+            )
 
         with gr.Column(
-            visible=False, elem_id="guided-area", elem_classes=""
+            elem_id="guided-area",
+            # elem_classes="fr-grid-row" messes with visible=False...
+            # elem_classes="fr-grid-row fr-grid-row--center",
+            visible=False,
         ) as guided_area:
-            gr.Markdown("##### Sélectionnez un thème que vous aimeriez explorer :")
-            with gr.Row():
+            gr.Markdown(
+                elem_classes="text-center fr-mt-4w fr-mb-2w",
+                value="##### Sélectionnez un thème que vous aimeriez explorer :",
+            )
+            # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
+            with gr.Row(elem_classes="radio-tiles"):
                 maniere = FrButton(
                     value="maniere",
                     custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>""",
@@ -377,7 +429,7 @@ def build_arena(models):
                     value="creativite",
                     custom_html="""<span class="fr-badge fr-badge--green-tilleul-verveine">Créativité</span><p>Jeux de mots, humour et expressions</p>""",
                 )
-            with gr.Row():
+            with gr.Row(elem_classes="radio-tiles"):
                 pedagogie = FrButton(
                     value="pedagogie",
                     custom_html="""<span class="fr-badge fr-badge--blue-cumulus">Pédagogie</span><p>Expliquer simplement un concept</p>""",
@@ -394,6 +446,46 @@ def build_arena(models):
             #     choices=["Chtimi ?", "Québécois ?"], elem_classes="", visible=False
             # )
 
+    # with gr.Column(elem_id="send-area", elem_classes="fr-grid-row", visible=False) as send_area:
+    with gr.Column(elem_id="send-area", visible=False) as send_area:
+        with gr.Row(elem_classes="fr-grid-row"):
+            # textbox = gr.Textbox(
+            textbox = FrInput(
+                show_label=False,
+                lines=1,
+                placeholder="Ecrivez votre premier message à l'arène ici",
+                max_lines=7,
+                # TODO: raise fr-col-md to 10 ?
+                elem_classes="fr-col-12 fr-col-md-9",
+                container=False,
+                # not working
+                # autofocus=True
+            )
+            send_btn = gr.Button(
+                interactive=False,
+                value="Envoyer",
+                elem_classes="fr-btn fr-col-6 fr-col-md-1",
+            )
+            # FIXME: visible=false not working?
+            # retry_btn = gr.Button(
+            #     icon="assets/dsfr/icons/system/refresh-line.svg",
+            #     value="",
+            #     elem_classes="icon-blue fr-btn fr-btn--secondary",
+            #     # elem_classes="fr-icon-refresh-line",
+            #     visible=False,
+            #     # render=False,
+            #     scale=1,
+            # )
+        with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
+            # FIXME: visible=false not working?
+            # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire
+            conclude_btn = gr.Button(
+                value="Terminer et donner mon avis",
+                elem_classes="fr-btn fr-col-12 fr-col-md-4",
+                visible=False,
+                interactive=False,
+            )
+
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
             for i in range(config.num_sides):
@@ -404,58 +496,32 @@ def build_arena(models):
                     #         placeholder
                     # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
                     chatbots[i] = gr.Chatbot(
-                        # container: bool = True par défaut,
+                        # TODO:
+                        # type="messages",
+                        elem_id=f"chatbot-{i}",
                         # min_width=
                         # height=
-                        # Doesn't seem to work, is it because it always has at least our message?
+                        # Doesn't show because it always has at least our message
                         # Note: supports HTML, use it!
-                        placeholder="**En chargement**",
+                        placeholder="<em>Veuillez écrire au modèle</em>",
                         # No difference
                         # bubble_full_width=False,
                         layout="panel",  # or "bubble"
-                        likeable=True,
-                        # TODO: move label
+                        likeable=False,
                         label=label,
+                        # UserWarning: show_label has no effect when container is False.
+                        show_label=False,
+                        container=False,
                         elem_classes="chatbot",
-                        # Could we show it? Useful...
+                        # Should we show it?
                         show_copy_button=False,
                     )
-
-    with gr.Column(elem_id="send-area", visible=False) as send_area:
-        with gr.Row():
-            # TODO: redevelop FrInput from Textbox and not SimpleTextbox
-            textbox = gr.Textbox(
-                show_label=False,
-                placeholder="Ecrivez votre premier message à l'arène ici",
-                scale=10,
-                lines=2,
-                max_lines=7,
-                # not working
-                # autofocus=True
-            )
-            send_btn = gr.Button(value="Envoyer", scale=1, elem_classes="fr-btn")
-            # FIXME: visible=false not working?
-            retry_btn = gr.Button(
-                icon="assets/dsfr/icons/system/refresh-line.svg",
-                value="",
-                elem_classes="fr-btn icon-white",
-                visible=False,
-                scale=1,
-            )
-        with gr.Row():
-            # FIXME: visible=false not working?
-            conclude_btn = gr.Button(
-                value="Terminer et donner mon avis",
-                scale=1,
-                elem_classes="fr-btn",
-                visible=False,
-                interactive=False,
-            )
 
     with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
         gr.Markdown(value="## Quel modèle avez-vous préféré ?")
         with gr.Row():
             which_model_radio = gr.Radio(
+                elem_classes="radio-tiles bolder",
                 show_label=False,
                 choices=[
                     ("Modèle A", "leftvote"),
@@ -468,127 +534,142 @@ def build_arena(models):
             # # tie_btn = gr.Button(value="🤝  Les deux se valent")
             # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-    # TODO: render=false?
-    with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
+        # with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
+        with gr.Column(visible=False) as supervote_area:
 
-        # TODO: render=false?
-        # TODO: move to another file
-        with gr.Column() as positive_supervote:
-            gr.Markdown(
-                value="### Pourquoi ce choix de modèle ?\nSélectionnez autant de préférences que vous souhaitez"
-            )
-            # TODO: checkboxes tuple
-            ressenti_checkbox = gr.CheckboxGroup(
-                [
-                    "Impressionné·e",
-                    "Complet",
-                    "Facile à comprendre",
-                    "Taille des réponses adaptées",
-                ],
-                label="ressenti",
-                show_label=False,
-                info="Ressenti général",
-            )
-            pertinence_checkbox = gr.CheckboxGroup(
-                [
-                    "Consignes respectées",
-                    "Cohérent par rapport au contexte",
-                    "Le modèle ne s'est pas trompé",
-                ],
-                label="pertinence",
-                show_label=False,
-                info="Pertinence des réponses",
-            )
-            comprehension_checkbox = gr.CheckboxGroup(
-                [
-                    "Syntaxe adaptée",
-                    "Richesse du vocabulaire",
-                    "Utilisation correcte des expressions",
-                ],
-                label="comprehension",
-                show_label=False,
-                info="Compréhension et expression",
-            )
-            originalite_checkbox = gr.CheckboxGroup(
-                ["Créatif", "Expressif", "Drôle"],
-                label="originalite",
-                info="Créativité et originalité",
-                show_label=False,
+            # TODO: render=false?
+            # TODO: move to another file?
+            with gr.Column() as positive_supervote:
+                gr.Markdown(
+                    value="### Pourquoi ce choix de modèle ?\nSélectionnez autant de préférences que vous souhaitez"
+                )
+                # TODO: checkboxes tuple
+                ressenti_checkbox = gr.CheckboxGroup(
+                    [
+                        "Impressionné·e",
+                        "Complet",
+                        "Facile à comprendre",
+                        "Taille des réponses adaptées",
+                    ],
+                    label="ressenti",
+                    show_label=False,
+                    info="Ressenti général",
+                )
+                pertinence_checkbox = gr.CheckboxGroup(
+                    [
+                        "Consignes respectées",
+                        "Cohérent par rapport au contexte",
+                        "Le modèle ne s'est pas trompé",
+                    ],
+                    label="pertinence",
+                    show_label=False,
+                    info="Pertinence des réponses",
+                )
+                comprehension_checkbox = gr.CheckboxGroup(
+                    [
+                        "Syntaxe adaptée",
+                        "Richesse du vocabulaire",
+                        "Utilisation correcte des expressions",
+                    ],
+                    label="comprehension",
+                    show_label=False,
+                    info="Compréhension et expression",
+                )
+                originalite_checkbox = gr.CheckboxGroup(
+                    ["Créatif", "Expressif", "Drôle"],
+                    label="originalite",
+                    info="Créativité et originalité",
+                    show_label=False,
+                )
+
+            # TODO: render=false?
+            # TODO: move to another file
+            with gr.Column() as negative_supervote:
+                gr.Markdown(
+                    value="### Pourquoi êtes-vous insatisfait·e des deux modèles ?\nSélectionnez autant de préférences que vous souhaitez"
+                )
+                ressenti_checkbox = gr.CheckboxGroup(
+                    [
+                        "Trop court",
+                        "Trop long",
+                        "Pas utile",
+                        "Nocif ou offensant",
+                    ],
+                    label="ressenti",
+                    info="Ressenti général",
+                    show_label=False,
+                )
+                pertinence_checkbox = gr.CheckboxGroup(
+                    [
+                        "Incohérentes par rapport au contexte",
+                        "Factuellement incorrectes",
+                        "Imprécises",
+                    ],
+                    label="pertinence",
+                    info="Pertinence des réponses",
+                    show_label=False,
+                )
+                comprehension_checkbox = gr.CheckboxGroup(
+                    [
+                        "Faible qualité de syntaxe",
+                        "Pauvreté du vocabulaire",
+                        "Mauvaise utilisation des expressions",
+                    ],
+                    label="comprehension",
+                    info="Compréhension et expression",
+                    show_label=False,
+                )
+                originalite_checkbox = gr.CheckboxGroup(
+                    ["Réponses banales", "Réponses superficielles"],
+                    label="originalite",
+                    info="Créativité et originalité",
+                    show_label=False,
+                )
+
+            supervote_checkboxes = [
+                ressenti_checkbox,
+                pertinence_checkbox,
+                comprehension_checkbox,
+                originalite_checkbox,
+            ]
+
+            comments_text = FrInput(
+                # elem_classes="fr-input",
+                label="Détails supplémentaires",
+                show_label=True,
+                # TODO:
+                # info=,
+                # autofocus=True,
+                placeholder="Ajoutez plus de précisions ici",
             )
 
-        # TODO: render=false?
-        # TODO: move to another file
-        with gr.Column() as negative_supervote:
-            gr.Markdown(
-                value="### Pourquoi êtes-vous insatisfait·e des deux modèles ?\nSélectionnez autant de préférences que vous souhaitez"
+    with gr.Column(
+        elem_classes="arena-footer fr-container--fluid", visible=False
+    ) as buttons_footer:
+        with gr.Row(elem_classes="fr-grid-row fr-container fr-mt-4w"):
+            return_btn = gr.Button(
+                elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-1",
+                value="Retour",
             )
-            ressenti_checkbox = gr.CheckboxGroup(
-                [
-                    "Trop court",
-                    "Trop long",
-                    "Pas utile",
-                    "Nocif ou offensant",
-                ],
-                label="ressenti",
-                info="Ressenti général",
-                show_label=False,
+            final_send_btn = gr.Button(
+                elem_classes="fr-btn fr-col-12 fr-col-md-3 fr-col-offset-md-2",
+                value="Envoyer mes préférences",
+                interactive=False,
             )
-            pertinence_checkbox = gr.CheckboxGroup(
-                [
-                    "Incohérentes par rapport au contexte",
-                    "Factuellement incorrectes",
-                    "Imprécises",
-                ],
-                label="pertinence",
-                info="Pertinence des réponses",
-                show_label=False,
-            )
-            comprehension_checkbox = gr.CheckboxGroup(
-                [
-                    "Faible qualité de syntaxe",
-                    "Pauvreté du vocabulaire",
-                    "Mauvaise utilisation des expressions",
-                ],
-                label="comprehension",
-                info="Compréhension et expression",
-                show_label=False,
-            )
-            originalite_checkbox = gr.CheckboxGroup(
-                ["Réponses banales", "Réponses superficielles"],
-                label="originalite",
-                info="Créativité et originalité",
-                show_label=False,
-            )
-
-        supervote_checkboxes = [
-            ressenti_checkbox,
-            pertinence_checkbox,
-            comprehension_checkbox,
-            originalite_checkbox,
-        ]
-
-        comments_text = gr.Textbox(
-            elem_classes="fr-input",
-            label="Détails supplémentaires",
-            # TODO:
-            # info=,
-            # autofocus=True,
-            placeholder="Ajoutez plus de précisions ici",
-        )
-        final_send_btn = gr.Button(
-            elem_classes="fr-btn", value="Envoyer mes préférences"
-        )
-
-    # with gr.Row():
-    #     # dsfr: This should just be a normal link...
-    #     opinion_btn = gr.HTML(value='''<a class="fr-btn disabled" href="#" >Donner mon avis sur l'arène</a>''')
-
-    #     clear_btn = gr.Button(value="Recommencer sans voter")
-
-    #     # dsfr: This should just be a normal link...
-    #     leaderboard_btn = gr.HTML(value='<a class="fr-btn" href="/models">Liste des modèles</a>')
 
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
+
+    with gr.Row(visible=False) as feedback_row:
+        # dsfr: This should just be a normal link...
+        # feedback_btns =
+        gr.HTML(
+            value="""
+            <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
+            <a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>
+            <a class="fr-btn fr-btn--secondary" href="../modeles">Liste des modèles</a>
+            </div>
+        """
+        )
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -623,32 +704,34 @@ def build_arena(models):
     def register_listeners():
         # Step 0
 
-        @gr.on(
-            triggers=[accept_tos_checkbox.change, accept_waiver_checkbox.change],
-            inputs=[accept_tos_checkbox, accept_waiver_checkbox],
-            outputs=start_arena_btn,
-        )
-        def accept_tos_to_enter_arena(accept_tos_checkbox, accept_waiver_checkbox):
-            # Enable if both checked
-            return gr.update(
-                interactive=(accept_tos_checkbox and accept_waiver_checkbox)
-            )
+        # @gr.on(
+        #     triggers=[accept_tos_checkbox.change, accept_waiver_checkbox.change],
+        #     inputs=[accept_tos_checkbox, accept_waiver_checkbox],
+        #     outputs=start_arena_btn,
+        #     api_name=False,
+        # )
+        # def accept_tos_to_enter_arena(accept_tos_checkbox, accept_waiver_checkbox):
+        #     # Enable if both checked
+        #     return gr.update(
+        #         interactive=(accept_tos_checkbox and accept_waiver_checkbox)
+        #     )
 
         @start_arena_btn.click(
             inputs=[],
             outputs=[header, start_screen, stepper_block, mode_screen],
+            api_name=False,
         )
         def enter_arena(request: gr.Request):
-            tos_accepted = accept_tos_checkbox
-            if tos_accepted:
-                return (
-                    gr.HTML(header_html),
-                    gr.update(visible=False),
-                    gr.update(visible=True),
-                    gr.update(visible=True),
-                )
-            else:
-                return (gr.skip(), gr.skip(), gr.skip())
+            # tos_accepted = accept_tos_checkbox
+            # if tos_accepted:
+            return (
+                gr.HTML(header_html),
+                gr.update(visible=False),
+                gr.update(visible=True),
+                gr.update(visible=True),
+            )
+            # else:
+            #     return (gr.skip(), gr.skip(), gr.skip())
 
         # Step 1
 
@@ -656,20 +739,23 @@ def build_arena(models):
             inputs=[],
             # js?
             outputs=[
-                guided_mode_btn,
                 free_mode_btn,
+                guided_mode_btn,
                 send_area,
                 guided_area,
                 mode_screen,
             ],
+            api_name=False,
         )
         def free_mode():
             return [
-                gr.update(elem_classes=""),
-                gr.update(elem_classes="selected"),
+                gr.update(
+                    elem_classes="fr-ml-auto " + mode_selection_classes + " selected"
+                ),
+                gr.update(elem_classes="fr-mr-auto " + mode_selection_classes),
                 gr.update(visible=True),
                 gr.update(visible=False),
-                gr.update(elem_classes="send-area-enabled"),
+                gr.update(elem_classes="fr-container send-area-enabled"),
             ]
 
         @guided_mode_btn.click(
@@ -677,10 +763,11 @@ def build_arena(models):
             outputs=[
                 free_mode_btn,
                 guided_mode_btn,
-                send_area,
+                # send_area,
                 guided_area,
                 mode_screen,
             ],
+            api_name=False,
             # TODO: scroll_to_output?
         )
         def guided_mode():
@@ -689,73 +776,26 @@ def build_arena(models):
                 return [gr.skip() * 4]
             else:
                 return [
-                    gr.update(elem_classes=""),
-                    gr.update(elem_classes="selected"),
-                    gr.update(visible=False),
+                    gr.update(elem_classes="fr-ml-auto " + mode_selection_classes),
+                    gr.update(
+                        elem_classes="fr-mr-auto "
+                        + mode_selection_classes
+                        + " selected"
+                    ),
+                    # send_area
+                    # gr.update(visible=False),
                     gr.update(visible=True),
-                    gr.update(elem_classes="send-area-enabled"),
+                    gr.update(elem_classes="fr-container send-area-enabled"),
                 ]
 
         # Step 1.1
 
-        # TODO: refacto into RadioTile
-        # FIXME: selected logic...
         def set_guided_prompt(event: gr.EventData):
             chosen_guide = event.target.value
-            if chosen_guide == "maniere":
-                preprompts = [
-                    "Tu es Victor Hugo. Explique moi synthétiquement ce qu'est un LLM dans ton style d'écriture.",
-                    "Tu es Voltaire, explique moi ce qu'est le deep learning à ta manière.",
-                    "Tu es Francis Ponge, décris moi l’ordinateur à ta manière.",
-                    "Ecris une scène d'amour à la manière de Michel Audiard entre un homme éco-anxieux et une femme pilote d'avion.",
-                ]
-            elif chosen_guide == "registre":
-                preprompts = [
-                    "Transcris cette phrase dans un langage familier comme si tu parlais à un ami proche : “La soirée s'annonçait sous les auspices d'une promenade tranquille au clair de lune.”",
-                    "Invente une phrase et écris-la trois fois: d’abord sur un ton tragique puis sur un ton lyrique et enfin sur un ton absurde.",
-                    "Réécris ce passage dans un style courant, comme si tu parlais à un collègue au travail : “L’OSI mène actuellement des travaux pour aboutir à une définition claire de l’IA open source, et qui pourraient mener à la proposition de nouvelles licences types”.",
-                    "Transforme cette phrase en un style soutenu et formel, tel que tu pourrais le lire dans un document officiel : “Je suis malade et ne pourrai pas travailler aujourd’hui. La réunion est reportée à la semaine prochaine.",
-                    """Adapte ce texte dans un langage populaire, comme si tu t’adressais à un public jeune, curieux, enthousiaste : "Le capitaine du vaisseau interstellaire manœuvra habilement à travers le champ d'astéroïdes." """,
-                ]
-            elif chosen_guide == "creativite":
-                preprompts = [
-                    "Donne moi un moyen mnémotechnique pour retenir l'ordre des planètes",
-                    "Pourquoi les français font-ils des blagues sur les belges ?",
-                    "De qui les français sont-ils les belges, niveau blague ?",
-                ]
-            elif chosen_guide == "pedagogie":
-                preprompts = [
-                    "Explique de manière simple et accessible la différence entre l'inflation et la déflation à un enfant de 10 ans",
-                    "Explique de manière simple et accessible à un enfant de 10 ans les enjeux du traité sur l’espace ratifié à l’ONU en 1967",
-                    "Explique le concept de l'économie d'échelle en donnant des exemples de la vie courante ",
-                    "Utilise une métaphore pour expliquer le concept d’apprentissage profond de manière simple et compréhensible",
-                    "Détaille les étapes simples pour comprendre le concept de la photosynthèse comme si tu l'expliquais à un débutant.",
-                    "Explique le concept de l'empathie en utilisant des exemples concrets tirés de la vie quotidienne",
-                ]
-            elif chosen_guide == "regional":
-                preprompts = [
-                    "Raconte ein tiot conte in picard avéc des personnages du village.",
-                    "Wann ich dir so schwätz, verstehsch mich? Réponds en alsacien",
-                    "Cocorico en louchebem ça donne quoi ?",
-                    "Ecris un tiot poème in ch'ti sus l'biauté d'la nature. Propose aussi une traduction en français de ta réponse.",
-                    "Pòtès escriure un pichon poèma en occitan sus lo passatge de las sasons? Propose une traduction en français après la réponse en occitan.",
-                    "Kannst du e chürzi Gedicht uf Elsässisch schriibe über d’Schönheit vo dr Natur? Réponds à la fois en alsacien et en français.",
-                    "Quoque ch'est qu'te berdoules ? Réponds en Chtimi.",
-                ]
-            elif chosen_guide == "variete":
-                preprompts = [
-                    """Que veut dire "se sécher les dents" en Québécois ?""",
-                    "Quel est le système de transport public le mieux conçu entre la Belgique, le Canada, la France, de la Suisse et des autres pays francophones ?",
-                    "Il y a la sécurité sociale en France, c'est pareil en Belgique et en Suisse?",
-                    "La nouvelle vague, c’est que en France ?",
-                    "J’ai raté la votation de la semaine dernière. Je viens d’où ?",
-                    "Si je parle BD tu penses à quel pays ?",
-                    "Gérard Depardieu est il belge ou français ?",
-                    "La chanson française, c'est quoi au juste ? Donne moi des exemples variés.",
-                ]
+            if chosen_guide in ['variete','regional',"pedagogie","creativite","registre","maniere"]:
+                preprompts = config.preprompts_table[chosen_guide]
             else:
-                logger.error("Error, chosen guided prompt not listed")
-
+                logger.error("Type of guided prompt not listed")
             preprompt = preprompts[np.random.randint(len(preprompts))]
             return [gr.update(visible=True), gr.update(value=preprompt)]
 
@@ -771,6 +811,7 @@ def build_arena(models):
             fn=set_guided_prompt,
             inputs=[],
             outputs=[send_area, textbox],
+            api_name=False,
         )
 
         # @guided_prompt.change(inputs=guided_prompt, outputs=[send_area, textbox])
@@ -786,11 +827,9 @@ def build_arena(models):
         #             gr.update(value="Quoque ch'est qu'te berdoules ?"),
         #         ]
 
-        # TODO: refacto so that it clears any object / trashes the state except ToS
-
         # Step 2
 
-        @textbox.change(inputs=textbox, outputs=send_btn)
+        @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
         def change_send_btn_state(textbox):
             if textbox == "":
                 return gr.update(interactive=False)
@@ -800,56 +839,82 @@ def build_arena(models):
         def enable_component():
             return gr.update(interactive=True)
 
+        def goto_chatbot():
+            # textbox
+
+            # FIXME: when submitting empty text
+            # if len(text) <= 0:
+            #     for i in range(num_sides):
+            #         conversations_state[i].skip_next = True
+            #     return (
+            #         # 2 conversations_state
+            #         conversations_state
+            #         # 2 chatbots
+            #         + [x.to_gradio_chatbot() for x in conversations_state]
+            #         # text
+            #         + [""]
+            #         + [visible_row]
+            #         # Slow warning
+            #         + [""]
+            #     )
+
+            # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
+            return (
+                [
+                    gr.update(
+                        value="",
+                        placeholder="Continuer à discuter avec les deux modèles",
+                    )
+                ]
+                # stepper_block
+                + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
+                # mode_screen
+                + [gr.update(visible=False)]
+                # chat_area
+                + [gr.update(visible=True)]
+                # send_btn
+                + [gr.update(interactive=False)]
+                # retry_btn
+                # + [gr.update(visible=True)]
+                # conclude_btn
+                + [gr.update(visible=True, interactive=True)]
+            )
+
         gr.on(
             triggers=[textbox.submit, send_btn.click],
             fn=add_text,
+            api_name=False,
             inputs=conversations_state + [textbox],
             # inputs=conversations_state + model_selectors + [textbox],
-            outputs=conversations_state
-            + chatbots
-            + [textbox]
-            + [stepper_block]
-            + [mode_screen]
-            + [chat_area]
-            + [send_btn]
-            + [retry_btn]
-            + [conclude_btn],
+            outputs=conversations_state + chatbots,
         ).then(
-            bot_response_multi,
-            conversations_state + [temperature, top_p, max_output_tokens],
-            conversations_state + chatbots,
+            fn=goto_chatbot,
+            inputs=[],
+            outputs=(
+                [textbox]
+                + [stepper_block]
+                + [mode_screen]
+                + [chat_area]
+                + [send_btn]
+                # + [retry_btn]
+                + [conclude_btn]
+            ),
         ).then(
-            enable_component, [], [conclude_btn]
+            fn=bot_response_multi,
+            inputs=conversations_state + [temperature, top_p, max_output_tokens],
+            outputs=conversations_state + chatbots,
+            api_name=False,
+        ).then(
+            fn=enable_component,
+            inputs=[],
+            outputs=[conclude_btn],
+            api_name=False,
         )
-
-        def intermediate_like(state0, state1, event: gr.LikeData, request: gr.Request):
-            # TODO: add model name?
-            details = {"message": event.value["value"]}
-
-            vote_type = "intermediate_"
-            if event.liked:
-                vote_type += "like_"
-            else:
-                vote_type += "dislike_"
-            if event.target == chatbots[0]:
-                vote_type += "left"
-            elif event.target == chatbots[1]:
-                vote_type += "right"
-            else:
-                logger.error("Like event for unknown chat")
-            vote_last_response(
-                [state0, state1],
-                vote_type,
-                details,
-                request,
-            )
-
-        chatbots[0].like(intermediate_like, conversations_state, [])
-        chatbots[1].like(intermediate_like, conversations_state, [])
 
         @conclude_btn.click(
             inputs=[],
-            outputs=[stepper_block, chat_area, send_area, vote_area],
+            outputs=[stepper_block, chat_area, send_area, vote_area, buttons_footer],
+            api_name=False,
             # TODO: scroll_to_output?
         )
         def show_vote_area():
@@ -865,11 +930,18 @@ def build_arena(models):
                 gr.update(visible=False),
                 gr.update(visible=False),
                 gr.update(visible=True),
+                gr.update(visible=True),
             ]
 
         @which_model_radio.change(
             inputs=[which_model_radio],
-            outputs=[supervote_area, positive_supervote, negative_supervote],
+            outputs=[
+                supervote_area,
+                positive_supervote,
+                negative_supervote,
+                final_send_btn,
+            ],
+            api_name=False,
         )
         def build_supervote_area(vote_radio):
             if vote_radio == "bothbad":
@@ -877,15 +949,39 @@ def build_arena(models):
                     gr.update(visible=True),
                     gr.update(visible=False),
                     gr.update(visible=True),
+                    gr.update(interactive=True),
                 )
             else:
                 return (
                     gr.update(visible=True),
                     gr.update(visible=True),
                     gr.update(visible=False),
+                    gr.update(interactive=True),
                 )
 
         # Step 3
+
+        @return_btn.click(
+            inputs=[],
+            outputs=[stepper_block] + [vote_area]
+            # + [supervote_area]
+            + [chat_area] + [send_area] + [buttons_footer],
+        )
+        def return_to_chat():
+            return (
+                [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
+                # vote_area
+                + [gr.update(visible=False)]
+                # supervote_area
+                # + [gr.update(visible=False)]
+                # chat_area
+                + [gr.update(visible=True)]
+                # send_area
+                + [gr.update(visible=True)]
+                # buttons_footer
+                + [gr.update(visible=False)]
+            )
+
         @final_send_btn.click(
             inputs=(
                 [conversations_state[0]]
@@ -898,8 +994,11 @@ def build_arena(models):
                 stepper_block,
                 vote_area,
                 supervote_area,
+                feedback_row,
                 results_area,
+                buttons_footer,
             ],
+            api_name=False,
         )
         def vote_preferences(
             state0,
@@ -936,34 +1035,61 @@ def build_arena(models):
                     'Model selection was neither "bothbad", "leftvote" or "rightvote", got: '
                     + str(which_model_radio)
                 )
+            # model_a =  config.models_extra_info[state0.model_name.lower()]
+            # model_b =  config.models_extra_info[state1.model_name.lower()]
+            model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
+            model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
 
+            # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
+            model_a_tokens = count_output_tokens(
+                state0.conv.roles, state0.conv.messages
+            )
+            model_b_tokens = count_output_tokens(
+                state1.conv.roles, state1.conv.messages
+            )
+            # TODO:
+            # request_latency_a = state0.conv.finish_tstamp - state0.conv.start_tstamp
+            # request_latency_b = state1.conv.finish_tstamp - state1.conv.start_tstamp
+            model_a_impact = get_llm_impact(
+                model_a, state0.model_name, model_a_tokens, None
+            )
+            model_b_impact = get_llm_impact(
+                model_b, state1.model_name, model_b_tokens, None
+            )
+
+            model_a_running_eq = running_eq(model_a_impact)
+            model_b_running_eq = running_eq(model_b_impact)
+
+            reveal_html = build_reveal_html(
+                model_a=model_a,
+                model_b=model_b,
+                which_model_radio=which_model_radio,
+                model_a_impact=model_a_impact,
+                model_b_impact=model_b_impact,
+                model_a_running_eq=model_a_running_eq,
+                model_b_running_eq=model_b_running_eq,
+            )
             return [
                 gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
                 gr.update(visible=False),
                 gr.update(visible=False),
-                gr.update(
-                    visible=True,
-                    value=build_reveal_html(
-                        state0.model_name, state1.model_name, which_model_radio
-                    ),
-                ),
+                gr.update(visible=True),
+                gr.update(visible=True, value=reveal_html),
+                gr.update(visible=False),
             ]
-            # return vote
 
         # On reset go to mode selection mode_screen
-        gr.on(
-            triggers=[retry_btn.click],
-            # triggers=[clear_btn.click, retry_btn.click],
-            fn=clear_history,
-            inputs=conversations_state + chatbots + [textbox],
-            # inputs=conversations_state + chatbots + model_selectors + [textbox],
-            # List of objects to clear
-            outputs=conversations_state + chatbots
-            # + model_selectors
-            + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
-        )
+        # gr.on(
+        #     triggers=[retry_btn.click],
+        #     api_name=False,
+        #     # triggers=[clear_btn.click, retry_btn.click],
+        #     fn=clear_history,
+        #     inputs=conversations_state + chatbots + [textbox],
+        #     # inputs=conversations_state + chatbots + model_selectors + [textbox],
+        #     # List of objects to clear
+        #     outputs=conversations_state + chatbots
+        #     # + model_selectors
+        #     + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
+        # )
 
     register_listeners()
-
-    return conversations_state
-    # return conversations_state + model_selectors

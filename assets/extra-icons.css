@@ -1,0 +1,5 @@
+.fr-icon-ruler::before,
+.fr-icon-ruler::after {
+    -webkit-mask-image: url("../assets/extra-icons/ruler.svg");
+    mask-image: url("../assets/extra-icons/ruler.svg");
+}
