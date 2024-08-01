@@ -3,8 +3,18 @@ from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 import os
 import sentry_sdk
 import json
-import logging
 from slugify import slugify
+
+from fastchat.utils import build_logger, LOGDIR
+import datetime
+from random import randrange
+t = datetime.datetime.now()
+random = randrange(10000)
+log_filename = f"logs-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{t.second:02d}-{t.microsecond:02d}-{random}.txt"   
+name = os.path.join(LOGDIR, log_filename)
+
+    
+logger = build_logger("languia",name)
 
 num_sides = 2
 enable_moderation = False

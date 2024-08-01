@@ -25,9 +25,8 @@ from languia.block_conversation import (
     bot_response,
 )
 
-from fastchat.utils import moderation_filter
+from languia.config import logger
 
-import logging as logger
 
 from languia.utils import (
     get_ip,
