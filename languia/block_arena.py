@@ -129,10 +129,10 @@ def add_text(
         conversations_state[i].conv.append_message(
             conversations_state[i].conv.roles[0], text
         )
-        # Empty assistant message?
-        # conversations_state[i].conv.append_message(
-        #     conversations_state[i].conv.roles[1], None
-        # )
+        # TODO: Empty assistant message is needed to show user's first question but why??
+        conversations_state[i].conv.append_message(
+            conversations_state[i].conv.roles[1], None
+        )
         conversations_state[i].skip_next = False
 
     return (
