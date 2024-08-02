@@ -40,7 +40,7 @@ enable_btn = gr.Button(interactive=True, visible=True)
 disable_btn = gr.Button(interactive=False)
 invisible_btn = gr.Button(interactive=False, visible=False)
 
-
+# from gradio.components.base import Component
 class ConversationState(gr.State):
     def __init__(self, model_name="", is_vision=False):
         # TODO: use std OpenAI format instead
@@ -116,10 +116,10 @@ def bot_response(
         ret = is_limit_reached(state.model_name, ip)
         if ret is not None and ret["is_limit_reached"]:
             error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
-            logger.info(f"rate limit reached. ip: {ip}. error_msg: {ret['reason']}")
+            logger.warn(f"rate limit reached. ip: {ip}. error_msg: {ret['reason']}")
             # state.conv.update_last_message(error_msg)
             # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-            raise error_msg
+            raise RuntimeError(error_msg)
 
     conv, model_name = state.conv, state.model_name
     model_api_dict = (
@@ -129,7 +129,7 @@ def bot_response(
     )
 
     if model_api_dict is None:
-        raise (SERVER_ERROR_MSG)
+        logger.critical("No model for model name: "+model_name)
     else:
         if use_recommended_config:
             recommended_config = model_api_dict.get("recommended_config", None)
@@ -164,7 +164,7 @@ def bot_response(
             conv.update_last_message(output + html_code)
             yield (state, state.to_gradio_chatbot())
         else:
-            raise(data["text"] + f"\n\n(error_code: {data['error_code']})")
+            raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
             
     output = data["text"].strip()
     conv.update_last_message(output)

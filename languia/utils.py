@@ -121,9 +121,9 @@ def vote_last_response(
     details: list,
     request: gr.Request,
 ):
-    logger.info(f"{vote_type}_vote (anony). ip: {get_ip(request)}")
+    logging.info(f"{vote_type}_vote (anony). ip: {get_ip(request)}")
     details_str = json.dumps(details)
-    logger.info(f"details: {details_str}")
+    logging.info(f"details: {details_str}")
 
     with open(get_conv_log_filename(), "a") as fout:
         data = {
@@ -135,7 +135,7 @@ def vote_last_response(
         }
         if details != []:
             data.update(details=details),
-        logger.info(json.dumps(data))
+        logging.info(json.dumps(data))
         fout.write(json.dumps(data) + "\n")
 
     return data
@@ -183,11 +183,14 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
 ):
-
+    models = [model for model in models if model not in outage_models]
     if len(models) == 0:
+        logging.critical("Model list doesn't contain any model")
+        # Maybe sleep then kill container?
         raise ValueError("Model list doesn't contain any model")
 
     if len(models) == 1:
+        logging.warn("Only one model configured! Making it fight with itself")
         return models[0], models[0]
 
     model_weights = []
@@ -422,15 +425,16 @@ def get_model_list(controller_url, register_api_endpoint_file):
 
 
 def is_limit_reached(model_name, ip):
-    monitor_url = "http://localhost:9090"
-    try:
-        ret = requests.get(
-            f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
-        )
-        obj = ret.json()
-        return obj
-    except Exception as e:
-        logging.info(f"monitor error: {e}")
+    # FIXME:
+    # monitor_url = "http://localhost:9090"
+    # try:
+    #     ret = requests.get(
+    #         f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
+    #     )
+    #     obj = ret.json()
+    #     return obj
+    # except Exception as e:
+    #     logging.info(f"monitor error: {e}")
         return None
 
 

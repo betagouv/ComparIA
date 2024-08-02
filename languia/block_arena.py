@@ -53,7 +53,7 @@ from languia.config import (
     SAMPLING_WEIGHTS,
     BATTLE_TARGETS,
     SAMPLING_BOOST_MODELS,
-    OUTAGE_MODELS,
+    outage_models,
 )
 
 # // Enable navigation prompt
@@ -134,6 +134,8 @@ with gr.Blocks(
 
 """,
 ) as demo:
+    # A tester
+    # conversations_state = [ConversationState() for _ in range(config.num_sides)]
     conversations_state = [gr.State() for _ in range(config.num_sides)]
     # model_selectors = [None] * num_sides
     # TODO: allow_flagging?
@@ -248,9 +250,6 @@ with gr.Blocks(
                     value="variete",
                     custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Est-ce différent en Québécois, Belge, Suisse, Antillais…</p>""",
                 )
-            # guided_prompt = gr.Radio(
-            #     choices=["Chtimi ?", "Québécois ?"], elem_classes="", visible=False
-            # )
 
     # with gr.Column(elem_id="send-area", elem_classes="fr-grid-row", visible=False) as send_area:
     with gr.Column(elem_id="send-area", visible=False) as send_area:
@@ -283,7 +282,6 @@ with gr.Blocks(
             #     scale=1,
             # )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            # FIXME: visible=false not working?
             # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire
             conclude_btn = gr.Button(
                 value="Terminer et donner mon avis",
@@ -628,6 +626,7 @@ with gr.Blocks(
 
         def goto_chatbot():
             # textbox
+            logger.info("advancing to chatbot frame")
 
             # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
             return (
@@ -653,11 +652,12 @@ with gr.Blocks(
 
         def check_answers(state0, state1, null_state, request: gr.Request):
             # Not set to none at all :'(
-            print(str(state0.conv_id))
-            print(str(state1.conv_id))
+            # print(str(state0.conv_id))
+            # print(str(state1.conv_id))
+            logger.debug("models answered")
 
             if app_state.original_user_prompt:
-                logger.info("resetting")
+                logger.info("model crash detected, keeping prompt")
                 original_user_prompt = app_state.original_user_prompt
                 app_state.original_user_prompt = False
                 # TODO: reroll instead?     
@@ -941,6 +941,7 @@ with gr.Blocks(
             + [chat_area] + [send_area] + [buttons_footer],
         )
         def return_to_chat():
+            logger.info("clicked return")
             return (
                 [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
                 # vote_area
@@ -1008,8 +1009,7 @@ with gr.Blocks(
                     'Model selection was neither "bothbad", "leftvote" or "rightvote", got: '
                     + str(which_model_radio)
                 )
-            # model_a =  config.models_extra_info[state0.model_name.lower()]
-            # model_b =  config.models_extra_info[state1.model_name.lower()]
+                
             model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
             model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
 
