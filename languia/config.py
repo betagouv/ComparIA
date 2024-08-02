@@ -6,6 +6,20 @@ import json
 import logging
 from slugify import slugify
 
+from fastchat.utils import build_logger
+import datetime
+from random import randrange
+
+LOGDIR = os.getenv("LOGDIR", "./data")
+
+t = datetime.datetime.now()
+random = randrange(10000)
+log_filename = f"logs-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{t.second:02d}-{t.microsecond:02d}-{random}.txt"
+name = os.path.join(LOGDIR, log_filename)
+
+
+logger = build_logger("languia", name)
+
 num_sides = 2
 enable_moderation = False
 
@@ -193,7 +207,7 @@ preprompts_table = {
         "Si je parle BD tu penses à quel pays ?",
         "Gérard Depardieu est il belge ou français ?",
         "La chanson française, c'est quoi au juste ? Donne moi des exemples variés.",
-        "Quelles différences entre l’humour français et l’humour britannique ? Donne quelques exemples."
+        "Quelles différences entre l’humour français et l’humour britannique ? Donne quelques exemples.",
     ],
 }
 
