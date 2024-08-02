@@ -41,7 +41,7 @@ disable_btn = gr.Button(interactive=False)
 invisible_btn = gr.Button(interactive=False, visible=False)
 
 
-class ConversationState:
+class ConversationState(gr.State):
     def __init__(self, model_name="", is_vision=False):
         # TODO: use std OpenAI format instead
         # self.conv = get_conversation_template(model_name)
