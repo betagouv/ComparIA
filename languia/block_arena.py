@@ -63,204 +63,7 @@ from languia.config import (
 # // Remove navigation prompt
 # window.onbeforeunload = null;
 
-original_user_prompt = False
-
-def add_text(
-    state0: gr.State,
-    state1: gr.State,
-    text: gr.Text,
-    request: gr.Request,
-):
-    ip = get_ip(request)
-    logger.info(f"add_text (anony). ip: {ip}. len: {len(text)}")
-    conversations_state = [state0, state1]
-
-    # TODO: refacto and put init apart
-    # Init conversations_state if necessary
-    if conversations_state[0] is None:
-        assert conversations_state[1] is None
-
-        model_left, model_right = get_battle_pair(
-            config.models,
-            BATTLE_TARGETS,
-            OUTAGE_MODELS,
-            SAMPLING_WEIGHTS,
-            SAMPLING_BOOST_MODELS,
-        )
-        conversations_state = [
-            # NOTE: replacement of gr.State() to ConversationState happens here
-            ConversationState(model_name=model_left),
-            ConversationState(model_name=model_right),
-        ]
-        # TODO: test here if models answer?
-
-    model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
-    # all_conv_text_left = conversations_state[0].conv.get_prompt()
-    # all_conv_text_right = conversations_state[1].conv.get_prompt()
-    # all_conv_text = (
-    #     all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
-    # )
-    # TODO: turn on moderation in battle mode
-    # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
-    # if flagged:
-    #     logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
-    #     # overwrite the original text
-    #     text = MODERATION_MSG
-
-    # conv = conversations_state[0].conv
-    # if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
-    #     logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
-    #     for i in range(config.num_sides):
-    #         conversations_state[i].skip_next = True
-    #         # FIXME: fix return value
-    #     return (
-    #         # 2 conversations_state
-    #         conversations_state
-    #         # 2 chatbots
-    #         + [x.to_gradio_chatbot() for x in conversations_state]
-    #         # text
-    #         # + [CONVERSATION_LIMIT_MSG]
-    #         # + [gr.update(visible=True)]
-    #     )
-
-    text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
-    # TODO: what do?
-
-    for i in range(config.num_sides):
-        conversations_state[i].conv.append_message(
-            conversations_state[i].conv.roles[0], text
-        )
-        # TODO: Empty assistant message is needed to show user's first question but why??
-        conversations_state[i].conv.append_message(
-            conversations_state[i].conv.roles[1], None
-        )
-        conversations_state[i].skip_next = False
-
-    return (
-        # 2 conversations_state
-        conversations_state
-        # 2 chatbots
-        + [x.to_gradio_chatbot() for x in conversations_state]
-    )
-
-
-def bot_response_multi(
-    state0,
-    state1,
-    temperature,
-    top_p,
-    max_new_tokens,
-    request: gr.Request,
-):
-    logger.info(f"bot_response_multi (anony). ip: {get_ip(request)}")
-
-    conversations_state = [state0, state1]
-
-    gen = []
-    for i in range(config.num_sides):
-        gen.append(
-            bot_response(
-                conversations_state[i],
-                temperature,
-                top_p,
-                max_new_tokens,
-                request,
-                apply_rate_limit=False,
-                use_recommended_config=True,
-            )
-        )
-
-    is_stream_batch = []
-    for i in range(config.num_sides):
-        is_stream_batch.append(
-            conversations_state[i].model_name
-            in [
-                "gemini-pro",
-                "gemini-pro-dev-api",
-                "gemini-1.0-pro-vision",
-                "gemini-1.5-pro",
-                "gemini-1.5-flash",
-                "gemma-1.1-2b-it",
-                "gemma-1.1-7b-it",
-            ]
-        )
-    chatbots = [None] * config.num_sides
-    iters = 0
-    while True:
-        stop = True
-        iters += 1
-        for i in range(config.num_sides):
-            try:
-                # yield gemini fewer times as its chunk size is larger
-                # otherwise, gemini will stream too fast
-                if not is_stream_batch[i] or (iters % 30 == 1 or iters < 3):
-                    ret = next(gen[i])
-                    conversations_state[i], chatbots[i] = ret[0], ret[1]
-                stop = False
-            except StopIteration:
-                pass
-            except Exception as e:
-                logger.error(
-                    f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling."
-                )
-                logger.debug(str(e))
-                gr.Warning(
-                    message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
-                )
-                # conversations_state[0],conversations_state[1] = clear_history(
-                #     state0=conversations_state[0],
-                #     state1=conversations_state[1],
-                #     chatbot0=chatbots[0],
-                #     chatbot1=chatbots[1],
-                #     textbox=textbox,
-                #     request=request,
-                # )
-                global original_user_prompt
-                original_user_prompt = chatbots[0][0][0]
-                logger.info("Saving original prompt: " + original_user_prompt)
-                print(str(conversations_state[0].conv_id))
-                print(str(conversations_state[1].conv_id))
-                # Useful?
-                conversations_state[0],conversations_state[1], chatbots[0], chatbots[1] = None, None, "", ""
-                # conversations_state[0],conversations_state[1], chatbots[0], chatbots[1] = add_text(conversations_state[0], conversations_state[1], original_user_prompt, request=request)
-                # textbox = original_user_prompt
-                
-                # print("conversations_state[0]:" + str(conversations_state[0].conv))
-                return conversations_state[0], conversations_state[1], chatbots[0], chatbots[1]
-                
-
-        yield conversations_state + chatbots
-        if stop:
-            break
-
-        
-def clear_history(
-    state0,
-    state1,
-    chatbot0,
-    chatbot1,
-    textbox,
-    request: gr.Request,
-):
-    logger.info(f"clear_history (anony). ip: {get_ip(request)}")
-    #     + chatbots
-    # + [textbox]
-    # + [chat_area]
-    # + [vote_area]
-    # + [supervote_area]
-    # + [mode_screen],
-    return [
-        None,
-        None,
-        None,
-        None,
-        "",
-        gr.update(visible=False),
-        gr.update(visible=False),
-        gr.update(visible=False),
-        gr.update(visible=True),
-    ]
-
+app_state = gr.State()
 
 from themes.dsfr import DSFR
 
@@ -848,16 +651,205 @@ with gr.Blocks(
                 + [gr.update(visible=True, interactive=True)]
             )
 
-        def check_answers(state0, state1, request: gr.Request):
+        def check_answers(state0, state1, null_state, request: gr.Request):
             # Not set to none at all :'(
             print(str(state0.conv_id))
             print(str(state1.conv_id))
-            if original_user_prompt:
-                print("resetting")
-                return [state0] + [state1] + chatbots + [gr.skip()] + [original_user_prompt]
+
+            if app_state.original_user_prompt:
+                logger.info("resetting")
+                original_user_prompt = app_state.original_user_prompt
+                app_state.original_user_prompt = False
+                state0 = gr.State()
+                state1 = gr.State()
+                return (
+                    [state0]
+                    + [state1]
+                    # chatbots
+                    + [""]
+                    + [""]
+                    + [gr.skip()]
+                    + [original_user_prompt]
+                )
 
             # enable conclude_btn
-            else: return [state0] + [state1] + chatbots + [gr.update(interactive=True)] + [textbox]
+            else:
+                return (
+                    [state0]
+                    + [state1]
+                    + chatbots
+                    + [gr.update(interactive=True)]
+                    + [textbox]
+                )
+# TODO: move this
+        def add_text(
+            state0: gr.State,
+            state1: gr.State,
+            text: gr.Text,
+            request: gr.Request,
+        ):                  
+            ip = get_ip(request)
+            logger.info(f"add_text (anony). ip: {ip}. len: {len(text)}")
+            conversations_state = [state0, state1]
+
+            # TODO: refacto and put init apart
+            # Init conversations_state if necessary
+            if conversations_state[0] is None:
+                assert conversations_state[1] is None
+
+                model_left, model_right = get_battle_pair(
+                    config.models,
+                    BATTLE_TARGETS,
+                    OUTAGE_MODELS,
+                    SAMPLING_WEIGHTS,
+                    SAMPLING_BOOST_MODELS,
+                )
+                conversations_state = [
+                    # NOTE: replacement of gr.State() to ConversationState happens here
+                    ConversationState(model_name=model_left),
+                    ConversationState(model_name=model_right),
+                ]
+                # TODO: test here if models answer?
+
+            model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
+            # all_conv_text_left = conversations_state[0].conv.get_prompt()
+            # all_conv_text_right = conversations_state[1].conv.get_prompt()
+            # all_conv_text = (
+            #     all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
+            # )
+            # TODO: turn on moderation in battle mode
+            # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
+            # if flagged:
+            #     logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
+            #     # overwrite the original text
+            #     text = MODERATION_MSG
+
+            # conv = conversations_state[0].conv
+            # if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
+            #     logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
+            #     for i in range(config.num_sides):
+            #         conversations_state[i].skip_next = True
+            #         # FIXME: fix return value
+            #     return (
+            #         # 2 conversations_state
+            #         conversations_state
+            #         # 2 chatbots
+            #         + [x.to_gradio_chatbot() for x in conversations_state]
+            #         # text
+            #         # + [CONVERSATION_LIMIT_MSG]
+            #         # + [gr.update(visible=True)]
+            #     )
+
+            text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
+            # TODO: what do?
+
+            for i in range(config.num_sides):
+                conversations_state[i].conv.append_message(
+                    conversations_state[i].conv.roles[0], text
+                )
+                # TODO: Empty assistant message is needed to show user's first question but why??
+                conversations_state[i].conv.append_message(
+                    conversations_state[i].conv.roles[1], None
+                )
+                conversations_state[i].skip_next = False
+
+            return (
+                # 2 conversations_state
+                conversations_state
+                # 2 chatbots
+                + [x.to_gradio_chatbot() for x in conversations_state]
+            )
+
+# TODO: move this
+        def bot_response_multi(
+            state0,
+            state1,
+            temperature,
+            top_p,
+            max_new_tokens,
+            request: gr.Request,
+        ):
+            logger.info(f"bot_response_multi (anony). ip: {get_ip(request)}")
+
+            conversations_state = [state0, state1]
+
+            gen = []
+            for i in range(config.num_sides):
+                gen.append(
+                    bot_response(
+                        conversations_state[i],
+                        temperature,
+                        top_p,
+                        max_new_tokens,
+                        request,
+                        apply_rate_limit=False,
+                        use_recommended_config=True,
+                    )
+                )
+
+            is_stream_batch = []
+            for i in range(config.num_sides):
+                is_stream_batch.append(
+                    conversations_state[i].model_name
+                    in [
+                        "gemini-pro",
+                        "gemini-pro-dev-api",
+                        "gemini-1.0-pro-vision",
+                        "gemini-1.5-pro",
+                        "gemini-1.5-flash",
+                        "gemma-1.1-2b-it",
+                        "gemma-1.1-7b-it",
+                    ]
+                )
+            chatbots = [None] * config.num_sides
+            iters = 0
+            while True:
+                stop = True
+                iters += 1
+                for i in range(config.num_sides):
+                    try:
+                        # yield gemini fewer times as its chunk size is larger
+                        # otherwise, gemini will stream too fast
+                        if not is_stream_batch[i] or (iters % 30 == 1 or iters < 3):
+                            ret = next(gen[i])
+                            conversations_state[i], chatbots[i] = ret[0], ret[1]
+                        stop = False
+                    except StopIteration:
+                        pass
+                    except Exception as e:
+                        logger.error(
+                            f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling."
+                        )
+                        logger.debug(str(e))
+                        gr.Warning(
+                            message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
+                        )
+                        # conversations_state[0],conversations_state[1] = clear_history(
+                        #     state0=conversations_state[0],
+                        #     state1=conversations_state[1],
+                        #     chatbot0=chatbots[0],
+                        #     chatbot1=chatbots[1],
+                        #     textbox=textbox,
+                        #     request=request,
+                        # )
+                        app_state.original_user_prompt = chatbots[0][0][0]
+                        logger.info("Saving original prompt: " + app_state.original_user_prompt)
+                        # print(str(conversations_state[0].conv_id))
+                        # print(str(conversations_state[1].conv_id))
+                        # Not effective:
+                        # conversations_state[0],conversations_state[1], chatbots[0], chatbots[1] = gr.State(value=None), None, gr.Chatbot(value=None), ""
+
+                        # print("conversations_state[0]:" + str(conversations_state[0].conv))
+                        return (
+                            state0,
+                            state1,
+                            chatbots[0],
+                            chatbots[1],
+                        )
+
+                yield conversations_state + chatbots
+                if stop:
+                    break
 
 
         gr.on(
@@ -883,10 +875,10 @@ with gr.Blocks(
             fn=bot_response_multi,
             inputs=conversations_state + [temperature, top_p, max_output_tokens],
             outputs=conversations_state + chatbots,
-            api_name=False
+            api_name=False,
         ).then(
             fn=check_answers,
-            inputs=conversations_state,
+            inputs=conversations_state + [gr.State()],
             outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
             api_name=False,
         )
@@ -1073,3 +1065,31 @@ with gr.Blocks(
         # )
 
     register_listeners()
+
+# def clear_history(
+#     state0,
+#     state1,
+#     chatbot0,
+#     chatbot1,
+#     textbox,
+#     request: gr.Request,
+# ):
+#     logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+#     #     + chatbots
+#     # + [textbox]
+#     # + [chat_area]
+#     # + [vote_area]
+#     # + [supervote_area]
+#     # + [mode_screen],
+#     return [
+#         None,
+#         None,
+#         None,
+#         None,
+#         "",
+#         gr.update(visible=False),
+#         gr.update(visible=False),
+#         gr.update(visible=False),
+#         gr.update(visible=True),
+#     ]
+
