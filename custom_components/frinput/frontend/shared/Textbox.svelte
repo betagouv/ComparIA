@@ -190,7 +190,7 @@
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<label class="container fr-label {elem_classes.join(' ')}">{#if show_label}{label}{/if}
+<label id={elem_id} class="container fr-label {elem_classes.join(' ')}">{#if show_label}{label}{/if}
 
 	{#if lines === 1 && max_lines === 1}
 		{#if type === "text"}
