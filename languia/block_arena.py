@@ -306,7 +306,7 @@ with gr.Blocks(
                         # type="messages",
                         elem_id=f"chatbot-{i}",
                         # min_width=
-                        # height=
+                        height="100%",
                         # Doesn't show because it always has at least our message
                         # Note: supports HTML, use it!
                         placeholder="<em>Veuillez écrire au modèle</em>",
