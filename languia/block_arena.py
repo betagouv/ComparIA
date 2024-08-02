@@ -650,7 +650,7 @@ with gr.Blocks(
                 + [gr.update(visible=True, interactive=True)]
             )
 
-        def check_answers(state0, state1, null_state, request: gr.Request):
+        def check_answers(state0, state1, request: gr.Request):
             # Not set to none at all :'(
             # print(str(state0.conv_id))
             # print(str(state1.conv_id))
@@ -661,8 +661,10 @@ with gr.Blocks(
                 original_user_prompt = app_state.original_user_prompt
                 app_state.original_user_prompt = False
                 # TODO: reroll instead?     
-                state0 = ConversationState()
-                state1 = ConversationState()
+                state0 = gr.State()
+                state1 = gr.State()
+                # state0 = ConversationState()
+                # state1 = ConversationState()
                 return (
                     [state0]
                     + [state1]
@@ -682,6 +684,7 @@ with gr.Blocks(
                     + [gr.update(interactive=True)]
                     + [textbox]
                 )
+
 # TODO: move this
         def add_text(
             state0: gr.State,
@@ -694,17 +697,24 @@ with gr.Blocks(
             conversations_state = [state0, state1]
 
             # TODO: refacto and put init apart
-            # Init conversations_state if necessary
-            if conversations_state[0] is None:
-                assert conversations_state[1] is None
+            # Init conversations_state if necessary 
+            is_conversations_state = hasattr(conversations_state[0],"model_name")
+            got_battle_pair_already = False
+            if is_conversations_state:
+                if conversations_state[0].model_name != "":
+                    got_battle_pair_already = True
 
+            if not got_battle_pair_already:
+                # assert conversations_state[1] is None
+                logger.info("outage_models:  "+" ".join(outage_models))
                 model_left, model_right = get_battle_pair(
                     config.models,
                     BATTLE_TARGETS,
-                    OUTAGE_MODELS,
+                    outage_models,
                     SAMPLING_WEIGHTS,
                     SAMPLING_BOOST_MODELS,
                 )
+                logger.info("Picked 2 models: "+model_left+" and "+model_right)
                 conversations_state = [
                     # NOTE: replacement of gr.State() to ConversationState happens here
                     ConversationState(model_name=model_left),
@@ -783,7 +793,7 @@ with gr.Blocks(
                         top_p,
                         max_new_tokens,
                         request,
-                        apply_rate_limit=False,
+                        apply_rate_limit=True,
                         use_recommended_config=True,
                     )
                 )
@@ -821,6 +831,7 @@ with gr.Blocks(
                         logger.error(
                             f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling."
                         )
+                        outage_models.append(conversations_state[i].model_name)
                         logger.debug(str(e))
                         gr.Warning(
                             message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
@@ -879,7 +890,7 @@ with gr.Blocks(
             api_name=False,
         ).then(
             fn=check_answers,
-            inputs=conversations_state + [gr.State()],
+            inputs=conversations_state,
             outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
             api_name=False,
         )
