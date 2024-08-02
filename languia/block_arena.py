@@ -903,11 +903,12 @@ with gr.Blocks(
             inputs=conversations_state,
             outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
             api_name=False,
-        ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
-                console.log("rerolling");
-                document.getElementById('send-btn').click();               
-                return args;
-            }""")
+        )
+        # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
+        #         console.log("rerolling");
+        #         document.getElementById('send-btn').click();               
+        #         return args;
+        #     }""")
 
         @conclude_btn.click(
             inputs=[],
