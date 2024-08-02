@@ -270,6 +270,7 @@ with gr.Blocks(
             send_btn = gr.Button(
                 interactive=False,
                 value="Envoyer",
+                elem_id="send-btn",
                 elem_classes="fr-btn fr-col-6 fr-col-md-1",
             )
             # FIXME: visible=false not working?
@@ -903,9 +904,9 @@ with gr.Blocks(
             outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
             api_name=False,
         ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
-               console.log("rerolling");
-                document.getElementById('main-textbox').click();
-               return args;
+                console.log("rerolling");
+                document.getElementById('send-btn').click();               
+                return args;
             }""")
 
         @conclude_btn.click(
