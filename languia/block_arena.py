@@ -256,6 +256,7 @@ with gr.Blocks(
         with gr.Row(elem_classes="fr-grid-row"):
             # textbox = gr.Textbox(
             textbox = FrInput(
+                elem_id="main-textbox",
                 show_label=False,
                 lines=1,
                 placeholder="Ecrivez votre premier message à l'arène ici",
@@ -660,18 +661,25 @@ with gr.Blocks(
                 logger.info("model crash detected, keeping prompt")
                 original_user_prompt = app_state.original_user_prompt
                 app_state.original_user_prompt = False
-                # TODO: reroll instead?     
+                # TODO: reroll here
                 state0 = gr.State()
                 state1 = gr.State()
                 # state0 = ConversationState()
                 # state1 = ConversationState()
+
+                logger.info("submitting original prompt")
+                textbox.value = original_user_prompt
+
+                logger.info("original prompt sent")
+
                 return (
                     [state0]
                     + [state1]
                     # chatbots
                     + [""]
                     + [""]
-                    + [gr.skip()]
+                    # disable conclude btn
+                    + [gr.update(interactive=False)]
                     + [original_user_prompt]
                 )
 
@@ -888,12 +896,17 @@ with gr.Blocks(
             inputs=conversations_state + [temperature, top_p, max_output_tokens],
             outputs=conversations_state + chatbots,
             api_name=False,
+            # should do .success()
         ).then(
             fn=check_answers,
             inputs=conversations_state,
             outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
             api_name=False,
-        )
+        ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
+               console.log("rerolling");
+                document.getElementById('main-textbox').click();
+               return args;
+            }""")
 
         @conclude_btn.click(
             inputs=[],
