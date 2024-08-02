@@ -9,11 +9,13 @@ from random import randrange
 
 import json
 
-# from fastchat.utils import (
-#     # moderation_filter,
-# )
+from fastchat.utils import (
+    moderation_filter,
+)
 
-import logging as logger
+import logging
+from logging.handlers import WatchedFileHandler
+import sys
 
 import datetime
 
@@ -25,9 +27,85 @@ from slugify import slugify
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
+class StreamToLogger(object):
+    """
+    Fake file-like stream object that redirects writes to a logger instance.
+    """
+    def __init__(self, logger, level):
+       self.logger = logger
+       self.level = level
+       self.linebuf = ''
+
+    def write(self, buf):
+       for line in buf.rstrip().splitlines():
+          self.logger.log(self.level, line.rstrip())
+
+    def flush(self):
+        pass
+
+
+def build_logger(logger_filename):
+
+    # Get logger
+    logger = logging.getLogger("languia")
+    logger.setLevel(logging.INFO)
+
+    file_formatter = logging.Formatter(
+        "{'time':'%(asctime)s', 'name': '%(name)s', \
+        'level': '%(levelname)s', 'message': '%(message)s'}",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    stream_formatter = logging.Formatter(
+        fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    # stream_handler = logging.StreamHandler()
+    # file_handler = WatchedFileHandler()
+
+    # Set the format of root handlers
+    if not logging.getLogger().handlers:
+        logging.basicConfig(level=logging.INFO)
+    logging.getLogger().handlers[0].setFormatter(stream_formatter)
+
+    # Redirect stdout and stderr to loggers
+    stdout_logger = logging.getLogger("stdout")
+    stdout_logger.setLevel(logging.INFO)
+    sl = StreamToLogger(stdout_logger, logging.INFO)
+    sys.stdout = sl
+
+    stderr_logger = logging.getLogger("stderr")
+    stderr_logger.setLevel(logging.ERROR)
+    sl = StreamToLogger(stderr_logger, logging.ERROR)
+    sys.stderr = sl
+
+
+    # Avoid httpx flooding POST logs
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
+    # if LOGDIR is empty, then don't try output log to local file
+    if LOGDIR != "":
+        os.makedirs(LOGDIR, exist_ok=True)
+        filename = os.path.join(LOGDIR, logger_filename)
+        file_handler = WatchedFileHandler(
+            filename, encoding="utf-8"
+        )
+        file_handler.setFormatter(file_formatter)
+
+        visited_loggers = []
+        for l in [stdout_logger, stderr_logger, logger]:
+            # if l in visited_loggers:
+            #     continue
+            # visited_loggers.add(l)
+            l.addHandler(file_handler)
+            # l.addHandler(stream_handler)
+
+    return logger
+
+
 def get_ip(request: gr.Request):
     # TODO: remove
-    print("Headers:"+str(request.headers))
+    print("Headers:" + str(request.headers))
     if "cf-connecting-ip" in request.headers:
         ip = request.headers["cf-connecting-ip"]
     elif "x-forwarded-for" in request.headers:
@@ -99,8 +177,9 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
         weight *= 5
     return weight
 
+
 # TODO: add to outage_models for next n min when detected an error
-# TODO: simplify battle targets formula     
+# TODO: simplify battle targets formula
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
 ):
@@ -338,7 +417,7 @@ def get_model_list(controller_url, register_api_endpoint_file):
 
     models = list(set(models))
 
-    logger.info(f"All models: {models}")
+    logging.info(f"All models: {models}")
     return models
 
 
@@ -351,7 +430,7 @@ def is_limit_reached(model_name, ip):
         obj = ret.json()
         return obj
     except Exception as e:
-        logger.info(f"monitor error: {e}")
+        logging.info(f"monitor error: {e}")
         return None
 
 
@@ -384,7 +463,7 @@ def get_llm_impact(
             if "params" in model_extra_info:
                 # TODO: add request latency
                 print(model_extra_info["params"])
-            # FIXME: multiply by 1_000_000?
+                # FIXME: multiply by 1_000_000?
                 impact = compute_llm_impacts(
                     model_active_parameter_count=int(model_extra_info["params"]),
                     model_total_parameter_count=int(model_extra_info["params"]),
@@ -392,7 +471,7 @@ def get_llm_impact(
                     request_latency=request_latency,
                 )
             else:
-                logger.warn(
+                logging.warn(
                     "impact is None for "
                     + model_name
                     + ", and no params, closed model did not match ecologits list?"
