@@ -660,8 +660,9 @@ with gr.Blocks(
                 logger.info("resetting")
                 original_user_prompt = app_state.original_user_prompt
                 app_state.original_user_prompt = False
-                state0 = gr.State()
-                state1 = gr.State()
+                # TODO: reroll instead?     
+                state0 = ConversationState()
+                state1 = ConversationState()
                 return (
                     [state0]
                     + [state1]
