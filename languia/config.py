@@ -3,7 +3,6 @@ from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 import os
 import sentry_sdk
 import json
-import logging
 from slugify import slugify
 
 from languia.utils import build_logger
@@ -324,4 +323,4 @@ BATTLE_TARGETS = {
 SAMPLING_BOOST_MODELS = []
 
 # outage models won't be sampled.
-OUTAGE_MODELS = []
+outage_models = []
