@@ -28,6 +28,15 @@ from slugify import slugify
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 
+# class CustomFormatter(logging.Formatter):
+#     def format(self, record):
+#         if hasattr(record, 'request'):
+#             request_dict = record.request
+#             if isinstance(request_dict, dict):
+#                 request_json = json.dumps(request_dict)
+#                 record.request = request_json
+#         return super().format(record)
+
 def build_logger(logger_filename):
 
     # Get logger
@@ -36,7 +45,7 @@ def build_logger(logger_filename):
 
     file_formatter = logging.Formatter(
         "{'time':'%(asctime)s', 'name': '%(name)s', \
-    'level': '%(levelname)s', 'message': '%(message)s'}, 'request': '%(request)s'}",
+        'level': '%(levelname)s', 'message': '%(message)s'}, 'request': '%(request)s'}",
         defaults={"request": ""},
         datefmt="%Y-%m-%d %H:%M:%S",
     )
@@ -45,8 +54,7 @@ def build_logger(logger_filename):
     #     fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
     #     datefmt="%Y-%m-%d %H:%M:%S",
     # )
-    # stream_handler = logging.StreamHandler()
-    # file_handler = WatchedFileHandler()
+    # stream_handler = logging.StreamHandler()  
     # stream_logger.addHandler(stream_handler)
 
     # Avoid httpx flooding POST logs
