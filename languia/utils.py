@@ -348,7 +348,7 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
                 model["params"] = model["total_params"]
             else:
                 # FIXME: handle this better...
-                logger.warn(
+                logging.warn(
                     "Params not found for model "
                     + std_name
                     + ", infering from friendly size (when closed model for example)"
