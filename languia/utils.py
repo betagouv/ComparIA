@@ -31,7 +31,8 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 # class CustomFormatter(logging.Formatter):
 #     def format(self, record):
 #         if hasattr(record, 'request'):
-#             request_dict = record.request
+#             request_dict = record.request.__dict__
+#             # request_dict = record.request.kwargs
 #             if isinstance(request_dict, dict):
 #                 request_json = json.dumps(request_dict)
 #                 record.request = request_json
@@ -43,6 +44,7 @@ def build_logger(logger_filename):
     logger = logging.getLogger("languia")
     logger.setLevel(logging.INFO)
 
+    # TODO: request.request.__dict__ (or custom fields) + request.session_hash
     file_formatter = logging.Formatter(
         "{'time':'%(asctime)s', 'name': '%(name)s', \
         'level': '%(levelname)s', 'message': '%(message)s'}, 'request': '%(request)s'}",
