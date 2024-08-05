@@ -139,6 +139,8 @@
     "description": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
   },
   "gemini-1.5-pro-001": {
+    "active_params": "220",
+    "total_params": "440",
     "simple_name": "Gemini 1.5 Pro",
     "organisation": "Google",
     "country": "États-Unis",
