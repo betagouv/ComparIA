@@ -118,6 +118,9 @@ site_head_js = (
     + matomo_js
 )
 
+with open("./assets/arena.js", encoding="utf-8") as js_file:
+    arena_js = js_file.read()
+
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
 with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
