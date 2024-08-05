@@ -44,6 +44,10 @@ body.dark {
   background-color: var(--background-default-grey) !important;
 }
 
+.dark code {
+  background-color: var(--neutral-100);
+}
+
 /* "COMPONENTS" (not custom components) */
 
 /* Radio button as DSFR-ish selectable tiles */
