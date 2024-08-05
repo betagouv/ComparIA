@@ -27,6 +27,7 @@ from slugify import slugify
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
+
 def build_logger(logger_filename):
 
     # Get logger
@@ -35,7 +36,8 @@ def build_logger(logger_filename):
 
     file_formatter = logging.Formatter(
         "{'time':'%(asctime)s', 'name': '%(name)s', \
-        'level': '%(levelname)s', 'message': '%(message)s'}",
+    'level': '%(levelname)s', 'message': '%(message)s'}, 'request': '%(request)s'}",
+        defaults={"request": ""},
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
@@ -54,11 +56,9 @@ def build_logger(logger_filename):
     if LOGDIR != "":
         os.makedirs(LOGDIR, exist_ok=True)
         filename = os.path.join(LOGDIR, logger_filename)
-        file_handler = WatchedFileHandler(
-            filename, encoding="utf-8"
-        )
+        file_handler = WatchedFileHandler(filename, encoding="utf-8")
         file_handler.setFormatter(file_formatter)
-  
+
         logger.addHandler(file_handler)
     return logger
 
@@ -395,7 +395,7 @@ def is_limit_reached(model_name, ip):
     #     return obj
     # except Exception as e:
     #     logging.info(f"monitor error: {e}")
-        return None
+    return None
 
 
 def count_output_tokens(roles, messages) -> int:

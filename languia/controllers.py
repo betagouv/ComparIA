@@ -1,5 +1,5 @@
+from languia.block_arena import *
 
-from languia.block_arena import *   
 
 # Register listeners
 def register_listeners():
@@ -16,14 +16,17 @@ def register_listeners():
     def enter_arena(request: gr.Request):
         # tos_accepted = accept_tos_checkbox
         # if tos_accepted:
+        # logger.info(f"ToS accepted")
+        logger.info(
+            f"ToS accepted",
+            extra={"request": request},
+        )
         return (
             gr.HTML(header_html),
             gr.update(visible=False),
             gr.update(visible=True),
             gr.update(visible=True),
         )
-        # else:
-        #     return (gr.skip(), gr.skip(), gr.skip())
 
     # Step 1
 
@@ -39,7 +42,12 @@ def register_listeners():
         ],
         api_name=False,
     )
-    def free_mode():
+    def free_mode(request: gr.Request):
+        logger.info(
+            f"Chose free mode",
+            extra={"request": request},
+        )
+
         return [
             gr.update(
                 elem_classes="fr-ml-auto " + mode_selection_classes + " selected"
@@ -62,17 +70,19 @@ def register_listeners():
         api_name=False,
         # TODO: scroll_to_output?
     )
-    def guided_mode():
+    def guided_mode(request: gr.Request):
         # print(guided_mode_btn.elem_classes)
+        logger.info(
+            f"Chose guided mode",
+            extra={"request": request},
+        )
         if "selected" in guided_mode_btn.elem_classes:
             return [gr.skip() * 4]
         else:
             return [
                 gr.update(elem_classes="fr-ml-auto " + mode_selection_classes),
                 gr.update(
-                    elem_classes="fr-mr-auto "
-                    + mode_selection_classes
-                    + " selected"
+                    elem_classes="fr-mr-auto " + mode_selection_classes + " selected"
                 ),
                 # send_area
                 # gr.update(visible=False),
@@ -82,8 +92,12 @@ def register_listeners():
 
     # Step 1.1
 
-    def set_guided_prompt(event: gr.EventData):
+    def set_guided_prompt(event: gr.EventData, request: gr.Request):
         chosen_guide = event.target.value
+        logger.info(
+            f"set_guided_prompt: {chosen_guide}",
+            extra={"request": request},
+        )
         if chosen_guide in [
             "variete",
             "regional",
@@ -120,88 +134,23 @@ def register_listeners():
         else:
             return gr.update(interactive=True)
 
-    def goto_chatbot():
-        # textbox
-        logger.info("advancing to chatbot frame")
-
-        # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
-        return (
-            [
-                gr.update(
-                    value="",
-                    placeholder="Continuer à discuter avec les deux modèles",
-                )
-            ]
-            # stepper_block
-            + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
-            # mode_screen
-            + [gr.update(visible=False)]
-            # chat_area
-            + [gr.update(visible=True)]
-            # send_btn
-            + [gr.update(interactive=False)]
-            # retry_btn
-            # + [gr.update(visible=True)]
-            # conclude_btn
-            + [gr.update(visible=True, interactive=True)]
-        )
-
-    def check_answers(state0, state1, request: gr.Request):
-        # Not set to none at all :'(
-        # print(str(state0.conv_id))
-        # print(str(state1.conv_id))
-        logger.debug("models answered")
-
-        if app_state.original_user_prompt:
-            logger.info("model crash detected, keeping prompt")
-            original_user_prompt = app_state.original_user_prompt
-            app_state.original_user_prompt = False
-            # TODO: reroll here
-            state0 = gr.State()
-            state1 = gr.State()
-            # state0 = ConversationState()
-            # state1 = ConversationState()
-
-            logger.info("submitting original prompt")
-            textbox.value = original_user_prompt
-
-            logger.info("original prompt sent")
-
-            return (
-                [state0]
-                + [state1]
-                # chatbots
-                + [""]
-                + [""]
-                # disable conclude btn
-                + [gr.update(interactive=False)]
-                + [original_user_prompt]
-            )
-
-        # enable conclude_btn
-        else:
-            return (
-                [state0]
-                + [state1]
-                + chatbots
-                + [gr.update(interactive=True)]
-                + [textbox]
-            )
-
-# TODO: move this
+    # TODO: move this
     def add_text(
         state0: gr.State,
         state1: gr.State,
         text: gr.Text,
         request: gr.Request,
-    ):                  
+    ):
         ip = get_ip(request)
-        logger.info(f"add_text (anony). ip: {ip}. len: {len(text)}")
+        logger.info(
+            f"add_text. len: {len(text)}",
+            extra={"request": request},
+        )
         conversations_state = [state0, state1]
 
         # TODO: refacto and put init apart
-        # Init conversations_state if necessary 
-        is_conversations_state = hasattr(conversations_state[0],"model_name")
+        # Init conversations_state if necessary
+        is_conversations_state = hasattr(conversations_state[0], "model_name")
         got_battle_pair_already = False
         if is_conversations_state:
             if conversations_state[0].model_name != "":
@@ -209,7 +158,7 @@ def register_listeners():
 
         if not got_battle_pair_already:
             # assert conversations_state[1] is None
-            logger.info("outage_models:  "+" ".join(outage_models))
+            logger.info("outage_models:  " + " ".join(outage_models))
             model_left, model_right = get_battle_pair(
                 config.models,
                 BATTLE_TARGETS,
@@ -217,7 +166,7 @@ def register_listeners():
                 SAMPLING_WEIGHTS,
                 SAMPLING_BOOST_MODELS,
             )
-            logger.info("Picked 2 models: "+model_left+" and "+model_right)
+            logger.info("Picked 2 models: " + model_left + " and " + model_right)
             conversations_state = [
                 # NOTE: replacement of gr.State() to ConversationState happens here
                 ConversationState(model_name=model_left),
@@ -225,7 +174,9 @@ def register_listeners():
             ]
             # TODO: test here if models answer?
 
-        model_list = [conversations_state[i].model_name for i in range(config.num_sides)]
+        model_list = [
+            conversations_state[i].model_name for i in range(config.num_sides)
+        ]
         # all_conv_text_left = conversations_state[0].conv.get_prompt()
         # all_conv_text_right = conversations_state[1].conv.get_prompt()
         # all_conv_text = (
@@ -274,7 +225,7 @@ def register_listeners():
             + [x.to_gradio_chatbot() for x in conversations_state]
         )
 
-# TODO: move this
+    # TODO: move this
     def bot_response_multi(
         state0,
         state1,
@@ -283,7 +234,10 @@ def register_listeners():
         max_new_tokens,
         request: gr.Request,
     ):
-        logger.info(f"bot_response_multi (anony). ip: {get_ip(request)}")
+        logger.info(
+            f"bot_response_multi (anony). ip: {get_ip(request)}",
+            extra={"request": request},
+        )
 
         conversations_state = [state0, state1]
 
@@ -348,7 +302,9 @@ def register_listeners():
                     #     request=request,
                     # )
                     app_state.original_user_prompt = chatbots[0][0][0]
-                    logger.info("Saving original prompt: " + app_state.original_user_prompt)
+                    logger.info(
+                        "Saving original prompt: " + app_state.original_user_prompt
+                    )
                     # print(str(conversations_state[0].conv_id))
                     # print(str(conversations_state[1].conv_id))
                     # Not effective:
@@ -366,6 +322,95 @@ def register_listeners():
             if stop:
                 break
 
+    def goto_chatbot(request: gr.Request):
+        # textbox
+        logger.info(
+            "chatbot launched",
+            extra={"request": request},
+        )
+
+        # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
+        return (
+            [
+                gr.update(
+                    value="",
+                    placeholder="Continuer à discuter avec les deux modèles",
+                )
+            ]
+            # stepper_block
+            + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
+            # mode_screen
+            + [gr.update(visible=False)]
+            # chat_area
+            + [gr.update(visible=True)]
+            # send_btn
+            + [gr.update(interactive=False)]
+            # retry_btn
+            # + [gr.update(visible=True)]
+            # conclude_btn
+            + [gr.update(visible=True, interactive=True)]
+        )
+
+    def check_answers(state0, state1, request: gr.Request):
+        # Not set to none at all :'(
+        # print(str(state0.conv_id))
+        # print(str(state1.conv_id))
+        logger.debug(
+            "models finished answering",
+            extra={"request": request},
+        )
+
+        if app_state.original_user_prompt:
+            logger.info(
+                "model crash detected, keeping prompt",
+                extra={"request": request},
+            )
+            original_user_prompt = app_state.original_user_prompt
+            app_state.original_user_prompt = False
+            # TODO: reroll here
+            state0 = gr.State()
+            state1 = gr.State()
+            # state0 = ConversationState()
+            # state1 = ConversationState()
+
+            logger.info(
+                "submitting original prompt",
+                extra={"request": request},
+            )
+            textbox.value = original_user_prompt
+
+            logger.info(
+                "original prompt sent",
+                extra={"request": request},
+            )
+
+            return (
+                [state0]
+                + [state1]
+                # chatbots
+                + [""]
+                + [""]
+                # disable conclude btn
+                + [gr.update(interactive=False)]
+                + [original_user_prompt]
+            )
+
+        # enable conclude_btn
+        else:
+            # TODO: log answers here?
+            logger.info(
+                "models answered with success",
+                extra={"request": request},
+            )
+
+            extra = ({"request": request},)
+            return (
+                [state0]
+                + [state1]
+                + chatbots
+                + [gr.update(interactive=True)]
+                + [textbox]
+            )
 
     gr.on(
         triggers=[textbox.submit, send_btn.click],
@@ -400,7 +445,7 @@ def register_listeners():
     )
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
     #         console.log("rerolling");
-    #         document.getElementById('send-btn').click();               
+    #         document.getElementById('send-btn').click();
     #         return args;
     #     }""")
 
@@ -529,17 +574,13 @@ def register_listeners():
                 'Model selection was neither "bothbad", "leftvote" or "rightvote", got: '
                 + str(which_model_radio)
             )
-            
+
         model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
         model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
 
         # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = count_output_tokens(
-            state0.conv.roles, state0.conv.messages
-        )
-        model_b_tokens = count_output_tokens(
-            state1.conv.roles, state1.conv.messages
-        )
+        model_a_tokens = count_output_tokens(state0.conv.roles, state0.conv.messages)
+        model_b_tokens = count_output_tokens(state1.conv.roles, state1.conv.messages)
         # TODO:
         # request_latency_a = state0.conv.finish_tstamp - state0.conv.start_tstamp
         # request_latency_b = state1.conv.finish_tstamp - state1.conv.start_tstamp
@@ -584,6 +625,7 @@ def register_listeners():
     #     # + model_selectors
     #     + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
     # )
+
 
 # def clear_history(
 #     state0,
