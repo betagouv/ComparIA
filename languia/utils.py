@@ -72,10 +72,13 @@ def build_logger(logger_filename):
 
 
 def get_ip(request: gr.Request):
-    # TODO: remove
-    print("Headers:" + str(request.headers))
-    if "cf-connecting-ip" in request.headers:
-        ip = request.headers["cf-connecting-ip"]
+    # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
+
+    # print("Headers:" + str(request.headers))
+    if "cloud-protector-client-ip" in request.headers:
+        ip = request.headers["cloud-protector-client-ip"]
+    elif "x-original-forwarded-for" in request.headers:
+        ip = request.headers["x-original-forwarded-for"]
     elif "x-forwarded-for" in request.headers:
         ip = request.headers["x-forwarded-for"]
     else:

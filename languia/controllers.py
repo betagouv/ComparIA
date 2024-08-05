@@ -141,7 +141,9 @@ def register_listeners():
         text: gr.Text,
         request: gr.Request,
     ):
+
         ip = get_ip(request)
+
         logger.info(
             f"add_text. len: {len(text)}",
             extra={"request": request},
