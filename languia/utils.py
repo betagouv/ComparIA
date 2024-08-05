@@ -27,23 +27,6 @@ from slugify import slugify
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
-class StreamToLogger(object):
-    """
-    Fake file-like stream object that redirects writes to a logger instance.
-    """
-    def __init__(self, logger, level):
-       self.logger = logger
-       self.level = level
-       self.linebuf = ''
-
-    def write(self, buf):
-       for line in buf.rstrip().splitlines():
-          self.logger.log(self.level, line.rstrip())
-
-    def flush(self):
-        pass
-
-
 def build_logger(logger_filename):
 
     # Get logger
@@ -56,29 +39,13 @@ def build_logger(logger_filename):
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    stream_formatter = logging.Formatter(
-        fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+    # stream_formatter = logging.Formatter(
+    #     fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    #     datefmt="%Y-%m-%d %H:%M:%S",
+    # )
     # stream_handler = logging.StreamHandler()
     # file_handler = WatchedFileHandler()
-
-    # Set the format of root handlers
-    if not logging.getLogger().handlers:
-        logging.basicConfig(level=logging.INFO)
-    logging.getLogger().handlers[0].setFormatter(stream_formatter)
-
-    # Redirect stdout and stderr to loggers
-    stdout_logger = logging.getLogger("stdout")
-    stdout_logger.setLevel(logging.INFO)
-    sl = StreamToLogger(stdout_logger, logging.INFO)
-    sys.stdout = sl
-
-    stderr_logger = logging.getLogger("stderr")
-    stderr_logger.setLevel(logging.ERROR)
-    sl = StreamToLogger(stderr_logger, logging.ERROR)
-    sys.stderr = sl
-
+    # stream_logger.addHandler(stream_handler)
 
     # Avoid httpx flooding POST logs
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -91,15 +58,8 @@ def build_logger(logger_filename):
             filename, encoding="utf-8"
         )
         file_handler.setFormatter(file_formatter)
-
-        visited_loggers = []
-        for l in [stdout_logger, stderr_logger, logger]:
-            # if l in visited_loggers:
-            #     continue
-            # visited_loggers.add(l)
-            l.addHandler(file_handler)
-            # l.addHandler(stream_handler)
-
+  
+        logger.addHandler(file_handler)
     return logger
 
 
