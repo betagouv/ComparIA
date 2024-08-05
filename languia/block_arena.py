@@ -88,7 +88,9 @@ with gr.Blocks(
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
     # if not tos_cookie:
-    header = gr.HTML(start_screen_html, elem_id="header_html")
+
+    # gr.HTML(elem_id="header-placeholder")
+    header = gr.HTML(start_screen_html, elem_id="header-html")
 
     with gr.Column(elem_classes="fr-container") as start_screen:
 

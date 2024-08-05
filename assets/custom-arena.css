@@ -1,7 +1,4 @@
-body {
-  margin: auto !important;
-}
-
+/* BUGFIXES */
 .app {
   padding: 0 !important;
   /* padding: var(--size-4) var(--size-8); */
@@ -13,14 +10,7 @@ body {
   display: none !important;
 }
 
-/* --raised-shadow: 0 1px 3px var(--shadow-color); */
-#stepper-html {
-  background-color: var(--background-raised-grey);
-  filter: drop-shadow(var(--raised-shadow));
-  /* hide top drop shadow by getting it closer to the header */
-  top: -16px;
-}
-
+/* DARK MODE FIXES */
 
 /* Temporary fixes for dark mode in arena: enforce clear mode */
 /* .dark .fr-label {
@@ -54,16 +44,7 @@ body.dark {
   background-color: var(--background-default-grey) !important;
 }
 
-/* Gradio overrides */
-label,
-fieldset {
-  background-color: var(--background-default-grey) !important;
-  border: none;
-}
-
-.form {
-  border: none;
-}
+/* "COMPONENTS" (not custom components) */
 
 /* Radio button as DSFR-ish selectable tiles */
 .radio-tiles label.selected,
@@ -91,7 +72,7 @@ fieldset {
   display: none;
 }
 
-/* Utility classes */
+/* UTILITY CLASSES */
 
 .bolder {
   font-weight: 700;
@@ -118,13 +99,45 @@ fieldset {
 }
 
 /* General */
+body {
+  margin: auto !important;
+}
 
 .app {
   max-width: none !important;
   /* max-width: none; */
 }
 
+/* Gradio overrides */
+label,
+fieldset {
+  background-color: var(--background-default-grey) !important;
+  border: none;
+}
+
+.form {
+  border: none;
+}
+
 /* Screen by screen */
+
+/* Screen 0 */
+
+#stepper-html.sticky {
+  position: fixed;
+  top: 0;
+  z-index: 10000;
+}
+
+/* --raised-shadow: 0 1px 3px var(--shadow-color); */
+#stepper-html {
+  background-color: var(--background-raised-grey);
+  filter: drop-shadow(var(--raised-shadow));
+  /* hide top drop shadow by getting it closer to the header */
+  top: -16px;
+  /* transition: transform 0.3s ease-in-out; */
+}
+
 li.fr-nav__item {
   margin-bottom: 0;
 }
