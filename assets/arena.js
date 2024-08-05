@@ -35,20 +35,20 @@ function() {
     });
   });
 
+  // window.onscroll = function() {
+  //   // const headerPlaceholder = document.querySelector('#header-placeholder');
+  //   const header = document.querySelector('#header-html');      
+  //   const headerBottom = header.offsetTop + header.offsetHeight;
+  //   const stepper = document.querySelector('#stepper-html');
+  //   // const stepperHeight = stepper.offsetHeight;
+  //   if (window.scrollY > headerBottom) {
+  //     stepper.classList.add('sticky');
+  //     // headerPlaceholder.style.height = header.offsetHeight + stepperHeight;
+  //   } else {
+  //     stepper.classList.remove('sticky');
+  //   }
+  //   };
 
-  window.onscroll = function() {
-    // const headerPlaceholder = document.querySelector('#header-placeholder');
-    const header = document.querySelector('#header-html');      
-    const headerBottom = header.offsetTop + header.offsetHeight;
-    const stepper = document.querySelector('#stepper-html');
-    // const stepperHeight = stepper.offsetHeight;
-    if (window.scrollY > headerBottom) {
-      stepper.classList.add('sticky');
-      // headerPlaceholder.style.height = header.offsetHeight + stepperHeight;
-    } else {
-      stepper.classList.remove('sticky');
-    }
-    };
 // // scroll to last prompt
 //   var left = document.querySelector('#chatbot-0 .user'); 
 //   var last_left = left.items(left.length-1);
