@@ -38,7 +38,7 @@ class CustomFormatter(logging.Formatter):
             log_data = json.loads(msg)
         except json.JSONDecodeError:
             # Handle cases where the message isn't valid JSON
-            log_data = {}
+            log_data = {"message": msg}
 
         # if 'request' in record.args:
         if hasattr(record, "request"):
@@ -61,8 +61,7 @@ class CustomFormatter(logging.Formatter):
             log_data["conversations_state"] = record.conversations_state
 
         # Add the args dictionary to the JSON payload
-        log_data.update(record.args)
-        # log_data.update(record.extra)
+        # log_data.update(record.args)
         # Convert the updated dictionary back to JSON
         return json.dumps(log_data)
 
@@ -485,7 +484,6 @@ def get_llm_impact(
         else:
             if "params" in model_extra_info:
                 # TODO: add request latency
-                print(model_extra_info["params"])
                 # FIXME: multiply by 1_000_000?
                 impact = compute_llm_impacts(
                     model_active_parameter_count=int(model_extra_info["params"]),

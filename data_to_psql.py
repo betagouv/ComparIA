@@ -109,7 +109,7 @@ for filename in os.listdir(json_directory):
                     print(f"An error occurred: {e}")
                     print(traceback.format_exc())
                     # 
-        print("Data from " + file_path + "successfully parsed")
+        print("Data from " + file_path + " successfully parsed")
  
 
 # Commit changes and close the connection
@@ -161,7 +161,7 @@ for filename in os.listdir(json_directory):
                     print("Line: "+str(line))
                     print(traceback.format_exc())
                     print("Skipping file "+ file_path)
-        print("Data from " + file_path + "successfully parsed")
+        print("Data from " + file_path + " successfully parsed")
 
 # Commit changes and close the connection
 conn.commit()
