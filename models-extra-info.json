@@ -21,7 +21,7 @@
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "restricted",
+    "conditions": "free",
     "license": "Apache 2.0"
   },
   "Phi-3-Mini-4k-Instruct": {
@@ -46,7 +46,7 @@
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "restricted",
+    "conditions": "free",
     "description": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol. Grâce à l’architecture SMoE (sparse mixture of experts), seule une fraction des paramètres est activée pour chaque inférence, réduisant ainsi les coûts et la latence.",
     "excerpt": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol.",
     "license": "Apache 2.0"
@@ -61,7 +61,7 @@
     "friendly_size": "L",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "restricted",
+    "conditions": "free",
     "excerpt": "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût.",
     "description": "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût. Seuls 39Mds de paramètres sont actifs sur 141Mds. La fenêtre contextuelle de 64000 tokens permet de rappeler des informations précises à partir de grands documents.",
     "license": "Apache 2.0"
@@ -75,7 +75,7 @@
     "friendly_size": "M",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "restricted",
+    "conditions": "free",
     "description": "",
     "license": "Apache 2.0"
   },
@@ -88,7 +88,7 @@
     "friendly_size": "L",
     "dataset": "private",
     "distribution": "open-weights",
-    "conditions": "Sous condition",
+    "conditions": "restricted",
     "excerpt": "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens",
     "description": "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il supporte un contexte de 8000 tokens.",
     "license": "Llama 3 Community"
@@ -102,7 +102,7 @@
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
-    "conditions": "Sous condition",
+    "conditions": "restricted",
     "description": "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité.",
     "license": "Llama 3 Community"
   },
@@ -124,6 +124,7 @@
     "friendly_size": "S",
     "distribution": "open-weights",
     "dataset": "private",
+    "license": "Gemma",
     "conditions": "restricted",
     "description": "Petit frère de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
   },
@@ -145,7 +146,7 @@
     "organisation": "Google",
     "country": "États-Unis",
     "icon_path": "google.png",
-    "friendly_size": "L",
+    "friendly_size": "XL",
     "dataset": "private",
     "distribution": "api-only",
     "conditions": "restricted",
@@ -156,12 +157,26 @@
     "organisation": "Meta",
     "country": "États-Unis",
     "icon_path": "meta.svg",
-    "friendly_size": "L",
+    "friendly_size": "XL",
     "dataset": "private",
     "distribution": "open-weights",
-    "conditions": "restricted",
+    "conditions": "free",
     "description": "Modèle le plus puissant de la famille Llama 3.1 avec 405 milliards de paramètres, il est doté de capacités accrues pour des tâches de programmation, de mathématique et de raisonnement.",
-    "params": 405
+    "params": 405,
+    "license": "Llama 3.1 Community"
+  },
+  "llama-3.1-8b": {
+    "simple_name": "Llama 3.1 8b",
+    "organisation": "Meta",
+    "country": "États-Unis",
+    "icon_path": "meta.svg",
+    "friendly_size": "M",
+    "dataset": "private",
+    "distribution": "open-weights",
+    "conditions": "free",
+    "description": "Cadet de la famille Llama 3.1, ce petit modèle est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens.",
+    "params": 405,
+    "license": "Llama 3.1 Community"
   },
   "GPT-4-Turbo-2024-04-09": {
     "simple_name": "GPT-4-Turbo-2024-04-09",
