@@ -113,6 +113,7 @@ for filename in os.listdir(json_directory):
 
 # Commit changes and close the connection
 conn.commit()
+print("All conversation data successfully committed into the database")
 
 # Create the logs table if it doesn't exist
 cur.execute(
