@@ -183,7 +183,8 @@ def vertex_api_stream_iter(
         if len(chunk.choices) > 0:
             text += chunk.choices[0].delta.content or ""
             data = {
-                "text": text,
+                # Processing \n for Llama3.1-405B
+                "text": f"{text}",
                 "error_code": 0,
             }
             yield data

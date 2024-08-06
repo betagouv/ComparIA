@@ -146,7 +146,8 @@ def register_listeners():
 
         # TODO: add turn
         logger.info(
-            f"add_text. len: {len(text)}",
+            f"add_text",
+            # f"add_text. len: {len(text)}",
             extra={"request": request, "prompt": text},
         )
         conversations_state = [state0, state1]
