@@ -27,6 +27,7 @@ from slugify import slugify
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
+
 class CustomFormatter(logging.Formatter):
     def format(self, record):
 
@@ -40,22 +41,31 @@ class CustomFormatter(logging.Formatter):
             log_data = {}
 
         # if 'request' in record.args:
-        if hasattr(record, 'request'):
+        if hasattr(record, "request"):
             # log_data = record.request
             # request_dict = record.request.kwargs
-            log_data['query_params'] = dict(record.request.query_params)
-            log_data['path_params'] = dict(record.request.path_params)
-            log_data['ip'] = get_ip(record.request)
-            log_data['session_hash'] = record.request.session_hash
+            log_data["query_params"] = dict(record.request.query_params)
+            log_data["path_params"] = dict(record.request.path_params)
+            log_data["ip"] = get_ip(record.request)
+            log_data["session_hash"] = record.request.session_hash
             # if isinstance(request_di  ct, dict):
             #     request_json = json.dumps(request_dict)
             # delattr(record, 'request')
+        if hasattr(record, "prompt"):
+            log_data["prompt"] = record.prompt
+        if hasattr(record, "details"):
+            log_data["details"] = record.details
+        if hasattr(record, "models"):
+            log_data["models"] = record.models
+        if hasattr(record, "conversations_state"):
+            log_data["conversations_state"] = record.conversations_state
 
         # Add the args dictionary to the JSON payload
         log_data.update(record.args)
         # log_data.update(record.extra)
         # Convert the updated dictionary back to JSON
         return json.dumps(log_data)
+
 
 def build_logger(logger_filename):
     # Get logger
@@ -78,7 +88,7 @@ def build_logger(logger_filename):
     #     fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
     #     datefmt="%Y-%m-%d %H:%M:%S",
     # )
-    # stream_handler = logging.StreamHandler()  
+    # stream_handler = logging.StreamHandler()
     # stream_logger.addHandler(stream_handler)
 
     # Avoid httpx flooding POST logs
@@ -114,9 +124,18 @@ def vote_last_response(
     details: list,
     request: gr.Request,
 ):
-    logging.info(f"{vote_type}_vote (anony). ip: {get_ip(request)}")
-    details_str = json.dumps(details)
-    logging.info(f"details: {details_str}")
+    logger = logging.getLogger("languia")
+    logger.info(f"{vote_type}_vote", extra={"request": request})
+    logger.info(
+        f"{vote_type}_vote",
+        extra={
+            "request": request,
+            "vote": vote_type,
+            "details": details,
+            "models": [x.model_name for x in conversations_state],
+            "conversations_state": [x.dict() for x in conversations_state],
+        },
+    )
 
     with open(get_conv_log_filename(), "a") as fout:
         data = {
@@ -177,13 +196,14 @@ def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
 ):
     models = [model for model in models if model not in outage_models]
+    logger = logging.getLogger("languia")
     if len(models) == 0:
-        logging.critical("Model list doesn't contain any model")
+        logger.critical("Model list doesn't contain any model")
         # Maybe sleep then kill container?
         raise ValueError("Model list doesn't contain any model")
 
     if len(models) == 1:
-        logging.warn("Only one model configured! Making it fight with itself")
+        logger.warn("Only one model configured! Making it fight with itself")
         return models[0], models[0]
 
     model_weights = []
@@ -326,6 +346,7 @@ def get_conv_log_filename(is_vision=False, has_csam_image=False):
 def build_model_extra_info(name: str, all_models_extra_info_json: dict):
     # Maybe put orgs countries in an array here
     std_name = slugify(name.lower())
+    logger = logging.getLogger("languia")
     if std_name in all_models_extra_info_json:
         model = all_models_extra_info_json[std_name]
         # TODO: Should use a dict instead
@@ -341,7 +362,7 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
                 model["params"] = model["total_params"]
             else:
                 # FIXME: handle this better...
-                logging.warn(
+                logger.warn(
                     "Params not found for model "
                     + std_name
                     + ", infering from friendly size (when closed model for example)"
@@ -394,6 +415,7 @@ def get_model_extra_info(name: str, models_extra_info: list):
 
 
 def get_model_list(controller_url, register_api_endpoint_file):
+    logger = logging.getLogger("languia")
 
     # Add models from the controller
     if controller_url:
@@ -413,7 +435,7 @@ def get_model_list(controller_url, register_api_endpoint_file):
 
     models = list(set(models))
 
-    logging.info(f"All models: {models}")
+    logger.info(f"All models: {models}")
     return models
 
 
@@ -441,6 +463,7 @@ def get_llm_impact(
     model_extra_info, model_name: str, token_count: int, request_latency: float
 ) -> dict:
     """Compute or fallback to estimated impact for an LLM."""
+    logger = logging.getLogger("languia")
     # TODO: add request latency
     # FIXME: most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
     # model_active_parameter_count: ValueOrRange,
@@ -468,7 +491,7 @@ def get_llm_impact(
                     request_latency=request_latency,
                 )
             else:
-                logging.warn(
+                logger.warn(
                     "impact is None for "
                     + model_name
                     + ", and no params, closed model did not match ecologits list?"

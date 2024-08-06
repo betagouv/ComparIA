@@ -108,7 +108,10 @@ def register_listeners():
         ]:
             preprompts = config.preprompts_table[chosen_guide]
         else:
-            logger.error("Type of guided prompt not listed")
+            logger.error(
+                "Type of guided prompt not listed: " + str(chosen_guide),
+                extra={"request": request},
+            )
         preprompt = preprompts[np.random.randint(len(preprompts))]
         return [gr.update(visible=True), gr.update(value=preprompt)]
 
@@ -134,7 +137,6 @@ def register_listeners():
         else:
             return gr.update(interactive=True)
 
-    # TODO: move this
     def add_text(
         state0: gr.State,
         state1: gr.State,
@@ -142,11 +144,10 @@ def register_listeners():
         request: gr.Request,
     ):
 
-        ip = get_ip(request)
-
+        # TODO: add turn
         logger.info(
             f"add_text. len: {len(text)}",
-            extra={"request": request},
+            extra={"request": request, "prompt": text},
         )
         conversations_state = [state0, state1]
 
@@ -288,10 +289,11 @@ def register_listeners():
                     pass
                 except Exception as e:
                     logger.error(
-                        f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling."
+                        f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling.",
+                        extra={"request": request},
                     )
                     outage_models.append(conversations_state[i].model_name)
-                    logger.debug(str(e))
+                    logger.error(str(e), extra={"request": request})
                     gr.Warning(
                         message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
                     )
@@ -305,7 +307,8 @@ def register_listeners():
                     # )
                     app_state.original_user_prompt = chatbots[0][0][0]
                     logger.info(
-                        "Saving original prompt: " + app_state.original_user_prompt
+                        "Saving original prompt: " + app_state.original_user_prompt,
+                        extra={"request": request},
                     )
                     # print(str(conversations_state[0].conv_id))
                     # print(str(conversations_state[1].conv_id))
@@ -457,7 +460,11 @@ def register_listeners():
         api_name=False,
         # TODO: scroll_to_output?
     )
-    def show_vote_area():
+    def show_vote_area(request: gr.Request):
+        logger.info(
+            "advancing to vote area",
+            extra={"request": request},
+        )
         # return {
         #     conclude_area: gr.update(visible=False),
         #     chat_area: gr.update(visible=False),
@@ -483,7 +490,11 @@ def register_listeners():
         ],
         api_name=False,
     )
-    def build_supervote_area(vote_radio):
+    def build_supervote_area(vote_radio, request: gr.Request):
+        logger.info(
+            "voted for " + str(vote_radio),
+            extra={"request": request},
+        )
         if vote_radio == "bothbad":
             return (
                 gr.update(visible=True),
@@ -507,8 +518,11 @@ def register_listeners():
         # + [supervote_area]
         + [chat_area] + [send_area] + [buttons_footer],
     )
-    def return_to_chat():
-        logger.info("clicked return")
+    def return_to_chat(request: gr.Request):
+        logger.info(
+            "clicked return",
+            extra={"request": request},
+        )
         return (
             [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
             # vote_area
@@ -563,7 +577,6 @@ def register_listeners():
             "comments": comments_text,
         }
         if which_model_radio in ["bothbad", "leftvote", "rightvote"]:
-            logger.info("Voting " + which_model_radio)
 
             vote_last_response(
                 [state0, state1],
