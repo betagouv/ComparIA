@@ -149,9 +149,9 @@
     "friendly_size": "XL",
     "dataset": "private",
     "distribution": "api-only",
-    "license": "propriétaire Google",
+    "license": "propriétaire Gemini",
     "conditions": "restricted",
-    "description": "Ce modèle est capable de traiter du texte mais aussi des images, des vidéos et de l'audio. Idéal pour des applications variées comme la génération de textes, la compréhension d'images, l'analyse de vidéos et la transcription d'audio."
+    "description": "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
   },
   "llama-3.1-405b": {
     "simple_name": "Llama 3.1 405B",
