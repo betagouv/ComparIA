@@ -424,34 +424,32 @@ def register_listeners():
                     "original prompt sent",
                     extra={"request": request},
                 )
-
-            return (
-                [state0]
-                + [state1]
-                # chatbots
-                + [""]
-                + [""]
-                # disable conclude btn
-                + [gr.update(interactive=False)]
-                + [original_user_prompt]
-            )
+                return (
+                    [state0]
+                    + [state1]
+                    # chatbots
+                    + [""]
+                    + [""]
+                    # disable conclude btn
+                    + [gr.update(interactive=False)]
+                    + [original_user_prompt]
+                )
 
         # enable conclude_btn
-        else:
-            # TODO: log answers here?
-            logger.info(
-                "models answered with success",
-                extra={"request": request},
-            )
+        # TODO: log answers here?
+        logger.info(
+            "models answered with success",
+            extra={"request": request},
+        )
 
-            extra = ({"request": request},)
-            return (
-                [state0]
-                + [state1]
-                + chatbots
-                + [gr.update(interactive=True)]
-                + [textbox]
-            )
+        extra = ({"request": request},)
+        return (
+            [state0]
+            + [state1]
+            + chatbots
+            + [gr.update(interactive=True)]
+            + [textbox]
+        )
 
     gr.on(
         triggers=[textbox.submit, send_btn.click],
