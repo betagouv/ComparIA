@@ -366,29 +366,30 @@ def register_listeners():
             extra={"request": request},
         )
 
-        if app_state.original_user_prompt:
-            logger.info(
-                "model crash detected, keeping prompt",
-                extra={"request": request},
-            )
-            original_user_prompt = app_state.original_user_prompt
-            app_state.original_user_prompt = False
-            # TODO: reroll here
-            state0 = gr.State()
-            state1 = gr.State()
-            # state0 = ConversationState()
-            # state1 = ConversationState()
+        if hasattr(app_state, "original_user_prompt"):
+            if app_state.original_user_prompt != False:
+                logger.info(
+                    "model crash detected, keeping prompt",
+                    extra={"request": request},
+                )
+                original_user_prompt = app_state.original_user_prompt
+                app_state.original_user_prompt = False
+                # TODO: reroll here
+                state0 = gr.State()
+                state1 = gr.State()
+                # state0 = ConversationState()
+                # state1 = ConversationState()
 
-            logger.info(
-                "submitting original prompt",
-                extra={"request": request},
-            )
-            textbox.value = original_user_prompt
+                logger.info(
+                    "submitting original prompt",
+                    extra={"request": request},
+                )
+                textbox.value = original_user_prompt
 
-            logger.info(
-                "original prompt sent",
-                extra={"request": request},
-            )
+                logger.info(
+                    "original prompt sent",
+                    extra={"request": request},
+                )
 
             return (
                 [state0]
