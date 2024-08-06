@@ -97,7 +97,6 @@ with gr.Blocks(
         start_arena_btn = gr.Button(
             value="C'est parti",
             scale=0,
-            # TODO: à centrer
             elem_id="start_arena_btn",
             elem_classes="fr-btn fr-mx-auto",
             interactive=False,

@@ -27,28 +27,50 @@ from slugify import slugify
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
+class CustomFormatter(logging.Formatter):
+    def format(self, record):
 
-# class CustomFormatter(logging.Formatter):
-#     def format(self, record):
-#         if hasattr(record, 'request'):
-#             request_dict = record.request.__dict__
-#             # request_dict = record.request.kwargs
-#             if isinstance(request_dict, dict):
-#                 request_json = json.dumps(request_dict)
-#                 record.request = request_json
-#         return super().format(record)
+        msg = super().format(record)
+
+        # Parse the message as JSON
+        try:
+            log_data = json.loads(msg)
+        except json.JSONDecodeError:
+            # Handle cases where the message isn't valid JSON
+            log_data = {}
+
+        # if 'request' in record.args:
+        if hasattr(record, 'request'):
+            # log_data = record.request
+            # request_dict = record.request.kwargs
+            log_data['query_params'] = dict(record.request.query_params)
+            log_data['path_params'] = dict(record.request.path_params)
+            log_data['ip'] = get_ip(record.request)
+            log_data['session_hash'] = record.request.session_hash
+            # if isinstance(request_di  ct, dict):
+            #     request_json = json.dumps(request_dict)
+            # delattr(record, 'request')
+
+        # Add the args dictionary to the JSON payload
+        log_data.update(record.args)
+        # log_data.update(record.extra)
+        # Convert the updated dictionary back to JSON
+        return json.dumps(log_data)
 
 def build_logger(logger_filename):
-
     # Get logger
     logger = logging.getLogger("languia")
     logger.setLevel(logging.INFO)
 
-    # TODO: request.request.__dict__ (or custom fields) + request.session_hash
-    file_formatter = logging.Formatter(
-        "{'time':'%(asctime)s', 'name': '%(name)s', \
-        'level': '%(levelname)s', 'message': '%(message)s'}, 'request': '%(request)s'}",
-        defaults={"request": ""},
+    # file_formatter = CustomFormatter(
+    #     '{"time":"%(asctime)s", "name": "%(name)s", \
+    #     "level": "%(levelname)s", "message": "%(message)s", \
+    #     "ip": "%(ip)s", "query_params": "%(query_params)s", \
+    #     "path_params": "%(path_params)s", "session_hash": "%(session_hash)s"}',
+    file_formatter = CustomFormatter(
+        '{"time":"%(asctime)s", "name": "%(name)s", \
+        "level": "%(levelname)s", "message": "%(message)s"}',
+        # defaults={"request": ""},
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
@@ -75,8 +97,6 @@ def build_logger(logger_filename):
 
 def get_ip(request: gr.Request):
     # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
-
-    # print("Headers:" + str(request.headers))
     if "cloud-protector-client-ip" in request.headers:
         ip = request.headers["cloud-protector-client-ip"]
     elif "x-original-forwarded-for" in request.headers:
