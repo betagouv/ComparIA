@@ -238,7 +238,7 @@ def register_listeners():
         request: gr.Request,
     ):
         logger.info(
-            f"bot_response_multi (anony). ip: {get_ip(request)}",
+            f"bot_response_multi: {get_ip(request)}",
             extra={"request": request},
         )
 

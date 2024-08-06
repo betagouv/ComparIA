@@ -9,7 +9,8 @@ from datetime import datetime
 DB_CONNECTION = os.getenv("DB_CONNECTION")
 
 # Directory containing the JSON files
-json_directory = "./data/s3_prod"
+json_directory = "./data/s3"
+# json_directory = os.getenv("LOGDIR") or "./data"
 
 # Connect to PostgreSQL
 
@@ -33,9 +34,20 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
 );
 """
 )
+
+# Create the logs table if it doesn't exist
+cur.execute(
+    """
+CREATE TABLE IF NOT EXISTS logs (
+    id SERIAL PRIMARY KEY,
+    tstamp TIMESTAMP,
+    msg JSONB
+);
+"""
+)
     # Loop through each JSON file in the directory
 for filename in os.listdir(json_directory):
-    if filename.endswith(".json"):
+    if filename.endswith(".json") and filename.startswith("conv-"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
@@ -89,6 +101,52 @@ for filename in os.listdir(json_directory):
                             state_b,
                             ip,
                             details,
+                        ),
+                    )
+                    print("Data successfully parsed")
+
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    print(traceback.format_exc())
+                    # 
+                    
+
+# Commit changes and close the connection
+conn.commit()
+
+# Create the logs table if it doesn't exist
+cur.execute(
+    """
+CREATE TABLE IF NOT EXISTS logs (
+    id SERIAL PRIMARY KEY,
+    tstamp TIMESTAMP,
+    data JSONB
+);
+""")
+for filename in os.listdir(json_directory):
+    if filename.endswith(".jsonl") and filename.startswith("logs-"):
+        file_path = os.path.join(json_directory, filename)
+
+        with open(file_path, "r") as file:
+            for line in file:
+                try: 
+                    tstamp = datetime.fromtimestamp(data.get("tstamp"))
+                    data = json.loads(line)
+
+                    # Prepare SQL INSERT statement
+                    insert_query = sql.SQL(
+                        """
+                    INSERT INTO logs (tstamp, msg)
+                    VALUES (%s, %s);
+                    """
+                    )
+
+                    # Execute the insert statement
+                    cur.execute(
+                        insert_query,
+                        (
+                            tstamp,
+                            data,
                         ),
                     )
                     print("Data successfully parsed")
