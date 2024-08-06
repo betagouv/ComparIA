@@ -1,4 +1,37 @@
 from languia.block_arena import *
+import traceback
+
+from languia.utils import (
+    stepper_html,
+    get_ip,
+    get_battle_pair,
+    build_reveal_html,
+    header_html,
+    vote_last_response,
+    get_model_extra_info,
+    count_output_tokens,
+    get_llm_impact,
+    running_eq,
+)
+from languia.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    SAMPLING_WEIGHTS,
+    BATTLE_TARGETS,
+    SAMPLING_BOOST_MODELS,
+    outage_models,
+)
+
+import numpy as np
+
+# from fastchat.model.model_adapter import get_conversation_template
+
+from languia.block_conversation import (
+    # TODO: to import/replace State and bot_response?
+    ConversationState,      
+    bot_response,
+)
+
+from languia.config import logger
 
 
 # Register listeners
@@ -295,6 +328,7 @@ def register_listeners():
                     )
                     outage_models.append(conversations_state[i].model_name)
                     logger.error(str(e), extra={"request": request})
+                    logger.error(traceback.format_exc(), extra={"request": request})
                     gr.Warning(
                         message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
                     )
