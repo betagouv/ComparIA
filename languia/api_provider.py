@@ -184,7 +184,8 @@ def vertex_api_stream_iter(
             text += chunk.choices[0].delta.content or ""
             data = {
                 # Processing \n for Llama3.1-405B
-                "text": f"{text}",
+
+                "text": text.replace("\n", "<br />"),
                 "error_code": 0,
             }
             yield data
