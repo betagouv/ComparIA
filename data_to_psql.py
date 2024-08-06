@@ -9,7 +9,7 @@ from datetime import datetime
 DB_CONNECTION = os.getenv("DB_CONNECTION")
 
 # Directory containing the JSON files
-json_directory = "./data/s3"
+json_directory = "./data/s3_prod"
 # json_directory = os.getenv("LOGDIR") or "./data"
 
 # Connect to PostgreSQL
@@ -109,7 +109,8 @@ for filename in os.listdir(json_directory):
                     print(f"An error occurred: {e}")
                     print(traceback.format_exc())
                     # 
-                    
+        print("Data from " + file_path + "successfully parsed")
+ 
 
 # Commit changes and close the connection
 conn.commit()
@@ -131,8 +132,8 @@ for filename in os.listdir(json_directory):
         with open(file_path, "r") as file:
             for line in file:
                 try: 
-                    tstamp = datetime.fromtimestamp(data.get("tstamp"))
                     data = json.loads(line)
+                    tstamp = datetime.fromtimestamp(data.get("tstamp"))
 
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
@@ -150,12 +151,17 @@ for filename in os.listdir(json_directory):
                             data,
                         ),
                     )
-                    print("Data successfully parsed")
-
+                except json.decoder.JSONDecodeError:
+                    print("Not JSON:" + str(line))
+                    print("Skipping file "+ file_path)
+                    # print(traceback.format_exc())
+                    # continue
                 except Exception as e:
                     print(f"An error occurred: {e}")
+                    print("Line: "+str(line))
                     print(traceback.format_exc())
-                    # continue
+                    print("Skipping file "+ file_path)
+        print("Data from " + file_path + "successfully parsed")
 
 # Commit changes and close the connection
 conn.commit()
