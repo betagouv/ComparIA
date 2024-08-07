@@ -89,13 +89,13 @@
                         <div class="fr-grid-row">
                             <div class="fr-col-12 fr-col-md-6">
                                 <h5>Transparence</h5>
-                                <p><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span></p>
-                                <div class="fr-ml-7v">{% if
+                                <p><span class="fr-icon-code-view" aria-hidden="true"> Code source</span></p>
+                                <div class="fr-ml-7v fr-mb-1v">{% if
                                     model['distribution'] == "open-weights" %}<span
                                         class="fr-badge fr-badge--blue-cumulus">Poids communiqués</span>{%
                                     else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif
                                     %}</div>
-                                <p><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus
+                                <p><span class="fr-icon-table-2" aria-hidden="true"> Corpus
                                         d'entrainement</span></p>
                                 <div class="fr-ml-7v">{%
                                     if
@@ -105,16 +105,16 @@
                             </div>
                             <div class="fr-col-12 fr-col-md-6">
                                 <h5>Utilisation</h5>
-                                <div><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true">
+                                <div><span class="fr-icon-equalizer-line" aria-hidden="true">
                                         Distribution</span>
-                                    <div class="fr-ml-7v">{% if
+                                    <div class="fr-ml-7v fr-mb-1v">{% if
                                         model['distribution'] == "open-weights" %}<span
                                             class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
                                             class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
                                         else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
                                         endif %}</div>
                                 </div>
-                                <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions
+                                <p><span class="fr-icon-article-line" aria-hidden="true"> Conditions
                                         d'usage</span></p>
                                 <div class="fr-ml-7v">{% if
                                     model['conditions'] == "restricted" %}<span
