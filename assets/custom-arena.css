@@ -344,6 +344,10 @@ footer, .built-with,
   /* filter: drop-shadow(var(--raised-shadow)); */
 }
 
+.has-info {
+  color: var(--text-title-grey) !important;
+}
+
 #feedback-row
 {
   background-color: var(--background-alt-grey);
