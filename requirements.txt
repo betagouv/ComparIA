@@ -9,6 +9,3 @@ google-auth
 ecologits
 python-slugify
 pandas
-
-# Really needed?
-# plotly
