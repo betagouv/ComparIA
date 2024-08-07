@@ -45,19 +45,19 @@ CREATE TABLE IF NOT EXISTS logs (
 );
 """
 )
-    # Loop through each JSON file in the directory
+# Loop through each JSON file in the directory
 for filename in os.listdir(json_directory):
     if filename.endswith(".json") and filename.startswith("conv-"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
             for line in file:
-                try: 
+                try:
                     data = json.loads(line)
 
-                    if data.get("type") not in ["leftvote","rightvote","bothbad"]:
+                    if data.get("type") not in ["leftvote", "rightvote", "bothbad"]:
                         if data.get("type") != "chat":
-                            print("Ignoring event "+data.get("type"))
+                            print("Ignoring event " + data.get("type"))
                         continue
 
                     # Prepare SQL INSERT statement
@@ -71,7 +71,11 @@ for filename in os.listdir(json_directory):
                     def build_conv_id(data):
                         conv_state = data.get("conversations_state", None)
                         if conv_state:
-                            return conv_state[0].get("conv_id", None)+"-"+conv_state[1].get("conv_id", None)
+                            return (
+                                conv_state[0].get("conv_id", None)
+                                + "-"
+                                + conv_state[1].get("conv_id", None)
+                            )
                         # elif data.get("state", None):
                         #     return data.get("state", None).get("conv_id", None)
                         else:
@@ -108,9 +112,9 @@ for filename in os.listdir(json_directory):
                 except Exception as e:
                     print(f"An error occurred: {e}")
                     print(traceback.format_exc())
-                    # 
+                    #
         print("Data from " + file_path + " successfully parsed")
- 
+
 
 # Commit changes and close the connection
 conn.commit()
@@ -124,14 +128,15 @@ CREATE TABLE IF NOT EXISTS logs (
     tstamp TIMESTAMP,
     data JSONB
 );
-""")
+"""
+)
 for filename in os.listdir(json_directory):
     if filename.endswith(".jsonl") and filename.startswith("logs-"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
             for line in file:
-                try: 
+                try:
                     data = json.loads(line)
                     tstamp = datetime.fromtimestamp(data.get("tstamp"))
 
@@ -153,14 +158,14 @@ for filename in os.listdir(json_directory):
                     )
                 except json.decoder.JSONDecodeError:
                     print("Not JSON:" + str(line))
-                    print("Skipping file "+ file_path)
+                    print("Skipping file " + file_path)
                     # print(traceback.format_exc())
                     # continue
                 except Exception as e:
                     print(f"An error occurred: {e}")
-                    print("Line: "+str(line))
+                    print("Line: " + str(line))
                     print(traceback.format_exc())
-                    print("Skipping file "+ file_path)
+                    print("Skipping file " + file_path)
         print("Data from " + file_path + " successfully parsed")
 
 # Commit changes and close the connection

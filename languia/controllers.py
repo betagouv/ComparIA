@@ -27,7 +27,7 @@ import numpy as np
 
 from languia.block_conversation import (
     # TODO: to import/replace State and bot_response?
-    ConversationState,      
+    ConversationState,
     bot_response,
 )
 
@@ -74,7 +74,7 @@ from languia.config import (
 def register_listeners():
 
     # Step -1
-    
+
     # @demo.load(inputs=[], outputs=[],api_name=False)
     # def init_models(request: gr.Request):
     #     logger.info("Logged")
@@ -486,11 +486,7 @@ def register_listeners():
 
         extra = ({"request": request},)
         return (
-            [state0]
-            + [state1]
-            + chatbots
-            + [gr.update(interactive=True)]
-            + [textbox]
+            [state0] + [state1] + chatbots + [gr.update(interactive=True)] + [textbox]
         )
 
     gr.on(
@@ -523,7 +519,6 @@ def register_listeners():
         inputs=conversations_state,
         outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
         api_name=False,
-        
     )
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
     #         console.log("rerolling");
@@ -531,13 +526,12 @@ def register_listeners():
     #         return args;
     #     }""")
 
-
-# // Enable navigation prompt
-# window.onbeforeunload = function() {
-#     return true;
-# };
-# // Remove navigation prompt
-# window.onbeforeunload = null;
+    # // Enable navigation prompt
+    # window.onbeforeunload = function() {
+    #     return true;
+    # };
+    # // Remove navigation prompt
+    # window.onbeforeunload = null;
 
     @conclude_btn.click(
         inputs=[],
@@ -667,7 +661,8 @@ def register_listeners():
     )
     @skip_poll_btn.click(
         inputs=[conversations_state[0]] + [conversations_state[1]],
-        outputs=[quiz_modal,
+        outputs=[
+            quiz_modal,
             stepper_block,
             vote_area,
             supervote_area,

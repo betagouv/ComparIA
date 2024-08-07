@@ -244,10 +244,18 @@ with gr.Blocks(
             #     <div class="fr-messages-group" id="range-2240-messages" aria-live="polite">
             #     </div>
             # </div>
-            which_model_radio = gr.Radio(show_label=False,container=False,elem_classes="fr-radio",choices=["Je préfère de loin le modèle A","Le modèle A est un peu mieux","Le modèle B est un peu mieux","Je préfère de loin le modèle B"])
+            which_model_radio = gr.Radio(
+                show_label=False,
+                container=False,
+                choices=[
+                    "Je préfère de loin le modèle A",
+                    "Le modèle A est un peu mieux",
+                    "Le modèle B est un peu mieux",
+                    "Je préfère de loin le modèle B",
+                ],
+            )
 
-
-        with gr.Column(visible=False,elem_classes="fr-mb-12w") as supervote_area:
+        with gr.Column(visible=False, elem_classes="fr-mb-12w") as supervote_area:
 
             # TODO: render=false?
             # TODO: move to another file?
@@ -296,7 +304,6 @@ with gr.Blocks(
                 # autofocus=True,
                 placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
             )
-            
 
     with gr.Column(
         elem_classes="fr-container--fluid", elem_id="buttons-footer", visible=False
@@ -331,8 +338,7 @@ with gr.Blocks(
         s = gr.Dropdown("ASV?")
         v = gr.Dropdown("ASV?")
         skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
-        send_poll_btn = gr.Button(
-                "Envoyer", elem_classes="fr-btn")
+        send_poll_btn = gr.Button("Envoyer", elem_classes="fr-btn")
 
     # TODO: get rid
     temperature = gr.Slider(
