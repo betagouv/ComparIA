@@ -146,7 +146,7 @@ all_models_extra_info_json = {
 models_extra_info = [
     build_model_extra_info(model, all_models_extra_info_json) for model in models
 ]
-print(models_extra_info)
+# print(models_extra_info)
 
 headers = {"User-Agent": "FastChat Client"}
 controller_url = None
