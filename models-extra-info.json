@@ -129,6 +129,7 @@
 		"distribution": "open-weights",
 		"dataset": "private",
 		"license": "Gemma",
+		"params": 9,
 		"conditions": "restricted",
 		"description": "Petit frère de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 	},
@@ -341,12 +342,12 @@
 		"organisation": "Meta",
 		"country": "États-Unis",
 		"icon_path": "meta.svg",
-		"friendly_size": "M",
+		"friendly_size": "S",
 		"dataset": "private",
 		"distribution": "open-weights",
 		"conditions": "free",
 		"description": "Cadet de la famille Llama 3.1, ce petit modèle est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens.",
-		"params": 405,
+		"params": 8,
 		"license": "Llama 3.1 Community"
 	},
 	"mistral-nemo-2407": {
