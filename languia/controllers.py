@@ -12,6 +12,7 @@ from languia.utils import (
     count_output_tokens,
     get_llm_impact,
     running_eq,
+    log_poll,
 )
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -648,7 +649,14 @@ def register_listeners():
         return Modal(visible=True)
 
     @send_poll_btn.click(
-        inputs=[conversations_state[0]] + [conversations_state[1]],
+        inputs=[
+            conversations_state[0],
+            conversations_state[1],
+            chatbot_use,
+            gender,
+            age,
+            profession,
+        ],
         outputs=[
             quiz_modal,
             stepper_block,
@@ -660,7 +668,14 @@ def register_listeners():
         ],
     )
     @skip_poll_btn.click(
-        inputs=[conversations_state[0]] + [conversations_state[1]],
+        inputs=[
+            conversations_state[0],
+            conversations_state[1],
+            chatbot_use,
+            gender,
+            age,
+            profession,
+        ],
         outputs=[
             quiz_modal,
             stepper_block,
@@ -671,10 +686,11 @@ def register_listeners():
             buttons_footer,
         ],
     )
-    def send_poll(
-        state0,
-        state1,
-    ):
+    def send_poll(state0, state1, chatbot_use, gender, age, profession, request: gr.Request):
+
+        # FIXME: check input, sanitize it?
+        log_poll(state0, state1, chatbot_use, gender, age, profession, request)
+
         model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
         model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
 

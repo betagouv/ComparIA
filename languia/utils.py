@@ -117,6 +117,40 @@ def get_ip(request: gr.Request):
     return ip
 
 
+def log_poll(
+    state0,
+    state1,
+    chatbot_use,
+    gender,
+    age,
+    profession,
+    request: gr.Request,
+):
+    logger = logging.getLogger("languia")
+    # logger.info(f"poll", extra={"request": request,
+    #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
+    #     },
+    # )
+
+    with open(get_conv_log_filename(), "a") as fout:
+        data = {
+            "tstamp": round(time.time(), 4),
+            "type": vote_type,
+            "models": [x.model_name for x in [state0, state1]],
+            "conversations_state": [x.dict() for x in [state0, state1]],
+            "chatbot_use": chatbot_use,
+            "gender": gender,
+            "age": age,
+            "profession": profession,
+            # FIXME:
+            # "ip": get_ip(request),
+        }
+        logging.info(json.dumps(data), extra={"request": request})
+        fout.write(json.dumps(data) + "\n")
+
+    return data
+
+
 def vote_last_response(
     conversations_state,
     vote_type,
@@ -147,7 +181,7 @@ def vote_last_response(
         }
         if details != []:
             data.update(details=details),
-        logging.info(json.dumps(data))
+        logging.info(json.dumps(data), extra={"request": request})
         fout.write(json.dumps(data) + "\n")
 
     return data

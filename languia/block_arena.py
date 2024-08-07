@@ -333,12 +333,58 @@ with gr.Blocks(
         """
         )
 
-    with Modal() as quiz_modal:
-        a = gr.Dropdown("ASV?")
-        s = gr.Dropdown("ASV?")
-        v = gr.Dropdown("ASV?")
-        skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
-        send_poll_btn = gr.Button("Envoyer", elem_classes="fr-btn")
+    with Modal(elem_id="quiz-modal") as quiz_modal:
+        gr.Markdown(
+            """
+                    ### Votre profil
+                    Ces quelques informations permettront d’améliorer les réponses générées en français par les assistants conversationnels.
+                    """
+        )
+        profession = gr.Dropdown(
+            choices=[
+                "Agriculteur",
+                "Artisan, commerçant et chef d'entreprise",
+                "Cadre et profession intellectuelle supérieure",
+                "Profession intermédiaire",
+                "Étudiant",
+                "Employé",
+                "Ouvrier",
+                "Retraité",
+                "Sans emploi",
+                "Ne se prononce pas",
+            ],
+            label="Catégorie socioprofessionnelle",
+        )
+        age = gr.Dropdown(
+            choices=[
+                "Moins de 18 ans",
+                "Entre 18 et 24 ans",
+                "Entre 25 et 34 ans",
+                "Entre 35 et 44 ans",
+                "Entre 45 et 54 ans",
+                "Entre 55 et 64 ans",
+                "Plus de 64 ans",
+                "Ne se prononce pas",
+            ],
+            label="Tranche d'âge",
+        )
+        gender = gr.Dropdown(
+            choices=["Femme", "Homme", "Autre", "Ne se prononce pas"], label="Genre"
+        )
+        chatbot_use = gr.Dropdown(
+            choices=[
+                "Tous les jours",
+                "Toutes les semaines",
+                "Une fois par mois",
+                "Moins d’une fois par mois",
+                "Jamais",
+                "Ne se prononce pas",
+            ],
+            label="Fréquence d’utilisation d’assistants conversationnels",
+        )
+        with gr.Row(elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--right"):
+            skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
+            send_poll_btn = gr.Button("Envoyer", elem_classes="fr-btn")
 
     # TODO: get rid
     temperature = gr.Slider(
