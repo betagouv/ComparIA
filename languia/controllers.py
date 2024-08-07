@@ -37,6 +37,12 @@ from languia.config import logger
 # Register listeners
 def register_listeners():
 
+    # Step -1
+    
+    # @demo.load(inputs=[], outputs=[],api_name=False)
+    # def init_models(request: gr.Request):
+    #     logger.info("Logged")
+
     # Step 0
 
     # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
@@ -481,12 +487,21 @@ def register_listeners():
         inputs=conversations_state,
         outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
         api_name=False,
+        
     )
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
     #         console.log("rerolling");
     #         document.getElementById('send-btn').click();
     #         return args;
     #     }""")
+
+
+# // Enable navigation prompt
+# window.onbeforeunload = function() {
+#     return true;
+# };
+# // Remove navigation prompt
+# window.onbeforeunload = null;
 
     @conclude_btn.click(
         inputs=[],

@@ -3,9 +3,6 @@ Chatbot Arena (battle) tab.
 Users chat with two anonymous models.
 """
 
-# import json
-# import time
-
 import gradio as gr
 from languia.utils import (
     start_screen_html,
@@ -17,14 +14,6 @@ from custom_components.frinput.backend.gradio_frinput import FrInput
 
 
 from languia import config
-
-
-# // Enable navigation prompt
-# window.onbeforeunload = function() {
-#     return true;
-# };
-# // Remove navigation prompt
-# window.onbeforeunload = null;
 
 app_state = gr.State()
 
