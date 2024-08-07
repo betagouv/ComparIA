@@ -73,6 +73,7 @@ class ConversationState(gr.State):
     # TODO: get rid
     def to_gradio_chatbot(self):
         return self.conv.to_gradio_chatbot()
+        # return self.conv.messages
 
     def dict(self):
         base = self.conv.dict()
@@ -100,13 +101,6 @@ def bot_response(
     temperature = float(temperature)
     top_p = float(top_p)
     max_new_tokens = int(max_new_tokens)
-
-    # TODO: remove, shouldn't happen anymore
-    if state.skip_next:
-        # This generate call is skipped due to invalid inputs
-        state.skip_next = False
-        yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-        return
 
     if apply_rate_limit:
         ret = is_limit_reached(state.model_name, ip)
