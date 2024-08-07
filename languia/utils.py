@@ -135,7 +135,7 @@ def log_poll(
     with open(get_conv_log_filename(), "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
-            "type": vote_type,
+            "type": "poll",
             "models": [x.model_name for x in [state0, state1]],
             "conversations_state": [x.dict() for x in [state0, state1]],
             "chatbot_use": chatbot_use,
