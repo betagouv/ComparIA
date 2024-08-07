@@ -244,7 +244,7 @@ with gr.Blocks(
             #     <div class="fr-messages-group" id="range-2240-messages" aria-live="polite">
             #     </div>
             # </div>
-            which_model_radio = gr.Slider(minimum=-1.5, maximum=+1.5, value=+3, step=1)
+            which_model_radio = gr.Radio(choices=["Je préfère de loin le modèle A","Le modèle A est un peu mieux","Le modèle B est un peu mieux","Je préfère de loin le modèle B"])
 
 
         with gr.Column(visible=False) as supervote_area:
