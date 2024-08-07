@@ -1,11 +1,11 @@
 <div class="fr-container" id="reveal-screen">
     <h3 class="text-center">Merci pour votre vote !<br />
         Découvrez les modèles avec lesquels vous venez de discuter :</h3>
-    <div class="fr-grid-row fr-grid-row--gutters">
+    <div class="fr-grid-row">
         {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b,
         'model-b', model_b_impact, model_b_running_eq)] %}
-
-        <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w">
+    
+        <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-{% if side == 'model-a' %}n{% endif %}3w">
             <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}"
                     width="20" />
             </h4>
