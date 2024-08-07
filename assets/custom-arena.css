@@ -202,7 +202,8 @@ li.fr-nav__item {
   color: var(--text-default-info) !important;
 }
 
-.built-with,
+/* TODO: find a better selector... */
+footer, .built-with,
 .show-api {
   display: none !important;
 }
@@ -318,6 +319,7 @@ li.fr-nav__item {
   color: var(--text-action-high-blue-france);
 }
 
+/* TODO: don't do this on mobile */
 .your-choice {
   position: absolute;
   right: 2em;
@@ -337,6 +339,11 @@ li.fr-nav__item {
   /* filter: drop-shadow(var(--raised-shadow)); */
 }
 
+#feedback-row
+{
+  background-color: var(--background-alt-grey);
+  border-top: solid 1px var(--border-default-grey);
+}
 /* Icons */
 
 .fr-icon-stack::before,
