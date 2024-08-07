@@ -353,6 +353,11 @@ footer, .built-with,
   background-color: var(--background-alt-grey);
   border-top: solid 1px var(--border-default-grey);
 }
+
+.modal-block {
+  padding: 2rem;
+}
+
 /* Icons */
 
 .fr-icon-stack::before,
