@@ -57,8 +57,8 @@ class CustomFormatter(logging.Formatter):
             log_data["details"] = record.details
         if hasattr(record, "models"):
             log_data["models"] = record.models
-        if hasattr(record, "conversations_state"):
-            log_data["conversations_state"] = record.conversations_state
+        if hasattr(record, "conversations"):
+            log_data["conversations"] = record.conversations
 
         # Add the args dictionary to the JSON payload
         # log_data.update(record.args)
@@ -118,8 +118,8 @@ def get_ip(request: gr.Request):
 
 
 def log_poll(
-    state0,
-    state1,
+    conversation_a,
+    conversation_b,
     chatbot_use,
     gender,
     age,
@@ -136,8 +136,8 @@ def log_poll(
         data = {
             "tstamp": round(time.time(), 4),
             "type": "poll",
-            "models": [x.model_name for x in [state0, state1]],
-            "conversations_state": [x.dict() for x in [state0, state1]],
+            "models": [x.model_name for x in [conversation_a, conversation_b]],
+            "conversations": [x.dict() for x in [conversation_a, conversation_b]],
             "chatbot_use": chatbot_use,
             "gender": gender,
             "age": age,
@@ -152,7 +152,7 @@ def log_poll(
 
 
 def vote_last_response(
-    conversations_state,
+    conversations,
     vote_type,
     details: list,
     request: gr.Request,
@@ -165,8 +165,8 @@ def vote_last_response(
             "request": request,
             "vote": vote_type,
             "details": details,
-            "models": [x.model_name for x in conversations_state],
-            "conversations_state": [x.dict() for x in conversations_state],
+            "models": [x.model_name for x in conversations],
+            "conversations": [x.dict() for x in conversations],
         },
     )
 
@@ -174,8 +174,8 @@ def vote_last_response(
         data = {
             "tstamp": round(time.time(), 4),
             "type": vote_type,
-            "models": [x.model_name for x in conversations_state],
-            "conversations_state": [x.dict() for x in conversations_state],
+            "models": [x.model_name for x in conversations],
+            "conversations": [x.dict() for x in conversations],
             # FIXME:
             # "ip": get_ip(request),
         }

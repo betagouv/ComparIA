@@ -214,8 +214,8 @@ def register_listeners():
             return gr.update(interactive=True)
 
     def add_text(
-        state0: gr.State,
-        state1: gr.State,
+        conversation_a: gr.State,
+        conversation_b: gr.State,
         text: gr.Text,
         request: gr.Request,
     ):
@@ -226,18 +226,18 @@ def register_listeners():
             # f"add_text. len: {len(text)}",
             extra={"request": request, "prompt": text},
         )
-        conversations_state = [state0, state1]
+        conversations = [conversation_a, conversation_b]
 
         # TODO: refacto and put init apart
-        # Init conversations_state if necessary
-        is_conversations_state = hasattr(conversations_state[0], "model_name")
+        # Init conversations if necessary
+        is_conversations_state = hasattr(conversations[0], "model_name")
         got_battle_pair_already = False
         if is_conversations_state:
-            if conversations_state[0].model_name != "":
+            if conversations[0].model_name != "":
                 got_battle_pair_already = True
 
         if not got_battle_pair_already:
-            # assert conversations_state[1] is None
+            # assert conversations[1] is None
             logger.info("outage_models:  " + " ".join(outage_models))
             model_left, model_right = get_battle_pair(
                 config.models,
@@ -247,7 +247,7 @@ def register_listeners():
                 SAMPLING_BOOST_MODELS,
             )
             logger.info("Picked 2 models: " + model_left + " and " + model_right)
-            conversations_state = [
+            conversations = [
                 # NOTE: replacement of gr.State() to ConversationState happens here
                 ConversationState(model_name=model_left),
                 ConversationState(model_name=model_right),
@@ -255,10 +255,10 @@ def register_listeners():
             # TODO: test here if models answer?
 
         model_list = [
-            conversations_state[i].model_name for i in range(config.num_sides)
+            conversations[i].model_name for i in range(config.num_sides)
         ]
-        # all_conv_text_left = conversations_state[0].conv.get_prompt()
-        # all_conv_text_right = conversations_state[1].conv.get_prompt()
+        # all_conv_text_left = conversations[0].conv.get_prompt()
+        # all_conv_text_right = conversations[1].conv.get_prompt()
         # all_conv_text = (
         #     all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
         # )
@@ -269,17 +269,17 @@ def register_listeners():
         #     # overwrite the original text
         #     text = MODERATION_MSG
 
-        # conv = conversations_state[0].conv
+        # conv = conversations[0].conv
         # if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
         #     logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
         #     for i in range(config.num_sides):
-        #         conversations_state[i].skip_next = True
+        #         conversations[i].skip_next = True
         #         # FIXME: fix return value
         #     return (
-        #         # 2 conversations_state
-        #         conversations_state
+        #         # 2 conversations
+        #         conversations
         #         # 2 chatbots
-        #         + [x.to_gradio_chatbot() for x in conversations_state]
+        #         + [x.to_gradio_chatbot() for x in conversations]
         #         # text
         #         # + [CONVERSATION_LIMIT_MSG]
         #         # + [gr.update(visible=True)]
@@ -289,26 +289,26 @@ def register_listeners():
         # TODO: what do?
 
         for i in range(config.num_sides):
-            conversations_state[i].conv.append_message(
-                conversations_state[i].conv.roles[0], text
+            conversations[i].conv.append_message(
+                conversations[i].conv.roles[0], text
             )
             # TODO: Empty assistant message is needed to show user's first question but why??
-            conversations_state[i].conv.append_message(
-                conversations_state[i].conv.roles[1], None
+            conversations[i].conv.append_message(
+                conversations[i].conv.roles[1], None
             )
-            conversations_state[i].skip_next = False
+            conversations[i].skip_next = False
 
         return (
-            # 2 conversations_state
-            conversations_state
+            # 2 conversations
+            conversations
             # 2 chatbots
-            + [x.to_gradio_chatbot() for x in conversations_state]
+            + [x.to_gradio_chatbot() for x in conversations]
         )
 
     # TODO: move this
     def bot_response_multi(
-        state0,
-        state1,
+        conversation_a,
+        conversation_b,
         temperature,
         top_p,
         max_new_tokens,
@@ -319,13 +319,13 @@ def register_listeners():
             extra={"request": request},
         )
 
-        conversations_state = [state0, state1]
+        conversations = [conversation_a, conversation_b]
 
         gen = []
         for i in range(config.num_sides):
             gen.append(
                 bot_response(
-                    conversations_state[i],
+                    conversations[i],
                     temperature,
                     top_p,
                     max_new_tokens,
@@ -338,7 +338,7 @@ def register_listeners():
         is_stream_batch = []
         for i in range(config.num_sides):
             is_stream_batch.append(
-                conversations_state[i].model_name
+                conversations[i].model_name
                 in [
                     "gemini-pro",
                     "gemini-pro-dev-api",
@@ -360,24 +360,24 @@ def register_listeners():
                     # otherwise, gemini will stream too fast
                     if not is_stream_batch[i] or (iters % 30 == 1 or iters < 3):
                         ret = next(gen[i])
-                        conversations_state[i], chatbots[i] = ret[0], ret[1]
+                        conversations[i], chatbots[i] = ret[0], ret[1]
                     stop = False
                 except StopIteration:
                     pass
                 except Exception as e:
                     logger.error(
-                        f"Problem with generating model {conversations_state[i].model_name}. Adding to outcasts list and re-rolling.",
+                        f"Problem with generating model {conversations[i].model_name}. Adding to outcasts list and re-rolling.",
                         extra={"request": request},
                     )
-                    outage_models.append(conversations_state[i].model_name)
+                    outage_models.append(conversations[i].model_name)
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
                     gr.Warning(
                         message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
                     )
-                    # conversations_state[0],conversations_state[1] = clear_history(
-                    #     state0=conversations_state[0],
-                    #     state1=conversations_state[1],
+                    # conversations[0],conversations[1] = clear_history(
+                    #     conversation_a=conversations[0],
+                    #     conversation_b=conversations[1],
                     #     chatbot0=chatbots[0],
                     #     chatbot1=chatbots[1],
                     #     textbox=textbox,
@@ -388,20 +388,20 @@ def register_listeners():
                         "Saving original prompt: " + app_state.original_user_prompt,
                         extra={"request": request},
                     )
-                    # print(str(conversations_state[0].conv_id))
-                    # print(str(conversations_state[1].conv_id))
+                    # print(str(conversations[0].conv_id))
+                    # print(str(conversations[1].conv_id))
                     # Not effective:
-                    # conversations_state[0],conversations_state[1], chatbots[0], chatbots[1] = gr.State(value=None), None, gr.Chatbot(value=None), ""
+                    # conversations[0],conversations[1], chatbots[0], chatbots[1] = gr.State(value=None), None, gr.Chatbot(value=None), ""
 
-                    # print("conversations_state[0]:" + str(conversations_state[0].conv))
+                    # print("conversations[0]:" + str(conversations[0].conv))
                     return (
-                        state0,
-                        state1,
+                        conversation_a,
+                        conversation_b,
                         chatbots[0],
                         chatbots[1],
                     )
 
-            yield conversations_state + chatbots
+            yield conversations + chatbots
             if stop:
                 break
 
@@ -434,10 +434,10 @@ def register_listeners():
             + [gr.update(visible=True, interactive=True)]
         )
 
-    def check_answers(state0, state1, request: gr.Request):
+    def check_answers(conversation_a, conversation_b, request: gr.Request):
         # Not set to none at all :'(
-        # print(str(state0.conv_id))
-        # print(str(state1.conv_id))
+        # print(str(conversation_a.conv_id))
+        # print(str(conversation_b.conv_id))
         logger.debug(
             "models finished answering",
             extra={"request": request},
@@ -452,10 +452,10 @@ def register_listeners():
                 original_user_prompt = app_state.original_user_prompt
                 app_state.original_user_prompt = False
                 # TODO: reroll here
-                state0 = gr.State()
-                state1 = gr.State()
-                # state0 = ConversationState()
-                # state1 = ConversationState()
+                conversation_a = gr.State()
+                conversation_b = gr.State()
+                # conversation_a = ConversationState()
+                # conversation_b = ConversationState()
 
                 logger.info(
                     "submitting original prompt",
@@ -468,8 +468,8 @@ def register_listeners():
                     extra={"request": request},
                 )
                 return (
-                    [state0]
-                    + [state1]
+                    [conversation_a]
+                    + [conversation_b]
                     # chatbots
                     + [""]
                     + [""]
@@ -487,16 +487,16 @@ def register_listeners():
 
         extra = ({"request": request},)
         return (
-            [state0] + [state1] + chatbots + [gr.update(interactive=True)] + [textbox]
+            [conversation_a] + [conversation_b] + chatbots + [gr.update(interactive=True)] + [textbox]
         )
 
     gr.on(
         triggers=[textbox.submit, send_btn.click],
         fn=add_text,
         api_name=False,
-        inputs=conversations_state + [textbox],
-        # inputs=conversations_state + model_selectors + [textbox],
-        outputs=conversations_state + chatbots,
+        inputs=conversations + [textbox],
+        # inputs=conversations + model_selectors + [textbox],
+        outputs=conversations + chatbots,
     ).then(
         fn=goto_chatbot,
         inputs=[],
@@ -511,14 +511,14 @@ def register_listeners():
         ),
     ).then(
         fn=bot_response_multi,
-        inputs=conversations_state + [temperature, top_p, max_output_tokens],
-        outputs=conversations_state + chatbots,
+        inputs=conversations + [temperature, top_p, max_output_tokens],
+        outputs=conversations + chatbots,
         api_name=False,
         # should do .success()
     ).then(
         fn=check_answers,
-        inputs=conversations_state,
-        outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
+        inputs=conversations,
+        outputs=conversations + chatbots + [conclude_btn] + [textbox],
         api_name=False,
     )
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
@@ -607,8 +607,8 @@ def register_listeners():
 
     @supervote_send_btn.click(
         inputs=(
-            [conversations_state[0]]
-            + [conversations_state[1]]
+            [conversations[0]]
+            + [conversations[1]]
             + [which_model_radio]
             + (supervote_sliders)
             + [comments_text]
@@ -618,8 +618,8 @@ def register_listeners():
         api_name=False,
     )
     def vote_preferences(
-        state0,
-        state1,
+        conversation_a,
+        conversation_b,
         which_model_radio,
         relevance_slider,
         clearness_slider,
@@ -627,11 +627,11 @@ def register_listeners():
         comments_text,
         request: gr.Request,
     ):
-        # conversations_state = [state0, state1]
+        # conversations = [conversation_a, conversation_b]
 
         details = {
-            "model_left": state0.model_name,
-            "model_right": state1.model_name,
+            "model_left": conversation_a.model_name,
+            "model_right": conversation_b.model_name,
             "chosen_model": which_model_radio,
             "relevance": relevance_slider,
             "clearness": clearness_slider,
@@ -640,7 +640,7 @@ def register_listeners():
         }
         # FIXME: check input, sanitize it?
         vote_last_response(
-            [state0, state1],
+            [conversation_a, conversation_b],
             which_model_radio,
             details,
             request,
@@ -650,8 +650,8 @@ def register_listeners():
 
     @send_poll_btn.click(
         inputs=[
-            conversations_state[0],
-            conversations_state[1],
+            conversations[0],
+            conversations[1],
             chatbot_use,
             gender,
             age,
@@ -669,8 +669,8 @@ def register_listeners():
     )
     @skip_poll_btn.click(
         inputs=[
-            conversations_state[0],
-            conversations_state[1],
+            conversations[0],
+            conversations[1],
             chatbot_use,
             gender,
             age,
@@ -686,25 +686,25 @@ def register_listeners():
             buttons_footer,
         ],
     )
-    def send_poll(state0, state1, chatbot_use, gender, age, profession, request: gr.Request):
+    def send_poll(conversation_a, conversation_b, chatbot_use, gender, age, profession, request: gr.Request):
 
         # FIXME: check input, sanitize it?
-        log_poll(state0, state1, chatbot_use, gender, age, profession, request)
+        log_poll(conversation_a, conversation_b, chatbot_use, gender, age, profession, request)
 
-        model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
-        model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
+        model_a = get_model_extra_info(conversation_a.model_name, config.models_extra_info)
+        model_b = get_model_extra_info(conversation_b.model_name, config.models_extra_info)
 
         # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = count_output_tokens(state0.conv.roles, state0.conv.messages)
-        model_b_tokens = count_output_tokens(state1.conv.roles, state1.conv.messages)
+        model_a_tokens = count_output_tokens(conversation_a.conv.roles, conversation_a.conv.messages)
+        model_b_tokens = count_output_tokens(conversation_b.conv.roles, conversation_b.conv.messages)
         # TODO:
-        # request_latency_a = state0.conv.finish_tstamp - state0.conv.start_tstamp
-        # request_latency_b = state1.conv.finish_tstamp - state1.conv.start_tstamp
+        # request_latency_a = conversation_a.conv.finish_tstamp - conversation_a.conv.start_tstamp
+        # request_latency_b = conversation_b.conv.finish_tstamp - conversation_b.conv.start_tstamp
         model_a_impact = get_llm_impact(
-            model_a, state0.model_name, model_a_tokens, None
+            model_a, conversation_a.model_name, model_a_tokens, None
         )
         model_b_impact = get_llm_impact(
-            model_b, state1.model_name, model_b_tokens, None
+            model_b, conversation_b.model_name, model_b_tokens, None
         )
 
         model_a_running_eq = running_eq(model_a_impact)
@@ -735,18 +735,18 @@ def register_listeners():
     #     api_name=False,
     #     # triggers=[clear_btn.click, retry_btn.click],
     #     fn=clear_history,
-    #     inputs=conversations_state + chatbots + [textbox],
-    #     # inputs=conversations_state + chatbots + model_selectors + [textbox],
+    #     inputs=conversations + chatbots + [textbox],
+    #     # inputs=conversations + chatbots + model_selectors + [textbox],
     #     # List of objects to clear
-    #     outputs=conversations_state + chatbots
+    #     outputs=conversations + chatbots
     #     # + model_selectors
     #     + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
     # )
 
 
 # def clear_history(
-#     state0,
-#     state1,
+#     conversation_a,
+#     conversation_b,
 #     chatbot0,
 #     chatbot1,
 #     textbox,

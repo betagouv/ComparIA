@@ -42,8 +42,8 @@ with gr.Blocks(
     js=config.arena_js,
 ) as demo:
     # A tester
-    # conversations_state = [ConversationState() for _ in range(config.num_sides)]
-    conversations_state = [gr.State() for _ in range(config.num_sides)]
+    # conversations = [ConversationState() for _ in range(config.num_sides)]
+    conversations = [gr.State() for _ in range(config.num_sides)]
     # model_selectors = [None] * num_sides
     # TODO: allow_flagging?
     chatbots = [None] * config.num_sides
