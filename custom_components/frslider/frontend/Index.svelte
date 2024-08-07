@@ -41,7 +41,7 @@
 	export let value_is_output = false;
 
 	let rangeInput: HTMLInputElement;
-	let numberInput: HTMLInputElement;
+	// let numberInput: HTMLInputElement;
 
 	const id = `range_id_${_id++}`;
 
@@ -67,7 +67,7 @@
 	function setSlider(): void {
 		setSliderRange();
 		rangeInput.addEventListener("input", setSliderRange);
-		numberInput.addEventListener("input", setSliderRange);
+		// numberInput.addEventListener("input", setSliderRange);
 	}
 	function setSliderRange(): void {
 		const dividend = Number(rangeInput.value) - Number(rangeInput.min);
