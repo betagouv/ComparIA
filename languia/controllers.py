@@ -651,12 +651,12 @@ def register_listeners():
             request,
         )
         # quiz_modal.visible = True
-        # return
-        return [Modal(visible=True)]
+        return Modal(visible=True)
 
     @send_poll_btn.click(
         inputs=[conversations_state[0]] + [conversations_state[1]],
         outputs=[
+            quiz_modal,
             stepper_block,
             vote_area,
             supervote_area,
@@ -667,7 +667,7 @@ def register_listeners():
     )
     @skip_poll_btn.click(
         inputs=[conversations_state[0]] + [conversations_state[1]],
-        outputs=[
+        outputs=[quiz_modal,
             stepper_block,
             vote_area,
             supervote_area,
@@ -709,6 +709,7 @@ def register_listeners():
             model_b_running_eq=model_b_running_eq,
         )
         return [
+            Modal(visible=False),
             gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
             gr.update(visible=False),
             gr.update(visible=False),
