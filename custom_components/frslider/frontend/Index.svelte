@@ -3,13 +3,13 @@
 </script>
 
 <script lang="ts">
-	import "@gouvfr/dsfr/dist/scheme/scheme.css";
-	import "@gouvfr/dsfr/dist/core/core.css";
-	import "@gouvfr/dsfr/dist/component/form/form.css";
-	// import "@gouvfr/dsfr/dist/component/link/link.css";
-	// import "@gouvfr/dsfr/dist/component/button/button.css";
-	import "@gouvfr/dsfr/dist/component/input/input.css";
-	import "@gouvfr/dsfr/dist/component/range/range.css";
+
+	// import '@gouvfr/dsfr/dist/scheme/scheme.css';
+    // import '@gouvfr/dsfr/dist/core/core.css';
+    // import '@gouvfr/dsfr/dist/component/form/form.css';
+    // import '@gouvfr/dsfr/dist/component/link/link.css';
+    // import '@gouvfr/dsfr/dist/component/button/button.css';
+    // import '@gouvfr/dsfr/dist/component/input/input.css';
 
 	import type { Gradio } from "@gradio/utils";
 	import { Block, BlockTitle } from "@gradio/atoms";
@@ -91,39 +91,80 @@
 		on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
 	/>
 
-	<div class="fr-range-group">
-		<label class="fr-label" for={id}>
-			<BlockTitle {show_label} {info}>{label}</BlockTitle>
-			<span class="fr-hint-text"></span>
-		</label>
-		<div class="fr-range fr-range--step">
-			<span class="fr-range__output">50</span>
+	<div class="wrap">
+		<div class="head">
+			<label for={id}>
+				<BlockTitle {show_label} {info}>{label}</BlockTitle>
+			</label>
 
 			<input
-				type="range"
-				{id}
-				name="cowbell"
+				aria-label={`number input for ${label}`}
+				data-testid="number-input"
+				type="number"
 				bind:value
-				bind:this={rangeInput}
+				bind:this={numberInput}
 				min={minimum}
 				max={maximum}
+				on:blur={clamp}
 				{step}
 				{disabled}
 				on:pointerup={handle_release}
-				aria-label={`range slider for ${label}`}
 			/>
-			<span class="fr-range__min" aria-hidden="true">{minimum}</span>
-			<span class="fr-range__max" aria-hidden="true">{maximum}</span>
 		</div>
-		<div class="fr-messages-group" aria-live="polite"></div>
 	</div>
+
+	<input
+		type="range"
+		{id}
+		name="cowbell"
+		bind:value
+		bind:this={rangeInput}
+		min={minimum}
+		max={maximum}
+		{step}
+		{disabled}
+		on:pointerup={handle_release}
+		aria-label={`range slider for ${label}`}
+	/>
 </Block>
 
 <style>
+	.wrap {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.head {
+		display: flex;
+		justify-content: space-between;
+	}
+
+	input[type="number"] {
+		display: block;
+		position: relative;
+		outline: none !important;
+		box-shadow: var(--input-shadow);
+		border: var(--input-border-width) solid var(--input-border-color);
+		border-radius: var(--input-radius);
+		background: var(--input-background-fill);
+		padding: var(--size-2) var(--size-2);
+		height: var(--size-6);
+		color: var(--body-text-color);
+		font-size: var(--input-text-size);
+		line-height: var(--line-sm);
+		text-align: center;
+	}
+
 	input:disabled {
 		-webkit-text-fill-color: var(--body-text-color);
 		-webkit-opacity: 1;
 		opacity: 1;
+	}
+
+	input[type="number"]:focus {
+		box-shadow: var(--input-shadow-focus);
+		border-color: var(--input-border-color-focus);
 	}
 
 	input::placeholder {
@@ -142,10 +183,7 @@
 		height: 4px;
 		background: var(--neutral-200);
 		border-radius: 5px;
-		background-image: linear-gradient(
-			var(--slider-color),
-			var(--slider-color)
-		);
+		background-image: linear-gradient(var(--slider-color), var(--slider-color));
 		background-size: 0% 100%;
 		background-repeat: no-repeat;
 	}
