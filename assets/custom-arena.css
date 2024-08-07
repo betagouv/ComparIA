@@ -151,7 +151,12 @@ li.fr-nav__item {
   margin-bottom: 0;
 }
 
-/* TODO: correctly reenable drop shadows when needed */
+#header-html {
+  /* Required < 100 to be behind modal */
+  z-index: 99;
+}
+
+
 .fr-header {
   filter: none;
   border-bottom: 1px solid var(--border-default-grey);
