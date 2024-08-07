@@ -15,7 +15,6 @@ from languia.utils import (
 
 from custom_components.frbutton.backend.gradio_frbutton import FrButton
 from custom_components.frinput.backend.gradio_frinput import FrInput
-from custom_components.frslider.backend.gradio_frslider import FrSlider
 
 
 from languia import config
@@ -268,7 +267,7 @@ with gr.Blocks(
                 <p class="text-gray">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
                 elem_classes="text-center",
             )
-            relevance_slider = FrSlider(
+            relevance_slider = gr.Slider(
                 value=-1,
                 minimum=1,
                 maximum=5,
@@ -278,7 +277,7 @@ with gr.Blocks(
                 label="Les réponses étaient-elles pertinentes ?",
                 info="Critères : réponses utiles, correctes factuelles, précises",
             )
-            clearness_slider = FrSlider(
+            clearness_slider = gr.Slider(
                 value=-1,
                 minimum=1,
                 maximum=5,
@@ -287,7 +286,7 @@ with gr.Blocks(
                 # show_label=False,
                 info="Critères : mise en forme et longueur des réponses adaptées",
             )
-            style_slider = FrSlider(
+            style_slider = gr.Slider(
                 value=-1,
                 minimum=1,
                 maximum=5,

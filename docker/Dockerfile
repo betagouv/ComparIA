@@ -49,9 +49,6 @@ RUN gradio cc build --no-generate-docs
 WORKDIR /app/custom_components/frinput
 RUN gradio cc install
 RUN gradio cc build --no-generate-docs
-WORKDIR /app/custom_components/frslider
-RUN gradio cc install
-RUN gradio cc build --no-generate-docs
 
 # Comment these 2 lines if you want an image with node
 FROM app
