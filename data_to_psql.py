@@ -54,7 +54,7 @@ for filename in os.listdir(json_directory):
 
         with open(file_path, "r") as file:
             for line in file:
-                try:
+                # try:
                     data = json.loads(line)
 
                     if data.get("type") not in ["leftvote", "rightvote", "bothbad"]:
@@ -115,9 +115,9 @@ for filename in os.listdir(json_directory):
                     )
                     print("Data successfully parsed")
 
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    print(traceback.format_exc())
+                # except Exception as e:
+                #     print(f"An error occurred: {e}")
+                #     print(traceback.format_exc())
                     #
         print("Data from " + file_path + " successfully parsed")
 
@@ -132,7 +132,7 @@ cur.execute(
 CREATE TABLE IF NOT EXISTS logs (
     id SERIAL PRIMARY KEY,
     tstamp TIMESTAMP,
-    data JSONB
+    msg JSONB
 );
 """
 )
@@ -143,8 +143,8 @@ for filename in os.listdir(json_directory):
         with open(file_path, "r") as file:
             for line in file:
                 try:
-                    data = json.loads(line)
-                    tstamp = datetime.fromtimestamp(data.get("tstamp"))
+                    msg = json.loads(line)
+                    tstamp = msg.get("time")
 
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
@@ -153,13 +153,14 @@ for filename in os.listdir(json_directory):
                     VALUES (%s, %s);
                     """
                     )
-
+                    # print(tstamp)
+                    # print(json.dumps(msg))
                     # Execute the insert statement
                     cur.execute(
                         insert_query,
                         (
                             tstamp,
-                            data,
+                            json.dumps(msg),
                         ),
                     )
                 except json.decoder.JSONDecodeError:
@@ -167,13 +168,13 @@ for filename in os.listdir(json_directory):
                     print("Skipping file " + file_path)
                     # print(traceback.format_exc())
                     # continue
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    print("Line: " + str(line))
-                    print(traceback.format_exc())
-                    print("Skipping file " + file_path)
+                # except Exception as e:
+                    # print(f"An error occurred: {e}")
+                    # print("Line: " + str(line))
+                    # print(traceback.format_exc())
+                    # print("Skipping file " + file_path)
         print("Data from " + file_path + " successfully parsed")
-
+    
 # Commit changes and close the connection
 conn.commit()
 print("All data successfully committed into the database")
