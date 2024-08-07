@@ -1,4 +1,3 @@
-
 from .frinput import FrInput
 
-__all__ = ['FrInput']
+__all__ = ["FrInput"]
