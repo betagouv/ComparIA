@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
     models TEXT,
     state_a JSONB,
     state_b JSONB,
+    model_a_name TEXT,
+    model_b_name TEXT,
     ip TEXT,
     details JSONB
 );
@@ -63,8 +65,8 @@ for filename in os.listdir(json_directory):
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
                         """
-                    INSERT INTO conversation_logs (tstamp, type, conv_id, models, state_a, state_b, ip, details)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+                    INSERT INTO conversation_logs (tstamp, type, conv_id, models, state_a, state_b, model_a_name, model_b_name, ip, details)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s,%s, %s, %s);
                     """
                     )
 
@@ -90,6 +92,8 @@ for filename in os.listdir(json_directory):
                     # model = data.get("model", None)
                     state_a = json.dumps(states[0])
                     state_b = json.dumps(states[1])
+                    model_a_name = json.dumps(states[0].model_name)
+                    model_b_name = json.dumps(states[1].model_name)
                     ip = data.get("ip", None)
                     details = json.dumps(data.get("details", {}))
 
@@ -103,6 +107,8 @@ for filename in os.listdir(json_directory):
                             models,
                             state_a,
                             state_b,
+                            model_a_name,
+                            model_b_name,
                             ip,
                             details,
                         ),
