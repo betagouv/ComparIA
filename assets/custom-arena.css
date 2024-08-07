@@ -98,6 +98,11 @@ body.dark {
   text-align: left;
 }
 
+.text-grey {
+  color: var(--block-title-text-color);
+  /* color: var(--neutral-500); */
+}
+
 .underline {
   --underline-hover-width: var(--underline-max-width);
 }
@@ -318,8 +323,17 @@ li.fr-nav__item {
   right: 2em;
 }
 
-.arena-footer {
-  box-shadow: inset 0 1px 0 0 var(--border-default-grey);
+
+#buttons-footer {
+  position: fixed;
+  padding: 1em 20%;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background-color: var(--background-alt-grey);
+  border-top: solid 1px var(--border-default-grey);
+  z-index: 100;
+  /* box-shadow: inset 0 1px 0 0 var(--border-default-grey); */
   /* filter: drop-shadow(var(--raised-shadow)); */
 }
 

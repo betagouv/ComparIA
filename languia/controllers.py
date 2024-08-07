@@ -533,8 +533,6 @@ def register_listeners():
         inputs=[which_model_radio],
         outputs=[
             supervote_area,
-            positive_supervote,
-            negative_supervote,
             final_send_btn,
         ],
         api_name=False,
@@ -544,20 +542,10 @@ def register_listeners():
             "voted for " + str(vote_radio),
             extra={"request": request},
         )
-        if vote_radio == "bothbad":
-            return (
-                gr.update(visible=True),
-                gr.update(visible=False),
-                gr.update(visible=True),
-                gr.update(interactive=True),
-            )
-        else:
-            return (
-                gr.update(visible=True),
-                gr.update(visible=True),
-                gr.update(visible=False),
-                gr.update(interactive=True),
-            )
+        return (
+            gr.update(visible=True),
+            gr.update(interactive=True),
+        )
 
     # Step 3
 
@@ -591,7 +579,7 @@ def register_listeners():
             [conversations_state[0]]
             + [conversations_state[1]]
             + [which_model_radio]
-            + (supervote_checkboxes)
+            + (supervote_sliders)
             + [comments_text]
         ),
         outputs=[
