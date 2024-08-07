@@ -35,11 +35,6 @@ from languia import config
 
 import logging as logger
 
-no_change_btn = gr.Button()
-enable_btn = gr.Button(interactive=True, visible=True)
-disable_btn = gr.Button(interactive=False)
-invisible_btn = gr.Button(interactive=False, visible=False)
-
 # from gradio.components.base import Component
 class ConversationState(gr.State):
     def __init__(self, model_name="", is_vision=False):
