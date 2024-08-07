@@ -33,6 +33,42 @@ from languia.block_conversation import (
 
 from languia.config import logger
 
+import gradio as gr
+import numpy as np
+
+# from fastchat.model.model_adapter import get_conversation_template
+
+from languia.block_conversation import (
+    # TODO: to import/replace State and bot_response?
+    ConversationState,
+    bot_response,
+)
+
+from languia.config import logger
+
+from languia.utils import (
+    get_ip,
+    get_battle_pair,
+    build_reveal_html,
+    header_html,
+    stepper_html,
+    vote_last_response,
+    get_model_extra_info,
+    count_output_tokens,
+    get_llm_impact,
+    running_eq,
+)
+
+from languia import config
+
+from languia.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    SAMPLING_WEIGHTS,
+    BATTLE_TARGETS,
+    SAMPLING_BOOST_MODELS,
+    outage_models,
+)
+
 
 # Register listeners
 def register_listeners():
@@ -533,7 +569,7 @@ def register_listeners():
         inputs=[which_model_radio],
         outputs=[
             supervote_area,
-            final_send_btn,
+            supervote_send_btn,
         ],
         api_name=False,
     )
@@ -574,7 +610,7 @@ def register_listeners():
             + [gr.update(visible=False)]
         )
 
-    @final_send_btn.click(
+    @supervote_send_btn.click(
         inputs=(
             [conversations_state[0]]
             + [conversations_state[1]]
@@ -582,6 +618,44 @@ def register_listeners():
             + (supervote_sliders)
             + [comments_text]
         ),
+        # outputs=[],
+        outputs=[quiz_modal],
+        api_name=False,
+    )
+    def vote_preferences(
+        state0,
+        state1,
+        which_model_radio,
+        relevance_slider,
+        clearness_slider,
+        style_slider,
+        comments_text,
+        request: gr.Request,
+    ):
+        # conversations_state = [state0, state1]
+
+        details = {
+            "model_left": state0.model_name,
+            "model_right": state1.model_name,
+            "chosen_model": which_model_radio,
+            "relevance": relevance_slider,
+            "clearness": clearness_slider,
+            "style": style_slider,
+            "comments": comments_text,
+        }
+        # FIXME: check input, sanitize it?
+        vote_last_response(
+            [state0, state1],
+            which_model_radio,
+            details,
+            request,
+        )
+        # quiz_modal.visible = True
+        # return
+        return [Modal(visible=True)]
+
+    @send_poll_btn.click(
+        inputs=[conversations_state[0]] + [conversations_state[1]],
         outputs=[
             stepper_block,
             vote_area,
@@ -590,43 +664,22 @@ def register_listeners():
             results_area,
             buttons_footer,
         ],
-        api_name=False,
     )
-    def vote_preferences(
+    @skip_poll_btn.click(
+        inputs=[conversations_state[0]] + [conversations_state[1]],
+        outputs=[
+            stepper_block,
+            vote_area,
+            supervote_area,
+            feedback_row,
+            results_area,
+            buttons_footer,
+        ],
+    )
+    def send_poll(
         state0,
         state1,
-        which_model_radio,
-        ressenti_checkbox,
-        pertinence_checkbox,
-        comprehension_checkbox,
-        originalite_checkbox,
-        comments_text,
-        request: gr.Request,
     ):
-        # conversations_state = [state0, state1]
-
-        details = {
-            "chosen_model": which_model_radio,
-            "ressenti": ressenti_checkbox,
-            "pertinence": pertinence_checkbox,
-            "comprehension": comprehension_checkbox,
-            "originalite": originalite_checkbox,
-            "comments": comments_text,
-        }
-        if which_model_radio in ["bothbad", "leftvote", "rightvote"]:
-
-            vote_last_response(
-                [state0, state1],
-                which_model_radio,
-                details,
-                request,
-            )
-        else:
-            logger.error(
-                'Model selection was neither "bothbad", "leftvote" or "rightvote", got: '
-                + str(which_model_radio)
-            )
-
         model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
         model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
 

@@ -4,6 +4,10 @@ Users chat with two anonymous models.
 """
 
 import gradio as gr
+
+from gradio_modal import Modal
+
+
 from languia.utils import (
     start_screen_html,
     stepper_html,
@@ -14,6 +18,13 @@ from custom_components.frinput.backend.gradio_frinput import FrInput
 
 
 from languia import config
+
+# // Enable navigation prompt
+# window.onbeforeunload = function() {
+#     return true;
+# };
+# // Remove navigation prompt
+# window.onbeforeunload = null;
 
 app_state = gr.State()
 
@@ -207,9 +218,16 @@ with gr.Blocks(
                     )
 
     with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
-        gr.Markdown(
-            elem_classes="fr-mt-2w text-center",
-            value="## Quel modèle avez-vous préféré ?",
+        gr.HTML(
+            value="""
+        <div class="fr-notice fr-notice--info"> 
+            <div class="fr-container">
+                <div class="fr-notice__body mission">
+                    <p class="fr-notice__title mission">Des réponses détaillées de votre part permettent à la recherche d’améliorer les réponses des futurs modèles sur des enjeux linguistiques et culturels.</p>
+                </div>
+            </div>
+        </div>
+            <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
         )
         with gr.Row():
             # <div class="fr-range-group" id="range-2241-group">
@@ -227,21 +245,8 @@ with gr.Blocks(
             #     </div>
             # </div>
             which_model_radio = gr.Slider(minimum=-1.5, maximum=+1.5, value=+3, step=1)
-            # which_model_radio = gr.Radio(
-            #     elem_classes="radio-tiles bolder",
-            #     show_label=False,
-            #     choices=[
-            #         ("Modèle A", "leftvote"),
-            #         ("Modèle B", "rightvote"),
-            #         ("Aucun des deux", "bothbad"),
-            #     ],
-            # )
-            # leftvote_btn = gr.Button(value="👈  A est mieux")
-            # rightvote_btn = gr.Button(value="👉  B est mieux")
-            # # tie_btn = gr.Button(value="🤝  Les deux se valent")
-            # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-        # with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
+
         with gr.Column(visible=False) as supervote_area:
 
             # TODO: render=false?
@@ -300,7 +305,7 @@ with gr.Blocks(
                 elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-1",
                 value="Retour",
             )
-            final_send_btn = gr.Button(
+            supervote_send_btn = gr.Button(
                 elem_classes="fr-btn fr-col-12 fr-col-md-4 fr-col-offset-md-3",
                 value="Envoyer mes préférences",
                 interactive=False,
@@ -320,6 +325,14 @@ with gr.Blocks(
         """
         )
 
+    with Modal(visible=False) as quiz_modal:
+        a = gr.Dropdown("ASV?")
+        s = gr.Dropdown("ASV?")
+        v = gr.Dropdown("ASV?")
+        skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
+        send_poll_btn = gr.Button(
+                "Envoyer", elem_classes="fr-btn fr-btn--secondary"
+            )
     # TODO: get rid
     temperature = gr.Slider(
         visible=False,

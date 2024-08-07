@@ -142,7 +142,8 @@ def vote_last_response(
             "type": vote_type,
             "models": [x.model_name for x in conversations_state],
             "conversations_state": [x.dict() for x in conversations_state],
-            "ip": get_ip(request),
+            # FIXME:
+            # "ip": get_ip(request),
         }
         if details != []:
             data.update(details=details),
