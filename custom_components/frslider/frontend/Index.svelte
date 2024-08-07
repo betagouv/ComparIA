@@ -3,13 +3,13 @@
 </script>
 
 <script lang="ts">
-
-	// import '@gouvfr/dsfr/dist/scheme/scheme.css';
-    // import '@gouvfr/dsfr/dist/core/core.css';
-    // import '@gouvfr/dsfr/dist/component/form/form.css';
-    // import '@gouvfr/dsfr/dist/component/link/link.css';
-    // import '@gouvfr/dsfr/dist/component/button/button.css';
-    // import '@gouvfr/dsfr/dist/component/input/input.css';
+	import "@gouvfr/dsfr/dist/scheme/scheme.css";
+	import "@gouvfr/dsfr/dist/core/core.css";
+	import "@gouvfr/dsfr/dist/component/form/form.css";
+	import "@gouvfr/dsfr/dist/component/link/link.css";
+	import "@gouvfr/dsfr/dist/component/button/button.css";
+	import "@gouvfr/dsfr/dist/component/input/input.css";
+	import "@gouvfr/dsfr/dist/component/range/range.css";
 
 	import type { Gradio } from "@gradio/utils";
 	import { Block, BlockTitle } from "@gradio/atoms";
@@ -83,53 +83,39 @@
 	$: value, handle_change();
 </script>
 
-<Block {visible} {elem_id} {elem_classes} {container} {scale} {min_width}>
+<div id={elem_id} class="{visible} {elem_classes}" >
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
 		i18n={gradio.i18n}
 		{...loading_status}
 		on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
 	/>
+	<label for={id}>
+		<!-- {show_label} {info}  -->
+		{label}	
+	</label>
 
-	<div class="wrap">
-		<div class="head">
-			<label for={id}>
-				<BlockTitle {show_label} {info}>{label}</BlockTitle>
-			</label>
-
+	<div class="fr-range-group">
+		<div class="fr-range fr-range--step" data-fr-js-range="true">
 			<input
-				aria-label={`number input for ${label}`}
-				data-testid="number-input"
-				type="number"
+				type="range"
+				{id}
+				name="cowbell"
 				bind:value
-				bind:this={numberInput}
+				bind:this={rangeInput}
 				min={minimum}
 				max={maximum}
-				on:blur={clamp}
 				{step}
 				{disabled}
 				on:pointerup={handle_release}
+				aria-label={`range slider for ${label}`}
 			/>
 		</div>
 	</div>
-
-	<input
-		type="range"
-		{id}
-		name="cowbell"
-		bind:value
-		bind:this={rangeInput}
-		min={minimum}
-		max={maximum}
-		{step}
-		{disabled}
-		on:pointerup={handle_release}
-		aria-label={`range slider for ${label}`}
-	/>
-</Block>
+</div>
 
 <style>
-	.wrap {
+	/* .wrap {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -183,7 +169,10 @@
 		height: 4px;
 		background: var(--neutral-200);
 		border-radius: 5px;
-		background-image: linear-gradient(var(--slider-color), var(--slider-color));
+		background-image: linear-gradient(
+			var(--slider-color),
+			var(--slider-color)
+		);
 		background-size: 0% 100%;
 		background-repeat: no-repeat;
 	}
@@ -237,5 +226,5 @@
 
 	input[type="range"]::-moz-range-track {
 		height: 12px;
-	}
+	} */
 </style>
