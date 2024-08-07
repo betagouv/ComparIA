@@ -142,7 +142,6 @@ def vertex_api_stream_iter(
     # location = os.environ.get("GCP_LOCATION", None)
     # vertexai.init(project=project_id, location=location)
 
-
     # gen_params = {
     #     "model": model_name,
     #     "prompt": messages,
@@ -184,7 +183,6 @@ def vertex_api_stream_iter(
             text += chunk.choices[0].delta.content or ""
             data = {
                 # Processing \n for Llama3.1-405B
-
                 "text": text.replace("\n", "<br />"),
                 "error_code": 0,
             }

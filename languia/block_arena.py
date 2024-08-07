@@ -4,6 +4,10 @@ Users chat with two anonymous models.
 """
 
 import gradio as gr
+
+from gradio_modal import Modal
+
+
 from languia.utils import (
     start_screen_html,
     stepper_html,
@@ -14,6 +18,13 @@ from custom_components.frinput.backend.gradio_frinput import FrInput
 
 
 from languia import config
+
+# // Enable navigation prompt
+# window.onbeforeunload = function() {
+#     return true;
+# };
+# // Remove navigation prompt
+# window.onbeforeunload = null;
 
 app_state = gr.State()
 
@@ -207,158 +218,173 @@ with gr.Blocks(
                     )
 
     with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
-        gr.Markdown(elem_classes="fr-mt-2w", value="## Quel modèle avez-vous préféré ?")
+        gr.HTML(
+            value="""
+        <div class="fr-notice fr-notice--info"> 
+            <div class="fr-container">
+                <div class="fr-notice__body mission">
+                    <p class="fr-notice__title mission">Des réponses détaillées de votre part permettent à la recherche d’améliorer les réponses des futurs modèles sur des enjeux linguistiques et culturels.</p>
+                </div>
+            </div>
+        </div>
+            <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
+        )
         with gr.Row():
+            # <div class="fr-range-group" id="range-2241-group">
+            #     <label class="fr-label">
+            #         Label
+            #         <span class="fr-hint-text">Texte de description additionnel, valeur de 0 à 100.</span>
+            #     </label>
+            #     <div class="fr-range">
+            #         <span class="fr-range__output">50</span>
+            #         <input id="range-2240" name="range-2240" type="range" aria-labelledby="range-2240-label" max="100" value="50" aria-describedby="range-2240-messages">
+            #         <span class="fr-range__min" aria-hidden="true">0</span>
+            #         <span class="fr-range__max" aria-hidden="true">100</span>
+            #     </div>
+            #     <div class="fr-messages-group" id="range-2240-messages" aria-live="polite">
+            #     </div>
+            # </div>
             which_model_radio = gr.Radio(
-                elem_classes="radio-tiles bolder",
                 show_label=False,
+                container=False,
                 choices=[
-                    ("Modèle A", "leftvote"),
-                    ("Modèle B", "rightvote"),
-                    ("Aucun des deux", "bothbad"),
+                    "Je préfère de loin le modèle A",
+                    "Le modèle A est un peu mieux",
+                    "Le modèle B est un peu mieux",
+                    "Je préfère de loin le modèle B",
                 ],
             )
-            # leftvote_btn = gr.Button(value="👈  A est mieux")
-            # rightvote_btn = gr.Button(value="👉  B est mieux")
-            # # tie_btn = gr.Button(value="🤝  Les deux se valent")
-            # bothbad_btn = gr.Button(value="👎  Aucun des deux")
 
-        # with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
-        with gr.Column(visible=False) as supervote_area:
+        with gr.Column(visible=False, elem_classes="fr-mb-12w") as supervote_area:
 
             # TODO: render=false?
             # TODO: move to another file?
-            with gr.Column() as positive_supervote:
-                gr.Markdown(
-                    value="### Pourquoi ce choix de modèle ?\nSélectionnez autant de préférences que vous souhaitez"
-                )
-                # TODO: checkboxes tuple
-                ressenti_checkbox = gr.CheckboxGroup(
-                    [
-                        "Impressionné·e",
-                        "Complet",
-                        "Facile à comprendre",
-                        "Taille des réponses adaptées",
-                    ],
-                    label="ressenti",
-                    show_label=False,
-                    info="Ressenti général",
-                )
-                pertinence_checkbox = gr.CheckboxGroup(
-                    [
-                        "Consignes respectées",
-                        "Cohérent par rapport au contexte",
-                        "Le modèle ne s'est pas trompé",
-                    ],
-                    label="pertinence",
-                    show_label=False,
-                    info="Pertinence des réponses",
-                )
-                comprehension_checkbox = gr.CheckboxGroup(
-                    [
-                        "Syntaxe adaptée",
-                        "Richesse du vocabulaire",
-                        "Utilisation correcte des expressions",
-                    ],
-                    label="comprehension",
-                    show_label=False,
-                    info="Compréhension et expression",
-                )
-                originalite_checkbox = gr.CheckboxGroup(
-                    ["Créatif", "Expressif", "Drôle"],
-                    label="originalite",
-                    info="Créativité et originalité",
-                    show_label=False,
-                )
-
-            # TODO: render=false?
-            # TODO: move to another file
-            with gr.Column() as negative_supervote:
-                gr.Markdown(
-                    value="### Pourquoi êtes-vous insatisfait·e des deux modèles ?\nSélectionnez autant de préférences que vous souhaitez"
-                )
-                ressenti_checkbox = gr.CheckboxGroup(
-                    [
-                        "Trop court",
-                        "Trop long",
-                        "Pas utile",
-                        "Nocif ou offensant",
-                    ],
-                    label="ressenti",
-                    info="Ressenti général",
-                    show_label=False,
-                )
-                pertinence_checkbox = gr.CheckboxGroup(
-                    [
-                        "Incohérentes par rapport au contexte",
-                        "Factuellement incorrectes",
-                        "Imprécises",
-                    ],
-                    label="pertinence",
-                    info="Pertinence des réponses",
-                    show_label=False,
-                )
-                comprehension_checkbox = gr.CheckboxGroup(
-                    [
-                        "Faible qualité de syntaxe",
-                        "Pauvreté du vocabulaire",
-                        "Mauvaise utilisation des expressions",
-                    ],
-                    label="comprehension",
-                    info="Compréhension et expression",
-                    show_label=False,
-                )
-                originalite_checkbox = gr.CheckboxGroup(
-                    ["Réponses banales", "Réponses superficielles"],
-                    label="originalite",
-                    info="Créativité et originalité",
-                    show_label=False,
-                )
-
-            supervote_checkboxes = [
-                ressenti_checkbox,
-                pertinence_checkbox,
-                comprehension_checkbox,
-                originalite_checkbox,
-            ]
+            gr.HTML(
+                value="""<h4>Précisez votre préférence</h4>
+                <p class="text-gray">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
+                elem_classes="text-center",
+            )
+            relevance_slider = gr.Slider(
+                value=-1,
+                minimum=1,
+                maximum=5,
+                step=1,
+                # label="pertinence",
+                # show_label=False,
+                label="Les réponses étaient-elles pertinentes ?",
+                info="Critères : réponses utiles, correctes factuelles, précises",
+            )
+            clearness_slider = gr.Slider(
+                value=-1,
+                minimum=1,
+                maximum=5,
+                step=1,
+                label="Les réponses étaient-elles simples à lire ?",
+                # show_label=False,
+                info="Critères : mise en forme et longueur des réponses adaptées",
+            )
+            style_slider = gr.Slider(
+                value=-1,
+                minimum=1,
+                maximum=5,
+                step=1,
+                label="Le style de la réponse était-il adapté ?",
+                # show_label=False,
+                info="Critères : registre de langue, vocabulaire, orthographe",
+            )
+            supervote_sliders = [relevance_slider, clearness_slider, style_slider]
 
             comments_text = FrInput(
                 # elem_classes="fr-input",
                 label="Détails supplémentaires",
                 show_label=True,
+                lines=3,
                 # TODO:
                 # info=,
                 # autofocus=True,
-                placeholder="Ajoutez plus de précisions ici",
+                placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
             )
 
     with gr.Column(
-        elem_classes="arena-footer fr-container--fluid", visible=False
+        elem_classes="fr-container--fluid", elem_id="buttons-footer", visible=False
     ) as buttons_footer:
-        with gr.Row(elem_classes="fr-grid-row fr-container fr-mt-4w"):
+        with gr.Row(elem_classes="fr-grid-row fr-container fr-my-2w"):
             return_btn = gr.Button(
                 elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-1",
                 value="Retour",
             )
-            final_send_btn = gr.Button(
-                elem_classes="fr-btn fr-col-12 fr-col-md-3 fr-col-offset-md-2",
+            supervote_send_btn = gr.Button(
+                elem_classes="fr-btn fr-col-12 fr-col-md-4 fr-col-offset-md-3",
                 value="Envoyer mes préférences",
                 interactive=False,
             )
 
     results_area = gr.HTML(visible=False, elem_classes="fr-container")
 
-    with gr.Row(visible=False) as feedback_row:
+    with gr.Row(visible=False, elem_id="feedback-row") as feedback_row:
         # dsfr: This should just be a normal link...
         # feedback_btns =
         gr.HTML(
             value="""
-            <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters">
+            <div class="fr-grid-row fr-grid-row--center fr-py-4w">
             <a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>
-            <a class="fr-btn fr-btn--secondary" href="../modeles">Liste des modèles</a>
+            <a class="fr-btn fr-btn--secondary fr-ml-2w" href="../modeles">Liste des modèles</a>
             </div>
         """
         )
+
+    with Modal(elem_id="quiz-modal") as quiz_modal:
+        gr.Markdown(
+            """
+                    ### Votre profil
+                    Ces quelques informations permettront d’améliorer les réponses générées en français par les assistants conversationnels.
+                    """
+        )
+        profession = gr.Dropdown(
+            choices=[
+                "Agriculteur",
+                "Artisan, commerçant et chef d'entreprise",
+                "Cadre et profession intellectuelle supérieure",
+                "Profession intermédiaire",
+                "Étudiant",
+                "Employé",
+                "Ouvrier",
+                "Retraité",
+                "Sans emploi",
+                "Ne se prononce pas",
+            ],
+            label="Catégorie socioprofessionnelle",
+        )
+        age = gr.Dropdown(
+            choices=[
+                "Moins de 18 ans",
+                "Entre 18 et 24 ans",
+                "Entre 25 et 34 ans",
+                "Entre 35 et 44 ans",
+                "Entre 45 et 54 ans",
+                "Entre 55 et 64 ans",
+                "Plus de 64 ans",
+                "Ne se prononce pas",
+            ],
+            label="Tranche d'âge",
+        )
+        gender = gr.Dropdown(
+            choices=["Femme", "Homme", "Autre", "Ne se prononce pas"], label="Genre"
+        )
+        chatbot_use = gr.Dropdown(
+            choices=[
+                "Tous les jours",
+                "Toutes les semaines",
+                "Une fois par mois",
+                "Moins d’une fois par mois",
+                "Jamais",
+                "Ne se prononce pas",
+            ],
+            label="Fréquence d’utilisation d’assistants conversationnels",
+        )
+        with gr.Row(elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--right"):
+            skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
+            send_poll_btn = gr.Button("Envoyer", elem_classes="fr-btn")
 
     # TODO: get rid
     temperature = gr.Slider(
@@ -392,4 +418,3 @@ with gr.Blocks(
     from languia.controllers import register_listeners
 
     register_listeners()
-

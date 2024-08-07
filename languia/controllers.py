@@ -12,6 +12,7 @@ from languia.utils import (
     count_output_tokens,
     get_llm_impact,
     running_eq,
+    log_poll,
 )
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -27,18 +28,54 @@ import numpy as np
 
 from languia.block_conversation import (
     # TODO: to import/replace State and bot_response?
-    ConversationState,      
+    ConversationState,
     bot_response,
 )
 
 from languia.config import logger
+
+import gradio as gr
+import numpy as np
+
+# from fastchat.model.model_adapter import get_conversation_template
+
+from languia.block_conversation import (
+    # TODO: to import/replace State and bot_response?
+    ConversationState,
+    bot_response,
+)
+
+from languia.config import logger
+
+from languia.utils import (
+    get_ip,
+    get_battle_pair,
+    build_reveal_html,
+    header_html,
+    stepper_html,
+    vote_last_response,
+    get_model_extra_info,
+    count_output_tokens,
+    get_llm_impact,
+    running_eq,
+)
+
+from languia import config
+
+from languia.config import (
+    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    SAMPLING_WEIGHTS,
+    BATTLE_TARGETS,
+    SAMPLING_BOOST_MODELS,
+    outage_models,
+)
 
 
 # Register listeners
 def register_listeners():
 
     # Step -1
-    
+
     # @demo.load(inputs=[], outputs=[],api_name=False)
     # def init_models(request: gr.Request):
     #     logger.info("Logged")
@@ -450,11 +487,7 @@ def register_listeners():
 
         extra = ({"request": request},)
         return (
-            [state0]
-            + [state1]
-            + chatbots
-            + [gr.update(interactive=True)]
-            + [textbox]
+            [state0] + [state1] + chatbots + [gr.update(interactive=True)] + [textbox]
         )
 
     gr.on(
@@ -487,7 +520,6 @@ def register_listeners():
         inputs=conversations_state,
         outputs=conversations_state + chatbots + [conclude_btn] + [textbox],
         api_name=False,
-        
     )
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
     #         console.log("rerolling");
@@ -495,13 +527,12 @@ def register_listeners():
     #         return args;
     #     }""")
 
-
-# // Enable navigation prompt
-# window.onbeforeunload = function() {
-#     return true;
-# };
-# // Remove navigation prompt
-# window.onbeforeunload = null;
+    # // Enable navigation prompt
+    # window.onbeforeunload = function() {
+    #     return true;
+    # };
+    # // Remove navigation prompt
+    # window.onbeforeunload = null;
 
     @conclude_btn.click(
         inputs=[],
@@ -533,9 +564,7 @@ def register_listeners():
         inputs=[which_model_radio],
         outputs=[
             supervote_area,
-            positive_supervote,
-            negative_supervote,
-            final_send_btn,
+            supervote_send_btn,
         ],
         api_name=False,
     )
@@ -544,20 +573,10 @@ def register_listeners():
             "voted for " + str(vote_radio),
             extra={"request": request},
         )
-        if vote_radio == "bothbad":
-            return (
-                gr.update(visible=True),
-                gr.update(visible=False),
-                gr.update(visible=True),
-                gr.update(interactive=True),
-            )
-        else:
-            return (
-                gr.update(visible=True),
-                gr.update(visible=True),
-                gr.update(visible=False),
-                gr.update(interactive=True),
-            )
+        return (
+            gr.update(visible=True),
+            gr.update(interactive=True),
+        )
 
     # Step 3
 
@@ -586,15 +605,60 @@ def register_listeners():
             + [gr.update(visible=False)]
         )
 
-    @final_send_btn.click(
+    @supervote_send_btn.click(
         inputs=(
             [conversations_state[0]]
             + [conversations_state[1]]
             + [which_model_radio]
-            + (supervote_checkboxes)
+            + (supervote_sliders)
             + [comments_text]
         ),
+        # outputs=[],
+        outputs=[quiz_modal],
+        api_name=False,
+    )
+    def vote_preferences(
+        state0,
+        state1,
+        which_model_radio,
+        relevance_slider,
+        clearness_slider,
+        style_slider,
+        comments_text,
+        request: gr.Request,
+    ):
+        # conversations_state = [state0, state1]
+
+        details = {
+            "model_left": state0.model_name,
+            "model_right": state1.model_name,
+            "chosen_model": which_model_radio,
+            "relevance": relevance_slider,
+            "clearness": clearness_slider,
+            "style": style_slider,
+            "comments": comments_text,
+        }
+        # FIXME: check input, sanitize it?
+        vote_last_response(
+            [state0, state1],
+            which_model_radio,
+            details,
+            request,
+        )
+        # quiz_modal.visible = True
+        return Modal(visible=True)
+
+    @send_poll_btn.click(
+        inputs=[
+            conversations_state[0],
+            conversations_state[1],
+            chatbot_use,
+            gender,
+            age,
+            profession,
+        ],
         outputs=[
+            quiz_modal,
             stepper_block,
             vote_area,
             supervote_area,
@@ -602,42 +666,30 @@ def register_listeners():
             results_area,
             buttons_footer,
         ],
-        api_name=False,
     )
-    def vote_preferences(
-        state0,
-        state1,
-        which_model_radio,
-        ressenti_checkbox,
-        pertinence_checkbox,
-        comprehension_checkbox,
-        originalite_checkbox,
-        comments_text,
-        request: gr.Request,
-    ):
-        # conversations_state = [state0, state1]
+    @skip_poll_btn.click(
+        inputs=[
+            conversations_state[0],
+            conversations_state[1],
+            chatbot_use,
+            gender,
+            age,
+            profession,
+        ],
+        outputs=[
+            quiz_modal,
+            stepper_block,
+            vote_area,
+            supervote_area,
+            feedback_row,
+            results_area,
+            buttons_footer,
+        ],
+    )
+    def send_poll(state0, state1, chatbot_use, gender, age, profession, request: gr.Request):
 
-        details = {
-            "chosen_model": which_model_radio,
-            "ressenti": ressenti_checkbox,
-            "pertinence": pertinence_checkbox,
-            "comprehension": comprehension_checkbox,
-            "originalite": originalite_checkbox,
-            "comments": comments_text,
-        }
-        if which_model_radio in ["bothbad", "leftvote", "rightvote"]:
-
-            vote_last_response(
-                [state0, state1],
-                which_model_radio,
-                details,
-                request,
-            )
-        else:
-            logger.error(
-                'Model selection was neither "bothbad", "leftvote" or "rightvote", got: '
-                + str(which_model_radio)
-            )
+        # FIXME: check input, sanitize it?
+        log_poll(state0, state1, chatbot_use, gender, age, profession, request)
 
         model_a = get_model_extra_info(state0.model_name, config.models_extra_info)
         model_b = get_model_extra_info(state1.model_name, config.models_extra_info)
@@ -668,6 +720,7 @@ def register_listeners():
             model_b_running_eq=model_b_running_eq,
         )
         return [
+            Modal(visible=False),
             gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
             gr.update(visible=False),
             gr.update(visible=False),

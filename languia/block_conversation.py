@@ -35,6 +35,7 @@ from languia import config
 
 import logging as logger
 
+
 # from gradio.components.base import Component
 class ConversationState(gr.State):
     def __init__(self, model_name="", is_vision=False):
@@ -100,7 +101,7 @@ def bot_response(
     top_p = float(top_p)
     max_new_tokens = int(max_new_tokens)
 
-# TODO: remove, shouldn't happen anymore
+    # TODO: remove, shouldn't happen anymore
     if state.skip_next:
         # This generate call is skipped due to invalid inputs
         state.skip_next = False
@@ -124,7 +125,7 @@ def bot_response(
     )
 
     if model_api_dict is None:
-        logger.critical("No model for model name: "+model_name)
+        logger.critical("No model for model name: " + model_name)
     else:
         if use_recommended_config:
             recommended_config = model_api_dict.get("recommended_config", None)
@@ -160,11 +161,11 @@ def bot_response(
             yield (state, state.to_gradio_chatbot())
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
-            
+
     output = data["text"].strip()
     conv.update_last_message(output)
     yield (state, state.to_gradio_chatbot())
-        # TODO: handle them great, or reboot arena saving initial prompt
+    # TODO: handle them great, or reboot arena saving initial prompt
     # except requests.exceptions.RequestException as e:
     #     conv.update_last_message(
     #         f"{SERVER_ERROR_MSG}\n\n"
