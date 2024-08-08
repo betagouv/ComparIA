@@ -218,7 +218,7 @@ with gr.Blocks(
                         show_copy_button=False,
                     )
 
-    with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
+    with gr.Column(visible=False, elem_classes="fr-container fr-mb-12w") as vote_area:
         gr.HTML(
             value="""
         <div class="fr-notice fr-notice--info"> 
@@ -245,8 +245,7 @@ with gr.Blocks(
             #     </div>
             # </div>
 
-        with gr.Column(visible=False, elem_classes="fr-mb-12w") as supervote_area:
-            which_model_radio = gr.Radio(
+        which_model_radio = gr.Radio(
                 show_label=False,
                 container=False,
                 choices=[
@@ -259,7 +258,7 @@ with gr.Blocks(
             # which_model_radio = gr.Slider(minimum=-1.5, maximum=+1.5, value=+3, step=1)
 
 
-        with gr.Column(visible=False) as supervote_area:
+        with gr.Column(visible=False, elem_classes="fr-container") as supervote_area:
 
             # TODO: render=false?
             # TODO: move to another file?
