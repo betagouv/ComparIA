@@ -269,42 +269,40 @@ with gr.Blocks(
             )
             relevance_slider = FrSlider(
                 value=-1,
+                minimum_text="Pas du tout d'accord",
+                maximum_text="Tout à fait d'accord",
                 minimum=1,
                 maximum=5,
                 step=1,
-                # label="pertinence",
-                # show_label=False,
                 label="Les réponses étaient-elles pertinentes ?",
                 info="Critères : réponses utiles, correctes factuelles, précises",
             )
             clearness_slider = FrSlider(
                 value=-1,
+                minimum_text="Pas du tout d'accord",
+                maximum_text="Tout à fait d'accord",
                 minimum=1,
                 maximum=5,
                 step=1,
                 label="Les réponses étaient-elles simples à lire ?",
-                # show_label=False,
                 info="Critères : mise en forme et longueur des réponses adaptées",
             )
             style_slider = FrSlider(
+                minimum_text="Pas du tout d'accord",
+                maximum_text="Tout à fait d'accord",
                 value=-1,
                 minimum=1,
                 maximum=5,
                 step=1,
                 label="Le style de la réponse était-il adapté ?",
-                # show_label=False,
                 info="Critères : registre de langue, vocabulaire, orthographe",
             )
             supervote_sliders = [relevance_slider, clearness_slider, style_slider]
 
             comments_text = FrInput(
-                # elem_classes="fr-input",
                 label="Détails supplémentaires",
                 show_label=True,
                 lines=3,
-                # TODO:
-                # info=,
-                # autofocus=True,
                 placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
             )
 

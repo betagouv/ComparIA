@@ -33,6 +33,8 @@
 	// export let scale: number | null = null;
 	// export let min_width: number | undefined = undefined;
 	export let minimum: number;
+	export let minimum_text: string;
+	export let maximum_text: string;
 	export let maximum = 100;
 	export let step: number;
 	export let show_label: boolean;
@@ -113,8 +115,8 @@
 				on:pointerup={handle_release}
 				aria-label={`range slider for ${label}`}
 			/>
-			<span class="fr-range__min" aria-hidden="true">{minimum}</span>
-			<span class="fr-range__max" aria-hidden="true">{maximum}</span>
+			<span class="fr-range__min" aria-hidden="true">{minimum_text}</span>
+			<span class="fr-range__max" aria-hidden="true">{maximum_text}</span>
 		</div>
 	</div>
 </div>

@@ -84,6 +84,32 @@ float
 </tr>
 
 <tr>
+<td align="left"><code>minimum_text</code></td>
+<td align="left" style="width: 25%;">
+
+```python
+str | None
+```
+
+</td>
+<td align="left"><code>None</code></td>
+<td align="left">minimum text value for slider.</td>
+</tr>
+
+<tr>
+<td align="left"><code>maximum_text</code></td>
+<td align="left" style="width: 25%;">
+
+```python
+str | None
+```
+
+</td>
+<td align="left"><code>None</code></td>
+<td align="left">maximum text value for slider.</td>
+</tr>
+
+<tr>
 <td align="left"><code>value</code></td>
 <td align="left" style="width: 25%;">
 
