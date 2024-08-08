@@ -15,6 +15,7 @@ from languia.utils import (
 
 from custom_components.frbutton.backend.gradio_frbutton import FrButton
 from custom_components.frinput.backend.gradio_frinput import FrInput
+from custom_components.frslider.backend.gradio_frslider import FrSlider
 
 
 from languia import config
@@ -217,7 +218,7 @@ with gr.Blocks(
                         show_copy_button=False,
                     )
 
-    with gr.Column(visible=False, elem_classes="fr-container") as vote_area:
+    with gr.Column(visible=False, elem_classes="fr-container fr-mb-12w") as vote_area:
         gr.HTML(
             value="""
         <div class="fr-notice fr-notice--info"> 
@@ -229,7 +230,6 @@ with gr.Blocks(
         </div>
             <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
         )
-        with gr.Row():
             # <div class="fr-range-group" id="range-2241-group">
             #     <label class="fr-label">
             #         Label
@@ -244,7 +244,8 @@ with gr.Blocks(
             #     <div class="fr-messages-group" id="range-2240-messages" aria-live="polite">
             #     </div>
             # </div>
-            which_model_radio = gr.Radio(
+
+        which_model_radio = gr.Radio(
                 show_label=False,
                 container=False,
                 choices=[
@@ -254,8 +255,10 @@ with gr.Blocks(
                     "Je préfère de loin le modèle B",
                 ],
             )
+            # which_model_radio = gr.Slider(minimum=-1.5, maximum=+1.5, value=+3, step=1)
 
-        with gr.Column(visible=False, elem_classes="fr-mb-16w") as supervote_area:
+
+        with gr.Column(visible=False, elem_classes="fr-container fr-mb-6w") as supervote_area:
 
             # TODO: render=false?
             # TODO: move to another file?
@@ -264,44 +267,42 @@ with gr.Blocks(
                 <p class="text-gray">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
                 elem_classes="text-center",
             )
-            relevance_slider = gr.Slider(
+            relevance_slider = FrSlider(
                 value=-1,
+                minimum_text="Pas du tout d'accord",
+                maximum_text="Tout à fait d'accord",
                 minimum=1,
                 maximum=5,
                 step=1,
-                # label="pertinence",
-                # show_label=False,
                 label="Les réponses étaient-elles pertinentes ?",
                 info="Critères : réponses utiles, correctes factuelles, précises",
             )
-            clearness_slider = gr.Slider(
+            clearness_slider = FrSlider(
                 value=-1,
+                minimum_text="Pas du tout d'accord",
+                maximum_text="Tout à fait d'accord",
                 minimum=1,
                 maximum=5,
                 step=1,
                 label="Les réponses étaient-elles simples à lire ?",
-                # show_label=False,
                 info="Critères : mise en forme et longueur des réponses adaptées",
             )
-            style_slider = gr.Slider(
+            style_slider = FrSlider(
+                minimum_text="Pas du tout d'accord",
+                maximum_text="Tout à fait d'accord",
                 value=-1,
                 minimum=1,
                 maximum=5,
                 step=1,
                 label="Le style de la réponse était-il adapté ?",
-                # show_label=False,
                 info="Critères : registre de langue, vocabulaire, orthographe",
             )
             supervote_sliders = [relevance_slider, clearness_slider, style_slider]
 
             comments_text = FrInput(
-                # elem_classes="fr-input",
                 label="Détails supplémentaires",
                 show_label=True,
                 lines=3,
-                # TODO:
-                # info=,
-                # autofocus=True,
                 placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
             )
 
