@@ -269,8 +269,7 @@ with gr.Blocks(
             )
             relevance_slider = FrSlider(
                 value=-1,
-                minimum_text="Pas du tout d'accord",
-                maximum_text="Tout à fait d'accord",
+                range_labels=["Pas du tout d'accord","Tout à fait d'accord"],
                 minimum=1,
                 maximum=5,
                 step=1,
@@ -279,8 +278,7 @@ with gr.Blocks(
             )
             clearness_slider = FrSlider(
                 value=-1,
-                minimum_text="Pas du tout d'accord",
-                maximum_text="Tout à fait d'accord",
+                range_labels=["Pas du tout d'accord","Tout à fait d'accord"],
                 minimum=1,
                 maximum=5,
                 step=1,
@@ -288,8 +286,7 @@ with gr.Blocks(
                 info="Critères : mise en forme et longueur des réponses adaptées",
             )
             style_slider = FrSlider(
-                minimum_text="Pas du tout d'accord",
-                maximum_text="Tout à fait d'accord",
+                range_labels=["Pas du tout d'accord","Tout à fait d'accord"],
                 value=-1,
                 minimum=1,
                 maximum=5,
