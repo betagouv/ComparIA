@@ -1,7 +1,31 @@
 /* BUGFIXES */
+/* Gradio overrides */
+
+label,
+fieldset {
+  background-color: var(--background-default-grey) !important;
+  border: none;
+}
+
+.form {
+  border: none;
+  background-color: transparent;
+}
+
+/* form label is in light grey */
+.has-info {
+  color: var(--text-title-grey) !important;
+}
+
 .app {
   padding: 0 !important;
   /* padding: var(--size-4) var(--size-8); */
+}
+
+/* TODO: find a better selector... */
+footer, .built-with,
+.show-api {
+  display: none !important;
 }
 
 /* Bug when fr-grid-row or other changes display property  */
@@ -47,7 +71,10 @@ body.dark {
 .dark code {
   background-color: var(--neutral-100);
 }
-
+.dark .modal-block {
+  background-color: var(--background-fill-primary);
+  color: var(--neutral-800) !important;
+}
 /* "COMPONENTS" (not custom components) */
 
 /* Radio button as DSFR-ish selectable tiles */
@@ -117,16 +144,6 @@ body {
   /* max-width: none; */
 }
 
-/* Gradio overrides */
-label,
-fieldset {
-  background-color: var(--background-default-grey) !important;
-  border: none;
-}
-
-.form {
-  border: none;
-}
 
 /* Screen by screen */
 
@@ -205,12 +222,6 @@ li.fr-nav__item {
 
 .mission {
   color: var(--text-default-info) !important;
-}
-
-/* TODO: find a better selector... */
-footer, .built-with,
-.show-api {
-  display: none !important;
 }
 
 .model-icon {
@@ -344,18 +355,11 @@ footer, .built-with,
   /* filter: drop-shadow(var(--raised-shadow)); */
 }
 
-.has-info {
-  color: var(--text-title-grey) !important;
-}
 
 #feedback-row
 {
   background-color: var(--background-alt-grey);
   border-top: solid 1px var(--border-default-grey);
-}
-
-.no-bg .form {
-  background-color: transparent !important;
 }
 
 /* Icons */
