@@ -32,9 +32,8 @@
 	// export let container = true;
 	// export let scale: number | null = null;
 	// export let min_width: number | undefined = undefined;
+	export let range_labels: string[] = [];
 	export let minimum: number;
-	export let minimum_text: string;
-	export let maximum_text: string;
 	export let maximum = 100;
 	export let step: number;
 	export let show_label: boolean;
@@ -69,7 +68,6 @@
 	function setSlider(): void {
 		setSliderRange();
 		rangeInput.addEventListener("input", setSliderRange);
-		// numberInput.addEventListener("input", setSliderRange);
 	}
 	function setSliderRange(): void {
 		const dividend = Number(rangeInput.value) - Number(rangeInput.min);
@@ -115,8 +113,14 @@
 				on:pointerup={handle_release}
 				aria-label={`range slider for ${label}`}
 			/>
-			<span class="fr-range__min" aria-hidden="true">{minimum_text}</span>
-			<span class="fr-range__max" aria-hidden="true">{maximum_text}</span>
+			{#if range_labels.length != 0}
+			{#each range_labels as range_label}
+			<span class="fr-range-customlabel" aria-hidden="true">{range_label}</span>
+			{/each}
+			{:else}
+			<span class="fr-range__min" aria-hidden="true">{minimum}</span>
+			<span class="fr-range__max" aria-hidden="true">{maximum}</span>
+			{/if}
 		</div>
 	</div>
 </div>

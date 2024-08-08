@@ -84,29 +84,16 @@ float
 </tr>
 
 <tr>
-<td align="left"><code>minimum_text</code></td>
+<td align="left"><code>range_labels</code></td>
 <td align="left" style="width: 25%;">
 
 ```python
-str | None
+list[str] | None
 ```
 
 </td>
 <td align="left"><code>None</code></td>
-<td align="left">minimum text value for slider.</td>
-</tr>
-
-<tr>
-<td align="left"><code>maximum_text</code></td>
-<td align="left" style="width: 25%;">
-
-```python
-str | None
-```
-
-</td>
-<td align="left"><code>None</code></td>
-<td align="left">maximum text value for slider.</td>
+<td align="left">text labels for slider values.</td>
 </tr>
 
 <tr>
