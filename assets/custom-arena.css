@@ -358,6 +358,20 @@ footer, .built-with,
   padding: 2rem;
 }
 
+/* Bend the modal component to our will */
+.modal-block .close {
+  margin: 20px 40px;
+  border: none;
+  box-shadow: none;
+  color: var(--text-action-high-blue-france);
+}
+.modal-block .close::before {
+  font-weight: 500;
+  padding-right: 15px;
+  content: "Fermer";
+  color: var(--text-action-high-blue-france);
+}
+
 /* Icons */
 
 .fr-icon-stack::before,
