@@ -274,7 +274,7 @@ def register_listeners():
 
         if not got_battle_pair_already:
             # assert conversations[1] is None
-            logger.info("outage_models:  " + " ".join(outage_models))
+            logger.info("outage_models:  " + " ".join(outage_models), extra={"request": request})
             model_left, model_right = get_battle_pair(
                 config.models,
                 BATTLE_TARGETS,
@@ -282,7 +282,7 @@ def register_listeners():
                 SAMPLING_WEIGHTS,
                 SAMPLING_BOOST_MODELS,
             )
-            logger.info("Picked 2 models: " + model_left + " and " + model_right)
+            logger.info("Picked 2 models: " + model_left + " and " + model_right, extra={"request": request})
             conversations = [
                 # NOTE: replacement of gr.State() to ConversationState happens here
                 ConversationState(model_name=model_left),
