@@ -365,35 +365,25 @@ def register_listeners():
                 except StopIteration:
                     pass
                 except Exception as e:
-                    logger.error(
-                        f"Problem with generating model {conversations[i].model_name}. Adding to outcasts list and re-rolling.",
-                        extra={"request": request},
-                    )
-                    outage_models.append(conversations[i].model_name)
+                    # logger.error(
+                    #     f"Problem with generating model {conversations[i].model_name}. Adding to outcasts list and re-rolling.",
+                    #     extra={"request": request},
+                    # )
+                    # outage_models.append(conversations[i].model_name)
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
                     gr.Warning(
-                        message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
+                        message="Erreur avec le chargement d'un des modèles, veuillez relancer l'arène",
                     )
-                    # conversations[0],conversations[1] = clear_history(
-                    #     conversation_a=conversations[0],
-                    #     conversation_b=conversations[1],
-                    #     chatbot0=chatbots[0],
-                    #     chatbot1=chatbots[1],
-                    #     textbox=textbox,
-                    #     request=request,
+                    # gr.Warning(
+                    #     message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
                     # )
-                    app_state.original_user_prompt = chatbots[0][0][0]
-                    logger.info(
-                        "Saving original prompt: " + app_state.original_user_prompt,
-                        extra={"request": request},
-                    )
-                    # print(str(conversations[0].conv_id))
-                    # print(str(conversations[1].conv_id))
-                    # Not effective:
-                    # conversations[0],conversations[1], chatbots[0], chatbots[1] = gr.State(value=None), None, gr.Chatbot(value=None), ""
-
-                    # print("conversations[0]:" + str(conversations[0].conv))
+                    # app_state.original_user_prompt = chatbots[0][0][0]
+                    # logger.info(
+                    #     "Saving original prompt: " + app_state.original_user_prompt,
+                    #     extra={"request": request},
+                    # )
+                    
                     return (
                         conversation_a,
                         conversation_b,
@@ -443,49 +433,47 @@ def register_listeners():
             extra={"request": request},
         )
 
-        if hasattr(app_state, "original_user_prompt"):
-            if app_state.original_user_prompt != False:
-                logger.info(
-                    "model crash detected, keeping prompt",
-                    extra={"request": request},
-                )
-                original_user_prompt = app_state.original_user_prompt
-                app_state.original_user_prompt = False
-                # TODO: reroll here
-                conversation_a = gr.State()
-                conversation_b = gr.State()
-                # conversation_a = ConversationState()
-                # conversation_b = ConversationState()
+        # if hasattr(app_state, "original_user_prompt"):
+        #     if app_state.original_user_prompt != False:
+        #         logger.info(
+        #             "model crash detected, keeping prompt",
+        #             extra={"request": request},
+        #         )
+        #         original_user_prompt = app_state.original_user_prompt
+        #         app_state.original_user_prompt = False
+        #         # TODO: reroll here
+        #         conversation_a = gr.State()
+        #         conversation_b = gr.State()
+        #         # conversation_a = ConversationState()
+        #         # conversation_b = ConversationState()
 
-                logger.info(
-                    "submitting original prompt",
-                    extra={"request": request},
-                )
-                textbox.value = original_user_prompt
+        #         logger.info(
+        #             "submitting original prompt",
+        #             extra={"request": request},
+        #         )
+        #         textbox.value = original_user_prompt
 
-                logger.info(
-                    "original prompt sent",
-                    extra={"request": request},
-                )
-                return (
-                    [conversation_a]
-                    + [conversation_b]
-                    # chatbots
-                    + [""]
-                    + [""]
-                    # disable conclude btn
-                    + [gr.update(interactive=False)]
-                    + [original_user_prompt]
-                )
+        #         logger.info(
+        #             "original prompt sent",
+        #             extra={"request": request},
+        #         )
+        #         return (
+        #             [conversation_a]
+        #             + [conversation_b]
+        #             # chatbots
+        #             + [""]
+        #             + [""]
+        #             # disable conclude btn
+        #             + [gr.update(interactive=False)]
+        #             + [original_user_prompt]
+        #         )
 
-        # enable conclude_btn
-        # TODO: log answers here?
         logger.info(
             "models answered with success",
             extra={"request": request},
         )
 
-        extra = ({"request": request},)
+        # enable conclude_btn
         return (
             [conversation_a] + [conversation_b] + chatbots + [gr.update(interactive=True)] + [textbox]
         )
@@ -495,7 +483,6 @@ def register_listeners():
         fn=add_text,
         api_name=False,
         inputs=conversations + [textbox],
-        # inputs=conversations + model_selectors + [textbox],
         outputs=conversations + chatbots,
     ).then(
         fn=goto_chatbot,
