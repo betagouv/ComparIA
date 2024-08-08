@@ -75,10 +75,27 @@ from languia.config import (
 def register_listeners():
 
     # Step -1
+    @demo.load(inputs=[], outputs=conversations, api_name=False)
+    def init_models(request: gr.Request):
 
-    # @demo.load(inputs=[], outputs=[],api_name=False)
-    # def init_models(request: gr.Request):
-    #     logger.info("Logged")
+        # app_state.model_left, app_state.model_right = get_battle_pair(
+        model_left,model_right = get_battle_pair(
+            config.models,
+            BATTLE_TARGETS,
+            outage_models,
+            SAMPLING_WEIGHTS,
+            SAMPLING_BOOST_MODELS,
+        )
+        conversations = [
+                # NOTE: replacement of gr.State() to ConversationState happens here
+                ConversationState(model_name=model_left),
+                ConversationState(model_name=model_right),
+            ]
+        logger.info(
+            "Picked 2 models: " + model_left + " and " + model_right
+        , extra={request: request})
+
+        return conversations
 
     # Step 0
 
@@ -228,74 +245,25 @@ def register_listeners():
         )
         conversations = [conversation_a, conversation_b]
 
-        # TODO: refacto and put init apart
-        # Init conversations if necessary
-        is_conversations_state = hasattr(conversations[0], "model_name")
-        got_battle_pair_already = False
-        if is_conversations_state:
-            if conversations[0].model_name != "":
-                got_battle_pair_already = True
-
-        if not got_battle_pair_already:
-            # assert conversations[1] is None
-            logger.info("outage_models:  " + " ".join(outage_models), extra={"request": request})
-            model_left, model_right = get_battle_pair(
-                config.models,
-                BATTLE_TARGETS,
-                outage_models,
-                SAMPLING_WEIGHTS,
-                SAMPLING_BOOST_MODELS,
-            )
-            logger.info("Picked 2 models: " + model_left + " and " + model_right, extra={"request": request})
-            conversations = [
-                # NOTE: replacement of gr.State() to ConversationState happens here
-                ConversationState(model_name=model_left),
-                ConversationState(model_name=model_right),
-            ]
-            # TODO: test here if models answer?
-
-        model_list = [
-            conversations[i].model_name for i in range(config.num_sides)
-        ]
-        # all_conv_text_left = conversations[0].conv.get_prompt()
-        # all_conv_text_right = conversations[1].conv.get_prompt()
-        # all_conv_text = (
-        #     all_conv_text_left[-1000:] + all_conv_text_right[-1000:] + "\nuser: " + text
-        # )
-        # TODO: turn on moderation in battle mode
+        model_list = [conversations[i].model_name for i in range(config.num_sides)]
+        
+        # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
         # if flagged:
         #     logger.info(f"violate moderation (anony). ip: {ip}. text: {text}")
         #     # overwrite the original text
         #     text = MODERATION_MSG
 
-        # conv = conversations[0].conv
-        # if (len(conv.messages) - conv.offset) // 2 >= CONVERSATION_TURN_LIMIT:
+        # FIXME:  CONVERSATION_TURN_LIMIT:
         #     logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
-        #     for i in range(config.num_sides):
-        #         conversations[i].skip_next = True
-        #         # FIXME: fix return value
-        #     return (
-        #         # 2 conversations
-        #         conversations
-        #         # 2 chatbots
-        #         + [x.to_gradio_chatbot() for x in conversations]
-        #         # text
-        #         # + [CONVERSATION_LIMIT_MSG]
-        #         # + [gr.update(visible=True)]
-        #     )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
         # TODO: what do?
 
         for i in range(config.num_sides):
-            conversations[i].conv.append_message(
-                conversations[i].conv.roles[0], text
-            )
+            conversations[i].conv.append_message(conversations[i].conv.roles[0], text)
             # TODO: Empty assistant message is needed to show user's first question but why??
-            conversations[i].conv.append_message(
-                conversations[i].conv.roles[1], None
-            )
+            conversations[i].conv.append_message(conversations[i].conv.roles[1], None)
             conversations[i].skip_next = False
 
         return (
@@ -383,7 +351,7 @@ def register_listeners():
                     #     "Saving original prompt: " + app_state.original_user_prompt,
                     #     extra={"request": request},
                     # )
-                    
+
                     return (
                         conversation_a,
                         conversation_b,
@@ -468,14 +436,18 @@ def register_listeners():
         #             + [original_user_prompt]
         #         )
 
-        logger.info(
-            "models answered with success",
-            extra={"request": request},
-        )
+        # logger.info(
+        #     "models answered with success",
+        #     extra={"request": request},
+        # )
 
         # enable conclude_btn
         return (
-            [conversation_a] + [conversation_b] + chatbots + [gr.update(interactive=True)] + [textbox]
+            [conversation_a]
+            + [conversation_b]
+            + chatbots
+            + [gr.update(interactive=True)]
+            + [textbox]
         )
 
     gr.on(
@@ -673,17 +645,41 @@ def register_listeners():
             buttons_footer,
         ],
     )
-    def send_poll(conversation_a, conversation_b, chatbot_use, gender, age, profession, request: gr.Request):
+    def send_poll(
+        conversation_a,
+        conversation_b,
+        chatbot_use,
+        gender,
+        age,
+        profession,
+        request: gr.Request,
+    ):
 
         # FIXME: check input, sanitize it?
-        log_poll(conversation_a, conversation_b, chatbot_use, gender, age, profession, request)
+        log_poll(
+            conversation_a,
+            conversation_b,
+            chatbot_use,
+            gender,
+            age,
+            profession,
+            request,
+        )
 
-        model_a = get_model_extra_info(conversation_a.model_name, config.models_extra_info)
-        model_b = get_model_extra_info(conversation_b.model_name, config.models_extra_info)
+        model_a = get_model_extra_info(
+            conversation_a.model_name, config.models_extra_info
+        )
+        model_b = get_model_extra_info(
+            conversation_b.model_name, config.models_extra_info
+        )
 
         # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = count_output_tokens(conversation_a.conv.roles, conversation_a.conv.messages)
-        model_b_tokens = count_output_tokens(conversation_b.conv.roles, conversation_b.conv.messages)
+        model_a_tokens = count_output_tokens(
+            conversation_a.conv.roles, conversation_a.conv.messages
+        )
+        model_b_tokens = count_output_tokens(
+            conversation_b.conv.roles, conversation_b.conv.messages
+        )
         # TODO:
         # request_latency_a = conversation_a.conv.finish_tstamp - conversation_a.conv.start_tstamp
         # request_latency_b = conversation_b.conv.finish_tstamp - conversation_b.conv.start_tstamp
