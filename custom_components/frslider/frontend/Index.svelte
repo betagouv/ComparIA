@@ -29,9 +29,9 @@
 	export let value = 0;
 	export let label = gradio.i18n("slider.slider");
 	export let info: string | undefined = undefined;
-	export let container = true;
-	export let scale: number | null = null;
-	export let min_width: number | undefined = undefined;
+	// export let container = true;
+	// export let scale: number | null = null;
+	// export let min_width: number | undefined = undefined;
 	export let minimum: number;
 	export let maximum = 100;
 	export let step: number;
@@ -83,24 +83,27 @@
 	$: value, handle_change();
 </script>
 
-<div id={elem_id} class="{visible} {elem_classes}" >
+<div id={elem_id} class="{visible} {elem_classes}">
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
 		i18n={gradio.i18n}
 		{...loading_status}
 		on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
 	/>
-	<label for={id}>
-		<!-- {show_label} {info}  -->
-		{label}	
+	<label class="fr-label" for={id}>
+		{#if show_label}
+			{label}
+			<span class="fr-hint-text">{info}</span>
+		{/if}
 	</label>
 
 	<div class="fr-range-group">
 		<div class="fr-range fr-range--step" data-fr-js-range="true">
+			<span class="fr-range__output">{value}</span>
 			<input
 				type="range"
 				{id}
-				name="cowbell"
+				name={id}
 				bind:value
 				bind:this={rangeInput}
 				min={minimum}
@@ -110,17 +113,26 @@
 				on:pointerup={handle_release}
 				aria-label={`range slider for ${label}`}
 			/>
+			<span class="fr-range__min" aria-hidden="true">{minimum}</span>
+			<span class="fr-range__max" aria-hidden="true">{maximum}</span>
 		</div>
 	</div>
 </div>
 
 <style>
+		/* .fr-range--step[data-fr-js-range]::before,
+		.fr-range--step[data-fr-js-range]::after {
+			top: 0.5rem !important;
+		}
+		.fr-range[data-fr-js-range] .fr-range__output {
+			position: absolute;
+			top: -20px;
+		} */
 	/* .wrap {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 	}
-
 	.head {
 		display: flex;
 		justify-content: space-between;
