@@ -255,7 +255,7 @@ with gr.Blocks(
                 ],
             )
 
-        with gr.Column(visible=False, elem_classes="fr-mb-12w") as supervote_area:
+        with gr.Column(visible=False, elem_classes="fr-mb-16w") as supervote_area:
 
             # TODO: render=false?
             # TODO: move to another file?
