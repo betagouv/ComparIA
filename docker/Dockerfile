@@ -44,10 +44,13 @@ FROM base AS cc
 RUN apt update && apt install -y nodejs npm
 COPY --from=app /app /app
 WORKDIR /app/custom_components/frbutton
+# TODO: factorize this
 RUN gradio cc install
 RUN gradio cc build --no-generate-docs --bump-version
 WORKDIR /app/custom_components/frinput
 RUN gradio cc install
+# workaround
+RUN npm install @gouvfr/dsfr
 RUN gradio cc build --no-generate-docs --bump-version
 WORKDIR /app/custom_components/frslider
 RUN gradio cc install
