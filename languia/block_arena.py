@@ -263,45 +263,50 @@ with gr.Blocks(
             # TODO: render=false?
             # TODO: move to another file?
             gr.HTML(
-                value="""<h4>Précisez votre préférence</h4>
-                <p class="text-gray">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
+                value="""<h4>Pourquoi préférez-vous ce modèle ?</h4>
+                <p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
                 elem_classes="text-center",
             )
-            relevance_slider = FrSlider(
-                value=-1,
-                range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                minimum=1,
-                maximum=5,
-                step=1,
-                label="Les réponses étaient-elles pertinentes ?",
-                info="Critères : réponses utiles, correctes factuelles, précises",
-            )
-            clearness_slider = FrSlider(
-                value=-1,
-                range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                minimum=1,
-                maximum=5,
-                step=1,
-                label="Les réponses étaient-elles simples à lire ?",
-                info="Critères : mise en forme et longueur des réponses adaptées",
-            )
-            style_slider = FrSlider(
-                range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                value=-1,
-                minimum=1,
-                maximum=5,
-                step=1,
-                label="Le style de la réponse était-il adapté ?",
-                info="Critères : registre de langue, vocabulaire, orthographe",
-            )
-            supervote_sliders = [relevance_slider, clearness_slider, style_slider]
+            with gr.Column(elem_classes="fr-container"):
+                relevance_slider = FrSlider(
+                    value=-1,
+                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
+                    minimum=1,
+                    maximum=5,
+                    step=1,
+                    label="Les réponses étaient-elles pertinentes ?",
+                    info="Critères : réponses utiles, correctes factuelles, précises",
+                    elem_classes="fr-my-4w",
+                )
+                clearness_slider = FrSlider(
+                    value=-1,
+                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
+                    minimum=1,
+                    maximum=5,
+                    step=1,
+                    label="Les réponses étaient-elles simples à lire ?",
+                    info="Critères : mise en forme et longueur des réponses adaptées",
+                    elem_classes="fr-my-4w",
+                )
+                style_slider = FrSlider(
+                    elem_classes="fr-my-4w",
+                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
+                    value=-1,
+                    minimum=1,
+                    maximum=5,
+                    step=1,
+                    label="Le style de la réponse était-il adapté ?",
+                    info="Critères : registre de langue, vocabulaire, orthographe",
+                )
+                supervote_sliders = [relevance_slider, clearness_slider, style_slider]
 
-            comments_text = FrInput(
-                label="Détails supplémentaires",
-                show_label=True,
-                lines=3,
-                placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
-            )
+                comments_text = FrInput(
+                    elem_classes="big-label",
+                    label="Détails supplémentaires",
+                    show_label=True,
+                    lines=3,
+                    placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
+                )
 
     with gr.Column(
         elem_classes="fr-container--fluid", elem_id="buttons-footer", visible=False

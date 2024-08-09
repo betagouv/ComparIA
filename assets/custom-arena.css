@@ -108,7 +108,6 @@ body.dark {
 .bolder {
   font-weight: 700;
 }
-
 /* 
 .icon-white img {
   filter: invert(100%);
@@ -126,10 +125,25 @@ body.dark {
 }
 
 .text-grey {
-  color: var(--block-title-text-color);
+  /* color: var(--block-title-text-color); */
   /* color: var(--neutral-500); */
+  /* color: var(--text-default-grey); */
+  color: var(--text-mention-grey);
+  
 }
 
+.big-label
+ {
+  font-size: 1.175rem;
+    font-weight: 700;
+}
+
+.big-label textarea,
+.big-label input
+{
+  font-size: 1rem;
+  font-weight: 400;
+}
 .underline {
   --underline-hover-width: var(--underline-max-width);
 }

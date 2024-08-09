@@ -133,14 +133,15 @@
 </div>
 
 <style>
-	/* .fr-range--step[data-fr-js-range]::before,
-		.fr-range--step[data-fr-js-range]::after {
-			top: 0.5rem !important;
-		} */
-	/* 	.fr-range[data-fr-js-range] .fr-range__output {
-			position: absolute;
-			top: -20px;
-		} */
+	
+	.fr-label {
+		font-size: 1.175rem;
+  		font-weight: 700;
+	}
+	.fr-hint-text {
+		font-weight: 400;
+		font-size: 1rem;
+	}
 		
 	input:disabled {
 		-webkit-text-fill-color: var(--body-text-color);
