@@ -149,11 +149,11 @@ body {
 
 /* Screen 0 */
 
-#stepper-html.sticky {
+/* #stepper-html.sticky {
   position: fixed;
   top: 0;
-  z-index: 10000;
-}
+  z-index: 99;
+} */
 
 /* --raised-shadow: 0 1px 3px var(--shadow-color); */
 #stepper-html {
@@ -170,7 +170,7 @@ li.fr-nav__item {
 
 #header-html {
   /* Required < 100 to be behind modal */
-  z-index: 99;
+  z-index: 98;
 }
 
 
