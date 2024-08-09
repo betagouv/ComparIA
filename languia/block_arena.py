@@ -334,8 +334,8 @@ with gr.Blocks(
     with Modal(elem_id="quiz-modal") as quiz_modal:
         gr.Markdown(
             """
-                    ### Votre profil
-                    Ces quelques informations permettront d’améliorer les réponses générées en français par les assistants conversationnels.
+                    ### Dernière étape
+                    Ces quelques informations sur votre profil permettront à la recherche d’affiner les réponses des futurs modèles.
                     """
         )
         profession = gr.Dropdown(
