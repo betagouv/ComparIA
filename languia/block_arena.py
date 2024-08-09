@@ -230,35 +230,38 @@ with gr.Blocks(
         </div>
             <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
         )
-            # <div class="fr-range-group" id="range-2241-group">
-            #     <label class="fr-label">
-            #         Label
-            #         <span class="fr-hint-text">Texte de description additionnel, valeur de 0 à 100.</span>
-            #     </label>
-            #     <div class="fr-range">
-            #         <span class="fr-range__output">50</span>
-            #         <input id="range-2240" name="range-2240" type="range" aria-labelledby="range-2240-label" max="100" value="50" aria-describedby="range-2240-messages">
-            #         <span class="fr-range__min" aria-hidden="true">0</span>
-            #         <span class="fr-range__max" aria-hidden="true">100</span>
-            #     </div>
-            #     <div class="fr-messages-group" id="range-2240-messages" aria-live="polite">
-            #     </div>
-            # </div>
 
-        which_model_radio = gr.Radio(
-                show_label=False,
-                container=False,
-                choices=[
-                    "Je préfère de loin le modèle A",
-                    "Le modèle A est un peu mieux",
-                    "Le modèle B est un peu mieux",
-                    "Je préfère de loin le modèle B",
-                ],
-            )
-            # which_model_radio = gr.Slider(minimum=-1.5, maximum=+1.5, value=+3, step=1)
+        # which_model_radio = gr.Radio(
+        #         show_label=False,
+        #         container=False,
+        #         choices=[
+        #             "Je préfère de loin le modèle A",
+        #             "Le modèle A est un peu mieux",
+        #             "Le modèle B est un peu mieux",
+        #             "Je préfère de loin le modèle B",
+        #         ],
+        #     )
+        which_model_radio = FrSlider(
+            minimum=-1.5,
+            maximum=+1.5,
+            value=-3,
+            step=1,
+            show_label=False,
+            spotlight_mode=True,
+            extrema=["Modèle A", "Modèle B"],
+            range_labels=[
+                "Je préfère de loin le modèle A",
+                "Le modèle A est un peu mieux",
+                "Le modèle B est un peu mieux",
+                "Je préfère de loin le modèle B",
+            ],
+                # label="Les réponses étaient-elles pertinentes ?",
+            # info="Critères : réponses utiles, correctes factuelles, précises",
+        )
 
-
-        with gr.Column(visible=False, elem_classes="fr-container fr-mb-6w") as supervote_area:
+        with gr.Column(
+            visible=False, elem_classes="fr-container fr-mb-6w"
+        ) as supervote_area:
 
             # TODO: render=false?
             # TODO: move to another file?
@@ -269,7 +272,7 @@ with gr.Blocks(
             )
             relevance_slider = FrSlider(
                 value=-1,
-                range_labels=["Pas du tout d'accord","Tout à fait d'accord"],
+                range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
                 minimum=1,
                 maximum=5,
                 step=1,
@@ -278,7 +281,7 @@ with gr.Blocks(
             )
             clearness_slider = FrSlider(
                 value=-1,
-                range_labels=["Pas du tout d'accord","Tout à fait d'accord"],
+                range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
                 minimum=1,
                 maximum=5,
                 step=1,
@@ -286,7 +289,7 @@ with gr.Blocks(
                 info="Critères : mise en forme et longueur des réponses adaptées",
             )
             style_slider = FrSlider(
-                range_labels=["Pas du tout d'accord","Tout à fait d'accord"],
+                range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
                 value=-1,
                 minimum=1,
                 maximum=5,

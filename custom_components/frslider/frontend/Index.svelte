@@ -26,6 +26,8 @@
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
+	export let spotlight_mode = false;
+	export let extrema: string[] = [];
 	export let value = 0;
 	export let label = gradio.i18n("slider.slider");
 	export let info: string | undefined = undefined;
@@ -41,6 +43,8 @@
 	export let loading_status: LoadingStatus;
 	export let value_is_output = false;
 
+	let currentLabel: number;
+	let labelIndex: number;
 	let rangeInput: HTMLInputElement;
 	// let numberInput: HTMLInputElement;
 
@@ -74,6 +78,15 @@
 		const divisor = Number(rangeInput.max) - Number(rangeInput.min);
 		const h = divisor === 0 ? 0 : dividend / divisor;
 		rangeInput.style.backgroundSize = h * 100 + "% 100%";
+		if (spotlight_mode) {
+			setRangeLabel(h);
+		}
+	}
+
+	function setRangeLabel(h: number): void {
+		if (range_labels && range_labels.length) {
+			currentLabel = Math.round(Number((range_labels.length - 1) * h));
+		}
 	}
 
 	$: disabled = !interactive;
@@ -98,8 +111,19 @@
 	</label>
 
 	<div class="fr-range-group">
+		{#if spotlight_mode && extrema.length == 2}
+			<span class="fr-range__left" aria-hidden="true"
+				>{extrema[0]}</span
+			>
+			<span class="fr-range__right" aria-hidden="true"
+				>{extrema[1]}</span
+			>
+		{/if}
 		<div class="fr-range fr-range--step" data-fr-js-range="true">
-			<span class="fr-range__output">{value}</span>
+
+			<span class="fr-range__output{spotlight_mode ? ' hide' : ''}"
+				>{value}</span
+			>
 			<input
 				type="range"
 				{id}
@@ -114,23 +138,33 @@
 				aria-label={`range slider for ${label}`}
 			/>
 			{#if range_labels.length != 0}
-			{#each range_labels as range_label}
-			<span class="fr-range-customlabel" aria-hidden="true">{range_label}</span>
-			{/each}
+				{#each range_labels as range_label, labelIndex}
+					<span
+						class="fr-range__custom-label{spotlight_mode &&
+						currentLabel == labelIndex
+							? ' spotlight'
+							: ''}"
+						aria-hidden="true">{range_label}</span
+					>
+				{/each}
 			{:else}
-			<span class="fr-range__min" aria-hidden="true">{minimum}</span>
-			<span class="fr-range__max" aria-hidden="true">{maximum}</span>
+				<span class="fr-range__min" aria-hidden="true">{minimum}</span>
+				<span class="fr-range__max" aria-hidden="true">{maximum}</span>
 			{/if}
 		</div>
 	</div>
 </div>
 
 <style>
-		/* .fr-range--step[data-fr-js-range]::before,
+	.spotlight, .fr-range__left, .fr-range__right {
+		font-weight: 500;
+		color: var(--text-action-high-blue-france);
+	}
+	.fr-range--step[data-fr-js-range]::before,
 		.fr-range--step[data-fr-js-range]::after {
 			top: 0.5rem !important;
 		}
-		.fr-range[data-fr-js-range] .fr-range__output {
+	/* 	.fr-range[data-fr-js-range] .fr-range__output {
 			position: absolute;
 			top: -20px;
 		} */

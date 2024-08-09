@@ -38,6 +38,8 @@ class FrSlider(FormComponent):
         every: Timer | float | None = None,
         inputs: Component | Sequence[Component] | set[Component] | None = None,
         show_label: bool | None = None,
+        spotlight_mode: bool | None = False,
+        extrema: list[str] | None = None,
         container: bool = True,
         scale: int | None = None,
         min_width: int = 160,
@@ -61,6 +63,8 @@ class FrSlider(FormComponent):
             every: Continously calls `value` to recalculate it if `value` is a function (has no effect otherwise). Can provide a Timer whose tick resets `value`, or a float that provides the regular interval for the reset Timer.
             inputs: Components that are used as inputs to calculate `value` if `value` is a function (has no effect otherwise). `value` is recalculated any time the inputs change.
             show_label: if True, will display label.
+            spotlight_mode: if True, will display component in spotlight mode.
+            extrema: if in spotlight_mode, will display one text at each side of the component.
             container: If True, will place the component in a container - providing some extra padding around the border.
             scale: relative size compared to adjacent Components. For example if Components A and B are in a Row, and A has scale=2, and B has scale=1, A will be twice as wide as B. Should be an integer. scale applies in Rows, and to top-level Components in Blocks where fill_height=True.
             min_width: minimum pixel width, will wrap if not sufficient screen space to satisfy this value. If a certain scale value results in this Component being narrower than min_width, the min_width parameter will be respected first.
@@ -75,6 +79,9 @@ class FrSlider(FormComponent):
         self.minimum = minimum
         self.maximum = maximum
         self.range_labels = range_labels
+        self.extrema = extrema
+        self.spotlight_mode = spotlight_mode
+        
         if step is None:
             difference = maximum - minimum
             power = math.floor(math.log10(difference) - 2)
