@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 import random
-from typing import TYPE_CHECKING, Any, Callable, Sequence
+from typing import TYPE_CHECKING, Any, Callable
 
 from gradio_client.documentation import document
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from gradio.components import Timer
 
 
-class FrSlider(FormComponent):
+class CustomSlider(FormComponent):
     """
     Creates a slider that ranges from {minimum} to {maximum} with a step size of {step}.
 
@@ -30,13 +30,14 @@ class FrSlider(FormComponent):
         minimum: float = 0,
         maximum: float = 100,
         range_labels: list[str] | None = None,
+        extrema: list[str] | None = None,
         value: float | Callable | None = None,
         *,
         step: float | None = None,
         label: str | None = None,
         info: str | None = None,
         every: Timer | float | None = None,
-        inputs: Component | Sequence[Component] | set[Component] | None = None,
+        inputs: Component | list[Component] | set[Component] | None = None,
         show_label: bool | None = None,
         container: bool = True,
         scale: int | None = None,
@@ -54,6 +55,7 @@ class FrSlider(FormComponent):
             minimum: minimum value for slider.
             maximum: maximum value for slider.
             range_labels: text labels for slider values.
+            extrema: will display one text at each side of the component.
             value: default value. If callable, the function will be called whenever the app loads to set the initial value of the component. Ignored if randomized=True.
             step: increment between slider values.
             label: The label for this component. Appears above the component and is also used as the header if there are a table of examples for this component. If None and used in a `gr.Interface`, the label will be the name of the parameter this component is assigned to.
@@ -75,7 +77,7 @@ class FrSlider(FormComponent):
         self.minimum = minimum
         self.maximum = maximum
         self.range_labels = range_labels
-        
+        self.extrema = extrema or [minimum, maximum]
         if step is None:
             difference = maximum - minimum
             power = math.floor(math.log10(difference) - 2)
