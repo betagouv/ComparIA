@@ -177,9 +177,13 @@ with gr.Blocks(
                 interactive=False,
             )
 
-            retry_modal_btn = gr.Button(value="",elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
-                                        #  icon="assets/dsfr/icons/system/refresh-line.svg", 
-                                         scale=1, visible=False)
+            retry_modal_btn = gr.Button(
+                value="",
+                elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
+                #  icon="assets/dsfr/icons/system/refresh-line.svg",
+                scale=1,
+                visible=False,
+            )
 
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
@@ -248,7 +252,7 @@ with gr.Blocks(
                 "Le modèle B est un peu mieux",
                 "Je préfère de loin le modèle B",
             ],
-                # label="Les réponses étaient-elles pertinentes ?",
+            # label="Les réponses étaient-elles pertinentes ?",
             # info="Critères : réponses utiles, correctes factuelles, précises",
         )
 
@@ -409,16 +413,19 @@ with gr.Blocks(
         label="Max output tokens",
     )
 
-        # Modals
+    # Modals
     with Modal(elem_id="retry-modal") as retry_modal:
-        gr.Markdown("""## Etes-vous sûr·e ?""")
+        gr.HTML(
+            """<h1 class="fr-modal__title"><span class="class="fr-icon-arrow-right-line fr-icon--lg"></span> Etes-vous sûr·e de quitter sans voter ?</h1>
+<p>Vous êtes sur le point de recommencer une nouvelle conversation sans avoir voté sur celle-ci qui est en cours.</p>"""
+        )
+        close_retry_modal_btn = gr.Button(
+            value="Non, annuler", elem_classes="fr-btn fr-btn--secondary", scale=1
+        )
         retry_btn = gr.Button(
-                    icon="assets/extra-icons/refresh-blue.svg",
-                    value="",
-                    elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line",
-                    scale=1
-                )
-            
+            value="Oui, recommencer une conversation", elem_classes="fr-btn", scale=1
+        )
+
     from languia.controllers import register_listeners
 
     register_listeners()

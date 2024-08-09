@@ -490,3 +490,11 @@ li.fr-nav__item {
   -webkit-mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
   mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
 }
+
+.fr-icon-arrow-right-line::before,
+.fr-icon-arrow-right-line::after {
+  background-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+}

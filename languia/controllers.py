@@ -736,7 +736,13 @@ def register_listeners():
         inputs=[],
         outputs=retry_modal,
     )
-
+    gr.on(
+        triggers=close_retry_modal_btn.click,
+        fn=(lambda: Modal(visible=False)),
+        inputs=[],
+        outputs=retry_modal,
+    )
+    
     # On reset go to mode selection mode_screen
     # gr.on(
     #     triggers=[retry_btn.click],
