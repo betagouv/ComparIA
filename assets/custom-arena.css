@@ -448,13 +448,13 @@ li.fr-nav__item {
   mask-image: url("file=assets/extra-icons/pass-expired.svg");
 }
 
-/* .fr-icon-refresh-line::before, 
+.fr-icon-refresh-line::before, 
 .fr-icon-refresh-line::after {
   background-color: var(--text-action-high-blue-france);
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/system/refresh-line.svg");
-  mask-image: url("file=assets/dsfr/system/refresh-line.svg");
-} */
+  -webkit-mask-image: url("file=assets/extra-icons/refresh-blue.svg");
+  mask-image: url("file=assets/extra-icons/refresh-blue.svg");
+}
 
 .fr-icon-code-view::before {
   background-image: url("file=assets/dsfr/icons/editor/code-view.svg");
@@ -489,4 +489,12 @@ li.fr-nav__item {
 
   -webkit-mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
   mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
+}
+
+.fr-icon-arrow-right-line::before,
+.fr-icon-arrow-right-line::after {
+  background-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
 }

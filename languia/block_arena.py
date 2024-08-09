@@ -168,23 +168,21 @@ with gr.Blocks(
                 elem_id="send-btn",
                 elem_classes="fr-btn fr-col-6 fr-col-md-1",
             )
-            # FIXME: visible=false not working?
-            # retry_btn = gr.Button(
-            #     icon="assets/dsfr/icons/system/refresh-line.svg",
-            #     value="",
-            #     elem_classes="icon-blue fr-btn fr-btn--secondary",
-            #     # elem_classes="fr-icon-refresh-line",
-            #     visible=False,
-            #     # render=False,
-            #     scale=1,
-            # )
+
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire
             conclude_btn = gr.Button(
                 value="Terminer et donner mon avis",
                 elem_classes="fr-btn fr-col-12 fr-col-md-4",
                 visible=False,
                 interactive=False,
+            )
+
+            retry_modal_btn = gr.Button(
+                value="",
+                elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
+                #  icon="assets/dsfr/icons/system/refresh-line.svg",
+                scale=1,
+                visible=False,
             )
 
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
@@ -254,7 +252,7 @@ with gr.Blocks(
                 "Le modèle B est un peu mieux",
                 "Je préfère de loin le modèle B",
             ],
-                # label="Les réponses étaient-elles pertinentes ?",
+            # label="Les réponses étaient-elles pertinentes ?",
             # info="Critères : réponses utiles, correctes factuelles, précises",
         )
 
@@ -414,6 +412,19 @@ with gr.Blocks(
         interactive=False,
         label="Max output tokens",
     )
+
+    # Modals
+    with Modal(elem_id="retry-modal") as retry_modal:
+        gr.HTML(
+            """<h1 class="fr-modal__title"><span class="class="fr-icon-arrow-right-line fr-icon--lg"></span> Etes-vous sûr·e de quitter sans voter ?</h1>
+<p>Vous êtes sur le point de recommencer une nouvelle conversation sans avoir voté sur celle-ci qui est en cours.</p>"""
+        )
+        close_retry_modal_btn = gr.Button(
+            value="Non, annuler", elem_classes="fr-btn fr-btn--secondary", scale=1
+        )
+        retry_btn = gr.Button(
+            value="Oui, recommencer une conversation", elem_classes="fr-btn", scale=1
+        )
 
     from languia.controllers import register_listeners
 
