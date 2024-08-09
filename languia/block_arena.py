@@ -168,24 +168,18 @@ with gr.Blocks(
                 elem_id="send-btn",
                 elem_classes="fr-btn fr-col-6 fr-col-md-1",
             )
-            # FIXME: visible=false not working?
-            # retry_btn = gr.Button(
-            #     icon="assets/dsfr/icons/system/refresh-line.svg",
-            #     value="",
-            #     elem_classes="icon-blue fr-btn fr-btn--secondary",
-            #     # elem_classes="fr-icon-refresh-line",
-            #     visible=False,
-            #     # render=False,
-            #     scale=1,
-            # )
+
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            # TODO: griser le bouton "Terminer et donner mon avis" tant que les LLM n'ont pas fini d'écrire
             conclude_btn = gr.Button(
                 value="Terminer et donner mon avis",
                 elem_classes="fr-btn fr-col-12 fr-col-md-4",
                 visible=False,
                 interactive=False,
             )
+
+            retry_modal_btn = gr.Button(value="",elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
+                                        #  icon="assets/dsfr/icons/system/refresh-line.svg", 
+                                         scale=1, visible=False)
 
     with gr.Group(elem_id="chat-area", visible=False) as chat_area:
         with gr.Row():
@@ -415,6 +409,16 @@ with gr.Blocks(
         label="Max output tokens",
     )
 
+        # Modals
+    with Modal(elem_id="retry-modal") as retry_modal:
+        gr.Markdown("""## Etes-vous sûr·e ?""")
+        retry_btn = gr.Button(
+                    icon="assets/extra-icons/refresh-blue.svg",
+                    value="",
+                    elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line",
+                    scale=1
+                )
+            
     from languia.controllers import register_listeners
 
     register_listeners()

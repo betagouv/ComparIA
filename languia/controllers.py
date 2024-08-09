@@ -79,7 +79,7 @@ def register_listeners():
     def init_models(request: gr.Request):
 
         # app_state.model_left, app_state.model_right = get_battle_pair(
-        model_left,model_right = get_battle_pair(
+        model_left, model_right = get_battle_pair(
             config.models,
             BATTLE_TARGETS,
             outage_models,
@@ -87,13 +87,14 @@ def register_listeners():
             SAMPLING_BOOST_MODELS,
         )
         conversations = [
-                # NOTE: replacement of gr.State() to ConversationState happens here
-                ConversationState(model_name=model_left),
-                ConversationState(model_name=model_right),
-            ]
+            # NOTE: replacement of gr.State() to ConversationState happens here
+            ConversationState(model_name=model_left),
+            ConversationState(model_name=model_right),
+        ]
         logger.info(
-            "Picked 2 models: " + model_left + " and " + model_right
-        , extra={request: request})
+            "Picked 2 models: " + model_left + " and " + model_right,
+            extra={request: request},
+        )
 
         return conversations
 
@@ -257,7 +258,7 @@ def register_listeners():
         conversations = [conversation_a, conversation_b]
 
         model_list = [conversations[i].model_name for i in range(config.num_sides)]
-        
+
         # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
         # if flagged:
@@ -400,7 +401,7 @@ def register_listeners():
             # retry_btn
             # + [gr.update(visible=True)]
             # conclude_btn
-            + [gr.update(visible=True, interactive=True)]
+            + [gr.update(visible=True, interactive=False)]
         )
 
     def check_answers(conversation_a, conversation_b, request: gr.Request):
@@ -453,11 +454,13 @@ def register_listeners():
         # )
 
         # enable conclude_btn
+        # show retry_btn
         return (
             [conversation_a]
             + [conversation_b]
             + chatbots
             + [gr.update(interactive=True)]
+            + [gr.update(visible=True)]
             + [textbox]
         )
 
@@ -488,7 +491,11 @@ def register_listeners():
     ).then(
         fn=check_answers,
         inputs=conversations,
-        outputs=conversations + chatbots + [conclude_btn] + [textbox],
+        outputs=conversations
+        + chatbots
+        + [conclude_btn]
+        + [retry_modal_btn]
+        + [textbox],
         api_name=False,
     )
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
@@ -722,6 +729,13 @@ def register_listeners():
             gr.update(visible=True, value=reveal_html),
             gr.update(visible=False),
         ]
+
+    gr.on(
+        triggers=retry_modal_btn.click,
+        fn=(lambda: Modal(visible=True)),
+        inputs=[],
+        outputs=retry_modal,
+    )
 
     # On reset go to mode selection mode_screen
     # gr.on(
