@@ -94,7 +94,7 @@
 	$: value, handle_change();
 </script>
 
-<div id={elem_id} class="custom-slider {visible} {elem_classes}">
+<div id={elem_id} class="custom-slider {visible ? 'hide' : ''} {elem_classes}">
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
 		i18n={gradio.i18n}
@@ -153,7 +153,7 @@
 </div>
 
 <style>
-	.custom-slider {
+	.fr-range-group {
 		display: flex;
 	}
 	
