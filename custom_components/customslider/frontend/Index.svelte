@@ -9,6 +9,14 @@
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import { afterUpdate } from "svelte";
 
+	import "@gouvfr/dsfr/dist/scheme/scheme.css";
+	import "@gouvfr/dsfr/dist/core/core.css";
+	import "@gouvfr/dsfr/dist/component/form/form.css";
+	import "@gouvfr/dsfr/dist/component/link/link.css";
+	import "@gouvfr/dsfr/dist/component/button/button.css";
+	import "@gouvfr/dsfr/dist/component/input/input.css";
+	import "@gouvfr/dsfr/dist/component/range/range.css";
+
 	export let gradio: Gradio<{
 		change: never;
 		input: never;
@@ -18,12 +26,14 @@
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
+	export let extrema: string[] = [];
+	export let range_labels: string[] = [];
 	export let value = 0;
 	export let label = gradio.i18n("slider.slider");
 	export let info: string | undefined = undefined;
-	export let container = true;
-	export let scale: number | null = null;
-	export let min_width: number | undefined = undefined;
+	// export let container = true;
+	// export let scale: number | null = null;
+	// export let min_width: number | undefined = undefined;
 	export let minimum: number;
 	export let maximum = 100;
 	export let step: number;
@@ -32,8 +42,11 @@
 	export let loading_status: LoadingStatus;
 	export let value_is_output = false;
 
+	let currentLabel: number;
+	let labelIndex: number;
+
 	let rangeInput: HTMLInputElement;
-	let numberInput: HTMLInputElement;
+	// let numberInput: HTMLInputElement;
 
 	const id = `range_id_${_id++}`;
 
@@ -59,15 +72,21 @@
 	function setSlider(): void {
 		setSliderRange();
 		rangeInput.addEventListener("input", setSliderRange);
-		numberInput.addEventListener("input", setSliderRange);
+		// numberInput.addEventListener("input", setSliderRange);
 	}
 	function setSliderRange(): void {
 		const dividend = Number(rangeInput.value) - Number(rangeInput.min);
 		const divisor = Number(rangeInput.max) - Number(rangeInput.min);
 		const h = divisor === 0 ? 0 : dividend / divisor;
 		rangeInput.style.backgroundSize = h * 100 + "% 100%";
+		setRangeLabel(h);
 	}
 
+	function setRangeLabel(h: number): void {
+		if (range_labels && range_labels.length) {
+			currentLabel = Math.round(Number((range_labels.length - 1) * h));
+		}
+	}
 	$: disabled = !interactive;
 
 	// When the value changes, dispatch the change event via handle_change()
@@ -75,58 +94,86 @@
 	$: value, handle_change();
 </script>
 
-<Block {visible} {elem_id} {elem_classes} {container} {scale} {min_width}>
+<div id={elem_id} class="custom-slider {visible} {elem_classes}">
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
 		i18n={gradio.i18n}
 		{...loading_status}
 		on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
 	/>
+	<label class="fr-label" for={id}>
+		{#if show_label}
+			{label}
+			<span class="fr-hint-text">{info}</span>
+		{/if}
+	</label>
 
-	<div class="wrap">
-		<div class="head">
-			<label for={id}>
-				<BlockTitle {show_label} {info}>{label}</BlockTitle>
-			</label>
+	<div class="fr-range-group">
+		{#if extrema.length == 2}
+			<span class="fr-range__left" aria-hidden="true"
+				>{extrema[0]}</span
+			>
+			<span class="fr-range__right" aria-hidden="true"
+				>{extrema[1]}</span
+			>
+		{/if}
+		<div class="fr-range fr-range--step" data-fr-js-range="true">
 
+			<span class="fr-range__output hide">{value}</span
+			>
 			<input
-				aria-label={`number input for ${label}`}
-				data-testid="number-input"
-				type="number"
+				type="range"
+				{id}
+				name={id}
 				bind:value
-				bind:this={numberInput}
+				bind:this={rangeInput}
 				min={minimum}
 				max={maximum}
-				on:blur={clamp}
 				{step}
 				{disabled}
 				on:pointerup={handle_release}
+				aria-label={`range slider for ${label}`}
 			/>
+			{#if range_labels.length != 0}
+				{#each range_labels as range_label, labelIndex}
+					<span
+						class="fr-range__custom-label{
+						currentLabel == labelIndex
+							? ' spotlight'
+							: ''}"
+						aria-hidden="true">{range_label}</span
+					>
+				{/each}
+			{:else}
+				<span class="fr-range__min" aria-hidden="true">{minimum}</span>
+				<span class="fr-range__max" aria-hidden="true">{maximum}</span>
+			{/if}
 		</div>
 	</div>
-
-	<input
-		type="range"
-		{id}
-		name="cowbell"
-		bind:value
-		bind:this={rangeInput}
-		min={minimum}
-		max={maximum}
-		{step}
-		{disabled}
-		on:pointerup={handle_release}
-		aria-label={`range slider for ${label}`}
-	/>
-</Block>
+</div>
 
 <style>
-	.wrap {
+	.custom-slider {
+		display: flex;
+	}
+	
+	.spotlight, .fr-range__left, .fr-range__right {
+		font-weight: 500;
+		color: var(--text-action-high-blue-france);
+	}
+	.fr-range--step[data-fr-js-range]::before,
+		.fr-range--step[data-fr-js-range]::after {
+			top: 0.5rem !important;
+		}
+	/* 	.fr-range[data-fr-js-range] .fr-range__output {
+			position: absolute;
+			top: -20px;
+		} */
+	/* .wrap {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 	}
-
 	.head {
 		display: flex;
 		justify-content: space-between;
@@ -175,7 +222,10 @@
 		height: 4px;
 		background: var(--neutral-200);
 		border-radius: 5px;
-		background-image: linear-gradient(var(--slider-color), var(--slider-color));
+		background-image: linear-gradient(
+			var(--slider-color),
+			var(--slider-color)
+		);
 		background-size: 0% 100%;
 		background-repeat: no-repeat;
 	}
@@ -229,5 +279,5 @@
 
 	input[type="range"]::-moz-range-track {
 		height: 12px;
-	}
+	} */
 </style>

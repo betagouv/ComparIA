@@ -29,6 +29,8 @@ class CustomSlider(FormComponent):
         self,
         minimum: float = 0,
         maximum: float = 100,
+        range_labels: list[str] | None = None,
+        extrema: list[str] | None = None,
         value: float | Callable | None = None,
         *,
         step: float | None = None,
@@ -52,6 +54,8 @@ class CustomSlider(FormComponent):
         Parameters:
             minimum: minimum value for slider.
             maximum: maximum value for slider.
+            range_labels: text labels for slider values.
+            extrema: will display one text at each side of the component.
             value: default value. If callable, the function will be called whenever the app loads to set the initial value of the component. Ignored if randomized=True.
             step: increment between slider values.
             label: The label for this component. Appears above the component and is also used as the header if there are a table of examples for this component. If None and used in a `gr.Interface`, the label will be the name of the parameter this component is assigned to.
@@ -72,6 +76,8 @@ class CustomSlider(FormComponent):
         """
         self.minimum = minimum
         self.maximum = maximum
+        self.range_labels = range_labels
+        self.extrema = extrema or [minimum, maximum]
         if step is None:
             difference = maximum - minimum
             power = math.floor(math.log10(difference) - 2)

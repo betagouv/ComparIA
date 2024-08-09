@@ -7,7 +7,6 @@ import gradio as gr
 
 from gradio_modal import Modal
 
-
 from languia.utils import (
     start_screen_html,
     stepper_html,
@@ -16,6 +15,7 @@ from languia.utils import (
 from custom_components.frbutton.backend.gradio_frbutton import FrButton
 from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
+from custom_components.customslider.backend.gradio_customslider import CustomSlider
 
 
 from languia import config
@@ -241,13 +241,12 @@ with gr.Blocks(
         #             "Je préfère de loin le modèle B",
         #         ],
         #     )
-        which_model_radio = FrSlider(
+        which_model_radio = CustomSlider(
             minimum=-1.5,
             maximum=+1.5,
             value=-3,
             step=1,
             show_label=False,
-            spotlight_mode=True,
             extrema=["Modèle A", "Modèle B"],
             range_labels=[
                 "Je préfère de loin le modèle A",
