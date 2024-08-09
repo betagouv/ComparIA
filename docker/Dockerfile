@@ -1,6 +1,6 @@
 # FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04 AS build
 # FROM debian:11-slim
-FROM python:3.9-slim AS base
+FROM python:3.10-slim AS base
 
 # RUN apt-get update -y && apt-get install -y python3.9 python3.9-distutils curl
 # RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
@@ -44,11 +44,21 @@ FROM base AS cc
 RUN apt update && apt install -y nodejs npm
 COPY --from=app /app /app
 WORKDIR /app/custom_components/frbutton
-RUN gradio cc install && npm i -D @gradio/preview
-RUN gradio cc build --no-generate-docs
+# TODO: factorize this
+RUN gradio cc install
+RUN gradio cc build --no-generate-docs --bump-version
 WORKDIR /app/custom_components/frinput
-RUN gradio cc install && npm i -D @gradio/preview
-RUN gradio cc build --no-generate-docs
+RUN gradio cc install
+RUN gradio cc build --no-generate-docs --bump-version
+WORKDIR /app/custom_components/frslider
+RUN gradio cc install
+# workaround
+RUN npm install @gouvfr/dsfr
+RUN gradio cc build --no-generate-docs --bump-version
+WORKDIR /app/custom_components/customslider
+RUN gradio cc install
+RUN npm install @gouvfr/dsfr
+RUN gradio cc build --no-generate-docs --bump-version
 
 # Comment these 2 lines if you want an image with node
 FROM app

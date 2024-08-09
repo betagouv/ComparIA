@@ -10,5 +10,18 @@ Elle est basée sur [Gradio](https://www.gradio.app/) et [FastChat](https://gith
 
 1. Personnaliser le fichier `register-api-endpoint-file.json` avec des clés d'API valide
 
-    - Avec Docker : `cd docker/; docker compose up -d`
-    - Sans Docker (mode debug) :  `pip install -r requirements.txt` puis `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` ou simplement `uvicorn main:app`
+### Avec Docker
+
+`cd docker/; docker compose up -d`
+
+### Sans Docker
+
+```bash
+pip install -r requirements.txt
+cd custom_components/frinput
+gradio cc install;gradio cc build --no-generate-docs
+cd ../../custom_components/frbutton
+gradio cc install;gradio cc build --no-generate-docs
+cd ../..
+```
+puis `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` ou simplement `uvicorn main:app`

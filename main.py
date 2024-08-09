@@ -10,6 +10,7 @@ import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from languia.block_arena import demo
+
 import logging
 import gradio as gr
 
@@ -44,8 +45,8 @@ app = gr.mount_gradio_app(
     demo,
     path="/arene",
     root_path="/arene",
-    allowed_paths=[config.assets_absolute_path],
-    # allowed_paths=[config.assets_absolute_path, "/tmp"],
+    # allowed_paths=[config.assets_absolute_path],
+    allowed_paths=[config.assets_absolute_path, "/tmp", "/tmp/gradio", "custom_components"],
     # allowed_paths=[config.assets_absolute_path, "/tmp", "custom_components"],
     show_error=config.debug,
 )

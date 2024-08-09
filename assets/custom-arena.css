@@ -1,5 +1,20 @@
-body {
-  margin: auto !important;
+/* BUGFIXES */
+/* Gradio overrides */
+
+label,
+fieldset {
+  background-color: var(--background-default-grey) !important;
+  border: none;
+}
+
+.form {
+  border: none;
+  background-color: transparent;
+}
+
+/* form label is in light grey */
+.has-info {
+  color: var(--text-title-grey) !important;
 }
 
 .app {
@@ -7,15 +22,19 @@ body {
   /* padding: var(--size-4) var(--size-8); */
 }
 
-/* Bug when fr-grid-row or other changes display property  */
-.hidden, .hide {
+/* TODO: find a better selector... */
+footer, .built-with,
+.show-api {
   display: none !important;
 }
 
-/* --raised-shadow: 0 1px 3px var(--shadow-color); */
-/* .raised {
-  filter: drop-shadow(var(--raised-shadow));
-} */
+/* Bug when fr-grid-row or other changes display property  */
+.hidden,
+.hide {
+  display: none !important;
+}
+
+/* DARK MODE FIXES */
 
 /* Temporary fixes for dark mode in arena: enforce clear mode */
 /* .dark .fr-label {
@@ -49,16 +68,14 @@ body.dark {
   background-color: var(--background-default-grey) !important;
 }
 
-/* Gradio overrides */
-label,
-fieldset {
-  background-color: var(--background-default-grey) !important;
-  border: none;
+.dark code {
+  background-color: var(--neutral-100);
 }
-
-.form {
-  border: none;
+.dark .modal-block {
+  background-color: var(--white);
+  color: var(--neutral-800) !important;
 }
+/* "COMPONENTS" (not custom components) */
 
 /* Radio button as DSFR-ish selectable tiles */
 .radio-tiles label.selected,
@@ -86,12 +103,11 @@ fieldset {
   display: none;
 }
 
-/* Utility classes */
+/* UTILITY CLASSES */
 
 .bolder {
   font-weight: 700;
 }
-
 /* 
 .icon-white img {
   filter: invert(100%);
@@ -108,28 +124,75 @@ fieldset {
   text-align: left;
 }
 
+.text-grey {
+  /* color: var(--block-title-text-color); */
+  /* color: var(--neutral-500); */
+  /* color: var(--text-default-grey); */
+  color: var(--text-mention-grey);
+  
+}
+
+.big-label
+ {
+  font-size: 1.175rem;
+    font-weight: 700;
+}
+
+.big-label textarea,
+.big-label input
+{
+  font-size: 1rem;
+  font-weight: 400;
+}
 .underline {
   --underline-hover-width: var(--underline-max-width);
 }
 
 /* General */
+body {
+  margin: auto !important;
+}
 
 .app {
   max-width: none !important;
   /* max-width: none; */
 }
 
+
 /* Screen by screen */
+
+/* Screen 0 */
+
+/* #stepper-html.sticky {
+  position: fixed;
+  top: 0;
+  z-index: 99;
+} */
+
+/* --raised-shadow: 0 1px 3px var(--shadow-color); */
+#stepper-html {
+  background-color: var(--background-raised-grey);
+  filter: drop-shadow(var(--raised-shadow));
+  /* hide top drop shadow by getting it closer to the header */
+  top: -16px;
+  /* transition: transform 0.3s ease-in-out; */
+}
+
 li.fr-nav__item {
   margin-bottom: 0;
 }
 
-/* TODO: correctly reenable drop shadows when needed */
-/* .fr-header {
+#header-html {
+  /* Required < 100 to be behind modal */
+  z-index: 98;
+}
+
+
+.fr-header {
   filter: none;
   border-bottom: 1px solid var(--border-default-grey);
-  filter: drop-shadow(var(--raised-shadow));
-} */
+  /* filter: drop-shadow(var(--raised-shadow)); */
+}
 
 #arena {
   margin: auto;
@@ -173,11 +236,6 @@ li.fr-nav__item {
 
 .mission {
   color: var(--text-default-info) !important;
-}
-
-.built-with,
-.show-api {
-  display: none !important;
 }
 
 .model-icon {
@@ -291,14 +349,49 @@ li.fr-nav__item {
   color: var(--text-action-high-blue-france);
 }
 
+/* TODO: don't do this on mobile */
 .your-choice {
   position: absolute;
   right: 2em;
 }
 
-.arena-footer {
-  box-shadow: inset 0 1px 0 0 var(--border-default-grey);
+
+#buttons-footer {
+  position: fixed;
+  padding: 1em 20%;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  background-color: var(--background-alt-grey);
+  border-top: solid 1px var(--border-default-grey);
+  z-index: 100;
+  /* box-shadow: inset 0 1px 0 0 var(--border-default-grey); */
   /* filter: drop-shadow(var(--raised-shadow)); */
+}
+
+
+#feedback-row
+{
+  background-color: var(--background-alt-grey);
+  border-top: solid 1px var(--border-default-grey);
+}
+
+.modal-block {
+  padding: 2rem;
+}
+
+/* Bend the modal component to our will */
+.modal-block .close {
+  margin: 20px 40px;
+  border: none;
+  box-shadow: none;
+  color: var(--text-action-high-blue-france);
+}
+.modal-block .close::before {
+  font-weight: 500;
+  padding-right: 15px;
+  content: "Fermer";
+  color: var(--text-action-high-blue-france);
 }
 
 /* Icons */
@@ -369,13 +462,13 @@ li.fr-nav__item {
   mask-image: url("file=assets/extra-icons/pass-expired.svg");
 }
 
-/* .fr-icon-refresh-line::before, 
+.fr-icon-refresh-line::before, 
 .fr-icon-refresh-line::after {
   background-color: var(--text-action-high-blue-france);
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/system/refresh-line.svg");
-  mask-image: url("file=assets/dsfr/system/refresh-line.svg");
-} */
+  -webkit-mask-image: url("file=assets/extra-icons/refresh-blue.svg");
+  mask-image: url("file=assets/extra-icons/refresh-blue.svg");
+}
 
 .fr-icon-code-view::before {
   background-image: url("file=assets/dsfr/icons/editor/code-view.svg");
@@ -410,4 +503,12 @@ li.fr-nav__item {
 
   -webkit-mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
   mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
+}
+
+.fr-icon-arrow-right-line::before,
+.fr-icon-arrow-right-line::after {
+  background-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
 }

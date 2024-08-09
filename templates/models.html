@@ -17,7 +17,8 @@
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
-                            <p class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mb-1w">Modèle ouvert</p>
+                            {% if
+                                model['distribution'] == "open-weights" %}<p class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mb-1w">Modèle ouvert</p>{% else %}<p class="fr-badge fr-badge--purple-glycine fr-badge--sm fr-mb-1w">Modèle propriétaire</p>{% endif%}
                             <h3 class="fr-card__title"><a href="#" data-fr-opened="false" aria-controls="fr-modal-{{ model['id'] }}">{{
                                 model['simple_name'] }} <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20"
                                  /></a></h3>

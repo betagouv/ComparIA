@@ -12,7 +12,6 @@ import gradio as gr
 import requests
 
 from fastchat.constants import (
-    LOGDIR,
     WORKER_API_TIMEOUT,
     ErrorCode,
     MODERATION_MSG,
@@ -36,13 +35,9 @@ from languia import config
 
 import logging as logger
 
-no_change_btn = gr.Button()
-enable_btn = gr.Button(interactive=True, visible=True)
-disable_btn = gr.Button(interactive=False)
-invisible_btn = gr.Button(interactive=False, visible=False)
 
-
-class ConversationState:
+# from gradio.components.base import Component
+class ConversationState(gr.State):
     def __init__(self, model_name="", is_vision=False):
         # TODO: use std OpenAI format instead
         # self.conv = get_conversation_template(model_name)
@@ -78,6 +73,7 @@ class ConversationState:
     # TODO: get rid
     def to_gradio_chatbot(self):
         return self.conv.to_gradio_chatbot()
+        # return self.conv.messages
 
     def dict(self):
         base = self.conv.dict()
@@ -106,20 +102,14 @@ def bot_response(
     top_p = float(top_p)
     max_new_tokens = int(max_new_tokens)
 
-    if state.skip_next:
-        # This generate call is skipped due to invalid inputs
-        state.skip_next = False
-        yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-        return
-
     if apply_rate_limit:
         ret = is_limit_reached(state.model_name, ip)
         if ret is not None and ret["is_limit_reached"]:
             error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
-            logger.info(f"rate limit reached. ip: {ip}. error_msg: {ret['reason']}")
-            state.conv.update_last_message(error_msg)
-            yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-            return
+            logger.warn(f"rate limit reached. ip: {ip}. error_msg: {ret['reason']}")
+            # state.conv.update_last_message(error_msg)
+            # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
+            raise RuntimeError(error_msg)
 
     conv, model_name = state.conv, state.model_name
     model_api_dict = (
@@ -129,18 +119,7 @@ def bot_response(
     )
 
     if model_api_dict is None:
-        conv.update_last_message(SERVER_ERROR_MSG)
-        yield (
-            state,
-            state.to_gradio_chatbot(),
-            disable_btn,
-            disable_btn,
-            disable_btn,
-            enable_btn,
-            enable_btn,
-        )
-        return
-
+        logger.critical("No model for model name: " + model_name)
     else:
         if use_recommended_config:
             recommended_config = model_api_dict.get("recommended_config", None)
@@ -165,56 +144,48 @@ def bot_response(
 
     # conv.update_last_message("▌")
     conv.update_last_message(html_code)
-    yield (state, state.to_gradio_chatbot()) + (disable_btn,) * 5
+    yield (state, state.to_gradio_chatbot())
 
-    try:
-        data = {"text": ""}
-        for i, data in enumerate(stream_iter):
-            if data["error_code"] == 0:
-                output = data["text"].strip()
-                # conv.update_last_message(output + "▌")
-                conv.update_last_message(output + html_code)
-                yield (state, state.to_gradio_chatbot()) + (disable_btn,) * 5
-            else:
-                output = data["text"] + f"\n\n(error_code: {data['error_code']})"
-                conv.update_last_message(output)
-                yield (state, state.to_gradio_chatbot()) + (
-                    disable_btn,
-                    disable_btn,
-                    disable_btn,
-                    enable_btn,
-                    enable_btn,
-                )
-                return
-        output = data["text"].strip()
-        conv.update_last_message(output)
-        yield (state, state.to_gradio_chatbot()) + (enable_btn,) * 5
-    except requests.exceptions.RequestException as e:
-        conv.update_last_message(
-            f"{SERVER_ERROR_MSG}\n\n"
-            f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
-        )
-        yield (state, state.to_gradio_chatbot()) + (
-            disable_btn,
-            disable_btn,
-            disable_btn,
-            enable_btn,
-            enable_btn,
-        )
-        return
-    except Exception as e:
-        conv.update_last_message(
-            f"{SERVER_ERROR_MSG}\n\n"
-            f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
-        )
-        yield (state, state.to_gradio_chatbot()) + (
-            disable_btn,
-            disable_btn,
-            disable_btn,
-            enable_btn,
-            enable_btn,
-        )
-        return
+    data = {"text": ""}
+    for i, data in enumerate(stream_iter):
+        if data["error_code"] == 0:
+            output = data["text"].strip()
+            # conv.update_last_message(output + "▌")
+            conv.update_last_message(output + html_code)
+            yield (state, state.to_gradio_chatbot())
+        else:
+            raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
+
+    output = data["text"].strip()
+    conv.update_last_message(output)
+    yield (state, state.to_gradio_chatbot())
+    # TODO: handle them great, or reboot arena saving initial prompt
+    # except requests.exceptions.RequestException as e:
+    #     conv.update_last_message(
+    #         f"{SERVER_ERROR_MSG}\n\n"
+    #         f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
+    #     )
+    #     yield (state, state.to_gradio_chatbot()) + (
+    #         disable_btn,
+    #         disable_btn,
+    #         disable_btn,
+    #         enable_btn,
+    #         enable_btn,
+    #     )
+    #     return
+    # except Exception as e:
+    #     conv.update_last_message(
+    #         f"{SERVER_ERROR_MSG}\n\n"
+    #         f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
+    #     )
+    #     yield (state, state.to_gradio_chatbot()) + (
+    #         disable_btn,
+    #         disable_btn,
+    #         disable_btn,
+    #         enable_btn,
+    #         enable_btn,
+    #     )
+    #     return
 
     finish_tstamp = time.time()
     logger.info(f"{output}")

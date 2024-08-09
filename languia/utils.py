@@ -9,24 +9,107 @@ from random import randrange
 
 import json
 
-# from fastchat.utils import (
-#     # moderation_filter,
-# )
+from fastchat.utils import (
+    moderation_filter,
+)
 
-import logging as logger
+import logging
+from logging.handlers import WatchedFileHandler
+import sys
 
 import datetime
-from fastchat.constants import LOGDIR
+
 import requests
 
 from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
 
 from slugify import slugify
 
+LOGDIR = os.getenv("LOGDIR", "./data")
+
+
+class CustomFormatter(logging.Formatter):
+    def format(self, record):
+
+        msg = super().format(record)
+
+        # Parse the message as JSON
+        try:
+            log_data = json.loads(msg)
+        except json.JSONDecodeError:
+            # Handle cases where the message isn't valid JSON
+            log_data = {"message": msg}
+
+        # if 'request' in record.args:
+        if hasattr(record, "request"):
+            # log_data = record.request
+            # request_dict = record.request.kwargs
+            log_data["query_params"] = dict(record.request.query_params)
+            log_data["path_params"] = dict(record.request.path_params)
+            log_data["ip"] = get_ip(record.request)
+            log_data["session_hash"] = record.request.session_hash
+            # if isinstance(request_di  ct, dict):
+            #     request_json = json.dumps(request_dict)
+            # delattr(record, 'request')
+        if hasattr(record, "prompt"):
+            log_data["prompt"] = record.prompt
+        if hasattr(record, "details"):
+            log_data["details"] = record.details
+        if hasattr(record, "models"):
+            log_data["models"] = record.models
+        if hasattr(record, "conversations"):
+            log_data["conversations"] = record.conversations
+
+        # Add the args dictionary to the JSON payload
+        # log_data.update(record.args)
+        # Convert the updated dictionary back to JSON
+        return json.dumps(log_data)
+
+
+def build_logger(logger_filename):
+    # Get logger
+    logger = logging.getLogger("languia")
+    logger.setLevel(logging.INFO)
+
+    # file_formatter = CustomFormatter(
+    #     '{"time":"%(asctime)s", "name": "%(name)s", \
+    #     "level": "%(levelname)s", "message": "%(message)s", \
+    #     "ip": "%(ip)s", "query_params": "%(query_params)s", \
+    #     "path_params": "%(path_params)s", "session_hash": "%(session_hash)s"}',
+    file_formatter = CustomFormatter(
+        '{"time":"%(asctime)s", "name": "%(name)s", \
+        "level": "%(levelname)s", "message": "%(message)s"}',
+        # defaults={"request": ""},
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    # stream_formatter = logging.Formatter(
+    #     fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    #     datefmt="%Y-%m-%d %H:%M:%S",
+    # )
+    # stream_handler = logging.StreamHandler()
+    # stream_logger.addHandler(stream_handler)
+
+    # Avoid httpx flooding POST logs
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+
+    # if LOGDIR is empty, then don't try output log to local file
+    if LOGDIR != "":
+        os.makedirs(LOGDIR, exist_ok=True)
+        filename = os.path.join(LOGDIR, logger_filename)
+        file_handler = WatchedFileHandler(filename, encoding="utf-8")
+        file_handler.setFormatter(file_formatter)
+
+        logger.addHandler(file_handler)
+    return logger
+
 
 def get_ip(request: gr.Request):
-    if "cf-connecting-ip" in request.headers:
-        ip = request.headers["cf-connecting-ip"]
+    # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
+    if "cloud-protector-client-ip" in request.headers:
+        ip = request.headers["cloud-protector-client-ip"]
+    elif "x-original-forwarded-for" in request.headers:
+        ip = request.headers["x-original-forwarded-for"]
     elif "x-forwarded-for" in request.headers:
         ip = request.headers["x-forwarded-for"]
     else:
@@ -34,41 +117,80 @@ def get_ip(request: gr.Request):
     return ip
 
 
+def log_poll(
+    conversation_a,
+    conversation_b,
+    chatbot_use,
+    gender,
+    age,
+    profession,
+    request: gr.Request,
+):
+    logger = logging.getLogger("languia")
+    # logger.info(f"poll", extra={"request": request,
+    #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
+    #     },
+    # )
+
+    with open(get_conv_log_filename(), "a") as fout:
+        data = {
+            "tstamp": round(time.time(), 4),
+            "type": "poll",
+            "models": [x.model_name for x in [conversation_a, conversation_b]],
+            "conversations": [x.dict() for x in [conversation_a, conversation_b]],
+            "chatbot_use": chatbot_use,
+            "gender": gender,
+            "age": age,
+            "profession": profession,
+            # FIXME:
+            # "ip": get_ip(request),
+        }
+        logging.info(json.dumps(data), extra={"request": request})
+        fout.write(json.dumps(data) + "\n")
+
+    return data
+
+
 def vote_last_response(
-    conversations_state,
+    conversations,
     vote_type,
-    # _model_selectors,
     details: list,
     request: gr.Request,
 ):
-    logger.info(f"{vote_type}_vote (anony). ip: {get_ip(request)}")
-    details_str = json.dumps(details)
-    logger.info(f"details: {details_str}")
+    logger = logging.getLogger("languia")
+    logger.info(f"{vote_type}_vote", extra={"request": request})
+    logger.info(
+        f"{vote_type}_vote",
+        extra={
+            "request": request,
+            "vote": vote_type,
+            "details": details,
+            "models": [x.model_name for x in conversations],
+            "conversations": [x.dict() for x in conversations],
+        },
+    )
 
     with open(get_conv_log_filename(), "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
             "type": vote_type,
-            "models": [x.model_name for x in conversations_state],
-            "conversations_state": [x.dict() for x in conversations_state],
-            "ip": get_ip(request),
+            "models": [x.model_name for x in conversations],
+            "conversations": [x.dict() for x in conversations],
+            # FIXME:
+            # "ip": get_ip(request),
         }
         if details != []:
             data.update(details=details),
-        logger.info(json.dumps(data))
+        logging.info(json.dumps(data), extra={"request": request})
         fout.write(json.dumps(data) + "\n")
 
-    # names = (
-    #     "### Model A: " + conversations_state[0].model_name,
-    #     "### Model B: " + conversations_state[1].model_name,
-    # )
     return data
     # yield names + ("",)
 
 
 def stepper_html(title, step, total_steps):
     return f"""
-    <div class="fr-stepper">
+    <div class="fr-stepper fr-container fr-pb-2w">
     <h2 class="fr-stepper__title">
         {title}
         <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
@@ -102,14 +224,20 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
     return weight
 
 
+# TODO: add to outage_models for next n min when detected an error
+# TODO: simplify battle targets formula
 def get_battle_pair(
     models, battle_targets, outage_models, sampling_weights, sampling_boost_models
 ):
-
+    models = [model for model in models if model not in outage_models]
+    logger = logging.getLogger("languia")
     if len(models) == 0:
+        logger.critical("Model list doesn't contain any model")
+        # Maybe sleep then kill container?
         raise ValueError("Model list doesn't contain any model")
 
     if len(models) == 1:
+        logger.warn("Only one model configured! Making it fight with itself")
         return models[0], models[0]
 
     model_weights = []
@@ -189,14 +317,17 @@ size_desc = {
     "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
     "S": "Un modèle de petit gabarit (7 à 20 milliards de paramètres) est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
     "M": "Les modèles moyens, entre 20 et 70 milliards de paramètres, offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-    "L": "Les grands modèles, avec plus de 70 milliards de paramètres, sont les plus complexes et nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
+    "L": "Les grands modèles, avec plus de 70 milliards de paramètres, nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
+    "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
 }
 license_desc = {
     "MIT": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur.",
     "Apache 2.0": "Cette licence permet d'utiliser, modifier et distribuer librement, même à des fins commerciales. Outre la liberté d’utilisation, elle garantit la protection juridique en incluant une clause de non-atteinte aux brevets et la transparence : toutes les modifications doivent être documentées et sont donc traçables.",
     "Gemma": "Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagée avec la communauté sous la même licence, favorisant ainsi la collaboration et la transparence dans le développement logiciel.",
     "Llama 3 Community": "Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta.",
+    "Llama 3.1 Community": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
     "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
+    "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités",
 }
 
 
@@ -212,9 +343,9 @@ def build_reveal_html(
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
     chosen_model = None
-    if which_model_radio == "leftvote":
+    if which_model_radio in [-1.5, -0.5]:
         chosen_model = "model-a"
-    if which_model_radio == "rightvote":
+    if which_model_radio in [0.5, 1.5]:
         chosen_model = "model-b"
 
     return template.render(
@@ -252,6 +383,7 @@ def get_conv_log_filename(is_vision=False, has_csam_image=False):
 def build_model_extra_info(name: str, all_models_extra_info_json: dict):
     # Maybe put orgs countries in an array here
     std_name = slugify(name.lower())
+    logger = logging.getLogger("languia")
     if std_name in all_models_extra_info_json:
         model = all_models_extra_info_json[std_name]
         # TODO: Should use a dict instead
@@ -272,7 +404,7 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
                     + std_name
                     + ", infering from friendly size (when closed model for example)"
                 )
-                size_to_params = {"XS": 3, "S": 7, "M": 35, "L": 70}
+                size_to_params = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
                 model["params"] = size_to_params[model["friendly_size"]]
 
         # Let's suppose q8
@@ -320,6 +452,7 @@ def get_model_extra_info(name: str, models_extra_info: list):
 
 
 def get_model_list(controller_url, register_api_endpoint_file):
+    logger = logging.getLogger("languia")
 
     # Add models from the controller
     if controller_url:
@@ -344,16 +477,17 @@ def get_model_list(controller_url, register_api_endpoint_file):
 
 
 def is_limit_reached(model_name, ip):
-    monitor_url = "http://localhost:9090"
-    try:
-        ret = requests.get(
-            f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
-        )
-        obj = ret.json()
-        return obj
-    except Exception as e:
-        logger.info(f"monitor error: {e}")
-        return None
+    # FIXME:
+    # monitor_url = "http://localhost:9090"
+    # try:
+    #     ret = requests.get(
+    #         f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
+    #     )
+    #     obj = ret.json()
+    #     return obj
+    # except Exception as e:
+    #     logging.info(f"monitor error: {e}")
+    return None
 
 
 def count_output_tokens(roles, messages) -> int:
@@ -366,6 +500,7 @@ def get_llm_impact(
     model_extra_info, model_name: str, token_count: int, request_latency: float
 ) -> dict:
     """Compute or fallback to estimated impact for an LLM."""
+    logger = logging.getLogger("languia")
     # TODO: add request latency
     # FIXME: most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
     # model_active_parameter_count: ValueOrRange,
@@ -384,8 +519,7 @@ def get_llm_impact(
         else:
             if "params" in model_extra_info:
                 # TODO: add request latency
-                print(model_extra_info["params"])
-            # FIXME: multiply by 1_000_000?
+                # FIXME: multiply by 1_000_000?
                 impact = compute_llm_impacts(
                     model_active_parameter_count=int(model_extra_info["params"]),
                     model_total_parameter_count=int(model_extra_info["params"]),

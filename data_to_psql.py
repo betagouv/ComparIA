@@ -10,6 +10,7 @@ DB_CONNECTION = os.getenv("DB_CONNECTION")
 
 # Directory containing the JSON files
 json_directory = "./data/s3_prod"
+# json_directory = os.getenv("LOGDIR") or "./data"
 
 # Connect to PostgreSQL
 
@@ -28,38 +29,55 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
     models TEXT,
     state_a JSONB,
     state_b JSONB,
+    model_a_name TEXT,
+    model_b_name TEXT,
     ip TEXT,
     details JSONB
 );
 """
 )
-    # Loop through each JSON file in the directory
+
+# Create the logs table if it doesn't exist
+cur.execute(
+    """
+CREATE TABLE IF NOT EXISTS logs (
+    id SERIAL PRIMARY KEY,
+    tstamp TIMESTAMP,
+    msg JSONB
+);
+"""
+)
+# Loop through each JSON file in the directory
 for filename in os.listdir(json_directory):
-    if filename.endswith(".json"):
+    if filename.endswith(".json") and filename.startswith("conv-"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
             for line in file:
-                try: 
+                # try:
                     data = json.loads(line)
 
-                    if data.get("type") not in ["leftvote","rightvote","bothbad"]:
+                    if data.get("type") not in ["leftvote", "rightvote", "bothbad"]:
                         if data.get("type") != "chat":
-                            print("Ignoring event "+data.get("type"))
+                            print("Ignoring event " + data.get("type"))
                         continue
 
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
                         """
-                    INSERT INTO conversation_logs (tstamp, type, conv_id, models, state_a, state_b, ip, details)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s);
+                    INSERT INTO conversation_logs (tstamp, type, conv_id, models, state_a, state_b, model_a_name, model_b_name, ip, details)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s,%s, %s, %s);
                     """
                     )
 
                     def build_conv_id(data):
                         conv_state = data.get("conversations_state", None)
                         if conv_state:
-                            return conv_state[0].get("conv_id", None)+"-"+conv_state[1].get("conv_id", None)
+                            return (
+                                conv_state[0].get("conv_id", None)
+                                + "-"
+                                + conv_state[1].get("conv_id", None)
+                            )
                         # elif data.get("state", None):
                         #     return data.get("state", None).get("conv_id", None)
                         else:
@@ -74,6 +92,8 @@ for filename in os.listdir(json_directory):
                     # model = data.get("model", None)
                     state_a = json.dumps(states[0])
                     state_b = json.dumps(states[1])
+                    model_a_name = json.dumps(states[0].model_name)
+                    model_b_name = json.dumps(states[1].model_name)
                     ip = data.get("ip", None)
                     details = json.dumps(data.get("details", {}))
 
@@ -87,17 +107,74 @@ for filename in os.listdir(json_directory):
                             models,
                             state_a,
                             state_b,
+                            model_a_name,
+                            model_b_name,
                             ip,
                             details,
                         ),
                     )
                     print("Data successfully parsed")
 
-                except Exception as e:
-                    print(f"An error occurred: {e}")
-                    print(traceback.format_exc())
-                    # continue
+                # except Exception as e:
+                #     print(f"An error occurred: {e}")
+                #     print(traceback.format_exc())
+                    #
+        print("Data from " + file_path + " successfully parsed")
 
+
+# Commit changes and close the connection
+conn.commit()
+print("All conversation data successfully committed into the database")
+
+# Create the logs table if it doesn't exist
+cur.execute(
+    """
+CREATE TABLE IF NOT EXISTS logs (
+    id SERIAL PRIMARY KEY,
+    tstamp TIMESTAMP,
+    msg JSONB
+);
+"""
+)
+for filename in os.listdir(json_directory):
+    if filename.endswith(".jsonl") and filename.startswith("logs-"):
+        file_path = os.path.join(json_directory, filename)
+
+        with open(file_path, "r") as file:
+            for line in file:
+                try:
+                    msg = json.loads(line)
+                    tstamp = msg.get("time")
+
+                    # Prepare SQL INSERT statement
+                    insert_query = sql.SQL(
+                        """
+                    INSERT INTO logs (tstamp, msg)
+                    VALUES (%s, %s);
+                    """
+                    )
+                    # print(tstamp)
+                    # print(json.dumps(msg))
+                    # Execute the insert statement
+                    cur.execute(
+                        insert_query,
+                        (
+                            tstamp,
+                            json.dumps(msg),
+                        ),
+                    )
+                except json.decoder.JSONDecodeError:
+                    print("Not JSON:" + str(line))
+                    print("Skipping file " + file_path)
+                    # print(traceback.format_exc())
+                    # continue
+                # except Exception as e:
+                    # print(f"An error occurred: {e}")
+                    # print("Line: " + str(line))
+                    # print(traceback.format_exc())
+                    # print("Skipping file " + file_path)
+        print("Data from " + file_path + " successfully parsed")
+    
 # Commit changes and close the connection
 conn.commit()
 print("All data successfully committed into the database")

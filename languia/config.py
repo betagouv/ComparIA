@@ -3,8 +3,17 @@ from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 import os
 import sentry_sdk
 import json
-import logging
 from slugify import slugify
+
+from languia.utils import build_logger
+import datetime
+from random import randrange
+
+t = datetime.datetime.now()
+random = randrange(10000)
+hostname = os.uname().nodename
+log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
+logger = build_logger(log_filename)
 
 num_sides = 2
 enable_moderation = False
@@ -45,7 +54,7 @@ if os.getenv("SENTRY_DSN"):
         environment=sentry_env,
         traces_sample_rate=traces_sample_rate,
     )
-    logging.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
+    logger.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
 
 # TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
 # if os.getenv("SENTRY_FRONT_DSN"):
@@ -109,6 +118,9 @@ site_head_js = (
     + matomo_js
 )
 
+with open("./assets/arena.js", encoding="utf-8") as js_file:
+    arena_js = js_file.read()
+
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
 with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
@@ -134,7 +146,7 @@ all_models_extra_info_json = {
 models_extra_info = [
     build_model_extra_info(model, all_models_extra_info_json) for model in models
 ]
-print(models_extra_info)
+# print(models_extra_info)
 
 headers = {"User-Agent": "FastChat Client"}
 controller_url = None
@@ -193,7 +205,7 @@ preprompts_table = {
         "Si je parle BD tu penses à quel pays ?",
         "Gérard Depardieu est il belge ou français ?",
         "La chanson française, c'est quoi au juste ? Donne moi des exemples variés.",
-        "Quelles différences entre l’humour français et l’humour britannique ? Donne quelques exemples."
+        "Quelles différences entre l’humour français et l’humour britannique ? Donne quelques exemples.",
     ],
 }
 
@@ -314,4 +326,4 @@ BATTLE_TARGETS = {
 SAMPLING_BOOST_MODELS = []
 
 # outage models won't be sampled.
-OUTAGE_MODELS = []
+outage_models = []

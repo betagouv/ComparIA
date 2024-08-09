@@ -1,4 +1,4 @@
-/*! DSFR v1.11.2 | SPDX-License-Identifier: MIT | License-Filename: LICENSE.md | restricted use (see terms and conditions) */
+/*! DSFR v1.12.1 | SPDX-License-Identifier: MIT | License-Filename: LICENSE.md | restricted use (see terms and conditions) */
 
 class State {
   constructor () {
@@ -59,7 +59,7 @@ const config = {
   prefix: 'fr',
   namespace: 'dsfr',
   organisation: '@gouvfr',
-  version: '1.11.2'
+  version: '1.12.1'
 };
 
 class LogLevel {
@@ -2645,42 +2645,43 @@ class Collapse extends Disclosure {
 
   init () {
     super.init();
-    this.listen('transitionend', this.transitionend.bind(this));
+    this.listen('transitionend', this.endCollapsing.bind(this));
   }
 
-  transitionend (e) {
+  endCollapsing (e) {
+    if (!this._isCollpasing) return;
+    if (this._timeout) clearTimeout(this._timeout);
+    this._timeout = null;
+    this._isCollpasing = false;
     this.removeClass(CollapseSelector.COLLAPSING);
     if (!this.isDisclosed) {
       if (this.isLegacy) this.style.maxHeight = '';
-      else this.style.removeProperty('--collapse-max-height');
     }
   }
 
   unbound () {
     if (this.isLegacy) this.style.maxHeight = 'none';
-    else this.style.setProperty('--collapse-max-height', 'none');
   }
 
   disclose (withhold) {
     if (this.isDisclosed === true || !this.isEnabled) return false;
     this.unbound();
-    this.request(() => {
-      this.addClass(CollapseSelector.COLLAPSING);
-      this.adjust();
-      this.request(() => {
-        super.disclose(withhold);
-      });
-    });
+    this.collapsing(() => super.disclose(withhold));
   }
 
   conceal (withhold, preventFocus) {
     if (this.isDisclosed === false) return false;
+    this.collapsing(() => super.conceal(withhold, preventFocus));
+  }
+
+  collapsing (request) {
+    this._isCollpasing = true;
+    if (this._timeout) clearTimeout(this._timeout);
+    this.addClass(CollapseSelector.COLLAPSING);
+    this.adjust();
     this.request(() => {
-      this.addClass(CollapseSelector.COLLAPSING);
-      this.adjust();
-      this.request(() => {
-        super.conceal(withhold, preventFocus);
-      });
+      request();
+      this._timeout = setTimeout(this.endCollapsing.bind(this), 500);
     });
   }
 
@@ -2958,9 +2959,15 @@ class Artwork extends Instance {
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(xhr.responseText, 'text/html');
       this.realSvgContent = xmlDoc.getElementById(this.svgName);
-
       if (this.realSvgContent) {
-        this.realSvgContent.classList.add(this.node.classList);
+        if (this.realSvgContent.tagName === 'symbol') {
+          this.use = xmlDoc.querySelector('use[href="#' + this.svgName + '"]');
+          if (this.use) this.node.parentNode.insertBefore(this.use, this.node);
+        } else {
+          // deprecated svg structure
+          this.realSvgContent.classList.add(this.node.classList);
+        }
+
         this.replace();
       }
     };
