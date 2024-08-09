@@ -125,7 +125,6 @@ def register_listeners():
 
     @free_mode_btn.click(
         inputs=[],
-        # js?
         outputs=[
             free_mode_btn,
             guided_mode_btn,
@@ -182,6 +181,18 @@ def register_listeners():
                 gr.update(visible=True),
                 gr.update(elem_classes="fr-container send-area-enabled"),
             ]
+        # .then(
+        #         js="""
+        # () => 
+        # {
+        #     console.log("rerolling");
+
+        #   const targetElement = document.getElementById('guided-area');
+        #     targetElement.scrollIntoView({ 
+        #       behavior: 'smooth'
+        #     });
+        #   }
+        # """)
 
     # Step 1.1
 
