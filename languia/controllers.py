@@ -461,7 +461,10 @@ def register_listeners():
             + chatbots
             + [gr.update(interactive=True)]
             + [gr.update(visible=True)]
-            + [textbox]
+            + [ gr.update(
+                    value="",
+                    placeholder="Continuer à discuter avec les deux modèles",
+                )]
         )
 
     gr.on(
@@ -744,43 +747,64 @@ def register_listeners():
     )
     
     # On reset go to mode selection mode_screen
-    # gr.on(
-    #     triggers=[retry_btn.click],
-    #     api_name=False,
-    #     # triggers=[clear_btn.click, retry_btn.click],
-    #     fn=clear_history,
-    #     inputs=conversations + chatbots + [textbox],
-    #     # inputs=conversations + chatbots + model_selectors + [textbox],
-    #     # List of objects to clear
-    #     outputs=conversations + chatbots
-    #     # + model_selectors
-    #     + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen],
-    # )
+        
+    def clear_history(
+        conversation_a,
+        conversation_b,
+        chatbot0,
+        chatbot1,
+        textbox,
+        request: gr.Request,
+    ):
+        logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+        #     + chatbots
+        # + [textbox]
+        # + [chat_area]
+        # + [vote_area]
+        # + [supervote_area]
+        # + [mode_screen],
 
 
-# def clear_history(
-#     conversation_a,
-#     conversation_b,
-#     chatbot0,
-#     chatbot1,
-#     textbox,
-#     request: gr.Request,
-# ):
-#     logger.info(f"clear_history (anony). ip: {get_ip(request)}")
-#     #     + chatbots
-#     # + [textbox]
-#     # + [chat_area]
-#     # + [vote_area]
-#     # + [supervote_area]
-#     # + [mode_screen],
-#     return [
-#         None,
-#         None,
-#         None,
-#         None,
-#         "",
-#         gr.update(visible=False),
-#         gr.update(visible=False),
-#         gr.update(visible=False),
-#         gr.update(visible=True),
-#     ]
+        # app_state.model_left, app_state.model_right = get_battle_pair(
+        model_left, model_right = get_battle_pair(
+            config.models,
+            BATTLE_TARGETS,
+            outage_models,
+            SAMPLING_WEIGHTS,
+            SAMPLING_BOOST_MODELS,
+        )
+        conversation_a = ConversationState(model_name=model_left)
+        conversation_b = ConversationState(model_name=model_right)
+        logger.info(
+            "Picked 2 models: " + model_left + " and " + model_right,
+            extra={request: request},
+        )
+        return [
+            # Conversations
+            conversation_a,
+            conversation_b,
+            None,
+            None,
+            gr.update(value="",placeholder="Réinterrogez deux nouveaux modèles"),
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=False),
+            gr.update(visible=True),
+            # retry_modal
+            Modal(visible=False),
+            #  conclude_btn + retry_modal_btn
+            gr.update(visible=False),
+            gr.update(visible=False),
+        ]
+
+    gr.on(
+        triggers=[retry_btn.click],
+        api_name=False,
+        # triggers=[clear_btn.click, retry_btn.click],
+        fn=clear_history,
+        inputs=conversations + chatbots + [textbox],
+        # List of objects to clear
+        outputs=conversations + chatbots
+        + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen] + [retry_modal] + [conclude_btn] + [retry_modal_btn],
+
+    )
