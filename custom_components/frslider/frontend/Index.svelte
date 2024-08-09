@@ -86,7 +86,7 @@
 	$: value, handle_change();
 </script>
 
-<div id={elem_id} class="{visible} {elem_classes}">
+<div id={elem_id} class="{elem_classes} {visible ? '' : 'hide'}">
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
 		i18n={gradio.i18n}
@@ -133,123 +133,23 @@
 </div>
 
 <style>
-	.fr-range--step[data-fr-js-range]::before,
+	/* .fr-range--step[data-fr-js-range]::before,
 		.fr-range--step[data-fr-js-range]::after {
 			top: 0.5rem !important;
-		}
+		} */
 	/* 	.fr-range[data-fr-js-range] .fr-range__output {
 			position: absolute;
 			top: -20px;
 		} */
-	/* .wrap {
-		display: flex;
-		flex-direction: column;
-		width: 100%;
-	}
-	.head {
-		display: flex;
-		justify-content: space-between;
-	}
-
-	input[type="number"] {
-		display: block;
-		position: relative;
-		outline: none !important;
-		box-shadow: var(--input-shadow);
-		border: var(--input-border-width) solid var(--input-border-color);
-		border-radius: var(--input-radius);
-		background: var(--input-background-fill);
-		padding: var(--size-2) var(--size-2);
-		height: var(--size-6);
-		color: var(--body-text-color);
-		font-size: var(--input-text-size);
-		line-height: var(--line-sm);
-		text-align: center;
-	}
-
+		
 	input:disabled {
 		-webkit-text-fill-color: var(--body-text-color);
 		-webkit-opacity: 1;
 		opacity: 1;
 	}
 
-	input[type="number"]:focus {
-		box-shadow: var(--input-shadow-focus);
-		border-color: var(--input-border-color-focus);
-	}
-
-	input::placeholder {
-		color: var(--input-placeholder-color);
-	}
-
 	input[disabled] {
 		cursor: not-allowed;
 	}
 
-	input[type="range"] {
-		-webkit-appearance: none;
-		appearance: none;
-		width: 100%;
-		accent-color: var(--slider-color);
-		height: 4px;
-		background: var(--neutral-200);
-		border-radius: 5px;
-		background-image: linear-gradient(
-			var(--slider-color),
-			var(--slider-color)
-		);
-		background-size: 0% 100%;
-		background-repeat: no-repeat;
-	}
-
-	input[type="range"]::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		box-shadow: var(--input-shadow);
-		border: solid 0.5px #ddd;
-		height: 20px;
-		width: 20px;
-		border-radius: 50%;
-		background-color: white;
-		cursor: pointer;
-		margin-top: -2px;
-		transition: background-color 0.1s ease;
-	}
-
-	input[type="range"]::-webkit-slider-thumb:hover {
-		background: var(--neutral-50);
-	}
-
-	input[type="range"][disabled] {
-		background: var(--body-text-color-subdued);
-	}
-
-	input[type="range"][disabled]::-webkit-slider-thumb {
-		cursor: not-allowed;
-		background-color: var(--body-text-color-subdued);
-	}
-
-	input[type="range"][disabled]::-moz-range-track {
-		cursor: not-allowed;
-		background-color: var(--body-text-color-subdued);
-	}
-
-	input[type="range"][disabled]::-webkit-slider-thumb:hover {
-		background-color: var(--body-text-color-subdued);
-	}
-
-	input[type="range"][disabled]::-moz-range-track:hover {
-		background-color: var(--body-text-color-subdued);
-	}
-
-	input[type="range"]::-webkit-slider-runnable-track {
-		-webkit-appearance: none;
-		box-shadow: none;
-		border: none;
-		background: transparent;
-		height: 400%;
-	}
-
-	input[type="range"]::-moz-range-track {
-		height: 12px;
-	} */
 </style>
