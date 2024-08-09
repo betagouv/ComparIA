@@ -184,12 +184,12 @@ def register_listeners():
             ]
         # .then(
         #         js="""
-        # () => 
+        # () =>
         # {
         #     console.log("rerolling");
 
         #   const targetElement = document.getElementById('guided-area');
-        #     targetElement.scrollIntoView({ 
+        #     targetElement.scrollIntoView({
         #       behavior: 'smooth'
         #     });
         #   }
@@ -461,10 +461,12 @@ def register_listeners():
             + chatbots
             + [gr.update(interactive=True)]
             + [gr.update(visible=True)]
-            + [ gr.update(
+            + [
+                gr.update(
                     value="",
                     placeholder="Continuer à discuter avec les deux modèles",
-                )]
+                )
+            ]
         )
 
     gr.on(
@@ -609,10 +611,17 @@ def register_listeners():
     ):
         # conversations = [conversation_a, conversation_b]
 
+        if which_model_radio in [-1.5, -0.5]:
+            chosen_model = "model-a"
+        elif which_model_radio in [0.5, 1.5]:
+            chosen_model = "model-b"
+        else:
+            chosen_model = "invalid-vote"
+            raise (ValueError)
         details = {
             "model_left": conversation_a.model_name,
             "model_right": conversation_b.model_name,
-            "chosen_model": which_model_radio,
+            "chosen_model": chosen_model,
             "relevance": relevance_slider,
             "clearness": clearness_slider,
             "style": style_slider,
@@ -621,7 +630,7 @@ def register_listeners():
         # FIXME: check input, sanitize it?
         vote_last_response(
             [conversation_a, conversation_b],
-            which_model_radio,
+            chosen_model,
             details,
             request,
         )
@@ -745,9 +754,9 @@ def register_listeners():
         inputs=[],
         outputs=retry_modal,
     )
-    
+
     # On reset go to mode selection mode_screen
-        
+
     def clear_history(
         conversation_a,
         conversation_b,
@@ -763,7 +772,6 @@ def register_listeners():
         # + [vote_area]
         # + [supervote_area]
         # + [mode_screen],
-
 
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
@@ -785,7 +793,7 @@ def register_listeners():
             conversation_b,
             None,
             None,
-            gr.update(value="",placeholder="Réinterrogez deux nouveaux modèles"),
+            gr.update(value="", placeholder="Réinterrogez deux nouveaux modèles"),
             gr.update(visible=False),
             gr.update(visible=False),
             gr.update(visible=False),
@@ -804,7 +812,14 @@ def register_listeners():
         fn=clear_history,
         inputs=conversations + chatbots + [textbox],
         # List of objects to clear
-        outputs=conversations + chatbots
-        + [textbox] + [chat_area] + [vote_area] + [supervote_area] + [mode_screen] + [retry_modal] + [conclude_btn] + [retry_modal_btn],
-
+        outputs=conversations
+        + chatbots
+        + [textbox]
+        + [chat_area]
+        + [vote_area]
+        + [supervote_area]
+        + [mode_screen]
+        + [retry_modal]
+        + [conclude_btn]
+        + [retry_modal_btn],
     )

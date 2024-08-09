@@ -343,9 +343,9 @@ def build_reveal_html(
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
     chosen_model = None
-    if which_model_radio == "leftvote":
+    if which_model_radio in [-1.5, -0.5]:
         chosen_model = "model-a"
-    if which_model_radio == "rightvote":
+    if which_model_radio in [0.5, 1.5]:
         chosen_model = "model-b"
 
     return template.render(
