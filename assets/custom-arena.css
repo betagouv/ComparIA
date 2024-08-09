@@ -72,7 +72,7 @@ body.dark {
   background-color: var(--neutral-100);
 }
 .dark .modal-block {
-  background-color: var(--background-fill-primary);
+  background-color: var(--white);
   color: var(--neutral-800) !important;
 }
 /* "COMPONENTS" (not custom components) */
