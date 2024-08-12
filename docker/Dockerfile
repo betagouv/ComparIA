@@ -42,7 +42,7 @@ COPY . /app
 # Comment the next line if you want an image with node
 FROM base AS cc
 RUN apt update && apt install -y nodejs npm
-COPY --from=app /app /app
+COPY --from=app /app/custom_components /app/custom_components
 WORKDIR /app/custom_components/frbutton
 # TODO: factorize this
 RUN gradio cc install
