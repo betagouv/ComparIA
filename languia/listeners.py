@@ -153,12 +153,12 @@ def register_listeners():
 
     gr.on(
         triggers=[
-            expression.click,
+            # expression.click,
             langues.click,
             conseils.click,
             loisirs.click,
             administratif.click,
-            vie_professionnelle.click,
+            # vie_professionnelle.click,
         ],
         fn=set_guided_prompt,
         inputs=[],
