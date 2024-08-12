@@ -171,7 +171,7 @@ preprompts_table = {
         "Transcris cette phrase dans un langage familier comme si tu parlais à un ami proche : “La soirée s'annonçait sous les auspices d'une promenade tranquille au clair de lune.”",
         "Invente une phrase et écris-la trois fois: d’abord sur un ton tragique puis sur un ton lyrique et enfin sur un ton absurde.",
     ],
-    "pedagogie": [
+    "pedagogie": [  
         "Explique de manière simple et accessible la différence entre l'inflation et la déflation à un enfant de 10 ans",
         "Nous venons de regarder la Guerre des étoiles. Explique de manière simple et accessible à un enfant de 10 ans les bases du droit de l’espace.",
         "Explique le concept de l'empathie à un enfant de six ans en utilisant des exemples concrets tirés de la vie quotidienne. S’il te plait, sois concis !",

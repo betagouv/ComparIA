@@ -104,9 +104,7 @@ def register_listeners():
         inputs=[],
         outputs=[
             free_mode_btn,
-            guided_mode_btn,
             send_area,
-            guided_area,
             mode_screen,
         ],
         api_name=False,
@@ -119,45 +117,54 @@ def register_listeners():
 
         return [
             gr.update(
-                elem_classes="fr-ml-auto " + mode_selection_classes + " selected"
+                elem_classes="selected"
             ),
-            gr.update(elem_classes="fr-mr-auto " + mode_selection_classes),
             gr.update(visible=True),
-            gr.update(visible=False),
             gr.update(elem_classes="fr-container send-area-enabled"),
         ]
 
-    @guided_mode_btn.click(
-        inputs=[],
-        outputs=[
-            free_mode_btn,
-            guided_mode_btn,
-            # send_area,
-            guided_area,
-            mode_screen,
-        ],
-        api_name=False,
-        # TODO: scroll_to_output?
-    )
-    def guided_mode(request: gr.Request):
-        # print(guided_mode_btn.elem_classes)
+
+    # Step 1.1
+
+    def set_guided_prompt(event: gr.EventData, request: gr.Request):
+        chosen_guide = event.target.value
         logger.info(
-            f"Chose guided mode",
+            f"set_guided_prompt: {chosen_guide}",
             extra={"request": request},
         )
-        if "selected" in guided_mode_btn.elem_classes:
-            return [gr.skip() * 4]
+        if chosen_guide in [
+            "expression",
+            "langues",
+            "conseils",
+            "loisirs",
+            "administratif",
+            "vie-professionnelle",
+        ]:
+            preprompts = config.preprompts_table[chosen_guide]
         else:
-            return [
-                gr.update(elem_classes="fr-ml-auto " + mode_selection_classes),
-                gr.update(
-                    elem_classes="fr-mr-auto " + mode_selection_classes + " selected"
-                ),
-                # send_area
-                # gr.update(visible=False),
-                gr.update(visible=True),
-                gr.update(elem_classes="fr-container send-area-enabled"),
-            ]
+            logger.error(
+                "Type of guided prompt not listed: " + str(chosen_guide),
+                extra={"request": request},
+            )
+        preprompt = preprompts[np.random.randint(len(preprompts))]
+        return [gr.update(visible=True), gr.update(value=preprompt)]
+                            # gr.update(visible=True),
+                            # gr.update(elem_classes="fr-container send-area-enabled"),
+
+    gr.on(
+        triggers=[
+            expression.click,
+            langues.click,
+            conseils.click,
+            loisirs.click,
+            administratif.click,
+            vie_professionnelle.click,
+        ],
+        fn=set_guided_prompt,
+        inputs=[],
+        outputs=[send_area, textbox],
+        api_name=False,
+    )
         # .then(
         #         js="""
         # () =>
@@ -170,46 +177,6 @@ def register_listeners():
         #     });
         #   }
         # """)
-
-    # Step 1.1
-
-    def set_guided_prompt(event: gr.EventData, request: gr.Request):
-        chosen_guide = event.target.value
-        logger.info(
-            f"set_guided_prompt: {chosen_guide}",
-            extra={"request": request},
-        )
-        if chosen_guide in [
-            "variete",
-            "regional",
-            "pedagogie",
-            "creativite",
-            "registre",
-            "maniere",
-        ]:
-            preprompts = config.preprompts_table[chosen_guide]
-        else:
-            logger.error(
-                "Type of guided prompt not listed: " + str(chosen_guide),
-                extra={"request": request},
-            )
-        preprompt = preprompts[np.random.randint(len(preprompts))]
-        return [gr.update(visible=True), gr.update(value=preprompt)]
-
-    gr.on(
-        triggers=[
-            maniere.click,
-            registre.click,
-            regional.click,
-            variete.click,
-            pedagogie.click,
-            creativite_btn.click,
-        ],
-        fn=set_guided_prompt,
-        inputs=[],
-        outputs=[send_area, textbox],
-        api_name=False,
-    )
 
     @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
     def change_send_btn_state(textbox):
