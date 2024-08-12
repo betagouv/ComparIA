@@ -13,7 +13,9 @@ from languia.utils import (
     get_llm_impact,
     running_eq,
     log_poll,
+    get_chosen_model
 )
+
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     SAMPLING_WEIGHTS,
@@ -46,19 +48,6 @@ from languia.block_conversation import (
 )
 
 from languia.config import logger
-
-from languia.utils import (
-    get_ip,
-    get_battle_pair,
-    build_reveal_html,
-    header_html,
-    stepper_html,
-    vote_last_response,
-    get_model_extra_info,
-    count_output_tokens,
-    get_llm_impact,
-    running_eq,
-)
 
 from languia import config
 
@@ -586,7 +575,7 @@ def register_listeners():
             # buttons_footer
             + [gr.update(visible=False)]
         )
-
+    
     @supervote_send_btn.click(
         inputs=(
             [conversations[0]]
@@ -610,18 +599,12 @@ def register_listeners():
         request: gr.Request,
     ):
         # conversations = [conversation_a, conversation_b]
-
-        if which_model_radio in [-1.5, -0.5]:
-            chosen_model = "model-a"
-        elif which_model_radio in [0.5, 1.5]:
-            chosen_model = "model-b"
-        else:
-            chosen_model = "invalid-vote"
-            raise (ValueError)
+        chosen_model = get_chosen_model(which_model_radio)
         details = {
             "model_left": conversation_a.model_name,
             "model_right": conversation_b.model_name,
             "chosen_model": chosen_model,
+            "which_model_radio": which_model_radio,
             "relevance": relevance_slider,
             "clearness": clearness_slider,
             "style": style_slider,
@@ -631,6 +614,7 @@ def register_listeners():
         vote_last_response(
             [conversation_a, conversation_b],
             chosen_model,
+            which_model_radio,
             details,
             request,
         )

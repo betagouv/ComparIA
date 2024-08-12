@@ -117,9 +117,21 @@ def get_ip(request: gr.Request):
     return ip
 
 
+
+def get_chosen_model(which_model_radio):
+    if which_model_radio in [-1.5, -0.5]:
+        chosen_model = "model-a"
+    elif which_model_radio in [0.5, 1.5]:
+        chosen_model = "model-b"
+    else:
+        chosen_model = "invalid-vote"
+        raise (ValueError)
+    return chosen_model
+
 def log_poll(
     conversation_a,
     conversation_b,
+    which_model_radio,
     chatbot_use,
     gender,
     age,
@@ -131,6 +143,7 @@ def log_poll(
     #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
     #     },
     # )
+    chosen_model = get_chosen_model(which_model_radio)
 
     with open(get_conv_log_filename(), "a") as fout:
         data = {
@@ -139,6 +152,8 @@ def log_poll(
             "models": [x.model_name for x in [conversation_a, conversation_b]],
             "conversations": [x.dict() for x in [conversation_a, conversation_b]],
             "chatbot_use": chatbot_use,
+            "which_model_radio": which_model_radio,
+            "chosen_model": chosen_model,
             "gender": gender,
             "age": age,
             "profession": profession,
@@ -154,6 +169,7 @@ def log_poll(
 def vote_last_response(
     conversations,
     vote_type,
+    which_model_radio,
     details: list,
     request: gr.Request,
 ):
@@ -164,6 +180,7 @@ def vote_last_response(
         extra={
             "request": request,
             "vote": vote_type,
+            "which_model_radio": which_model_radio,
             "details": details,
             "models": [x.model_name for x in conversations],
             "conversations": [x.dict() for x in conversations],
@@ -342,11 +359,7 @@ def build_reveal_html(
 ):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
-    chosen_model = None
-    if which_model_radio in [-1.5, -0.5]:
-        chosen_model = "model-a"
-    if which_model_radio in [0.5, 1.5]:
-        chosen_model = "model-b"
+    chosen_model = get_chosen_model(which_model_radio)
 
     return template.render(
         model_a=model_a,
