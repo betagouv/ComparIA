@@ -731,6 +731,7 @@ def register_listeners():
         # + [vote_area]
         # + [supervote_area]
         # + [mode_screen],
+        outage_models = refresh_outage_models(controller_url=config.controller_url)
 
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
