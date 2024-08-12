@@ -36,6 +36,11 @@ footer, .built-with,
 
 /* DARK MODE FIXES */
 
+/* @media (prefers-color-scheme: dark) {
+  body {
+    background: var(--bg-dark);
+    color: var(--col-dark);
+  } */
 /* Temporary fixes for dark mode in arena: enforce clear mode */
 /* .dark .fr-label {
   color: var(--text-default-grey) !important;
@@ -156,6 +161,14 @@ body {
 .app {
   max-width: none !important;
   /* max-width: none; */
+}
+
+/* Gradio unofficial custom component Modal */
+@media (min-width: 768px) {
+  .modal-container {
+    width: calc(50%);
+    max-width: calc(50%);
+  }
 }
 
 
