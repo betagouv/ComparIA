@@ -216,7 +216,7 @@ with gr.Blocks(
                         show_copy_button=False,
                     )
 
-    with gr.Column(visible=False, elem_classes="fr-container fr-mb-12w") as vote_area:
+    with gr.Column(visible=False, elem_classes="fr-container fr-mb-12w fr-px-16w") as vote_area:
         gr.HTML(
             value="""
         <div class="fr-notice fr-notice--info"> 
@@ -267,7 +267,7 @@ with gr.Blocks(
                 <p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
                 elem_classes="text-center",
             )
-            with gr.Column(elem_classes="fr-container"):
+            with gr.Column(elem_classes="fr-container fr-px-16w"):
                 relevance_slider = FrSlider(
                     value=-1,
                     range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
@@ -421,15 +421,18 @@ with gr.Blocks(
     # Modals
     with Modal(elem_id="retry-modal") as retry_modal:
         gr.HTML(
-            """<h1 class="fr-modal__title"><span class="class="fr-icon-arrow-right-line fr-icon--lg"></span> Etes-vous sûr·e de quitter sans voter ?</h1>
+            """<h1 class="fr-modal__title"><span class="fr-icon-arrow-right-line fr-icon--lg"></span> Etes-vous sûr·e de quitter sans voter ?</h1>
 <p>Vous êtes sur le point de recommencer une nouvelle conversation sans avoir voté sur celle-ci qui est en cours.</p>"""
         )
-        close_retry_modal_btn = gr.Button(
-            value="Non, annuler", elem_classes="fr-btn fr-btn--secondary", scale=1
-        )
-        retry_btn = gr.Button(
-            value="Oui, recommencer une conversation", elem_classes="fr-btn", scale=1
-        )
+        with gr.Row():
+            close_retry_modal_btn = gr.Button(
+                value="Non, annuler", elem_classes="fr-btn fr-btn--secondary", scale=1
+            )
+            retry_btn = gr.Button(
+                value="Oui, recommencer une conversation",
+                elem_classes="fr-btn",
+                scale=1,
+            )
 
     from languia.controllers import register_listeners
 
