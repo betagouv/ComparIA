@@ -548,7 +548,7 @@ def get_llm_impact(
     return impact
 
 def refresh_outage_models(controller_url):
-    response = requests.get(controller_url+"/outages")
+    response = requests.get(controller_url+"/outages/")
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -556,16 +556,16 @@ def refresh_outage_models(controller_url):
         logging.info("outage models:", data)
         return data
     else:
-        print(f"Failed to retrieve data. Status code: {response.status_code}")
+        print(f"Failed to retrieve outage data. Status code: {response.status_code}")
     return []
 
 
 def add_outage_model(controller_url, model_name):
-    response = requests.post(url=controller_url+"/outages", data=  {"model_name": model_name})
-    if response.status_code == 200:
+    response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}")
+    if response.status_code == 201:
         logging.info("successfully reported outage model ", model_name)
     else:
-        print(f"Failed to retrieve data. Status code: {response.status_code}")
+        print(f"Failed to post outage data. Status code: {response.status_code}")
 
 # Not used
 # def model_worker_stream_iter(

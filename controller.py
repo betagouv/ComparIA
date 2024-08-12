@@ -15,7 +15,6 @@ stream_logs.setLevel(logging.INFO)
 
 @app.post("/outages/", status_code=201)
 async def create_outage(model_name: str):
-
     outage = {
         "detection_time": datetime.now().isoformat(),
         "model_name": model_name,
