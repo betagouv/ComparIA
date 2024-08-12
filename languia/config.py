@@ -80,10 +80,6 @@ if os.getenv("SENTRY_DSN"):
 # else:
 sentry_js = ""
 
-# if os.getenv("LANGUIA_CONTROLLER_URL"):
-#     controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
-# else:
-#     controller_url = "http://localhost:21001"
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
     register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
@@ -149,7 +145,12 @@ models_extra_info = [
 # print(models_extra_info)
 
 headers = {"User-Agent": "FastChat Client"}
-controller_url = None
+
+if os.getenv("LANGUIA_CONTROLLER_URL") != None:
+    controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
+else:
+    controller_url = "http://localhost:21001"
+
 enable_moderation = False
 use_remote_storage = False
 
