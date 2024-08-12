@@ -13,7 +13,9 @@ from languia.utils import (
     get_llm_impact,
     running_eq,
     log_poll,
-    get_chosen_model
+    get_chosen_model,
+    refresh_outage_models,
+    add_outage_model
 )
 
 from languia.config import (
@@ -34,30 +36,14 @@ from languia.block_conversation import (
     bot_response,
 )
 
-from languia.config import logger
 
 import gradio as gr
-import numpy as np
 
-# from fastchat.model.model_adapter import get_conversation_template
-
-from languia.block_conversation import (
-    # TODO: to import/replace State and bot_response?
-    ConversationState,
-    bot_response,
-)
 
 from languia.config import logger
 
-from languia import config
 
-from languia.config import (
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
-    SAMPLING_WEIGHTS,
-    BATTLE_TARGETS,
-    SAMPLING_BOOST_MODELS,
-    outage_models,
-)
+from languia import config
 
 
 # Register listeners
@@ -66,7 +52,7 @@ def register_listeners():
     # Step -1
     @demo.load(inputs=[], outputs=conversations, api_name=False)
     def init_models(request: gr.Request):
-
+        outage_models = refresh_outage_models(controller_url=config.controller_url)
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
             config.models,
@@ -304,20 +290,6 @@ def register_listeners():
                 )
             )
 
-        is_stream_batch = []
-        for i in range(config.num_sides):
-            is_stream_batch.append(
-                conversations[i].model_name
-                in [
-                    "gemini-pro",
-                    "gemini-pro-dev-api",
-                    "gemini-1.0-pro-vision",
-                    "gemini-1.5-pro",
-                    "gemini-1.5-flash",
-                    "gemma-1.1-2b-it",
-                    "gemma-1.1-7b-it",
-                ]
-            )
         chatbots = [None] * config.num_sides
         iters = 0
         while True:
@@ -325,20 +297,19 @@ def register_listeners():
             iters += 1
             for i in range(config.num_sides):
                 try:
-                    # yield gemini fewer times as its chunk size is larger
-                    # otherwise, gemini will stream too fast
-                    if not is_stream_batch[i] or (iters % 30 == 1 or iters < 3):
+                    if (iters % 30 == 1 or iters < 3):
                         ret = next(gen[i])
                         conversations[i], chatbots[i] = ret[0], ret[1]
                     stop = False
                 except StopIteration:
                     pass
                 except Exception as e:
-                    # logger.error(
-                    #     f"Problem with generating model {conversations[i].model_name}. Adding to outcasts list and re-rolling.",
-                    #     extra={"request": request},
-                    # )
-                    # outage_models.append(conversations[i].model_name)
+                    logger.error(
+                        f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
+                        extra={"request": request},
+                    )
+                    outage_models.append(conversations[i].model_name)
+                    add_outage_model(config.controller_url, conversations[i].model_name)
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
                     gr.Warning(
@@ -394,9 +365,7 @@ def register_listeners():
         )
 
     def check_answers(conversation_a, conversation_b, request: gr.Request):
-        # Not set to none at all :'(
-        # print(str(conversation_a.conv_id))
-        # print(str(conversation_b.conv_id))
+
         logger.debug(
             "models finished answering",
             extra={"request": request},
@@ -541,7 +510,7 @@ def register_listeners():
     )
     def build_supervote_area(vote_radio, request: gr.Request):
         logger.info(
-            "voted for " + str(vote_radio),
+            "(temporarily) voted for " + str(vote_radio),
             extra={"request": request},
         )
         return (
