@@ -86,32 +86,32 @@ with gr.Blocks(
             # elem_classes="fr-grid-row" messes with visible=False...
 
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
-            with gr.Row(elem_classes="radio-tiles"):
-                expression = FrButton(
-                    value="expression",
-                    custom_html="""<span class="fr-badge fr-badge--purple-glycine">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
-                )
+            with gr.Row(elem_classes=""):
+                # expression = FrButton(
+                #     value="expression",
+                #     custom_html="""<span class="fr-tag fr-tag--green-tilleul-verveine">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
+                # )
                 langues = FrButton(
                     value="langues",
-                    custom_html="""<span class="fr-badge fr-badge--purple-glycine">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
+                    custom_html="""<span class="fr-tag fr-tag--blue-cumulus">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
                 )
                 conseils = FrButton(
                     value="conseils",
-                    custom_html="""<span class="fr-badge fr-badge--green-tilleul-verveine">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
+                    custom_html="""<span class="fr-tag fr-tag--yellow-moutarde">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
                 )
-            with gr.Row(elem_classes="radio-tiles"):
+            with gr.Row(elem_classes=""):
                 loisirs = FrButton(
                     value="loisirs",
-                    custom_html="""<span class="fr-badge fr-badge--blue-cumulus">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
+                    custom_html="""<span class="fr-tag fr-tag--purple-glycine">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
                 )
                 administratif = FrButton(
                     value="administratif",
-                    custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+                    custom_html="""<span class="fr-tag fr-tag--orange-terre-battue">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
                 )
-                vie_professionnelle = FrButton(
-                    value="vie-professionnelle",
-                    custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
-                )
+                # vie_professionnelle = FrButton(
+                #     value="vie-professionnelle",
+                #     custom_html="""<span class="fr-tag fr-tag--blue-ecume">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
+                # )
         free_mode_btn = gr.Button(
             elem_id="free-mode",
             value="Je veux écrire sur mon propre sujet",
