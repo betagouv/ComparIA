@@ -33,7 +33,10 @@ footer, .built-with,
 .hide {
   display: none !important;
 }
-
+/* TODO: reenable */
+.copy_code_button {
+  display: none;
+}
 /* DARK MODE FIXES */
 
 /* @media (prefers-color-scheme: dark) {
