@@ -1,9 +1,12 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from typing import List, Dict
 import asyncio
 import time
 from datetime import datetime
 import logging
+from fastapi.templating import Jinja2Templates
+templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 
@@ -137,3 +140,11 @@ async def scheduled_outage_tests():
         for outage in outages:
             asyncio.create_task(test_model(outage['model_name']))
         await asyncio.sleep(600)  # Test every 10 minutes (600 seconds)
+
+
+@app.get("/", response_class=HTMLResponse, )
+async def index(request: Request):
+    return templates.TemplateResponse(
+        "outages.html",
+        {"outages": outages, "request": request},
+    )
