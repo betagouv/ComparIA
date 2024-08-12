@@ -435,6 +435,6 @@ with gr.Blocks(
                 scale=1,
             )
 
-    from languia.controllers import register_listeners
+    from languia.listeners import register_listeners
 
     register_listeners()
