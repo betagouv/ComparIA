@@ -161,13 +161,14 @@
 		border: 1px solid var(--border-action-high-blue-france);
 	}
 
-	.fr-range--step[data-fr-js-range]::before {
+	.fr-range--step[data-fr-js-range]::before, .fr-range--step[data-fr-js-range]::after, .fr-range[data-fr-js-range]::before, .fr-range--step[data-fr-js-range]::after {
 		background-image: radial-gradient(
 			circle at 2px 50%,
-			var(--background-action-low-blue-france) 0,
-			var(--background-action-low-blue-france) 2px,
+			var(--background-action-high-blue-france) 0,
+			var(--background-action-high-blue-france) 2px,
 			transparent 2px
-		);
+		) !important;
+		--progress-right: 0% !important;
 	}
 
 	.spotlight {
