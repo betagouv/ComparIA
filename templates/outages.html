@@ -1,0 +1,23 @@
+
+<html>
+    <head>
+        <title>Outages</title>
+    </head>
+    <body>
+        <h1>Outages</h1>
+        <table>
+            <tr>
+                <th>Model name</th>
+                <th>Detection Time</th>
+                <th>Retry?</th>
+            </tr>
+            {% for outage in outages %}
+            <tr>
+                <td>{{ outage.model_name }}</td>
+                <td>{{ outage.detection_time }}</td>
+                <td><a href="/outages/{{ outage.model_name }}">Test?</a></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </body>
+</html>
