@@ -229,9 +229,10 @@ with gr.Blocks(
             <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
         )
 
-        # which_model_radio = gr.Radio(
+        # TODO: which_model_radio = CustomSlider(
         #         show_label=False,
         #         container=False,
+                    # extrema=["Modèle A", "Modèle B"],
         #         choices=[
         #             "Je préfère de loin le modèle A",
         #             "Le modèle A est un peu mieux",

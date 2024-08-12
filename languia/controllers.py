@@ -594,6 +594,7 @@ def register_listeners():
         inputs=[
             conversations[0],
             conversations[1],
+            which_model_radio,
             chatbot_use,
             gender,
             age,
@@ -613,6 +614,7 @@ def register_listeners():
         inputs=[
             conversations[0],
             conversations[1],
+            which_model_radio,
             chatbot_use,
             gender,
             age,
@@ -631,6 +633,7 @@ def register_listeners():
     def send_poll(
         conversation_a,
         conversation_b,
+        which_model_radio,
         chatbot_use,
         gender,
         age,
@@ -642,6 +645,7 @@ def register_listeners():
         log_poll(
             conversation_a,
             conversation_b,
+            which_model_radio,
             chatbot_use,
             gender,
             age,

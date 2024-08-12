@@ -128,6 +128,15 @@ def get_chosen_model(which_model_radio):
         raise (ValueError)
     return chosen_model
 
+def get_final_vote(which_model_radio):
+    final_vote= {
+         -1.5: "strongly-a",
+         -0.5: "slightly-a",
+         +0.5: "slightly-b",
+         +1.5: "strongly-b",
+                  }
+    return (final_vote[which_model_radio])
+
 def log_poll(
     conversation_a,
     conversation_b,
@@ -144,6 +153,7 @@ def log_poll(
     #     },
     # )
     chosen_model = get_chosen_model(which_model_radio)
+    final_vote = get_final_vote(which_model_radio)
 
     with open(get_conv_log_filename(), "a") as fout:
         data = {
@@ -152,7 +162,7 @@ def log_poll(
             "models": [x.model_name for x in [conversation_a, conversation_b]],
             "conversations": [x.dict() for x in [conversation_a, conversation_b]],
             "chatbot_use": chatbot_use,
-            "which_model_radio": which_model_radio,
+            "final_vote": final_vote,
             "chosen_model": chosen_model,
             "gender": gender,
             "age": age,
