@@ -123,25 +123,30 @@ cur.execute(
 CREATE TABLE IF NOT EXISTS logs (
     id SERIAL PRIMARY KEY,
     tstamp TIMESTAMP,
-    msg JSONB
+    msg JSONB,
+    message TEXT
 );
-"""
+ALTER TABLE logs
+ADD UNIQUE (tstamp,message); """
 )
+conn.commit()
+
 for filename in os.listdir(json_directory):
     if filename.endswith(".jsonl") and filename.startswith("logs-"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
-            for line in file:
-                try:
+            try:
+                for line in file:
                     msg = json.loads(line)
                     tstamp = msg.get("time")
+                    message = msg.get("message")
 
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
                         """
-                    INSERT INTO logs (tstamp, msg)
-                    VALUES (%s, %s);
+                    INSERT INTO logs (tstamp, msg, message)
+                    VALUES (%s, %s, %s);
                     """
                     )
                     # print(tstamp)
@@ -152,18 +157,19 @@ for filename in os.listdir(json_directory):
                         (
                             tstamp,
                             json.dumps(msg),
+                            message
                         ),
                     )
-                except json.decoder.JSONDecodeError:
-                    # print("Not JSON:" + str(line))
-                    print("Skipping file " + file_path)
-                    # print(traceback.format_exc())
-                    # continue
-                # except Exception as e:
-                    # print(f"An error occurred: {e}")
-                    # print("Line: " + str(line))
-                    # print(traceback.format_exc())
-                    # print("Skipping file " + file_path)
+            except json.decoder.JSONDecodeError:
+                # print("Not JSON:" + str(line))
+                print("Skipping file " + file_path)
+                # print(traceback.format_exc())
+                continue
+            # except Exception as e:
+                # print(f"An error occurred: {e}")
+                # print("Line: " + str(line))
+                # print(traceback.format_exc())
+                # print("Skipping file " + file_path)
         print("Data from " + file_path + " successfully parsed")
     
 # Commit changes and close the connection
