@@ -8,6 +8,7 @@ from languia.utils import (
     build_reveal_html,
     header_html,
     vote_last_response,
+    get_final_vote,
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
@@ -569,11 +570,12 @@ def register_listeners():
     ):
         # conversations = [conversation_a, conversation_b]
         chosen_model = get_chosen_model(which_model_radio)
+        final_vote = get_final_vote(which_model_radio)
         details = {
             "model_left": conversation_a.model_name,
             "model_right": conversation_b.model_name,
             "chosen_model": chosen_model,
-            "which_model_radio": which_model_radio,
+            "final_vote": final_vote,
             "relevance": relevance_slider,
             "clearness": clearness_slider,
             "style": style_slider,
@@ -583,7 +585,7 @@ def register_listeners():
         vote_last_response(
             [conversation_a, conversation_b],
             chosen_model,
-            which_model_radio,
+            final_vote,
             details,
             request,
         )

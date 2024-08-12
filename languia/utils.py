@@ -117,7 +117,6 @@ def get_ip(request: gr.Request):
     return ip
 
 
-
 def get_chosen_model(which_model_radio):
     if which_model_radio in [-1.5, -0.5]:
         chosen_model = "model-a"
@@ -128,14 +127,16 @@ def get_chosen_model(which_model_radio):
         raise (ValueError)
     return chosen_model
 
+
 def get_final_vote(which_model_radio):
-    final_vote= {
-         -1.5: "strongly-a",
-         -0.5: "slightly-a",
-         +0.5: "slightly-b",
-         +1.5: "strongly-b",
-                  }
-    return (final_vote[which_model_radio])
+    final_vote = {
+        -1.5: "strongly-a",
+        -0.5: "slightly-a",
+        +0.5: "slightly-b",
+        +1.5: "strongly-b",
+    }
+    return final_vote[which_model_radio]
+
 
 def log_poll(
     conversation_a,
@@ -178,19 +179,23 @@ def log_poll(
 
 def vote_last_response(
     conversations,
-    vote_type,
-    which_model_radio,
+    chosen_model,
+    final_vote,
     details: list,
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
-    logger.info(f"{vote_type}_vote", extra={"request": request})
     logger.info(
-        f"{vote_type}_vote",
+        f"{final_vote}",
         extra={
             "request": request,
-            "vote": vote_type,
-            "which_model_radio": which_model_radio,
+            "type": final_vote,
+            "chosen_model": chosen_model,
+            "chosen_model_name": (
+                conversations[0].model_name
+                if chosen_model == "model-a"
+                else conversations[1].model_name
+            ),
             "details": details,
             "models": [x.model_name for x in conversations],
             "conversations": [x.dict() for x in conversations],
@@ -200,11 +205,17 @@ def vote_last_response(
     with open(get_conv_log_filename(), "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
-            "type": vote_type,
+            "vote": final_vote,
+            "chosen_model": chosen_model,
+            "chosen_model_name": (
+                conversations[0].model_name
+                if chosen_model == "model-a"
+                else conversations[1].model_name
+            ),
             "models": [x.model_name for x in conversations],
             "conversations": [x.dict() for x in conversations],
             # FIXME:
-            # "ip": get_ip(request),
+            "ip": get_ip(request),
         }
         if details != []:
             data.update(details=details),
@@ -557,8 +568,9 @@ def get_llm_impact(
                 )
     return impact
 
+
 def refresh_outage_models(controller_url):
-    response = requests.get(controller_url+"/outages/")
+    response = requests.get(controller_url + "/outages/")
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -576,6 +588,7 @@ def add_outage_model(controller_url, model_name):
         logging.info("successfully reported outage model ", model_name)
     else:
         print(f"Failed to post outage data. Status code: {response.status_code}")
+
 
 # Not used
 # def model_worker_stream_iter(

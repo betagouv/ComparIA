@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS logs (
 )
 # Loop through each JSON file in the directory
 for filename in os.listdir(json_directory):
-    if filename.endswith(".json") and filename.startswith("conv-"):
+    if filename.endswith("-conv.json"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
@@ -57,7 +57,7 @@ for filename in os.listdir(json_directory):
                 # try:
                     data = json.loads(line)
 
-                    if data.get("type") not in ["leftvote", "rightvote", "bothbad"]:
+                    if data.get("type") not in ["slightly-a", "strongly-a", "slightly-b", "strongly-b", "poll"]:
                         if data.get("type") != "chat":
                             print("Ignoring event " + data.get("type"))
                         continue
