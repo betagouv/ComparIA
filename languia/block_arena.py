@@ -79,40 +79,37 @@ with gr.Blocks(
         visible=False, elem_id="mode-screen", elem_classes="fr-container"
     ) as mode_screen:
 
-            # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
-            # with gr.Row(elem_classes="fr-col-12 fr-mx-auto fr-col-md-8"):
-                # expression = FrButton(
-                #     value="expression",
-                #     custom_html="""<span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
-                # )
-
         guided_cards = CustomRadioCard(
-                    show_label=False,
-                    # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center",
-                    # elem_classes="fr-container",
-                    choices=[
-                        (
-                            """<span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
-                            "langues",
-                        ),
-                        (
-                            """<span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
-                            "conseils",
-                        ),
-                        (
-                            """<span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
-                            "loisirs",
-                        ),
-                        (
-                            """<span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
-                            "administratif",
-                        ),
-                    ]
-                )
-                # vie_professionnelle = FrButton(
-                #     value="vie-professionnelle",
-                #     custom_html="""<span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
-                # )
+            show_label=False,
+            # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center",
+            # elem_classes="fr-container",
+            choices=[
+                (
+                    """<span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
+                    "expression",
+                ),
+                (
+                    """<span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
+                    "langues",
+                ),
+                (
+                    """<span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
+                    "conseils",
+                ),
+                (
+                    """<span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
+                    "loisirs",
+                ),
+                (
+                    """<span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+                    "administratif",
+                ),
+                (
+                    """<span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
+                    "vie-professionnelle",
+                ),
+            ],
+        )
         free_mode_btn = gr.Button(
             scale=1,
             elem_id="free-mode",
@@ -121,7 +118,7 @@ with gr.Blocks(
         )
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
-            # textbox = gr.Textbox(
+        # textbox = gr.Textbox(
         with gr.Column(elem_classes="inline-block"):
             textbox = FrInput(
                 elem_id="main-textbox",
@@ -143,7 +140,7 @@ with gr.Blocks(
             )
         shuffle_btn = gr.Button(
             scale=1,
-            size='sm',
+            size="sm",
             elem_classes="fr-btn fr-btn--tertiary small-icon fr-mx-auto",
             interactive=False,
             value="Générer un autre message",
