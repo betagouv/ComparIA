@@ -42,7 +42,7 @@ with gr.Blocks(
     analytics_enabled=False,
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
-    # Dirty hack for accepting ToS
+    # Script for accepting ToS is there:
     js=config.arena_js,
 ) as demo:
     # A tester
@@ -69,8 +69,6 @@ with gr.Blocks(
             interactive=False,
         )
 
-    # with gr.Row(elem_id="stepper-row", elem_classes="fr-pb-2w") as stepper_row:
-    # with gr.Row(elem_id="stepper-row", elem_classes="raised fr-pb-2w") as stepper_row:
     stepper_block = gr.HTML(
         stepper_html("Bienvenue ! Comment puis-je vous aider aujourd'hui ?", 1, 4),
         elem_id="stepper-html",
@@ -81,18 +79,11 @@ with gr.Blocks(
         visible=False, elem_id="mode-screen", elem_classes="fr-container"
     ) as mode_screen:
 
-        # with gr.Column(
-        #     # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center"
-        # ):
-            # mode_selection_classes = "fr-col-12 fr-col-md-4 fr-p-4w"
-
-            # elem_classes="fr-grid-row" messes with visible=False...
-
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
             # with gr.Row(elem_classes="fr-col-12 fr-mx-auto fr-col-md-8"):
                 # expression = FrButton(
                 #     value="expression",
-                #     custom_html="""<span class="fr-tag fr-tag--green-tilleul-verveine fr-tag--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
+                #     custom_html="""<span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
                 # )
 
         guided_cards = CustomRadioCard(
@@ -101,26 +92,26 @@ with gr.Blocks(
                     # elem_classes="fr-container",
                     choices=[
                         (
-                            """<span class="fr-tag fr-tag--blue-cumulus fr-tag--icon-left fr-icon-translate-2">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
+                            """<span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
                             "langues",
                         ),
                         (
-                            """<span class="fr-tag fr-tag--yellow-moutarde fr-tag--icon-left fr-icon-lightbulb">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
+                            """<span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
                             "conseils",
                         ),
                         (
-                            """<span class="fr-tag fr-tag--purple-glycine fr-tag--icon-left fr-icon-bike">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
+                            """<span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
                             "loisirs",
                         ),
                         (
-                            """<span class="fr-tag fr-tag--orange-terre-battue fr-tag--icon-left fr-icon-draft">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+                            """<span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
                             "administratif",
                         ),
                     ]
                 )
                 # vie_professionnelle = FrButton(
                 #     value="vie-professionnelle",
-                #     custom_html="""<span class="fr-tag fr-tag--blue-ecume fr-tag--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
+                #     custom_html="""<span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
                 # )
         free_mode_btn = gr.Button(
             scale=1,
@@ -138,11 +129,10 @@ with gr.Blocks(
                 lines=1,
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,
-                # TODO: raise fr-col-md to 10 ?
-                elem_classes="inline-block fr-col-12 fr-col-md-9 bg-white",
+                elem_classes="inline-block fr-col-12 fr-col-md-10 bg-white",
                 container=False,
-                # not working
-                # autofocus=True
+                autofocus=True,
+                # autoscroll=True
             )
             send_btn = gr.Button(
                 interactive=False,
@@ -170,6 +160,7 @@ with gr.Blocks(
 
             retry_modal_btn = gr.Button(
                 value="",
+                elem_id="retry-modal-btn",
                 elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
                 #  icon="assets/dsfr/icons/system/refresh-line.svg",
                 scale=1,
