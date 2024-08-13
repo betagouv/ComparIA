@@ -16,7 +16,8 @@ from languia.utils import (
     log_poll,
     get_chosen_model,
     refresh_outage_models,
-    add_outage_model
+    add_outage_model,
+    gen_prompt,
 )
 
 from languia.config import (
@@ -102,15 +103,8 @@ def register_listeners():
 
     @free_mode_btn.click(
         inputs=[],
-        outputs=[
-            free_mode_btn,
-            guided_mode_btn,
-            send_area,
-            guided_area,
-            mode_screen,
-        ],
-        api_name=False,
-    )
+        outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
+        api_name=False,)
     def free_mode(request: gr.Request):
         logger.info(
             f"Chose free mode",
@@ -118,46 +112,36 @@ def register_listeners():
         )
 
         return [
-            gr.update(
-                elem_classes="fr-ml-auto " + mode_selection_classes + " selected"
-            ),
-            gr.update(elem_classes="fr-mr-auto " + mode_selection_classes),
-            gr.update(visible=True),
             gr.update(visible=False),
+            gr.update(visible=True),
             gr.update(elem_classes="fr-container send-area-enabled"),
+            gr.update(interactive=False),
+            # Don't remove or autofocus won't work
+            gr.skip()
         ]
 
-    @guided_mode_btn.click(
-        inputs=[],
-        outputs=[
-            free_mode_btn,
-            guided_mode_btn,
-            # send_area,
-            guided_area,
-            mode_screen,
-        ],
+    # Step 1.1
+    @guided_cards.change(
+        inputs=[guided_cards],
+        outputs=[send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
         api_name=False,
-        # TODO: scroll_to_output?
     )
-    def guided_mode(request: gr.Request):
-        # print(guided_mode_btn.elem_classes)
+    def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
+        category = guided_cards
+        prompt = gen_prompt(category)
         logger.info(
-            f"Chose guided mode",
+            f"set_guided_prompt: {category}",
             extra={"request": request},
         )
-        if "selected" in guided_mode_btn.elem_classes:
-            return [gr.skip() * 4]
-        else:
-            return [
-                gr.update(elem_classes="fr-ml-auto " + mode_selection_classes),
-                gr.update(
-                    elem_classes="fr-mr-auto " + mode_selection_classes + " selected"
-                ),
-                # send_area
-                # gr.update(visible=False),
-                gr.update(visible=True),
-                gr.update(elem_classes="fr-container send-area-enabled"),
-            ]
+        return [
+            gr.update(visible=True),
+            gr.update(value=prompt),
+            # gr.update(visible=True),
+            gr.update(elem_classes="fr-container send-area-enabled"),
+            gr.update(interactive=True),
+            gr.update(visible=False),
+        ]
+
         # .then(
         #         js="""
         # () =>
@@ -171,45 +155,9 @@ def register_listeners():
         #   }
         # """)
 
-    # Step 1.1
-
-    def set_guided_prompt(event: gr.EventData, request: gr.Request):
-        chosen_guide = event.target.value
-        logger.info(
-            f"set_guided_prompt: {chosen_guide}",
-            extra={"request": request},
-        )
-        if chosen_guide in [
-            "variete",
-            "regional",
-            "pedagogie",
-            "creativite",
-            "registre",
-            "maniere",
-        ]:
-            preprompts = config.preprompts_table[chosen_guide]
-        else:
-            logger.error(
-                "Type of guided prompt not listed: " + str(chosen_guide),
-                extra={"request": request},
-            )
-        preprompt = preprompts[np.random.randint(len(preprompts))]
-        return [gr.update(visible=True), gr.update(value=preprompt)]
-
-    gr.on(
-        triggers=[
-            maniere.click,
-            registre.click,
-            regional.click,
-            variete.click,
-            pedagogie.click,
-            creativite_btn.click,
-        ],
-        fn=set_guided_prompt,
-        inputs=[],
-        outputs=[send_area, textbox],
-        api_name=False,
-    )
+    @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox])
+    def shuffle_prompt(guided_cards):
+        return gen_prompt(category=guided_cards)
 
     @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
     def change_send_btn_state(textbox):
@@ -298,7 +246,7 @@ def register_listeners():
             iters += 1
             for i in range(config.num_sides):
                 try:
-                    if (iters % 30 == 1 or iters < 3):
+                    if iters % 30 == 1 or iters < 3:
                         ret = next(gen[i])
                         conversations[i], chatbots[i] = ret[0], ret[1]
                     stop = False
@@ -361,6 +309,8 @@ def register_listeners():
             + [gr.update(interactive=False)]
             # retry_btn
             # + [gr.update(visible=True)]
+            # shuffle_btn
+            + [gr.update(visible=False)]
             # conclude_btn
             + [gr.update(visible=True, interactive=False)]
         )
@@ -443,7 +393,7 @@ def register_listeners():
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            # + [retry_btn]
+            + [shuffle_btn]
             + [conclude_btn]
         ),
     ).then(
@@ -545,7 +495,7 @@ def register_listeners():
             # buttons_footer
             + [gr.update(visible=False)]
         )
-    
+
     @supervote_send_btn.click(
         inputs=(
             [conversations[0]]
@@ -724,7 +674,7 @@ def register_listeners():
         textbox,
         request: gr.Request,
     ):
-        logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+        logger.info("clear_history", extra={request: request})
         #     + chatbots
         # + [textbox]
         # + [chat_area]

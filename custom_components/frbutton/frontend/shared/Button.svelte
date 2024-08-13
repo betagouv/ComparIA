@@ -65,14 +65,12 @@
 		box-shadow: var(--button-shadow);
 		padding: var(--size-0-5) var(--size-2);
 		text-align: center;
-	    /* height: 30rem; */
 		border: 1px var(--border-default-flat-grey) solid;
-		border-bottom: 4px var(--border-default-blue-france-sun) solid;
 	}
 	button.selected,
 	a.selected {
 		background-color: var(--background-flat-grey);
-		border-bottom: 4px var(--border-default-flat-grey) solid;
+		/* border-bottom: 4px var(--border-default-flat-grey) solid; */
 	}
 	
 	button:hover,

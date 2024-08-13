@@ -36,12 +36,12 @@ async def create_outage(model_name: str):
 @app.get("/outages/")
 async def get_outages():
     """
-    Retrieves a list of all outages.
+    Retrieves a list of all models currently off.
 
     Returns:
-        List[Dict[str, str]]: A list of outage dictionaries.
+        List[str]: A list of model names.
     """
-    return outages
+    return (o["model_name"] for o in outages)
 
 
 @app.delete("/outages/{model_name}", status_code=204)
