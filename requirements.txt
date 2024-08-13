@@ -10,3 +10,4 @@ google-auth
 ecologits
 python-slugify
 pandas
+psycopg2-binary

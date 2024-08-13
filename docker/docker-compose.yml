@@ -4,6 +4,7 @@ services:
     environment:
       LOGDIR: /data
       LANGUIA_REGISTER_API_ENDPOINT_FILE: "/register-api-endpoint-file.json"
+      LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -16,3 +17,14 @@ services:
       # Dev config
       - ../:/app
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+  languia-controller:
+    env_file: .env
+    environment:
+      LANGUIA_REGISTER_API_ENDPOINT_FILE: "/register-api-endpoint-file.json"
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: languia:latest
+    volumes:
+      - ../register-api-endpoint-file.json:/register-api-endpoint-file.json
+    command: ["uvicorn", "controller:app", "--host", "0.0.0.0", "--port", "21001", "--reload"]

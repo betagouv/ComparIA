@@ -8,12 +8,18 @@ from languia.utils import (
     build_reveal_html,
     header_html,
     vote_last_response,
+    get_final_vote,
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
     running_eq,
     log_poll,
+    get_chosen_model,
+    refresh_outage_models,
+    add_outage_model,
+    gen_prompt,
 )
+
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     SAMPLING_WEIGHTS,
@@ -32,43 +38,14 @@ from languia.block_conversation import (
     bot_response,
 )
 
-from languia.config import logger
 
 import gradio as gr
-import numpy as np
 
-# from fastchat.model.model_adapter import get_conversation_template
-
-from languia.block_conversation import (
-    # TODO: to import/replace State and bot_response?
-    ConversationState,
-    bot_response,
-)
 
 from languia.config import logger
 
-from languia.utils import (
-    get_ip,
-    get_battle_pair,
-    build_reveal_html,
-    header_html,
-    stepper_html,
-    vote_last_response,
-    get_model_extra_info,
-    count_output_tokens,
-    get_llm_impact,
-    running_eq,
-)
 
 from languia import config
-
-from languia.config import (
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
-    SAMPLING_WEIGHTS,
-    BATTLE_TARGETS,
-    SAMPLING_BOOST_MODELS,
-    outage_models,
-)
 
 
 # Register listeners
@@ -77,7 +54,7 @@ def register_listeners():
     # Step -1
     @demo.load(inputs=[], outputs=conversations, api_name=False)
     def init_models(request: gr.Request):
-
+        outage_models = refresh_outage_models(controller_url=config.controller_url)
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
             config.models,
@@ -126,15 +103,8 @@ def register_listeners():
 
     @free_mode_btn.click(
         inputs=[],
-        outputs=[
-            free_mode_btn,
-            guided_mode_btn,
-            send_area,
-            guided_area,
-            mode_screen,
-        ],
-        api_name=False,
-    )
+        outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
+        api_name=False,)
     def free_mode(request: gr.Request):
         logger.info(
             f"Chose free mode",
@@ -142,46 +112,36 @@ def register_listeners():
         )
 
         return [
-            gr.update(
-                elem_classes="fr-ml-auto " + mode_selection_classes + " selected"
-            ),
-            gr.update(elem_classes="fr-mr-auto " + mode_selection_classes),
-            gr.update(visible=True),
             gr.update(visible=False),
+            gr.update(visible=True),
             gr.update(elem_classes="fr-container send-area-enabled"),
+            gr.update(interactive=False),
+            # Don't remove or autofocus won't work
+            gr.skip()
         ]
 
-    @guided_mode_btn.click(
-        inputs=[],
-        outputs=[
-            free_mode_btn,
-            guided_mode_btn,
-            # send_area,
-            guided_area,
-            mode_screen,
-        ],
+    # Step 1.1
+    @guided_cards.change(
+        inputs=[guided_cards],
+        outputs=[send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
         api_name=False,
-        # TODO: scroll_to_output?
     )
-    def guided_mode(request: gr.Request):
-        # print(guided_mode_btn.elem_classes)
+    def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
+        category = guided_cards
+        prompt = gen_prompt(category)
         logger.info(
-            f"Chose guided mode",
+            f"set_guided_prompt: {category}",
             extra={"request": request},
         )
-        if "selected" in guided_mode_btn.elem_classes:
-            return [gr.skip() * 4]
-        else:
-            return [
-                gr.update(elem_classes="fr-ml-auto " + mode_selection_classes),
-                gr.update(
-                    elem_classes="fr-mr-auto " + mode_selection_classes + " selected"
-                ),
-                # send_area
-                # gr.update(visible=False),
-                gr.update(visible=True),
-                gr.update(elem_classes="fr-container send-area-enabled"),
-            ]
+        return [
+            gr.update(visible=True),
+            gr.update(value=prompt),
+            # gr.update(visible=True),
+            gr.update(elem_classes="fr-container send-area-enabled"),
+            gr.update(interactive=True),
+            gr.update(visible=False),
+        ]
+
         # .then(
         #         js="""
         # () =>
@@ -195,45 +155,9 @@ def register_listeners():
         #   }
         # """)
 
-    # Step 1.1
-
-    def set_guided_prompt(event: gr.EventData, request: gr.Request):
-        chosen_guide = event.target.value
-        logger.info(
-            f"set_guided_prompt: {chosen_guide}",
-            extra={"request": request},
-        )
-        if chosen_guide in [
-            "variete",
-            "regional",
-            "pedagogie",
-            "creativite",
-            "registre",
-            "maniere",
-        ]:
-            preprompts = config.preprompts_table[chosen_guide]
-        else:
-            logger.error(
-                "Type of guided prompt not listed: " + str(chosen_guide),
-                extra={"request": request},
-            )
-        preprompt = preprompts[np.random.randint(len(preprompts))]
-        return [gr.update(visible=True), gr.update(value=preprompt)]
-
-    gr.on(
-        triggers=[
-            maniere.click,
-            registre.click,
-            regional.click,
-            variete.click,
-            pedagogie.click,
-            creativite_btn.click,
-        ],
-        fn=set_guided_prompt,
-        inputs=[],
-        outputs=[send_area, textbox],
-        api_name=False,
-    )
+    @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox])
+    def shuffle_prompt(guided_cards):
+        return gen_prompt(category=guided_cards)
 
     @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
     def change_send_btn_state(textbox):
@@ -315,20 +239,6 @@ def register_listeners():
                 )
             )
 
-        is_stream_batch = []
-        for i in range(config.num_sides):
-            is_stream_batch.append(
-                conversations[i].model_name
-                in [
-                    "gemini-pro",
-                    "gemini-pro-dev-api",
-                    "gemini-1.0-pro-vision",
-                    "gemini-1.5-pro",
-                    "gemini-1.5-flash",
-                    "gemma-1.1-2b-it",
-                    "gemma-1.1-7b-it",
-                ]
-            )
         chatbots = [None] * config.num_sides
         iters = 0
         while True:
@@ -336,20 +246,19 @@ def register_listeners():
             iters += 1
             for i in range(config.num_sides):
                 try:
-                    # yield gemini fewer times as its chunk size is larger
-                    # otherwise, gemini will stream too fast
-                    if not is_stream_batch[i] or (iters % 30 == 1 or iters < 3):
+                    if iters % 30 == 1 or iters < 3:
                         ret = next(gen[i])
                         conversations[i], chatbots[i] = ret[0], ret[1]
                     stop = False
                 except StopIteration:
                     pass
                 except Exception as e:
-                    # logger.error(
-                    #     f"Problem with generating model {conversations[i].model_name}. Adding to outcasts list and re-rolling.",
-                    #     extra={"request": request},
-                    # )
-                    # outage_models.append(conversations[i].model_name)
+                    logger.error(
+                        f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
+                        extra={"request": request},
+                    )
+                    outage_models.append(conversations[i].model_name)
+                    add_outage_model(config.controller_url, conversations[i].model_name)
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
                     gr.Warning(
@@ -400,14 +309,14 @@ def register_listeners():
             + [gr.update(interactive=False)]
             # retry_btn
             # + [gr.update(visible=True)]
+            # shuffle_btn
+            + [gr.update(visible=False)]
             # conclude_btn
             + [gr.update(visible=True, interactive=False)]
         )
 
     def check_answers(conversation_a, conversation_b, request: gr.Request):
-        # Not set to none at all :'(
-        # print(str(conversation_a.conv_id))
-        # print(str(conversation_b.conv_id))
+
         logger.debug(
             "models finished answering",
             extra={"request": request},
@@ -484,7 +393,7 @@ def register_listeners():
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            # + [retry_btn]
+            + [shuffle_btn]
             + [conclude_btn]
         ),
     ).then(
@@ -552,7 +461,7 @@ def register_listeners():
     )
     def build_supervote_area(vote_radio, request: gr.Request):
         logger.info(
-            "voted for " + str(vote_radio),
+            "(temporarily) voted for " + str(vote_radio),
             extra={"request": request},
         )
         return (
@@ -610,18 +519,13 @@ def register_listeners():
         request: gr.Request,
     ):
         # conversations = [conversation_a, conversation_b]
-
-        if which_model_radio in [-1.5, -0.5]:
-            chosen_model = "model-a"
-        elif which_model_radio in [0.5, 1.5]:
-            chosen_model = "model-b"
-        else:
-            chosen_model = "invalid-vote"
-            raise (ValueError)
+        chosen_model = get_chosen_model(which_model_radio)
+        final_vote = get_final_vote(which_model_radio)
         details = {
             "model_left": conversation_a.model_name,
             "model_right": conversation_b.model_name,
             "chosen_model": chosen_model,
+            "final_vote": final_vote,
             "relevance": relevance_slider,
             "clearness": clearness_slider,
             "style": style_slider,
@@ -631,6 +535,7 @@ def register_listeners():
         vote_last_response(
             [conversation_a, conversation_b],
             chosen_model,
+            final_vote,
             details,
             request,
         )
@@ -641,6 +546,7 @@ def register_listeners():
         inputs=[
             conversations[0],
             conversations[1],
+            which_model_radio,
             chatbot_use,
             gender,
             age,
@@ -660,6 +566,7 @@ def register_listeners():
         inputs=[
             conversations[0],
             conversations[1],
+            which_model_radio,
             chatbot_use,
             gender,
             age,
@@ -678,6 +585,7 @@ def register_listeners():
     def send_poll(
         conversation_a,
         conversation_b,
+        which_model_radio,
         chatbot_use,
         gender,
         age,
@@ -689,6 +597,7 @@ def register_listeners():
         log_poll(
             conversation_a,
             conversation_b,
+            which_model_radio,
             chatbot_use,
             gender,
             age,
@@ -765,13 +674,14 @@ def register_listeners():
         textbox,
         request: gr.Request,
     ):
-        logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+        logger.info("clear_history", extra={request: request})
         #     + chatbots
         # + [textbox]
         # + [chat_area]
         # + [vote_area]
         # + [supervote_area]
         # + [mode_screen],
+        outage_models = refresh_outage_models(controller_url=config.controller_url)
 
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(

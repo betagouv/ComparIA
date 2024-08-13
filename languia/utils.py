@@ -25,6 +25,8 @@ from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
 
 from slugify import slugify
 
+# import config
+
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 
@@ -117,9 +119,31 @@ def get_ip(request: gr.Request):
     return ip
 
 
+def get_chosen_model(which_model_radio):
+    if which_model_radio in [-1.5, -0.5]:
+        chosen_model = "model-a"
+    elif which_model_radio in [0.5, 1.5]:
+        chosen_model = "model-b"
+    else:
+        chosen_model = "invalid-vote"
+        raise (ValueError)
+    return chosen_model
+
+
+def get_final_vote(which_model_radio):
+    final_vote = {
+        -1.5: "strongly-a",
+        -0.5: "slightly-a",
+        +0.5: "slightly-b",
+        +1.5: "strongly-b",
+    }
+    return final_vote[which_model_radio]
+
+
 def log_poll(
     conversation_a,
     conversation_b,
+    which_model_radio,
     chatbot_use,
     gender,
     age,
@@ -131,6 +155,8 @@ def log_poll(
     #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
     #     },
     # )
+    chosen_model = get_chosen_model(which_model_radio)
+    final_vote = get_final_vote(which_model_radio)
 
     with open(get_conv_log_filename(), "a") as fout:
         data = {
@@ -139,13 +165,15 @@ def log_poll(
             "models": [x.model_name for x in [conversation_a, conversation_b]],
             "conversations": [x.dict() for x in [conversation_a, conversation_b]],
             "chatbot_use": chatbot_use,
+            "final_vote": final_vote,
+            "chosen_model": chosen_model,
             "gender": gender,
             "age": age,
             "profession": profession,
             # FIXME:
             # "ip": get_ip(request),
         }
-        logging.info(json.dumps(data), extra={"request": request})
+        logger.info(json.dumps(data), extra={"request": request})
         fout.write(json.dumps(data) + "\n")
 
     return data
@@ -153,17 +181,23 @@ def log_poll(
 
 def vote_last_response(
     conversations,
-    vote_type,
+    chosen_model,
+    final_vote,
     details: list,
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
-    logger.info(f"{vote_type}_vote", extra={"request": request})
     logger.info(
-        f"{vote_type}_vote",
+        f"{final_vote}",
         extra={
             "request": request,
-            "vote": vote_type,
+            "type": final_vote,
+            "chosen_model": chosen_model,
+            "chosen_model_name": (
+                conversations[0].model_name
+                if chosen_model == "model-a"
+                else conversations[1].model_name
+            ),
             "details": details,
             "models": [x.model_name for x in conversations],
             "conversations": [x.dict() for x in conversations],
@@ -173,15 +207,21 @@ def vote_last_response(
     with open(get_conv_log_filename(), "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
-            "type": vote_type,
+            "vote": final_vote,
+            "chosen_model": chosen_model,
+            "chosen_model_name": (
+                conversations[0].model_name
+                if chosen_model == "model-a"
+                else conversations[1].model_name
+            ),
             "models": [x.model_name for x in conversations],
             "conversations": [x.dict() for x in conversations],
             # FIXME:
-            # "ip": get_ip(request),
+            "ip": get_ip(request),
         }
         if details != []:
             data.update(details=details),
-        logging.info(json.dumps(data), extra={"request": request})
+        logger.info(json.dumps(data), extra={"request": request})
         fout.write(json.dumps(data) + "\n")
 
     return data
@@ -190,7 +230,7 @@ def vote_last_response(
 
 def stepper_html(title, step, total_steps):
     return f"""
-    <div class="fr-stepper fr-container fr-pb-2w">
+    <div class="fr-stepper fr-container fr-pb-2w fr-px-2w">
     <h2 class="fr-stepper__title">
         {title}
         <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
@@ -200,7 +240,6 @@ def stepper_html(title, step, total_steps):
 </div>"""
 
 
-# Use starlette's jinja templating? Or static files
 with open("./templates/header-arena.html", encoding="utf-8") as header_file:
     header_html = header_file.read()
 
@@ -342,11 +381,7 @@ def build_reveal_html(
 ):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
-    chosen_model = None
-    if which_model_radio in [-1.5, -0.5]:
-        chosen_model = "model-a"
-    if which_model_radio in [0.5, 1.5]:
-        chosen_model = "model-b"
+    chosen_model = get_chosen_model(which_model_radio)
 
     return template.render(
         model_a=model_a,
@@ -533,6 +568,52 @@ def get_llm_impact(
                     + ", and no params, closed model did not match ecologits list?"
                 )
     return impact
+
+def gen_prompt(category):
+    from languia.config import prompts_table
+    if category in [
+        "expression",
+        "langues",
+        "conseils",
+        "loisirs",
+        "administratif",
+        "vie-professionnelle",
+    ]:
+        prompts = prompts_table[category]
+    else:
+        raise ValueError("Invalid prompt category")
+    return prompts[np.random.randint(len(prompts))]
+
+def refresh_outage_models(controller_url):
+    logger = logging.getLogger("languia")
+    try:
+        response = requests.get(controller_url + "/outages/")
+    except:
+        return []
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the JSON response
+        data = response.json()
+        logger.info("refreshed outage models:"+str(data))
+        return data
+    else:
+        print(f"Failed to retrieve outage data. Status code: {response.status_code}")
+    return []
+
+
+def add_outage_model(controller_url, model_name):
+    logger = logging.getLogger("languia")
+
+    try:
+        response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}")
+    except:
+        logger.error(f"Failed to post outage data.")
+        return
+
+    if response.status_code == 201:
+        logger.info("successfully reported outage model ", model_name)
+    else:
+        logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
 
 # Not used

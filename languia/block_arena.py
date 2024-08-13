@@ -12,7 +12,10 @@ from languia.utils import (
     stepper_html,
 )
 
-from custom_components.frbutton.backend.gradio_frbutton import FrButton
+# from custom_components.frbutton.backend.gradio_frbutton import FrButton
+from custom_components.customradiocard.backend.gradio_customradiocard import (
+    CustomRadioCard,
+)
 from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
 from custom_components.customslider.backend.gradio_customslider import CustomSlider
@@ -39,7 +42,7 @@ with gr.Blocks(
     analytics_enabled=False,
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
-    # Dirty hack for accepting ToS
+    # Script for accepting ToS is there:
     js=config.arena_js,
 ) as demo:
     # A tester
@@ -62,14 +65,12 @@ with gr.Blocks(
             value="C'est parti",
             scale=0,
             elem_id="start_arena_btn",
-            elem_classes="fr-btn fr-mx-auto",
+            elem_classes="fr-btn fr-mx-auto fr-mb-4w",
             interactive=False,
         )
 
-    # with gr.Row(elem_id="stepper-row", elem_classes="fr-pb-2w") as stepper_row:
-    # with gr.Row(elem_id="stepper-row", elem_classes="raised fr-pb-2w") as stepper_row:
     stepper_block = gr.HTML(
-        stepper_html("Choix du mode de conversation", 1, 4),
+        stepper_html("Bienvenue ! Comment puis-je vous aider aujourd'hui ?", 1, 4),
         elem_id="stepper-html",
         visible=False,
     )
@@ -77,97 +78,77 @@ with gr.Blocks(
     with gr.Column(
         visible=False, elem_id="mode-screen", elem_classes="fr-container"
     ) as mode_screen:
-        gr.HTML(
-            """
-        <div class="fr-notice fr-notice--info"> 
-            <div class="fr-container">
-                    <div class="fr-notice__body mission" >
-                        <p class="fr-notice__title mission">Discutez d’un sujet qui vous intéresse puis évaluez les réponses des modèles.</p>
-                    </div>
-            </div>
-        </div>"""
-        )
-        gr.HTML(
-            """<div class="text-center fr-mt-4w fr-mb-2w fr-grid-row fr-grid-row--center"><h4 class="fr-mb-1v fr-col-12">Comment voulez-vous commencer la conversation ?</h4>
-            <p class="fr-col-12"><em>(Sélectionnez un des deux modes)</em></p></div>"""
-        )
-        with gr.Row(
-            elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-col-12"
-        ):
-            mode_selection_classes = "fr-col-12 fr-col-md-4 fr-p-4w"
-            free_mode_btn = FrButton(
-                custom_html="""<h4>Mode libre</h4><p class="fr-text--lg">Ecrivez directement aux modèles, discutez du sujet que vous voulez</p>""",
-                elem_id="free-mode",
-                elem_classes="fr-ml-auto " + mode_selection_classes,
-                icon="assets/extra-artwork/conclusion.svg",
-            )
-            guided_mode_btn = FrButton(
-                elem_classes="fr-mr-auto " + mode_selection_classes,
-                elem_id="guided-mode",
-                custom_html="""<h4>Mode inspiré</h4><p class="fr-text--lg">Vous n'avez pas d'idée ? Découvrez une série de thèmes inspirants</p>""",
-                icon="assets/extra-artwork/innovation.svg",
-            )
 
-        with gr.Column(
-            elem_id="guided-area",
-            # elem_classes="fr-grid-row" messes with visible=False...
-            # elem_classes="fr-grid-row fr-grid-row--center",
-            visible=False,
-        ) as guided_area:
-            gr.Markdown(
-                elem_classes="text-center fr-mt-4w fr-mb-2w",
-                value="##### Sélectionnez un thème que vous aimeriez explorer :",
-            )
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
-            with gr.Row(elem_classes="radio-tiles"):
-                maniere = FrButton(
-                    value="maniere",
-                    custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Ecrire à la manière d'un romancier ou d'une romancière</p>""",
-                )
-                registre = FrButton(
-                    value="registre",
-                    custom_html="""<span class="fr-badge fr-badge--purple-glycine">Style</span><p>Transposer en registre familier, courant, soutenu…</p>""",
-                )
-                creativite_btn = FrButton(
-                    value="creativite",
-                    custom_html="""<span class="fr-badge fr-badge--green-tilleul-verveine">Créativité</span><p>Jeux de mots, humour et expressions</p>""",
-                )
-            with gr.Row(elem_classes="radio-tiles"):
-                pedagogie = FrButton(
-                    value="pedagogie",
-                    custom_html="""<span class="fr-badge fr-badge--blue-cumulus">Pédagogie</span><p>Expliquer simplement un concept</p>""",
-                )
-                regional = FrButton(
-                    value="regional",
-                    custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Parler en Occitan, Alsacien, Basque, Picard…</p>""",
-                )
-                variete = FrButton(
-                    value="variete",
-                    custom_html="""<span class="fr-badge fr-badge--yellow-moutarde">Diversité</span><p>Est-ce différent en Québécois, Belge, Suisse, Antillais…</p>""",
-                )
+            # with gr.Row(elem_classes="fr-col-12 fr-mx-auto fr-col-md-8"):
+                # expression = FrButton(
+                #     value="expression",
+                #     custom_html="""<span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
+                # )
 
-    # with gr.Column(elem_id="send-area", elem_classes="fr-grid-row", visible=False) as send_area:
+        guided_cards = CustomRadioCard(
+                    show_label=False,
+                    # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center",
+                    # elem_classes="fr-container",
+                    choices=[
+                        (
+                            """<span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
+                            "langues",
+                        ),
+                        (
+                            """<span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
+                            "conseils",
+                        ),
+                        (
+                            """<span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
+                            "loisirs",
+                        ),
+                        (
+                            """<span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+                            "administratif",
+                        ),
+                    ]
+                )
+                # vie_professionnelle = FrButton(
+                #     value="vie-professionnelle",
+                #     custom_html="""<span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
+                # )
+        free_mode_btn = gr.Button(
+            scale=1,
+            elem_id="free-mode",
+            value="Je veux écrire sur mon propre sujet",
+            elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mb-4w",
+        )
+
     with gr.Column(elem_id="send-area", visible=False) as send_area:
-        with gr.Row(elem_classes="fr-grid-row"):
             # textbox = gr.Textbox(
+        with gr.Column(elem_classes="inline-block"):
             textbox = FrInput(
                 elem_id="main-textbox",
                 show_label=False,
                 lines=1,
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,
-                # TODO: raise fr-col-md to 10 ?
-                elem_classes="fr-col-12 fr-col-md-9",
+                elem_classes="inline-block fr-col-12 fr-col-md-10 bg-white",
                 container=False,
-                # not working
-                # autofocus=True
+                autofocus=True,
+                # autoscroll=True
             )
             send_btn = gr.Button(
                 interactive=False,
+                scale=1,
                 value="Envoyer",
                 elem_id="send-btn",
-                elem_classes="fr-btn fr-col-6 fr-col-md-1",
+                elem_classes="inline-block fr-btn fr-ml-3v",
             )
+        shuffle_btn = gr.Button(
+            scale=1,
+            size='sm',
+            elem_classes="fr-btn fr-btn--tertiary small-icon fr-mx-auto",
+            interactive=False,
+            value="Générer un autre message",
+            icon="assets/extra-icons/shuffle.svg",
+        )
 
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
@@ -179,6 +160,7 @@ with gr.Blocks(
 
             retry_modal_btn = gr.Button(
                 value="",
+                elem_id="retry-modal-btn",
                 elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
                 #  icon="assets/dsfr/icons/system/refresh-line.svg",
                 scale=1,
@@ -216,7 +198,9 @@ with gr.Blocks(
                         show_copy_button=False,
                     )
 
-    with gr.Column(visible=False, elem_classes="fr-container fr-mb-12w") as vote_area:
+    with gr.Column(
+        visible=False, elem_classes="fr-container fr-mb-12w fr-px-16w"
+    ) as vote_area:
         gr.HTML(
             value="""
         <div class="fr-notice fr-notice--info"> 
@@ -229,9 +213,10 @@ with gr.Blocks(
             <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
         )
 
-        # which_model_radio = gr.Radio(
+        # TODO: which_model_radio = CustomSlider(
         #         show_label=False,
         #         container=False,
+        # extrema=["Modèle A", "Modèle B"],
         #         choices=[
         #             "Je préfère de loin le modèle A",
         #             "Le modèle A est un peu mieux",
@@ -267,7 +252,7 @@ with gr.Blocks(
                 <p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
                 elem_classes="text-center",
             )
-            with gr.Column(elem_classes="fr-container"):
+            with gr.Column(elem_classes="fr-container fr-px-16w"):
                 relevance_slider = FrSlider(
                     value=-1,
                     range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
@@ -421,16 +406,19 @@ with gr.Blocks(
     # Modals
     with Modal(elem_id="retry-modal") as retry_modal:
         gr.HTML(
-            """<h1 class="fr-modal__title"><span class="class="fr-icon-arrow-right-line fr-icon--lg"></span> Etes-vous sûr·e de quitter sans voter ?</h1>
+            """<h1 class="fr-modal__title"><span class="fr-icon-arrow-right-line fr-icon--lg"></span> Etes-vous sûr·e de quitter sans voter ?</h1>
 <p>Vous êtes sur le point de recommencer une nouvelle conversation sans avoir voté sur celle-ci qui est en cours.</p>"""
         )
-        close_retry_modal_btn = gr.Button(
-            value="Non, annuler", elem_classes="fr-btn fr-btn--secondary", scale=1
-        )
-        retry_btn = gr.Button(
-            value="Oui, recommencer une conversation", elem_classes="fr-btn", scale=1
-        )
+        with gr.Row():
+            close_retry_modal_btn = gr.Button(
+                value="Non, annuler", elem_classes="fr-btn fr-btn--secondary", scale=1
+            )
+            retry_btn = gr.Button(
+                value="Oui, recommencer une conversation",
+                elem_classes="fr-btn",
+                scale=1,
+            )
 
-    from languia.controllers import register_listeners
+    from languia.listeners import register_listeners
 
     register_listeners()

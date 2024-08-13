@@ -37,27 +37,17 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
 """
 )
 
-# Create the logs table if it doesn't exist
-cur.execute(
-    """
-CREATE TABLE IF NOT EXISTS logs (
-    id SERIAL PRIMARY KEY,
-    tstamp TIMESTAMP,
-    msg JSONB
-);
-"""
-)
 # Loop through each JSON file in the directory
 for filename in os.listdir(json_directory):
-    if filename.endswith(".json") and filename.startswith("conv-"):
+    if filename.endswith("-conv.json"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
             for line in file:
-                # try:
+                try:
                     data = json.loads(line)
 
-                    if data.get("type") not in ["leftvote", "rightvote", "bothbad"]:
+                    if data.get("type") not in ["slightly-a", "strongly-a", "slightly-b", "strongly-b", "poll"]:
                         if data.get("type") != "chat":
                             print("Ignoring event " + data.get("type"))
                         continue
@@ -92,10 +82,10 @@ for filename in os.listdir(json_directory):
                     # model = data.get("model", None)
                     state_a = json.dumps(states[0])
                     state_b = json.dumps(states[1])
-                    model_a_name = json.dumps(states[0].model_name)
-                    model_b_name = json.dumps(states[1].model_name)
+                    model_a_name = states[0]['model_name']
+                    model_b_name = states[1]['model_name']
                     ip = data.get("ip", None)
-                    details = json.dumps(data.get("details", {}))
+                    details = json.dumps(data.get(" details", {}))
 
                     # Execute the insert statement
                     cur.execute(
@@ -115,10 +105,11 @@ for filename in os.listdir(json_directory):
                     )
                     print("Data successfully parsed")
 
-                # except Exception as e:
-                #     print(f"An error occurred: {e}")
-                #     print(traceback.format_exc())
-                    #
+                except Exception as e:
+                    print(f"An error occurred: {e}")
+                    pass
+                    # print(traceback.format_exc())
+                    
         print("Data from " + file_path + " successfully parsed")
 
 
@@ -132,25 +123,30 @@ cur.execute(
 CREATE TABLE IF NOT EXISTS logs (
     id SERIAL PRIMARY KEY,
     tstamp TIMESTAMP,
-    msg JSONB
+    msg JSONB,
+    message TEXT
 );
-"""
+ALTER TABLE logs
+ADD UNIQUE (tstamp,message); """
 )
+conn.commit()
+
 for filename in os.listdir(json_directory):
     if filename.endswith(".jsonl") and filename.startswith("logs-"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
-            for line in file:
-                try:
+            try:
+                for line in file:
                     msg = json.loads(line)
                     tstamp = msg.get("time")
+                    message = msg.get("message")
 
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
                         """
-                    INSERT INTO logs (tstamp, msg)
-                    VALUES (%s, %s);
+                    INSERT INTO logs (tstamp, msg, message)
+                    VALUES (%s, %s, %s);
                     """
                     )
                     # print(tstamp)
@@ -161,18 +157,19 @@ for filename in os.listdir(json_directory):
                         (
                             tstamp,
                             json.dumps(msg),
+                            message
                         ),
                     )
-                except json.decoder.JSONDecodeError:
-                    print("Not JSON:" + str(line))
-                    print("Skipping file " + file_path)
-                    # print(traceback.format_exc())
-                    # continue
-                # except Exception as e:
-                    # print(f"An error occurred: {e}")
-                    # print("Line: " + str(line))
-                    # print(traceback.format_exc())
-                    # print("Skipping file " + file_path)
+            except json.decoder.JSONDecodeError:
+                # print("Not JSON:" + str(line))
+                print("Skipping file " + file_path)
+                # print(traceback.format_exc())
+                continue
+            # except Exception as e:
+                # print(f"An error occurred: {e}")
+                # print("Line: " + str(line))
+                # print(traceback.format_exc())
+                # print("Skipping file " + file_path)
         print("Data from " + file_path + " successfully parsed")
     
 # Commit changes and close the connection

@@ -23,17 +23,18 @@ function() {
 
     // Initial check
     checkAndEnableButton();
-// scroll to guided area if selected    
 
-  const scrollButton = document.getElementById('guided-mode');
-  const targetElement = document.getElementById('guided-area');
+    // scroll to guided area if selected    
 
-  // only works on second click :(
-  scrollButton.addEventListener('click', () => {
-    targetElement.scrollIntoView({ 
-      behavior: 'smooth'
-    });
-  });
+  // const scrollButton = document.getElementById('guided-mode');
+  // const targetElement = document.getElementById('guided-area');
+
+  // // only works on second click :(
+  // scrollButton.addEventListener('click', () => {
+  //   targetElement.scrollIntoView({ 
+  //     behavior: 'smooth'
+  //   });
+  // });
 
   // window.onscroll = function() {
   //   // const headerPlaceholder = document.querySelector('#header-placeholder');
