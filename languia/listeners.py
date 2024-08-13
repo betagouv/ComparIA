@@ -103,9 +103,8 @@ def register_listeners():
 
     @free_mode_btn.click(
         inputs=[],
-        outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn],
-        api_name=False,
-    )
+        outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
+        api_name=False,)
     def free_mode(request: gr.Request):
         logger.info(
             f"Chose free mode",
@@ -117,6 +116,8 @@ def register_listeners():
             gr.update(visible=True),
             gr.update(elem_classes="fr-container send-area-enabled"),
             gr.update(interactive=False),
+            # Don't remove or autofocus won't work
+            gr.skip()
         ]
 
     # Step 1.1
