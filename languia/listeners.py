@@ -262,7 +262,7 @@ def register_listeners():
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
                     gr.Warning(
-                        message="Erreur avec le chargement d'un des modèles, veuillez relancer l'arène",
+                        message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
                     )
                     # gr.Warning(
                     #     message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
@@ -291,7 +291,6 @@ def register_listeners():
             extra={"request": request},
         )
 
-        # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
         return (
             [
                 gr.update(
