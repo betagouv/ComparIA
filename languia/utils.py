@@ -230,7 +230,7 @@ def vote_last_response(
 
 def stepper_html(title, step, total_steps):
     return f"""
-    <div class="fr-stepper fr-container fr-pb-2w fr-mx-16w">
+    <div class="fr-stepper fr-container fr-pb-2w fr-px-2w">
     <h2 class="fr-stepper__title">
         {title}
         <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
@@ -240,7 +240,6 @@ def stepper_html(title, step, total_steps):
 </div>"""
 
 
-# Use starlette's jinja templating? Or static files
 with open("./templates/header-arena.html", encoding="utf-8") as header_file:
     header_html = header_file.read()
 
