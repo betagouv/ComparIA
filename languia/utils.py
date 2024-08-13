@@ -570,7 +570,10 @@ def get_llm_impact(
 
 
 def refresh_outage_models(controller_url):
-    response = requests.get(controller_url + "/outages/")
+    try:
+        response = requests.get(controller_url + "/outages/")
+    except:
+        return []
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -583,7 +586,11 @@ def refresh_outage_models(controller_url):
 
 
 def add_outage_model(controller_url, model_name):
-    response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}")
+    try:
+        response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}")
+    except:
+        print(f"Failed to post outage data.")
+
     if response.status_code == 201:
         logging.info("successfully reported outage model ", model_name)
     else:
