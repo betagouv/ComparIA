@@ -16,7 +16,8 @@ from languia.utils import (
     log_poll,
     get_chosen_model,
     refresh_outage_models,
-    add_outage_model
+    add_outage_model,
+    gen_prompt
 )
 
 from languia.config import (
@@ -103,7 +104,7 @@ def register_listeners():
     @free_mode_btn.click(
         inputs=[],
         outputs=[
-            free_mode_btn,
+            # free_mode_btn,
             send_area,
             mode_screen,
         ],
@@ -116,9 +117,9 @@ def register_listeners():
         )
 
         return [
-            gr.update(
-                elem_classes="selected"
-            ),
+            # gr.update(
+            #     elem_classes="selected"
+            # ),
             gr.update(visible=True),
             gr.update(elem_classes="fr-container send-area-enabled"),
         ]
@@ -126,42 +127,29 @@ def register_listeners():
 
     # Step 1.1
 
-    def set_guided_prompt(event: gr.EventData, request: gr.Request):
-        chosen_guide = event.target.value
+    def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
+        category = guided_cards
+        prompt = gen_prompt(category)
         logger.info(
-            f"set_guided_prompt: {chosen_guide}",
+            f"set_guided_prompt: {category}",
             extra={"request": request},
         )
-        if chosen_guide in [
-            "expression",
-            "langues",
-            "conseils",
-            "loisirs",
-            "administratif",
-            "vie-professionnelle",
-        ]:
-            preprompts = config.preprompts_table[chosen_guide]
-        else:
-            logger.error(
-                "Type of guided prompt not listed: " + str(chosen_guide),
-                extra={"request": request},
-            )
-        preprompt = preprompts[np.random.randint(len(preprompts))]
-        return [gr.update(visible=True), gr.update(value=preprompt)]
+        return [gr.update(visible=True), gr.update(value=prompt)]
                             # gr.update(visible=True),
                             # gr.update(elem_classes="fr-container send-area-enabled"),
 
     gr.on(
         triggers=[
+            guided_cards.change
             # expression.click,
-            langues.click,
-            conseils.click,
-            loisirs.click,
-            administratif.click,
+            # langues.click,
+            # conseils.click,
+            # loisirs.click,
+            # administratif.click,
             # vie_professionnelle.click,
         ],
         fn=set_guided_prompt,
-        inputs=[],
+        inputs=[guided_cards],
         outputs=[send_area, textbox],
         api_name=False,
     )
@@ -177,6 +165,9 @@ def register_listeners():
         #     });
         #   }
         # """)
+    @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox])
+    def shuffle_prompt(guided_cards):
+        return gen_prompt(category=guided_cards)
 
     @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
     def change_send_btn_state(textbox):
@@ -691,7 +682,7 @@ def register_listeners():
         textbox,
         request: gr.Request,
     ):
-        logger.info(f"clear_history (anony). ip: {get_ip(request)}")
+        logger.info("clear_history", extra={request: request})
         #     + chatbots
         # + [textbox]
         # + [chat_area]

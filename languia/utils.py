@@ -25,6 +25,8 @@ from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
 
 from slugify import slugify
 
+# import config
+
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 
@@ -171,7 +173,7 @@ def log_poll(
             # FIXME:
             # "ip": get_ip(request),
         }
-        logging.info(json.dumps(data), extra={"request": request})
+        logger.info(json.dumps(data), extra={"request": request})
         fout.write(json.dumps(data) + "\n")
 
     return data
@@ -219,7 +221,7 @@ def vote_last_response(
         }
         if details != []:
             data.update(details=details),
-        logging.info(json.dumps(data), extra={"request": request})
+        logger.info(json.dumps(data), extra={"request": request})
         fout.write(json.dumps(data) + "\n")
 
     return data
@@ -568,8 +570,23 @@ def get_llm_impact(
                 )
     return impact
 
+def gen_prompt(category):
+    from languia.config import prompts_table
+    if category in [
+        "expression",
+        "langues",
+        "conseils",
+        "loisirs",
+        "administratif",
+        "vie-professionnelle",
+    ]:
+        prompts = prompts_table[category]
+    else:
+        raise ValueError("Invalid prompt category")
+    return prompts[np.random.randint(len(prompts))]
 
 def refresh_outage_models(controller_url):
+    logger = logging.getLogger("languia")
     try:
         response = requests.get(controller_url + "/outages/")
     except:
@@ -578,7 +595,7 @@ def refresh_outage_models(controller_url):
     if response.status_code == 200:
         # Parse the JSON response
         data = response.json()
-        logging.info("outage models:", data)
+        logger.info("refreshed outage models:"+str(data))
         return data
     else:
         print(f"Failed to retrieve outage data. Status code: {response.status_code}")
@@ -586,15 +603,18 @@ def refresh_outage_models(controller_url):
 
 
 def add_outage_model(controller_url, model_name):
+    logger = logging.getLogger("languia")
+
     try:
         response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}")
     except:
-        print(f"Failed to post outage data.")
+        logger.error(f"Failed to post outage data.")
+        return
 
     if response.status_code == 201:
-        logging.info("successfully reported outage model ", model_name)
+        logger.info("successfully reported outage model ", model_name)
     else:
-        print(f"Failed to post outage data. Status code: {response.status_code}")
+        logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
 
 # Not used

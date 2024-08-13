@@ -1,9 +1,9 @@
-from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
 import os
 import sentry_sdk
 import json
 from slugify import slugify
+from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
 from languia.utils import build_logger
 import datetime
@@ -153,7 +153,7 @@ else:
 
 enable_moderation = False
 use_remote_storage = False
-preprompts_table = {
+prompts_table = {
     "loisirs": [
         # Voyages
         "Je prévois un séjour en Suisse et j’aimerais faire une randonnée en montagne. Quels sentiers sont adaptés pour un débutant tout en offrant de belles vues sur les Alpes suisses ?,",
@@ -205,8 +205,8 @@ preprompts_table = {
         "Écris un court e-mail pour demander un devis à des électriciens près de chez moi pour un problème de panne. Je dois obtenir une intervention dans la semaine.",
         "Rédige un courrier pour résilier le bail de mon appartement",
         "Comment rédiger une lettre de contestation d'une amende pour excès de vitesse, en expliquant les raisons pour lesquelles l'amende devrait être annulée ou revue ?",
-        "Vous lancez une nouvelle entreprise et vous vous débattez avec les formalités administratives ? Je peux vous aider à préparer un plan d'affaires complet qui répond à toutes les exigences administratives.",
-        "Vous demandez un permis de séjour ? Travaillons ensemble pour rédiger une lettre de motivation convaincante qui met en valeur votre éligibilité et respecte toutes les directives officielles.",
+        "Je lance une nouvelle entreprise et je me débats avec les formalités administratives. Aide-moi à préparer un plan d'affaires complet qui répond à toutes les exigences administratives.",
+        "Je demande un permis de séjour, travaillons ensemble pour rédiger une lettre de motivation convaincante qui met en valeur mon éligibilité et respecte toutes les directives officielles.",
         "Vous devez rédiger une demande formelle d'informations auprès d'une agence gouvernementale ? Je vous aiderai à rédiger une lettre claire et concise qui respecte les protocoles administratifs appropriés.",
         "Je prépare un dossier pour créer une association. Aide moi à structurer le document des statuts, à utiliser un langage approprié et à m’assurer que toutes les informations nécessaires sont incluses pour répondre aux normes administratives.",
         "Crée un modèle de contrat de prestation de services entre un prestataire indépendant et un client, en précisant les obligations de chaque partie, les modalités de paiement, les conditions de résiliation, et les clauses de confidentialité.",

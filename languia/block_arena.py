@@ -12,7 +12,10 @@ from languia.utils import (
     stepper_html,
 )
 
-from custom_components.frbutton.backend.gradio_frbutton import FrButton
+# from custom_components.frbutton.backend.gradio_frbutton import FrButton
+from custom_components.customradiocard.backend.gradio_customradiocard import (
+    CustomRadioCard,
+)
 from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
 from custom_components.customslider.backend.gradio_customslider import CustomSlider
@@ -78,44 +81,52 @@ with gr.Blocks(
         visible=False, elem_id="mode-screen", elem_classes="fr-container"
     ) as mode_screen:
 
-        with gr.Column(
-            elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center fr-col-12"
-        ):
-            mode_selection_classes = "fr-col-12 fr-col-md-4 fr-p-4w"
+        # with gr.Column(
+        #     # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center"
+        # ):
+            # mode_selection_classes = "fr-col-12 fr-col-md-4 fr-p-4w"
 
             # elem_classes="fr-grid-row" messes with visible=False...
 
             # fr-col-12 fr-col-sm-8 fr-col-md-6 fr-col-lg-4 fr-col-xl-2
-            with gr.Row(elem_classes=""):
+            # with gr.Row(elem_classes="fr-col-12 fr-mx-auto fr-col-md-8"):
                 # expression = FrButton(
                 #     value="expression",
-                #     custom_html="""<span class="fr-tag fr-tag--green-tilleul-verveine">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
+                #     custom_html="""<span class="fr-tag fr-tag--green-tilleul-verveine fr-tag--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
                 # )
-                langues = FrButton(
-                    value="langues",
-                    custom_html="""<span class="fr-tag fr-tag--blue-cumulus">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
-                )
-                conseils = FrButton(
-                    value="conseils",
-                    custom_html="""<span class="fr-tag fr-tag--yellow-moutarde">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
-                )
-            with gr.Row(elem_classes=""):
-                loisirs = FrButton(
-                    value="loisirs",
-                    custom_html="""<span class="fr-tag fr-tag--purple-glycine">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
-                )
-                administratif = FrButton(
-                    value="administratif",
-                    custom_html="""<span class="fr-tag fr-tag--orange-terre-battue">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+
+        guided_cards = CustomRadioCard(
+                    show_label=False,
+                    # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center",
+                    # elem_classes="fr-grid-row",
+                    choices=[
+                        (
+                            """<span class="fr-tag fr-tag--blue-cumulus fr-tag--icon-left fr-icon-translate-2">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
+                            "langues",
+                        ),
+                        (
+                            """<span class="fr-tag fr-tag--yellow-moutarde fr-tag--icon-left fr-icon-lightbulb">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
+                            "conseils",
+                        ),
+                        (
+                            """<span class="fr-tag fr-tag--purple-glycine fr-tag--icon-left fr-icon-bike">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
+                            "loisirs",
+                        ),
+                        (
+                            """<span class="fr-tag fr-tag--orange-terre-battue fr-tag--icon-left fr-icon-draft">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+                            "administratif",
+                        ),
+                    ]
                 )
                 # vie_professionnelle = FrButton(
                 #     value="vie-professionnelle",
-                #     custom_html="""<span class="fr-tag fr-tag--blue-ecume">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
+                #     custom_html="""<span class="fr-tag fr-tag--blue-ecume fr-tag--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
                 # )
         free_mode_btn = gr.Button(
+            scale=1,
             elem_id="free-mode",
             value="Je veux écrire sur mon propre sujet",
-            elem_classes="fr-btn fr-btn--secondary",
+            elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
         )
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
@@ -128,7 +139,7 @@ with gr.Blocks(
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,
                 # TODO: raise fr-col-md to 10 ?
-                elem_classes="fr-col-12 fr-col-md-9",
+                elem_classes="fr-col-12 fr-col-md-9 bg-white",
                 container=False,
                 # not working
                 # autofocus=True
@@ -140,10 +151,10 @@ with gr.Blocks(
                 elem_classes="fr-btn fr-col-6 fr-col-md-1",
             )
             shuffle_btn = gr.Button(
-                elem_classes="fr-btn fr-btn--secondary",
-                interactive=False,
+                elem_classes="fr-btn fr-btn--secondary fr-icon-shuffle",
+                # interactive=False,
                 value="Générer un autre message",
-                # icon="",
+                # icon="assets/extra-icons/shuffle.svg",
             )
 
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
