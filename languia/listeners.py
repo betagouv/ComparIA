@@ -17,7 +17,7 @@ from languia.utils import (
     get_chosen_model,
     refresh_outage_models,
     add_outage_model,
-    gen_prompt
+    gen_prompt,
 )
 
 from languia.config import (
@@ -103,11 +103,7 @@ def register_listeners():
 
     @free_mode_btn.click(
         inputs=[],
-        outputs=[
-            # free_mode_btn,
-            send_area,
-            mode_screen,
-        ],
+        outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn],
         api_name=False,
     )
     def free_mode(request: gr.Request):
@@ -117,16 +113,18 @@ def register_listeners():
         )
 
         return [
-            # gr.update(
-            #     elem_classes="selected"
-            # ),
+            gr.update(visible=False),
             gr.update(visible=True),
             gr.update(elem_classes="fr-container send-area-enabled"),
+            gr.update(interactive=False),
         ]
 
-
     # Step 1.1
-
+    @guided_cards.change(
+        inputs=[guided_cards],
+        outputs=[send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
+        api_name=False,
+    )
     def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
         category = guided_cards
         prompt = gen_prompt(category)
@@ -134,25 +132,15 @@ def register_listeners():
             f"set_guided_prompt: {category}",
             extra={"request": request},
         )
-        return [gr.update(visible=True), gr.update(value=prompt)]
-                            # gr.update(visible=True),
-                            # gr.update(elem_classes="fr-container send-area-enabled"),
+        return [
+            gr.update(visible=True),
+            gr.update(value=prompt),
+            # gr.update(visible=True),
+            gr.update(elem_classes="fr-container send-area-enabled"),
+            gr.update(interactive=True),
+            gr.update(visible=False),
+        ]
 
-    gr.on(
-        triggers=[
-            guided_cards.change
-            # expression.click,
-            # langues.click,
-            # conseils.click,
-            # loisirs.click,
-            # administratif.click,
-            # vie_professionnelle.click,
-        ],
-        fn=set_guided_prompt,
-        inputs=[guided_cards],
-        outputs=[send_area, textbox],
-        api_name=False,
-    )
         # .then(
         #         js="""
         # () =>
@@ -165,6 +153,7 @@ def register_listeners():
         #     });
         #   }
         # """)
+
     @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox])
     def shuffle_prompt(guided_cards):
         return gen_prompt(category=guided_cards)
@@ -256,7 +245,7 @@ def register_listeners():
             iters += 1
             for i in range(config.num_sides):
                 try:
-                    if (iters % 30 == 1 or iters < 3):
+                    if iters % 30 == 1 or iters < 3:
                         ret = next(gen[i])
                         conversations[i], chatbots[i] = ret[0], ret[1]
                     stop = False
@@ -319,6 +308,8 @@ def register_listeners():
             + [gr.update(interactive=False)]
             # retry_btn
             # + [gr.update(visible=True)]
+            # shuffle_btn
+            + [gr.update(visible=False)]
             # conclude_btn
             + [gr.update(visible=True, interactive=False)]
         )
@@ -401,7 +392,7 @@ def register_listeners():
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            # + [retry_btn]
+            + [shuffle_btn]
             + [conclude_btn]
         ),
     ).then(
@@ -503,7 +494,7 @@ def register_listeners():
             # buttons_footer
             + [gr.update(visible=False)]
         )
-    
+
     @supervote_send_btn.click(
         inputs=(
             [conversations[0]]
