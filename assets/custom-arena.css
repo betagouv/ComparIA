@@ -88,41 +88,18 @@ body.dark {
   color: var(--neutral-800) !important;
 }
 
-/* "COMPONENTS" (not custom components) */
-
-/* Radio button as DSFR-ish selectable tiles */
-.radio-tiles label.selected,
-.radio-tiles button:focus {
-  box-shadow: 0 5px var(--border-action-high-blue-france);
-  background-color: var(--background-default-grey-active) !important;
-}
-
-.radio-tiles label,
-.radio-tiles button {
-  border-top: 2px var(--border-default-grey) solid;
-  border-left: 2px var(--border-default-grey) solid;
-  border-right: 2px var(--border-default-grey) solid;
-  -moz-box-shadow: 0 5px var(--border-action-high-grey);
-  box-shadow: 0 5px var(--border-action-high-grey);
-  margin: 0 auto;
-  display: block;
-  padding: 20px 50px;
-  align-content: center;
-  color: var(--text-action-high-blue-france);
-  font-size: larger;
-}
-
-.radio-tiles input {
-  display: none;
-}
 
 /* UTILITY CLASSES */
+
+.inline-block {
+  display: inline-block;
+}
 
 .bolder {
   font-weight: 700;
 }
-.bg-white {
-background-color: white;
+.bg-white textarea {
+background-color: white !important;
 }
 /* 
 .icon-white img {
@@ -235,7 +212,15 @@ li.fr-nav__item {
   border-top: solid 1px var(--border-default-grey);
   z-index: 100;
 }
+#send-area .small-icon .button-icon {
+  width: 15px;
+  height: 14px;
+}
 
+#send-btn {
+  position: absolute;
+  top: 0;
+}
 /* 
 #free-mode,
 #guided-mode {
@@ -249,8 +234,16 @@ li.fr-nav__item {
   background-color: var(--active-tint);
 } */
 
+#mode-screen .fr-tag {
+  font-variant: small-caps;
+  /* text-transform: uppercase; */
+}
 #mode-screen.send-area-enabled {
   margin-bottom: 12rem;
+}
+
+#mode-screen p {
+  margin: 0 !important;
 }
 
 #chat-area {

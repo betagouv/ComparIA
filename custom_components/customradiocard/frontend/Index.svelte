@@ -18,17 +18,17 @@
 		clear_status: LoadingStatus;
 	}>;
 
-	export let label = gradio.i18n("radio.radio");
-	export let info: string | undefined = undefined;
+	// export let label = gradio.i18n("radio.radio");
+	// export let info: string | undefined = undefined;
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let value: string | null = null;
 	export let choices: [string, string | number][] = [];
-	export let show_label = true;
-	export let container = false;
-	export let scale: number | null = null;
-	export let min_width: number | undefined = undefined;
+	// export let show_label = true;
+	// export let container = false;
+	// export let scale: number | null = null;
+	// export let min_width: number | undefined = undefined;
 	export let loading_status: LoadingStatus;
 	export let interactive = true;
 
@@ -41,15 +41,7 @@
 	$: disabled = !interactive;
 </script>
 
-<Block
-	{visible}
-	type="fieldset"
-	{elem_id}
-	{elem_classes}
-	{container}
-	{scale}
-	{min_width}
->
+<div id={elem_id} class="fr-grid-row fr-grid-row--center {elem_classes} {visible ? '' : 'hide'}">
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
 		i18n={gradio.i18n}
@@ -57,28 +49,24 @@
 		on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
 	/>
 
-	<BlockTitle {show_label} {info}>{label}</BlockTitle>
-
-	<div class="fr-grid-row">
-		{#each choices as [display_value, internal_value], i (i)}
-			<BaseRadio
-				{display_value}
-				{internal_value}
-				bind:selected={value}
-				{disabled}
-				on:input={() => {
-					gradio.dispatch("select", { value: internal_value, index: i });
-					gradio.dispatch("input");
-				}}
-			/>
-		{/each}
-	</div>
-</Block>
+	{#each choices as [display_value, internal_value], i (i)}
+		<BaseRadio
+			{display_value}
+			{internal_value}
+			bind:selected={value}
+			{disabled}
+			on:input={() => {
+				gradio.dispatch("select", { value: internal_value, index: i });
+				gradio.dispatch("input");
+			}}
+		/>
+	{/each}
+</div>
 
 <style>
-	.wrap {
+	/* .wrap {
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--checkbox-label-gap);
-	}
+	} */
 </style>

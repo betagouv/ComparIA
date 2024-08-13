@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from gradio.components import Timer
 
 
-class CustomRadioCard(FormComponent):
+class CustomRadioCard(Component):
     """
     Creates a set of (string or numeric type) radio buttons of which only one can be selected.
 

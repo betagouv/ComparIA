@@ -28,9 +28,9 @@
 <label
 	class:disabled
 	class:selected={is_selected}
-	class="fr-card"
+	class="fr-card fr-col-5 fr-col-md-3 fr-mx-1w fr-my-1w"
 	data-testid="{internal_value}-radio-label"
->
+	>
 	<input
 		{disabled}
 		type="radio"
@@ -44,7 +44,8 @@
 
 <style>
 	label {
-		padding: 1.5rem !important;
+		padding: 1.5rem 1rem 1.5rem 1.5rem !important;
+		height: 150px !important;
 		display: flex;
 		align-items: left;
 		transition: var(--button-transition);
