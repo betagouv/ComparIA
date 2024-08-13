@@ -65,7 +65,7 @@ with gr.Blocks(
             value="C'est parti",
             scale=0,
             elem_id="start_arena_btn",
-            elem_classes="fr-btn fr-mx-auto",
+            elem_classes="fr-btn fr-mx-auto fr-mb-4w",
             interactive=False,
         )
 
@@ -98,7 +98,7 @@ with gr.Blocks(
         guided_cards = CustomRadioCard(
                     show_label=False,
                     # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center",
-                    # elem_classes="fr-grid-row",
+                    # elem_classes="fr-container",
                     choices=[
                         (
                             """<span class="fr-tag fr-tag--blue-cumulus fr-tag--icon-left fr-icon-translate-2">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
@@ -126,12 +126,12 @@ with gr.Blocks(
             scale=1,
             elem_id="free-mode",
             value="Je veux écrire sur mon propre sujet",
-            elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
+            elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mb-4w",
         )
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
-        with gr.Row(elem_classes="fr-grid-row"):
             # textbox = gr.Textbox(
+        with gr.Column(elem_classes="inline-block"):
             textbox = FrInput(
                 elem_id="main-textbox",
                 show_label=False,
@@ -139,23 +139,26 @@ with gr.Blocks(
                 placeholder="Ecrivez votre premier message à l'arène ici",
                 max_lines=7,
                 # TODO: raise fr-col-md to 10 ?
-                elem_classes="fr-col-12 fr-col-md-9 bg-white",
+                elem_classes="inline-block fr-col-12 fr-col-md-9 bg-white",
                 container=False,
                 # not working
                 # autofocus=True
             )
             send_btn = gr.Button(
                 interactive=False,
+                scale=1,
                 value="Envoyer",
                 elem_id="send-btn",
-                elem_classes="fr-btn fr-col-6 fr-col-md-1",
+                elem_classes="inline-block fr-btn fr-ml-3v",
             )
-            shuffle_btn = gr.Button(
-                elem_classes="fr-btn fr-btn--secondary fr-icon-shuffle",
-                # interactive=False,
-                value="Générer un autre message",
-                # icon="assets/extra-icons/shuffle.svg",
-            )
+        shuffle_btn = gr.Button(
+            scale=1,
+            size='sm',
+            elem_classes="fr-btn fr-btn--tertiary small-icon fr-mx-auto",
+            interactive=False,
+            value="Générer un autre message",
+            icon="assets/extra-icons/shuffle.svg",
+        )
 
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(

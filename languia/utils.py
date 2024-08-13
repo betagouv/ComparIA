@@ -230,7 +230,7 @@ def vote_last_response(
 
 def stepper_html(title, step, total_steps):
     return f"""
-    <div class="fr-stepper fr-container fr-pb-2w">
+    <div class="fr-stepper fr-container fr-pb-2w fr-mx-16w">
     <h2 class="fr-stepper__title">
         {title}
         <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
