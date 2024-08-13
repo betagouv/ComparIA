@@ -150,15 +150,13 @@
 
 	.fr-range[data-fr-js-range] input[type="range"]::-webkit-slider-thumb,
 	.fr-range[data-fr-js-range] input[type="range"]::-moz-range-thumb {
-		background-color: var(--background-raised-grey);
-		--hover: var(--background-raised-grey-hover);
+		/* --hover: var(--background-raised-grey-hover);
 		--active: var(--background-raised-grey-active);
-		background-color: var(--background-action-high-blue-france);
-
-		--idle: transparent;
 		--hover: var(--background-default-grey-hover);
 		--active: var(--background-default-grey-active);
-		border: 1px solid var(--border-action-high-blue-france);
+		--idle: transparent; */
+		background-color: var(--background-action-high-blue-france) !important;
+		border: 1px solid var(--border-action-high-blue-france) !important;
 	}
 
 	.fr-range--step[data-fr-js-range]::before, .fr-range--step[data-fr-js-range]::after, .fr-range[data-fr-js-range]::before, .fr-range--step[data-fr-js-range]::after {
