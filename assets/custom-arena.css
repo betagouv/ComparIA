@@ -83,11 +83,17 @@ body.dark {
   background-color: var(--neutral-100);
 }
 
-.dark .modal-block {
-  background-color: white;
+.dark .modal-block, 
+.dark .options .item, .dark .options {
+  background-color: white !important;
   color: var(--neutral-800) !important;
 }
-
+.dark .modal-block .close,.dark .modal-block .block,.dark .modal-block .wrap,.dark .modal-block .wrap-inner {
+  background-color: white !important;
+}
+.dark .modal-block span[data-testid="block-info"] {
+  color: var(--neutral-800) !important;
+}
 
 /* UTILITY CLASSES */
 
@@ -413,8 +419,8 @@ li.fr-nav__item {
   border: none;
   box-shadow: none;
   color: var(--text-action-high-blue-france);
-}
-
+  }
+  
 .modal-block .close::before {
   font-weight: 500;
   padding-right: 15px;
