@@ -46,15 +46,18 @@
 	let labelIndex: number;
 
 	let rangeInput: HTMLInputElement;
-	// let numberInput: HTMLInputElement;
+	// let labelInput: HTMLInputElement;
+
+	let sliderInteracted = false;
 
 	const id = `range_id_${_id++}`;
 
 	function handle_change(): void {
 		gradio.dispatch("change");
 		if (!value_is_output) {
+			sliderInteracted = true;
 			gradio.dispatch("input");
-		}
+			}
 	}
 	afterUpdate(() => {
 		value_is_output = false;
@@ -110,7 +113,7 @@
 
 	<div class="fr-range-group">
 		<span class="fr-range__left" aria-hidden="true">{extrema[0]}</span>
-		<div class="fr-range fr-range--step" data-fr-js-range="true">
+		<div class="fr-range fr-range--step {sliderInteracted ? 'interacted' : ''}" data-fr-js-range="true">
 			<span class="fr-range__output hide">{value}</span>
 			<input
 				type="range"
@@ -128,7 +131,7 @@
 			{#if range_labels.length != 0}
 				{#each range_labels as range_label, labelIndex}
 					<span
-						class="fr-range__custom-label{currentLabel == labelIndex
+						class="fr-range__custom-label{(currentLabel == labelIndex && sliderInteracted)
 							? ' spotlight'
 							: ''}"
 						aria-hidden="true">{range_label}</span
@@ -144,6 +147,12 @@
 </div>
 
 <style>
+	/* Style to center the thumb when not interacted */
+    .fr-range[data-fr-js-range]:not(.interacted) input[type="range"]::-webkit-slider-thumb, .fr-range[data-fr-js-range]:not(.interacted) input[type="range"]::-moz-range-thumb {
+		transform: translateX(50%);
+		background-size: 50% 100% !important;
+    }
+
 	.fr-range-group {
 		display: flex;
 	}
@@ -195,11 +204,7 @@
 		max-width: 8rem;
 		margin: 0.5rem 1rem;
 	}
-	.fr-range-group
-	/* 	.fr-range[data-fr-js-range] .fr-range__output {
-			position: absolute;
-			top: -20px;
-		} */
+	
 	input:disabled {
 		-webkit-text-fill-color: var(--body-text-color);
 		-webkit-opacity: 1;
