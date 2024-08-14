@@ -114,7 +114,7 @@ with gr.Blocks(
             scale=1,
             elem_id="free-mode",
             value="Je veux écrire sur mon propre sujet",
-            elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mb-4w",
+            elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mt-8w fr-mb-4w",
         )
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
