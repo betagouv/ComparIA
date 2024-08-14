@@ -183,6 +183,9 @@ body {
   top: -16px;
   /* transition: transform 0.3s ease-in-out; */
 }
+.fr-stepper {
+  max-width: 55rem;
+}
 
 li.fr-nav__item {
   margin-bottom: 0;
