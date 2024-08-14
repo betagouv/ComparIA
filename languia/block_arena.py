@@ -164,7 +164,7 @@ with gr.Blocks(
                 visible=False,
             )
 
-    with gr.Group(elem_id="chat-area", visible=False) as chat_area:
+    with gr.Group(elem_id="chat-area", visible=False,elem_classes="fr-mb-10w fr-pb-16w fr-mb-md-0 fr-pb-md-0") as chat_area:
         with gr.Row():
             for i in range(config.num_sides):
                 label = "Modèle A" if i == 0 else "Modèle B"
@@ -196,7 +196,7 @@ with gr.Blocks(
                     )
 
     with gr.Column(
-        visible=False, elem_classes="fr-container fr-mb-12w fr-px-16w"
+        visible=False, elem_classes="fr-container fr-mb-12w fr-px-md-16w fr-px-0"
     ) as vote_area:
         gr.HTML(
             value="""
@@ -249,7 +249,7 @@ with gr.Blocks(
                 <p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
                 elem_classes="text-center",
             )
-            with gr.Column(elem_classes="fr-container fr-px-16w"):
+            with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w"):
                 relevance_slider = FrSlider(
                     value=-1,
                     range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
