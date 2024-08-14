@@ -134,7 +134,7 @@ def vertex_api_stream_iter(
     # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
 
     # Pass the Vertex endpoint and authentication to the OpenAI SDK
-    PROJECT = project
+    # PROJECT = project
     client = openai.OpenAI(base_url=api_base, api_key=creds.token)
 
     # print(client.models.list())
@@ -180,10 +180,10 @@ def vertex_api_stream_iter(
     text = ""
     for chunk in res:
         if len(chunk.choices) > 0:
-            text += chunk.choices[0].delta.content or ""
+            text += chunk.choices[0].delta.content.replace("\n", "<br />") or ""
             data = {
                 # Processing \n for Llama3.1-405B
-                "text": text.replace("\n", "<br />"),
+                "text": text,
                 "error_code": 0,
             }
             yield data
