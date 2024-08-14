@@ -475,7 +475,7 @@ def register_listeners():
         if hasattr(app_state, "selected_model"):
             if (app_state.selected_model == "B" and vote_radio in [-1.5, -0.5]) or (app_state.selected_model == "A" and vote_radio in [+1.5, +0.5]):
                 # FIXME: creates a CSS display bug where value isn't refreshed
-                new_supervote_sliders = [gr.update(value=-1) for slider in supervote_sliders]
+                new_supervote_sliders = [gr.update(value=3) for slider in supervote_sliders]
             else:
                 new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
         else:
