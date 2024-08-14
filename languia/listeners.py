@@ -25,10 +25,7 @@ from languia.config import (
     SAMPLING_WEIGHTS,
     BATTLE_TARGETS,
     SAMPLING_BOOST_MODELS,
-    outage_models,
 )
-
-import numpy as np
 
 # from fastchat.model.model_adapter import get_conversation_template
 
@@ -710,6 +707,8 @@ def register_listeners():
             #  conclude_btn + retry_modal_btn
             gr.update(visible=False),
             gr.update(visible=False),
+            # shuffle_btn
+            gr.update(visible=True),
         ]
 
     gr.on(
@@ -728,5 +727,6 @@ def register_listeners():
         + [mode_screen]
         + [retry_modal]
         + [conclude_btn]
-        + [retry_modal_btn],
+        + [retry_modal_btn]
+        + [shuffle_btn]
     )
