@@ -68,7 +68,9 @@ def register_listeners():
             extra={"request": request},
         )
 
-        config.outage_models = refresh_outage_models(config.outage_models, controller_url=config.controller_url)
+        config.outage_models = refresh_outage_models(
+            config.outage_models, controller_url=config.controller_url
+        )
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
             config.models,
@@ -241,9 +243,9 @@ def register_listeners():
             iters += 1
             for i in range(config.num_sides):
                 try:
-                    if iters % 30 == 1 or iters < 3:
-                        ret = next(gen[i])
-                        conversations[i], chatbots[i] = ret[0], ret[1]
+                    # if iters % 30 == 1 or iters < 3:
+                    ret = next(gen[i])
+                    conversations[i], chatbots[i] = ret[0], ret[1]
                     stop = False
                 except StopIteration:
                     pass
@@ -391,6 +393,7 @@ def register_listeners():
             + [conclude_btn]
         ),
     ).then(
+        # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         inputs=conversations + [temperature, top_p, max_output_tokens],
         outputs=conversations + chatbots,
@@ -406,6 +409,7 @@ def register_listeners():
         + [textbox],
         api_name=False,
     )
+
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
     #         console.log("rerolling");
     #         document.getElementById('send-btn').click();
@@ -675,7 +679,9 @@ def register_listeners():
         # + [vote_area]
         # + [supervote_area]
         # + [mode_screen],
-        config.outage_models = refresh_outage_models(config.outage_models,controller_url=config.controller_url)
+        config.outage_models = refresh_outage_models(
+            config.outage_models, controller_url=config.controller_url
+        )
 
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
@@ -728,5 +734,5 @@ def register_listeners():
         + [retry_modal]
         + [conclude_btn]
         + [retry_modal_btn]
-        + [shuffle_btn]
+        + [shuffle_btn],
     )
