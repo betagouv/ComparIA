@@ -51,9 +51,26 @@ from languia import config
 # Register listeners
 def register_listeners():
 
-    # Step -1
-    @demo.load(inputs=[], outputs=conversations, api_name=False)
-    def init_models(request: gr.Request):
+    # Sometimes @demo.load is not triggered!
+
+    # Step 0
+
+    # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
+    # TODO: make a cool input-output js function to pass here instead of in main js
+    @start_arena_btn.click(
+        inputs=[],
+        outputs=(conversations + [header, start_screen, stepper_block, mode_screen]),
+        api_name=False,
+    )
+    def enter_arena(request: gr.Request):
+        # tos_accepted = accept_tos_checkbox
+        # if tos_accepted:
+        # logger.info(f"ToS accepted")
+        logger.info(
+            f"ToS accepted",
+            extra={"request": request},
+        )
+
         outage_models = refresh_outage_models(controller_url=config.controller_url)
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
@@ -72,39 +89,20 @@ def register_listeners():
             "Picked 2 models: " + model_left + " and " + model_right,
             extra={request: request},
         )
-
-        return conversations
-
-    # Step 0
-
-    # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
-    # TODO: make a cool input-output js function to pass here instead of in main js
-    @start_arena_btn.click(
-        inputs=[],
-        outputs=[header, start_screen, stepper_block, mode_screen],
-        api_name=False,
-    )
-    def enter_arena(request: gr.Request):
-        # tos_accepted = accept_tos_checkbox
-        # if tos_accepted:
-        # logger.info(f"ToS accepted")
-        logger.info(
-            f"ToS accepted",
-            extra={"request": request},
-        )
-        return (
+        return conversations + [
             gr.HTML(header_html),
             gr.update(visible=False),
             gr.update(visible=True),
             gr.update(visible=True),
-        )
+        ]
 
     # Step 1
 
     @free_mode_btn.click(
         inputs=[],
         outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
-        api_name=False,)
+        api_name=False,
+    )
     def free_mode(request: gr.Request):
         logger.info(
             f"Chose free mode",
@@ -117,7 +115,7 @@ def register_listeners():
             gr.update(elem_classes="fr-container send-area-enabled"),
             gr.update(interactive=False),
             # Don't remove or autofocus won't work
-            gr.skip()
+            gr.skip(),
         ]
 
     # Step 1.1
