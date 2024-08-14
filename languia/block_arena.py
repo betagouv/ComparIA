@@ -210,17 +210,6 @@ with gr.Blocks(
             <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
         )
 
-        # TODO: which_model_radio = CustomSlider(
-        #         show_label=False,
-        #         container=False,
-        # extrema=["Modèle A", "Modèle B"],
-        #         choices=[
-        #             "Je préfère de loin le modèle A",
-        #             "Le modèle A est un peu mieux",
-        #             "Le modèle B est un peu mieux",
-        #             "Je préfère de loin le modèle B",
-        #         ],
-        #     )
         which_model_radio = CustomSlider(
             minimum=-1.5,
             maximum=+1.5,
@@ -229,26 +218,19 @@ with gr.Blocks(
             show_label=False,
             extrema=["Modèle A", "Modèle B"],
             range_labels=[
-                "Je préfère de loin le modèle A",
+                "Je préfère le modèle A",
                 "Le modèle A est un peu mieux",
                 "Le modèle B est un peu mieux",
-                "Je préfère de loin le modèle B",
+                "Je préfère le modèle B",
             ],
-            # label="Les réponses étaient-elles pertinentes ?",
-            # info="Critères : réponses utiles, correctes factuelles, précises",
         )
 
         with gr.Column(
             visible=False, elem_classes="fr-container fr-mb-md-6w fr-mb-16w"
         ) as supervote_area:
 
-            # TODO: render=false?
-            # TODO: move to another file?
-            gr.HTML(
-                value="""<h4>Pourquoi préférez-vous ce modèle ?</h4>
-                <p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
-                elem_classes="text-center",
-            )
+            why_vote = gr.HTML("""<h4>Pourquoi préférez-vous ce modèle ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",elem_classes="text-center")
+            
             with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w"):
                 relevance_slider = FrSlider(
                     value=-1,

@@ -441,7 +441,6 @@ def register_listeners():
         inputs=[],
         outputs=[stepper_block, chat_area, send_area, vote_area, buttons_footer],
         api_name=False,
-        # TODO: scroll_to_output?
     )
     def show_vote_area(request: gr.Request):
         logger.info(
@@ -465,10 +464,7 @@ def register_listeners():
 
     @which_model_radio.change(
         inputs=[which_model_radio],
-        outputs=[
-            supervote_area,
-            supervote_send_btn,
-        ],
+        outputs=[supervote_area, supervote_send_btn, why_vote],
         api_name=False,
     )
     def build_supervote_area(vote_radio, request: gr.Request):
@@ -476,9 +472,14 @@ def register_listeners():
             "(temporarily) voted for " + str(vote_radio),
             extra={"request": request},
         )
+        if vote_radio in [-1.5, -0.5]:
+            why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
+        else:
+            why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
         return (
             gr.update(visible=True),
             gr.update(interactive=True),
+            gr.update(value=why_text),
         )
 
     # Step 3
