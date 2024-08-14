@@ -488,7 +488,7 @@ prompts_table = {
         "Comment rédiger une lettre de contestation d'une amende pour excès de vitesse, en expliquant les raisons pour lesquelles l'amende devrait être annulée ou revue ?",
         "Je lance une nouvelle entreprise et je me débats avec les formalités administratives. Aide-moi à préparer un plan d'affaires complet qui répond à toutes les exigences administratives.",
         "Je demande un permis de séjour, travaillons ensemble pour rédiger une lettre de motivation convaincante qui met en valeur mon éligibilité et respecte toutes les directives officielles.",
-        "Vous devez rédiger une demande formelle d'informations auprès d'une agence gouvernementale ? Je vous aiderai à rédiger une lettre claire et concise qui respecte les protocoles administratifs appropriés.",
+        "Je dois rédiger une demande formelle d'informations auprès d'une agence gouvernementale. Aide-moi à rédiger une lettre claire et concise qui respecte les protocoles administratifs appropriés.",
         "Je prépare un dossier pour créer une association. Aide moi à structurer le document des statuts, à utiliser un langage approprié et à m’assurer que toutes les informations nécessaires sont incluses pour répondre aux normes administratives.",
         "Crée un modèle de contrat de prestation de services entre un prestataire indépendant et un client, en précisant les obligations de chaque partie, les modalités de paiement, les conditions de résiliation, et les clauses de confidentialité.",
         "Rédige une lettre de résiliation d'un contrat d'abonnement à un service (ex : téléphonie, internet), en mentionnant les raisons de la résiliation et la date d'effet souhaitée.",
