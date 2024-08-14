@@ -71,12 +71,12 @@ def register_listeners():
             extra={"request": request},
         )
 
-        outage_models = refresh_outage_models(controller_url=config.controller_url)
+        config.outage_models = refresh_outage_models(config.outage_models, controller_url=config.controller_url)
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
             config.models,
             BATTLE_TARGETS,
-            outage_models,
+            config.outage_models,
             SAMPLING_WEIGHTS,
             SAMPLING_BOOST_MODELS,
         )
@@ -255,7 +255,7 @@ def register_listeners():
                         f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
                         extra={"request": request},
                     )
-                    outage_models.append(conversations[i].model_name)
+                    config.outage_models.append(conversations[i].model_name)
                     add_outage_model(config.controller_url, conversations[i].model_name)
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
@@ -678,13 +678,13 @@ def register_listeners():
         # + [vote_area]
         # + [supervote_area]
         # + [mode_screen],
-        outage_models = refresh_outage_models(controller_url=config.controller_url)
+        config.outage_models = refresh_outage_models(config.outage_models,controller_url=config.controller_url)
 
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
             config.models,
             BATTLE_TARGETS,
-            outage_models,
+            config.outage_models,
             SAMPLING_WEIGHTS,
             SAMPLING_BOOST_MODELS,
         )

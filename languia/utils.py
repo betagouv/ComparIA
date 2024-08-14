@@ -584,12 +584,13 @@ def gen_prompt(category):
         raise ValueError("Invalid prompt category")
     return prompts[np.random.randint(len(prompts))]
 
-def refresh_outage_models(controller_url):
+def refresh_outage_models(previous_outage_models, controller_url):
     logger = logging.getLogger("languia")
     try:
-        response = requests.get(controller_url + "/outages/")
-    except:
-        return []
+        response = requests.get(controller_url + "/outages/", timeout=2)
+    except Exception as e:
+        logger.error("Couldn't reach controller: "+str(e))
+        return previous_outage_models
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -598,16 +599,16 @@ def refresh_outage_models(controller_url):
         return data
     else:
         print(f"Failed to retrieve outage data. Status code: {response.status_code}")
-    return []
+        return previous_outage_models
 
 
 def add_outage_model(controller_url, model_name):
     logger = logging.getLogger("languia")
 
     try:
-        response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}")
-    except:
-        logger.error(f"Failed to post outage data.")
+        response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}", timeout=2)
+    except Exception as e:
+        logger.error("Failed to post outage data: "+str(e))
         return
 
     if response.status_code == 201:
