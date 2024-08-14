@@ -95,6 +95,10 @@ body.dark {
   color: var(--neutral-800) !important;
 }
 
+.dark .code_wrap pre {
+  /* var(--code-background-fill) */
+  background-color: var(--neutral-100) !important;
+}
 /* UTILITY CLASSES */
 
 .inline-block {
