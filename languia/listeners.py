@@ -464,7 +464,7 @@ def register_listeners():
 
     @which_model_radio.change(
         inputs=[which_model_radio],
-        outputs=[supervote_area, supervote_send_btn, why_vote],
+        outputs=[supervote_area, supervote_send_btn, why_vote] + supervote_sliders,
         api_name=False,
     )
     def build_supervote_area(vote_radio, request: gr.Request):
@@ -472,14 +472,24 @@ def register_listeners():
             "(temporarily) voted for " + str(vote_radio),
             extra={"request": request},
         )
+        if hasattr(app_state, "selected_model"):
+            if (app_state.selected_model == "B" and vote_radio in [-1.5, -0.5]) or (app_state.selected_model == "A" and vote_radio in [+1.5, +0.5]):
+                new_supervote_sliders = [gr.update(value=3) for slider in supervote_sliders]
+            else:
+                new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
+        else:
+            new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
         if vote_radio in [-1.5, -0.5]:
+            app_state.selected_model = "A"
             why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
         else:
+            app_state.selected_model = "B"
             why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
+
         return (
-            gr.update(visible=True),
+            [gr.update(visible=True),
             gr.update(interactive=True),
-            gr.update(value=why_text),
+            gr.update(value=why_text)]+new_supervote_sliders
         )
 
     # Step 3
