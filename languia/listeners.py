@@ -258,17 +258,18 @@ def register_listeners():
                     add_outage_model(config.controller_url, conversations[i].model_name)
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
-                    gr.Warning(
-                        message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
-                    )
                     # gr.Warning(
-                    #     message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
+                    #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
                     # )
-                    # app_state.original_user_prompt = chatbots[0][0][0]
-                    # logger.info(
-                    #     "Saving original prompt: " + app_state.original_user_prompt,
-                    #     extra={"request": request},
-                    # )
+                    gr.Warning(
+                        duration=0,
+                        message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
+                    )
+                    app_state.original_user_prompt = chatbots[0][0][0]
+                    logger.info(
+                        "Saving original prompt: " + app_state.original_user_prompt,
+                        extra={"request": request},
+                    )
 
                     return (
                         conversation_a,
@@ -318,53 +319,66 @@ def register_listeners():
             extra={"request": request},
         )
 
-        # if hasattr(app_state, "original_user_prompt"):
-        #     if app_state.original_user_prompt != False:
-        #         logger.info(
-        #             "model crash detected, keeping prompt",
-        #             extra={"request": request},
-        #         )
-        #         original_user_prompt = app_state.original_user_prompt
-        #         app_state.original_user_prompt = False
-        #         # TODO: reroll here
-        #         conversation_a = gr.State()
-        #         conversation_b = gr.State()
-        #         # conversation_a = ConversationState()
-        #         # conversation_b = ConversationState()
+        if hasattr(app_state, "original_user_prompt"):
+            if app_state.original_user_prompt != False:
+                logger.info(
+                    "model crash detected, keeping prompt",
+                    extra={"request": request},
+                )
+                original_user_prompt = app_state.original_user_prompt
+                app_state.original_user_prompt = False
+                # TODO: reroll here
+                model_left, model_right = get_battle_pair(
+                    config.models,
+                    BATTLE_TARGETS,
+                    config.outage_models,
+                    SAMPLING_WEIGHTS,
+                    SAMPLING_BOOST_MODELS,
+                )
+                conversation_a = ConversationState(model_name=model_left)
+                conversation_b = ConversationState(model_name=model_right)
 
-        #         logger.info(
-        #             "submitting original prompt",
-        #             extra={"request": request},
-        #         )
-        #         textbox.value = original_user_prompt
+                logger.info(
+                    "Picked 2 models: " + model_left + " and " + model_right,
+                    extra={request: request},
+                )
+                # conversation_a = ConversationState()
+                # conversation_b = ConversationState()
 
-        #         logger.info(
-        #             "original prompt sent",
-        #             extra={"request": request},
-        #         )
-        #         return (
-        #             [conversation_a]
-        #             + [conversation_b]
-        #             # chatbots
-        #             + [""]
-        #             + [""]
-        #             # disable conclude btn
-        #             + [gr.update(interactive=False)]
-        #             + [original_user_prompt]
-        #         )
+                logger.info(
+                    "submitting original prompt",
+                    extra={"request": request},
+                )
+                textbox.value = original_user_prompt
+
+                logger.info(
+                    "original prompt sent",
+                    extra={"request": request},
+                )
+                return (
+                    [conversation_a]
+                    + [conversation_b]
+                    # chatbots
+                    + [""]
+                    + [""]
+                    # disable conclude btn
+                    + [gr.update(interactive=False)]
+                    + [gr.skip()]
+                    + [original_user_prompt]
+                )
 
         # logger.info(
         #     "models answered with success",
         #     extra={"request": request},
         # )
 
-        # enable conclude_btn
-        # show retry_btn
         return (
             [conversation_a]
             + [conversation_b]
             + chatbots
+            # enable conclude_btn
             + [gr.update(interactive=True)]
+            # show retry_modal_btn
             + [gr.update(visible=True)]
             + [
                 gr.update(
