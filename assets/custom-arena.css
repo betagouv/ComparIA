@@ -35,11 +35,20 @@ footer,
   display: none !important;
 }
 
+/* Bug because of "supports conic-gradient" media query */
+.fr-tooltip.fr-placement--top {
+  background-image: conic-gradient(from -33.69deg at 50% 100%, transparent 0deg, var(--background-overlap-grey) 0deg, var(--background-overlap-grey) 67.38deg, transparent 67.38deg), conic-gradient(from -33.69deg at 50% 100%, transparent 0deg, var(--border-default-grey) 0deg, var(--border-default-grey) 67.38deg, transparent 67.38deg), linear-gradient(90deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(90deg, var(--background-overlap-grey), var(--background-overlap-grey));
+}
+
+.fr-tooltip.fr-placement--bottom {
+  background-image: conic-gradient(from 146.31deg at 50% 0%, transparent 0deg, var(--background-overlap-grey) 0deg, var(--background-overlap-grey) 67.38deg, transparent 67.38deg), conic-gradient(from 146.31deg at 50% 0%, transparent 0deg, var(--border-default-grey) 0deg, var(--border-default-grey) 67.38deg, transparent 67.38deg), linear-gradient(90deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(90deg, var(--background-overlap-grey), var(--background-overlap-grey));
+}
 /* TODO: reenable */
 .copy_code_button {
   display: none;
 }
 
+/* FIXME: */
 /* DARK MODE FIXES */
 
 /* @media (prefers-color-scheme: dark) {
@@ -589,4 +598,14 @@ li.fr-nav__item {
 .fr-icon-shuffle::after {
   -webkit-mask-image: url("file=assets/extra-icons/shuffle.svg");
   mask-image: url("file=assets/extra-icons/shuffle.svg");
+}
+
+.fr-icon--question-line {
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
+  background-image: url("file=assets/dsfr/icons/system/question-line.svg");
+  fill: var(--text-active-grey);
+  color: var(--text-active-grey);
+  display: inline-block;
+  width: 22px;
 }
