@@ -108,8 +108,13 @@
 			if (rangeInput) {
 				rangeInput.style.setProperty(
 					"--slider-center",
-					`${rangeInput.offsetWidth / 2}px`,
+					// FIXME: Hardcoded because I gave up
+					`-${rangeInput.offsetWidth / 6}px`,
 				);
+				// rangeInput.style.setProperty(
+				// 	"--slider-center",
+				// 	`${rangeInput.offsetWidth / 2}px`,
+				// );
 			}
 		};
 
@@ -196,9 +201,6 @@
 		display: flex;
 	}
 
-	/* input[type="range"] {
-		--slider-width: 100%;
-	} */
 
 	.fr-range[data-fr-js-range].interacted input[type="range"]::-webkit-slider-thumb,
 	.fr-range[data-fr-js-range].interacted input[type="range"]::-moz-range-thumb {
