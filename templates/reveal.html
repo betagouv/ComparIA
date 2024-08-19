@@ -1,10 +1,10 @@
 <div class="fr-container" id="reveal-screen">
-    <h3 class="text-center">Merci pour votre vote !<br />
-        Découvrez les modèles avec lesquels vous venez de discuter :</h3>
+    <!-- <h3 class="text-center">Merci pour votre vote !<br />
+        Découvrez les modèles d'IA générative avec lesquels vous venez de discuter :</h3> -->
     <div class="fr-grid-row">
-        {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b,
-        'model-b', model_b_impact, model_b_running_eq)] %}
-    
+        {% for model, side, impact, tokens in [(model_a, 'model-a', model_a_impact, model_a_tokens), (model_b,
+        'model-b', model_b_impact, model_b_tokens)] %}
+
         <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-{% if side == 'model-a' %}n{% endif %}3w">
             <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}"
                     width="20" />
@@ -12,61 +12,78 @@
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success your-choice">Votre choix</span>
             {% endif %}
-            <p class="fr-mb-4w">{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{
-                    model['friendly_size']
-                    }}</span></p>
-            <!-- <p>{{ model['excerpt'] }}</p> -->
-            <div class="fr-grid-row">
-                <div class="fr-col-12 fr-col-md-6">
-                    <h5>Transparence</h5>
-                    <p class="fr-mt-2w"><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span>
-                    </p>
-                    <div class="fr-ml-7v">{% if
-                        model['distribution'] == "open-weights" %}<span class="fr-badge fr-badge--blue-cumulus">Poids
-                            communiqués</span>{%
-                        else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif %}</div>
-                    <p class="fr-mt-2w"><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus
-                            d'entrainement</span></p>
-                    <div class="fr-ml-7v">{% if
-                        model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
-                            communiqué</span>{% else %}<span
-                            class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</div>
+            <p class="fr-mb-4w">
+                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{% if model['distribution'] ==
+                    "open-weights"
+                    %}Libre{%
+                    else
+                    %}Propriétaire{% endif %}</span>
+                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">Taille {{ model['friendly_size']
+                    }}</span>
+                {% if
+                model['distribution'] == "open-weights" %}<span
+                    class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ '%0.1f'|
+                    format(model['params']|float) |replace(".", ",") }} mds de paramètres</span>{% endif %}
+                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ model['organisation'] }}</span>
+            </p>
+            <p class="fr-mb-4w">{{ model['description'] }}</p>
+            <h5>Bilan de votre discussion</h5>
+            <p class="fr-mt-2w">La taille du modèle et de ses réponses ont un impact sur son bilan.</p>
+            <div class="fr-grid-row fr-grid-row--middle">
+                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-ml-n1w fr-mr-1w">
+                    <p><strong class="fr-text--lead">{{ tokens
+                            }}</strong></p>
+                    jetons en sortie
                 </div>
-                <div class="fr-col-12 fr-col-md-6">
-                    <h5>Utilisation</h5>
-                    <p class="fr-mt-2w"><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true">
-                            Distribution</span></p>
-                    <div class="fr-ml-7v">{% if
-                        model['distribution'] == "open-weights" %}<span
-                            class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span>{%
-                        else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{% endif %}</div>
-                    <p class="fr-mt-2w"><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions
-                            d'usage</span></p>
-                    <div class="fr-ml-7v">{% if
-                        model['conditions'] == "restricted" %}<span class="fr-badge fr-badge--yellow-moutarde">Sous
-                            conditions</span>{% else
-                        %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %}</div>
+                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-1w">
+                    <p><strong class="fr-text--lead">{{ '%0.2f'|
+                            format(impact.energy.value*100|float) | replace(".", ",") }}</strong>Wh</p>
+                    énergie conso.
+                </div>
+                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-n1w">
+                    <p><svg aria-hidden="true" class="inline" viewBox="0 0 20 20" width="20px" height="20px">
+                            <use href="file=assets/dsfr/icons/weather/flashlight-line.svg" />
+                        </svg>
+                        <strong class="fr-text--lead">{{ '%0.2f'|
+                            format(impact.gwp.value*100|float) |replace(".", ",") }}</strong>g
+                    </p>
+                    <p>CO<sup>2</sup> émis</p>
                 </div>
             </div>
-            <h5 class="fr-mt-4w">Ma conversation correspond à :</h5>
+
+            <h5 class="fr-mt-2w">Equivalences CO<sup>2</sup></h5>
+            <p class="fr-mt-2w">Concrètement, à quoi ça correspond ?</p>
             <div class="fr-grid-row fr-grid-row--middle">
-                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-3 text-center"><strong class="fr-text--lead">{{ '%0.2f'|
-                        format(impact.energy.value*100|float) }}</strong><br />
-                    <i>wattheures</i>
+                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-ml-n1w fr-mr-1w">
+                    <p><strong class="fr-text--lead">{{ tokens
+                            }}</strong></p>
+                    jetons en sortie
                 </div>
-                <div class="fr-container fr-col-12 fr-col-md-9">Emissions de CO2 : <strong>{{ '%0.2f'|
-                        format(impact.gwp.value*100|float) }} g</strong><br />
-                    Équivalent à <strong>{{ '%0.2f'|
-                        format(running_eq*1000|float) }} m de course à pied</strong></div>
+                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-1w">
+                    <p><strong class="fr-text--lead">{{ '%0.2f'|
+                            format(impact.energy.value*100|float) | replace(".", ",") }}</strong>Wh</p>
+                    énergie conso.
+                </div>
+                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-n1w">
+                    <p><svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px"
+                            href="file=assets/dsfr/icons/weather/flashlight-line.svg">
+                        </svg>
+                        <strong class="fr-text--lead">{{ '%0.2f'|
+                            format(impact.gwp.value*100|float) |replace(".", ",") }}</strong>g
+                    </p>
+                    <p>CO<sup>2</sup> émis</p>
+                </div>
             </div>
             <div class="fr-grid-row fr-mt-4w"><button class="fr-btn fr-btn--secondary" data-fr-opened="false"
-                    aria-controls="fr-modal-{{ side }}">En savoir plus</button></div>
+                    aria-controls="fr-modal-{{ side }}">En savoir plus
+                </button>
+            </div>
         </div>
         {% endfor %}
     </div>
 </div>
 
-<!-- TODO: factorize -->
+<!-- TODO: factoriser avec page liste des modèles -->
 {% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
 <dialog aria-labelledby="fr-modal-title-modal-{{ side }}" role="dialog" id="fr-modal-{{ side }}" class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
@@ -83,8 +100,7 @@
                         </h4>
                         <p><span class="fr-badge">Taille {{
                                 model['friendly_size']
-                                }}</span>{% if
-                                    model['distribution'] == "open-weights" %} <span class="fr-badge">{{ '%0.1f'| format(model['params']|float) }} milliards de paramètres</span>{% endif %} <span class="fr-badge">{{ model['organisation'] }}</span></p>
+                                }}</span><span class="fr-badge">{{ model['organisation'] }}</span></p>
                         <p>{{ model['description'] }}</p>
                         <div class="fr-grid-row">
                             <div class="fr-col-12 fr-col-md-6">
@@ -93,7 +109,8 @@
                                 <div class="fr-ml-7v fr-mb-1v">{% if
                                     model['distribution'] == "open-weights" %}<span
                                         class="fr-badge fr-badge--blue-cumulus">Poids communiqués</span>{%
-                                    else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif
+                                    else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{%
+                                    endif
                                     %}</div>
                                 <p><span class="fr-icon-table-2" aria-hidden="true"> Corpus
                                         d'entrainement</span></p>
@@ -101,7 +118,8 @@
                                     if
                                     model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
                                         communiqué</span>{% else %}<span
-                                        class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</div>
+                                        class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}
+                                </div>
                             </div>
                             <div class="fr-col-12 fr-col-md-6">
                                 <h5>Utilisation</h5>
@@ -110,8 +128,10 @@
                                     <div class="fr-ml-7v fr-mb-1v">{% if
                                         model['distribution'] == "open-weights" %}<span
                                             class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
-                                            class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
-                                        else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
+                                            class="fr-badge">{{ model['required_ram'] }} Go de RAM
+                                            nécessaires</span>{%
+                                        else %}<span class="fr-badge fr-badge--yellow-moutarde">API
+                                            uniquement</span>{%
                                         endif %}</div>
                                 </div>
                                 <p><span class="fr-icon-article-line" aria-hidden="true"> Conditions
@@ -120,7 +140,8 @@
                                     model['conditions'] == "restricted" %}<span
                                         class="fr-badge fr-badge--yellow-moutarde">Sous conditions</span>{% else
                                     %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %} <span
-                                        class="fr-badge fr-badge--blue-cumulus">Licence {{ model['license'] }}</span>
+                                        class="fr-badge fr-badge--blue-cumulus">Licence {{ model['license']
+                                        }}</span>
                                 </div>
                             </div>
                             <h5 class="fr-mt-4w">Détails</h5>

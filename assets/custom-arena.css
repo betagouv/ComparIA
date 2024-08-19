@@ -111,14 +111,9 @@ body.dark {
 .bg-white textarea {
 background-color: white !important;
 }
-/* 
-.icon-white img {
-  filter: invert(100%);
-} */
-/* .icon-blue img {
-  filter: 
-} */
-
+.inline {
+  display: inline;
+}
 .text-center {
   text-align: center;
 }
