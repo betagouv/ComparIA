@@ -37,14 +37,27 @@ CREATE TABLE IF NOT EXISTS conversation_logs (
 """
 )
 
+def build_conv_id(data):
+    conv_state = data.get("conversations_state", None)
+    if conv_state:
+        return (
+            conv_state[0].get("conv_id", None)
+            + "-"
+            + conv_state[1].get("conv_id", None)
+        )
+    # elif data.get("state", None):
+    #     return data.get("state", None).get("conv_id", None)
+    else:
+        return None
+        
 # Loop through each JSON file in the directory
 for filename in os.listdir(json_directory):
     if filename.endswith("-conv.json"):
         file_path = os.path.join(json_directory, filename)
 
         with open(file_path, "r") as file:
-            for line in file:
-                try:
+            try:
+                for line in file:
                     data = json.loads(line)
 
                     if data.get("type") not in ["slightly-a", "strongly-a", "slightly-b", "strongly-b", "poll"]:
@@ -60,18 +73,6 @@ for filename in os.listdir(json_directory):
                     """
                     )
 
-                    def build_conv_id(data):
-                        conv_state = data.get("conversations_state", None)
-                        if conv_state:
-                            return (
-                                conv_state[0].get("conv_id", None)
-                                + "-"
-                                + conv_state[1].get("conv_id", None)
-                            )
-                        # elif data.get("state", None):
-                        #     return data.get("state", None).get("conv_id", None)
-                        else:
-                            return None
 
                     states = data.get("conversations_state", {})
                     # Extract values from JSON
@@ -103,18 +104,19 @@ for filename in os.listdir(json_directory):
                             details,
                         ),
                     )
-                    print("Data successfully parsed")
-
-                except Exception as e:
+                print(f"File {file_path} successfully parsed")
+                conn.commit()
+            except psycopg2.errors.UniqueViolation:
+                continue
+            except Exception as e:
                     print(f"An error occurred: {e}")
-                    pass
+                    continue
                     # print(traceback.format_exc())
                     
         print("Data from " + file_path + " successfully parsed")
 
 
-# Commit changes and close the connection
-conn.commit()
+# Commit changes
 print("All conversation data successfully committed into the database")
 
 # Create the logs table if it doesn't exist
@@ -124,10 +126,11 @@ CREATE TABLE IF NOT EXISTS logs (
     id SERIAL PRIMARY KEY,
     tstamp TIMESTAMP,
     msg JSONB,
-    message TEXT
+    message TEXT,
+    log_file TEXT
 );
 ALTER TABLE logs
-ADD UNIQUE (tstamp,message); """
+ADD UNIQUE (tstamp,log_file); """
 )
 conn.commit()
 
@@ -145,8 +148,8 @@ for filename in os.listdir(json_directory):
                     # Prepare SQL INSERT statement
                     insert_query = sql.SQL(
                         """
-                    INSERT INTO logs (tstamp, msg, message)
-                    VALUES (%s, %s, %s);
+                    INSERT INTO logs (tstamp, msg, message, log_file)
+                    VALUES (%s, %s, %s, %s);
                     """
                     )
                     # print(tstamp)
@@ -157,7 +160,8 @@ for filename in os.listdir(json_directory):
                         (
                             tstamp,
                             json.dumps(msg),
-                            message
+                            message,
+                            file_path
                         ),
                     )
             except json.decoder.JSONDecodeError:
@@ -165,15 +169,17 @@ for filename in os.listdir(json_directory):
                 print("Skipping file " + file_path)
                 # print(traceback.format_exc())
                 continue
+            except psycopg2.errors.UniqueViolation:
+                pass
+
             # except Exception as e:
                 # print(f"An error occurred: {e}")
                 # print("Line: " + str(line))
                 # print(traceback.format_exc())
                 # print("Skipping file " + file_path)
-        print("Data from " + file_path + " successfully parsed")
+            conn.commit()
+            print("Data from " + file_path + " successfully parsed")
     
-# Commit changes and close the connection
-conn.commit()
 print("All data successfully committed into the database")
 
 # finally:
