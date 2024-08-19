@@ -473,9 +473,13 @@ def register_listeners():
             extra={"request": request},
         )
         if hasattr(app_state, "selected_model"):
-            if (app_state.selected_model == "B" and vote_radio in [-1.5, -0.5]) or (app_state.selected_model == "A" and vote_radio in [+1.5, +0.5]):
+            if (app_state.selected_model == "B" and vote_radio in [-1.5, -0.5]) or (
+                app_state.selected_model == "A" and vote_radio in [+1.5, +0.5]
+            ):
                 # FIXME: creates a CSS display bug where value isn't refreshed
-                new_supervote_sliders = [gr.update(value=3) for slider in supervote_sliders]
+                new_supervote_sliders = [
+                    gr.update(value=3) for slider in supervote_sliders
+                ]
             else:
                 new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
         else:
@@ -487,11 +491,11 @@ def register_listeners():
             app_state.selected_model = "B"
             why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
 
-        return (
-            [gr.update(visible=True),
+        return [
+            gr.update(visible=True),
             gr.update(interactive=True),
-            gr.update(value=why_text)]+new_supervote_sliders
-        )
+            gr.update(value=why_text),
+        ] + new_supervote_sliders
 
     # Step 3
 

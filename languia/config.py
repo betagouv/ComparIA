@@ -161,7 +161,7 @@ all_models_extra_info_json = {
 models_extra_info = [
     build_model_extra_info(model, all_models_extra_info_json) for model in models
 ]
-models_extra_info.sort(key=lambda x: x['simple_name'])
+models_extra_info.sort(key=lambda x: x["simple_name"])
 
 headers = {"User-Agent": "FastChat Client"}
 

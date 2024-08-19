@@ -9,13 +9,12 @@ from random import randrange
 
 import json
 
-from fastchat.utils import (
-    moderation_filter,
-)
+# from fastchat.utils import (
+#     moderation_filter,
+# )
 
 import logging
 from logging.handlers import WatchedFileHandler
-import sys
 
 import datetime
 
@@ -501,7 +500,8 @@ def get_model_list(controller_url, register_api_endpoint_file):
 
     # Add models from the API providers
     if register_api_endpoint_file:
-        api_endpoint_info = json.load(open(register_api_endpoint_file))
+        with open(register_api_endpoint_file) as file:
+            api_endpoint_info = json.load(file)
         for mdl, mdl_dict in api_endpoint_info.items():
             models.append(mdl)
 
@@ -569,8 +569,10 @@ def get_llm_impact(
                 )
     return impact
 
+
 def gen_prompt(category):
     from languia.config import prompts_table
+
     if category in [
         "expression",
         "langues",
@@ -584,18 +586,19 @@ def gen_prompt(category):
         raise ValueError("Invalid prompt category")
     return prompts[np.random.randint(len(prompts))]
 
+
 def refresh_outage_models(previous_outage_models, controller_url):
     logger = logging.getLogger("languia")
     try:
         response = requests.get(controller_url + "/outages/", timeout=2)
     except Exception as e:
-        logger.error("Couldn't reach controller: "+str(e))
+        logger.error("Couldn't reach controller: " + str(e))
         return previous_outage_models
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
         data = response.json()
-        logger.info("refreshed outage models:"+str(data))
+        logger.info("refreshed outage models:" + str(data))
         return data
     else:
         print(f"Failed to retrieve outage data. Status code: {response.status_code}")
@@ -606,13 +609,15 @@ def add_outage_model(controller_url, model_name):
     logger = logging.getLogger("languia")
 
     try:
-        response = requests.post(url=f"{controller_url}/outages/?model_name={model_name}", timeout=2)
+        response = requests.post(
+            url=f"{controller_url}/outages/?model_name={model_name}", timeout=2
+        )
     except Exception as e:
-        logger.error("Failed to post outage data: "+str(e))
+        logger.error("Failed to post outage data: " + str(e))
         return
 
     if response.status_code == 201:
-        logger.info("successfully reported outage model ", model_name)
+        logger.info("successfully reported outage model "+ model_name)
     else:
         logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
