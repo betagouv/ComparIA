@@ -31,23 +31,50 @@
             <p class="fr-mt-2w">La taille du modèle et de ses réponses ont un impact sur son bilan.</p>
             <div class="fr-grid-row fr-grid-row--middle">
                 <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-ml-n1w fr-mr-1w">
-                    <p><strong class="fr-text--lead">{{ tokens
-                            }}</strong></p>
-                    jetons en sortie
+                    <p><!-- seo -->
+                        <svg class="inline" width="22" height="20" viewBox="0 0 22 20" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M7.26989 2.5C3.75535 2.5 0.90625 5.11168 0.90625 8.33333C0.90625 11.555 3.75535 14.1667 7.26989 14.1667H8.24342C8.20095 13.8945 8.17898 13.6163 8.17898 13.3333C8.17898 13.0504 8.20095 12.7722 8.24342 12.5H7.26989C4.7595 12.5 2.72443 10.6345 2.72443 8.33333C2.72443 6.03215 4.7595 4.16667 7.26989 4.16667H14.5426C17.053 4.16667 19.0881 6.03215 19.0881 8.33333C19.0881 8.619 19.0567 8.89792 18.997 9.16733C19.5292 9.64567 19.9703 10.209 20.2939 10.8333C20.6865 10.0756 20.9062 9.228 20.9062 8.33333C20.9062 5.11168 18.0572 2.5 14.5426 2.5H7.26989ZM9.99716 13.3333C9.99716 11.0322 12.0323 9.16667 14.5426 9.16667C17.053 9.16667 19.0881 11.0322 19.0881 13.3333C19.0881 14.1826 18.8109 14.9725 18.335 15.6312L20.64 17.7441L19.3543 18.9226L17.0493 16.8097C16.3308 17.2459 15.4691 17.5 14.5426 17.5C12.0323 17.5 9.99716 15.6345 9.99716 13.3333Z"
+                                fill="#009081" />
+                        </svg><strong class="fr-text--lead">{{ tokens
+                            }}</strong>
+                    </p>
+                    <p>jetons en sortie<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="jetons-{{side}}"></a>
+                    </p>
+                    <span class="fr-tooltip fr-placement" id="jetons-{{side}}" role="tooltip" aria-hidden="true">L’IA
+                        analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre
+                        lettres, cette unité de texte est appelée jeton. Plus un texte est long, plus le nombre de
+                        jetons est grand.</span>
                 </div>
                 <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-1w">
-                    <p><strong class="fr-text--lead">{{ '%0.2f'|
-                            format(impact.energy.value*100|float) | replace(".", ",") }}</strong>Wh</p>
-                    énergie conso.
+                    <p>
+                        <!-- flashlight -->
+                        <svg class="inline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
+                            height="24">
+                            <path fill="#0063cb"
+                                d="M13 0v9h8L11 24v-9H4l9-15Zm-2 7.22L7.532 13H13v4.394L17.263 11H11V7.22Z" />
+                        </svg><strong class="fr-text--lead">{{ '%0.2f'|
+                            format(impact.energy.value*100|float) | replace(".", ",") }}</strong>Wh
+                    </p>
+                    <p>énergie conso.<a
+                        class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="energie-{{side}}"></a>
+                    </p><span class="fr-tooltip fr-placement" id="energie-{{side}}" role="tooltip" aria-hidden="true">NON
+                        REMPLI</span>
                 </div>
                 <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-n1w">
-                    <p><svg aria-hidden="true" class="inline" viewBox="0 0 20 20" width="20px" height="20px">
-                            <use href="file=assets/dsfr/icons/weather/flashlight-line.svg" />
-                        </svg>
-                        <strong class="fr-text--lead">{{ '%0.2f'|
+                    <p>
+                        <!-- cloud -->
+                        <svg class="inline" width="21" height="17" viewBox="0 0 21 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M15.4556 16.5001H6.36473C3.70538 16.5016 1.43245 14.7449 0.984647 12.342C0.536847 9.93905 2.04472 7.59035 4.55382 6.78255C4.44169 4.63438 5.62808 2.60391 7.64094 1.49905C9.6538 0.394196 12.1666 0.394196 14.1794 1.49905C16.1923 2.60391 17.3787 4.63438 17.2666 6.78255C19.7757 7.59035 21.2835 9.93905 20.8357 12.342C20.3879 14.7449 18.115 16.5016 15.4556 16.5001Z"
+                                fill="#CFCFCF" />
+                        </svg><strong class="fr-text--lead">{{ '%0.2f'|
                             format(impact.gwp.value*100|float) |replace(".", ",") }}</strong>g
                     </p>
-                    <p>CO<sup>2</sup> émis</p>
+                    <p>CO<sup>2</sup> émis<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="co2-{{side}}"></a>
+                    </p>
+                    <span class="fr-tooltip fr-placement" id="co2-{{side}}" role="tooltip" aria-hidden="true">NON
+                        REMPLI</span>
                 </div>
             </div>
 
@@ -55,23 +82,31 @@
             <p class="fr-mt-2w">Concrètement, à quoi ça correspond ?</p>
             <div class="fr-grid-row fr-grid-row--middle">
                 <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-ml-n1w fr-mr-1w">
-                    <p><strong class="fr-text--lead">{{ tokens
-                            }}</strong></p>
-                    jetons en sortie
+                    <p>
+                        <!-- lightbulb -->
+                        <svg class="inline" width="14" height="19" viewBox="0 0 14 19" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M6.16953 14H3.62036C3.37286 12.9391 2.2562 12.0716 1.79786 11.5C-0.384161 8.77374 -0.0927751 4.82569 2.46585 2.44933C5.02447 0.0729714 8.98325 0.0736052 11.5411 2.45078C14.099 4.82796 14.3891 8.7761 12.2062 11.5016C11.7479 12.0725 10.6329 12.94 10.3854 14H7.83619V9.83331H6.16953V14ZM10.3362 15.6666V16.5C10.3362 17.4205 9.59 18.1666 8.66953 18.1666H5.33619C4.41572 18.1666 3.66953 17.4205 3.66953 16.5V15.6666H10.3362Z"
+                                fill="#EFCB3A" />
+                        </svg><strong class="fr-text--lead">1337</strong>h
+                    </p>
+                    <p>ampoule LED<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="ampoule-{{side}}"></a></p>
+                    <span class="fr-tooltip fr-placement" id="ampoule-{{side}}" role="tooltip" aria-hidden="true">NON
+                        REMPLI</span>
                 </div>
                 <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-1w">
-                    <p><strong class="fr-text--lead">{{ '%0.2f'|
-                            format(impact.energy.value*100|float) | replace(".", ",") }}</strong>Wh</p>
-                    énergie conso.
-                </div>
-                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-n1w">
-                    <p><svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px"
-                            href="file=assets/dsfr/icons/weather/flashlight-line.svg">
-                        </svg>
-                        <strong class="fr-text--lead">{{ '%0.2f'|
-                            format(impact.gwp.value*100|float) |replace(".", ",") }}</strong>g
+                    <p>
+                        <!-- youtube -->
+                        <svg class="inline" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M1.66406 3.32783C1.66406 2.87063 2.04349 2.5 2.49056 2.5H17.5042C17.9607 2.5 18.3307 2.87079 18.3307 3.32783V16.6722C18.3307 17.1293 17.9513 17.5 17.5042 17.5H2.49056C2.0341 17.5 1.66406 17.1292 1.66406 16.6722V3.32783ZM8.84898 7.01216C8.79423 6.97565 8.72989 6.95617 8.66406 6.95617C8.47998 6.95617 8.33073 7.10541 8.33073 7.28951V12.7105C8.33073 12.7763 8.35023 12.8407 8.38673 12.8954C8.48881 13.0486 8.69581 13.09 8.84898 12.9878L12.9147 10.2773C12.9513 10.2529 12.9827 10.2215 13.0071 10.1849C13.1093 10.0317 13.0679 9.82475 12.9147 9.72267L8.84898 7.01216Z"
+                                fill="#F95A5C" />
+                        </svg><strong class="fr-text--lead">1337</strong>h
                     </p>
-                    <p>CO<sup>2</sup> émis</p>
+                    <p>vidéos en ligne<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="videos-{{side}}"></a>
+                    </p>
+                    <span class="fr-tooltip fr-placement" id="videos-{{side}}" role="tooltip" aria-hidden="true">NON
+                        REMPLI</span>
                 </div>
             </div>
             <div class="fr-grid-row fr-mt-4w"><button class="fr-btn fr-btn--secondary" data-fr-opened="false"
@@ -87,7 +122,7 @@
 {% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
 <dialog aria-labelledby="fr-modal-title-modal-{{ side }}" role="dialog" id="fr-modal-{{ side }}" class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-grid-row fr-grid-row--middle">
             <div class="fr-col-12 fr-col-md-8">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
