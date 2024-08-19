@@ -8,6 +8,7 @@
 	import { StatusTracker } from "@gradio/statustracker";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import { afterUpdate } from "svelte";
+	import { onMount } from "svelte";
 
 	import "@gouvfr/dsfr/dist/scheme/scheme.css";
 	import "@gouvfr/dsfr/dist/core/core.css";
@@ -28,7 +29,7 @@
 	export let visible = true;
 	export let extrema: string[] = [];
 	export let range_labels: string[] = [];
-	export let value = 0;
+	export let value = -100;
 	export let label = gradio.i18n("slider.slider");
 	export let info: string | undefined = undefined;
 	// export let container = true;
@@ -43,10 +44,13 @@
 	export let value_is_output = false;
 
 	let currentLabel: number;
-	let labelIndex: number;
+	// TODO: set value from label click
+	// let labelIndex: number;
 
 	let rangeInput: HTMLInputElement;
-	// let numberInput: HTMLInputElement;
+	// let labelInput: HTMLInputElement;
+
+	let sliderInteracted = false;
 
 	const id = `range_id_${_id++}`;
 
@@ -63,6 +67,9 @@
 
 	function handle_release(e: MouseEvent): void {
 		gradio.dispatch("release", value);
+	}
+	function handle_pointerdown(e: MouseEvent): void {
+		sliderInteracted = true;
 	}
 	function clamp(): void {
 		gradio.dispatch("release", value);
@@ -92,6 +99,34 @@
 	// When the value changes, dispatch the change event via handle_change()
 	// See the docs for an explanation: https://svelte.dev/docs/svelte-components#script-3-$-marks-a-statement-as-reactive
 	$: value, handle_change();
+
+	// Reactive statement to update slider center
+	// $: rangeInput.offsetWidth, rangeInput.style.setProperty('--slider-center', (rangeInput ? rangeInput.offsetWidth / 2 : 0).toString() + 'px');
+
+	onMount(() => {
+		const updateSliderCenter = () => {
+			if (rangeInput) {
+				rangeInput.style.setProperty(
+					"--slider-center",
+					// FIXME: Hardcoded because I gave up
+					`-${rangeInput.offsetWidth / 6}px`,
+				);
+				// rangeInput.style.setProperty(
+				// 	"--slider-center",
+				// 	`${rangeInput.offsetWidth / 2}px`,
+				// );
+			}
+		};
+
+		updateSliderCenter(); // Initial update
+
+		// Update on resize
+		window.addEventListener("resize", updateSliderCenter);
+
+		return () => {
+			window.removeEventListener("resize", updateSliderCenter);
+		};
+	});
 </script>
 
 <div id={elem_id} class="custom-slider {visible ? '' : 'hide'} {elem_classes}">
@@ -110,7 +145,12 @@
 
 	<div class="fr-range-group">
 		<span class="fr-range__left" aria-hidden="true">{extrema[0]}</span>
-		<div class="fr-range fr-range--step" data-fr-js-range="true">
+		<div
+			class="fr-range fr-range--step {sliderInteracted
+				? 'interacted'
+				: ''}"
+			data-fr-js-range="true"
+		>
 			<span class="fr-range__output hide">{value}</span>
 			<input
 				type="range"
@@ -122,13 +162,15 @@
 				max={maximum}
 				{step}
 				{disabled}
+				on:pointerdown={handle_pointerdown}
 				on:pointerup={handle_release}
 				aria-label={`range slider for ${label}`}
 			/>
 			{#if range_labels.length != 0}
 				{#each range_labels as range_label, labelIndex}
 					<span
-						class="fr-range__custom-label{currentLabel == labelIndex
+						class="fr-range__custom-label{currentLabel ==
+							labelIndex && sliderInteracted
 							? ' spotlight'
 							: ''}"
 						aria-hidden="true">{range_label}</span
@@ -144,22 +186,39 @@
 </div>
 
 <style>
+	/* Style to center the thumb when not interacted */
+	.fr-range[data-fr-js-range]:not(.interacted)
+		input[type="range"]::-webkit-slider-thumb,
+	.fr-range[data-fr-js-range]:not(.interacted)
+		input[type="range"]::-moz-range-thumb {
+		/* transform: translateX(calc(var(--slider-width)/2)); */
+		transform: translateX(var(--slider-center));
+
+		background-color: var(--background-default-grey-hover);
+	}
+
 	.fr-range-group {
 		display: flex;
 	}
 
-	.fr-range[data-fr-js-range] input[type="range"]::-webkit-slider-thumb,
-	.fr-range[data-fr-js-range] input[type="range"]::-moz-range-thumb {
+
+	.fr-range[data-fr-js-range].interacted input[type="range"]::-webkit-slider-thumb,
+	.fr-range[data-fr-js-range].interacted input[type="range"]::-moz-range-thumb {
 		/* --hover: var(--background-raised-grey-hover);
 		--active: var(--background-raised-grey-active);
 		--hover: var(--background-default-grey-hover);
 		--active: var(--background-default-grey-active);
 		--idle: transparent; */
+		/* Should be useless */
+		transform: translateX(0);
 		background-color: var(--background-action-high-blue-france) !important;
 		border: 1px solid var(--border-action-high-blue-france) !important;
 	}
 
-	.fr-range--step[data-fr-js-range]::before, .fr-range--step[data-fr-js-range]::after, .fr-range[data-fr-js-range]::before, .fr-range--step[data-fr-js-range]::after {
+	.fr-range--step[data-fr-js-range]::before,
+	.fr-range--step[data-fr-js-range]::after,
+	.fr-range[data-fr-js-range]::before,
+	.fr-range--step[data-fr-js-range]::after {
 		background-image: radial-gradient(
 			circle at 2px 50%,
 			var(--background-action-high-blue-france) 0,
@@ -195,11 +254,7 @@
 		max-width: 8rem;
 		margin: 0.5rem 1rem;
 	}
-	.fr-range-group
-	/* 	.fr-range[data-fr-js-range] .fr-range__output {
-			position: absolute;
-			top: -20px;
-		} */
+
 	input:disabled {
 		-webkit-text-fill-color: var(--body-text-color);
 		-webkit-opacity: 1;
