@@ -13,16 +13,16 @@
     <div class="fr-container">
         <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
             {% for model in models %}
-            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 fr-col-lg-3">
+            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4">
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
                             <p class="fr-mb-1w">{% if
                                 model['distribution'] == "open-weights" %}<span
-                                    class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mr-1v">Modèle ouvert</span>{%
+                                    class="fr-badge fr-badge--yellow-moutarde fr-badge--sm fr-mr-1v">Modèle ouvert</span>{%
                                 else %}<span class="fr-badge fr-badge--purple-glycine fr-badge--sm fr-mr-1v">Modèle
-                                    propriétaire</span>{% endif%} <span class="fr-badge fr-badge--sm fr-mr-1v">Taille {{
-                                    model['friendly_size'] }}</span> <img class="model-icon"
+                                    propriétaire</span>{% endif%} <span class="fr-badge fr-badge--sm  fr-badge--info fr-badge--no-icon">Taille {{
+                                    model['friendly_size'] }}</span> <img class="model-icon fr-mb-n1v fr-ml-1w"
                                     src="assets/orgs/{{ model['icon_path'] }}" width="20" /></p>
                             <h3 class="fr-card__title"><a href="#" data-fr-opened="false"
                                     aria-controls="fr-modal-{{ model['id'] }}">{{
