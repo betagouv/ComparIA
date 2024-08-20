@@ -96,16 +96,19 @@
                                 <div class="fr-ml-1v">
                                     <p class="fr-mb-1w"><strong>Taille {{ model['friendly_size'] }}</strong> : {{
                                         size_desc[model["friendly_size"]] }}</p>
-                                    <p><a class="fr-link fr-text--sm" aria-describedby="params-{{ model['id'] }}"
-                                            href="#">Les
-                                            paramètres, qu'est-ce que c'est ?</a><span class="fr-tooltip fr-placement"
-                                            id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les
+                                        <section class="fr-accordion fr-mb-4w">
+                                            <h3 class="fr-accordion__title">
+                                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="params-{{ model['id'] }}">Les paramètres, qu'est-ce que c'est ?</button>
+                                            </h3>
+                                            <div class="fr-collapse" id="params-{{ model['id'] }}">Les
                                             paramètres ou
                                             les poids comptés en milliards sont les variables apprises par un modèle au
                                             cours de
                                             son entrainement qui déterminent ses réponses. Plus le nombre de paramètres
                                             est
-                                            important, plus il est capable d’effectuer des tâches complexes.</span></p>
+                                            important, plus il est capable d’effectuer des tâches complexes.
+                                            </div>
+                                        </section>
                                 </div>
                             </div>
                             <div class="fr-mb-4w">
@@ -134,10 +137,11 @@
                                             informations de
                                             licence n'ont pas été remplies pour ce modèle.") }}
                                         </p>
-                                        <p><a class="fr-link fr-text--sm"
-                                                aria-describedby="ram-{{ model['id'] }}" href="#">La RAM,
-                                                à quoi ça sert ?</a><span class="fr-tooltip fr-placement"
-                                                id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">La RAM
+                                        <section class="fr-accordion">
+                                            <h3 class="fr-accordion__title">
+                                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="ram-{{ model['id'] }}">La RAM, à quoi ça sert ?</button>
+                                            </h3>
+                                            <div class="fr-collapse" id="ram-{{ model['id'] }}">La RAM
                                                 (mémoire
                                                 vive) stocke les données traitées par un LLM en temps réel. Plus le
                                                 modèle
@@ -148,7 +152,10 @@
                                                 déployer
                                                 sur
                                                 des
-                                                ordinateurs moins puissants</span></p>
+                                                ordinateurs moins puissants
+                                            </div>
+                                        </section>
+                                        
                                     </div>
                                 </div>
                             </div>
