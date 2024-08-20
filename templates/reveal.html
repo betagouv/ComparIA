@@ -2,8 +2,8 @@
     <!-- <h3 class="text-center">Merci pour votre vote !<br />
         Découvrez les modèles d'IA générative avec lesquels vous venez de discuter :</h3> -->
     <div class="fr-grid-row">
-        {% for model, side, impact, tokens in [(model_a, 'model-a', model_a_impact, model_a_tokens), (model_b,
-        'model-b', model_b_impact, model_b_tokens)] %}
+        {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a, 'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit), (model_b,
+        'model-b', model_b_impact, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b, streaming_b_unit)] %}
 
         <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-{% if side == 'model-a' %}n{% endif %}3w">
             <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}"
@@ -83,7 +83,7 @@
                         </svg>
                     </div>
                     <div class="fr-col-9 text-left">
-                        <p><strong><span class="fr-text--xxl">{{ '%0.2f'|
+                        <p><strong><span class="fr-text--xxl">{{ '%0.1f'|
                                     format(impact.gwp.value*100|float) |replace(".", ",") }}</span>g</strong>
                         </p>
                         <p class="fr-text--xs">CO<sup>2</sup> émis<a class="fr-icon fr-icon--xs fr-icon--question-line"
@@ -111,7 +111,7 @@
                         </svg>
                     </div>
                     <div class="fr-col-9 text-left">
-                        <p><strong><span class="fr-text--xxl">1337</span>h</strong>
+                        <p><strong><span class="fr-text--xxl">{{ lightbulb }}</span>{{ lightbulb_unit }}</strong>
                         </p>
                         <p class="fr-text--xs">ampoule LED<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                 aria-describedby="ampoule-{{side}}"></a></p>
@@ -130,7 +130,7 @@
                         </svg>
                     </div>
                     <div class="fr-col-9 text-left">
-                        <p><strong><span class="fr-text--xxl">1337</span>h</strong>
+                        <p><strong><span class="fr-text--xxl">{{ streaming }}</span>{{ streaming_unit }}</strong>
                         </p>
                         <p class="fr-text--xs">vidéos en ligne<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                 aria-describedby="videos-{{side}}"></a>

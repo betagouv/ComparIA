@@ -368,6 +368,65 @@ license_desc = {
     "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités",
 }
 
+def calculate_lightbulb_consumption(impact_energy_value):
+    """
+    Calculates the energy consumption of a 5W LED light and determines the most sensible time unit.
+
+    Args:
+      impact_energy_value: Energy consumption in kilowatt-hours (kWh).
+
+    Returns:
+      A tuple containing:
+        - An integer representing the consumption time.
+        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
+    """
+
+    # Calculate consumption time using Wh
+    watthours = impact_energy_value * 1000
+    consumption_days = watthours / (5 * 24)  
+    consumption_hours = watthours / 5  
+    consumption_minutes = watthours / (5 * 60)  
+    consumption_seconds = watthours / (5 * 60 * 60)
+
+    # Determine the most sensible unit based on magnitude
+    if consumption_days >= 1:
+        return int(consumption_days), "j"
+    elif consumption_hours >= 1:
+        return int(consumption_hours), "h"
+    elif consumption_minutes >= 1:
+        return int(consumption_minutes), "min"
+    else:
+        return int(consumption_seconds), "s"
+
+
+def calculate_streaming_hours(impact_gwp_value):
+    """
+    Calculates equivalent streaming hours and determines a sensible time unit.
+
+    Args:
+      impact_gwp_value: CO2 emissions in kilograms.
+
+    Returns:
+      A tuple containing:
+        - An integer representing the streaming hours.
+        - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
+    """
+
+    # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
+    streaming_hours = impact_gwp_value * 10000 / 317
+    print("streaming_hours")
+    print(streaming_hours)
+    # Determine sensible unit based on magnitude
+    if streaming_hours >= 24:  # 1 day in hours
+        return int(streaming_hours / 24), "j"
+    elif streaming_hours >= 1:
+        return int(streaming_hours), "h"
+    elif streaming_hours * 60 >= 1: 
+        return int(streaming_hours * 60), "min"
+    else: 
+        return int(streaming_hours * 60 * 60), "s"
+
+
 
 def build_reveal_html(
     model_a,
@@ -381,6 +440,15 @@ def build_reveal_html(
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
     chosen_model = get_chosen_model(which_model_radio)
+    lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(
+        model_a_impact.energy.value
+    )
+    lightbulb_b, lightbulb_b_unit = calculate_lightbulb_consumption(
+        model_b_impact.energy.value
+    )
+
+    streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_impact.gwp.value)
+    streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_impact.gwp.value)
 
     return template.render(
         model_a=model_a,
@@ -392,17 +460,15 @@ def build_reveal_html(
         license_desc=license_desc,
         model_a_tokens=model_a_tokens,
         model_b_tokens=model_b_tokens,
+        streaming_a=streaming_a,
+        streaming_a_unit=streaming_a_unit,
+        streaming_b=streaming_b,
+        streaming_b_unit=streaming_b_unit,
+        lightbulb_a=lightbulb_a,
+        lightbulb_a_unit=lightbulb_a_unit,
+        lightbulb_b=lightbulb_b,
+        lightbulb_b_unit=lightbulb_b_unit,
     )
-
-
-def running_eq(impact):
-    if impact is not None:
-        energy_in_kJ = impact.energy.value / 0.2777777778
-        # running 1 km at 10 km/h with a weight of 70 kg
-        running_eq = energy_in_kJ / 294
-        # in km
-        return running_eq
-    return 0.0
 
 
 def get_conv_log_filename(is_vision=False, has_csam_image=False):
@@ -617,7 +683,7 @@ def add_outage_model(controller_url, model_name):
         return
 
     if response.status_code == 201:
-        logger.info("successfully reported outage model "+ model_name)
+        logger.info("successfully reported outage model " + model_name)
     else:
         logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 

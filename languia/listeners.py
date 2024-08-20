@@ -12,7 +12,6 @@ from languia.utils import (
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
-    running_eq,
     log_poll,
     get_chosen_model,
     refresh_outage_models,
@@ -653,8 +652,6 @@ def register_listeners():
             model_b, conversation_b.model_name, model_b_tokens, None
         )
 
-        model_a_running_eq = running_eq(model_a_impact)
-        model_b_running_eq = running_eq(model_b_impact)
 
         reveal_html = build_reveal_html(
             model_a=model_a,
