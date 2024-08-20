@@ -13,6 +13,7 @@
         /* Not DSFR compliant */
         color: var(--text-action-high-blue-france) !important;
     }
+
     .flex {
         display: flex;
     }
@@ -74,7 +75,8 @@
                         <p><strong>{{ model['description'] }}</strong></p>
                         <div>
                             <h6 class="text-blue fr-mb-0">Pourquoi la taille des modèles est importante ?</h6>
-                            <p class="fr-mb-1w"><span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v">{% if
+                            <p class="fr-mb-1w"><span
+                                    class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v">{% if
                                     model['friendly_size']
                                     ==
                                     "XS" %}Très petit modèle
@@ -84,64 +86,88 @@
                                     {% elif model['friendly_size'] == "XL" %}Très grand modèle (XL)
                                     {% else %}Très très grand modèle (XXL)
                                     {% endif %}</span>{% if
-                                model['distribution'] == "open-weights" %}<span
-                                    class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{ '%0.1f'|
+                                model['distribution'] == "open-weights" %}
+                                <!-- TODO: don't show 1 decimal if it's round -->
+                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{ '%0.1f'|
                                     format(model['params']|float) | replace(".",",") }} mds de paramètres</span>{% endif
-                                %}</p>
-                            <p class="flex"><span class="fr-icon-ruler" aria-hidden="true"></span><span
-                                    class=" fr-ml-1v"><strong>Taille {{ model['friendly_size'] }}</strong> : {{
-                                    size_desc[model["friendly_size"]] }}</span></p>
-                            <p><a class="fr-link fr-text--sm" aria-describedby="params-{{ model['id'] }}" href="#">Les
-                                    paramètres, qu'est-ce que c'est ?</a><span class="fr-tooltip fr-placement"
-                                    id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les paramètres ou
-                                    les poids comptés en milliards sont les variables apprises par un modèle au cours de
-                                    son entrainement qui déterminent ses réponses. Plus le nombre de paramètres est
-                                    important, plus il est capable d’effectuer des tâches complexes.</span></p>
-                        </div>
-                        <div class="fr-mb-4w">
-                            <h6 class="text-blue fr-mb-0">Est-ce possible de modifier ce modèle ?</h6>
-                            <div class="fr-mb-1w">{% if
-                                model['distribution'] == "open-weights" %}<span
-                                    class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Licence {{
-                                    model['license'] }}</span><span
-                                    class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Open source</span>
-                                <span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">De {{
-                                    (model['required_ram'] // 2)|int }} à {{ (model['required_ram'] * 2)|int }} Go de
-                                    RAM</span>
-                                {%
-                                else %}<span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--purple-glycine">Licence
-                                    commerciale</span>{% endif
                                 %}
+                            </p>
+                            <div class="flex fr-mb-1w"><span class="fr-icon-ruler" aria-hidden="true"></span>
+                                <div class="fr-ml-1v">
+                                    <p class="fr-mb-1w"><strong>Taille {{ model['friendly_size'] }}</strong> : {{
+                                        size_desc[model["friendly_size"]] }}</p>
+                                    <p><a class="fr-link fr-text--sm" aria-describedby="params-{{ model['id'] }}"
+                                            href="#">Les
+                                            paramètres, qu'est-ce que c'est ?</a><span class="fr-tooltip fr-placement"
+                                            id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les
+                                            paramètres ou
+                                            les poids comptés en milliards sont les variables apprises par un modèle au
+                                            cours de
+                                            son entrainement qui déterminent ses réponses. Plus le nombre de paramètres
+                                            est
+                                            important, plus il est capable d’effectuer des tâches complexes.</span></p>
+                                </div>
                             </div>
-                            <p class="flex"><span class="fr-icon-download-line" aria-hidden="true"></span> <strong
-                                    class="fr-ml-1v">Licence {{
-                                    model["license"]
-                                    }}</strong> : {{ license_desc[model["license"]]|default("Les informations de
-                                licence n'ont pas été remplies pour ce modèle.") }}
-                            </p>
-                            <p><a class="fr-link fr-text--sm" aria-describedby="ram-{{ model['id'] }}" href="#">La RAM,
-                                    à quoi ça sert ?</a><span class="fr-tooltip fr-placement"
-                                    id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">La RAM (mémoire
-                                    vive) stocke les données traitées par un LLM en temps réel. Plus le modèle est
-                                    grand, plus il a besoin de RAM pour fonctionner. La quantisation permet de
-                                    simplifier les calculs pour réduire la taille des modèles et les déployer sur des
-                                    ordinateurs moins puissants</span></p>
-                        </div>
-                        <div class="fr-alert fr-alert--info">
-                            <h6 class="fr-alert__title">Pour aller plus loin</h6>
-                            <p>Pour les expert·es, consultez la <a href="{{ model['url']|default('#') }}"
-                                    rel="noopener external" target="_blank">fiche du modèle sur Hugging Face</a>
-                            </p>
-                            <p>Les calculs d’impacts environnementaux reposent sur les projets <a
-                                    href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
-                                    rel="noopener external" target="_blank">EcoLogits</a> et <a rel="noopener external"
-                                    target="_blank" href="https://impactco2.fr">Impact CO<sub>2</sub></a>.</p>
+                            <div class="fr-mb-4w">
+                                <h6 class="text-blue fr-mb-0">Est-ce possible de modifier ce modèle ?</h6>
+                                <div class="fr-mb-1w">{% if
+                                    model['distribution'] == "open-weights" %}<span
+                                        class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Licence {{
+                                        model['license'] }}</span><span
+                                        class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Open
+                                        source</span>
+                                    <span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">De {{
+                                        (model['required_ram'] // 2)|int }} à {{ (model['required_ram'] * 2)|int }} Go
+                                        de
+                                        RAM</span>
+                                    {%
+                                    else %}<span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--purple-glycine">Licence
+                                        commerciale</span>{% endif
+                                    %}
+                                </div>
+                                <div class="flex fr-mb-1w"><span class="fr-icon-download-line"
+                                        aria-hidden="true"></span>
+                                    <div class="fr-ml-1v">
+                                        <p class="fr-mb-1w"><strong>Licence {{
+                                                model["license"]
+                                                }}</strong> : {{ license_desc[model["license"]]|default("Les
+                                            informations de
+                                            licence n'ont pas été remplies pour ce modèle.") }}
+                                        </p>
+                                        <p><a class="fr-link fr-text--sm"
+                                                aria-describedby="ram-{{ model['id'] }}" href="#">La RAM,
+                                                à quoi ça sert ?</a><span class="fr-tooltip fr-placement"
+                                                id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">La RAM
+                                                (mémoire
+                                                vive) stocke les données traitées par un LLM en temps réel. Plus le
+                                                modèle
+                                                est
+                                                grand, plus il a besoin de RAM pour fonctionner. La quantisation permet
+                                                de
+                                                simplifier les calculs pour réduire la taille des modèles et les
+                                                déployer
+                                                sur
+                                                des
+                                                ordinateurs moins puissants</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="fr-alert fr-alert--info">
+                                <h6 class="fr-alert__title">Pour aller plus loin</h6>
+                                <p>Pour les expert·es, consultez la <a href="{{ model['url']|default('#') }}"
+                                        rel="noopener external" target="_blank">fiche du modèle sur Hugging Face</a>
+                                </p>
+                                <p>Les calculs d’impacts environnementaux reposent sur les projets <a
+                                        href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
+                                        rel="noopener external" target="_blank">EcoLogits</a> et <a
+                                        rel="noopener external" target="_blank" href="https://impactco2.fr">Impact
+                                        CO<sub>2</sub></a>.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 </dialog>
 {% endfor %}
 
