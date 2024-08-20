@@ -138,6 +138,10 @@ background-color: white !important;
   color: var(--text-mention-grey);
 
 }
+.text-blue {
+  /* Not DSFR compliant */
+  color: var(--text-action-high-blue-france) !important;
+}
 
 .big-label {
   font-size: 1.175rem;
@@ -469,6 +473,16 @@ li.fr-nav__item {
 
 .fr-icon-ruler::before {
   background-image: url("file=assets/extra-icons/ruler.svg");
+}
+
+.fr-icon-download::before,
+.fr-icon-download::after {
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/download-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/download-line.svg");
+}
+
+.fr-icon-download::before {
+  background-image: url("file=assets/dsfr/icons/system/download-line.svg");
 }
 
 .fr-icon-copyright-line::before,

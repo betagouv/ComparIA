@@ -17,12 +17,17 @@
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
-                            {% if
-                                model['distribution'] == "open-weights" %}<p class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mb-1w">Modèle ouvert</p>{% else %}<p class="fr-badge fr-badge--purple-glycine fr-badge--sm fr-mb-1w">Modèle propriétaire</p>{% endif%}
-                            <h3 class="fr-card__title"><a href="#" data-fr-opened="false" aria-controls="fr-modal-{{ model['id'] }}">{{
-                                model['simple_name'] }} <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20"
-                                 /></a></h3>
-                            <!-- <p class="fr-card__desc">{{ model['excerpt'] }}</p> -->
+                            <p class="fr-mb-1w">{% if
+                                model['distribution'] == "open-weights" %}<span
+                                    class="fr-badge fr-badge--blue-cumulus fr-badge--sm fr-mr-1v">Modèle ouvert</span>{%
+                                else %}<span class="fr-badge fr-badge--purple-glycine fr-badge--sm fr-mr-1v">Modèle
+                                    propriétaire</span>{% endif%} <span class="fr-badge fr-badge--sm fr-mr-1v">Taille {{
+                                    model['friendly_size'] }}</span> <img class="model-icon"
+                                    src="assets/orgs/{{ model['icon_path'] }}" width="20" /></p>
+                            <h3 class="fr-card__title"><a href="#" data-fr-opened="false"
+                                    aria-controls="fr-modal-{{ model['id'] }}">{{
+                                    model['simple_name'] }}</a></h3>
+                            <p class="fr-card__desc">{{ model['excerpt'] }}</p>
                             <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
                         class="fr-link--icon-right fr-link">    En savoir plus</a> -->
                         </div>
@@ -36,7 +41,8 @@
 </main>
 
 {% for model in models %}
-<dialog aria-labelledby="fr-modal-title-modal-{{ model['id'] }}" role="dialog" id="fr-modal-{{ model['id'] }}" class="fr-modal">
+<dialog aria-labelledby="fr-modal-title-modal-{{ model['id'] }}" role="dialog" id="fr-modal-{{ model['id'] }}"
+    class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-8">
@@ -46,56 +52,74 @@
                             aria-controls="fr-modal-{{ model['id'] }}">Fermer</button>
                     </div>
                     <div class="fr-modal__content fr-mb-4w">
-                        <h1 id="fr-modal-title-modal-{{ model['id'] }}" class="fr-modal__title">{{ model['simple_name'] }}
-                            <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20"
-                                 />
+                        <h1 id="fr-modal-title-modal-{{ model['id'] }}" class="fr-modal__title">{{ model['simple_name']
+                            }}
+                            <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20" />
                         </h1>
-                        <p><span class="fr-badge">Taille {{
-                                model['friendly_size']
-                                }}</span>{% if
-                                    model['distribution'] == "open-weights" %} <span class="fr-badge">{{ '%0.1f'| format(model['params']|float) }} milliards de paramètres</span>{% endif %} <span class="fr-badge">{{ model['organisation'] }}</span></p>
-                        <p>{{ model['description'] }}</p>
-                        <div class="fr-grid-row">
-                            <div class="fr-col-12 fr-col-md-6">
-                                <h5>Transparence</h5>
-                                <p><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span></p><div class="fr-ml-7v">{% if
-                                    model['distribution'] == "open-weights" %}<span
-                                        class="fr-badge fr-badge--blue-cumulus">Poids communiqués</span>{%
-                                    else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif
-                                    %}</div>
-                                <p><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus d'entrainement</span></p><div class="fr-ml-7v">{%
-                                    if
-                                    model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
-                                        communiqué</span>{% else %}<span
-                                        class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</div>
+                        <p><strong>{{ model['description'] }}</strong></p>
+                        <div class="fr-mx-4w">
+                            <h6 class="text-blue">Pourquoi la taille des modèles est importante ?</h6>
+                            <p><span class="fr-badge fr-badge--sm fr-badge--info fr-mr-1v">{% if model['friendly_size']
+                                    ==
+                                    "XS" %}Très petit modèle
+                                    (XS){% elif model['friendly_size'] == "S" %}Petit modèle (S)
+                                    {% elif model['friendly_size'] == "M" %}Moyen modèle (M)
+                                    {% elif model['friendly_size'] == "L" %}Grand modèle (L)
+                                    {% elif model['friendly_size'] == "XL" %}Très grand modèle (XL)
+                                    {% else %}Très très grand modèle (XXL)
+                                    {% endif %}</span>{% if
+                                model['distribution'] == "open-weights" %}<span
+                                    class="fr-badge fr-badge--sm fr-badge--info">{{ '%0.1f'|
+                                    format(model['params']|float) | replace(".",",") }} mds de paramètres</span>{% endif
+                                %}</p>
+                            <p><span class="fr-icon-ruler fr-ml-n4w" aria-hidden="true"></span> <strong
+                                    class="fr-ml-2w">Taille {{ model['friendly_size'] }}</strong> : {{
+                                size_desc[model["friendly_size"]] }}</p>
+                            <p><a class="fr-link fr-text--sm" aria-describedby="params-{{ model['id'] }}" href="#">Les
+                                    paramètres, qu'est-ce que c'est ?</a><span class="fr-tooltip fr-placement"
+                                    id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les paramètres ou
+                                    les poids comptés en milliards sont les variables apprises par un modèle au cours de
+                                    son entrainement qui déterminent ses réponses. Plus le nombre de paramètres est
+                                    important, plus il est capable d’effectuer des tâches complexes.</span></p>
+                        </div>
+                        <div class="fr-mb-4w">
+                            <h6 class="text-blue">Est-ce possible de modifier ce modèle ?</h6>
+                            <div>{% if
+                                model['distribution'] == "open-weights" %}<span
+                                    class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Licence {{
+                                    model['license'] }}</span><span
+                                    class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Open source</span>
+                                <span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">De {{
+                                    (model['required_ram'] // 2)|int }} à {{ (model['required_ram'] * 2)|int }} Go de
+                                    RAM</span>
+                                {%
+                                else %}<span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--purple-glycine">Licence
+                                    commerciale</span>{% endif
+                                %}
                             </div>
-                            <div class="fr-col-12 fr-col-md-6">
-                                <h5>Utilisation</h5>
-                                <p><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true"> Distribution</span><div class="fr-ml-7v">{% if
-                                    model['distribution'] == "open-weights" %}<span
-                                        class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
-                                        class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
-                                    else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
-                                    endif %}</p></div>
-                                <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions d'usage</span></p><div class="fr-ml-7v">{% if
-                                    model['conditions'] == "restricted" %}<span
-                                        class="fr-badge fr-badge--yellow-moutarde">Sous conditions</span>{% else
-                                    %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %} <span
-                                        class="fr-badge fr-badge--blue-cumulus">Licence {{ model['license'] }}</span>
-                                        </div>
-                            </div>
-                            <h5>Détails</h5>
-                            <p><span class="fr-icon-ruler fr-mb-1v" aria-hidden="true"> <strong>Taille {{ model["friendly_size"]
-                                        }}</strong> : {{ size_desc[model["friendly_size"]] }}</span>
-                            <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> <strong>Licence {{ model["license"]
-                                        }}</strong> : {{ license_desc[model["license"]]|default("Les informations de
-                                    licence n'ont pas été remplies pour ce modèle.") }}</span>
-                            <p><span class="fr-icon-leaf-line fr-mb-1v" aria-hidden="true"> <strong>Indicateurs
-                                        environnementaux</strong> : rendez-vous sur <a
-                                        href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
-                                        rel="noopener external" target="_blank">🧮 EcoLogits Calculator</a></p>
-                            <p><a href="{{ model['url']|default('#') }}" rel="noopener external"
-                                    target="_blank">Pour en savoir plus sur ce modèle, rendez-vous sur la page du modèle</a></p>
+                            <p><span class="fr-icon-download fr-ml-n4w" aria-hidden="true"></span> <strong
+                                    class="fr-ml-2w">Licence {{
+                                    model["license"]
+                                    }}</strong> : {{ license_desc[model["license"]]|default("Les informations de
+                                licence n'ont pas été remplies pour ce modèle.") }}
+                            </p>
+                            <p><a class="fr-link fr-text--sm" aria-describedby="ram-{{ model['id'] }}" href="#">La RAM,
+                                    à quoi ça sert ?</a><span class="fr-tooltip fr-placement"
+                                    id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">La RAM (mémoire
+                                    vive) stocke les données traitées par un LLM en temps réel. Plus le modèle est
+                                    grand, plus il a besoin de RAM pour fonctionner. La quantisation permet de
+                                    simplifier les calculs pour réduire la taille des modèles et les déployer sur des
+                                    ordinateurs moins puissants</span></p>
+                        </div>
+                        <div class="fr-alert fr-alert--info">
+                            <h6 class="fr-alert__title">Pour aller plus loin</h6>
+                            <p>Pour les expert·es, consultez la <a href="{{ model['url']|default('#') }}"
+                                    rel="noopener external" target="_blank">fiche du modèle sur Hugging Face</a>
+                            </p>
+                            <p>Les calculs d’impacts environnementaux reposent sur les projets <a
+                                    href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
+                                    rel="noopener external" target="_blank">EcoLogits</a> et <a rel="noopener external"
+                                    target="_blank" href="https://impactco2.fr">Impact CO<sub>2</sub></a>.</p>
                         </div>
                     </div>
                 </div>
