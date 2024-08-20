@@ -153,8 +153,17 @@ background-color: white !important;
 .underline {
   --underline-hover-width: var(--underline-max-width);
 }
+.fr-text--xxl {
+  font-size: 1.5rem;
+}
+/* Custom */
+.rounded-tile {
+  border-color: var(--border-default-grey);
+  border-width: 1px;
+  border-radius: 0.25rem; /* 4px */
+}
 
-/* General */
+  /* General */
 body {
   margin: auto !important;
 }
