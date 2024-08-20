@@ -662,12 +662,12 @@ def register_listeners():
             which_model_radio=which_model_radio,
             model_a_impact=model_a_impact,
             model_b_impact=model_b_impact,
-            model_a_running_eq=model_a_running_eq,
-            model_b_running_eq=model_b_running_eq,
+            model_a_tokens=model_a_tokens,
+            model_b_tokens=model_b_tokens,
         )
         return [
             Modal(visible=False),
-            gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
+            gr.update(value=stepper_html("Découvrez les modèles d'IA générative avec lesquels vous venez de discuter", 4, 4)),
             gr.update(visible=False),
             gr.update(visible=False),
             gr.update(visible=True),

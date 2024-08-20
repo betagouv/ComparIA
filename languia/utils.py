@@ -375,8 +375,8 @@ def build_reveal_html(
     which_model_radio,
     model_a_impact,
     model_b_impact,
-    model_a_running_eq,
-    model_b_running_eq,
+    model_a_tokens,
+    model_b_tokens,
 ):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
@@ -390,8 +390,8 @@ def build_reveal_html(
         model_b_impact=model_b_impact,
         size_desc=size_desc,
         license_desc=license_desc,
-        model_a_running_eq=model_a_running_eq,
-        model_b_running_eq=model_b_running_eq,
+        model_a_tokens=model_a_tokens,
+        model_b_tokens=model_b_tokens,
     )
 
 
