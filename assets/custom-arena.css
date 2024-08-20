@@ -160,6 +160,7 @@ background-color: white !important;
 .rounded-tile {
   border-color: var(--border-default-grey);
   border-width: 1px;
+  border-style: solid;
   border-radius: 0.25rem; /* 4px */
 }
 
