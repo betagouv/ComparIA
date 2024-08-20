@@ -321,7 +321,7 @@ def register_listeners():
 
         if hasattr(app_state, "original_user_prompt"):
             if app_state.original_user_prompt != False:
-                logger.info(
+                logger.error(
                     "model crash detected, keeping prompt",
                     extra={"request": request},
                 )
@@ -339,22 +339,18 @@ def register_listeners():
                 conversation_b = ConversationState(model_name=model_right)
 
                 logger.info(
-                    "Picked 2 models: " + model_left + " and " + model_right,
+                    "Repicked 2 models: " + model_left + " and " + model_right,
                     extra={request: request},
                 )
                 # conversation_a = ConversationState()
                 # conversation_b = ConversationState()
 
                 logger.info(
-                    "submitting original prompt",
+                    "prefilling opening prompt",
                     extra={"request": request},
                 )
                 textbox.value = original_user_prompt
 
-                logger.info(
-                    "original prompt sent",
-                    extra={"request": request},
-                )
                 return (
                     [conversation_a]
                     + [conversation_b]
