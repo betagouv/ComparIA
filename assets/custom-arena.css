@@ -603,9 +603,9 @@ li.fr-nav__item {
 .fr-icon--question-line {
   -webkit-mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
   mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
-  background-image: url("file=assets/dsfr/icons/system/question-line.svg");
-  fill: var(--text-active-grey);
-  color: var(--text-active-grey);
+  background-color: var(--text-active-grey);
+  color: var(--text-active-grey) !important;
   display: inline-block;
-  width: 22px;
+  mask-size: 100%;
+  mask-repeat: no-repeat;
 }
