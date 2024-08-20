@@ -4,7 +4,19 @@
 <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-others/icons-others.css">
 <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-document/icons-document.css">
 <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-editor/icons-editor.css">
+<link rel="stylesheet" href="assets/dsfr/utility/icons/icons-system/icons-system.css">
 <link rel="stylesheet" href="assets/extra-icons.css">
+<style>
+    .text-blue,
+    .fr-modal__title.text-blue,
+    h6.text-blue {
+        /* Not DSFR compliant */
+        color: var(--text-action-high-blue-france) !important;
+    }
+    .flex {
+        display: flex;
+    }
+</style>
 {% endblock %}
 {% block content %}
 
@@ -19,9 +31,11 @@
                         <div class="fr-card__content">
                             <p class="fr-mb-1w">{% if
                                 model['distribution'] == "open-weights" %}<span
-                                    class="fr-badge fr-badge--yellow-moutarde fr-badge--sm fr-mr-1v">Modèle ouvert</span>{%
+                                    class="fr-badge fr-badge--yellow-moutarde fr-badge--sm fr-mr-1v">Modèle
+                                    ouvert</span>{%
                                 else %}<span class="fr-badge fr-badge--purple-glycine fr-badge--sm fr-mr-1v">Modèle
-                                    propriétaire</span>{% endif%} <span class="fr-badge fr-badge--sm  fr-badge--info fr-badge--no-icon">Taille {{
+                                    propriétaire</span>{% endif%} <span
+                                    class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">Taille {{
                                     model['friendly_size'] }}</span> <img class="model-icon fr-mb-n1v fr-ml-1w"
                                     src="assets/orgs/{{ model['icon_path'] }}" width="20" /></p>
                             <h3 class="fr-card__title"><a href="#" data-fr-opened="false"
@@ -52,14 +66,16 @@
                             aria-controls="fr-modal-{{ model['id'] }}">Fermer</button>
                     </div>
                     <div class="fr-modal__content fr-mb-4w">
-                        <h1 id="fr-modal-title-modal-{{ model['id'] }}" class="fr-modal__title">{{ model['simple_name']
+                        <h1 id="fr-modal-title-modal-{{ model['id'] }}" class="fr-modal__title text-blue">{{
+                            model['simple_name']
                             }}
                             <img class="model-icon" src="assets/orgs/{{ model['icon_path'] }}" width="20" />
                         </h1>
                         <p><strong>{{ model['description'] }}</strong></p>
-                        <div class="fr-mx-4w">
-                            <h6 class="text-blue">Pourquoi la taille des modèles est importante ?</h6>
-                            <p><span class="fr-badge fr-badge--sm fr-badge--info fr-mr-1v">{% if model['friendly_size']
+                        <div>
+                            <h6 class="text-blue fr-mb-0">Pourquoi la taille des modèles est importante ?</h6>
+                            <p class="fr-mb-1w"><span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v">{% if
+                                    model['friendly_size']
                                     ==
                                     "XS" %}Très petit modèle
                                     (XS){% elif model['friendly_size'] == "S" %}Petit modèle (S)
@@ -69,12 +85,12 @@
                                     {% else %}Très très grand modèle (XXL)
                                     {% endif %}</span>{% if
                                 model['distribution'] == "open-weights" %}<span
-                                    class="fr-badge fr-badge--sm fr-badge--info">{{ '%0.1f'|
+                                    class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{ '%0.1f'|
                                     format(model['params']|float) | replace(".",",") }} mds de paramètres</span>{% endif
                                 %}</p>
-                            <p><span class="fr-icon-ruler fr-ml-n4w" aria-hidden="true"></span> <strong
-                                    class="fr-ml-2w">Taille {{ model['friendly_size'] }}</strong> : {{
-                                size_desc[model["friendly_size"]] }}</p>
+                            <p class="flex"><span class="fr-icon-ruler" aria-hidden="true"></span><span
+                                    class=" fr-ml-1v"><strong>Taille {{ model['friendly_size'] }}</strong> : {{
+                                    size_desc[model["friendly_size"]] }}</span></p>
                             <p><a class="fr-link fr-text--sm" aria-describedby="params-{{ model['id'] }}" href="#">Les
                                     paramètres, qu'est-ce que c'est ?</a><span class="fr-tooltip fr-placement"
                                     id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les paramètres ou
@@ -83,8 +99,8 @@
                                     important, plus il est capable d’effectuer des tâches complexes.</span></p>
                         </div>
                         <div class="fr-mb-4w">
-                            <h6 class="text-blue">Est-ce possible de modifier ce modèle ?</h6>
-                            <div>{% if
+                            <h6 class="text-blue fr-mb-0">Est-ce possible de modifier ce modèle ?</h6>
+                            <div class="fr-mb-1w">{% if
                                 model['distribution'] == "open-weights" %}<span
                                     class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Licence {{
                                     model['license'] }}</span><span
@@ -97,8 +113,8 @@
                                     commerciale</span>{% endif
                                 %}
                             </div>
-                            <p><span class="fr-icon-download fr-ml-n4w" aria-hidden="true"></span> <strong
-                                    class="fr-ml-2w">Licence {{
+                            <p class="flex"><span class="fr-icon-download-line" aria-hidden="true"></span> <strong
+                                    class="fr-ml-1v">Licence {{
                                     model["license"]
                                     }}</strong> : {{ license_desc[model["license"]]|default("Les informations de
                                 licence n'ont pas été remplies pour ce modèle.") }}
