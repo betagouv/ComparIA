@@ -414,8 +414,7 @@ def calculate_streaming_hours(impact_gwp_value):
 
     # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
     streaming_hours = impact_gwp_value * 10000 / 317
-    print("streaming_hours")
-    print(streaming_hours)
+
     # Determine sensible unit based on magnitude
     if streaming_hours >= 24:  # 1 day in hours
         return int(streaming_hours / 24), "j"
