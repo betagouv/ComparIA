@@ -8,7 +8,6 @@ import gradio as gr
 from gradio_modal import Modal
 
 from languia.utils import (
-    start_screen_html,
     stepper_html,
 )
 
@@ -57,17 +56,8 @@ with gr.Blocks(
     # if not tos_cookie:
 
     # gr.HTML(elem_id="header-placeholder")
-    header = gr.HTML(start_screen_html, elem_id="header-html")
+    header = gr.HTML("", elem_id="header-html")
 
-    with gr.Column(elem_classes="fr-container") as start_screen:
-
-        start_arena_btn = gr.Button(
-            value="C'est parti",
-            scale=0,
-            elem_id="start_arena_btn",
-            elem_classes="fr-btn fr-mx-auto fr-mb-4w",
-            interactive=False,
-        )
 
     stepper_block = gr.HTML(
         stepper_html("Bienvenue ! Comment puis-je vous aider aujourd'hui ?", 1, 4),

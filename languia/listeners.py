@@ -53,9 +53,9 @@ def register_listeners():
 
     # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
     # TODO: make a cool input-output js function to pass here instead of in main js
-    @start_arena_btn.click(
+    @demo.load(
         inputs=[],
-        outputs=(conversations + [header, start_screen, stepper_block, mode_screen]),
+        outputs=(conversations + [header, stepper_block, mode_screen]),
         api_name=False,
     )
     def enter_arena(request: gr.Request):
@@ -89,7 +89,6 @@ def register_listeners():
         )
         return conversations + [
             gr.HTML(header_html),
-            gr.update(visible=False),
             gr.update(visible=True),
             gr.update(visible=True),
         ]

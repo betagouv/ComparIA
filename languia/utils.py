@@ -247,9 +247,6 @@ with open("./templates/header-arena.html", encoding="utf-8") as header_file:
         header_html += f"<!-- Git commit: {git_commit} -->"
 
 
-with open("./templates/start-screen.html", encoding="utf-8") as start_screen_file:
-    start_screen_html = start_screen_file.read()
-
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
