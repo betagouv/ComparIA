@@ -485,8 +485,8 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
         # TODO: Should use a dict instead
         model["id"] = std_name
         if "excerpt" not in model and "description" in model:
-            if len(model["description"]) > 350:
-                model["excerpt"] = model["description"][0:349] + "…"
+            if len(model["description"]) > 190:
+                model["excerpt"] = model["description"][0:190] + "[…]"
             else:
                 model["excerpt"] = model["description"]
 
