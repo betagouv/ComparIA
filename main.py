@@ -1,4 +1,3 @@
-import os
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -6,7 +5,6 @@ from fastapi.templating import Jinja2Templates
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-import sentry_sdk
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from languia.block_arena import demo
@@ -46,7 +44,12 @@ app = gr.mount_gradio_app(
     path="/arene",
     root_path="/arene",
     # allowed_paths=[config.assets_absolute_path],
-    allowed_paths=[config.assets_absolute_path, "/tmp", "/tmp/gradio", "custom_components"],
+    allowed_paths=[
+        config.assets_absolute_path,
+        "/tmp",
+        "/tmp/gradio",
+        "custom_components",
+    ],
     # allowed_paths=[config.assets_absolute_path, "/tmp", "custom_components"],
     show_error=config.debug,
 )

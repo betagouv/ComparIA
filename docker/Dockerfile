@@ -43,7 +43,7 @@ COPY . /app
 FROM base AS cc
 RUN apt update && apt install -y nodejs npm
 COPY --from=app /app/custom_components /app/custom_components
-WORKDIR /app/custom_components/frbutton
+WORKDIR /app/custom_components/customradiocard
 # TODO: factorize this
 RUN gradio cc install
 RUN gradio cc build --no-generate-docs --bump-version

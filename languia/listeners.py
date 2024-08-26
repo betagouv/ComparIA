@@ -12,7 +12,6 @@ from languia.utils import (
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
-    running_eq,
     log_poll,
     get_chosen_model,
     refresh_outage_models,
@@ -25,10 +24,7 @@ from languia.config import (
     SAMPLING_WEIGHTS,
     BATTLE_TARGETS,
     SAMPLING_BOOST_MODELS,
-    outage_models,
 )
-
-import numpy as np
 
 # from fastchat.model.model_adapter import get_conversation_template
 
@@ -51,15 +47,34 @@ from languia import config
 # Register listeners
 def register_listeners():
 
-    # Step -1
-    @demo.load(inputs=[], outputs=conversations, api_name=False)
-    def init_models(request: gr.Request):
-        outage_models = refresh_outage_models(controller_url=config.controller_url)
+    # Sometimes @demo.load is not triggered!
+
+    # Step 0
+
+    # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
+    # TODO: make a cool input-output js function to pass here instead of in main js
+    @start_arena_btn.click(
+        inputs=[],
+        outputs=(conversations + [header, start_screen, stepper_block, mode_screen]),
+        api_name=False,
+    )
+    def enter_arena(request: gr.Request):
+        # tos_accepted = accept_tos_checkbox
+        # if tos_accepted:
+        # logger.info(f"ToS accepted")
+        logger.info(
+            f"ToS accepted",
+            extra={"request": request},
+        )
+
+        config.outage_models = refresh_outage_models(
+            config.outage_models, controller_url=config.controller_url
+        )
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
             config.models,
             BATTLE_TARGETS,
-            outage_models,
+            config.outage_models,
             SAMPLING_WEIGHTS,
             SAMPLING_BOOST_MODELS,
         )
@@ -72,39 +87,20 @@ def register_listeners():
             "Picked 2 models: " + model_left + " and " + model_right,
             extra={request: request},
         )
-
-        return conversations
-
-    # Step 0
-
-    # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
-    # TODO: make a cool input-output js function to pass here instead of in main js
-    @start_arena_btn.click(
-        inputs=[],
-        outputs=[header, start_screen, stepper_block, mode_screen],
-        api_name=False,
-    )
-    def enter_arena(request: gr.Request):
-        # tos_accepted = accept_tos_checkbox
-        # if tos_accepted:
-        # logger.info(f"ToS accepted")
-        logger.info(
-            f"ToS accepted",
-            extra={"request": request},
-        )
-        return (
+        return conversations + [
             gr.HTML(header_html),
             gr.update(visible=False),
             gr.update(visible=True),
             gr.update(visible=True),
-        )
+        ]
 
     # Step 1
 
     @free_mode_btn.click(
         inputs=[],
         outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
-        api_name=False,)
+        api_name=False,
+    )
     def free_mode(request: gr.Request):
         logger.info(
             f"Chose free mode",
@@ -117,7 +113,7 @@ def register_listeners():
             gr.update(elem_classes="fr-container send-area-enabled"),
             gr.update(interactive=False),
             # Don't remove or autofocus won't work
-            gr.skip()
+            gr.skip(),
         ]
 
     # Step 1.1
@@ -246,9 +242,9 @@ def register_listeners():
             iters += 1
             for i in range(config.num_sides):
                 try:
-                    if iters % 30 == 1 or iters < 3:
-                        ret = next(gen[i])
-                        conversations[i], chatbots[i] = ret[0], ret[1]
+                    # if iters % 30 == 1 or iters < 3:
+                    ret = next(gen[i])
+                    conversations[i], chatbots[i] = ret[0], ret[1]
                     stop = False
                 except StopIteration:
                     pass
@@ -257,21 +253,22 @@ def register_listeners():
                         f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
                         extra={"request": request},
                     )
-                    outage_models.append(conversations[i].model_name)
+                    config.outage_models.append(conversations[i].model_name)
                     add_outage_model(config.controller_url, conversations[i].model_name)
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
-                    gr.Warning(
-                        message="Erreur avec le chargement d'un des modèles, veuillez relancer l'arène",
-                    )
                     # gr.Warning(
-                    #     message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Posez votre question de nouveau.",
+                    #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
                     # )
-                    # app_state.original_user_prompt = chatbots[0][0][0]
-                    # logger.info(
-                    #     "Saving original prompt: " + app_state.original_user_prompt,
-                    #     extra={"request": request},
-                    # )
+                    gr.Warning(
+                        duration=0,
+                        message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
+                    )
+                    app_state.original_user_prompt = chatbots[0][0][0]
+                    logger.info(
+                        "Saving original prompt: " + app_state.original_user_prompt,
+                        extra={"request": request},
+                    )
 
                     return (
                         conversation_a,
@@ -291,7 +288,6 @@ def register_listeners():
             extra={"request": request},
         )
 
-        # FIXME: tant que les 2 modèles n'ont pas répondu, le bouton "envoyer" est aussi inaccessible
         return (
             [
                 gr.update(
@@ -322,53 +318,62 @@ def register_listeners():
             extra={"request": request},
         )
 
-        # if hasattr(app_state, "original_user_prompt"):
-        #     if app_state.original_user_prompt != False:
-        #         logger.info(
-        #             "model crash detected, keeping prompt",
-        #             extra={"request": request},
-        #         )
-        #         original_user_prompt = app_state.original_user_prompt
-        #         app_state.original_user_prompt = False
-        #         # TODO: reroll here
-        #         conversation_a = gr.State()
-        #         conversation_b = gr.State()
-        #         # conversation_a = ConversationState()
-        #         # conversation_b = ConversationState()
+        if hasattr(app_state, "original_user_prompt"):
+            if app_state.original_user_prompt != False:
+                logger.error(
+                    "model crash detected, keeping prompt",
+                    extra={"request": request},
+                )
+                original_user_prompt = app_state.original_user_prompt
+                app_state.original_user_prompt = False
+                # TODO: reroll here
+                model_left, model_right = get_battle_pair(
+                    config.models,
+                    BATTLE_TARGETS,
+                    config.outage_models,
+                    SAMPLING_WEIGHTS,
+                    SAMPLING_BOOST_MODELS,
+                )
+                conversation_a = ConversationState(model_name=model_left)
+                conversation_b = ConversationState(model_name=model_right)
 
-        #         logger.info(
-        #             "submitting original prompt",
-        #             extra={"request": request},
-        #         )
-        #         textbox.value = original_user_prompt
+                logger.info(
+                    "Repicked 2 models: " + model_left + " and " + model_right,
+                    extra={request: request},
+                )
+                # conversation_a = ConversationState()
+                # conversation_b = ConversationState()
 
-        #         logger.info(
-        #             "original prompt sent",
-        #             extra={"request": request},
-        #         )
-        #         return (
-        #             [conversation_a]
-        #             + [conversation_b]
-        #             # chatbots
-        #             + [""]
-        #             + [""]
-        #             # disable conclude btn
-        #             + [gr.update(interactive=False)]
-        #             + [original_user_prompt]
-        #         )
+                logger.info(
+                    "prefilling opening prompt",
+                    extra={"request": request},
+                )
+                textbox.value = original_user_prompt
+
+                return (
+                    [conversation_a]
+                    + [conversation_b]
+                    # chatbots
+                    + [""]
+                    + [""]
+                    # disable conclude btn
+                    + [gr.update(interactive=False)]
+                    + [gr.skip()]
+                    + [original_user_prompt]
+                )
 
         # logger.info(
         #     "models answered with success",
         #     extra={"request": request},
         # )
 
-        # enable conclude_btn
-        # show retry_btn
         return (
             [conversation_a]
             + [conversation_b]
             + chatbots
+            # enable conclude_btn
             + [gr.update(interactive=True)]
+            # show retry_modal_btn
             + [gr.update(visible=True)]
             + [
                 gr.update(
@@ -397,6 +402,7 @@ def register_listeners():
             + [conclude_btn]
         ),
     ).then(
+        # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         inputs=conversations + [temperature, top_p, max_output_tokens],
         outputs=conversations + chatbots,
@@ -412,6 +418,7 @@ def register_listeners():
         + [textbox],
         api_name=False,
     )
+
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
     #         console.log("rerolling");
     #         document.getElementById('send-btn').click();
@@ -429,7 +436,6 @@ def register_listeners():
         inputs=[],
         outputs=[stepper_block, chat_area, send_area, vote_area, buttons_footer],
         api_name=False,
-        # TODO: scroll_to_output?
     )
     def show_vote_area(request: gr.Request):
         logger.info(
@@ -453,10 +459,7 @@ def register_listeners():
 
     @which_model_radio.change(
         inputs=[which_model_radio],
-        outputs=[
-            supervote_area,
-            supervote_send_btn,
-        ],
+        outputs=[supervote_area, supervote_send_btn, why_vote] + supervote_sliders,
         api_name=False,
     )
     def build_supervote_area(vote_radio, request: gr.Request):
@@ -464,10 +467,30 @@ def register_listeners():
             "(temporarily) voted for " + str(vote_radio),
             extra={"request": request},
         )
-        return (
+        if hasattr(app_state, "selected_model"):
+            if (app_state.selected_model == "B" and vote_radio in [-1.5, -0.5]) or (
+                app_state.selected_model == "A" and vote_radio in [+1.5, +0.5]
+            ):
+                # FIXME: creates a CSS display bug where value isn't refreshed
+                new_supervote_sliders = [
+                    gr.update(value=3) for slider in supervote_sliders
+                ]
+            else:
+                new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
+        else:
+            new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
+        if vote_radio in [-1.5, -0.5]:
+            app_state.selected_model = "A"
+            why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
+        else:
+            app_state.selected_model = "B"
+            why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
+
+        return [
             gr.update(visible=True),
             gr.update(interactive=True),
-        )
+            gr.update(value=why_text),
+        ] + new_supervote_sliders
 
     # Step 3
 
@@ -629,8 +652,6 @@ def register_listeners():
             model_b, conversation_b.model_name, model_b_tokens, None
         )
 
-        model_a_running_eq = running_eq(model_a_impact)
-        model_b_running_eq = running_eq(model_b_impact)
 
         reveal_html = build_reveal_html(
             model_a=model_a,
@@ -638,12 +659,12 @@ def register_listeners():
             which_model_radio=which_model_radio,
             model_a_impact=model_a_impact,
             model_b_impact=model_b_impact,
-            model_a_running_eq=model_a_running_eq,
-            model_b_running_eq=model_b_running_eq,
+            model_a_tokens=model_a_tokens,
+            model_b_tokens=model_b_tokens,
         )
         return [
             Modal(visible=False),
-            gr.update(value=stepper_html("Révélation des modèles", 4, 4)),
+            gr.update(value=stepper_html("Découvrez les modèles d'IA générative avec lesquels vous venez de discuter", 4, 4)),
             gr.update(visible=False),
             gr.update(visible=False),
             gr.update(visible=True),
@@ -681,13 +702,15 @@ def register_listeners():
         # + [vote_area]
         # + [supervote_area]
         # + [mode_screen],
-        outage_models = refresh_outage_models(controller_url=config.controller_url)
+        config.outage_models = refresh_outage_models(
+            config.outage_models, controller_url=config.controller_url
+        )
 
         # app_state.model_left, app_state.model_right = get_battle_pair(
         model_left, model_right = get_battle_pair(
             config.models,
             BATTLE_TARGETS,
-            outage_models,
+            config.outage_models,
             SAMPLING_WEIGHTS,
             SAMPLING_BOOST_MODELS,
         )
@@ -713,6 +736,8 @@ def register_listeners():
             #  conclude_btn + retry_modal_btn
             gr.update(visible=False),
             gr.update(visible=False),
+            # shuffle_btn
+            gr.update(visible=True),
         ]
 
     gr.on(
@@ -731,5 +756,6 @@ def register_listeners():
         + [mode_screen]
         + [retry_modal]
         + [conclude_btn]
-        + [retry_modal_btn],
+        + [retry_modal_btn]
+        + [shuffle_btn],
     )

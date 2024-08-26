@@ -59,7 +59,7 @@
 		"distribution": "api-only",
 		"conditions": "restricted"
 	},
-	"Command R+": {
+	"command-r-plus": {
 		"simple_name": "Command R+",
 		"organisation": "Cohere",
 		"country": "Canada",
@@ -67,7 +67,10 @@
 		"friendly_size": "L",
 		"distribution": "open-weights",
 		"dataset": "private",
-		"conditions": "restricted"
+		"params": 104,
+		"license": "CC-BY-NC-4.0",
+		"conditions": "restricted",
+		"description": "Grand frère de la famille Command R de Cohere, ce modèle de langage est orienté pour l'usage professionnel et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
 	},
 	"Command R": {
 		"simple_name": "Command R",
@@ -89,6 +92,59 @@
 		"dataset": "public",
 		"conditions": "free"
 	},
+	"gemini-1.5-pro-001": {
+		"active_params": 220,
+		"total_params": 440,
+		"simple_name": "Gemini 1.5 Pro",
+		"organisation": "Google",
+		"country": "États-Unis",
+		"icon_path": "google.png",
+		"friendly_size": "XL",
+		"dataset": "private",
+		"distribution": "api-only",
+		"license": "propriétaire Gemini",
+		"conditions": "restricted",
+		"description": "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
+	},
+	"Gemma 2-27b-it": {
+		"simple_name": "Gemma 2-27b-it",
+		"organisation": "Google",
+		"country": "États-Unis",
+		"icon_path": "google.png",
+		"friendly_size": "M",
+		"distribution": "open-weights",
+		"dataset": "private",
+		"conditions": "restricted",
+		"license": "Gemma",
+		"params": 27,
+		"description": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
+	},
+	"Gemma-2-9B-it": {
+		"simple_name": "Gemma 2 9B",
+		"organisation": "Google",
+		"country": "États-Unis",
+		"icon_path": "google.png",
+		"friendly_size": "S",
+		"distribution": "open-weights",
+		"dataset": "private",
+		"license": "Gemma",
+		"params": 9,
+		"conditions": "restricted",
+		"description": "Modèle intermédiaire de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
+	},
+	"gemma-2-2b-it": {
+		"simple_name": "Gemma 2 2B",
+		"organisation": "Google",
+		"country": "États-Unis",
+		"icon_path": "google.png",
+		"friendly_size": "XS",
+		"distribution": "open-weights",
+		"dataset": "private",
+		"license": "Gemma",
+		"params": 2,
+		"conditions": "restricted",
+		"description": "Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros."
+	},
 	"GPT-3.5-Turbo-0613": {
 		"simple_name": "GPT-3.5-Turbo-0613",
 		"organisation": "OpenAI",
@@ -109,33 +165,35 @@
 		"distribution": "api-only",
 		"conditions": "restricted"
 	},
-	"Gemma 2-27b-it": {
-		"simple_name": "Gemma 2-27b-it",
-		"organisation": "Google",
+	"llama-3.1-405b": {
+		"simple_name": "Llama 3.1 405B",
+		"organisation": "Meta",
 		"country": "États-Unis",
-		"icon_path": "google.png",
-		"friendly_size": "M",
-		"distribution": "open-weights",
+		"icon_path": "meta.svg",
+		"friendly_size": "XL",
 		"dataset": "private",
-		"conditions": "restricted",
-		"description": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
+		"distribution": "open-weights",
+		"conditions": "free",
+		"description": "Modèle le plus puissant de la famille Llama 3.1 avec 405 milliards de paramètres, il est doté de capacités accrues pour des tâches de programmation, de mathématique et de raisonnement.",
+		"params": 405,
+		"license": "Llama 3.1 Community"
 	},
-	"Gemma-2-9B-it": {
-		"simple_name": "Gemma-2-9B-it",
-		"organisation": "Google",
+	"llama-3.1-8b": {
+		"simple_name": "Llama 3.1 8B",
+		"organisation": "Meta",
 		"country": "États-Unis",
-		"icon_path": "google.png",
+		"icon_path": "meta.svg",
 		"friendly_size": "S",
-		"distribution": "open-weights",
 		"dataset": "private",
-		"license": "Gemma",
-		"params": 9,
-		"conditions": "restricted",
-		"description": "Petit frère de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
+		"distribution": "open-weights",
+		"conditions": "free",
+		"description": "Cadet de la famille Llama 3.1, ce petit modèle est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens.",
+		"params": 8,
+		"license": "Llama 3.1 Community"
 	},
 	"Meta-Llama-3-70B-Instruct": {
 		"params": 70,
-		"simple_name": "Llama-3-70b",
+		"simple_name": "Llama 3 70B",
 		"organisation": "Meta",
 		"country": "États-Unis",
 		"icon_path": "meta.svg",
@@ -149,7 +207,7 @@
 	},
 	"Meta-Llama-3-8B-Instruct": {
 		"params": 8,
-		"simple_name": "Llama-3-8b",
+		"simple_name": "Llama 3 8B",
 		"organisation": "Meta",
 		"country": "États-Unis",
 		"icon_path": "meta.svg",
@@ -159,6 +217,19 @@
 		"conditions": "restricted",
 		"description": "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité.",
 		"license": "Llama 3 Community"
+	},
+	"mistral-nemo-2407": {
+		"simple_name": "Mistral Nemo",
+		"params": 12,
+		"organisation": "Mistral",
+		"country": "France",
+		"icon_path": "mistral.png",
+		"friendly_size": "S",
+		"distribution": "open-weights",
+		"dataset": "private",
+		"conditions": "free",
+		"description": "Ce modèle de petit gabarit est entraîné pour des tâches de raisonnement, de connaissances générales et de programmation. Il utilise le tokenizer Tekken, efficace pour compresser des textes allant jusqu’à 128 000 tokens en plus de 100 langues.",
+		"license": "Apache 2.0"
 	},
 	"Mistral-7B-Instruct-v0.3": {
 		"simple_name": "Mistral-7B",
@@ -183,7 +254,7 @@
 		"conditions": "restricted"
 	},
 	"Mixtral-8x22B-Instruct-v0.1": {
-		"simple_name": "Mixtral-8x22B",
+		"simple_name": "Mixtral 8x22B",
 		"active_params": 44,
 		"total_params": 176,
 		"organisation": "Mistral",
@@ -212,7 +283,7 @@
 		"excerpt": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol.",
 		"license": "Apache 2.0"
 	},
-	"Phi-3-Mini-4k-Instruct": {
+	"phi-3-mini-4k": {
 		"simple_name": "Phi-3-Mini",
 		"organisation": "Microsoft",
 		"country": "États-Unis",
@@ -221,10 +292,12 @@
 		"friendly_size": "XS",
 		"distribution": "open-weights",
 		"dataset": "private",
+		"license": "MIT",
 		"conditions": "free",
 		"description": "Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
 	},
 	"Phi-3-small-8k-Instruct": {
+		"license": "MIT",
 		"simple_name": "Phi-3-small-8k-Instruct",
 		"description": "Grand frère de la famille Phi3, ce modèle supporte un contexte de 8000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.",
 		"organisation": "Microsoft",
@@ -309,58 +382,5 @@
 		"distribution": "open-weights",
 		"dataset": "private",
 		"conditions": "restricted"
-	},
-	"gemini-1.5-pro-001": {
-		"active_params": "220",
-		"total_params": "440",
-		"simple_name": "Gemini 1.5 Pro",
-		"organisation": "Google",
-		"country": "États-Unis",
-		"icon_path": "google.png",
-		"friendly_size": "XL",
-		"dataset": "private",
-		"distribution": "api-only",
-		"license": "propriétaire Gemini",
-		"conditions": "restricted",
-		"description": "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
-	},
-	"llama-3.1-405b": {
-		"simple_name": "Llama 3.1 405B",
-		"organisation": "Meta",
-		"country": "États-Unis",
-		"icon_path": "meta.svg",
-		"friendly_size": "XL",
-		"dataset": "private",
-		"distribution": "open-weights",
-		"conditions": "free",
-		"description": "Modèle le plus puissant de la famille Llama 3.1 avec 405 milliards de paramètres, il est doté de capacités accrues pour des tâches de programmation, de mathématique et de raisonnement.",
-		"params": 405,
-		"license": "Llama 3.1 Community"
-	},
-	"llama-3.1-8b": {
-		"simple_name": "Llama 3.1 8B",
-		"organisation": "Meta",
-		"country": "États-Unis",
-		"icon_path": "meta.svg",
-		"friendly_size": "S",
-		"dataset": "private",
-		"distribution": "open-weights",
-		"conditions": "free",
-		"description": "Cadet de la famille Llama 3.1, ce petit modèle est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens.",
-		"params": 8,
-		"license": "Llama 3.1 Community"
-	},
-	"mistral-nemo-2407": {
-		"simple_name": "Mistral Nemo",
-		"params": 12,
-		"organisation": "Mistral",
-		"country": "France",
-		"icon_path": "mistral.png",
-		"friendly_size": "M",
-		"distribution": "open-weights",
-		"dataset": "private",
-		"conditions": "free",
-		"description": "",
-		"license": "Apache 2.0"
 	}
 }

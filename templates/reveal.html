@@ -1,10 +1,10 @@
 <div class="fr-container" id="reveal-screen">
-    <h3 class="text-center">Merci pour votre vote !<br />
-        Découvrez les modèles avec lesquels vous venez de discuter :</h3>
+    <!-- <h3 class="text-center">Merci pour votre vote !<br />
+        Découvrez les modèles d'IA générative avec lesquels vous venez de discuter :</h3> -->
     <div class="fr-grid-row">
-        {% for model, side, impact, running_eq in [(model_a, 'model-a', model_a_impact, model_a_running_eq), (model_b,
-        'model-b', model_b_impact, model_b_running_eq)] %}
-    
+        {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a, 'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit), (model_b,
+        'model-b', model_b_impact, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b, streaming_b_unit)] %}
+
         <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-{% if side == 'model-a' %}n{% endif %}3w">
             <h4>{{ model["simple_name"] }} <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}"
                     width="20" />
@@ -12,139 +12,267 @@
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success your-choice">Votre choix</span>
             {% endif %}
-            <p class="fr-mb-4w">{{ model['organisation'] }}, {{ model['country'] }} <span class="fr-badge">Taille {{
-                    model['friendly_size']
-                    }}</span></p>
-            <!-- <p>{{ model['excerpt'] }}</p> -->
-            <div class="fr-grid-row">
-                <div class="fr-col-12 fr-col-md-6">
-                    <h5>Transparence</h5>
-                    <p class="fr-mt-2w"><span class="fr-icon-code-view fr-mb-1v" aria-hidden="true"> Code source</span>
-                    </p>
-                    <div class="fr-ml-7v">{% if
-                        model['distribution'] == "open-weights" %}<span class="fr-badge fr-badge--blue-cumulus">Poids
-                            communiqués</span>{%
-                        else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif %}</div>
-                    <p class="fr-mt-2w"><span class="fr-icon-table-2 fr-mb-1v" aria-hidden="true"> Corpus
-                            d'entrainement</span></p>
-                    <div class="fr-ml-7v">{% if
-                        model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
-                            communiqué</span>{% else %}<span
-                            class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</div>
+            <p class="fr-mb-4w">
+                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{% if model['distribution'] ==
+                    "open-weights"
+                    %}Libre{%
+                    else
+                    %}Propriétaire{% endif %}</span>
+                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">Taille {{ model['friendly_size']
+                    }}</span>
+                {% if
+                model['distribution'] == "open-weights" %}<span
+                    class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ '%0.1f'|
+                    format(model['params']|float) |replace(".", ",") }} mds de paramètres</span>{% endif %}
+                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ model['organisation'] }}</span>
+            </p>
+            <p class="fr-mb-4w fr-text--sm">{{ model['excerpt'] }}</p>
+            <h6>Bilan de votre discussion</h6>
+            <p class="fr-my-1w fr-text--xs">La taille du modèle et de ses réponses ont un impact sur son bilan.</p>
+            <div class="fr-grid-row fr-grid-row--middle">
+                <div class="rounded-tile fr-grid-row fr-p-1w fr-col-12 fr-col-md-4 fr-ml-n1w fr-mr-1w">
+                    <div class="fr-col-3"><!-- seo -->
+                        <svg class="inline" width="22" height="20" viewBox="0 0 22 20"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M7.26989 2.5C3.75535 2.5 0.90625 5.11168 0.90625 8.33333C0.90625 11.555 3.75535 14.1667 7.26989 14.1667H8.24342C8.20095 13.8945 8.17898 13.6163 8.17898 13.3333C8.17898 13.0504 8.20095 12.7722 8.24342 12.5H7.26989C4.7595 12.5 2.72443 10.6345 2.72443 8.33333C2.72443 6.03215 4.7595 4.16667 7.26989 4.16667H14.5426C17.053 4.16667 19.0881 6.03215 19.0881 8.33333C19.0881 8.619 19.0567 8.89792 18.997 9.16733C19.5292 9.64567 19.9703 10.209 20.2939 10.8333C20.6865 10.0756 20.9062 9.228 20.9062 8.33333C20.9062 5.11168 18.0572 2.5 14.5426 2.5H7.26989ZM9.99716 13.3333C9.99716 11.0322 12.0323 9.16667 14.5426 9.16667C17.053 9.16667 19.0881 11.0322 19.0881 13.3333C19.0881 14.1826 18.8109 14.9725 18.335 15.6312L20.64 17.7441L19.3543 18.9226L17.0493 16.8097C16.3308 17.2459 15.4691 17.5 14.5426 17.5C12.0323 17.5 9.99716 15.6345 9.99716 13.3333Z"
+                                fill="#009081" />
+                        </svg>
+                    </div>
+                    <div class="fr-col-9 text-left">
+                        <p><strong class="fr-text--xxl">{{ tokens
+                                }}</strong></p>
+                        <p class="fr-text--xs">jetons en sortie<a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                aria-describedby="jetons-{{side}}"></a>
+                        </p>
+                    </div>
+
+                    <span class="fr-tooltip fr-placement" id="jetons-{{side}}" role="tooltip" aria-hidden="true">L’IA
+                        analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre
+                        lettres, cette unité de texte est appelée jeton. Plus un texte est long, plus le nombre de
+                        jetons est grand.</span>
                 </div>
-                <div class="fr-col-12 fr-col-md-6">
-                    <h5>Utilisation</h5>
-                    <p class="fr-mt-2w"><span class="fr-icon-equalizer-line fr-mb-1v" aria-hidden="true">
-                            Distribution</span></p>
-                    <div class="fr-ml-7v">{% if
-                        model['distribution'] == "open-weights" %}<span
-                            class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span>{%
-                        else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{% endif %}</div>
-                    <p class="fr-mt-2w"><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> Conditions
-                            d'usage</span></p>
-                    <div class="fr-ml-7v">{% if
-                        model['conditions'] == "restricted" %}<span class="fr-badge fr-badge--yellow-moutarde">Sous
-                            conditions</span>{% else
-                        %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %}</div>
+                <div class="rounded-tile fr-p-1w fr-col-12 fr-col-md-4 fr-mr-1w fr-grid-row">
+                    <div class="fr-col-3">
+                        <!-- flashlight -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+                            class="inline">
+                            <path fill="#0063cb" d="M13 10h7l-9 13v-9H4l9-13v9Z" />
+                        </svg>
+                    </div>
+                    <div class="fr-col-9 text-left">
+                        <p><strong><span class="fr-text--xxl">{{ '%0.1f'|
+                                    format(impact.energy.value*100|float) | replace(".", ",") }}</span>Wh</strong>
+                        </p>
+                        <p class="fr-text--xs">énergie conso.<a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                aria-describedby="energie-{{side}}"></a>
+                        </p>
+                    </div><span class="fr-tooltip fr-placement" id="energie-{{side}}" role="tooltip"
+                        aria-hidden="true">Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée
+                        par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est
+                        grand (en milliards de paramètres), plus il faut d'énergie pour produire un jeton.</span>
+                </div>
+                <div class="rounded-tile fr-grid-row fr-p-1w fr-col-12 fr-col-md-4 fr-mr-n1w">
+                    <div class="fr-col-3">
+                        <!-- cloud -->
+                        <svg class="inline" width="21" height="17" viewBox="0 0 21 17" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M15.4556 16.5001H6.36473C3.70538 16.5016 1.43245 14.7449 0.984647 12.342C0.536847 9.93905 2.04472 7.59035 4.55382 6.78255C4.44169 4.63438 5.62808 2.60391 7.64094 1.49905C9.6538 0.394196 12.1666 0.394196 14.1794 1.49905C16.1923 2.60391 17.3787 4.63438 17.2666 6.78255C19.7757 7.59035 21.2835 9.93905 20.8357 12.342C20.3879 14.7449 18.115 16.5016 15.4556 16.5001Z"
+                                fill="#CFCFCF" />
+                        </svg>
+                    </div>
+                    <div class="fr-col-9 text-left">
+                        <p><strong><span class="fr-text--xxl">{{ '%0.1f'|
+                                    format(impact.gwp.value*100|float) |replace(".", ",") }}</span>g</strong>
+                        </p>
+                        <p class="fr-text--xs">CO<sup>2</sup> émis<a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                aria-describedby="co2-{{side}}"></a>
+                        </p>
+                    </div>
+                    <span class="fr-tooltip fr-placement" id="co2-{{side}}" role="tooltip" aria-hidden="true">Le CO2
+                        émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour
+                        faire
+                        fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation
+                        énergétique.</span>
                 </div>
             </div>
-            <h5 class="fr-mt-4w">Ma conversation correspond à :</h5>
+
+            <h6 class="fr-mt-2w">C’est autant d’émissions que :</h6>
             <div class="fr-grid-row fr-grid-row--middle">
-                <div class="fr-tile fr-p-1w fr-col-12 fr-col-md-3 text-center"><strong class="fr-text--lead">{{ '%0.2f'|
-                        format(impact.energy.value*100|float) }}</strong><br />
-                    <i>wattheures</i>
+                <div class="rounded-tile fr-grid-row fr-p-1w fr-col-12 fr-col-md-4 fr-ml-n1w fr-mr-1w">
+                    <div class="fr-col-3">
+                        <!-- lightbulb -->
+                        <svg class="inline" width="14" height="19" viewBox="0 0 14 19" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M6.16953 14H3.62036C3.37286 12.9391 2.2562 12.0716 1.79786 11.5C-0.384161 8.77374 -0.0927751 4.82569 2.46585 2.44933C5.02447 0.0729714 8.98325 0.0736052 11.5411 2.45078C14.099 4.82796 14.3891 8.7761 12.2062 11.5016C11.7479 12.0725 10.6329 12.94 10.3854 14H7.83619V9.83331H6.16953V14ZM10.3362 15.6666V16.5C10.3362 17.4205 9.59 18.1666 8.66953 18.1666H5.33619C4.41572 18.1666 3.66953 17.4205 3.66953 16.5V15.6666H10.3362Z"
+                                fill="#EFCB3A" />
+                        </svg>
+                    </div>
+                    <div class="fr-col-9 text-left">
+                        <p><strong><span class="fr-text--xxl">{{ lightbulb }}</span>{{ lightbulb_unit }}</strong>
+                        </p>
+                        <p class="fr-text--xs">ampoule LED<a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                aria-describedby="ampoule-{{side}}"></a></p>
+                    </div>
+                    <span class="fr-tooltip fr-placement" id="ampoule-{{side}}" role="tooltip" aria-hidden="true">Donnée
+                        calculée sur la base de consommation d’une ampoule LED standard de 5W (E14)</span>
                 </div>
-                <div class="fr-container fr-col-12 fr-col-md-9">Emissions de CO2 : <strong>{{ '%0.2f'|
-                        format(impact.gwp.value*100|float) }} g</strong><br />
-                    Équivalent à <strong>{{ '%0.2f'|
-                        format(running_eq*1000|float) }} m de course à pied</strong></div>
+                <div class="rounded-tile fr-grid-row fr-p-1w fr-col-12 fr-col-md-4 fr-mr-1w">
+                    <div class="fr-col-3">
+                        <!-- youtube -->
+                        <svg class="inline" width="20" height="20" viewBox="0 0 20 20" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M1.66406 3.32783C1.66406 2.87063 2.04349 2.5 2.49056 2.5H17.5042C17.9607 2.5 18.3307 2.87079 18.3307 3.32783V16.6722C18.3307 17.1293 17.9513 17.5 17.5042 17.5H2.49056C2.0341 17.5 1.66406 17.1292 1.66406 16.6722V3.32783ZM8.84898 7.01216C8.79423 6.97565 8.72989 6.95617 8.66406 6.95617C8.47998 6.95617 8.33073 7.10541 8.33073 7.28951V12.7105C8.33073 12.7763 8.35023 12.8407 8.38673 12.8954C8.48881 13.0486 8.69581 13.09 8.84898 12.9878L12.9147 10.2773C12.9513 10.2529 12.9827 10.2215 13.0071 10.1849C13.1093 10.0317 13.0679 9.82475 12.9147 9.72267L8.84898 7.01216Z"
+                                fill="#F95A5C" />
+                        </svg>
+                    </div>
+                    <div class="fr-col-9 text-left">
+                        <p><strong><span class="fr-text--xxl">{{ streaming }}</span>{{ streaming_unit }}</strong>
+                        </p>
+                        <p class="fr-text--xs">vidéos en ligne<a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                aria-describedby="videos-{{side}}"></a>
+                        </p>
+                    </div>
+                    <span class="fr-tooltip fr-placement" id="videos-{{side}}" role="tooltip" aria-hidden="true">Donnée
+                        calculée selon l’impact carbone d’une heure de vidéo en ligne en haute définition, sur
+                        une
+                        télévision, en connexion wifi (source <a
+                            href="https://impactco2.fr/outils/usagenumerique/streamingvideo" rel="noopener external"
+                            target="_blank">ADEME</a>)</span>
+                </div>
             </div>
             <div class="fr-grid-row fr-mt-4w"><button class="fr-btn fr-btn--secondary" data-fr-opened="false"
-                    aria-controls="fr-modal-{{ side }}">En savoir plus</button></div>
+                    aria-controls="fr-modal-{{ model['id'] }}">En savoir plus
+                </button>
+            </div>
         </div>
         {% endfor %}
     </div>
 </div>
 
-<!-- TODO: factorize -->
-{% for model, side in [(model_a, 'model-a'), (model_b, 'model-b')] %}
-<dialog aria-labelledby="fr-modal-title-modal-{{ side }}" role="dialog" id="fr-modal-{{ side }}" class="fr-modal">
+<!-- TODO: factoriser avec page liste des modèles -->
+{% for model in [model_a, model_b] %}
+<dialog aria-labelledby="fr-modal-title-modal-{{ model['id'] }}" role="dialog" id="fr-modal-{{ model['id'] }}"
+    class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
             <div class="fr-col-12 fr-col-md-8">
                 <div class="fr-modal__body">
                     <div class="fr-modal__header">
                         <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale"
-                            aria-controls="fr-modal-{{ side }}">Fermer</button>
+                            aria-controls="fr-modal-{{ model['id'] }}">Fermer</button>
                     </div>
                     <div class="fr-modal__content fr-mb-4w">
-                        <h4 id="fr-modal-title-modal-{{ side }}" class="fr-modal__title">{{ model['simple_name'] }}
+                        <h1 id="fr-modal-title-modal-{{ model['id'] }}" class="fr-modal__title text-blue">{{
+                            model['simple_name']
+                            }}
                             <img class="model-icon" src="file=assets/orgs/{{ model['icon_path'] }}" width="20" />
-                        </h4>
-                        <p><span class="fr-badge">Taille {{
-                                model['friendly_size']
-                                }}</span>{% if
-                                    model['distribution'] == "open-weights" %} <span class="fr-badge">{{ '%0.1f'| format(model['params']|float) }} milliards de paramètres</span>{% endif %} <span class="fr-badge">{{ model['organisation'] }}</span></p>
-                        <p>{{ model['description'] }}</p>
-                        <div class="fr-grid-row">
-                            <div class="fr-col-12 fr-col-md-6">
-                                <h5>Transparence</h5>
-                                <p><span class="fr-icon-code-view" aria-hidden="true"> Code source</span></p>
-                                <div class="fr-ml-7v fr-mb-1v">{% if
+                        </h1>
+                        <p><strong>{{ model['description'] }}</strong></p>
+                        <div>
+                            <h6 class="text-blue fr-mb-0">Pourquoi la taille des modèles est importante ?</h6>
+                            <p class="fr-mb-1w"><span
+                                    class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v">{% if
+                                    model['friendly_size']
+                                    ==
+                                    "XS" %}Très petit modèle
+                                    (XS){% elif model['friendly_size'] == "S" %}Petit modèle (S)
+                                    {% elif model['friendly_size'] == "M" %}Moyen modèle (M)
+                                    {% elif model['friendly_size'] == "L" %}Grand modèle (L)
+                                    {% elif model['friendly_size'] == "XL" %}Très grand modèle (XL)
+                                    {% else %}Très très grand modèle (XXL)
+                                    {% endif %}</span>{% if
+                                model['distribution'] == "open-weights" %}
+                                <!-- TODO: don't show 1 decimal if it's round -->
+                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{ '%0.1f'|
+                                    format(model['params']|float) | replace(".",",") }} mds de paramètres</span>{% endif
+                                %}
+                            </p>
+                            <div class="flex fr-mb-1w"><span class="fr-icon-ruler" aria-hidden="true"></span>
+                                <div class="fr-ml-1v">
+                                    <p class="fr-mb-1w"><strong>Taille {{ model['friendly_size'] }}</strong> : {{
+                                        size_desc[model["friendly_size"]] }}</p>
+                                        <section class="fr-accordion fr-mb-4w">
+                                            <h3 class="fr-accordion__title">
+                                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="params-{{ model['id'] }}">Les paramètres, qu'est-ce que c'est ?</button>
+                                            </h3>
+                                            <div class="fr-collapse" id="params-{{ model['id'] }}">Les
+                                            paramètres ou
+                                            les poids comptés en milliards sont les variables apprises par un modèle au
+                                            cours de
+                                            son entrainement qui déterminent ses réponses. Plus le nombre de paramètres
+                                            est
+                                            important, plus il est capable d’effectuer des tâches complexes.
+                                            </div>
+                                        </section>
+                                </div>
+                            </div>
+                            <div class="fr-mb-4w">
+                                <h6 class="text-blue fr-mb-0">Est-ce possible de modifier ce modèle ?</h6>
+                                <div class="fr-mb-1w">{% if
                                     model['distribution'] == "open-weights" %}<span
-                                        class="fr-badge fr-badge--blue-cumulus">Poids communiqués</span>{%
-                                    else %}<span class="fr-badge  fr-badge--yellow-moutarde">Propriétaire</span>{% endif
-                                    %}</div>
-                                <p><span class="fr-icon-table-2" aria-hidden="true"> Corpus
-                                        d'entrainement</span></p>
-                                <div class="fr-ml-7v">{%
-                                    if
-                                    model['dataset'] == "private" %}<span class="fr-badge fr-badge--yellow-moutarde">Non
-                                        communiqué</span>{% else %}<span
-                                        class="fr-badge fr-badge--green-tilleul-verveine">Public</span>{% endif %}</div>
-                            </div>
-                            <div class="fr-col-12 fr-col-md-6">
-                                <h5>Utilisation</h5>
-                                <div><span class="fr-icon-equalizer-line" aria-hidden="true">
-                                        Distribution</span>
-                                    <div class="fr-ml-7v fr-mb-1v">{% if
-                                        model['distribution'] == "open-weights" %}<span
-                                            class="fr-badge fr-badge--blue-cumulus">Téléchargeable</span> <span
-                                            class="fr-badge">{{ model['required_ram'] }} Go de RAM nécessaires</span>{%
-                                        else %}<span class="fr-badge fr-badge--yellow-moutarde">API uniquement</span>{%
-                                        endif %}</div>
+                                        class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Licence {{
+                                        model['license'] }}</span><span
+                                        class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">Open
+                                        source</span>
+                                    <span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--yellow-moutarde">De {{
+                                        (model['required_ram'] // 2)|int }} à {{ (model['required_ram'] * 2)|int }} Go
+                                        de
+                                        RAM</span>
+                                    {%
+                                    else %}<span class="fr-badge fr-badge--sm fr-mr-1v fr-badge--purple-glycine">Licence
+                                        commerciale</span>{% endif
+                                    %}
                                 </div>
-                                <p><span class="fr-icon-article-line" aria-hidden="true"> Conditions
-                                        d'usage</span></p>
-                                <div class="fr-ml-7v">{% if
-                                    model['conditions'] == "restricted" %}<span
-                                        class="fr-badge fr-badge--yellow-moutarde">Sous conditions</span>{% else
-                                    %}<span class="fr-badge fr-badge--blue-cumulus">Libre</span>{% endif %} <span
-                                        class="fr-badge fr-badge--blue-cumulus">Licence {{ model['license'] }}</span>
+                                <div class="flex fr-mb-1w"><span class="fr-icon-download-line"
+                                        aria-hidden="true"></span>
+                                    <div class="fr-ml-1v">
+                                        <p class="fr-mb-1w"><strong>Licence {{
+                                                model["license"]
+                                                }}</strong> : {{ license_desc[model["license"]]|default("Les
+                                            informations de
+                                            licence n'ont pas été remplies pour ce modèle.") }}
+                                        </p>
+                                        <section class="fr-accordion">
+                                            <h3 class="fr-accordion__title">
+                                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="ram-{{ model['id'] }}">La RAM, à quoi ça sert ?</button>
+                                            </h3>
+                                            <div class="fr-collapse" id="ram-{{ model['id'] }}">La RAM
+                                                (mémoire
+                                                vive) stocke les données traitées par un LLM en temps réel. Plus le
+                                                modèle
+                                                est
+                                                grand, plus il a besoin de RAM pour fonctionner. La quantisation permet
+                                                de
+                                                simplifier les calculs pour réduire la taille des modèles et les
+                                                déployer
+                                                sur
+                                                des
+                                                ordinateurs moins puissants.
+                                            </div>
+                                        </section>
+                                        
+                                    </div>
                                 </div>
                             </div>
-                            <h5 class="fr-mt-4w">Détails</h5>
-                            <p><span class="fr-icon-ruler fr-mb-1v" aria-hidden="true"> <strong>Taille {{
-                                        model["friendly_size"]
-                                        }}</strong> : {{ size_desc[model["friendly_size"]] }}</span>
-                            <p><span class="fr-icon-article-line fr-mb-1v" aria-hidden="true"> <strong>Licence {{
-                                        model["license"]
-                                        }}</strong> : {{ license_desc[model["license"]]|default("Les informations de
-                                    licence n'ont pas été remplies pour ce modèle.") }}</span>
-                            <p><span class="fr-icon-leaf-line fr-mb-1v" aria-hidden="true"> <strong>Indicateurs
-                                        environnementaux</strong> : rendez-vous sur <a
+                            <div class="fr-alert fr-alert--info">
+                                <h6 class="fr-alert__title">Pour aller plus loin</h6>
+                                <p>Pour les expert·es, consultez la <a href="{{ model['url']|default('#') }}"
+                                        rel="noopener external" target="_blank">fiche du modèle sur Hugging Face</a>
+                                </p>
+                                <p>Les calculs d’impacts environnementaux reposent sur les projets <a
                                         href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
-                                        rel="noopener external" target="_blank">🧮 EcoLogits Calculator</a></p>
-                            <p><a href="{{ model['url']|default('#') }}" rel="noopener external" target="_blank">Pour en
-                                    savoir plus sur ce modèle, rendez-vous sur la page du modèle</a></p>
+                                        rel="noopener external" target="_blank">EcoLogits</a> et <a
+                                        rel="noopener external" target="_blank" href="https://impactco2.fr">Impact
+                                        CO<sub>2</sub></a>.</p>
+                            </div>
                         </div>
-                        <p>
-                            <a href="../modeles" class="fr-btn fr-mt-2w">Découvrir tous les modèles</a>
-                        </p>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 </dialog>
 {% endfor %}

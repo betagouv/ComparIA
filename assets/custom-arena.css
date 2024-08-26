@@ -35,11 +35,20 @@ footer,
   display: none !important;
 }
 
+/* Bug because of "supports conic-gradient" media query */
+.fr-tooltip.fr-placement--top {
+  background-image: conic-gradient(from -33.69deg at 50% 100%, transparent 0deg, var(--background-overlap-grey) 0deg, var(--background-overlap-grey) 67.38deg, transparent 67.38deg), conic-gradient(from -33.69deg at 50% 100%, transparent 0deg, var(--border-default-grey) 0deg, var(--border-default-grey) 67.38deg, transparent 67.38deg), linear-gradient(90deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(90deg, var(--background-overlap-grey), var(--background-overlap-grey));
+}
+
+.fr-tooltip.fr-placement--bottom {
+  background-image: conic-gradient(from 146.31deg at 50% 0%, transparent 0deg, var(--background-overlap-grey) 0deg, var(--background-overlap-grey) 67.38deg, transparent 67.38deg), conic-gradient(from 146.31deg at 50% 0%, transparent 0deg, var(--border-default-grey) 0deg, var(--border-default-grey) 67.38deg, transparent 67.38deg), linear-gradient(90deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(90deg, var(--background-overlap-grey), var(--background-overlap-grey));
+}
 /* TODO: reenable */
 .copy_code_button {
   display: none;
 }
 
+/* FIXME: */
 /* DARK MODE FIXES */
 
 /* @media (prefers-color-scheme: dark) {
@@ -83,12 +92,22 @@ body.dark {
   background-color: var(--neutral-100);
 }
 
-.dark .modal-block {
-  background-color: white;
+.dark .modal-block, 
+.dark .options .item, .dark .options {
+  background-color: white !important;
+  color: var(--neutral-800) !important;
+}
+.dark .modal-block .close,.dark .modal-block .block,.dark .modal-block .wrap,.dark .modal-block .wrap-inner {
+  background-color: white !important;
+}
+.dark .modal-block span[data-testid="block-info"] {
   color: var(--neutral-800) !important;
 }
 
-
+.dark .code_wrap pre {
+  /* var(--code-background-fill) */
+  background-color: var(--neutral-100) !important;
+}
 /* UTILITY CLASSES */
 
 .inline-block {
@@ -101,14 +120,9 @@ body.dark {
 .bg-white textarea {
 background-color: white !important;
 }
-/* 
-.icon-white img {
-  filter: invert(100%);
-} */
-/* .icon-blue img {
-  filter: 
-} */
-
+.inline {
+  display: inline;
+}
 .text-center {
   text-align: center;
 }
@@ -123,6 +137,10 @@ background-color: white !important;
   /* color: var(--text-default-grey); */
   color: var(--text-mention-grey);
 
+}
+.text-blue, .fr-modal__title.text-blue, h6.text-blue  {
+  /* Not DSFR compliant */
+  color: var(--text-action-high-blue-france) !important;
 }
 
 .big-label {
@@ -139,8 +157,22 @@ background-color: white !important;
 .underline {
   --underline-hover-width: var(--underline-max-width);
 }
+.fr-text--xxl {
+  font-size: 1.5rem;
+}
+/* Custom */
+.rounded-tile {
+  border-color: var(--border-default-grey);
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0.25rem; /* 4px */
+}
 
-/* General */
+.flex {
+  display: flex;
+}
+
+  /* General */
 body {
   margin: auto !important;
 }
@@ -176,6 +208,9 @@ body {
   /* hide top drop shadow by getting it closer to the header */
   top: -16px;
   /* transition: transform 0.3s ease-in-out; */
+}
+.fr-stepper {
+  max-width: 55rem;
 }
 
 li.fr-nav__item {
@@ -413,8 +448,8 @@ li.fr-nav__item {
   border: none;
   box-shadow: none;
   color: var(--text-action-high-blue-france);
-}
-
+  }
+  
 .modal-block .close::before {
   font-weight: 500;
   padding-right: 15px;
@@ -442,6 +477,16 @@ li.fr-nav__item {
 
 .fr-icon-ruler::before {
   background-image: url("file=assets/extra-icons/ruler.svg");
+}
+
+.fr-icon-download-line::before,
+.fr-icon-download-line::after {
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/download-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/download-line.svg");
+}
+
+.fr-icon-download-line::before {
+  background-image: url("file=assets/dsfr/icons/system/download-line.svg");
 }
 
 .fr-icon-copyright-line::before,
@@ -581,4 +626,14 @@ li.fr-nav__item {
 .fr-icon-shuffle::after {
   -webkit-mask-image: url("file=assets/extra-icons/shuffle.svg");
   mask-image: url("file=assets/extra-icons/shuffle.svg");
+}
+
+.fr-icon--question-line {
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
+  background-color: var(--text-active-grey);
+  color: var(--text-active-grey) !important;
+  display: inline-block;
+  mask-size: 100%;
+  mask-repeat: no-repeat;
 }

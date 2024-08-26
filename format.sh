@@ -21,8 +21,8 @@ tool_version_check() {
     fi
 }
 
-tool_version_check "black" $BLACK_VERSION "23.3.0"
-tool_version_check "pylint" $PYLINT_VERSION "2.8.2"
+#tool_version_check "black" $BLACK_VERSION "23.3.0"
+#tool_version_check "pylint" $PYLINT_VERSION "2.8.2"
 
 # Format files that differ from main branch. Ignores dirs that are not slated
 # for autoformat yet.
@@ -48,7 +48,7 @@ if [[ "$1" == '--files' ]]; then
    # entire python directory is formatted.
 elif [[ "$1" == '--all' ]]; then
    # Format all files
-   black fastchat
+   black languia
 else
    # Format only the files that changed in last commit.
    format_changed
@@ -57,7 +57,7 @@ echo 'FastChat Black: Done'
 
 # Run Pylint
 echo 'FastChat Pylint:'
-pylint fastchat
+pylint languia
 # TODO(suquark): disable 'pylint_quotes' for now due to too many inconsistent quotes
 # pylint --load-plugins pylint_quotes fastchat
 
