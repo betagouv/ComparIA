@@ -17,14 +17,18 @@
 
     .bg-light-blue {
         background-color: var(--blue-france-main-525);
+        --blue-france-main-525-hover: #9898F8;
+        --hover: var(--blue-france-main-525-hover);
+        --blue-france-main-525-active: #AEAEF9;
+        --active: var(--blue-france-main-525-active);
     }
 
-
-    /* blue-france-main-525-hover: #9898F8
-
-blue-france-main-525-active: [#AEAEF9] */
     .flex {
         display: flex;
+    }
+
+    .inline-block {
+        display: inline-block;
     }
 
     .text-blue {
@@ -87,7 +91,8 @@ blue-france-main-525-active: [#AEAEF9] */
                     </p>
                 </div>
             </div>
-            <input type="submit" id="start_arena_btn" class="fr-btn bg-light-blue" value="Commencer à discuter" />
+            <input type="submit" id="start_arena_btn" class="fr-btn fr-btn--lg bg-light-blue"
+                value="Commencer à discuter" />
             </fieldset>
         </div>
         <div class="fr-container fr-col-md-6 bg-blue fr-p-4w">
@@ -209,7 +214,8 @@ blue-france-main-525-active: [#AEAEF9] */
             </div>
         </div>
         <div class="fr-grid-row fr-grid-row--center fr-my-4w">
-            <a class="fr-btn fr-col-2 bg-light-blue" href="/a-propos">En savoir plus</a>
+            <button class="fr-btn fr-col-10 fr-col-md-3 bg-light-blue inline-block" href="/a-propos">En savoir
+                plus</button>
         </div>
     </div>
     <div class="fr-container">
@@ -222,9 +228,12 @@ blue-france-main-525-active: [#AEAEF9] */
             qui aide les administrations publiques à construire des services numériques utiles, simples et
             faciles à utiliser.</p>
         <div class="fr-grid-row fr-grid-row--gutters">
-            <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
-            <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
-            <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
+            <img src="assets/orgs/minicult.png" alt="Ministère de la Culture"
+                class="fr-col-md-3 fr-col-2 fr-responsive-img" />
+            <img src="assets/orgs/ateliernumerique.png" alt="Atelier numérique"
+                class="fr-col-md-3 fr-col-2 fr-responsive-img" />
+            <img src="assets/orgs/betagouv.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2 fr-responsive-img" />
+            <img src="assets/orgs/dinum.png" alt="DINUM" class="fr-col-md-3 fr-col-2 fr-responsive-img" />
         </div>
     </div>
     </div>
