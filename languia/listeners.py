@@ -150,7 +150,7 @@ def register_listeners():
         #   }
         # """)
 
-    @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox])
+    @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox], api_name=False)
     def shuffle_prompt(guided_cards):
         return gen_prompt(category=guided_cards)
 
@@ -280,7 +280,11 @@ def register_listeners():
             if stop:
                 break
 
-    def goto_chatbot(request: gr.Request):
+    def goto_chatbot(
+        request: gr.Request,
+        #  FIXME: ignored
+        api_name=False,
+    ):
         # textbox
         logger.info(
             "chatbot launched",
@@ -499,7 +503,11 @@ def register_listeners():
         # + [supervote_area]
         + [chat_area] + [send_area] + [buttons_footer],
     )
-    def return_to_chat(request: gr.Request):
+    def return_to_chat(
+        request: gr.Request,
+        #    FIXME: ignored
+        api_name=False,
+    ):
         logger.info(
             "clicked return",
             extra={"request": request},
@@ -583,6 +591,7 @@ def register_listeners():
             results_area,
             buttons_footer,
         ],
+        api_name=False,
     )
     @skip_poll_btn.click(
         inputs=[
@@ -603,6 +612,7 @@ def register_listeners():
             results_area,
             buttons_footer,
         ],
+        api_name=False,
     )
     def send_poll(
         conversation_a,
@@ -651,7 +661,6 @@ def register_listeners():
             model_b, conversation_b.model_name, model_b_tokens, None
         )
 
-
         reveal_html = build_reveal_html(
             model_a=model_a,
             model_b=model_b,
@@ -663,7 +672,13 @@ def register_listeners():
         )
         return [
             Modal(visible=False),
-            gr.update(value=stepper_html("Découvrez les modèles d'IA générative avec lesquels vous venez de discuter", 4, 4)),
+            gr.update(
+                value=stepper_html(
+                    "Découvrez les modèles d'IA générative avec lesquels vous venez de discuter",
+                    4,
+                    4,
+                )
+            ),
             gr.update(visible=False),
             gr.update(visible=False),
             gr.update(visible=True),
@@ -676,12 +691,14 @@ def register_listeners():
         fn=(lambda: Modal(visible=True)),
         inputs=[],
         outputs=retry_modal,
+        api_name=False,
     )
     gr.on(
         triggers=close_retry_modal_btn.click,
         fn=(lambda: Modal(visible=False)),
         inputs=[],
         outputs=retry_modal,
+        api_name=False,
     )
 
     # On reset go to mode selection mode_screen
