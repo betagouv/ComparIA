@@ -33,8 +33,8 @@ auth = None
 
 # Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
 demo = demo.queue(
-    default_concurrency_limit=10,
-    status_update_rate=10,
+    # default_concurrency_limit=10,
+    status_update_rate="auto",
     api_open=False,
 )
 
