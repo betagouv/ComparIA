@@ -1,58 +1,66 @@
 {% extends "base.html" %}
-{% block content %}
+
+{% block extra_styles %}
 <style>
+    .fr-icon-check-line::before,
+    .fr-icon-check-line::after {
+        -webkit-mask-image: url("assets/dsfr/icons/system/check-line.svg");
+        mask-image: url("assets/dsfr/icons/system/check-line.svg");
+        background-color: var(--blue-france-main-525);
+    }
+
+
     .bg-blue {
+        /* --background-contrast-info: var(--info-950-100); */
         background-color: var(--background-contrast-info);
+    }
+
+    .bg-light-blue {
+        background-color: var(--blue-france-main-525);
+    }
+
+
+    /* blue-france-main-525-hover: #9898F8
+
+blue-france-main-525-active: [#AEAEF9] */
+    .flex {
+        display: flex;
     }
 
     .text-blue {
         color: var(--text-action-high-blue-france);
+        /* --text-action-high-blue-france: var(--blue-france-sun-113-625); */
+
         /* color: var(--text-action-high-blue-france) !important; */
     }
-
-    .underline {
-        text-decoration: underline;
-    }
-
-    ol {
-        list-style-position: outside;
-    }
-
-    ol li::marker {
-        font-size: 1.5rem;
-    }
 </style>
+{% endblock %}
+
+{% block content %}
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
         function validateAndRedirect() {
             const acceptTosCheckbox = document.getElementById('accept_tos');
             const startArenaBtn = document.getElementById('start_arena_btn');
+            const errorMessage = document.getElementById('checkbox-error-messages');
 
-            function checkAndEnableButton() {
-                const shouldEnable = acceptTosCheckbox.checked;
-                startArenaBtn.disabled = !shouldEnable;
-            }
-
-            acceptTosCheckbox.addEventListener('change', function () {
-                checkAndEnableButton();
-            });
-
-            // Initial check
-            checkAndEnableButton();
 
             // on submit, check again and redirect to /arene?cgu_acceptees=true
             startArenaBtn.addEventListener('click', function (event) {
-                checkAndEnableButton();
-                if (!startArenaBtn.disabled) {
-                    window.location.href = '/arene?cgu_acceptees=true';
+                if (acceptTosCheckbox.checked) {
+                    window.location.href = '/arene/?cgu_acceptees=true';
                 } else {
                     event.preventDefault();
-                    // Change class of input and display a warning message
-                    acceptTosCheckbox.classList.add('input-error');
-                    const warningDiv = document.createElement('div');
-                    warningDiv.classList.add('fr-warn');
-                    warningDiv.textContent = 'Vous devez accepter les conditions pour continuer';
-                    acceptTosCheckbox.parentNode.appendChild(warningDiv);
+
+                    acceptTosCheckbox.parentNode.classList.add('fr-checkbox-group--error');
+
+                    errorMessage.classList.remove('fr-hidden');
+                    // WIP
+                    // acceptTosCheckbox.classList.add('input-error');
+                    // const warningDiv = document.createElement('div');
+                    // warningDiv.classList.add('fr-warn');
+                    // warningDiv.textContent = 'Vous devez accepter les conditions pour continuer';
+                    // acceptTosCheckbox.parentNode.appendChild(warningDiv);
                 }
             });
         }
@@ -62,26 +70,28 @@
 </script>
 
 <main id="content" role="main" class="fr-mb-7w fr-mb-md-10w fr-mt-8w">
-    <div class="fr-grid-row fr-container">
+    <div class="fr-grid-row fr-container fr-mb-4w">
         <div class="fr-container fr-col-md-6">
-            <h1 class="text-blue">Ne vous fiez pas aux réponses d’une seule IA</h1>
-            <p>Discutez avec deux IA à l’aveugle pour croiser leurs réponses</p>
-            <div class="fr-checkbox-group fr-checkbox-group--error">
+            <h1 class="text-blue">Ne vous fiez pas<br />aux réponses<br />d’une seule IA</h1>
+            <p>Discutez avec deux IA à l’aveugle<br />pour croiser leurs réponses</p>
+            <div class="fr-checkbox-group fr-checkbox-group--sm fr-my-4w">
                 <input aria-describedby="checkbox-error-messages" id="accept_tos" type="checkbox">
                 <label class="fr-label" for="accept_tos">
-                    J'accepte les&nbsp;<a href="/cgu" target="_blank" class="underline">conditions générales
+                    J'accepte les&nbsp;<a href="/cgu" target="_blank">conditions générales
                         d'utilisation</a>
+                    <p class="fr-message">Les données sont partagées à des fins de recherche</p>
                 </label>
-                <div class="fr-messages-group" id="checkbox-error-messages" aria-live="assertive">
-                    <p class="fr-message fr-message--error" id="checkbox-error-message-error">Texte d’erreur obligatoire
+                <div class="fr-messages-group fr-hidden" id="checkbox-error-messages" aria-live="assertive">
+                    <p class="fr-message fr-message--error" id="checkbox-error-message-error">Vous devez accepter les
+                        conditions pour continuer
                     </p>
                 </div>
             </div>
-            <input type="submit" id="start_arena_btn" class="fr-btn" value="Commencer à discuter" />
+            <input type="submit" id="start_arena_btn" class="fr-btn bg-light-blue" value="Commencer à discuter" />
             </fieldset>
         </div>
         <div class="fr-container fr-col-md-6 bg-blue fr-p-4w">
-            <h5>Comment ça marche ?</h5>
+            <h5 class="text-blue">Comment ça marche ?</h5>
             <!-- <ol>
                 <li>
                     <h6>Je discute avec deux IA anonymes</h6>
@@ -96,132 +106,56 @@
                     </p>Apprenez en plus sur les modèles d’IA et leurs caractéristiques</p>
                 </li>
             </ol> -->
-            <!-- <img
-  src="assets/how.svg"
-  alt="Comment ça marche ? 1. Je discute avec deux IA anonymes : Échangez aussi longtemps que vous le souhaitez 2. Je donne mon avis : Vous contribuez ainsi à l'amélioration des modèles d’IA 3. Les modèles sont démasqués ! Apprenez en plus sur les modèles d’IA et leurs caractéristiques"
-  height="280"
-  width="513" /> -->
-            <svg width="513" height="280" viewBox="0 0 513 280" fill="none" version="1.1" id="svg9"
-                xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-                <style id="style1">
-                    <!-- .text-style-1 {
-                    font-family: 'Marianne';
-                    font-style: normal;
-                    font-weight: 700;
-                    font-size: 18px;
-                    line-height: 28px;
-                    color: #161616;
-                    }
-
-                    .text-style-2 {
-                        font-family: 'Marianne';
-                        font-style: normal;
-                        font-weight: 400;
-                        font-size: 14px;
-                        line-height: 24px;
-                        color: #666666;
-                    }
-                    -->
-                    @font-face
-                    {
-                    font-family:
-                    Marianne;
-                    src:
-                    url("dsfr/fonts/Marianne-Regular.woff2")
-                    format("woff2");
-                    font-weight:
-                    400;
-                    font-style:
-                    normal;
-                    font-display:
-                    swap;
-                    }
-                </style>
-                <path d="m 6,21.5 c 1.97844,129.342 213.429,38.6375 252,85 38.571,46.362 -185.2601,50.665 -152,117.5"
-                    stroke="#000000" id="path7" />
-                <circle cx="5.5" cy="18.5" r="5.5" fill="#6a6af4" id="circle7" />
-                <circle cx="258.5" cy="107.5" r="5.5" fill="#6a6af4" id="circle8" />
-                <circle cx="105.5" cy="225.5" r="5.5" fill="#6a6af4" id="circle9" />
-
-                <text x="298.69144" y="102.10426" font-family="Marianne" font-size="18px" font-weight="700"
-                    fill="#161616" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:28px" id="text1">Je donne mon avis</text>
-                <text x="146.80658" y="222.71048" font-family="Marianne" font-size="18px" font-weight="700"
-                    fill="#161616" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:28px" id="text2">Les modèles sont démasqués !</text>
-                <text x="39.528667" y="9.3315382" font-family="Marianne" font-size="18px" font-weight="700"
-                    fill="#161616" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:28px" id="text3">Je discute avec deux IA anonymes</text>
-                <text x="299.24356" y="128" font-family="Marianne" font-size="14px" font-weight="400" fill="#666666"
-                    text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:24px"
-                    id="text4">Vous contribuez ainsi à</text>
-                <text x="146.46295" y="248.50197" font-family="Marianne" font-size="14px" font-weight="400"
-                    fill="#666666" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:24px" id="text5">Apprenez en plus sur les modèles</text>
-                <text xml:space="preserve" style="font-size:14px;fill:#666666" x="299.25146" y="154.04274" id="text10">
-                    <tspan sodipodi:role="line" id="tspan10" x="299.25146" y="154.04274"
-                        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">l'amélioration des modèles d’IA</tspan>
-                </text>
-                <text x="39.899445" y="34.194839" font-family="Marianne" font-size="14px" font-weight="400"
-                    fill="#666666" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:24px" id="text4-5">Échangez aussi longtemps que</text>
-                <text xml:space="preserve" style="font-size:14px;fill:#666666" x="39.907349" y="60.237579"
-                    id="text10-3">
-                    <tspan sodipodi:role="line" id="tspan10-5" x="39.907349" y="60.237579"
-                        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">vous le souhaitez</tspan>
-                </text>
-                <text xml:space="preserve" style="font-size:14px;fill:#666666" x="146.52148" y="275.85373" id="text11">
-                    <tspan sodipodi:role="line" id="tspan11" x="146.52148" y="275.85373"
-                        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">d’IA et leurs caractéristiques</tspan>
-                </text>
-            </svg>
-
+            <!-- TODO: insert svg instead -->
+            <img src="assets/how.svg"
+                alt="1. Je discute avec deux IA anonymes : Échangez aussi longtemps que vous le souhaitez 2. Je donne mon avis : Vous contribuez ainsi à l'amélioration des modèles d’IA 3. Les modèles sont démasqués ! Apprenez en plus sur les modèles d’IA et leurs caractéristiques"
+                height="280" width="513" id="how" />
         </div>
     </div>
     <div class="fr-container-fluid bg-blue">
         <div class="fr-container">
-            <h3>Nos enjeux</h3>
+            <h3 class="fr-pt-4w text-blue">Nos enjeux</h3>
             <p>
                 Le comparateur LANGU:IA est un outil gratuit proposé par le service du numérique du ministère de la
                 Culture qui répond à trois enjeux majeurs&nbsp;:
             </p>
             <div class="fr-grid-row fr-grid-row--gutters">
-                <p class="fr-col-md-4 icon-valid"><strong>Sensibiliser les citoyens</strong> à l’IA générative et ses
-                    enjeux</p>
-                <p class="fr-col-md-4 icon-valid">Veiller au respect de la <strong>diversité des cultures
-                        francophones</strong> dans les modèles d’IA conversationnelle</p>
-                <p class="fr-col-md-4 icon-valid"><strong>Contibuer à la transparence</strong> des modèles d’IA
-                    générative</p>
+                <div class="fr-col-md-3 flex"><span class="fr-icon-check-line"></span>
+                    <p><strong>Sensibiliser les citoyens</strong> à l’IA générative et ses enjeux</p>
+                </div>
+                <div class="fr-col-md-3 fr-col-offset-md-1 flex"><span class="fr-icon-check-line"></span>
+                    <p>Veiller au respect de la <strong>diversité des cultures francophones</strong> dans les modèles
+                        d’IA conversationnelle</p>
+                </div>
+                <div class="fr-col-md-3 fr-col-offset-md-1 flex"><span class="fr-icon-check-line"></span>
+                    <p><strong>Contribuer à la transparence</strong> des modèles d’IA générative</p>
+                </div>
             </div>
-
         </div>
     </div>
-    <div class="fr-container">
-        <h4>Nos missions</h4>
+    <div class="fr-container fr-mt-8w">
+        <h3 class="text-blue">Nos missions</h3>
 
         <div class="fr-grid-row fr-grid-row--gutters">
             <!-- Tile 1 -->
             <div class="fr-col-md-4">
-                <div class="fr-tile fr-tile--sm fr-enlarge-link" id="tile-6612">
+                <div class="fr-tile">
                     <div class="fr-tile__body">
                         <div class="fr-tile__content">
                             <h4 class="fr-tile__title">
                                 Faciliter l’accès
                             </h4>
-                            <p class="fr-tile__desc">Mise à disposition de plusieurs modèles d’IA conversationnels à
+                            <p class="fr-tile__desc">Mise à disposition de plusieurs modèles d’IA
+                                conversationnels à
                                 travers une unique plateforme.</p>
                         </div>
                     </div>
                     <div class="fr-tile__header">
                         <div class="fr-tile__pictogram">
-                            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
-                                <use class="fr-artwork-decorative"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-decorative"></use>
-                                <use class="fr-artwork-minor"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-minor"></use>
-                                <use class="fr-artwork-major"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-major"></use>
-                            </svg>
+                            <img src="assets/extra-artwork/ecosystem.svg" />
+                            <!-- <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                                <use href="assets/extra-artwork/ecosystem.svg"></use>
+                            </svg> -->
                         </div>
                     </div>
                 </div>
@@ -229,26 +163,23 @@
 
             <!-- Tile 2 -->
             <div class="fr-col-md-4">
-                <div class="fr-tile fr-tile--sm fr-enlarge-link" id="tile-6613">
+                <div class="fr-tile">
                     <div class="fr-tile__body">
                         <div class="fr-tile__content">
                             <h4 class="fr-tile__title">
                                 Collecter des données
                             </h4>
-                            <p class="fr-tile__desc">Création de jeux de données de préférence à partir de tâches
+                            <p class="fr-tile__desc">Création de jeux de données de préférence à partir de
+                                tâches
                                 réelles, utiles pour l’alignement des modèles en français.</p>
                         </div>
                     </div>
                     <div class="fr-tile__header">
                         <div class="fr-tile__pictogram">
-                            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
-                                <use class="fr-artwork-decorative"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-decorative"></use>
-                                <use class="fr-artwork-minor"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-minor"></use>
-                                <use class="fr-artwork-major"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-major"></use>
-                            </svg>
+                            <img src="assets/dsfr/artwork/pictograms/digital/data-visualization.svg" />
+                            <!-- <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                                <use href="assets/dsfr/artwork/pictograms/digital/data-visualization.svg"></use>
+                            </svg> -->
                         </div>
                     </div>
                 </div>
@@ -256,7 +187,7 @@
 
             <!-- Tile 3 -->
             <div class="fr-col-md-4">
-                <div class="fr-tile fr-tile--sm fr-enlarge-link" id="tile-6614">
+                <div class="fr-tile">
                     <div class="fr-tile__body">
                         <div class="fr-tile__content">
                             <h4 class="fr-tile__title">
@@ -268,35 +199,34 @@
                     </div>
                     <div class="fr-tile__header">
                         <div class="fr-tile__pictogram">
-                            <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
-                                <use class="fr-artwork-decorative"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-decorative"></use>
-                                <use class="fr-artwork-minor"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-minor"></use>
-                                <use class="fr-artwork-major"
-                                    href="/img/artwork/pictograms/city-hall.svg#artwork-major"></use>
-                            </svg>
+                            <img src="assets/extra-artwork/map-pin.svg" />
+                            <!-- <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
+                                <use href="assets/extra-artwork/map-pin.svg"></use>
+                            </svg> -->
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="fr-container fr-mx-auto">
-            <a class="fr-btn" href="/a-propos">En savoir plus</a>
+        <div class="fr-grid-row fr-grid-row--center fr-my-4w">
+            <a class="fr-btn fr-col-2 bg-light-blue" href="/a-propos">En savoir plus</a>
         </div>
-        <div class="fr-container">
-            <h3>Qui sommes-nous ?</h3>
-            <p>Le comparateur LANGU:IA est développé dans le cadre de la start-up d’Etat (incubateurs de l’Atelier
-                numérique et AllIAnce) intégrée au programme <a href="https://beta.gouv.fr"
-                    rel="noopener external">beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM)
-                qui aide les administrations publiques à construire des services numériques utiles, simples et
-                faciles à utiliser.</p>
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
-                <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
-                <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
-            </div>
+    </div>
+    <div class="fr-container">
+        <h3>Qui sommes-nous ?</h3>
+        <p>Le comparateur LANGU:IA est développé dans le cadre de la start-up d’Etat (incubateurs de
+            l’Atelier
+            numérique et AllIAnce) intégrée au programme <a href="https://beta.gouv.fr"
+                rel="noopener external">beta.gouv.fr</a> de la Direction interministérielle du numérique
+            (DINUM)
+            qui aide les administrations publiques à construire des services numériques utiles, simples et
+            faciles à utiliser.</p>
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
+            <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
+            <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
         </div>
+    </div>
     </div>
 
 </main>
