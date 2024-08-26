@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="513"
+   height="280"
+   viewBox="0 0 513 280"
+   fill="none"
+   version="1.1"
+   id="svg9"
+   sodipodi:docname="how2.svg"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview10"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="1.8111858"
+     inkscape:cx="326.58163"
+     inkscape:cy="134.71837"
+     inkscape:window-width="1920"
+     inkscape:window-height="989"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg9" />
+  <defs
+     id="defs9" />
+  <path
+     d="m 6,21.5 c 1.97844,129.342 213.429,38.6375 252,85 38.571,46.362 -185.2601,50.665 -152,117.5"
+     stroke="#000000"
+     id="path7" />
+  <circle
+     cx="5.5"
+     cy="18.5"
+     r="5.5"
+     fill="#6a6af4"
+     id="circle7" />
+  <circle
+     cx="258.5"
+     cy="107.5"
+     r="5.5"
+     fill="#6a6af4"
+     id="circle8" />
+  <circle
+     cx="105.5"
+     cy="225.5"
+     r="5.5"
+     fill="#6a6af4"
+     id="circle9" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">
+            .text-style-1 {
+                font-family: 'Marianne';
+                font-style: normal;
+                font-weight: 700;
+                font-size: 18px;
+                line-height: 28px;
+                color: #161616;
+            }
+            .text-style-2 {
+                font-family: 'Marianne';
+                font-style: normal;
+                font-weight: 400;
+                font-size: 14px;
+                line-height: 24px;
+                color: #666666;
+            }
+
+@font-face {
+  font-family: Marianne;
+  src: url("dsfr/fonts/Marianne-Regular.woff2") format("woff2"), url("../fonts/Marianne-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+        </style>
+  </defs>
+  <text
+     x="298.69144"
+     y="102.10426"
+     font-family="Marianne"
+     font-size="18px"
+     font-weight="700"
+     fill="#161616"
+     text-anchor="start"
+     dominant-baseline="central"
+     style="font-style:normal;line-height:28px"
+     id="text1">Je donne mon avis</text>
+  <text
+     x="146.80658"
+     y="222.71048"
+     font-family="Marianne"
+     font-size="18px"
+     font-weight="700"
+     fill="#161616"
+     text-anchor="start"
+     dominant-baseline="central"
+     style="font-style:normal;line-height:28px"
+     id="text2">Les modèles sont démasqués !</text>
+  <text
+     x="39.528667"
+     y="9.3315382"
+     font-family="Marianne"
+     font-size="18px"
+     font-weight="700"
+     fill="#161616"
+     text-anchor="start"
+     dominant-baseline="central"
+     style="font-style:normal;line-height:28px"
+     id="text3">Je discute avec deux IA anonymes</text>
+  <text
+     x="299.24356"
+     y="128"
+     font-family="Marianne"
+     font-size="14px"
+     font-weight="400"
+     fill="#666666"
+     text-anchor="start"
+     dominant-baseline="central"
+     style="font-style:normal;line-height:24px"
+     id="text4">Vous contribuez ainsi à</text>
+  <text
+     x="146.46295"
+     y="248.50197"
+     font-family="Marianne"
+     font-size="14px"
+     font-weight="400"
+     fill="#666666"
+     text-anchor="start"
+     dominant-baseline="central"
+     style="font-style:normal;line-height:24px"
+     id="text5">Apprenez en plus sur les modèles</text>
+  <text
+     xml:space="preserve"
+     style="font-size:14px;fill:#666666"
+     x="299.25146"
+     y="154.04274"
+     id="text10"><tspan
+       sodipodi:role="line"
+       id="tspan10"
+       x="299.25146"
+       y="154.04274"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">l'amélioration des modèles d’IA</tspan></text>
+  <text
+     x="39.899445"
+     y="34.194839"
+     font-family="Marianne"
+     font-size="14px"
+     font-weight="400"
+     fill="#666666"
+     text-anchor="start"
+     dominant-baseline="central"
+     style="font-style:normal;line-height:24px"
+     id="text4-5">Échangez aussi longtemps que</text>
+  <text
+     xml:space="preserve"
+     style="font-size:14px;fill:#666666"
+     x="39.907349"
+     y="60.237579"
+     id="text10-3"><tspan
+       sodipodi:role="line"
+       id="tspan10-5"
+       x="39.907349"
+       y="60.237579"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">vous le souhaitez</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:14px;fill:#666666"
+     x="146.52148"
+     y="275.85373"
+     id="text11"><tspan
+       sodipodi:role="line"
+       id="tspan11"
+       x="146.52148"
+       y="275.85373"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">d’IA et leurs caractéristiques</tspan></text>
+</svg>
