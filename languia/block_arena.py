@@ -1,5 +1,5 @@
 """
-Chatbot Arena (battle) tab.
+LANGU:IA's main code
 Users chat with two anonymous models.
 """
 
@@ -40,10 +40,10 @@ with gr.Blocks(
     css=config.css,
     head=config.arena_head_js,
     analytics_enabled=False,
+    # js=config.arena_js,
+    js=None,
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
-    # Script for accepting ToS is there:
-    js=config.arena_js,
 ) as demo:
     # A tester
     # conversations = [ConversationState() for _ in range(config.num_sides)]

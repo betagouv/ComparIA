@@ -1,28 +1,4 @@
 function() {
-// start_arena_btn code: check for ToS+Waiver
-
-    const acceptWaiverCheckbox = document.getElementById('accept_waiver');
-
-    const acceptTosCheckbox = document.getElementById('accept_tos');
-
-    const startArenaBtn = document.getElementById('start_arena_btn');
-
-    function checkAndEnableButton() {
-        const shouldEnable = acceptWaiverCheckbox.checked && acceptTosCheckbox.checked;
-
-        startArenaBtn.disabled = !shouldEnable;
-    }
-
-    acceptWaiverCheckbox.addEventListener('change', function() {
-        checkAndEnableButton();
-    });
-
-    acceptTosCheckbox.addEventListener('change', function() {
-        checkAndEnableButton();
-    });
-
-    // Initial check
-    checkAndEnableButton();
 
     // scroll to guided area if selected    
 

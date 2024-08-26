@@ -1,3 +1,7 @@
+"""
+Utilities to communicate with different APIs
+"""
+
 import os
 import logging
 

@@ -293,20 +293,11 @@ li.fr-nav__item {
   display: inline;
 }
 
-#start-screen h4,
 #guided-mode h4,
 #reveal-screen h4 {
   /* Not DSFR compliant */
   color: var(--text-action-high-blue-france) !important;
 
-}
-
-#start-screen ol {
-  list-style-position: outside;
-}
-
-#start-screen ol li::marker {
-  font-size: 1.5rem;
 }
 
 #chat-area button {
