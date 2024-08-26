@@ -1,65 +1,224 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    #welcome {
+    .bg-blue {
         background-color: var(--background-contrast-info);
-        text-align: center;
     }
 
-    #welcome h2 {
+    .text-blue {
         color: var(--text-action-high-blue-france);
+        /* color: var(--text-action-high-blue-france) !important; */
+    }
+
+    .underline {
+        text-decoration: underline;
+    }
+
+    ol {
+        list-style-position: outside;
+    }
+
+    ol li::marker {
+        font-size: 1.5rem;
     }
 </style>
-<main id="content" role="main" class="fr-mb-7w fr-mb-md-10w">
-    <div class="fr-container--fluid" id="welcome">
-        <div class="fr-container fr-mt-4w fr-mb-3w">
-            <h2>Comparez des modèles conversationnels<br />sur les enjeux de diversité
-                linguistique et culturelle</h2>
-            <p>
-                L’arène LANGU:IA est la plateforme francophone de comparaison de modèles conversationnels
-            </p>
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+    function validateAndRedirect() {
+        const acceptTosCheckbox = document.getElementById('accept_tos');
+        const startArenaBtn = document.getElementById('start_arena_btn');
 
-            <div><a href="/arene/" class="fr-btn">Commencer une conversation</a></div>
+        function checkAndEnableButton() {
+            const shouldEnable = acceptTosCheckbox.checked;
+            startArenaBtn.disabled = !shouldEnable;
+        }
+
+        acceptTosCheckbox.addEventListener('change', function () {
+            checkAndEnableButton();
+        });
+
+        // Initial check
+        checkAndEnableButton();
+
+        // on submit, check again and redirect to /arene?cgu_acceptees=true
+        startArenaBtn.addEventListener('click', function (event) {
+            checkAndEnableButton();
+            if (!startArenaBtn.disabled) {
+                window.location.href = '/arene?cgu_acceptees=true';
+            } else {
+                event.preventDefault();
+                // Change class of input and display a warning message
+                acceptTosCheckbox.classList.add('input-error');
+                const warningDiv = document.createElement('div');
+                warningDiv.classList.add('fr-warn');
+                warningDiv.textContent = 'Vous devez accepter les conditions pour continuer';
+                acceptTosCheckbox.parentNode.appendChild(warningDiv);
+            }
+        });
+    }
+
+    validateAndRedirect();
+    });
+</script>
+
+<main id="content" role="main" class="fr-mb-7w fr-mb-md-10w">
+    <div class="fr-grid-row fr-container">
+        <div class="fr-container fr-col-md-6">
+            <h1 class="text-blue">Ne vous fiez pas aux réponses d’une seule IA</h1>
+            <p>Discutez avec deux IA à l’aveugle pour croiser leurs réponses</p>
+            <div class="fr-checkbox-group fr-checkbox-group--error">
+                <input aria-describedby="checkbox-error-messages" id="accept_tos" type="checkbox">
+                        <label class="fr-label" for="accept_tos">
+                    J'accepte les&nbsp;<a href="/cgu" target="_blank" class="underline">conditions générales d'utilisation</a>
+                        </label>
+                <div class="fr-messages-group" id="checkbox-error-messages" aria-live="assertive">
+                    <p class="fr-message fr-message--error" id="checkbox-error-message-error">Texte d’erreur obligatoire</p>
+                    </div>
+                </div>
+                <input type="submit" id="start_arena_btn" class="fr-btn" value="Commencer à discuter" />
+            </fieldset>
+        </div>
+        <div class="fr-container fr-col-md-6 bg-blue">
+            <h5>Comment ça marche ?</h5>
+            <ol>
+                <li>
+                    <h6>Je discute avec deux IA anonymes</h6>
+                    <p>Échangez aussi longtemps que vous le souhaitez</p>
+                </li>
+                <li>
+                    <h6>Je donne mon avis</h6>
+                    <p>Vous contribuez ainsi à l'amélioration des modèles d’IA</p>
+                </li>
+                <li>
+                    <h6>Les modèles sont démasqués !</h6>
+                    </p>Apprenez en plus sur les modèles d’IA et leurs caractéristiques</p>
+                </li>
+            </ol>
         </div>
     </div>
+    <div class="fr-container-fluid bg-blue">
+        <div class="fr-container">
+            <h3>Nos enjeux</h3>
+            <p>
+                Le comparateur LANGU:IA est un outil gratuit proposé par le service du numérique du ministère de la
+                Culture qui répond à trois enjeux majeurs&nbsp;:
+            </p>
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <p class="fr-col-md-4 icon-valid"><strong>Sensibiliser les citoyens</strong> à l’IA générative et ses
+                    enjeux</p>
+                <p class="fr-col-md-4 icon-valid">Veiller au respect de la <strong>diversité des cultures
+                        francophones</strong> dans les modèles d’IA conversationnelle</p>
+                <p class="fr-col-md-4 icon-valid"><strong>Contibuer à la transparence</strong> des modèles d’IA
+                    générative</p>
+            </div>
 
-    <div class="fr-container fr-mt-4w">
-
-        <h3>L'arène</h3>
-        <p>
-            L'arène LANGU:IA permet aux utilisateurs de comparer les réponses générées par différents modèles de langage
-            en
-            français. Posez une question, obtenez des réponses de deux modèles anonymes, et votez pour votre réponse
-            préférée.
-            Ce processus aide à créer des jeux de données de préférences humaines, essentiels pour améliorer les
-            performances
-            des modèles sur des tâches en français.
-        </p>
-        <h3>
-            Le constat
-        </h3>
-        <p>
-            Les modèles de langage actuels sont majoritairement entraînés sur des données anglo-saxonnes, ce qui pose
-            des
-            défis
-            pour la représentation des langues et cultures françaises et francophones. Cela participe de l’effort pour
-            faciliter
-            l’accès à des jeux de données francophones pour l'entraînement, la spécialisation et l’évaluation des
-            modèles.
-        </p>
-        <h3>
-            Qui sommes-nous
-        </h3>
-        <p>
-            L’équipe LANGU:IA, portée par l’Atelier Numérique du Ministère de la Culture, a pour ambition de
-            sensibiliser
-            les
-            citoyens aux enjeux de l'intelligence artificielle et de promouvoir les langues et cultures françaises et
-            francophones auprès des acteurs de l’écosystème.</p>
-        <p> Ce projet vise à mettre à disposition de tous un outil de comparaison de modèles permettant de questionner
-            leur
-            capacité à répondre à des tâches exprimées en français.
-        </p>
+        </div>
     </div>
+    <div class="fr-container">
+        <h4>Nos missions</h4>
+
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <!-- Tile 1 -->
+                <div class="fr-col-md-4">
+                    <div class="fr-tile fr-tile--sm fr-enlarge-link" id="tile-6612">
+                        <div class="fr-tile__body">
+                            <div class="fr-tile__content">
+                                <h4 class="fr-tile__title">
+                                    Faciliter l’accès
+                                </h4>
+                                <p class="fr-tile__desc">Mise à disposition de plusieurs modèles d’IA conversationnels à
+                                    travers une unique plateforme.</p>
+                            </div>
+                        </div>
+                        <div class="fr-tile__header">
+                            <div class="fr-tile__pictogram">
+                                <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px"
+                                    height="80px">
+                                    <use class="fr-artwork-decorative"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-decorative"></use>
+                                    <use class="fr-artwork-minor"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-minor"></use>
+                                    <use class="fr-artwork-major"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-major"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 2 -->
+                <div class="fr-col-md-4">
+                    <div class="fr-tile fr-tile--sm fr-enlarge-link" id="tile-6613">
+                        <div class="fr-tile__body">
+                            <div class="fr-tile__content">
+                                <h4 class="fr-tile__title">
+                                    Collecter des données
+                                </h4>
+                                <p class="fr-tile__desc">Création de jeux de données de préférence à partir de tâches
+                                    réelles, utiles pour l’alignement des modèles en français.</p>
+                            </div>
+                        </div>
+                        <div class="fr-tile__header">
+                            <div class="fr-tile__pictogram">
+                                <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px"
+                                    height="80px">
+                                    <use class="fr-artwork-decorative"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-decorative"></use>
+                                    <use class="fr-artwork-minor"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-minor"></use>
+                                    <use class="fr-artwork-major"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-major"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tile 3 -->
+                <div class="fr-col-md-4">
+                    <div class="fr-tile fr-tile--sm fr-enlarge-link" id="tile-6614">
+                        <div class="fr-tile__body">
+                            <div class="fr-tile__content">
+                                <h4 class="fr-tile__title">
+                                    Partager
+                                </h4>
+                                <p class="fr-tile__desc">Diffusion sous licence ouverte des jeux de données générées
+                                    pour en faire bénéficier l’écosystème IA.</p>
+                            </div>
+                        </div>
+                        <div class="fr-tile__header">
+                            <div class="fr-tile__pictogram">
+                                <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px"
+                                    height="80px">
+                                    <use class="fr-artwork-decorative"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-decorative"></use>
+                                    <use class="fr-artwork-minor"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-minor"></use>
+                                    <use class="fr-artwork-major"
+                                        href="/img/artwork/pictograms/city-hall.svg#artwork-major"></use>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="fr-container fr-mx-auto">
+                <a class="fr-btn" href="/a-propos">En savoir plus</a>
+            </div>
+            <div class="fr-container">
+                <h3>Qui sommes-nous ?</h3>
+                <p>Le comparateur LANGU:IA est développé dans le cadre de la start-up d’Etat (incubateurs de l’Atelier
+                    numérique et AllIAnce) intégrée au programme <a href="https://beta.gouv.fr"
+                        rel="noopener external">beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM)
+                    qui aide les administrations publiques à construire des services numériques utiles, simples et
+                    faciles à utiliser.</p>
+                <div class="fr-grid-row fr-grid-row--gutters">
+                    <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
+                    <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
+                    <img src="/img/logo-beta.png" alt="beta.gouv.fr" class="fr-col-md-3 fr-col-2" />
+                </div>
+            </div>
+        </div>
+
 </main>
 {% endblock %}
