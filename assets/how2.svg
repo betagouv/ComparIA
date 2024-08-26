@@ -1,74 +1,80 @@
 <svg width="513" height="280" viewBox="0 0 513 280" fill="none" version="1.1" id="svg9"
-      xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-      <style id="style1">
-         <!-- .text-style-1 {
+   xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
+   <style>
+      .text-style-1 {
          font-family: 'Marianne';
          font-style: normal;
          font-weight: 700;
          font-size: 18px;
          line-height: 28px;
          color: #161616;
-         }
+      }
 
-         .text-style-2 {
-            font-family: 'Marianne';
-            font-style: normal;
-            font-weight: 400;
-            font-size: 14px;
-            line-height: 24px;
-            color: #666666;
-         }
-         -->
-         @font-face
-         {
+      .text-style-2 {
+         font-family: 'Marianne';
+         font-style: normal;
+         font-weight: 400;
+         font-size: 14px;
+         line-height: 24px;
+         color: #666666;
+      }
+
+      @font-face {
          font-family:
-         Marianne;
+            Marianne;
          src:
-         url("dsfr/fonts/Marianne-Regular.woff2")
-         format("woff2");
+            url("dsfr/fonts/Marianne-Regular.woff2") format("woff2");
          font-weight:
-         400;
+            400;
          font-style:
-         normal;
+            normal;
          font-display:
-         swap;
-         }
-      </style>
-      <path d="m 6,21.5 c 1.97844,129.342 213.429,38.6375 252,85 38.571,46.362 -185.2601,50.665 -152,117.5"
-         stroke="#000000" id="path7" />
-      <circle cx="5.5" cy="18.5" r="5.5" fill="#6a6af4" id="circle7" />
-      <circle cx="258.5" cy="107.5" r="5.5" fill="#6a6af4" id="circle8" />
-      <circle cx="105.5" cy="225.5" r="5.5" fill="#6a6af4" id="circle9" />
+            swap;
+      }
+   </style>
+   <path d="m 6,21.5 c 1.97844,129.342 213.429,38.6375 252,85 38.571,46.362 -185.2601,50.665 -152,117.5"
+      stroke="#000000" id="path7" />
+   <circle cx="5.5" cy="18.5" r="5.5" fill="#6a6af4" id="circle7" />
+   <circle cx="258.5" cy="107.5" r="5.5" fill="#6a6af4" id="circle8" />
+   <circle cx="105.5" cy="225.5" r="5.5" fill="#6a6af4" id="circle9" />
 
-      <text x="298.69144" y="102.10426" font-family="Marianne" font-size="18px" font-weight="700"
-         fill="#161616" text-anchor="start" dominant-baseline="central"
-         style="font-style:normal;line-height:28px" id="text1">Je donne mon avis</text>
-      <text x="146.80658" y="222.71048" font-family="Marianne" font-size="18px" font-weight="700"
-         fill="#161616" text-anchor="start" dominant-baseline="central"
-         style="font-style:normal;line-height:28px" id="text2">Les modèles sont démasqués !</text>
-      <text x="39.528667" y="9.3315382" font-family="Marianne" font-size="18px" font-weight="700"
-         fill="#161616" text-anchor="start" dominant-baseline="central"
-         style="font-style:normal;line-height:28px" id="text3">Je discute avec deux IA anonymes</text>
-      <text x="299.24356" y="128" font-family="Marianne" font-size="14px" font-weight="400" fill="#666666"
-         text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:24px"
-         id="text4">Vous contribuez ainsi à</text>
-      <text x="146.46295" y="248.50197" font-family="Marianne" font-size="14px" font-weight="400"
-         fill="#666666" text-anchor="start" dominant-baseline="central"
-         style="font-style:normal;line-height:24px" id="text5">Apprenez en plus sur les modèles</text>
-      <text xml:space="preserve" style="font-size:14px;fill:#666666" x="299.25146" y="154.04274" id="text10">
-         <tspan sodipodi:role="line" id="tspan10" x="299.25146" y="154.04274"
-            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">l'amélioration des modèles d’IA</tspan>
-      </text>
-      <text x="39.899445" y="34.194839" font-family="Marianne" font-size="14px" font-weight="400"
-         fill="#666666" text-anchor="start" dominant-baseline="central"
-         style="font-style:normal;line-height:24px" id="text4-5">Échangez aussi longtemps que</text>
-      <text xml:space="preserve" style="font-size:14px;fill:#666666" x="39.907349" y="60.237579"
-         id="text10-3">
-         <tspan sodipodi:role="line" id="tspan10-5" x="39.907349" y="60.237579"
-            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">vous le souhaitez</tspan>
-      </text>
-      <text xml:space="preserve" style="font-size:14px;fill:#666666" x="146.52148" y="275.85373" id="text11">
-         <tspan sodipodi:role="line" id="tspan11" x="146.52148" y="275.85373"
-            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">d’IA et leurs caractéristiques</tspan>
-      </text>
+   <text x="298.69144" y="102.10426" font-family="Marianne" font-size="18px" font-weight="700" fill="#161616"
+      text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:28px" id="text1">Je donne mon
+      avis</text>
+   <text x="146.80658" y="222.71048" font-family="Marianne" font-size="18px" font-weight="700" fill="#161616"
+      text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:28px" id="text2">Les modèles
+      sont démasqués !</text>
+   <text x="39.528667" y="9.3315382" font-family="Marianne" font-size="18px" font-weight="700" fill="#161616"
+      text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:28px" id="text3">Je discute
+      avec deux IA anonymes</text>
+   <text x="299.24356" y="128" font-family="Marianne" font-size="14px" font-weight="400" fill="#666666"
+      text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:24px" id="text4">
+      <tspan>Vous
+         contribuez ainsi à</tspan>
+      <tspan id="tspan10" x="299.25146" y="154.04274"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
+         l'amélioration des modèles d’IA</tspan>
+   </text>
+   <text x="146.46295" y="248.50197" font-family="Marianne" font-size="14px" font-weight="400" fill="#666666"
+      text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:24px" id="text5">
+      <tspan>Apprenez en
+         plus sur les modèles</tspan>
+      <tspan id="tspan11" x="146.52148" y="275.85373"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
+         d’IA et leurs caractéristiques</tspan>
+   </text>
+   <text xml:space="preserve" style="font-size:14px;fill:#666666" x="299.25146" y="154.04274" id="text10">
+   </text>
+   <text x="39.899445" y="34.194839" font-family="Marianne" font-size="14px" font-weight="400" fill="#666666"
+      text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:24px" id="text4-5">
+      <tspan>Échangez
+         aussi longtemps que</tspan>
+
+      <tspan id="tspan10-5" x="39.907349" y="60.237579"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
+         vous le souhaitez</tspan>
+   </text>
+   <text xml:space="preserve" style="font-size:14px;fill:#666666" x="146.52148" y="275.85373" id="text11">
+
+   </text>
 </svg>
