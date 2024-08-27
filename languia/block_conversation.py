@@ -30,7 +30,7 @@ from fastchat.conversation import Conversation, SeparatorStyle
 from languia.api_provider import get_api_provider_stream_iter
 
 
-from languia.utils import get_ip, get_conv_log_filename, is_limit_reached
+from languia.utils import get_ip, is_limit_reached
 from languia import config
 
 import logging as logger
@@ -156,6 +156,7 @@ def bot_response(
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
 
+
     output = data["text"].strip()
     conv.update_last_message(output)
     yield (state, state.to_gradio_chatbot())
@@ -165,49 +166,35 @@ def bot_response(
     #         f"{SERVER_ERROR_MSG}\n\n"
     #         f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
     #     )
-    #     yield (state, state.to_gradio_chatbot()) + (
-    #         disable_btn,
-    #         disable_btn,
-    #         disable_btn,
-    #         enable_btn,
-    #         enable_btn,
-    #     )
     #     return
     # except Exception as e:
     #     conv.update_last_message(
     #         f"{SERVER_ERROR_MSG}\n\n"
     #         f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
     #     )
-    #     yield (state, state.to_gradio_chatbot()) + (
-    #         disable_btn,
-    #         disable_btn,
-    #         disable_btn,
-    #         enable_btn,
-    #         enable_btn,
-    #     )
     #     return
 
-    finish_tstamp = time.time()
-    logger.info(f"{output}")
+    # finish_tstamp = time.time()
+    # # logger.info(f"{output}")
 
-    filename = get_conv_log_filename(
-        # is_vision=state.is_vision, has_csam_image=state.has_csam_image
-    )
-    logger.info(f"Saving to: {filename}")
+    # filename = get_conv_log_filename(
+    #     # is_vision=state.is_vision, has_csam_image=state.has_csam_image
+    # )
+    # logger.info(f"Saving to: {filename}")
 
-    with open(filename, "a") as fout:
-        data = {
-            "tstamp": round(finish_tstamp, 4),
-            "type": "chat",
-            "model": model_name,
-            "gen_params": {
-                "temperature": temperature,
-                "top_p": top_p,
-                "max_new_tokens": max_new_tokens,
-            },
-            "start": round(start_tstamp, 4),
-            "finish": round(finish_tstamp, 4),
-            "state": state.dict(),
-            "ip": get_ip(request),
-        }
-        fout.write(json.dumps(data) + "\n")
+    # with open(filename, "a") as fout:
+    #     data = {
+    #         "tstamp": round(finish_tstamp, 4),
+    #         "type": "chat",
+    #         "model": model_name,
+    #         "gen_params": {
+    #             "temperature": temperature,
+    #             "top_p": top_p,
+    #             "max_new_tokens": max_new_tokens,
+    #         },
+    #         "start": round(start_tstamp, 4),
+    #         "finish": round(finish_tstamp, 4),
+    #         "state": state.dict(),
+    #         "ip": get_ip(request),
+    #     }
+    #     fout.write(json.dumps(data) + "\n")
