@@ -83,6 +83,13 @@ async def about(request: Request):
         {"request": request, "config": config},
     )
 
+@app.get("/partenaires", response_class=HTMLResponse)
+async def partners(request: Request):
+    return templates.TemplateResponse(
+        "partners.html",
+        {"request": request, "config": config},
+    )
+
 
 @app.get("/mentions-legales", response_class=HTMLResponse)
 async def legal(request: Request):
