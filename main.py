@@ -31,7 +31,7 @@ logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 # Set authorization credentials
 auth = None
 
-# Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
+# TODO: Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
 # demo = demo.queue(
 #     # default_concurrency_limit=10,
 #     status_update_rate="auto",
