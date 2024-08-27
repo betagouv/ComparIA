@@ -7,9 +7,7 @@ import gradio as gr
 
 from gradio_modal import Modal
 
-from languia.utils import (
-    stepper_html,
-)
+from languia.utils import stepper_html, header_html
 
 # from custom_components.frbutton.backend.gradio_frbutton import FrButton
 from custom_components.customradiocard.backend.gradio_customradiocard import (
@@ -56,8 +54,7 @@ with gr.Blocks(
     # if not tos_cookie:
 
     # gr.HTML(elem_id="header-placeholder")
-    header = gr.HTML("", elem_id="header-html")
-
+    header = gr.HTML(header_html, elem_id="header-html")
 
     stepper_block = gr.HTML(
         stepper_html("Bienvenue ! Comment puis-je vous aider aujourd'hui ?", 1, 4),

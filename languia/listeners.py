@@ -6,7 +6,6 @@ from languia.utils import (
     get_ip,
     get_battle_pair,
     build_reveal_html,
-    header_html,
     vote_last_response,
     get_final_vote,
     get_model_extra_info,
@@ -55,7 +54,7 @@ def register_listeners():
     # TODO: make a cool input-output js function to pass here instead of in main js
     @demo.load(
         inputs=[],
-        outputs=(conversations + [header, stepper_block, mode_screen]),
+        outputs=(conversations + [stepper_block, mode_screen]),
         api_name=False,
     )
     def enter_arena(request: gr.Request):
@@ -88,7 +87,6 @@ def register_listeners():
             extra={request: request},
         )
         return conversations + [
-            gr.HTML(header_html),
             gr.update(visible=True),
             gr.update(visible=True),
         ]
