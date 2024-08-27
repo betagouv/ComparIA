@@ -239,13 +239,15 @@ def stepper_html(title, step, total_steps):
 </div>"""
 
 
+with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
+    welcome_modal_html = welcome_modal_file.read()
+
 with open("./templates/header-arena.html", encoding="utf-8") as header_file:
     header_html = header_file.read()
 
     if os.getenv("GIT_COMMIT"):
         git_commit = os.getenv("GIT_COMMIT")
         header_html += f"<!-- Git commit: {git_commit} -->"
-
 
 
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
@@ -365,6 +367,7 @@ license_desc = {
     "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités",
 }
 
+
 def calculate_lightbulb_consumption(impact_energy_value):
     """
     Calculates the energy consumption of a 5W LED light and determines the most sensible time unit.
@@ -380,9 +383,9 @@ def calculate_lightbulb_consumption(impact_energy_value):
 
     # Calculate consumption time using Wh
     watthours = impact_energy_value * 1000
-    consumption_days = watthours / (5 * 24)  
-    consumption_hours = watthours / 5  
-    consumption_minutes = watthours / (5 * 60)  
+    consumption_days = watthours / (5 * 24)
+    consumption_hours = watthours / 5
+    consumption_minutes = watthours / (5 * 60)
     consumption_seconds = watthours / (5 * 60 * 60)
 
     # Determine the most sensible unit based on magnitude
@@ -417,11 +420,10 @@ def calculate_streaming_hours(impact_gwp_value):
         return int(streaming_hours / 24), "j"
     elif streaming_hours >= 1:
         return int(streaming_hours), "h"
-    elif streaming_hours * 60 >= 1: 
+    elif streaming_hours * 60 >= 1:
         return int(streaming_hours * 60), "min"
-    else: 
+    else:
         return int(streaming_hours * 60 * 60), "s"
-
 
 
 def build_reveal_html(

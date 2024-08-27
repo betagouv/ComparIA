@@ -43,6 +43,7 @@ footer,
 .fr-tooltip.fr-placement--bottom {
   background-image: conic-gradient(from 146.31deg at 50% 0%, transparent 0deg, var(--background-overlap-grey) 0deg, var(--background-overlap-grey) 67.38deg, transparent 67.38deg), conic-gradient(from 146.31deg at 50% 0%, transparent 0deg, var(--border-default-grey) 0deg, var(--border-default-grey) 67.38deg, transparent 67.38deg), linear-gradient(90deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(90deg, var(--background-overlap-grey), var(--background-overlap-grey));
 }
+
 /* TODO: reenable */
 .copy_code_button {
   display: none;
@@ -92,14 +93,20 @@ body.dark {
   background-color: var(--neutral-100);
 }
 
-.dark .modal-block, 
-.dark .options .item, .dark .options {
+.dark .modal-block,
+.dark .options .item,
+.dark .options {
   background-color: white !important;
   color: var(--neutral-800) !important;
 }
-.dark .modal-block .close,.dark .modal-block .block,.dark .modal-block .wrap,.dark .modal-block .wrap-inner {
+
+.dark .modal-block .close,
+.dark .modal-block .block,
+.dark .modal-block .wrap,
+.dark .modal-block .wrap-inner {
   background-color: white !important;
 }
+
 .dark .modal-block span[data-testid="block-info"] {
   color: var(--neutral-800) !important;
 }
@@ -108,6 +115,7 @@ body.dark {
   /* var(--code-background-fill) */
   background-color: var(--neutral-100) !important;
 }
+
 /* UTILITY CLASSES */
 
 .inline-block {
@@ -117,12 +125,15 @@ body.dark {
 .bolder {
   font-weight: 700;
 }
+
 .bg-white textarea {
-background-color: white !important;
+  background-color: white !important;
 }
+
 .inline {
   display: inline;
 }
+
 .text-center {
   text-align: center;
 }
@@ -138,7 +149,10 @@ background-color: white !important;
   color: var(--text-mention-grey);
 
 }
-.text-blue, .fr-modal__title.text-blue, h6.text-blue  {
+
+.text-blue,
+.fr-modal__title.text-blue,
+h6.text-blue {
   /* Not DSFR compliant */
   color: var(--text-action-high-blue-france) !important;
 }
@@ -157,22 +171,25 @@ background-color: white !important;
 .underline {
   --underline-hover-width: var(--underline-max-width);
 }
+
 .fr-text--xxl {
   font-size: 1.5rem;
 }
+
 /* Custom */
 .rounded-tile {
   border-color: var(--border-default-grey);
   border-width: 1px;
   border-style: solid;
-  border-radius: 0.25rem; /* 4px */
+  border-radius: 0.25rem;
+  /* 4px */
 }
 
 .flex {
   display: flex;
 }
 
-  /* General */
+/* General */
 body {
   margin: auto !important;
 }
@@ -209,6 +226,7 @@ body {
   top: -16px;
   /* transition: transform 0.3s ease-in-out; */
 }
+
 .fr-stepper {
   max-width: 55rem;
 }
@@ -247,6 +265,7 @@ li.fr-nav__item {
   border-top: solid 1px var(--border-default-grey);
   z-index: 100;
 }
+
 #send-area .small-icon .button-icon {
   width: 15px;
   height: 14px;
@@ -256,6 +275,7 @@ li.fr-nav__item {
   position: absolute;
   top: 0;
 }
+
 /* 
 #free-mode,
 #guided-mode {
@@ -273,6 +293,7 @@ li.fr-nav__item {
   font-variant: small-caps;
   /* text-transform: uppercase; */
 }
+
 #mode-screen.send-area-enabled {
   margin-bottom: 12rem;
 }
@@ -327,7 +348,7 @@ li.fr-nav__item {
 
 #chat-area h1,
 #chat-area h2,
-#chat-area h3,  
+#chat-area h3,
 #chat-area h4,
 #chat-area h5,
 #chat-area h6 {
@@ -439,8 +460,8 @@ li.fr-nav__item {
   border: none;
   box-shadow: none;
   color: var(--text-action-high-blue-france);
-  }
-  
+}
+
 .modal-block .close::before {
   font-weight: 500;
   padding-right: 15px;
@@ -449,6 +470,42 @@ li.fr-nav__item {
 }
 
 /* Icons */
+
+
+.fr-icon-discuss-line::before,
+.fr-icon-discuss-line::after {
+  background-color: var(--text-action-high-blue-france);
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
+  mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
+
+}
+
+.fr-icon-chat-delete-line::before,
+.fr-icon-chat-delete-line::after {
+  background-color: var(--text-action-high-blue-france);
+  /* background-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg"); */
+
+  -webkit-mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
+  mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
+}
+
+.fr-icon-pass-expired-line::before,
+.fr-icon-pass-expired-line::after {
+  background-color: var(--text-action-high-blue-france);
+  /* background-image: url("file=assets/extra-icons/pass-expired.svg"); */
+
+  -webkit-mask-image: url("file=assets/extra-icons/pass-expired.svg");
+  mask-image: url("file=assets/extra-icons/pass-expired.svg");
+}
+
+.fr-icon-refresh-line::before,
+.fr-icon-refresh-line::after {
+  background-color: var(--text-action-high-blue-france);
+
+  -webkit-mask-image: url("file=assets/extra-icons/refresh-blue.svg");
+  mask-image: url("file=assets/extra-icons/refresh-blue.svg");
+}
 
 .fr-icon-stack::before,
 .fr-icon-stack::after {
@@ -498,41 +555,14 @@ li.fr-nav__item {
   mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
 }
 
-.fr-icon-discuss-line::before,
-.fr-icon-discuss-line::after {
+
+.fr-icon-success-line::before,
+.fr-icon-success-line::after {
+  -webkit-mask-image: url("file=assets/dsfr/icons/system/fr--success-line.svg");
+  mask-image: url("file=assets/dsfr/icons/system/fr--success-line.svg");
   background-color: var(--text-action-high-blue-france);
-  /* background-image : url("file=assets/dsfr/icons/communication/discuss-line.svg"); */
-
-  -webkit-mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
-  mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
-
 }
 
-.fr-icon-chat-delete-line::before,
-.fr-icon-chat-delete-line::after {
-  background-color: var(--text-action-high-blue-france);
-  /* background-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg"); */
-
-  -webkit-mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
-  mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
-}
-
-.fr-icon-pass-expired-line::before,
-.fr-icon-pass-expired-line::after {
-  background-color: var(--text-action-high-blue-france);
-  /* background-image: url("file=assets/extra-icons/pass-expired.svg"); */
-
-  -webkit-mask-image: url("file=assets/extra-icons/pass-expired.svg");
-  mask-image: url("file=assets/extra-icons/pass-expired.svg");
-}
-
-.fr-icon-refresh-line::before,
-.fr-icon-refresh-line::after {
-  background-color: var(--text-action-high-blue-france);
-
-  -webkit-mask-image: url("file=assets/extra-icons/refresh-blue.svg");
-  mask-image: url("file=assets/extra-icons/refresh-blue.svg");
-}
 
 .fr-icon-code-view::before {
   background-image: url("file=assets/dsfr/icons/editor/code-view.svg");
