@@ -97,15 +97,21 @@ def openai_api_stream_iter(
         messages=messages,
         temperature=temperature,
         max_tokens=max_new_tokens,
+        top_p=top_p,
         stream=True,
     )
     text = ""
+    output_tokens = 0
     for chunk in res:
         if len(chunk.choices) > 0:
             text += chunk.choices[0].delta.content or ""
+            output_tokens = chunk.usage.completion_tokens
+            # ?
+            output_tokens += chunk.usage.completion_tokens
             data = {
                 "text": text,
                 "error_code": 0,
+                "output_tokens": output_tokens
             }
             yield data
 
