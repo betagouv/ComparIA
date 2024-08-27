@@ -2,6 +2,17 @@
 
 {% block extra_styles %}
 <style>
+    .fr-checkbox-group input[type=checkbox]+label:before {
+        --border-action-high-blue-france: var(--blue-france-main-525);
+    }
+
+    .fr-checkbox-group input[type=checkbox]:checked+label:before {
+
+        --border-active-blue-france: var(--blue-france-main-525);
+        background-color: var(--blue-france-main-525);
+    }
+
+
     .fr-icon-check-line::before,
     .fr-icon-check-line::after {
         -webkit-mask-image: url("assets/dsfr/icons/system/check-line.svg");
@@ -144,7 +155,7 @@
                         font-family:
                             Marianne;
                         src:
-                            url("dsfr/fonts/Marianne-Regular.woff2") format("woff2");
+                            url("assets/dsfr/fonts/Marianne-Regular.woff2") format("woff2");
                         font-weight:
                             400;
                         font-style:

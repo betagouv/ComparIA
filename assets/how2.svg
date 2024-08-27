@@ -23,7 +23,7 @@
          font-family:
             Marianne;
          src:
-            url("dsfr/fonts/Marianne-Regular.woff2") format("woff2");
+            url("assets/dsfr/fonts/Marianne-Regular.woff2") format("woff2");
          font-weight:
             400;
          font-style:
