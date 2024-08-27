@@ -6,10 +6,8 @@ from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
 from languia.utils import build_logger
 import datetime
-from random import randrange
 
 t = datetime.datetime.now()
-random = randrange(10000)
 hostname = os.uname().nodename
 log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
 logger = build_logger(log_filename)
@@ -21,6 +19,17 @@ if os.getenv("GIT_COMMIT"):
     git_commit = os.getenv("GIT_COMMIT")
 
 env_debug = os.getenv("LANGUIA_DEBUG")
+
+if any(os.getenv(var) for var in ['LANGUIA_DB_NAME', 'LANGUIA_DB_USER', 'LANGUIA_DB_PASSWORD', 'LANGUIA_DB_HOST', 'LANGUIA_DB_PORT']):
+    db = {
+    'dbname': os.getenv('LANGUIA_DB_NAME', 'languia'),
+    'user': os.getenv('LANGUIA_DB_USER', 'languia'),
+    'password': os.getenv('LANGUIA_DB_PASSWORD', ''),
+    'host': os.getenv('LANGUIA_DB_HOST', 'localhost'),
+    'port': os.getenv('LANGUIA_DB_PORT', 5678)
+}
+else:
+    db = None
 
 if env_debug:
     if env_debug.lower() == "true":
