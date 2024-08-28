@@ -9,6 +9,9 @@ from random import randrange
 
 import json
 
+import psycopg2
+from psycopg2 import sql
+
 # from fastchat.utils import (
 #     moderation_filter,
 # )
@@ -139,7 +142,47 @@ def get_final_vote(which_model_radio):
     return final_vote[which_model_radio]
 
 
-def log_poll(
+def get_matomo_tracker_from_cookies(cookies):
+    for cookie in cookies:
+        if cookie.name.startswith("_pk_id_"):
+            logging.debug(f"Found cookie: {cookie.name} {cookie.value}")
+            return cookie.value
+
+def save_profile_to_db(data):
+    from languia.config import db as db_config
+
+    if not db_config:
+        logger.warn("Cannot log to db: no db configured")
+        return
+    conn = psycopg2.connect(**db_config)
+    cursor = conn.cursor()
+    try:
+        insert_statement = sql.SQL("""
+            INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, session_hash, extra)
+            VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(session_hash)s, %(extra)s)
+        """)
+        values = {
+            "tstamp": int(data["tstamp"]),
+            "chatbot_use": str(data["chatbot_use"]),
+            "gender": str(data["gender"]),
+            "age": str(data["age"]),
+            "profession": str(data["profession"]),
+            "session_hash": str(data["session_hash"]),
+            "extra": json.dumps(data["extra"]),
+        }
+        cursor.execute(insert_statement, values)
+        conn.commit()
+    except Exception as e:
+        logger = logging.getLogger("languia")
+        logger.error(f"Error while saving to db: {e}")
+        conn.rollback()
+    finally:
+        cursor.close()
+        if conn:
+            conn.close()
+
+
+def save_profile(
     conversation_a,
     conversation_b,
     which_model_radio,
@@ -149,31 +192,46 @@ def log_poll(
     profession,
     request: gr.Request,
 ):
+    """
+    save poll data to file
+    """
     logger = logging.getLogger("languia")
-    # logger.info(f"poll", extra={"request": request,
-    #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
-    #     },
-    # )
+    t = datetime.datetime.now()
+    profile_log_filename = f"profile-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
+    profile_log_path = os.path.join(LOGDIR, profile_log_filename)
+
     chosen_model = get_chosen_model(which_model_radio)
     final_vote = get_final_vote(which_model_radio)
 
-    with open(get_conv_log_filename(), "a") as fout:
+    get_matomo_tracker_from_cookies(request.cookies)
+
+    with open(profile_log_path, "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
-            "type": "poll",
-            "models": [x.model_name for x in [conversation_a, conversation_b]],
-            "conversations": [x.dict() for x in [conversation_a, conversation_b]],
             "chatbot_use": chatbot_use,
-            "final_vote": final_vote,
-            "chosen_model": chosen_model,
             "gender": gender,
             "age": age,
             "profession": profession,
-            # FIXME:
-            # "ip": get_ip(request),
+            "session_hash": request.session_hash,
+            # "cookies": request.cookies(),
+            # Log redundant info to be sure
+            "extra": {
+                "final_vote": final_vote,
+                "chosen_model": chosen_model,
+                "models": [x.model_name for x in [conversation_a, conversation_b]],
+                "conversations": [x.dict() for x in [conversation_a, conversation_b]],
+                "cookies": request.cookies,
+            },
         }
-        logger.info(json.dumps(data), extra={"request": request})
+
+        # logger.info(f"poll", extra={"request": request,
+        #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
+        #     },
+        # )
         fout.write(json.dumps(data) + "\n")
+
+    save_profile_to_db(data=data)
+    logger.info("profile_filled", extra={"request": request, "extra_data": data})
 
     return data
 
@@ -467,15 +525,6 @@ def build_reveal_html(
         lightbulb_b=lightbulb_b,
         lightbulb_b_unit=lightbulb_b_unit,
     )
-
-
-def get_conv_log_filename(is_vision=False, has_csam_image=False):
-    t = datetime.datetime.now()
-    random = randrange(10000)
-    conv_log_filename = f"{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{t.second:02d}-{t.microsecond:02d}-{random}-conv.json"
-    name = os.path.join(LOGDIR, conv_log_filename)
-
-    return name
 
 
 def build_model_extra_info(name: str, all_models_extra_info_json: dict):
