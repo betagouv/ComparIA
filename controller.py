@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
+
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
@@ -16,22 +17,20 @@ outages: List[Dict[str, str]] = []
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
 
+
 @app.post("/outages/", status_code=201)
-async def create_outage(model_name: str, reason:str=None):
+async def create_outage(model_name: str, reason: str = None):
     outage = {
         "detection_time": datetime.now().isoformat(),
         "model_name": model_name,
-        "reason": reason
+        "reason": reason,
     }
 
     # Check if the model name already exists in the outages list
-    _existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
+    existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
 
-    # if existing_outage:
-        # refresh_outage([model_name]["detection_time"] = outage["detection_time"]
-        # if hasattr(outage,"reason"):
-        #     outages[model_name]["reason"] = outage["reason"]
-    # else:
+    if existing_outage:
+        remove_outage(model_name)
     outages.append(outage)
     return outage
 
@@ -77,13 +76,12 @@ else:
 
 models = json.load(open(register_api_endpoint_file))
 
+
 @app.get("/outages/{model_name}")
 async def test_model(model_name):
 
     # Log the outage test
-    logging.info(
-        f"Testing model: {model_name} "
-    )
+    logging.info(f"Testing model: {model_name} ")
 
     # Define test parameters
     test_message = "Say 'this is a test'."
@@ -91,8 +89,7 @@ async def test_model(model_name):
     top_p = 1
     max_new_tokens = 10
 
-
-# if api_endpoint_info[model_name]["api_type"] == "openai"
+    # if api_endpoint_info[model_name]["api_type"] == "openai"
 
     try:
         # Initialize the OpenAI client
@@ -125,11 +122,15 @@ async def test_model(model_name):
             if any(outage["model_name"] == model_name for outage in outages):
                 logging.info(f"Removing {model_name} from outage list")
                 await remove_outage(model_name)
-                return {"success": "true", "message": "Removed model from outages list.", "response": text}
-            return {"success": "true", "message": "Model responded: "+str(text)}
+                return {
+                    "success": "true",
+                    "message": "Removed model from outages list.",
+                    "response": text,
+                }
+            return {"success": "true", "message": "Model responded: " + str(text)}
 
         else:
-            reason = "No content in: "+str(chunk)
+            reason = "No content in: " + str(chunk)
             logging.error(f"Test failed: {model_name}")
             logging.error(f"No text in: {chunk}")
             await create_outage(model_name, reason)
@@ -137,7 +138,7 @@ async def test_model(model_name):
 
     except Exception as e:
         logging.error(f"Error: {model_name}, {str(e)}")
-        
+
         _outage = await create_outage(model_name, e)
 
         return {"success": "false", "reason": str(e)}
@@ -147,13 +148,16 @@ async def scheduled_outage_tests():
     while True:
         # for model in models:
         for outage in outages:
-            asyncio.create_task(test_model(outage['model_name']))
+            asyncio.create_task(test_model(outage["model_name"]))
         await asyncio.sleep(600)  # Test every 10 minutes (600 seconds)
 
 
-@app.get("/", response_class=HTMLResponse, )
+@app.get(
+    "/",
+    response_class=HTMLResponse,
+)
 async def index(request: Request):
-    
+
     return templates.TemplateResponse(
         "outages.html",
         {"outages": outages, "models": models, "request": request},
