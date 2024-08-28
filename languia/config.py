@@ -556,7 +556,7 @@ prompts_table = {
         "Quoque ch'est qu'te berdoules ? Réponds en Chtimi.",
         "C’est quoi les mots qui font que t’as l’air 100% québécois, tabarnak ?",
         "Comment « tèt chaje » fait passer ton stress haïtien pour du cool ?",
-        """Explique moi cette strophe de la chanson "Wesh alors" de Jul: "Wesh le sang, wesh la honda / Mes sons tournent à la Jonque' / Tu m'as trahis mais t'es un bon gars / J'suis en fumette mais j'me trompe pas”""",
+        """Explique moi cette strophe de la chanson "Wesh alors" de Jul: "Wesh le sang, wesh la honda / Mes sons tournent à la Jonque' / Tu m'as trahi mais t'es un bon gars / J'suis en fumette mais j'me trompe pas”""",
         "En quoi l'argot belge, avec des expressions comme « zwanze », diffère-t-il du reste de la francophonie ?",
         "Quels sont les contextes d’utilisation des expressions « wakh dem » et « jaay foné » à Dakar ?",
         "Comment l’expression « être un pive » s’intègre-t-elle dans l’argot suisse romand et que signifie-t-elle exactement ?",

@@ -9,13 +9,30 @@
             <tr>
                 <th>Model name</th>
                 <th>Detection Time</th>
+                <th>Last reason</th>
                 <th>Retry?</th>
             </tr>
             {% for outage in outages %}
             <tr>
                 <td>{{ outage.model_name }}</td>
                 <td>{{ outage.detection_time }}</td>
+                <td>{{ outage.reason }}</td>
                 <td><a href="/outages/{{ outage.model_name }}">Test?</a></a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        <h1>All models</h1>
+        <table>
+            <tr>
+                <th>Model name</th>
+                <th>Test?</th>
+                <!-- <th>Stats</th> -->
+            </tr>
+            {% for model in models %}
+            <tr>
+                <td>{{ model.model_name }}</td>
+                <td><a href="/outages/{{ model.model_name }}">Test?</a></a></td>
+                <!-- <td><a href="/outages/{{ outage.model_name }}">Test?</a></a></td> -->
             </tr>
             {% endfor %}
         </table>

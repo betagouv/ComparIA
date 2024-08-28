@@ -248,10 +248,10 @@ def register_listeners():
                 except Exception as e:
                     logger.error(
                         f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
-                        extra={"request": request},
+                        extra={"request": request, "error": str(e)},
                     )
                     config.outage_models.append(conversations[i].model_name)
-                    add_outage_model(config.controller_url, conversations[i].model_name)
+                    add_outage_model(config.controller_url, conversations[i].model_name,reason=str(e))
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
                     # gr.Warning(

@@ -669,11 +669,11 @@ def refresh_outage_models(previous_outage_models, controller_url):
         return previous_outage_models
 
 
-def add_outage_model(controller_url, model_name):
+def add_outage_model(controller_url, model_name, reason):
     logger = logging.getLogger("languia")
 
     try:
-        response = requests.post(
+        response = requests.post(json={"reason": str(reason)},
             url=f"{controller_url}/outages/?model_name={model_name}", timeout=2
         )
     except Exception as e:
