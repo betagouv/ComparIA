@@ -25,14 +25,14 @@ async def create_outage(model_name: str, reason:str=None):
     }
 
     # Check if the model name already exists in the outages list
-    existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
+    _existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
 
-    if existing_outage:
-        outages[model_name]["detection_time"] = outage["detection_time"]
-        if hasattr(outage,"reason"):
-            outages[model_name]["reason"] = outage["reason"]
-    else:
-        outages.append(outage)
+    # if existing_outage:
+        # refresh_outage([model_name]["detection_time"] = outage["detection_time"]
+        # if hasattr(outage,"reason"):
+        #     outages[model_name]["reason"] = outage["reason"]
+    # else:
+    outages.append(outage)
     return outage
 
 
@@ -138,7 +138,7 @@ async def test_model(model_name):
     except Exception as e:
         logging.error(f"Error: {model_name}, {str(e)}")
         
-        outage = await create_outage(model_name, e)
+        _outage = await create_outage(model_name, e)
 
         return {"success": "false", "reason": str(e)}
 
