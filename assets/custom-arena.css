@@ -12,6 +12,11 @@ fieldset {
   background-color: transparent;
 }
 
+
+.fr-collapse {
+  --collapse-max-height: None;
+}
+
 /* form label is in light grey */
 .has-info {
   color: var(--text-title-grey) !important;
