@@ -17,7 +17,7 @@
                 <td>{{ outage.model_name }}</td>
                 <td>{{ outage.detection_time }}</td>
                 <td>{{ outage.reason }}</td>
-                <td><a href="/outages/{{ outage.model_name }}">Test?</a></a></td>
+                <td><a href="/outages/{{ outage.model_name }}">Retry?</a></a></td>
             </tr>
             {% endfor %}
         </table>
@@ -32,7 +32,7 @@
             <tr>
                 <td>{{ model.model_name }}</td>
                 <td><a href="/outages/{{ model.model_name }}">Test?</a></a></td>
-                <!-- <td><a href="/outages/{{ outage.model_name }}">Test?</a></a></td> -->
+                <!-- <td><a href="/outages/{{ model.model_name }}">Test?</a></a></td> -->
             </tr>
             {% endfor %}
         </table>
