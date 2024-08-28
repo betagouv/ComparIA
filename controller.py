@@ -122,10 +122,12 @@ async def test_model(model_name):
         # Check if the response is successful
         if text:
             logging.info(f"Test successful: {model_name}")
-            logging.info(f"Removing {model_name} from outage list")
-            await remove_outage(model_name)
+            if any(outage["model_name"] == model_name for outage in outages):
+                logging.info(f"Removing {model_name} from outage list")
+                await remove_outage(model_name)
+                return {"success": "true", "message": "Removed model from outages list.", "response": text}
+            return {"success": "true", "message": "Model responded: "+str(text)}
 
-            return {"success": "true", "error_message": ""}
         else:
             reason = "No content in: "+str(chunk)
             logging.error(f"Test failed: {model_name}")
