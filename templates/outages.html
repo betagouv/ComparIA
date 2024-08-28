@@ -28,11 +28,11 @@
                 <th>Test?</th>
                 <!-- <th>Stats</th> -->
             </tr>
-            {% for model in models %}
+            {% for model_name, model in models.items() %}
             <tr>
-                <td>{{ model.model_name }}</td>
-                <td><a href="/outages/{{ model.model_name }}">Test?</a></a></td>
-                <!-- <td><a href="/outages/{{ model.model_name }}">Test?</a></a></td> -->
+                <td>{{ model_name }}</td>
+                <td><a href="/outages/{{ model_name }}">Test?</a></a></td>
+                <!-- <td><a href="/outages/{{ model_name }}">Test?</a></a></td> -->
             </tr>
             {% endfor %}
         </table>
