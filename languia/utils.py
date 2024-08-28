@@ -70,42 +70,51 @@ class CustomFormatter(logging.Formatter):
         return json.dumps(log_data)
 
 
-def build_logger(logger_filename):
-    # Get logger
-    logger = logging.getLogger("languia")
-    logger.setLevel(logging.INFO)
+class PostgresHandler(logging.Handler):
+    def __init__(self, db_config):
+        super().__init__()
+        self.db_config = db_config
+        self.connection = None
 
-    # file_formatter = CustomFormatter(
-    #     '{"time":"%(asctime)s", "name": "%(name)s", \
-    #     "level": "%(levelname)s", "message": "%(message)s", \
-    #     "ip": "%(ip)s", "query_params": "%(query_params)s", \
-    #     "path_params": "%(path_params)s", "session_hash": "%(session_hash)s"}',
-    file_formatter = CustomFormatter(
-        '{"time":"%(asctime)s", "name": "%(name)s", \
-        "level": "%(levelname)s", "message": "%(message)s"}',
-        # defaults={"request": ""},
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+    def connect(self):
+        if not self.connection or self.connection.closed:
+            self.connection = psycopg2.connect(**self.db_config)
 
-    # stream_formatter = logging.Formatter(
-    #     fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-    #     datefmt="%Y-%m-%d %H:%M:%S",
-    # )
-    # stream_handler = logging.StreamHandler()
-    # stream_logger.addHandler(stream_handler)
-
-    # Avoid httpx flooding POST logs
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-
-    # if LOGDIR is empty, then don't try output log to local file
-    if LOGDIR != "":
-        os.makedirs(LOGDIR, exist_ok=True)
-        filename = os.path.join(LOGDIR, logger_filename)
-        file_handler = WatchedFileHandler(filename, encoding="utf-8")
-        file_handler.setFormatter(file_formatter)
-
-        logger.addHandler(file_handler)
-    return logger
+    def emit(self, record):
+        try:
+            self.connect()
+            with self.connection.cursor() as cursor:
+                # CREATE TABLE logs (
+                #     time TIMESTAMP NOT NULL,
+                #     level VARCHAR(50) NOT NULL,
+                #     message TEXT NOT NULL,
+                #     query_params JSONB,
+                #     path_params JSONB,
+                #     session_hash VARCHAR(255),
+                #     extra JSONB
+                # );
+                insert_statement = sql.SQL(
+                    """
+                    INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
+                    VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
+                """
+                )
+                values = {
+                    "time": self.formatTime(record, self.datefmt),
+                    "level": record.levelname,
+                    "message": record.message,
+                    "query_params": json.dumps(record.__dict__.get("query_params")),
+                    "path_params": json.dumps(record.__dict__.get("path_params")),
+                    "session_hash": record.__dict__.get("session_hash"),
+                    "extra": json.dumps(record.__dict__),
+                }
+                cursor.execute(insert_statement, values)
+                self.connection.commit()
+        except Exception as e:
+            print(f"Error logging to Postgres: {e}")
+        finally:
+            if self.connection:
+                self.connection.close()
 
 
 def get_ip(request: gr.Request):
@@ -148,6 +157,7 @@ def get_matomo_tracker_from_cookies(cookies):
             logging.debug(f"Found cookie: {cookie.name} {cookie.value}")
             return cookie.value
 
+
 def save_profile_to_db(data):
     from languia.config import db as db_config
 
@@ -157,10 +167,12 @@ def save_profile_to_db(data):
     conn = psycopg2.connect(**db_config)
     cursor = conn.cursor()
     try:
-        insert_statement = sql.SQL("""
+        insert_statement = sql.SQL(
+            """
             INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, session_hash, extra)
             VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(session_hash)s, %(extra)s)
-        """)
+        """
+        )
         values = {
             "tstamp": int(data["tstamp"]),
             "chatbot_use": str(data["chatbot_use"]),
@@ -174,8 +186,6 @@ def save_profile_to_db(data):
         conn.commit()
     except Exception as e:
         logger = logging.getLogger("languia")
-        logger.error(f"Error while saving to db: {e}")
-        conn.rollback()
     finally:
         cursor.close()
         if conn:
@@ -722,8 +732,10 @@ def add_outage_model(controller_url, model_name, reason):
     logger = logging.getLogger("languia")
 
     try:
-        response = requests.post(json={"reason": str(reason)},
-            url=f"{controller_url}/outages/?model_name={model_name}", timeout=2
+        response = requests.post(
+            json={"reason": str(reason)},
+            url=f"{controller_url}/outages/?model_name={model_name}",
+            timeout=2,
         )
     except Exception as e:
         logger.error("Failed to post outage data: " + str(e))

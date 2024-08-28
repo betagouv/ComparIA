@@ -4,21 +4,18 @@ import json
 from slugify import slugify
 from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
-from languia.utils import build_logger
 import datetime
 
 t = datetime.datetime.now()
 hostname = os.uname().nodename
 log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
-logger = build_logger(log_filename)
+import logging
 
-num_sides = 2
-enable_moderation = False
+LOGDIR = os.getenv("LOGDIR", "./data")
 
-if os.getenv("GIT_COMMIT"):
-    git_commit = os.getenv("GIT_COMMIT")
+from logging.handlers import WatchedFileHandler
 
-env_debug = os.getenv("LANGUIA_DEBUG")
+from languia.utils import CustomFormatter, PostgresHandler
 
 if any(os.getenv(var) for var in ['LANGUIA_DB_NAME', 'LANGUIA_DB_USER', 'LANGUIA_DB_PASSWORD', 'LANGUIA_DB_HOST', 'LANGUIA_DB_PORT']):
     db = {
@@ -30,6 +27,41 @@ if any(os.getenv(var) for var in ['LANGUIA_DB_NAME', 'LANGUIA_DB_USER', 'LANGUIA
 }
 else:
     db = None
+
+def build_logger(logger_filename):
+    logger = logging.getLogger("languia")
+    logger.setLevel(logging.INFO)
+
+    file_formatter = CustomFormatter(
+        '{"time":"%(asctime)s", "name": "%(name)s", \
+        "level": "%(levelname)s", "message": "%(message)s"}',
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    if LOGDIR:
+        os.makedirs(LOGDIR, exist_ok=True)
+        filename = os.path.join(LOGDIR, logger_filename)
+        file_handler = WatchedFileHandler(filename, encoding="utf-8")
+        file_handler.setFormatter(file_formatter)
+        logger.addHandler(file_handler)
+
+    if db:
+        postgres_handler = PostgresHandler(db)
+        postgres_handler.setFormatter(file_formatter) 
+        logger.addHandler(postgres_handler)
+
+    return logger
+
+logger = build_logger(log_filename)
+
+num_sides = 2
+enable_moderation = False
+
+if os.getenv("GIT_COMMIT"):
+    git_commit = os.getenv("GIT_COMMIT")
+
+env_debug = os.getenv("LANGUIA_DEBUG")
+
 
 if env_debug:
     if env_debug.lower() == "true":
