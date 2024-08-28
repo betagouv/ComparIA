@@ -259,7 +259,7 @@ def register_listeners():
                     # )
                     gr.Warning(
                         duration=0,
-                        message="Erreur avec le chargement d'un des modèles, l'arène va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
+                        message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
                     )
                     app_state.original_user_prompt = chatbots[0][0][0]
                     logger.info(

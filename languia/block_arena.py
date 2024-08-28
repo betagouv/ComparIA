@@ -32,7 +32,7 @@ app_state = gr.State()
 from themes.dsfr import DSFR
 
 with gr.Blocks(
-    title="LANGU:IA – L'arène francophone de comparaison de modèles conversationnels",
+    title="LANGU:IA – Le comparateur d'IA conversationnelles",
     theme=DSFR(),
     css=config.css,
     head=config.arena_head_js,
@@ -112,7 +112,7 @@ with gr.Blocks(
                 elem_id="main-textbox",
                 show_label=False,
                 lines=1,
-                placeholder="Ecrivez votre premier message à l'arène ici",
+                placeholder="Ecrivez votre premier message aux modèles ici",
                 max_lines=7,
                 elem_classes="inline-block fr-col-12 fr-col-md-10 bg-white",
                 container=False,
@@ -289,7 +289,6 @@ with gr.Blocks(
         gr.HTML(
             value="""
             <div class="fr-grid-row fr-grid-row--center fr-py-4w">
-            <a class="fr-btn" href="https://adtk8x51mbw.eu.typeform.com/to/kiPl3JAL" >Donner mon avis sur l'arène</a>
             <a class="fr-btn fr-btn--secondary fr-ml-2w" href="../modeles">Liste des modèles</a>
             </div>
         """
