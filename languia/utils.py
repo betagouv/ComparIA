@@ -9,6 +9,9 @@ from random import randrange
 
 import json
 
+import psycopg2
+from psycopg2 import sql
+
 # from fastchat.utils import (
 #     moderation_filter,
 # )
@@ -67,42 +70,43 @@ class CustomFormatter(logging.Formatter):
         return json.dumps(log_data)
 
 
-def build_logger(logger_filename):
-    # Get logger
-    logger = logging.getLogger("languia")
-    logger.setLevel(logging.INFO)
+class PostgresHandler(logging.Handler):
+    def __init__(self, db_config):
+        super().__init__()
+        self.db_config = db_config
+        self.connection = None
 
-    # file_formatter = CustomFormatter(
-    #     '{"time":"%(asctime)s", "name": "%(name)s", \
-    #     "level": "%(levelname)s", "message": "%(message)s", \
-    #     "ip": "%(ip)s", "query_params": "%(query_params)s", \
-    #     "path_params": "%(path_params)s", "session_hash": "%(session_hash)s"}',
-    file_formatter = CustomFormatter(
-        '{"time":"%(asctime)s", "name": "%(name)s", \
-        "level": "%(levelname)s", "message": "%(message)s"}',
-        # defaults={"request": ""},
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
+    def connect(self):
+        if not self.connection or self.connection.closed:
+            self.connection = psycopg2.connect(**self.db_config)
 
-    # stream_formatter = logging.Formatter(
-    #     fmt="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-    #     datefmt="%Y-%m-%d %H:%M:%S",
-    # )
-    # stream_handler = logging.StreamHandler()
-    # stream_logger.addHandler(stream_handler)
+    def emit(self, record):
+        try:
+            self.connect()
+            with self.connection.cursor() as cursor:
 
-    # Avoid httpx flooding POST logs
-    logging.getLogger("httpx").setLevel(logging.WARNING)
-
-    # if LOGDIR is empty, then don't try output log to local file
-    if LOGDIR != "":
-        os.makedirs(LOGDIR, exist_ok=True)
-        filename = os.path.join(LOGDIR, logger_filename)
-        file_handler = WatchedFileHandler(filename, encoding="utf-8")
-        file_handler.setFormatter(file_formatter)
-
-        logger.addHandler(file_handler)
-    return logger
+                insert_statement = sql.SQL(
+                    """
+                    INSERT INTO logs (tstamp, level, message, query_params, path_params, session_hash, extra)
+                    VALUES (%(tstamp)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
+                """
+                )
+                values = {
+                    "tstamp": self.formatTime(record, self.datefmt),
+                    "level": record.levelname,
+                    "message": record.message,
+                    "query_params": json.dumps(record.__dict__.get("query_params")),
+                    "path_params": json.dumps(record.__dict__.get("path_params")),
+                    "session_hash": record.__dict__.get("session_hash"),
+                    "extra": json.dumps(record.__dict__),
+                }
+                cursor.execute(insert_statement, values)
+                self.connection.commit()
+        except Exception as e:
+            print(f"Error logging to Postgres: {e}")
+        finally:
+            if self.connection:
+                self.connection.close()
 
 
 def get_ip(request: gr.Request):
@@ -129,17 +133,49 @@ def get_chosen_model(which_model_radio):
     return chosen_model
 
 
-def get_final_vote(which_model_radio):
-    final_vote = {
-        -1.5: "strongly-a",
-        -0.5: "slightly-a",
-        +0.5: "slightly-b",
-        +1.5: "strongly-b",
-    }
-    return final_vote[which_model_radio]
+def get_matomo_tracker_from_cookies(cookies):
+    for cookie in cookies:
+        if cookie[0].startswith("_pk_id_"):
+            logging.debug(f"Found cookie: {cookie[0]} {cookie[1]}")
+            return cookie.value
 
 
-def log_poll(
+def save_profile_to_db(data):
+    from languia.config import db as db_config
+
+    logger = logging.getLogger("languia")
+    if not db_config:
+        logger.warn("Cannot log to db: no db configured")
+        return
+    conn = psycopg2.connect(**db_config)
+    cursor = conn.cursor()
+    try:
+        insert_statement = sql.SQL(
+            """
+            INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, session_hash, extra)
+            VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(session_hash)s, %(extra)s)
+        """
+        )
+        values = {
+            "tstamp": int(data["tstamp"]),
+            "chatbot_use": str(data["chatbot_use"]),
+            "gender": str(data["gender"]),
+            "age": str(data["age"]),
+            "profession": str(data["profession"]),
+            "session_hash": str(data["session_hash"]),
+            "extra": json.dumps(data["extra"]),
+        }
+        cursor.execute(insert_statement, values)
+        conn.commit()
+    except Exception as e:
+        logger = logging.getLogger("languia")
+    finally:
+        cursor.close()
+        if conn:
+            conn.close()
+
+
+def save_profile(
     conversation_a,
     conversation_b,
     which_model_radio,
@@ -149,82 +185,221 @@ def log_poll(
     profession,
     request: gr.Request,
 ):
+    """
+    save poll data to file
+    """
     logger = logging.getLogger("languia")
-    # logger.info(f"poll", extra={"request": request,
-    #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
-    #     },
-    # )
-    chosen_model = get_chosen_model(which_model_radio)
-    final_vote = get_final_vote(which_model_radio)
+    t = datetime.datetime.now()
+    profile_log_filename = f"profile-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
+    profile_log_path = os.path.join(LOGDIR, profile_log_filename)
 
-    with open(get_conv_log_filename(), "a") as fout:
+    get_matomo_tracker_from_cookies(request.cookies)
+
+    with open(profile_log_path, "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
-            "type": "poll",
-            "models": [x.model_name for x in [conversation_a, conversation_b]],
-            "conversations": [x.dict() for x in [conversation_a, conversation_b]],
-            "chatbot_use": chatbot_use,
-            "final_vote": final_vote,
-            "chosen_model": chosen_model,
-            "gender": gender,
-            "age": age,
-            "profession": profession,
-            # FIXME:
-            # "ip": get_ip(request),
+            "chatbot_use": str(chatbot_use),
+            "gender": str(gender),
+            "age": str(age),
+            "profession": str(profession),
+            "session_hash": str(request.session_hash),
+            # "cookies": request.cookies(),
+            # Log redundant info to be sure
+            "extra": {
+                "which_model_radio": which_model_radio,
+                "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
+                "conversations": [x.dict() for x in [conversation_a, conversation_b]],
+                "cookies": dict(request.cookies),
+            },
         }
-        logger.info(json.dumps(data), extra={"request": request})
+
+        # logger.info(f"poll", extra={"request": request,
+        #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
+        #     },
+        # )
         fout.write(json.dumps(data) + "\n")
 
+    save_profile_to_db(data=data)
+    logger.info("profile_filled", extra={"request": request, "extra_data": data})
+
     return data
+
+
+def get_intensity(which_model_radio):
+    intensity = {
+        -1.5: "strongly",
+        -0.5: "slightly",
+        +0.5: "slightly",
+        +1.5: "strongly",
+    }
+    return intensity[which_model_radio]
+
+
+def get_chosen_model_name(which_model_radio, conversations):
+    if which_model_radio in [-1.5, -0.5]:
+        chosen_model_name = conversations[0].model_name
+    elif which_model_radio in [0.5, 1.5]:
+        chosen_model_name = conversations[1].model_name
+    else:
+        chosen_model_name = "invalid-vote"
+        raise (ValueError)
+    return chosen_model_name
+
+
+def get_opening_prompt(conversation):
+    for msg in conversation.conv.messages:
+        if msg[0] == "user":
+            return conversation.conv.messages[0][1]
+    return ValueError("No opening prompt found")
+
+
+def get_messages_dict(messages):
+    messages_dict = []
+    for message in messages:
+        if message.len() == 2:
+            messages_dict.append({"role": message[0], "content": message[1]})
+        else:
+            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
+    return messages_dict
+
+
+def count_turns(messages):
+    return len(messages) // 2
+
+
+def is_unedited_prompt(opening_prompt, category):
+    from config import prompts_table
+
+    return opening_prompt in prompts_table[category].values()
+
+
+def save_vote_to_db(data):
+    from languia.config import db as db_config
+
+    logger = logging.getLogger("languia")
+    if not db_config:
+        logger.warn("Cannot log to db: no db configured")
+        return
+    conn = psycopg2.connect(**db_config)
+    cursor = conn.cursor()
+    try:
+        insert_statement = sql.SQL(
+            """
+            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, intensity, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments)
+            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(intensity)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s)
+        """
+        )
+        values = {
+            "tstamp": round(time.time(), 4),
+            "model_a_name": str(data["model_a_name"]),
+            "model_b_name": str(data["model_b_name"]),
+            "model_pair_name": json.dumps(sorted(data["model_pair_name"])),
+            "chosen_model_name": str(data["chosen_model_name"]),
+            "intensity": str(data["intensity"]),
+            "opening_prompt": str(data["opening_prompt"]),
+            "conversation_a": json.dumps(data["conversation_a"]),
+            "conversation_b": json.dumps(data["conversation_b"]),
+            "turns": int(data["turns"]),
+            "selected_category": str(data["selected_category"]),
+            "is_unedited_prompt": int(data["is_unedited_prompt"]),
+            "template": json.dumps(data["template"]),
+            "uuid": str(data["uuid"]),
+            "ip": str(data["ip"]),
+            "session_hash": str(data["session_hash"]),
+            "visitor_uuid": str(data["visitor_uuid"]),
+            "relevance": int(data["relevance"]),
+            "form": int(data["form"]),
+            "style": int(data["style"]),
+            "comments": str(data["comments"]),
+        }
+        cursor.execute(insert_statement, values)
+        conn.commit()
+    except Exception as e:
+        logger.error(f"Error saving vote to db: {e}")
+    finally:
+        cursor.close()
+        if conn:
+            conn.close()
 
 
 def vote_last_response(
     conversations,
-    chosen_model,
-    final_vote,
+    which_model_radio,
+    category,
     details: list,
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
-    logger.info(
-        f"{final_vote}",
-        extra={
-            "request": request,
-            "type": final_vote,
-            "chosen_model": chosen_model,
-            "chosen_model_name": (
-                conversations[0].model_name
-                if chosen_model == "model-a"
-                else conversations[1].model_name
-            ),
-            "details": details,
-            "models": [x.model_name for x in conversations],
-            "conversations": [x.dict() for x in conversations],
-        },
-    )
 
-    with open(get_conv_log_filename(), "a") as fout:
-        data = {
-            "tstamp": round(time.time(), 4),
-            "vote": final_vote,
-            "chosen_model": chosen_model,
-            "chosen_model_name": (
-                conversations[0].model_name
-                if chosen_model == "model-a"
-                else conversations[1].model_name
-            ),
-            "models": [x.model_name for x in conversations],
-            "conversations": [x.dict() for x in conversations],
-            # FIXME:
-            "ip": get_ip(request),
-        }
-        if details != []:
-            data.update(details=details),
-        logger.info(json.dumps(data), extra={"request": request})
+    chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
+    intensity = get_intensity(which_model_radio)
+
+    conversation_a = get_messages_dict(conversations[0].to_gradio_chatbot())
+    conversation_b = get_messages_dict(conversations[1].to_gradio_chatbot())
+
+    # details = {
+    #         "relevance": relevance_slider,
+    #         "form": form_slider,
+    #         "style": style_slider,
+    #         "comments": comments_text,
+    #     }
+
+    # 1-5 => 0-100
+    relevance = details["relevance"] - 1 * 25
+    form = details["form"] - 1 * 25
+    style = details["relevance"] - 1 * 25
+
+    # TODO: Put opening_prompt in app_state?
+    opening_prompt = str(get_opening_prompt(conversations[0]))
+    data = {
+        "tstamp": round(time.time(), 4),
+        "model_a_name": conversations[0].model_name,
+        "model_b_name": conversations[1].model_name,
+        # sorted
+        "model_pair_name": sorted(
+            [conversations[0].model_name, conversations[1].model_name]
+        ),
+        "chosen_model_name": chosen_model_name,
+        "intensity": intensity,
+        "opening_prompt": opening_prompt,
+        "conversation_a": conversation_a,
+        "conversation_b": conversation_b,
+        "turns": count_turns((conversations[0].conv.messages)),
+        "selected_category": category,
+        "is_unedited_prompt": (
+            0
+            if category == "unguided"
+            else (is_unedited_prompt(opening_prompt, category))
+        ),
+        "template": (
+            []
+            if conversations[0].conv.name == "zero-shot"
+            # FIXME: add template if there is some template
+            else [conversations[0].conv.name + ": FIXME: UNAVAILABLE TEMPLATE"]
+        ),
+        "uuid": conversations[0].conv_id + "-" + conversations[1].conv_id,
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        "session_hash": str(request.session_hash),
+        "visitor_uuid": str(get_matomo_tracker_from_cookies(request.request.cookies)),
+        "relevance": relevance,
+        "form": form,
+        "style": style,
+        # FIXME: further input sanitizing?
+        "comments": details["comments"],
+    }
+
+    save_vote_to_db(data=data)
+    t = datetime.datetime.now()
+    vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
+    vote_log_path = os.path.join(LOGDIR, vote_log_filename)
+
+    with open(vote_log_path, "a") as fout:
+
+        logger.info("vote", extra={"request": request, "data": data})
         fout.write(json.dumps(data) + "\n")
 
     return data
-    # yield names + ("",)
 
 
 def stepper_html(title, step, total_steps):
@@ -469,15 +644,6 @@ def build_reveal_html(
     )
 
 
-def get_conv_log_filename(is_vision=False, has_csam_image=False):
-    t = datetime.datetime.now()
-    random = randrange(10000)
-    conv_log_filename = f"{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{t.second:02d}-{t.microsecond:02d}-{random}-conv.json"
-    name = os.path.join(LOGDIR, conv_log_filename)
-
-    return name
-
-
 def build_model_extra_info(name: str, all_models_extra_info_json: dict):
     # Maybe put orgs countries in an array here
     std_name = slugify(name.lower())
@@ -673,8 +839,10 @@ def add_outage_model(controller_url, model_name, reason):
     logger = logging.getLogger("languia")
 
     try:
-        response = requests.post(json={"reason": str(reason)},
-            url=f"{controller_url}/outages/?model_name={model_name}", timeout=2
+        response = requests.post(
+            json={"reason": str(reason)},
+            url=f"{controller_url}/outages/?model_name={model_name}",
+            timeout=2,
         )
     except Exception as e:
         logger.error("Failed to post outage data: " + str(e))

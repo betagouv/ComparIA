@@ -56,7 +56,7 @@ class ConversationState(gr.State):
         self.conv_id = uuid.uuid4().hex
 
         self.model_name = model_name
-        self.oai_thread_id = None
+        # self.oai_thread_id = None
         # self.is_vision = is_vision
 
         # self.conv.history

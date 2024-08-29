@@ -7,11 +7,11 @@ from languia.utils import (
     get_battle_pair,
     build_reveal_html,
     vote_last_response,
-    get_final_vote,
+    get_intensity,
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
-    log_poll,
+    save_profile,
     get_chosen_model,
     refresh_outage_models,
     add_outage_model,
@@ -99,6 +99,9 @@ def register_listeners():
         api_name=False,
     )
     def free_mode(request: gr.Request):
+        category = "unguided"
+        app_state.category = category
+
         logger.info(
             f"Chose free mode",
             extra={"request": request},
@@ -121,6 +124,7 @@ def register_listeners():
     )
     def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
         category = guided_cards
+        app_state.category = category
         prompt = gen_prompt(category)
         logger.info(
             f"set_guided_prompt: {category}",
@@ -251,7 +255,11 @@ def register_listeners():
                         extra={"request": request, "error": str(e)},
                     )
                     config.outage_models.append(conversations[i].model_name)
-                    add_outage_model(config.controller_url, conversations[i].model_name,reason=str(e))
+                    add_outage_model(
+                        config.controller_url,
+                        conversations[i].model_name,
+                        reason=str(e),
+                    )
                     logger.error(str(e), extra={"request": request})
                     logger.error(traceback.format_exc(), extra={"request": request})
                     # gr.Warning(
@@ -541,29 +549,27 @@ def register_listeners():
         conversation_b,
         which_model_radio,
         relevance_slider,
-        clearness_slider,
+        form_slider,
         style_slider,
         comments_text,
         request: gr.Request,
     ):
-        # conversations = [conversation_a, conversation_b]
-        chosen_model = get_chosen_model(which_model_radio)
-        final_vote = get_final_vote(which_model_radio)
         details = {
-            "model_left": conversation_a.model_name,
-            "model_right": conversation_b.model_name,
-            "chosen_model": chosen_model,
-            "final_vote": final_vote,
-            "relevance": relevance_slider,
-            "clearness": clearness_slider,
-            "style": style_slider,
-            "comments": comments_text,
+            "relevance": int(relevance_slider),
+            "form": int(form_slider),
+            "style": int(style_slider),
+            "comments": str(comments_text),
         }
+        if category:
+            print("category: " + category)
+        if hasattr(app_state, "category"):
+            print("app_state_category: " + app_state.category)
+            category = app_state.category
         # FIXME: check input, sanitize it?
         vote_last_response(
             [conversation_a, conversation_b],
-            chosen_model,
-            final_vote,
+            which_model_radio,
+            category,
             details,
             request,
         )
@@ -623,8 +629,7 @@ def register_listeners():
         request: gr.Request,
     ):
 
-        # FIXME: check input, sanitize it?
-        log_poll(
+        save_profile(
             conversation_a,
             conversation_b,
             which_model_radio,
