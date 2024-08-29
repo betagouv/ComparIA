@@ -153,14 +153,14 @@ def get_final_vote(which_model_radio):
 
 def get_matomo_tracker_from_cookies(cookies):
     for cookie in cookies:
-        if cookie.name.startswith("_pk_id_"):
-            logging.debug(f"Found cookie: {cookie.name} {cookie.value}")
+        if cookie[0].startswith("_pk_id_"):
+            logging.debug(f"Found cookie: {cookie[0]} {cookie[1]}")
             return cookie.value
 
 
 def save_profile_to_db(data):
     from languia.config import db as db_config
-
+    logger = logging.getLogger("languia")
     if not db_config:
         logger.warn("Cannot log to db: no db configured")
         return
@@ -218,19 +218,19 @@ def save_profile(
     with open(profile_log_path, "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
-            "chatbot_use": chatbot_use,
-            "gender": gender,
-            "age": age,
-            "profession": profession,
-            "session_hash": request.session_hash,
+            "chatbot_use": str(chatbot_use),
+            "gender": str(gender),
+            "age": str(age),
+            "profession": str(profession),
+            "session_hash": str(request.session_hash),
             # "cookies": request.cookies(),
             # Log redundant info to be sure
             "extra": {
-                "final_vote": final_vote,
+                "final_vote": str(final_vote),
                 "chosen_model": chosen_model,
-                "models": [x.model_name for x in [conversation_a, conversation_b]],
+                "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
                 "conversations": [x.dict() for x in [conversation_a, conversation_b]],
-                "cookies": request.cookies,
+                "cookies": dict(request.cookies),
             },
         }
 
@@ -270,8 +270,11 @@ def vote_last_response(
             "conversations": [x.dict() for x in conversations],
         },
     )
+    t = datetime.datetime.now()
+    vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
+    vote_log_path = os.path.join(LOGDIR, vote_log_filename)
 
-    with open(get_conv_log_filename(), "a") as fout:
+    with open(vote_log_path, "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
             "vote": final_vote,
