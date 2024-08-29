@@ -147,6 +147,7 @@ def bot_response(
     yield (state, state.to_gradio_chatbot())
 
     data = {"text": ""}
+    # FIXME: does not detect/raise if 500 error
     for i, data in enumerate(stream_iter):
         if data["error_code"] == 0:
             output = data["text"].strip()
@@ -155,18 +156,16 @@ def bot_response(
             yield (state, state.to_gradio_chatbot())
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
-
+    else:
+        # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
+        if len(data["text"].strip()) == 0:
+            raise RuntimeError(f"No answer from API for model {model_name}")
 
     output = data["text"].strip()
     conv.update_last_message(output)
     yield (state, state.to_gradio_chatbot())
     # TODO: handle them great, or reboot arena saving initial prompt
     # except requests.exceptions.RequestException as e:
-    #     conv.update_last_message(
-    #         f"{SERVER_ERROR_MSG}\n\n"
-    #         f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
-    #     )
-    #     return
     # except Exception as e:
     #     conv.update_last_message(
     #         f"{SERVER_ERROR_MSG}\n\n"

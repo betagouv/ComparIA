@@ -106,10 +106,8 @@ def openai_api_stream_iter(
     for chunk in res:
         if len(chunk.choices) > 0:
             text += chunk.choices[0].delta.content or ""
-            try:
+            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
                 output_tokens += chunk.usage.completion_tokens
-            except Exception:
-                pass
             data = {"text": text, "error_code": 0, "output_tokens": output_tokens}
             yield data
 
