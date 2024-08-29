@@ -30,7 +30,8 @@ CREATE TABLE logs (
             relevance INT,
             form INT,
             style INT,
-            comments TEXT
+            comments TEXT,
+            extra JSONB
         );
 
 CREATE TABLE profiles (

@@ -134,10 +134,11 @@ def get_chosen_model(which_model_radio):
 
 
 def get_matomo_tracker_from_cookies(cookies):
+    logger = logging.getLogger("languia")
     for cookie in cookies:
-        if cookie[0].startswith("_pk_id_"):
-            logging.debug(f"Found cookie: {cookie[0]} {cookie[1]}")
-            return cookie.value
+        if cookie[0].startswith("_pk_id."):
+            logger.info(f"Found matomo cookie: {cookie[0]}: {cookie[1]}")
+            return cookie[1]
 
 
 def save_profile_to_db(data):
@@ -194,7 +195,7 @@ def save_profile(
     profile_log_path = os.path.join(LOGDIR, profile_log_filename)
 
     get_matomo_tracker_from_cookies(request.cookies)
-
+    
     with open(profile_log_path, "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
@@ -203,7 +204,6 @@ def save_profile(
             "age": str(age),
             "profession": str(profession),
             "session_hash": str(request.session_hash),
-            # "cookies": request.cookies(),
             # Log redundant info to be sure
             "extra": {
                 "which_model_radio": which_model_radio,
@@ -259,7 +259,7 @@ def get_messages_dict(messages):
         if len(message) == 2:
             messages_dict.append({"role": message[0], "content": message[1]})
         else:
-            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
+            raise TypeError(f"Expected (role, msg) tuple, got {str(dict(message))}")
     return messages_dict
 
 
@@ -285,8 +285,8 @@ def save_vote_to_db(data):
     try:
         insert_statement = sql.SQL(
             """
-            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, intensity, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments)
-            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(intensity)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s)
+            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, intensity, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments, extra)
+            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(intensity)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s, %(extra)s)
         """
         )
         values = {
@@ -311,6 +311,7 @@ def save_vote_to_db(data):
             "form": int(data["form"]),
             "style": int(data["style"]),
             "comments": str(data["comments"]),
+            "extra": json.dumps(data["extra"]),
         }
         cursor.execute(insert_statement, values)
         conn.commit()
@@ -334,8 +335,8 @@ def vote_last_response(
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     intensity = get_intensity(which_model_radio)
 
-    conversation_a = get_messages_dict(conversations[0].to_gradio_chatbot())
-    conversation_b = get_messages_dict(conversations[1].to_gradio_chatbot())
+    conversation_a = get_messages_dict(conversations[0].conv.messages)
+    conversation_b = get_messages_dict(conversations[1].conv.messages)
 
     # details = {
     #         "relevance": relevance_slider,
@@ -373,7 +374,7 @@ def vote_last_response(
         ),
         "template": (
             []
-            if conversations[0].conv.name == "zero-shot"
+            if conversations[0].conv.name == "zero_shot"
             # FIXME: add template if there is some template
             else [conversations[0].conv.name + ": FIXME: UNAVAILABLE TEMPLATE"]
         ),
@@ -387,6 +388,8 @@ def vote_last_response(
         "style": style,
         # FIXME: further input sanitizing?
         "comments": details["comments"],
+        # For redundance
+        "extra": {"cookies": dict(request.cookies)},
     }
 
     save_vote_to_db(data=data)

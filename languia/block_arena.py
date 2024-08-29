@@ -303,45 +303,59 @@ with gr.Blocks(
         )
         profession = gr.Dropdown(
             choices=[
-                "Agriculteur",
-                "Artisan, commerçant et chef d'entreprise",
-                "Cadre et profession intellectuelle supérieure",
-                "Profession intermédiaire",
-                "Étudiant",
-                "Employé",
-                "Ouvrier",
-                "Retraité",
-                "Sans emploi",
-                "Ne se prononce pas",
+                ("Agriculteur", "farmer"),
+                (
+                    "Artisan, commerçant et chef d'entreprise",
+                    "artisan_merchant_and_business_owner",
+                ),
+                (
+                    "Cadre et profession intellectuelle supérieure",
+                    "executive_and_senior_intellectual_profession",
+                ),
+                ("Profession intermédiaire", "intermediate_profession"),
+                ("Étudiant", "student"),
+                ("Employé", "employee"),
+                ("Ouvrier", "worker"),
+                ("Retraité", "retired"),
+                ("Sans emploi", "unemployed"),
+                ("Ne se prononce pas", "no_opinion"),
             ],
             label="Catégorie socioprofessionnelle",
         )
+
         age = gr.Dropdown(
             choices=[
-                "Moins de 18 ans",
-                "Entre 18 et 24 ans",
-                "Entre 25 et 34 ans",
-                "Entre 35 et 44 ans",
-                "Entre 45 et 54 ans",
-                "Entre 55 et 64 ans",
-                "Plus de 64 ans",
-                "Ne se prononce pas",
+                ("Moins de 18 ans", "under_18"),
+                ("Entre 18 et 24 ans", "18_to_24"),
+                ("Entre 25 et 34 ans", "25_to_34"),
+                ("Entre 35 et 44 ans", "35_to_44"),
+                ("Entre 45 et 54 ans", "45_to_54"),
+                ("Entre 55 et 64 ans", "55_to_64"),
+                ("Plus de 64 ans", "over_64"),
+                ("Ne se prononce pas", "no_opinion"),
             ],
             label="Tranche d'âge",
         )
+
         gender = gr.Dropdown(
-            choices=["Femme", "Homme", "Autre", "Ne se prononce pas"], label="Genre"
+            choices=[
+                ("Femme", "female"),
+                ("Homme", "male"),
+                ("Autre", "other"),
+                ("Ne se prononce pas", "no_opinion"),
+            ],
+            label="Genre",
         )
         chatbot_use = gr.Dropdown(
             choices=[
-                "Tous les jours",
-                "Toutes les semaines",
-                "Une fois par mois",
-                "Moins d’une fois par mois",
-                "Jamais",
-                "Ne se prononce pas",
+                ("Tous les jours", "every_day"),
+                ("Toutes les semaines", "every_week"),
+                ("Une fois par mois", "once_a_month"),
+                ("Moins d'une fois par mois", "less_than_once_a_month"),
+                ("Jamais", "never"),
+                ("Ne se prononce pas", "no_opinion"),
             ],
-            label="Fréquence d’utilisation d’assistants conversationnels",
+            label="Fréquence d'utilisation d'assistants conversationnels",
         )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--right"):
             skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
