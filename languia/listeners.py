@@ -11,7 +11,7 @@ from languia.utils import (
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
-    save_profile,
+    log_poll,
     get_chosen_model,
     refresh_outage_models,
     add_outage_model,
@@ -623,7 +623,8 @@ def register_listeners():
         request: gr.Request,
     ):
 
-        save_profile(
+        # FIXME: check input, sanitize it?
+        log_poll(
             conversation_a,
             conversation_b,
             which_model_radio,
