@@ -88,11 +88,11 @@ class PostgresHandler(logging.Handler):
                 insert_statement = sql.SQL(
                     """
                     INSERT INTO logs (tstamp, level, message, query_params, path_params, session_hash, extra)
-                    VALUES (%(tstamp)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
+                    VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                 """
                 )
                 values = {
-                    "tstamp": self.formatTime(record, self.datefmt),
+                    "time": record.time,
                     "level": record.levelname,
                     "message": record.message,
                     "query_params": json.dumps(record.__dict__.get("query_params")),

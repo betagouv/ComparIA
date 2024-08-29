@@ -1,6 +1,6 @@
 CREATE TABLE
     logs (
-        tstamp TIMESTAMP NOT NULL,
+        time TIMESTAMP NOT NULL,
         level VARCHAR(50) NOT NULL,
         message TEXT NOT NULL,
         query_params JSONB,
