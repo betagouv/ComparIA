@@ -84,23 +84,15 @@ class PostgresHandler(logging.Handler):
         try:
             self.connect()
             with self.connection.cursor() as cursor:
-                # CREATE TABLE logs (
-                #     time TIMESTAMP NOT NULL,
-                #     level VARCHAR(50) NOT NULL,
-                #     message TEXT NOT NULL,
-                #     query_params JSONB,
-                #     path_params JSONB,
-                #     session_hash VARCHAR(255),
-                #     extra JSONB
-                # );
+
                 insert_statement = sql.SQL(
                     """
-                    INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
-                    VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
+                    INSERT INTO logs (tstamp, level, message, query_params, path_params, session_hash, extra)
+                    VALUES (%(tstamp)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                 """
                 )
                 values = {
-                    "time": self.formatTime(record, self.datefmt),
+                    "tstamp": self.formatTime(record, self.datefmt),
                     "level": record.levelname,
                     "message": record.message,
                     "query_params": json.dumps(record.__dict__.get("query_params")),
@@ -141,16 +133,6 @@ def get_chosen_model(which_model_radio):
     return chosen_model
 
 
-def get_final_vote(which_model_radio):
-    final_vote = {
-        -1.5: "strongly-a",
-        -0.5: "slightly-a",
-        +0.5: "slightly-b",
-        +1.5: "strongly-b",
-    }
-    return final_vote[which_model_radio]
-
-
 def get_matomo_tracker_from_cookies(cookies):
     for cookie in cookies:
         if cookie[0].startswith("_pk_id_"):
@@ -160,6 +142,7 @@ def get_matomo_tracker_from_cookies(cookies):
 
 def save_profile_to_db(data):
     from languia.config import db as db_config
+
     logger = logging.getLogger("languia")
     if not db_config:
         logger.warn("Cannot log to db: no db configured")
@@ -210,9 +193,6 @@ def save_profile(
     profile_log_filename = f"profile-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     profile_log_path = os.path.join(LOGDIR, profile_log_filename)
 
-    chosen_model = get_chosen_model(which_model_radio)
-    final_vote = get_final_vote(which_model_radio)
-
     get_matomo_tracker_from_cookies(request.cookies)
 
     with open(profile_log_path, "a") as fout:
@@ -226,8 +206,7 @@ def save_profile(
             # "cookies": request.cookies(),
             # Log redundant info to be sure
             "extra": {
-                "final_vote": str(final_vote),
-                "chosen_model": chosen_model,
+                "which_model_radio": which_model_radio,
                 "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
                 "conversations": [x.dict() for x in [conversation_a, conversation_b]],
                 "cookies": dict(request.cookies),
@@ -246,56 +225,181 @@ def save_profile(
     return data
 
 
+def get_intensity(which_model_radio):
+    intensity = {
+        -1.5: "strongly",
+        -0.5: "slightly",
+        +0.5: "slightly",
+        +1.5: "strongly",
+    }
+    return intensity[which_model_radio]
+
+
+def get_chosen_model_name(which_model_radio, conversations):
+    if which_model_radio in [-1.5, -0.5]:
+        chosen_model_name = conversations[0].model_name
+    elif which_model_radio in [0.5, 1.5]:
+        chosen_model_name = conversations[1].model_name
+    else:
+        chosen_model_name = "invalid-vote"
+        raise (ValueError)
+    return chosen_model_name
+
+
+def get_opening_prompt(conversation):
+    for msg in conversation.conv.messages:
+        if msg[0] == "user":
+            return conversation.conv.messages[0][1]
+    return ValueError("No opening prompt found")
+
+
+def get_messages_dict(messages):
+    messages_dict = []
+    for message in messages:
+        if message.len() == 2:
+            messages_dict.append({"role": message[0], "content": message[1]})
+        else:
+            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
+    return messages_dict
+
+
+def count_turns(messages):
+    return len(messages) // 2
+
+
+def is_unedited_prompt(opening_prompt, category):
+    from config import prompts_table
+
+    return opening_prompt in prompts_table[category].values()
+
+
+def save_vote_to_db(data):
+    from languia.config import db as db_config
+
+    logger = logging.getLogger("languia")
+    if not db_config:
+        logger.warn("Cannot log to db: no db configured")
+        return
+    conn = psycopg2.connect(**db_config)
+    cursor = conn.cursor()
+    try:
+        insert_statement = sql.SQL(
+            """
+            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, intensity, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments)
+            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(intensity)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s)
+        """
+        )
+        values = {
+            "tstamp": round(time.time(), 4),
+            "model_a_name": str(data["model_a_name"]),
+            "model_b_name": str(data["model_b_name"]),
+            "model_pair_name": json.dumps(sorted(data["model_pair_name"])),
+            "chosen_model_name": str(data["chosen_model_name"]),
+            "intensity": str(data["intensity"]),
+            "opening_prompt": str(data["opening_prompt"]),
+            "conversation_a": json.dumps(data["conversation_a"]),
+            "conversation_b": json.dumps(data["conversation_b"]),
+            "turns": int(data["turns"]),
+            "selected_category": str(data["selected_category"]),
+            "is_unedited_prompt": int(data["is_unedited_prompt"]),
+            "template": json.dumps(data["template"]),
+            "uuid": str(data["uuid"]),
+            "ip": str(data["ip"]),
+            "session_hash": str(data["session_hash"]),
+            "visitor_uuid": str(data["visitor_uuid"]),
+            "relevance": int(data["relevance"]),
+            "form": int(data["form"]),
+            "style": int(data["style"]),
+            "comments": str(data["comments"]),
+        }
+        cursor.execute(insert_statement, values)
+        conn.commit()
+    except Exception as e:
+        logger.error(f"Error saving vote to db: {e}")
+    finally:
+        cursor.close()
+        if conn:
+            conn.close()
+
+
 def vote_last_response(
     conversations,
-    chosen_model,
-    final_vote,
+    which_model_radio,
+    category,
     details: list,
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
-    logger.info(
-        f"{final_vote}",
-        extra={
-            "request": request,
-            "type": final_vote,
-            "chosen_model": chosen_model,
-            "chosen_model_name": (
-                conversations[0].model_name
-                if chosen_model == "model-a"
-                else conversations[1].model_name
-            ),
-            "details": details,
-            "models": [x.model_name for x in conversations],
-            "conversations": [x.dict() for x in conversations],
-        },
-    )
+
+    chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
+    intensity = get_intensity(which_model_radio)
+
+    conversation_a = get_messages_dict(conversations[0].to_gradio_chatbot())
+    conversation_b = get_messages_dict(conversations[1].to_gradio_chatbot())
+
+    # details = {
+    #         "relevance": relevance_slider,
+    #         "form": form_slider,
+    #         "style": style_slider,
+    #         "comments": comments_text,
+    #     }
+
+    # 1-5 => 0-100
+    relevance = details["relevance"] - 1 * 25
+    form = details["form"] - 1 * 25
+    style = details["relevance"] - 1 * 25
+
+    # TODO: Put opening_prompt in app_state?
+    opening_prompt = str(get_opening_prompt(conversations[0]))
+    data = {
+        "tstamp": round(time.time(), 4),
+        "model_a_name": conversations[0].model_name,
+        "model_b_name": conversations[1].model_name,
+        # sorted
+        "model_pair_name": sorted(
+            [conversations[0].model_name, conversations[1].model_name]
+        ),
+        "chosen_model_name": chosen_model_name,
+        "intensity": intensity,
+        "opening_prompt": opening_prompt,
+        "conversation_a": conversation_a,
+        "conversation_b": conversation_b,
+        "turns": count_turns((conversations[0].conv.messages)),
+        "selected_category": category,
+        "is_unedited_prompt": (
+            0
+            if category == "unguided"
+            else (is_unedited_prompt(opening_prompt, category))
+        ),
+        "template": (
+            []
+            if conversations[0].conv.name == "zero-shot"
+            # FIXME: add template if there is some template
+            else [conversations[0].conv.name + ": FIXME: UNAVAILABLE TEMPLATE"]
+        ),
+        "uuid": conversations[0].conv_id + "-" + conversations[1].conv_id,
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        "session_hash": str(request.session_hash),
+        "visitor_uuid": str(get_matomo_tracker_from_cookies(request.request.cookies)),
+        "relevance": relevance,
+        "form": form,
+        "style": style,
+        # FIXME: further input sanitizing?
+        "comments": details["comments"],
+    }
+
+    save_vote_to_db(data=data)
     t = datetime.datetime.now()
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     vote_log_path = os.path.join(LOGDIR, vote_log_filename)
 
     with open(vote_log_path, "a") as fout:
-        data = {
-            "tstamp": round(time.time(), 4),
-            "vote": final_vote,
-            "chosen_model": chosen_model,
-            "chosen_model_name": (
-                conversations[0].model_name
-                if chosen_model == "model-a"
-                else conversations[1].model_name
-            ),
-            "models": [x.model_name for x in conversations],
-            "conversations": [x.dict() for x in conversations],
-            # FIXME:
-            "ip": get_ip(request),
-        }
-        if details != []:
-            data.update(details=details),
-        logger.info(json.dumps(data), extra={"request": request})
+
+        logger.info("vote", extra={"request": request, "data": data})
         fout.write(json.dumps(data) + "\n")
 
     return data
-    # yield names + ("",)
 
 
 def stepper_html(title, step, total_steps):

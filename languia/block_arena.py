@@ -237,7 +237,7 @@ with gr.Blocks(
                     info="Critères : réponses utiles, correctes factuelles, précises",
                     elem_classes="fr-my-4w",
                 )
-                clearness_slider = FrSlider(
+                form_slider = FrSlider(
                     value=-1,
                     range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
                     minimum=1,
@@ -257,7 +257,7 @@ with gr.Blocks(
                     label="Le style de la réponse était-il adapté ?",
                     info="Critères : registre de langue, vocabulaire, orthographe",
                 )
-                supervote_sliders = [relevance_slider, clearness_slider, style_slider]
+                supervote_sliders = [relevance_slider, form_slider, style_slider]
 
                 comments_text = FrInput(
                     elem_classes="big-label",
