@@ -159,10 +159,10 @@ def save_profile_to_db(data):
         )
         values = {
             "tstamp": int(data["tstamp"]),
-            "chatbot_use": str(data["chatbot_use"]),
-            "gender": str(data["gender"]),
-            "age": str(data["age"]),
-            "profession": str(data["profession"]),
+            "chatbot_use": (data["chatbot_use"]),
+            "gender": (data["gender"]),
+            "age": (data["age"]),
+            "profession": (data["profession"]),
             "session_hash": str(data["session_hash"]),
             "extra": json.dumps(data["extra"]),
         }
@@ -195,21 +195,21 @@ def save_profile(
     profile_log_path = os.path.join(LOGDIR, profile_log_filename)
 
     get_matomo_tracker_from_cookies(request.cookies)
-    
+
     with open(profile_log_path, "a") as fout:
         data = {
             "tstamp": round(time.time(), 4),
-            "chatbot_use": str(chatbot_use),
-            "gender": str(gender),
-            "age": str(age),
-            "profession": str(profession),
+            "chatbot_use": chatbot_use,
+            "gender": gender,
+            "age": age,
+            "profession": profession,
             "session_hash": str(request.session_hash),
             # Log redundant info to be sure
             "extra": {
                 "which_model_radio": which_model_radio,
                 "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
                 "conversations": [x.dict() for x in [conversation_a, conversation_b]],
-                "cookies": dict(request.cookies),
+                # "cookies": dict(request.cookies),
             },
         }
 
@@ -306,7 +306,7 @@ def save_vote_to_db(data):
             "uuid": str(data["uuid"]),
             "ip": str(data["ip"]),
             "session_hash": str(data["session_hash"]),
-            "visitor_uuid": str(data["visitor_uuid"]),
+            "visitor_uuid": (data["visitor_uuid"]),
             "relevance": int(data["relevance"]),
             "form": int(data["form"]),
             "style": int(data["style"]),
@@ -346,9 +346,11 @@ def vote_last_response(
     #     }
 
     # 1-5 => 0-100
-    relevance = details["relevance"] - 1 * 25
-    form = details["form"] - 1 * 25
-    style = details["relevance"] - 1 * 25
+    relevance = (
+        (details["relevance"] - 1) * 25 if 1 <= details["relevance"] <= 5 else None
+    )
+    form = (details["form"] - 1) * 25 if 1 <= details["form"] <= 5 else None
+    style = (details["style"] - 1) * 25 if 1 <= details["style"] <= 5 else None
 
     # TODO: Put opening_prompt in app_state?
     opening_prompt = str(get_opening_prompt(conversations[0]))
@@ -382,7 +384,7 @@ def vote_last_response(
         # Warning: IP is a PII
         "ip": str(get_ip(request)),
         "session_hash": str(request.session_hash),
-        "visitor_uuid": str(get_matomo_tracker_from_cookies(request.request.cookies)),
+        "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),
         "relevance": relevance,
         "form": form,
         "style": style,
