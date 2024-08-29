@@ -32,7 +32,7 @@ from slugify import slugify
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 
-class CustomFormatter(logging.Formatter):
+class JSONFormatter(logging.Formatter):
     def format(self, record):
 
         msg = super().format(record)

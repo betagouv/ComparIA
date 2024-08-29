@@ -25,7 +25,7 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 
 from logging.handlers import WatchedFileHandler
 
-from languia.utils import CustomFormatter, PostgresHandler
+from languia.utils import JSONFormatter, PostgresHandler
 
 if any(
     os.getenv(var)
@@ -55,7 +55,7 @@ def build_logger(logger_filename):
     else:
         logger.setLevel(logging.INFO)
 
-    file_formatter = CustomFormatter(
+    file_formatter = JSONFormatter(
         '{"time":"%(asctime)s", "name": "%(name)s", \
         "level": "%(levelname)s", "message": "%(message)s"}',
         datefmt="%Y-%m-%d %H:%M:%S",
