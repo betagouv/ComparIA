@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
+import traceback
 
 templates = Jinja2Templates(directory="templates")
 
@@ -130,15 +131,16 @@ async def test_model(model_name):
             return {"success": "true", "message": "Model responded: " + str(text)}
 
         else:
-            reason = "No content in: " + str(chunk)
+            reason = f"No content from api for model {model_name}"
             logging.error(f"Test failed: {model_name}")
-            logging.error(f"No text in: {chunk}")
+            logging.error(reason)
             await create_outage(model_name, reason)
             return {"success": "false", "error_message": reason}
 
     except Exception as e:
         logging.error(f"Error: {model_name}, {str(e)}")
 
+        traceback.print_exc()
         _outage = await create_outage(model_name, e)
 
         return {"success": "false", "reason": str(e)}
