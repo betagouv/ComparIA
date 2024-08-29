@@ -103,8 +103,8 @@ class PostgresHandler(logging.Handler):
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
         except Exception as e:
-            logger = logging.getLogger("languia")
-            logger.error(f"Error logging to Postgres: {e}")
+            # Don't use logger on purpose to avoid endless loops
+            print(f"Error logging to Postgres: {e}")
         finally:
             if self.connection:
                 self.connection.close()
