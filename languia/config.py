@@ -6,6 +6,16 @@ from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
 import datetime
 
+env_debug = os.getenv("LANGUIA_DEBUG")
+
+if env_debug:
+    if env_debug.lower() == "true":
+        debug = True
+    else:
+        debug = False
+else:
+    debug = False
+
 t = datetime.datetime.now()
 hostname = os.uname().nodename
 log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
@@ -30,7 +40,10 @@ else:
 
 def build_logger(logger_filename):
     logger = logging.getLogger("languia")
-    logger.setLevel(logging.INFO)
+    if debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
 
     file_formatter = CustomFormatter(
         '{"time":"%(asctime)s", "name": "%(name)s", \
@@ -60,16 +73,6 @@ enable_moderation = False
 if os.getenv("GIT_COMMIT"):
     git_commit = os.getenv("GIT_COMMIT")
 
-env_debug = os.getenv("LANGUIA_DEBUG")
-
-
-if env_debug:
-    if env_debug.lower() == "true":
-        debug = True
-    else:
-        debug = False
-else:
-    debug = False
 
 if not debug:
     assets_absolute_path = "/app/assets"
