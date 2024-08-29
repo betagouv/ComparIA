@@ -40,6 +40,7 @@ CREATE TABLE profiles (
     gender VARCHAR(255),
     age VARCHAR(255),
     profession VARCHAR(255),
+    confirmed BOOLEAN,
     session_hash VARCHAR(255),
     extra JSONB
 );

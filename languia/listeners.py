@@ -626,7 +626,9 @@ def register_listeners():
         age,
         profession,
         request: gr.Request,
+        event: gr.EventData,
     ):
+        confirmed = event.target.value == "Envoyer" # Not "Passer"
 
         save_profile(
             conversation_a,
@@ -636,6 +638,7 @@ def register_listeners():
             gender,
             age,
             profession,
+            confirmed,
             request,
         )
 

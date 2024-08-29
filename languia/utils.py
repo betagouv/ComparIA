@@ -103,7 +103,8 @@ class PostgresHandler(logging.Handler):
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
         except Exception as e:
-            print(f"Error logging to Postgres: {e}")
+            logger = logging.getLogger("languia")
+            logger.error(f"Error logging to Postgres: {e}")
         finally:
             if self.connection:
                 self.connection.close()
@@ -153,8 +154,8 @@ def save_profile_to_db(data):
     try:
         insert_statement = sql.SQL(
             """
-            INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, session_hash, extra)
-            VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(session_hash)s, %(extra)s)
+            INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, confirmed, session_hash, extra)
+            VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(confirmed)s, %(session_hash)s, %(extra)s)
         """
         )
         values = {
@@ -163,6 +164,7 @@ def save_profile_to_db(data):
             "gender": (data["gender"]),
             "age": (data["age"]),
             "profession": (data["profession"]),
+            "profession": (data["confirmed"]),
             "session_hash": str(data["session_hash"]),
             "extra": json.dumps(data["extra"]),
         }
@@ -184,6 +186,7 @@ def save_profile(
     gender,
     age,
     profession,
+    confirmed,
     request: gr.Request,
 ):
     """
@@ -196,27 +199,27 @@ def save_profile(
 
     get_matomo_tracker_from_cookies(request.cookies)
 
+    data = {
+        "tstamp": round(time.time(), 4),
+        "chatbot_use": chatbot_use,
+        "gender": gender,
+        "age": age,
+        "profession": profession,
+        "confirmed": bool(confirmed),
+        "session_hash": str(request.session_hash),
+        # Log redundant info to be sure
+        "extra": {
+            "which_model_radio": which_model_radio,
+            "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
+            "conversations": [x.dict() for x in [conversation_a, conversation_b]],
+            # "cookies": dict(request.cookies),
+        },
+    }
+    # logger.info(f"poll", extra={"request": request,
+    #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
+    #     },
+    # )
     with open(profile_log_path, "a") as fout:
-        data = {
-            "tstamp": round(time.time(), 4),
-            "chatbot_use": chatbot_use,
-            "gender": gender,
-            "age": age,
-            "profession": profession,
-            "session_hash": str(request.session_hash),
-            # Log redundant info to be sure
-            "extra": {
-                "which_model_radio": which_model_radio,
-                "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
-                "conversations": [x.dict() for x in [conversation_a, conversation_b]],
-                # "cookies": dict(request.cookies),
-            },
-        }
-
-        # logger.info(f"poll", extra={"request": request,
-        #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
-        #     },
-        # )
         fout.write(json.dumps(data) + "\n")
 
     save_profile_to_db(data=data)
@@ -391,18 +394,21 @@ def vote_last_response(
         # FIXME: further input sanitizing?
         "comments": details["comments"],
         # For redundance
-        "extra": {"cookies": dict(request.cookies)},
+        "extra": {
+            "cookies": dict(request.cookies),
+            "query_params": dict(request.query_params),
+            "path_params": dict(request.path_params),
+        },
     }
 
-    save_vote_to_db(data=data)
     t = datetime.datetime.now()
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     vote_log_path = os.path.join(LOGDIR, vote_log_filename)
-
     with open(vote_log_path, "a") as fout:
-
         logger.info("vote", extra={"request": request, "data": data})
         fout.write(json.dumps(data) + "\n")
+
+    save_vote_to_db(data=data)
 
     return data
 
@@ -836,7 +842,7 @@ def refresh_outage_models(previous_outage_models, controller_url):
         logger.info("refreshed outage models:" + str(data))
         return data
     else:
-        print(f"Failed to retrieve outage data. Status code: {response.status_code}")
+        logger.warning(f"Failed to retrieve outage data. Status code: {response.status_code}")
         return previous_outage_models
 
 

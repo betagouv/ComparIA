@@ -27,16 +27,26 @@ from logging.handlers import WatchedFileHandler
 
 from languia.utils import CustomFormatter, PostgresHandler
 
-if any(os.getenv(var) for var in ['LANGUIA_DB_NAME', 'LANGUIA_DB_USER', 'LANGUIA_DB_PASSWORD', 'LANGUIA_DB_HOST', 'LANGUIA_DB_PORT']):
+if any(
+    os.getenv(var)
+    for var in [
+        "LANGUIA_DB_NAME",
+        "LANGUIA_DB_USER",
+        "LANGUIA_DB_PASSWORD",
+        "LANGUIA_DB_HOST",
+        "LANGUIA_DB_PORT",
+    ]
+):
     db = {
-    'dbname': os.getenv('LANGUIA_DB_NAME', 'languia'),
-    'user': os.getenv('LANGUIA_DB_USER', 'languia'),
-    'password': os.getenv('LANGUIA_DB_PASSWORD', ''),
-    'host': os.getenv('LANGUIA_DB_HOST', 'localhost'),
-    'port': os.getenv('LANGUIA_DB_PORT', 5678)
-}
+        "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
+        "user": os.getenv("LANGUIA_DB_USER", "languia"),
+        "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
+        "host": os.getenv("LANGUIA_DB_HOST", "localhost"),
+        "port": os.getenv("LANGUIA_DB_PORT", 5678),
+    }
 else:
     db = None
+
 
 def build_logger(logger_filename):
     logger = logging.getLogger("languia")
@@ -60,10 +70,11 @@ def build_logger(logger_filename):
 
     if db:
         postgres_handler = PostgresHandler(db)
-        postgres_handler.setFormatter(file_formatter) 
+        postgres_handler.setFormatter(file_formatter)
         logger.addHandler(postgres_handler)
 
     return logger
+
 
 logger = build_logger(log_filename)
 
