@@ -560,11 +560,10 @@ def register_listeners():
             "style": int(style_slider),
             "comments": str(comments_text),
         }
-        if category:
-            print("category: " + category)
         if hasattr(app_state, "category"):
             print("app_state_category: " + app_state.category)
             category = app_state.category
+        else: category = None
         # FIXME: check input, sanitize it?
         vote_last_response(
             [conversation_a, conversation_b],

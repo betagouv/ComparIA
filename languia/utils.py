@@ -256,7 +256,7 @@ def get_opening_prompt(conversation):
 def get_messages_dict(messages):
     messages_dict = []
     for message in messages:
-        if message.len() == 2:
+        if len(message) == 2:
             messages_dict.append({"role": message[0], "content": message[1]})
         else:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
@@ -268,9 +268,9 @@ def count_turns(messages):
 
 
 def is_unedited_prompt(opening_prompt, category):
-    from config import prompts_table
+    from languia.config import prompts_table
 
-    return opening_prompt in prompts_table[category].values()
+    return opening_prompt in prompts_table[category]
 
 
 def save_vote_to_db(data):
