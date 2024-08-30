@@ -41,7 +41,7 @@ async def create_outage(model_name: str, reason: str = None):
     existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
 
     if existing_outage:
-        remove_outage(model_name)
+        await remove_outage(model_name)
     outages.append(outage)
     return outage
 
