@@ -43,20 +43,21 @@ class ConversationState(gr.State):
         # self.conv = get_conversation_template(model_name)
         self.messages = []
 
+        # TODO: add template info?
         # TODO: get it from api
         self.conv_id = uuid.uuid4().hex
-
+        self.template_name = "zero_shot"
         self.model_name = model_name
 
-    def dict(self):
-        base = self.conv.dict()
-        base.update(
-            {
-                "conv_id": self.conv_id,
-                "model_name": self.model_name,
-            }
-        )
-        return base
+    # def dict(self):
+    #     base = self.messages
+    #     base.update(
+    #         {
+    #             "conv_id": self.conv_id,
+    #             "model_name": self.model_name,
+    #         }
+    #     )
+    #     return base
 
 
 def bot_response(
@@ -84,7 +85,7 @@ def bot_response(
             # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
             raise RuntimeError(error_msg)
 
-    conv, model_name = state.conv, state.model_name
+    messages, model_name = state.messages, state.model_name
     model_api_dict = (
         config.api_endpoint_info[model_name]
         if model_name in config.api_endpoint_info
@@ -104,7 +105,7 @@ def bot_response(
                 )
         try:
             stream_iter = get_api_provider_stream_iter(
-                conv,
+                messages,
                 model_name,
                 model_api_dict,
                 temperature,

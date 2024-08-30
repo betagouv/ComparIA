@@ -7,16 +7,15 @@ from languia.utils import (
     get_battle_pair,
     build_reveal_html,
     vote_last_response,
-    get_intensity,
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
     save_profile,
-    get_chosen_model,
     refresh_outage_models,
     add_outage_model,
     gen_prompt,
-    to_threeway_chatbot
+    to_threeway_chatbot,
+    get_opening_prompt
 )
 
 from languia.config import (
@@ -199,7 +198,7 @@ def register_listeners():
             # conversations[i].messages.append(gr.ChatMessage(role=f"system", content=text))
 
             # conversations[i].messages.append(gr.ChatMessage(role=f"bot-{i}", content=text))
-            conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=text))
+            conversations[i].messages.append(gr.ChatMessage(role=f"user", content=text))
             # TODO: Empty assistant message is needed to show user's first question but why??
             # conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
             # conversations[i].skip_next = False
@@ -241,9 +240,9 @@ def register_listeners():
                         use_recommended_config=True,
                     )
                 )
+                # To be edited
+                conversations[i].messages.append(gr.ChatMessage(role="assistant", content=""))
 
-            chatbot = [to_threeway_chatbot(conversations)]
-            # chatbot = []
             iters = 0
             while True:
                 stop = True
@@ -280,8 +279,8 @@ def register_listeners():
             gr.Warning(
                 duration=0,
                 message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
-            )
-            app_state.original_user_prompt = chatbot[0].content
+            )   
+            app_state.original_user_prompt = get_opening_prompt(conversation_a)
             logger.info(
                 "Saving original prompt: " + app_state.original_user_prompt,
                 extra={"request": request},

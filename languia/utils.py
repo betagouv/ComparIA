@@ -86,7 +86,7 @@ class PostgresHandler(logging.Handler):
                 print(f"Error connecting to database: {e}")
                 stacktrace = traceback.format_exc()
                 print(f"Stacktrace: {stacktrace}")
-                
+
     def emit(self, record):
 
         assert isinstance(record, logging.LogRecord)
@@ -228,7 +228,7 @@ def save_profile(
         "extra": {
             "which_model_radio": which_model_radio,
             "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
-            "conversations": [x.dict() for x in [conversation_a, conversation_b]],
+            "conversations": [dict(x) for x in [conversation_a, conversation_b]],
             # "cookies": dict(request.cookies),
         },
     }
@@ -267,20 +267,10 @@ def get_chosen_model_name(which_model_radio, conversations):
 
 
 def get_opening_prompt(conversation):
-    for msg in conversation.conv.messages:
-        if msg[0] == "user":
-            return conversation.conv.messages[0][1]
+    for msg in conversation.messages:
+        if msg.role == "user":
+            return msg.content
     return ValueError("No opening prompt found")
-
-
-def get_messages_dict(messages):
-    messages_dict = []
-    for message in messages:
-        if len(message) == 2:
-            messages_dict.append({"role": message[0], "content": message[1]})
-        else:
-            raise TypeError(f"Expected (role, msg) tuple, got {str(dict(message))}")
-    return messages_dict
 
 
 def count_turns(messages):
@@ -355,8 +345,8 @@ def vote_last_response(
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     intensity = get_intensity(which_model_radio)
 
-    conversation_a = get_messages_dict(conversations[0].conv.messages)
-    conversation_b = get_messages_dict(conversations[1].conv.messages)
+    conversation_a = conversations[0].messages
+    conversation_b = conversations[1].messages
 
     # details = {
     #         "relevance": relevance_slider,
@@ -387,7 +377,7 @@ def vote_last_response(
         "opening_prompt": opening_prompt,
         "conversation_a": conversation_a,
         "conversation_b": conversation_b,
-        "turns": count_turns((conversations[0].conv.messages)),
+        "turns": count_turns((conversations[0].messages)),
         "selected_category": category,
         "is_unedited_prompt": (
             0
@@ -396,9 +386,9 @@ def vote_last_response(
         ),
         "template": (
             []
-            if conversations[0].conv.name == "zero_shot"
+            if conversations[0].template_name == "zero_shot"
             # FIXME: add template if there is some template
-            else [conversations[0].conv.name + ": FIXME: UNAVAILABLE TEMPLATE"]
+            else [conversations[0].name + ": FIXME: UNAVAILABLE TEMPLATE"]
         ),
         "uuid": conversations[0].conv_id + "-" + conversations[1].conv_id,
         # Warning: IP is a PII
@@ -859,7 +849,9 @@ def refresh_outage_models(previous_outage_models, controller_url):
         logger.info("refreshed outage models:" + str(data))
         return data
     else:
-        logger.warning(f"Failed to retrieve outage data. Status code: {response.status_code}")
+        logger.warning(
+            f"Failed to retrieve outage data. Status code: {response.status_code}"
+        )
         return previous_outage_models
 
 
@@ -882,30 +874,29 @@ def add_outage_model(controller_url, model_name, reason):
         logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
 
-    def to_threeway_chatbot(conversations):
-        threeway_chatbot = []
-        for msg_a, msg_b in zip(
-            conversations[0].messages, conversations[1].messages
-        ):
-            if msg_a[0] == "user":
-                if msg_b[0] != "user":
-                    raise IndexError
-                threeway_chatbot.append({"role": "user", "content": msg_a[1]})
-            else:
-                if msg_a[1]:
-                    threeway_chatbot.append(
-                        {
-                            "role": "assistant",
-                            "content": msg_a[1],
-                            "metadata": {"name": "bot-a"},
-                        }
-                    )
-                if msg_b[1]:
-                    threeway_chatbot.append(
-                        {
-                            "role": "assistant",
-                            "content": msg_b[1],
-                            "metadata": {"name": "bot-b"},
-                        }
-                    )
-        return threeway_chatbot
+def to_threeway_chatbot(conversations):
+    threeway_chatbot = []
+    for msg_a, msg_b in zip(conversations[0].messages, conversations[1].messages):
+        if msg_a.role == "user":
+            # Could even test if msg_a == msg_b
+            if msg_b.role != "user":
+                raise IndexError
+            threeway_chatbot.append(msg_a)
+        else:
+            if msg_a:
+                threeway_chatbot.append(
+                    {
+                        "role": "assistant",
+                        "content": msg_a.content,
+                        "metadata": {"name": "bot-a"},
+                    }
+                )
+            if msg_b:
+                threeway_chatbot.append(
+                    {
+                        "role": "assistant",
+                        "content": msg_b.content,
+                        "metadata": {"name": "bot-b"},
+                    }
+                )
+    return threeway_chatbot
