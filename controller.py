@@ -89,7 +89,7 @@ async def test_model(model_name):
     temperature = 1
     top_p = 1
     max_new_tokens = 10
-
+    stream = False
     # if api_endpoint_info[model_name]["api_type"] == "openai"
 
     try:
@@ -107,15 +107,20 @@ async def test_model(model_name):
             messages=[{"role": "user", "content": test_message}],
             temperature=temperature,
             max_tokens=max_new_tokens,
-            stream=True,
+            # Test without streaming
+            stream=stream,
         )
 
         # Verify the response
         text = ""
-        for chunk in res:
-            if len(chunk.choices) > 0:
-                text += chunk.choices[0].delta.content or ""
-                break
+        if stream:
+            for chunk in res:
+                if (chunk.choices):
+                    text += chunk.choices[0].delta.content or ""
+                    break
+        else:
+            if res.choices:
+                text = res.choices[0].message.content or ""
 
         # Check if the response is successful
         if text:
