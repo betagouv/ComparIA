@@ -202,9 +202,31 @@ def register_listeners():
         return (
             # 2 conversations
             conversations
-            # 2 chatbots
-            + [x.to_gradio_chatbot() for x in conversations]
+            # 1 chatbot
+            + [to_threeway_chatbot(conversations)]
         )
+
+    from fastchat.conversation import Conversation
+
+    def to_threeway_chatbot(conversations):
+        threeway_chatbot = []
+        for msg_a, msg_b in zip(
+            conversations[0].conv.messages, conversations[1].conv.messages
+        ):
+            if msg_a[0] == "user":
+                if msg_b[0] != "user":
+                    raise IndexError
+                # print("msg_a (user):" + str((msg_a[1])))
+                threeway_chatbot.append({"role": "user", "content": msg_a[1]})
+            else:
+                if msg_a[1]:
+                    # print("msg_a:" + str((msg_a[1])))
+                    threeway_chatbot.append({"role": "assistant", "content": msg_a[1]})
+                if msg_b[1]:
+                    # print("msg_b:" + str((msg_b[1])))
+                    threeway_chatbot.append({"role": "assistant ", "content": msg_b[1]})
+        print((threeway_chatbot))
+        return threeway_chatbot
 
     # TODO: move this
     def bot_response_multi(
@@ -237,7 +259,8 @@ def register_listeners():
                     )
                 )
 
-            chatbots = [None] * config.num_sides
+            chatbot = [to_threeway_chatbot(conversations)]
+            # chatbot = []
             iters = 0
             while True:
                 stop = True
@@ -246,12 +269,13 @@ def register_listeners():
                     try:
                         # if iters % 30 == 1 or iters < 3:
                         ret = next(gen[i])
-                        conversations[i], chatbots[i] = ret[0], ret[1]
+                        conversations[i] = ret
                         stop = False
                     except StopIteration:
                         pass
 
-                yield conversations + chatbots
+                yield conversations + [to_threeway_chatbot(conversations)]
+
                 if stop:
                     break
         except Exception as e:
@@ -274,17 +298,38 @@ def register_listeners():
                 duration=0,
                 message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
             )
-            app_state.original_user_prompt = chatbots[0][0][0]
+            app_state.original_user_prompt = chatbot[0]["content"]
             logger.info(
                 "Saving original prompt: " + app_state.original_user_prompt,
                 extra={"request": request},
             )
+            # TODO: reset arena a better way...
+            chatbot = gr.Chatbot(
+                        # TODO:
+                        type="messages",
+                        elem_id=f"main-chatbot",
+                        # min_width=
+                        height="100%",
+                        # Doesn't show because it always has at least our message
+                        # Note: supports HTML, use it!
+                        placeholder="<em>Veuillez écrire au modèle</em>",
+                        # No difference
+                        # bubble_full_width=False,
+                        layout="panel",  # or "bubble"
+                        likeable=False,
+                        label=label,
+                        # UserWarning: show_label has no effect when container is False.
+                        show_label=False,
+                        container=False,
+                        elem_classes="chatbot",
+                        # Should we show it?
+                        show_copy_button=False,
+                    )
 
             return (
                 conversation_a,
                 conversation_b,
-                chatbots[0],
-                chatbots[1],
+                chatbot
             )
 
     def goto_chatbot(
@@ -366,9 +411,8 @@ def register_listeners():
                 return (
                     [conversation_a]
                     + [conversation_b]
-                    # chatbots
-                    + [""]
-                    + [""]
+                    # chatbot
+                    + [[]]
                     # disable conclude btn
                     + [gr.update(interactive=False)]
                     + [gr.skip()]
@@ -383,7 +427,7 @@ def register_listeners():
         return (
             [conversation_a]
             + [conversation_b]
-            + chatbots
+            + [chatbot]
             # enable conclude_btn
             + [gr.update(interactive=True)]
             # show retry_modal_btn
@@ -401,7 +445,7 @@ def register_listeners():
         fn=add_text,
         api_name=False,
         inputs=conversations + [textbox],
-        outputs=conversations + chatbots,
+        outputs=conversations + [chatbot],
     ).then(
         fn=goto_chatbot,
         inputs=[],
@@ -418,14 +462,14 @@ def register_listeners():
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         inputs=conversations + [temperature, top_p, max_output_tokens],
-        outputs=conversations + chatbots,
+        outputs=conversations + [chatbot],
         api_name=False,
         # should do .success()
     ).then(
         fn=check_answers,
         inputs=conversations,
         outputs=conversations
-        + chatbots
+        + [chatbot]
         + [conclude_btn]
         + [retry_modal_btn]
         + [textbox],
@@ -716,8 +760,7 @@ def register_listeners():
     def clear_history(
         conversation_a,
         conversation_b,
-        chatbot0,
-        chatbot1,
+        chatbot,
         textbox,
         request: gr.Request,
     ):
@@ -771,10 +814,10 @@ def register_listeners():
         api_name=False,
         # triggers=[clear_btn.click, retry_btn.click],
         fn=clear_history,
-        inputs=conversations + chatbots + [textbox],
+        inputs=conversations + [chatbot] + [textbox],
         # List of objects to clear
         outputs=conversations
-        + chatbots
+        + [chatbot]
         + [textbox]
         + [chat_area]
         + [vote_area]
