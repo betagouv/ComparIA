@@ -306,7 +306,7 @@ def register_listeners():
                 duration=0,
                 message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
             )
-            app_state.original_user_prompt = chatbot[0]["content"]
+            app_state.original_user_prompt = chatbot[0].content
             logger.info(
                 "Saving original prompt: " + app_state.original_user_prompt,
                 extra={"request": request},
@@ -329,6 +329,9 @@ def register_listeners():
                 # UserWarning: show_label has no effect when container is False.
                 show_label=False,
                 container=False,
+                # One can dream
+                # autofocus=True,
+                # autoscroll=True,
                 elem_classes="chatbot",
                 # Should we show it?
                 show_copy_button=False,
