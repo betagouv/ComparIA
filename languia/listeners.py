@@ -223,68 +223,69 @@ def register_listeners():
         conversations = [conversation_a, conversation_b]
 
         gen = []
-        for i in range(config.num_sides):
-            gen.append(
-                bot_response(
-                    conversations[i],
-                    temperature,
-                    top_p,
-                    max_new_tokens,
-                    request,
-                    apply_rate_limit=True,
-                    use_recommended_config=True,
+        try:
+            for i in range(config.num_sides):
+                gen.append(
+                    bot_response(
+                        conversations[i],
+                        temperature,
+                        top_p,
+                        max_new_tokens,
+                        request,
+                        apply_rate_limit=True,
+                        use_recommended_config=True,
+                    )
                 )
+
+            chatbots = [None] * config.num_sides
+            iters = 0
+            while True:
+                stop = True
+                iters += 1
+                for i in range(config.num_sides):
+                    try:
+                        # if iters % 30 == 1 or iters < 3:
+                        ret = next(gen[i])
+                        conversations[i], chatbots[i] = ret[0], ret[1]
+                        stop = False
+                    except StopIteration:
+                        pass
+
+                yield conversations + chatbots
+                if stop:
+                    break
+        except Exception as e:
+            logger.error(
+                f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
+                extra={"request": request, "error": str(e)},
+            )
+            config.outage_models.append(conversations[i].model_name)
+            add_outage_model(
+                config.controller_url,
+                conversations[i].model_name,
+                reason=str(e),
+            )
+            logger.error(str(e), extra={"request": request})
+            logger.error(traceback.format_exc(), extra={"request": request})
+            # gr.Warning(
+            #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
+            # )
+            gr.Warning(
+                duration=0,
+                message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
+            )
+            app_state.original_user_prompt = chatbots[0][0][0]
+            logger.info(
+                "Saving original prompt: " + app_state.original_user_prompt,
+                extra={"request": request},
             )
 
-        chatbots = [None] * config.num_sides
-        iters = 0
-        while True:
-            stop = True
-            iters += 1
-            for i in range(config.num_sides):
-                try:
-                    # if iters % 30 == 1 or iters < 3:
-                    ret = next(gen[i])
-                    conversations[i], chatbots[i] = ret[0], ret[1]
-                    stop = False
-                except StopIteration:
-                    pass
-                except Exception as e:
-                    logger.error(
-                        f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
-                        extra={"request": request, "error": str(e)},
-                    )
-                    config.outage_models.append(conversations[i].model_name)
-                    add_outage_model(
-                        config.controller_url,
-                        conversations[i].model_name,
-                        reason=str(e),
-                    )
-                    logger.error(str(e), extra={"request": request})
-                    logger.error(traceback.format_exc(), extra={"request": request})
-                    # gr.Warning(
-                    #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
-                    # )
-                    gr.Warning(
-                        duration=0,
-                        message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
-                    )
-                    app_state.original_user_prompt = chatbots[0][0][0]
-                    logger.info(
-                        "Saving original prompt: " + app_state.original_user_prompt,
-                        extra={"request": request},
-                    )
-
-                    return (
-                        conversation_a,
-                        conversation_b,
-                        chatbots[0],
-                        chatbots[1],
-                    )
-
-            yield conversations + chatbots
-            if stop:
-                break
+            return (
+                conversation_a,
+                conversation_b,
+                chatbots[0],
+                chatbots[1],
+            )
 
     def goto_chatbot(
         request: gr.Request,
@@ -326,6 +327,9 @@ def register_listeners():
             "models finished answering",
             extra={"request": request},
         )
+        #     # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything if error in stream mode
+        #     if len(data["text"].strip()) == 0:
+        #         raise RuntimeError(f"No answer from API for model {model_name}")
 
         if hasattr(app_state, "original_user_prompt"):
             if app_state.original_user_prompt != False:
@@ -563,7 +567,8 @@ def register_listeners():
         if hasattr(app_state, "category"):
             print("app_state_category: " + app_state.category)
             category = app_state.category
-        else: category = None
+        else:
+            category = None
         # FIXME: check input, sanitize it?
         vote_last_response(
             [conversation_a, conversation_b],
@@ -628,7 +633,7 @@ def register_listeners():
         request: gr.Request,
         event: gr.EventData,
     ):
-        confirmed = event.target.value == "Envoyer" # Not "Passer"
+        confirmed = event.target.value == "Envoyer"  # Not "Passer"
 
         save_profile(
             conversation_a,
