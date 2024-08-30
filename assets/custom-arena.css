@@ -347,7 +347,13 @@ li.fr-nav__item {
 /* #chat-area #chatbot-0 .user-row {
   display: none;
 } */
-#chat-area .panel .user {
+#chat-area .flex-wrap.bot {
+  display: grid;
+  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+  #chat-area .panel .user {
   text-align: left !important;
 }
 
