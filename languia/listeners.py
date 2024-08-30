@@ -216,16 +216,24 @@ def register_listeners():
             if msg_a[0] == "user":
                 if msg_b[0] != "user":
                     raise IndexError
-                # print("msg_a (user):" + str((msg_a[1])))
                 threeway_chatbot.append({"role": "user", "content": msg_a[1]})
             else:
                 if msg_a[1]:
-                    # print("msg_a:" + str((msg_a[1])))
-                    threeway_chatbot.append({"role": "assistant", "content": msg_a[1]})
+                    threeway_chatbot.append(
+                        {
+                            "role": "assistant",
+                            "content": msg_a[1],
+                            "metadata": {"name": "bot-a"},
+                        }
+                    )
                 if msg_b[1]:
-                    # print("msg_b:" + str((msg_b[1])))
-                    threeway_chatbot.append({"role": "assistant ", "content": msg_b[1]})
-        print((threeway_chatbot))
+                    threeway_chatbot.append(
+                        {
+                            "role": "assistant",
+                            "content": msg_b[1],
+                            "metadata": {"name": "bot-b"},
+                        }
+                    )
         return threeway_chatbot
 
     # TODO: move this
@@ -305,32 +313,28 @@ def register_listeners():
             )
             # TODO: reset arena a better way...
             chatbot = gr.Chatbot(
-                        # TODO:
-                        type="messages",
-                        elem_id=f"main-chatbot",
-                        # min_width=
-                        height="100%",
-                        # Doesn't show because it always has at least our message
-                        # Note: supports HTML, use it!
-                        placeholder="<em>Veuillez écrire au modèle</em>",
-                        # No difference
-                        # bubble_full_width=False,
-                        layout="panel",  # or "bubble"
-                        likeable=False,
-                        label=label,
-                        # UserWarning: show_label has no effect when container is False.
-                        show_label=False,
-                        container=False,
-                        elem_classes="chatbot",
-                        # Should we show it?
-                        show_copy_button=False,
-                    )
-
-            return (
-                conversation_a,
-                conversation_b,
-                chatbot
+                # TODO:
+                type="messages",
+                elem_id=f"main-chatbot",
+                # min_width=
+                height="100%",
+                # Doesn't show because it always has at least our message
+                # Note: supports HTML, use it!
+                placeholder="<em>Veuillez écrire au modèle</em>",
+                # No difference
+                # bubble_full_width=False,
+                layout="panel",  # or "bubble"
+                likeable=False,
+                label=label,
+                # UserWarning: show_label has no effect when container is False.
+                show_label=False,
+                container=False,
+                elem_classes="chatbot",
+                # Should we show it?
+                show_copy_button=False,
             )
+
+            return (conversation_a, conversation_b, chatbot)
 
     def goto_chatbot(
         request: gr.Request,
@@ -609,7 +613,6 @@ def register_listeners():
             "comments": str(comments_text),
         }
         if hasattr(app_state, "category"):
-            print("app_state_category: " + app_state.category)
             category = app_state.category
         else:
             category = None
