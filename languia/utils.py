@@ -94,7 +94,6 @@ class PostgresHandler(logging.Handler):
 
         # record = super().format(record)
         self.format(record)
-        print("LoggingHandler formatted LogRecord: {}".format(record))
 
         try:
             self.connect()
@@ -105,9 +104,8 @@ class PostgresHandler(logging.Handler):
                     VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                 """
                 )
-                asctime_str = logging.Formatter.formatTime(self, record, datefmt='%Y-%m-%d %H:%M:%S.%f%z')
                 values = {
-                    "time": asctime_str,
+                    "time": record.asctime,
                     "level": record.levelname,
                     "message": record.message,
                     "query_params": json.dumps(record.__dict__.get("query_params")),
