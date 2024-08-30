@@ -8,6 +8,14 @@ import logging
 from fastapi.templating import Jinja2Templates
 import traceback
 
+import google.auth
+import google.auth.transport.requests
+import openai
+
+import os
+from typing import Dict
+import json
+
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
@@ -65,11 +73,6 @@ async def remove_outage(model_name: str):
     raise HTTPException(status_code=404, detail="Model not found in outages")
 
 
-import os
-import openai
-from typing import Dict
-import json
-
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
     register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
 else:
@@ -102,11 +105,7 @@ async def test_model(model_name):
             if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
                 logging.warn("No Google creds detected!")
 
-            import google.auth
-            import google.auth.transport.requests
-            import openai
-
-        # Programmatically get an access token
+            # Programmatically get an access token
             creds, project = google.auth.default(
                 scopes=["https://www.googleapis.com/auth/cloud-platform"]
             )
@@ -114,7 +113,7 @@ async def test_model(model_name):
             creds.refresh(auth_req)
             # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
             api_key = creds.token
-            
+
         client = openai.OpenAI(
             base_url=api_base,
             api_key=api_key,
@@ -134,7 +133,7 @@ async def test_model(model_name):
         text = ""
         if stream:
             for chunk in res:
-                if (chunk.choices):
+                if chunk.choices:
                     text += chunk.choices[0].delta.content or ""
                     break
         else:
