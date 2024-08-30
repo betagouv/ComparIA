@@ -334,21 +334,30 @@ li.fr-nav__item {
 #chat-area .bot button,
 #chat-area .bot button:hover,
 #chat-area .bot button:active {
-  background-color: var(--blue-france-975-75);
-  border: 1px solid var(--border-default-grey);
-  /* --hover-tint: var(--hover); */
-  /* --hover-tint: var(--background-default-grey-hover); */
-  /* --hover-tint: var(--background-default-grey-hover); */
-  --hover-tint: var(--blue-france-975-75);
-  color: var(--text-default-grey)
+  background-color: white;
+  border: none;
+  /* border: 1px solid var(--border-default-grey); */
+  --hover-tint: white ;
+  color: var(--text-default-grey);
     /* --hover-tint: var(--background-alt-blue-france); */
 }
 
 /* #chat-area #chatbot-0 .user-row {
   display: none;
 } */
+#chat-area .flex-wrap.bot {
+  display: grid;
+  column-gap: 2em;
+  grid-auto-rows: 1fr;
+  grid-template-columns: repeat(2, 1fr);
+}
+
 #chat-area .panel .user {
   text-align: left !important;
+}
+
+#chat-area .thought {
+  margin-top: 0 !important;
 }
 
 #chat-area h1,
@@ -364,6 +373,9 @@ li.fr-nav__item {
 #chat-area .user button,
 #chat-area .user button:hover,
 #chat-area .user button:active {
+  text-align: right;
+  width: 60%;
+  margin-left: auto;
   /* margin-left: -40px;
   width: calc(100% + 40px); */
   background-color: var(--background-alt-grey);
@@ -397,7 +409,8 @@ li.fr-nav__item {
 #chat-area .message-row,
 #chat-area .flex-wrap,
 #chat-area .styler {
-  background-color: var(--background-default-grey);
+  background-color: white;
+  /* background-color: var(--background-default-grey); */
 }
 
 #chat-area,
@@ -406,27 +419,65 @@ li.fr-nav__item {
   box-shadow: none !important;
 }
 
-#chat-area #chatbot-0 .message.bot .chatbot::before {
-  content: "Modèle A";
-  background-color: var(--blue-france-975-75);
+#chat-area #main-chatbot .message.bot {
+  border-color: var(--border-default-grey);
+  border-width: 1px;
+  border-style: solid;
 }
 
-#chat-area #chatbot-1 .message.bot .chatbot::before {
-  content: "Modèle B";
-  background-color: var(--blue-france-975-75);
+
+#chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
+  content: "Réponse modèle A";
+
+  /* .fr-badge--info */
+  color: var(--text-default-info);
+  background-color: var(--background-contrast-info);
+
+  --idle: transparent;
+  --hover: var(--background-contrast-info-hover);
+  --active: var(--background-contrast-info-active);
+}
+
+#chat-area #main-chatbot .message.bot.thought .chatbot::before {
+  content: "Réponse modèle B";
+  color: var(--text-label-green-tilleul-verveine);
+  background-color: var(--background-contrast-green-tilleul-verveine);
+
+  --idle: transparent;
+  --hover: var(--background-contrast-green-tilleul-verveine-hover);
+  --active: var(--background-contrast-green-tilleul-verveine-active);
+
 }
 
 #chat-area .message.bot .chatbot::before {
-  text-align: left;
-  /* background-color: var(--blue-fr ance-975-75); */
-  /* position: relative; */
-  /* top: 1.5rem;
-  left: 1.5rem; */
-  font-size: 1.5rem;
-  font-weight: 700;
 
-  /* Not DSFR compliant */
-  color: var(--text-action-high-blue-france);
+  /* .fr-badge css */
+  --text-spacing: 0;
+  --title-spacing: 0;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  width: -moz-fit-content;
+  width: fit-content;
+
+  --underline-img: none;
+  --hover-tint: var(--hover);
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  min-height: 1.5rem;
+  padding: 0 0.5rem;
+  overflow: initial;
+  max-height: none;
+  font-weight: 700;
+  max-width: 100%;
+  text-transform: uppercase;
+  border-radius: 0.25rem;
+  color: var(--text-default-grey);
+  background-color: var(--background-contrast-grey);
+
+  /* --idle: transparent;
+  --hover: var(--background-contrast-grey-hover);
+  --active: var(--background-contrast-grey-active); */
 }
 
 /* TODO: don't do this on mobile */

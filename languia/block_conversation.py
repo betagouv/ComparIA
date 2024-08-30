@@ -146,7 +146,7 @@ def bot_response(
 
     # conv.update_last_message("▌")
     conv.update_last_message(html_code)
-    yield (state, state.to_gradio_chatbot())
+    yield (state)
 
     data = {"text": ""}
     # FIXME: does not detect/raise if 500 error
@@ -155,7 +155,7 @@ def bot_response(
             output = data["text"].strip()
             # conv.update_last_message(output + "▌")
             conv.update_last_message(output + html_code)
-            yield (state, state.to_gradio_chatbot())
+            yield (state)
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
     # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
@@ -164,4 +164,4 @@ def bot_response(
     if output == "":
         raise RuntimeError(f"No answer from API for model {model_name}")
     conv.update_last_message(output)
-    yield (state, state.to_gradio_chatbot())
+    yield (state)
