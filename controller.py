@@ -95,7 +95,26 @@ async def test_model(model_name):
     try:
         # Initialize the OpenAI client
         api_key = models[model_name]["api_key"]
+        api_type = models[model_name]["api_type"]
         api_base = models[model_name]["api_base"]
+
+        if api_type == "vertex":
+            if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+                logging.warn("No Google creds detected!")
+
+            import google.auth
+            import google.auth.transport.requests
+            import openai
+
+        # Programmatically get an access token
+            creds, project = google.auth.default(
+                scopes=["https://www.googleapis.com/auth/cloud-platform"]
+            )
+            auth_req = google.auth.transport.requests.Request()
+            creds.refresh(auth_req)
+            # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
+            api_key = creds.token
+            
         client = openai.OpenAI(
             base_url=api_base,
             api_key=api_key,
