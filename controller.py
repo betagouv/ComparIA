@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from typing import List, Dict
 import asyncio
@@ -19,6 +20,7 @@ import json
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 # Outage is now a dictionary with time_of_outage and model_name
 outages: List[Dict[str, str]] = []
