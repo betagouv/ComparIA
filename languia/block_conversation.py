@@ -129,16 +129,18 @@ def bot_response(
                 max_new_tokens = recommended_config.get(
                     "max_new_tokens", max_new_tokens
                 )
-
-        stream_iter = get_api_provider_stream_iter(
-            conv,
-            model_name,
-            model_api_dict,
-            temperature,
-            top_p,
-            max_new_tokens,
-            state,
-        )
+        try:
+            stream_iter = get_api_provider_stream_iter(
+                conv,
+                model_name,
+                model_api_dict,
+                temperature,
+                top_p,
+                max_new_tokens,
+                state,
+            )
+        except Exception as e:
+            logger.error(f"Error in get_api_provider_stream_iter. error: {e}")
 
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
@@ -164,36 +166,3 @@ def bot_response(
     output = data["text"].strip()
     conv.update_last_message(output)
     yield (state, state.to_gradio_chatbot())
-    # TODO: handle them great, or reboot arena saving initial prompt
-    # except requests.exceptions.RequestException as e:
-    # except Exception as e:
-    #     conv.update_last_message(
-    #         f"{SERVER_ERROR_MSG}\n\n"
-    #         f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
-    #     )
-    #     return
-
-    # finish_tstamp = time.time()
-    # # logger.info(f"{output}")
-
-    # filename = get_conv_log_filename(
-    #     # is_vision=state.is_vision, has_csam_image=state.has_csam_image
-    # )
-    # logger.info(f"Saving to: {filename}")
-
-    # with open(filename, "a") as fout:
-    #     data = {
-    #         "tstamp": round(finish_tstamp, 4),
-    #         "type": "chat",
-    #         "model": model_name,
-    #         "gen_params": {
-    #             "temperature": temperature,
-    #             "top_p": top_p,
-    #             "max_new_tokens": max_new_tokens,
-    #         },
-    #         "start": round(start_tstamp, 4),
-    #         "finish": round(finish_tstamp, 4),
-    #         "state": state.dict(),
-    #         "ip": get_ip(request),
-    #     }
-    #     fout.write(json.dumps(data) + "\n")
