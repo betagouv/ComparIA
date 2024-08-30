@@ -97,7 +97,8 @@ class PostgresHandler(logging.Handler):
         print("LoggingHandler formatted LogRecord: {}".format(record))
 
         try:
-            with self.connect(), self.connection.cursor() as cursor:
+            self.connect()
+            with self.connection.cursor() as cursor:
                 insert_statement = sql.SQL(
                     """
                     INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
