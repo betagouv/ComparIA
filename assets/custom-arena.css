@@ -475,8 +475,6 @@ li.fr-nav__item {
   color: var(--text-default-grey);
   background-color: var(--background-contrast-grey);
 
-  margin-bottom: 1em;
-
   /* --idle: transparent;
   --hover: var(--background-contrast-grey-hover);
   --active: var(--background-contrast-grey-active); */

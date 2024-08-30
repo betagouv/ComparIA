@@ -41,24 +41,49 @@ class ConversationState(gr.State):
     def __init__(self, model_name="", is_vision=False):
         # TODO: use std OpenAI format instead
         # self.conv = get_conversation_template(model_name)
-        self.messages = []
+        self.conv = Conversation(
+            name="zero_shot",
+            system_message="",
+            # system_message="A chat between a curious human and an artificial intelligence assistant. "
+            # "The assistant gives helpful, detailed, and polite answers to the human's questions.",
+            roles=("user", "assistant"),
+            sep_style=SeparatorStyle.ADD_COLON_SINGLE,
+            sep="\n### ",
+            stop_str="###",
+        ).copy()
 
-        # TODO: add template info?
         # TODO: get it from api
         self.conv_id = uuid.uuid4().hex
-        self.template_name = "zero_shot"
-        self.template = []
-        self.model_name = model_name
 
-    # def dict(self):
-    #     base = self.messages
-    #     base.update(
-    #         {
-    #             "conv_id": self.conv_id,
-    #             "model_name": self.model_name,
-    #         }
-    #     )
-    #     return base
+        self.model_name = model_name
+        # self.oai_thread_id = None
+        # self.is_vision = is_vision
+
+        # self.conv.history
+
+    # def generate_response(history):
+    #     history.append(ChatMessage(role="user", content="What is the weather in San Francisco right now?"))
+    #     yield history
+    #     time.sleep(0.25)
+    #     history.append(ChatMessage(role="assistant",
+    #                                   content="In order to find the current weather in San Francisco, I will need to use my weather tool.")
+    #                                )
+    #     yield history
+
+    # TODO: get rid
+    def to_gradio_chatbot(self):
+        return self.conv.to_gradio_chatbot()
+        # return self.conv.messages
+
+    def dict(self):
+        base = self.conv.dict()
+        base.update(
+            {
+                "conv_id": self.conv_id,
+                "model_name": self.model_name,
+            }
+        )
+        return base
 
 
 def bot_response(
@@ -86,7 +111,7 @@ def bot_response(
             # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
             raise RuntimeError(error_msg)
 
-    messages, model_name = state.messages, state.model_name
+    conv, model_name = state.conv, state.model_name
     model_api_dict = (
         config.api_endpoint_info[model_name]
         if model_name in config.api_endpoint_info
@@ -106,7 +131,7 @@ def bot_response(
                 )
         try:
             stream_iter = get_api_provider_stream_iter(
-                messages,
+                conv,
                 model_name,
                 model_api_dict,
                 temperature,
@@ -120,7 +145,7 @@ def bot_response(
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
     # conv.update_last_message("▌")
-    messages[-1].content = html_code
+    conv.update_last_message(html_code)
     yield (state)
 
     data = {"text": ""}
@@ -129,7 +154,7 @@ def bot_response(
         if data["error_code"] == 0:
             output = data["text"].strip()
             # conv.update_last_message(output + "▌")
-            messages[-1].content = output + html_code
+            conv.update_last_message(output + html_code)
             yield (state)
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
@@ -138,43 +163,5 @@ def bot_response(
     output = data["text"].strip()
     if output == "":
         raise RuntimeError(f"No answer from API for model {model_name}")
-    messages[-1].content = output
+    conv.update_last_message(output)
     yield (state)
-    # TODO: handle them great, or reboot arena saving initial prompt
-    # except requests.exceptions.RequestException as e:
-    #     conv.update_last_message(
-    #         f"{SERVER_ERROR_MSG}\n\n"
-    #         f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
-    #     )
-    #     return
-    # except Exception as e:
-    #     conv.update_last_message(
-    #         f"{SERVER_ERROR_MSG}\n\n"
-    #         f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
-    #     )
-    #     return
-
-    # finish_tstamp = time.time()
-    # # logger.info(f"{output}")
-
-    # filename = get_conv_log_filename(
-    #     # is_vision=state.is_vision, has_csam_image=state.has_csam_image
-    # )
-    # logger.info(f"Saving to: {filename}")
-
-    # with open(filename, "a") as fout:
-    #     data = {
-    #         "tstamp": round(finish_tstamp, 4),
-    #         "type": "chat",
-    #         "model": model_name,
-    #         "gen_params": {
-    #             "temperature": temperature,
-    #             "top_p": top_p,
-    #             "max_new_tokens": max_new_tokens,
-    #         },
-    #         "start": round(start_tstamp, 4),
-    #         "finish": round(finish_tstamp, 4),
-    #         "state": state.dict(),
-    #         "ip": get_ip(request),
-    #     }
-    #     fout.write(json.dumps(data) + "\n")

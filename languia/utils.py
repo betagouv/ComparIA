@@ -86,7 +86,7 @@ class PostgresHandler(logging.Handler):
                 print(f"Error connecting to database: {e}")
                 stacktrace = traceback.format_exc()
                 print(f"Stacktrace: {stacktrace}")
-
+                
     def emit(self, record):
 
         assert isinstance(record, logging.LogRecord)
@@ -228,10 +228,7 @@ def save_profile(
         "extra": {
             "which_model_radio": which_model_radio,
             "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
-            "messages": [
-                messages_to_dict_list(x)
-                for x in [conversation_a.messages, conversation_b.messages]
-            ],
+            "conversations": [x.dict() for x in [conversation_a, conversation_b]],
             # "cookies": dict(request.cookies),
         },
     }
@@ -270,10 +267,20 @@ def get_chosen_model_name(which_model_radio, conversations):
 
 
 def get_opening_prompt(conversation):
-    for msg in conversation.messages:
-        if msg.role == "user":
-            return msg.content
+    for msg in conversation.conv.messages:
+        if msg[0] == "user":
+            return conversation.conv.messages[0][1]
     return ValueError("No opening prompt found")
+
+
+def get_messages_dict(messages):
+    messages_dict = []
+    for message in messages:
+        if len(message) == 2:
+            messages_dict.append({"role": message[0], "content": message[1]})
+        else:
+            raise TypeError(f"Expected (role, msg) tuple, got {str(dict(message))}")
+    return messages_dict
 
 
 def count_turns(messages):
@@ -336,10 +343,6 @@ def save_vote_to_db(data):
             conn.close()
 
 
-def messages_to_dict_list(messages):
-    return [{"role": message.role, "content": message.content} for message in messages]
-
-
 def vote_last_response(
     conversations,
     which_model_radio,
@@ -352,8 +355,8 @@ def vote_last_response(
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     intensity = get_intensity(which_model_radio)
 
-    conversation_a_messages = messages_to_dict_list(conversations[0].messages)
-    conversation_b_messages = messages_to_dict_list(conversations[1].messages)
+    conversation_a = get_messages_dict(conversations[0].conv.messages)
+    conversation_b = get_messages_dict(conversations[1].conv.messages)
 
     # details = {
     #         "relevance": relevance_slider,
@@ -382,9 +385,9 @@ def vote_last_response(
         "chosen_model_name": chosen_model_name,
         "intensity": intensity,
         "opening_prompt": opening_prompt,
-        "conversation_a": conversation_a_messages,
-        "conversation_b": conversation_b_messages,
-        "turns": count_turns((conversations[0].messages)),
+        "conversation_a": conversation_a,
+        "conversation_b": conversation_b,
+        "turns": count_turns((conversations[0].conv.messages)),
         "selected_category": category,
         "is_unedited_prompt": (
             0
@@ -393,8 +396,9 @@ def vote_last_response(
         ),
         "template": (
             []
-            if conversations[0].template_name == "zero_shot"
-            else conversations[0].template
+            if conversations[0].conv.name == "zero_shot"
+            # FIXME: add template if there is some template
+            else [conversations[0].conv.name + ": FIXME: UNAVAILABLE TEMPLATE"]
         ),
         "uuid": conversations[0].conv_id + "-" + conversations[1].conv_id,
         # Warning: IP is a PII
@@ -779,10 +783,10 @@ def is_limit_reached(model_name, ip):
     return None
 
 
-def count_output_tokens(messages) -> int:
+def count_output_tokens(roles, messages) -> int:
     """Count output tokens (assuming 4 per message)."""
 
-    return sum(len(msg.content) * 4 for msg in messages if msg.role == "assistant")
+    return sum(len(msg[1]) * 4 for msg in messages if msg[0] == roles[1])
 
 
 def get_llm_impact(
@@ -855,9 +859,7 @@ def refresh_outage_models(previous_outage_models, controller_url):
         logger.info("refreshed outage models:" + str(data))
         return data
     else:
-        logger.warning(
-            f"Failed to retrieve outage data. Status code: {response.status_code}"
-        )
+        logger.warning(f"Failed to retrieve outage data. Status code: {response.status_code}")
         return previous_outage_models
 
 
@@ -880,29 +882,45 @@ def add_outage_model(controller_url, model_name, reason):
         logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
 
-def to_threeway_chatbot(conversations):
-    threeway_chatbot = []
-    for msg_a, msg_b in zip(conversations[0].messages, conversations[1].messages):
-        if msg_a.role == "user":
-            # Could even test if msg_a == msg_b
-            if msg_b.role != "user":
-                raise IndexError
-            threeway_chatbot.append(msg_a)
-        else:
-            if msg_a:
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_a.content,
-                        "metadata": {"name": "bot-a"},
-                    }
-                )
-            if msg_b:
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_b.content,
-                        "metadata": {"name": "bot-b"},
-                    }
-                )
-    return threeway_chatbot
+# Not used
+# def model_worker_stream_iter(
+#     conv,
+#     model_name,
+#     worker_addr,
+#     prompt,
+#     temperature,
+#     repetition_penalty,
+#     top_p,
+#     max_new_tokens,
+#     images,
+# ):
+#     # Make requests
+#     gen_params = {
+#         "model": model_name,
+#         "prompt": prompt,
+#         "temperature": temperature,
+#         "repetition_penalty": repetition_penalty,
+#         "top_p": top_p,
+#         "max_new_tokens": max_new_tokens,
+#         "stop": conv.stop_str,
+#         "stop_token_ids": conv.stop_token_ids,
+#         "echo": False,
+#     }
+
+#     logger.info(f"==== request ====\n{gen_params}")
+
+#     if len(images) > 0:
+#         gen_params["images"] = images
+
+#     # Stream output
+#     response = requests.post(
+#         worker_addr + "/worker_generate_stream",
+#         headers=config.headers,
+#         json=gen_params,
+#         stream=True,
+#         timeout=WORKER_API_TIMEOUT,
+#     )
+#     for chunk in response.iter_lines(decode_unicode=False, delimiter=b"\0"):
+#         if chunk:
+#             data = json.loads(chunk.decode())
+#             yield data

@@ -26,7 +26,7 @@ import time
 
 
 def get_api_provider_stream_iter(
-    messages,
+    conv,
     model_name,
     model_api_dict,
     temperature,
@@ -34,19 +34,11 @@ def get_api_provider_stream_iter(
     max_new_tokens,
     state,
 ):
-    messages_dict = []
-    for message in messages:
-        if isinstance(message, ChatMessage):
-            messages_dict.append({
-                "role": message.role,
-                "content": message.content
-            })
-        else:
-            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
     if model_api_dict["api_type"] == "openai":
+        prompt = conv.to_openai_api_messages()
         stream_iter = openai_api_stream_iter(
             model_name=model_api_dict["model_name"],
-            messages=messages_dict,
+            messages=prompt,
             temperature=temperature,
             top_p=top_p,
             max_new_tokens=max_new_tokens,
@@ -54,9 +46,10 @@ def get_api_provider_stream_iter(
             api_key=model_api_dict["api_key"],
         )
     elif model_api_dict["api_type"] == "vertex":
+        prompt = conv.to_openai_api_messages()
         stream_iter = vertex_api_stream_iter(
             model_name=model_api_dict["model_name"],
-            messages=messages_dict,
+            messages=prompt,
             temperature=temperature,
             top_p=top_p,
             max_new_tokens=max_new_tokens,
@@ -211,47 +204,3 @@ def vertex_api_stream_iter(
     #         "error_code": 0,
     #     }
     #     yield data
-
-
-# Not used
-# def model_worker_stream_iter(
-#     conv,
-#     model_name,
-#     worker_addr,
-#     prompt,
-#     temperature,
-#     repetition_penalty,
-#     top_p,
-#     max_new_tokens,
-#     images,
-# ):
-#     # Make requests
-#     gen_params = {
-#         "model": model_name,
-#         "prompt": prompt,
-#         "temperature": temperature,
-#         "repetition_penalty": repetition_penalty,
-#         "top_p": top_p,
-#         "max_new_tokens": max_new_tokens,
-#         "stop": conv.stop_str,
-#         "stop_token_ids": conv.stop_token_ids,
-#         "echo": False,
-#     }
-
-#     logger.info(f"==== request ====\n{gen_params}")
-
-#     if len(images) > 0:
-#         gen_params["images"] = images
-
-#     # Stream output
-#     response = requests.post(
-#         worker_addr + "/worker_generate_stream",
-#         headers=config.headers,
-#         json=gen_params,
-#         stream=True,
-#         timeout=WORKER_API_TIMEOUT,
-#     )
-#     for chunk in response.iter_lines(decode_unicode=False, delimiter=b"\0"):
-#         if chunk:
-#             data = json.loads(chunk.decode())
-#             yield data
