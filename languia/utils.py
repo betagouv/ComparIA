@@ -52,7 +52,7 @@ class JSONFormatter(logging.Formatter):
             log_data["path_params"] = dict(record.request.path_params)
             log_data["ip"] = get_ip(record.request)
             log_data["session_hash"] = record.request.session_hash
-            # if isinstance(request_di  ct, dict):
+            # if isinstance(request_dict, dict):
             #     request_json = json.dumps(request_dict)
             # delattr(record, 'request')
         if hasattr(record, "extra"):
@@ -98,6 +98,9 @@ class PostgresHandler(logging.Handler):
         try:
             self.connect()
             with self.connection.cursor() as cursor:
+
+                # del(record.__dict__["request"])
+
                 insert_statement = sql.SQL(
                     """
                     INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
@@ -111,7 +114,7 @@ class PostgresHandler(logging.Handler):
                     "query_params": json.dumps(record.__dict__.get("query_params")),
                     "path_params": json.dumps(record.__dict__.get("path_params")),
                     "session_hash": record.__dict__.get("session_hash"),
-                    "extra": json.dumps(record.__dict__),
+                    "extra": json.dumps(record.__dict__.get("extra")),
                 }
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
