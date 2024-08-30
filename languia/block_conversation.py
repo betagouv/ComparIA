@@ -158,11 +158,10 @@ def bot_response(
             yield (state, state.to_gradio_chatbot())
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
-    else:
-        # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
-        if len(data["text"].strip()) == 0:
-            raise RuntimeError(f"No answer from API for model {model_name}")
+    # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
 
     output = data["text"].strip()
+    if output == "":
+        raise RuntimeError(f"No answer from API for model {model_name}")
     conv.update_last_message(output)
     yield (state, state.to_gradio_chatbot())
