@@ -15,7 +15,7 @@ from languia.utils import (
     add_outage_model,
     gen_prompt,
     to_threeway_chatbot,
-    get_opening_prompt
+    get_opening_prompt,
 )
 
 from languia.config import (
@@ -241,7 +241,9 @@ def register_listeners():
                     )
                 )
                 # To be edited
-                conversations[i].messages.append(gr.ChatMessage(role="assistant", content=""))
+                conversations[i].messages.append(
+                    gr.ChatMessage(role="assistant", content="")
+                )
 
             iters = 0
             while True:
@@ -279,7 +281,7 @@ def register_listeners():
             gr.Warning(
                 duration=0,
                 message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
-            )   
+            )
             app_state.original_user_prompt = get_opening_prompt(conversation_a)
             logger.info(
                 "Saving original prompt: " + app_state.original_user_prompt,
@@ -679,12 +681,8 @@ def register_listeners():
         )
 
         # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = count_output_tokens(
-            conversation_a.conv.roles, conversation_a.conv.messages
-        )
-        model_b_tokens = count_output_tokens(
-            conversation_b.conv.roles, conversation_b.conv.messages
-        )
+        model_a_tokens = count_output_tokens(conversation_a.messages)
+        model_b_tokens = count_output_tokens(conversation_b.messages)
         # TODO:
         # request_latency_a = conversation_a.conv.finish_tstamp - conversation_a.conv.start_tstamp
         # request_latency_b = conversation_b.conv.finish_tstamp - conversation_b.conv.start_tstamp

@@ -228,7 +228,10 @@ def save_profile(
         "extra": {
             "which_model_radio": which_model_radio,
             "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
-            "conversations": [dict(x) for x in [conversation_a, conversation_b]],
+            "messages": [
+                messages_to_dict_list(x)
+                for x in [conversation_a.messages, conversation_b.messages]
+            ],
             # "cookies": dict(request.cookies),
         },
     }
@@ -333,6 +336,10 @@ def save_vote_to_db(data):
             conn.close()
 
 
+def messages_to_dict_list(messages):
+    return [{"role": message.role, "content": message.content} for message in messages]
+
+
 def vote_last_response(
     conversations,
     which_model_radio,
@@ -345,8 +352,8 @@ def vote_last_response(
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     intensity = get_intensity(which_model_radio)
 
-    conversation_a_messages = dict(conversations[0].messages)
-    conversation_b_messages = dict(conversations[1].messages)
+    conversation_a_messages = messages_to_dict_list(conversations[0].messages)
+    conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
     # details = {
     #         "relevance": relevance_slider,
@@ -772,10 +779,10 @@ def is_limit_reached(model_name, ip):
     return None
 
 
-def count_output_tokens(roles, messages) -> int:
+def count_output_tokens(messages) -> int:
     """Count output tokens (assuming 4 per message)."""
 
-    return sum(len(msg[1]) * 4 for msg in messages if msg[0] == roles[1])
+    return sum(len(msg.content) * 4 for msg in messages if msg.role == "assistant")
 
 
 def get_llm_impact(
