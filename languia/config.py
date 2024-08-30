@@ -60,6 +60,11 @@ def build_logger(logger_filename):
         "level": "%(levelname)s", "message": "%(message)s"}',
         datefmt="%Y-%m-%d %H:%M:%S",
     )
+    # postgres_formatter = JSONFormatter(
+    #     '{"time":"%(asctime)s", "name": "%(name)s", \
+    #     "level": "%(levelname)s", "message": "%(message)s"}',
+    #     datefmt="%Y-%m-%d %H:%M:%S",
+    # )
 
     if LOGDIR:
         os.makedirs(LOGDIR, exist_ok=True)
@@ -70,7 +75,7 @@ def build_logger(logger_filename):
 
     if db:
         postgres_handler = PostgresHandler(db)
-        postgres_handler.setFormatter(file_formatter)
+        # postgres_handler.setFormatter(postgres_formatter)
         logger.addHandler(postgres_handler)
 
     return logger

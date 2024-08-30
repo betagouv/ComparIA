@@ -27,7 +27,7 @@ from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
 
 from slugify import slugify
 
-# import config
+import traceback
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
@@ -55,14 +55,16 @@ class JSONFormatter(logging.Formatter):
             # if isinstance(request_di  ct, dict):
             #     request_json = json.dumps(request_dict)
             # delattr(record, 'request')
-        if hasattr(record, "prompt"):
-            log_data["prompt"] = record.prompt
-        if hasattr(record, "details"):
-            log_data["details"] = record.details
-        if hasattr(record, "models"):
-            log_data["models"] = record.models
-        if hasattr(record, "conversations"):
-            log_data["conversations"] = record.conversations
+        if hasattr(record, "extra"):
+            log_data["extra"] = record.extra
+        # if hasattr(record, "prompt"):
+        #     log_data["prompt"] = record.prompt
+        # if hasattr(record, "details"):
+        #     log_data["details"] = record.details
+        # if hasattr(record, "models"):
+        #     log_data["models"] = record.models
+        # if hasattr(record, "conversations"):
+        #     log_data["conversations"] = record.conversations
 
         # Add the args dictionary to the JSON payload
         # log_data.update(record.args)
@@ -78,21 +80,25 @@ class PostgresHandler(logging.Handler):
 
     def connect(self):
         if not self.connection or self.connection.closed:
-            self.connection = psycopg2.connect(**self.db_config)
-
+            try:
+                self.connection = psycopg2.connect(**self.db_config)
+            except Exception as e:
+                print(f"Error connecting to database: {e}")
+                stacktrace = traceback.format_exc()
+                print(f"Stacktrace: {stacktrace}")
+                
     def emit(self, record):
         try:
-            self.connect()
-            with self.connection.cursor() as cursor:
-
+            with self.connect(), self.connection.cursor() as cursor:
                 insert_statement = sql.SQL(
                     """
                     INSERT INTO logs (tstamp, level, message, query_params, path_params, session_hash, extra)
                     VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                 """
                 )
+                asctime_str = logging.Formatter.formatTime(self, record, datefmt='%Y-%m-%d %H:%M:%S.%f%z')
                 values = {
-                    "time": record.time,
+                    "time": asctime_str,
                     "level": record.levelname,
                     "message": record.message,
                     "query_params": json.dumps(record.__dict__.get("query_params")),
@@ -102,12 +108,13 @@ class PostgresHandler(logging.Handler):
                 }
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
-        except Exception as e:
+        except (psycopg2.Error, Exception) as e:
             # Don't use logger on purpose to avoid endless loops
             print(f"Error logging to Postgres: {e}")
-        finally:
-            if self.connection:
-                self.connection.close()
+            stacktrace = traceback.format_exc()
+            print(f"Stacktrace: {stacktrace}")
+            # Could do:
+            # self.handleError(record)
 
 
 def get_ip(request: gr.Request):
