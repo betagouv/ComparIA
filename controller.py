@@ -95,11 +95,9 @@ async def test_model(model_name):
     top_p = 1
     max_new_tokens = 10
     stream = False
-    # if api_endpoint_info[model_name]["api_type"] == "openai"
 
     try:
         # Initialize the OpenAI client
-        api_key = models[model_name]["api_key"]
         api_type = models[model_name]["api_type"]
         api_base = models[model_name]["api_base"]
 
@@ -115,7 +113,9 @@ async def test_model(model_name):
             creds.refresh(auth_req)
             # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
             api_key = creds.token
-
+        else:
+            api_key = models[model_name]["api_key"]
+            
         client = openai.OpenAI(
             base_url=api_base,
             api_key=api_key,
