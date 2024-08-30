@@ -882,45 +882,30 @@ def add_outage_model(controller_url, model_name, reason):
         logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
 
-# Not used
-# def model_worker_stream_iter(
-#     conv,
-#     model_name,
-#     worker_addr,
-#     prompt,
-#     temperature,
-#     repetition_penalty,
-#     top_p,
-#     max_new_tokens,
-#     images,
-# ):
-#     # Make requests
-#     gen_params = {
-#         "model": model_name,
-#         "prompt": prompt,
-#         "temperature": temperature,
-#         "repetition_penalty": repetition_penalty,
-#         "top_p": top_p,
-#         "max_new_tokens": max_new_tokens,
-#         "stop": conv.stop_str,
-#         "stop_token_ids": conv.stop_token_ids,
-#         "echo": False,
-#     }
-
-#     logger.info(f"==== request ====\n{gen_params}")
-
-#     if len(images) > 0:
-#         gen_params["images"] = images
-
-#     # Stream output
-#     response = requests.post(
-#         worker_addr + "/worker_generate_stream",
-#         headers=config.headers,
-#         json=gen_params,
-#         stream=True,
-#         timeout=WORKER_API_TIMEOUT,
-#     )
-#     for chunk in response.iter_lines(decode_unicode=False, delimiter=b"\0"):
-#         if chunk:
-#             data = json.loads(chunk.decode())
-#             yield data
+    def to_threeway_chatbot(conversations):
+        threeway_chatbot = []
+        for msg_a, msg_b in zip(
+            conversations[0].messages, conversations[1].messages
+        ):
+            if msg_a[0] == "user":
+                if msg_b[0] != "user":
+                    raise IndexError
+                threeway_chatbot.append({"role": "user", "content": msg_a[1]})
+            else:
+                if msg_a[1]:
+                    threeway_chatbot.append(
+                        {
+                            "role": "assistant",
+                            "content": msg_a[1],
+                            "metadata": {"name": "bot-a"},
+                        }
+                    )
+                if msg_b[1]:
+                    threeway_chatbot.append(
+                        {
+                            "role": "assistant",
+                            "content": msg_b[1],
+                            "metadata": {"name": "bot-b"},
+                        }
+                    )
+        return threeway_chatbot

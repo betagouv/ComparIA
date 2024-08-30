@@ -16,6 +16,7 @@ from languia.utils import (
     refresh_outage_models,
     add_outage_model,
     gen_prompt,
+    to_threeway_chatbot
 )
 
 from languia.config import (
@@ -209,34 +210,6 @@ def register_listeners():
             # 1 chatbot
             + [to_threeway_chatbot(conversations)]
         )
-
-    def to_threeway_chatbot(conversations):
-        threeway_chatbot = []
-        for msg_a, msg_b in zip(
-            conversations[0].messages, conversations[1].messages
-        ):
-            if msg_a[0] == "user":
-                if msg_b[0] != "user":
-                    raise IndexError
-                threeway_chatbot.append({"role": "user", "content": msg_a[1]})
-            else:
-                if msg_a[1]:
-                    threeway_chatbot.append(
-                        {
-                            "role": "assistant",
-                            "content": msg_a[1],
-                            "metadata": {"name": "bot-a"},
-                        }
-                    )
-                if msg_b[1]:
-                    threeway_chatbot.append(
-                        {
-                            "role": "assistant",
-                            "content": msg_b[1],
-                            "metadata": {"name": "bot-b"},
-                        }
-                    )
-        return threeway_chatbot
 
     # TODO: move this
     def bot_response_multi(
