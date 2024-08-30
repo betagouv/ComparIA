@@ -1,40 +1,44 @@
 
 <html>
     <head>
-        <title>Outages</title>
+        <title>Dashboard LANGU:IA</title>
+        <link rel="stylesheet" href="assets/dsfr/dsfr.min.css">
     </head>
     <body>
-        <h1>Outages</h1>
-        <table>
-            <tr>
-                <th>Model name</th>
-                <th>Detection Time</th>
-                <th>Last reason</th>
-                <th>Retry?</th>
-            </tr>
-            {% for outage in outages %}
-            <tr>
-                <td>{{ outage.model_name }}</td>
-                <td>{{ outage.detection_time }}</td>
-                <td>{{ outage.reason }}</td>
-                <td><a href="/outages/{{ outage.model_name }}">Retry?</a></a></td>
-            </tr>
-            {% endfor %}
-        </table>
-        <h1>All models</h1>
-        <table>
-            <tr>
-                <th>Model name</th>
-                <th>Test?</th>
-                <!-- <th>Stats</th> -->
-            </tr>
-            {% for model_name, model in models.items() %}
-            <tr>
-                <td>{{ model_name }}</td>
-                <td><a href="/outages/{{ model_name }}">Test?</a></a></td>
-                <!-- <td><a href="/outages/{{ model_name }}">Test?</a></a></td> -->
-            </tr>
-            {% endfor %}
-        </table>
-    </body>
-</html>
+        <div class="fr-container">
+            <h1 class="fr-h1">Dashboard LANGU:IA</h1>
+            <h3 class="fr-h1">Erreurs d'API</h3>
+            <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
+                <tr>
+                    <th>Modèle</th>
+                    <th>Date de détection</th>
+                    <th>Raison</th>
+                    <th>Réessayer ?</th>
+                </tr>
+                {% for outage in outages %}
+                <tr>
+                    <td>{{ outage.model_name }}</td>
+                    <td>{{ outage.detection_time }}</td>
+                    <td>{{ outage.reason }}</td>
+                    <td><a href="/outages/{{ outage.model_name }}">Réessayer ?</a></a></td>
+                </tr>
+                {% endfor %}
+            </table>
+            <h1 class="fr-h1">Tous les modèles</h1>
+            <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
+                <tr>
+                    <th>Modèle</th>
+                    <th>Tester ?</th>
+                    <!-- <th>Stats</th> -->
+                </tr>
+                {% for model_name, model in models.items() %}
+                <tr>
+                    <td>{{ model_name }}</td>
+                    <td><a href="/outages/{{ model_name }}">Tester ?</a></a></td>
+                    <!-- <td><a href="/outages/{{ model_name }}">Test?</a></a></td> -->
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        </body>
+        </html>
