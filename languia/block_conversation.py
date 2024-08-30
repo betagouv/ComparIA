@@ -47,6 +47,7 @@ class ConversationState(gr.State):
         # TODO: get it from api
         self.conv_id = uuid.uuid4().hex
         self.template_name = "zero_shot"
+        self.template = []
         self.model_name = model_name
 
     # def dict(self):

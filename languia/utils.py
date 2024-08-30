@@ -345,8 +345,8 @@ def vote_last_response(
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     intensity = get_intensity(which_model_radio)
 
-    conversation_a = conversations[0].messages
-    conversation_b = conversations[1].messages
+    conversation_a_messages = dict(conversations[0].messages)
+    conversation_b_messages = dict(conversations[1].messages)
 
     # details = {
     #         "relevance": relevance_slider,
@@ -375,8 +375,8 @@ def vote_last_response(
         "chosen_model_name": chosen_model_name,
         "intensity": intensity,
         "opening_prompt": opening_prompt,
-        "conversation_a": conversation_a,
-        "conversation_b": conversation_b,
+        "conversation_a": conversation_a_messages,
+        "conversation_b": conversation_b_messages,
         "turns": count_turns((conversations[0].messages)),
         "selected_category": category,
         "is_unedited_prompt": (
@@ -387,8 +387,7 @@ def vote_last_response(
         "template": (
             []
             if conversations[0].template_name == "zero_shot"
-            # FIXME: add template if there is some template
-            else [conversations[0].name + ": FIXME: UNAVAILABLE TEMPLATE"]
+            else conversations[0].template
         ),
         "uuid": conversations[0].conv_id + "-" + conversations[1].conv_id,
         # Warning: IP is a PII
