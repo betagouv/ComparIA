@@ -88,11 +88,19 @@ class PostgresHandler(logging.Handler):
                 print(f"Stacktrace: {stacktrace}")
                 
     def emit(self, record):
+
+        assert isinstance(record, logging.LogRecord)
+        print("LoggingHandler received LogRecord: {}".format(record))
+
+        # record = super().format(record)
+        self.format(record)
+        print("LoggingHandler formatted LogRecord: {}".format(record))
+
         try:
             with self.connect(), self.connection.cursor() as cursor:
                 insert_statement = sql.SQL(
                     """
-                    INSERT INTO logs (tstamp, level, message, query_params, path_params, session_hash, extra)
+                    INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
                     VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                 """
                 )
