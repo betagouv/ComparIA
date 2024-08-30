@@ -77,29 +77,20 @@ def openai_api_stream_iter(
     client = openai.OpenAI(
         base_url=api_base or "https://api.openai.com/v1",
         api_key=api_key,
-        timeout=180,
+        timeout=10,
+        # max_retries=
     )
 
-    # Make requests for logging
-    # text_messages = messages
-
-    # gen_params = {
-    #     "model": model_name,
-    #     "prompt": text_messages,
-    #     "temperature": temperature,
-    #     "top_p": top_p,
-    #     "max_new_tokens": max_new_tokens,
-    # }
-    # logging.info(f"==== request ====\n{gen_params}")
-
+    #
     res = client.chat.completions.create(
         model=model_name,
         messages=messages,
         temperature=temperature,
         max_tokens=max_new_tokens,
+        stream=True,
+        stream_options={"include_usage": True},
         # Not available like this
         # top_p=top_p,
-        stream=True,
     )
     text = ""
     output_tokens = 0
