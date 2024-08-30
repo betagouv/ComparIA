@@ -26,7 +26,7 @@ import time
 
 
 def get_api_provider_stream_iter(
-    conv,
+    messages,
     model_name,
     model_api_dict,
     temperature,
@@ -34,11 +34,19 @@ def get_api_provider_stream_iter(
     max_new_tokens,
     state,
 ):
+    messages_dict = []
+    for message in messages:
+        if isinstance(message, ChatMessage):
+            messages_dict.append({
+                "role": message.role,
+                "content": message.content
+            })
+        else:
+            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
     if model_api_dict["api_type"] == "openai":
-        prompt = conv.to_openai_api_messages()
         stream_iter = openai_api_stream_iter(
             model_name=model_api_dict["model_name"],
-            messages=prompt,
+            messages=messages_dict,
             temperature=temperature,
             top_p=top_p,
             max_new_tokens=max_new_tokens,
@@ -46,10 +54,9 @@ def get_api_provider_stream_iter(
             api_key=model_api_dict["api_key"],
         )
     elif model_api_dict["api_type"] == "vertex":
-        prompt = conv.to_openai_api_messages()
         stream_iter = vertex_api_stream_iter(
             model_name=model_api_dict["model_name"],
-            messages=prompt,
+            messages=messages_dict,
             temperature=temperature,
             top_p=top_p,
             max_new_tokens=max_new_tokens,

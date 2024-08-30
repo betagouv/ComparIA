@@ -194,10 +194,14 @@ def register_listeners():
         # TODO: what do?
 
         for i in range(config.num_sides):
-            conversations[i].conv.append_message(conversations[i].conv.roles[0], text)
+            # conversations[i].messages.append(gr.ChatMessage(role=f"bot", content=text))
+            # conversations[i].messages.append(gr.ChatMessage(role=f"system", content=text))
+
+            # conversations[i].messages.append(gr.ChatMessage(role=f"bot-{i}", content=text))
+            conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=text))
             # TODO: Empty assistant message is needed to show user's first question but why??
-            conversations[i].conv.append_message(conversations[i].conv.roles[1], None)
-            conversations[i].skip_next = False
+            # conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
+            # conversations[i].skip_next = False
 
         return (
             # 2 conversations
@@ -206,12 +210,10 @@ def register_listeners():
             + [to_threeway_chatbot(conversations)]
         )
 
-    from fastchat.conversation import Conversation
-
     def to_threeway_chatbot(conversations):
         threeway_chatbot = []
         for msg_a, msg_b in zip(
-            conversations[0].conv.messages, conversations[1].conv.messages
+            conversations[0].messages, conversations[1].messages
         ):
             if msg_a[0] == "user":
                 if msg_b[0] != "user":
