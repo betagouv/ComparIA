@@ -422,7 +422,7 @@ def register_listeners():
                     + [[]]
                     # disable conclude btn
                     + [gr.update(interactive=False)]
-                    + [gr.skip()]
+                    # + [gr.skip()]
                     + [original_user_prompt]
                 )
 
@@ -438,7 +438,7 @@ def register_listeners():
             # enable conclude_btn
             + [gr.update(interactive=True)]
             # show retry_modal_btn
-            + [gr.update(visible=True)]
+            # + [gr.update(visible=True)]
             + [
                 gr.update(
                     value="",
@@ -478,7 +478,7 @@ def register_listeners():
         outputs=conversations
         + [chatbot]
         + [conclude_btn]
-        + [retry_modal_btn]
+        # + [retry_modal_btn]
         + [textbox],
         api_name=False,
     )
@@ -746,91 +746,91 @@ def register_listeners():
             gr.update(visible=False),
         ]
 
-    gr.on(
-        triggers=retry_modal_btn.click,
-        fn=(lambda: Modal(visible=True)),
-        inputs=[],
-        outputs=retry_modal,
-        api_name=False,
-    )
-    gr.on(
-        triggers=close_retry_modal_btn.click,
-        fn=(lambda: Modal(visible=False)),
-        inputs=[],
-        outputs=retry_modal,
-        api_name=False,
-    )
+    # gr.on(
+    #     triggers=retry_modal_btn.click,
+    #     fn=(lambda: Modal(visible=True)),
+    #     inputs=[],
+    #     outputs=retry_modal,
+    #     api_name=False,
+    # )
+    # gr.on(
+    #     triggers=close_retry_modal_btn.click,
+    #     fn=(lambda: Modal(visible=False)),
+    #     inputs=[],
+    #     outputs=retry_modal,
+    #     api_name=False,
+    # )
 
     # On reset go to mode selection mode_screen
 
-    def clear_history(
-        conversation_a,
-        conversation_b,
-        chatbot,
-        textbox,
-        request: gr.Request,
-    ):
-        logger.info("clear_history", extra={request: request})
-        #     + chatbots
-        # + [textbox]
-        # + [chat_area]
-        # + [vote_area]
-        # + [supervote_area]
-        # + [mode_screen],
-        config.outage_models = refresh_outage_models(
-            config.outage_models, controller_url=config.controller_url
-        )
+    # gr.on(
+    #     triggers=[retry_btn.click],
+    #     api_name=False,
+    #     # triggers=[clear_btn.click, retry_btn.click],
+    #     fn=clear_history,
+    #     inputs=conversations + [chatbot] + [textbox],
+    #     # List of objects to clear
+    #     outputs=conversations
+    #     + [chatbot]
+    #     + [textbox]
+    #     + [chat_area]
+    #     + [vote_area]
+    #     + [supervote_area]
+    #     + [mode_screen]
+    #     + [retry_modal]
+    #     + [conclude_btn]
+    #     + [retry_modal_btn]
+    #     + [shuffle_btn],
+    # )
 
-        # app_state.model_left, app_state.model_right = get_battle_pair(
-        model_left, model_right = get_battle_pair(
-            config.models,
-            BATTLE_TARGETS,
-            config.outage_models,
-            SAMPLING_WEIGHTS,
-            SAMPLING_BOOST_MODELS,
-        )
-        conversation_a = ConversationState(model_name=model_left)
-        conversation_b = ConversationState(model_name=model_right)
-        logger.info(
-            "Picked 2 models: " + model_left + " and " + model_right,
-            extra={request: request},
-        )
-        return [
-            # Conversations
-            conversation_a,
-            conversation_b,
-            None,
-            None,
-            gr.update(value="", placeholder="Réinterrogez deux nouveaux modèles"),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-            # retry_modal
-            Modal(visible=False),
-            #  conclude_btn + retry_modal_btn
-            gr.update(visible=False),
-            gr.update(visible=False),
-            # shuffle_btn
-            gr.update(visible=True),
-        ]
+    # def clear_history(
+    #     conversation_a,
+    #     conversation_b,
+    #     chatbot,
+    #     textbox,
+    #     request: gr.Request,
+    # ):
+    #     logger.info("clear_history", extra={request: request})
+    #     #     + chatbots
+    #     # + [textbox]
+    #     # + [chat_area]
+    #     # + [vote_area]
+    #     # + [supervote_area]
+    #     # + [mode_screen],
+    #     config.outage_models = refresh_outage_models(
+    #         config.outage_models, controller_url=config.controller_url
+    #     )
 
-    gr.on(
-        triggers=[retry_btn.click],
-        api_name=False,
-        # triggers=[clear_btn.click, retry_btn.click],
-        fn=clear_history,
-        inputs=conversations + [chatbot] + [textbox],
-        # List of objects to clear
-        outputs=conversations
-        + [chatbot]
-        + [textbox]
-        + [chat_area]
-        + [vote_area]
-        + [supervote_area]
-        + [mode_screen]
-        + [retry_modal]
-        + [conclude_btn]
-        + [retry_modal_btn]
-        + [shuffle_btn],
-    )
+    #     # app_state.model_left, app_state.model_right = get_battle_pair(
+    #     model_left, model_right = get_battle_pair(
+    #         config.models,
+    #         BATTLE_TARGETS,
+    #         config.outage_models,
+    #         SAMPLING_WEIGHTS,
+    #         SAMPLING_BOOST_MODELS,
+    #     )
+    #     conversation_a = ConversationState(model_name=model_left)
+    #     conversation_b = ConversationState(model_name=model_right)
+    #     logger.info(
+    #         "Picked 2 models: " + model_left + " and " + model_right,
+    #         extra={request: request},
+    #     )
+    #     return [
+    #         # Conversations
+    #         conversation_a,
+    #         conversation_b,
+    #         None,
+    #         None,
+    #         gr.update(value="", placeholder="Réinterrogez deux nouveaux modèles"),
+    #         gr.update(visible=False),
+    #         gr.update(visible=False),
+    #         gr.update(visible=False),
+    #         gr.update(visible=True),
+    #         # retry_modal
+    #         Modal(visible=False),
+    #         #  conclude_btn + retry_modal_btn
+    #         gr.update(visible=False),
+    #         gr.update(visible=False),
+    #         # shuffle_btn
+    #         gr.update(visible=True),
+    #     ]
