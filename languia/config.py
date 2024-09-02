@@ -161,26 +161,26 @@ arena_head_js = (
 <script type="text/javascript" nomodule src="file=assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
-    + """
-<script type="text/javascript">
+#     + """
+# <script type="text/javascript">
 
-    function handleRetryOrRedirect(event) {
-        // Prevent the default action of the link
-        event.preventDefault();
+#     function handleRetryOrRedirect(event) {
+#         // Prevent the default action of the link
+#         event.preventDefault();
 
-        // Look for the retry button
-        var retryButton = document.getElementById('retry-modal-btn');
+#         // Look for the retry button
+#         var retryButton = document.getElementById('retry-modal-btn');
 
-        if (retryButton) {
-        // If the retry button exists, simulate a click on it
-        retryButton.click();
-        } else {
-        // If the retry button does not exist, redirect to the main page
-        window.location.href = event.target.href || event.target.closest('a').href;
-        }
-    }
-</script>
-"""
+#         if (retryButton) {
+#         // If the retry button exists, simulate a click on it
+#         retryButton.click();
+#         } else {
+#         // If the retry button does not exist, redirect to the main page
+#         window.location.href = event.target.href || event.target.closest('a').href;
+#         }
+#     }
+# </script>
+# """
 )
 
 site_head_js = (
