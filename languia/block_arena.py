@@ -136,7 +136,7 @@ with gr.Blocks(
 
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
-                value="Terminer et donner mon avis",
+                value="Terminer et donner mon avis sur les IA",
                 elem_classes="fr-btn fr-col-12 fr-col-md-4",
                 visible=False,
                 interactive=False,

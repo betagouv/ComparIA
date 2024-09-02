@@ -358,7 +358,15 @@ def register_listeners():
                 )
             ]
             # stepper_block
-            + [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
+            + [
+                gr.update(
+                    value=stepper_html(
+                        "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
+                        2,
+                        4,
+                    )
+                )
+            ]
             # mode_screen
             + [gr.update(visible=False)]
             # chat_area
@@ -442,7 +450,7 @@ def register_listeners():
             + [
                 gr.update(
                     value="",
-                    placeholder="Continuer à discuter avec les deux modèles",
+                    placeholder="Continuer à discuter avec les deux modèles d'IA",
                 )
             ]
         )
@@ -475,9 +483,7 @@ def register_listeners():
     ).then(
         fn=check_answers,
         inputs=conversations,
-        outputs=conversations
-        + [chatbot]
-        + [conclude_btn]
+        outputs=conversations + [chatbot] + [conclude_btn]
         # + [retry_modal_btn]
         + [textbox],
         api_name=False,
@@ -514,7 +520,11 @@ def register_listeners():
         # }
         # [conclude_area, chat_area, send_area, vote_area]
         return [
-            gr.update(value=stepper_html("Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4)),
+            gr.update(
+                value=stepper_html(
+                    "Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4
+                )
+            ),
             gr.update(visible=False),
             gr.update(visible=False),
             gr.update(visible=True),
