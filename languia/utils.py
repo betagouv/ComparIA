@@ -189,6 +189,9 @@ def save_profile_to_db(data):
         conn.commit()
     except Exception as e:
         logger = logging.getLogger("languia")
+        logger.error(f"Error saving profile to db: {e}")
+        stacktrace = traceback.format_exc()
+        print(f"Stacktrace: {stacktrace}")
     finally:
         cursor.close()
         if conn:
@@ -321,15 +324,15 @@ def save_vote_to_db(data):
             "conversation_b": json.dumps(data["conversation_b"]),
             "turns": int(data["turns"]),
             "selected_category": str(data["selected_category"]),
-            "is_unedited_prompt": int(data["is_unedited_prompt"]),
+            "is_unedited_prompt": data["is_unedited_prompt"],
             "template": json.dumps(data["template"]),
             "uuid": str(data["uuid"]),
             "ip": str(data["ip"]),
             "session_hash": str(data["session_hash"]),
             "visitor_uuid": (data["visitor_uuid"]),
-            "relevance": int(data["relevance"]),
-            "form": int(data["form"]),
-            "style": int(data["style"]),
+            "relevance": (data["relevance"]),
+            "form": (data["form"]),
+            "style": (data["style"]),
             "comments": str(data["comments"]),
             "extra": json.dumps(data["extra"]),
         }
@@ -337,6 +340,8 @@ def save_vote_to_db(data):
         conn.commit()
     except Exception as e:
         logger.error(f"Error saving vote to db: {e}")
+        stacktrace = traceback.format_exc()
+        print(f"Stacktrace: {stacktrace}")
     finally:
         cursor.close()
         if conn:
