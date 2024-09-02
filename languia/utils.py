@@ -3,7 +3,6 @@ import os
 
 import gradio as gr
 
-import time
 
 from random import randrange
 
@@ -17,7 +16,6 @@ from psycopg2 import sql
 # )
 
 import logging
-from logging.handlers import WatchedFileHandler
 
 import datetime
 
@@ -176,7 +174,7 @@ def save_profile_to_db(data):
         """
         )
         values = {
-            "tstamp": int(data["tstamp"]),
+            "tstamp": (data["tstamp"]),
             "chatbot_use": (data["chatbot_use"]),
             "gender": (data["gender"]),
             "age": (data["age"]),
@@ -221,7 +219,7 @@ def save_profile(
     get_matomo_tracker_from_cookies(request.cookies)
 
     data = {
-        "tstamp": round(time.time(), 4),
+        "tstamp": str(t),
         "chatbot_use": chatbot_use,
         "gender": gender,
         "age": age,
@@ -314,7 +312,7 @@ def save_vote_to_db(data):
         """
         )
         values = {
-            "tstamp": round(time.time(), 4),
+            "tstamp": (data["tstamp"]),
             "model_a_name": str(data["model_a_name"]),
             "model_b_name": str(data["model_b_name"]),
             "model_pair_name": json.dumps(sorted(data["model_pair_name"])),
@@ -378,10 +376,12 @@ def vote_last_response(
     form = (details["form"] - 1) * 25 if 1 <= details["form"] <= 5 else None
     style = (details["style"] - 1) * 25 if 1 <= details["style"] <= 5 else None
 
+    t = datetime.datetime.now()
+
     # TODO: Put opening_prompt in app_state?
     opening_prompt = str(get_opening_prompt(conversations[0]))
     data = {
-        "tstamp": round(time.time(), 4),
+        "tstamp": str(t),
         "model_a_name": conversations[0].model_name,
         "model_b_name": conversations[1].model_name,
         # sorted
@@ -424,7 +424,6 @@ def vote_last_response(
         },
     }
 
-    t = datetime.datetime.now()
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     vote_log_path = os.path.join(LOGDIR, vote_log_filename)
     with open(vote_log_path, "a") as fout:
