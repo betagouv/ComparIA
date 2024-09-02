@@ -1,117 +1,177 @@
 {% extends "base.html" %}
+{% block extra_styles %}
+<style>
+    .cadre p, .cadre{
+        font-size: 9px !important;
 
+    }
+    .cadre {
+        border-style: solid;
+        border-color: var(--border-default-grey) !important;
+        border-width: 0.5px;
+        padding: 1em;
+    }
+
+    .cadre .texte::before {
+        content: "Réponse modèle B";
+        text-transform: uppercase;
+        color: var(--text-label-green-tilleul-verveine);
+        padding: 2px 4px;
+        background-color: var(--background-contrast-green-tilleul-verveine);
+        --idle: transparent;
+        --hover: var(--background-contrast-green-tilleul-verveine-hover);
+        --active: var(--background-contrast-green-tilleul-verveine-active);
+        font-weight: 700;
+    }
+
+    legend {
+        color: var(--text-mention-grey);
+    }
+
+    h5 {
+        color: var(--text-action-high-blue-france) !important;
+    }
+
+    p {
+        text-align: justify;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <main id="contenu">
-    <div class="hero__startup fr-container-fluid fr-my-7w fr-mt-md-12w">
-        <div class="fr-container">
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="">
-                    <h1>Arène LANGU:IA</h1>
-
-                    <p class="hero__startup__mission fr-mt-3w fr-h3">
-                        L'arène LANGU:IA consiste à comparer grâce à un dispositif interactif et ludique les réponses
-                        générées par différents modèles à une invite donnée. Un utilisateur pose une question en
-                        français et obtient des réponses de deux LLM anonymes.
-                    </p>
-                    <ul class="fr-mt-3w fr-tags-group">
-                        <li>
-                            <a class="fr-tag" href="#">Produit en construction</a>
-                        </li>
-                    </ul>
-                </div>
-
+    <div class="fr-container fr-mb-8w">
+        <h2 class="fr-mt-8w fr-mb-4w">Le problème</h2>
+        <div class="fr-grid-row fr-mb-4w fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-md-6 fr-pr-8w">
+                <h5>Les modèles d’IA conversationnelle respectent-ils la diversité des cultures francophones ?</h5>
+                <p>Les IA conversationnelles reposent sur des grands modèles de langage (LLM) entraînés principalement
+                    sur des données en anglais, ce qui crée des biais linguistiques et culturels dans les résultats
+                    qu'ils produisent. </p>
+                <p>Les systèmes d’IA conversationnelle donnent l’impression de parler toutes les langues mais les
+                    résultats qu’ils génèrent sont parfois stéréotypés ou discriminants. </p>
+                <p>Ces biais peuvent aussi se traduire par des réponses partielles voire incorrectes négligeant la
+                    diversité des langues et des cultures, notamment francophones et européennes.</p>
+                <p><strong>Comment réduire les biais culturels et linguistiques de ces modèles ?</strong></p>
             </div>
-        </div>
-    </div> <!-- 
-       -->
-    <div class="fr-container-fluid fr-mb-md-7w fr-mb-md-10w">
-        <div class="fr-container">
-            <div class="fr-py-2w fr-grid-row fr-grid-row--center fr-grid-row--gutters">
-                <div class="fr-col-md-8">
-                    <h3 id="le-problème">Le problème</h3>
-
-                    <p class="fr-my-2w fr-text">Les LLM actuels sont entraînés sur des données essentiellement
-                        anglo-saxonnes. Le développement extrêmement rapide des audiences et des usages de ces modèles
-                        fait peser un risque sur la place des langues et des cultures française, francophone et
-                        européenne dans les imaginaires collectifs de demain. En parallèle, les débats sont
-                        particulièrement vifs sur le volet juridique de l’entraînement des modèles d’IA, le respect du
-                        droit d’auteur et des données personnelles et la répartition de la valeur issue de leurs usages.
-                    </p>
-
-                    <p class="fr-my-2w fr-text">La question de la facilitation de l’accès aux données en français pour
-                        l’entraînement des modèles est directement liée à celle de l’évaluation des modèles sur des
-                        tâches en français : en quoi les données mises à disposition en français améliorent-elles les
-                        performances des modèles sur des tâches données ? Comment évaluer la capacité des modèles à «
-                        bien parler » français ou refléter la culture française, francophone, européenne ?</p>
-
-                    <p class="fr-my-2w fr-text">Ces questionnements font écho à un second irritant identifié auprès des
-                        fournisseurs de modèles et de services issus de ces modèles : la difficile mise en œuvre de
-                        l’évaluation humaine des modèles sur des tâches en français. Cette évaluation humaine, coûteuse
-                        et complexe, sur des aspects spécifiques à la culture et la langue française (ou aux langues
-                        européennes) est hors de portée de la plupart des fournisseurs de modèle alors que la majorité
-                        des corpus d’évaluation existants sont en anglais, présentent un risque de contamination et ne
-                        sont pas toujours alignés avec les usages et attentes des utilisateurs.</p>
-
-                    <h3 id="le-service">Le service</h3>
-
-                    <p class="fr-my-2w fr-text">L’arène LANGU:IA, arène francophone de classement des modèles par
-                        préférences humaines, consiste à comparer grâce à un dispositif interactif et ludique les
-                        réponses générées par différents modèles à une invite donnée. Un utilisateur pose une question
-                        en français et obtient des réponses de deux LLM anonymes. Il vote pour le modèle qui fournit la
-                        réponse préférée et se voit ainsi révélée l’identité des modèles. Ce dispositif de crowdsourcing
-                        inspiré de la plateforme « chatbot arena » (LMSYS) permet de constituer des jeux de données de
-                        préférences humaines sur des tâches réelles, en français, utilisables pour l’alignement des
-                        modèles et d’autres usages émergents. Ces jeux de données seront mis à la disposition des
-                        acteurs de l’écosystème académique et industriel du TAL.</p>
-
-                    <h3 id="la-stratégie">La stratégie</h3>
-
-                    <p class="fr-my-2w fr-text">L’un des défis du projet est de collecter des données de préférences
-                        humaines en masse suffisante et selon un dispositif qui assure la réutilisation du jeu de
-                        données produit. L’arène LANGU:IA touchera ses premiers utilisateurs-évaluateurs à travers des
-                        modules de formation des publics professionnels au fonctionnement et aux biais de l’IA
-                        générative, intégrables dans des plateformes de formation telles que PIX et Campus numérique. La
-                        construction de ce module permettra d’orienter les questions et les actions des utilisateurs de
-                        telle sorte que les données de préférences collectées au cours de la session soient exploitables
-                        à des fins d’alignement des modèles (enjeux spécifiques liés aux biais linguistiques,
-                        culturels…).</p>
-
-                    <p class="fr-my-2w fr-text">Ce premier produit pose les bases de services plus ambitieux de mise à
-                        disposition de jeux de données francophones, identifiant la structure LANGU:IA comme tiers de
-                        confiance et acteur fédérateur de l’écosystème. Les services produits par la start-up
-                        s’inscrivent dans les prérogatives des établissements LANGU:IA et ALT-EDIC en cours de
-                        structuration.</p>
-                </div>
-                <div class="fr-col-md-4">
-                    <!-- INFO -->
-                    <div class="fr-py-4w fr-px-4w fr-mt-3w"
-                        style="border: 1px solid var(--light-border-default-grey, #E5E5E5);">
-                        <p>
-
-                            <b>Arène LANGU:IA</b> est portée par l'Atelier Numérique du Ministère
-                                de la Culture.
-
-                        </p>
-                        <p>
-
-                            <a class="fr-link"
-                                href="mailto:lucie.termignon@culture.gouv.fr?subject=Ar%C3%A8ne%20LANGU:IA%20sur%20beta.gouv.fr">Contacter
-                                l'équipe</a>.
-
-                        </p>
-
+            <div class="fr-col-md-6 fr-col-12">
+                <!-- <img src="" class="fr-responsive-img" /> -->
+                <div class="cadre">
+                    <div class="texte">
+                        <p>Impossible de donner une liste objective et définitive des 10 films qui ont le plus influencé
+                            l'histoire du cinéma, étant donné que l'influence peut varier en fonction des perspectives
+                            et
+                            des critères d'évaluation. Cependant, voici une liste de 10 films qui sont généralement
+                            considérés comme ayant eu un impact significatif sur l'évolution du cinéma :</p>
+                        <ol>
+                            <li>
+                                "La Naissance d'une Nation" (1915) de D.W. Griffith - Bien que controversé pour son
+                                contenu
+                                raciste, ce film a été une étape importante dans le développement de la narration
+                                cinématographique et de la technique cinématographique.
+                            </li>
+                            <li>
+                                "Citizen Kane" (1941) d'Orson Welles - Souvent considéré comme l'un des meilleurs films
+                                de
+                                tous les temps, il a influencé la narration non linéaire et l'utilisation de l'ombre et
+                                de
+                                la lumière.
+                            </li>
+                            <li>"2001 : l'Odyssée de l'espace" (1968) de Stanley Kubrick - Ce film de science-fiction a
+                                repoussé les limites de la narration visuelle et a influencé de nombreux autres films du
+                                genre.</li>
+                            <li>"Le Parrain" (1972) de Francis Ford Coppola - Ce film a révolutionné le genre du film de
+                                gangsters et a influencé la façon dont les histoires de crime sont racontées à l'écran.
+                            </li>
+                            <li>"Jaws" (1975) de Steven Spielberg - Ce film a lancé l'ère des blockbusters et a changé
+                                la
+                                façon dont les films sont réalisés, commercialisés et distribués.
+                            </li>
+                            <li>"Star Wars" (1977) de George Lucas - Ce film de science-fiction a lancé une franchise
+                                emblématique et a influencé de nombreux autres films de science-fiction et de fantasy.
+                            </li>
+                            <li>
+                                "Taxi Driver" (1976) de Martin Scorsese - Ce film a influencé la façon dont les
+                                histoires de
+                                personnages complexes et perturbés sont racontées à l'écran.
+                            </li>
+                            <li>"Pulp Fiction" (1994) de Quentin Tarantino - Ce film a influencé la narration non
+                                linéaire
+                                et l'utilisation de dialogues stylisés.
+                            </li>
+                            <li>"Le Silence des Agneaux" (1991) de Jonathan Demme - Ce film a influencé la façon dont
+                                les
+                                histoires de crime et de thriller sont racontées à l'écran.
+                            </li>
+                            <li>"Inception" (2010) de Christopher Nolan - Ce film a influencé la façon dont les
+                                histoires
+                                complexes et les concepts scientifiques sont racontés à l'écran.
+                            </li>
+                            </ul>
+                            <p>Il est important de noter que cette liste n'est pas exhaustive et qu'il existe de
+                                nombreux
+                                autres films qui ont eu un impact significatif sur l'histoire du cinéma.
+                            </p>
                     </div>
                 </div>
+                <legend class="fr-text--sm">Réponse d’un modèle de langue au prompt : “Donne moi la liste des 10 films
+                    qui ont le plus
+                    influencé l’histoire du cinéma”</legend>
             </div>
-
-            <h2>En quelques dates</h2>
-            <div class="startup-timeline">
-                <div class="active"><b>Investigation</b><br>15 janvier 2024</div>
-                <div class="active"><b>Construction</b><br>15 avril 2024</div>
-            </div>
-
         </div>
-    </div>
-
+        <div>
+            <h5>L'alignement : une technique de réduction des biais qui repose sur la collecte des préférences
+                d’utilisateurs</h5>
+            <p>L'alignement des modèles d'IA est une <strong>méthode de réduction des biais</strong> qui consiste à ajuster les modèles
+                pour
+                qu'ils génèrent des résultats conformes à des valeurs ou des objectifs spécifiques.</p>
+            <p>Ce processus repose sur des jeux de données de préférences où les utilisateurs indiquent quelle réponse
+                est la
+                meilleure selon des critères donnés, telles que la pertinence, l’utilité, la nocivité. Une fois
+                constitués, ces
+                jeux de données sont utilisés pour entrainer les modèles en les ajustant selon les préférences exprimées
+                par les
+                utilisateurs.</p>
+            <p>Pour améliorer la représentation des cultures francophones dans les modèles, les jeux de données
+                d’alignement
+                doivent inclure une variété de langues, de contextes et d’exemples issus de tâches courantes des
+                utilisateurs.</p>
+            <p>En intégrant ces données, les modèles d’IA sont exposés à une diversité de contextes qui permet de
+                réduire les
+                biais et d’améliorer la pertinence des réponses générées.
+                Des plateformes telles que <a href="https://chat.lmsys.org/" rel="noop external"
+                    target="_blank">chat.lmsys.org</a> permettent de constituer ces jeux de données de préférence
+                mais peu d’utilisateurs s’en servent en français (moins de 1%). <strong>Ce type de jeux de données est
+                    rare, voire
+                    inexistant pour le français et les langues de France.</strong></p>
+            <p><strong>Comment faciliter la création de jeux de données de préférence francophones pour l’alignement des
+                    modèles ?</strong></p>
+            <h2 class="fr-mt-8w">La solution</h2>
+            <p>Le comparateur d’IA conversationnelles LANGUIA est un nouvel outil qui permet de créer des jeux de
+                données de
+                préférence centrés sur des usages réels exprimés en français. L’application développée répond à un
+                double
+                objectif :</p>
+            <h5 class="fr-mt-4w">1. Mettre à disposition des jeux de données de préférence pour l’alignement des modèles
+            </h5>
+            <p>Les données de préférence issues de la comparaison des modèles sont collectées, nettoyées et partagées:
+                le jeu
+                de données constitué est rendu accessible librement et peut être utilisé pour améliorer l’expression des
+                modèles
+                d’IA conversationnelle sur des tâches en français.</p>
+            <p>Les jeux de données produits présentent plusieurs avantages :</p>
+            <ul>
+                <li>les jeux de données sont <strong>en français</strong></li>
+                <li>la préférence peut être exprimée de <strong>manière plus fine</strong> à travers des critères de fond, de forme et de
+                    style</li>
+                <li>les données de préférence sont enrichies de données de <strong>profil des utilisateurs</strong></li>
+            </ul>
+            <h5 class="fr-mt-4w"> 2. Faciliter l’accès aux IA génératives et encourager l’esprit critique des
+                utilisateurs</h5>
+            <p>L’accès simplifié et gratuit à différents modèles d’IA conversationnelles, grands et petits,
+                propriétaires et
+                open source, permet à tous de les utiliser et de les tester. C’est la première étape de
+                l’appropriation
+                responsable et réfléchie de ces outils par les citoyens.</p>
+        </div>
 </main>
 {% endblock %}
