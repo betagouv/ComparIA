@@ -181,7 +181,7 @@ def save_profile_to_db(data):
             "gender": (data["gender"]),
             "age": (data["age"]),
             "profession": (data["profession"]),
-            "profession": (data["confirmed"]),
+            "confirmed": bool(data["confirmed"]),
             "session_hash": str(data["session_hash"]),
             "extra": json.dumps(data["extra"]),
         }
