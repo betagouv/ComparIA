@@ -187,6 +187,7 @@ def save_profile_to_db(data):
         }
         cursor.execute(insert_statement, values)
         conn.commit()
+        logger.info(f"Saved profile to db")
     except Exception as e:
         logger = logging.getLogger("languia")
         logger.error(f"Error saving profile to db: {e}")
