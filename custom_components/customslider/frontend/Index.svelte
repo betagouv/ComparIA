@@ -144,7 +144,9 @@
 	</label>
 
 	<div class="fr-range-group">
-		<span class="fr-range__left" aria-hidden="true">{extrema[0]}</span>
+		<span class="fr-range__left" aria-hidden="true"
+			><span class="fr-badge fr-badge--info">{extrema[0]}</span></span
+		>
 		<div
 			class="fr-range fr-range--step {sliderInteracted
 				? 'interacted'
@@ -181,7 +183,11 @@
 				<span class="fr-range__max" aria-hidden="true">{maximum}</span>
 			{/if}
 		</div>
-		<span class="fr-range__right" aria-hidden="true">{extrema[1]}</span>
+		<span class="fr-range__right" aria-hidden="true"
+			><span class="fr-badge fr-badge--green-tilleul-verveine"
+				>{extrema[1]}</span
+			>
+		</span>
 	</div>
 </div>
 
@@ -201,9 +207,10 @@
 		display: flex;
 	}
 
-
-	.fr-range[data-fr-js-range].interacted input[type="range"]::-webkit-slider-thumb,
-	.fr-range[data-fr-js-range].interacted input[type="range"]::-moz-range-thumb {
+	.fr-range[data-fr-js-range].interacted
+		input[type="range"]::-webkit-slider-thumb,
+	.fr-range[data-fr-js-range].interacted
+		input[type="range"]::-moz-range-thumb {
 		/* --hover: var(--background-raised-grey-hover);
 		--active: var(--background-raised-grey-active);
 		--hover: var(--background-default-grey-hover);
@@ -233,16 +240,19 @@
 	}
 	.fr-range__left,
 	.fr-range__right {
-		font-weight: 700;
+		/* font-weight: 700; */
 		margin: 0 1rem;
-		font-size: larger;
+		/* font-size: larger; */
+		min-width: 6rem;
 	}
-	.spotlight,
-	.fr-range__left,
-	.fr-range__right {
+	.fr-range__left .fr-badge {
+		min-width: 7rem;
+	}
+	.spotlight {
 		color: var(--text-action-high-blue-france);
 		min-width: 5rem;
 	}
+
 	.fr-range--step[data-fr-js-range]::before,
 	.fr-range--step[data-fr-js-range]::after {
 		top: 0.5rem !important;
