@@ -64,11 +64,9 @@
             const startArenaBtn = document.getElementById('start_arena_btn');
             const errorMessage = document.getElementById('checkbox-error-messages');
 
-
-            // on submit, check again and redirect to /arene?cgu_acceptees=true
             startArenaBtn.addEventListener('click', function (event) {
                 if (acceptTosCheckbox.checked) {
-                    window.location.href = '/arene/?cgu_acceptees=true';
+                    window.location.href = '/arene/?cgu_acceptees';
                 } else {
                     event.preventDefault();
 
