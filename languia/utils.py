@@ -23,7 +23,7 @@ import datetime
 
 import requests
 
-from ecologits.tracers.utils import llm_impacts, compute_llm_impacts
+from ecologits.tracers.utils import llm_impacts, compute_llm_impacts, electricity_mixes
 
 from slugify import slugify
 
@@ -805,31 +805,39 @@ def get_llm_impact(
     # model_total_parameter_count: ValueOrRange,
     impact = llm_impacts("huggingface_hub", model_name, token_count, request_latency)
     if impact is None:
-        # logger.info("impact is None for " + model_name + ", deducing from params")
+
+        logger.debug("impact is None for " + model_name + ", deducing from params")
         if "active_params" in model_extra_info and "total_params" in model_extra_info:
             # TODO: add request latency
             # FIXME: multiply by 1_000_000?
-            impact = compute_llm_impacts(
-                model_active_parameter_count=int(model_extra_info["active_params"]),
-                model_total_parameter_count=int(model_extra_info["total_params"]),
-                output_token_count=token_count,
-            )
+            model_active_parameter_count = int(model_extra_info["active_params"])
+            model_total_parameter_count=int(model_extra_info["total_params"])
         else:
             if "params" in model_extra_info:
                 # TODO: add request latency
-                # FIXME: multiply by 1_000_000?
-                impact = compute_llm_impacts(
-                    model_active_parameter_count=int(model_extra_info["params"]),
-                    model_total_parameter_count=int(model_extra_info["params"]),
-                    output_token_count=token_count,
-                    request_latency=request_latency,
-                )
+                model_active_parameter_count = int(model_extra_info["params"])
+                model_total_parameter_count=int(model_extra_info["params"])
             else:
-                logger.warn(
+                logger.error(
                     "impact is None for "
                     + model_name
                     + ", and no params, closed model did not match ecologits list?"
                 )
+                return None
+            
+        
+        # TODO: move to config.py
+        electricity_mix_zone = "WOR"
+        electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
+        if_electricity_mix_adpe=electricity_mix.adpe
+        if_electricity_mix_pe=electricity_mix.pe
+        if_electricity_mix_gwp=electricity_mix.gwp
+        
+        impact = compute_llm_impacts(
+            model_active_parameter_count=model_active_parameter_count,
+            model_total_parameter_count=model_total_parameter_count,
+            output_token_count=token_count,if_electricity_mix_adpe=if_electricity_mix_adpe,if_electricity_mix_pe=if_electricity_mix_pe,if_electricity_mix_gwp=if_electricity_mix_gwp
+        )
     return impact
 
 
