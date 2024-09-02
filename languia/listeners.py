@@ -514,7 +514,7 @@ def register_listeners():
         # }
         # [conclude_area, chat_area, send_area, vote_area]
         return [
-            gr.update(value=stepper_html("Évaluation des modèles", 3, 4)),
+            gr.update(value=stepper_html("Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4)),
             gr.update(visible=False),
             gr.update(visible=False),
             gr.update(visible=True),

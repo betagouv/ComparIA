@@ -195,7 +195,7 @@ with gr.Blocks(
                 </div>
             </div>
         </div>
-            <h3 class="text-center fr-mt-2w">Quel modèle avez-vous préféré ?*</h3>""",
+            <h3 class="text-center fr-mt-2w">Quel modèle d'IA avez-vous préféré ?*</h3>""",
         )
 
         which_model_radio = CustomSlider(
@@ -218,7 +218,7 @@ with gr.Blocks(
         ) as supervote_area:
 
             why_vote = gr.HTML(
-                """<h4>Pourquoi préférez-vous ce modèle ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
+                """<h4>Pourquoi préférez-vous ce modèle d'IA ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
                 elem_classes="text-center",
             )
 
