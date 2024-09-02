@@ -145,7 +145,7 @@
 
 	<div class="fr-range-group">
 		<span class="fr-range__left" aria-hidden="true"
-			><span class="fr-badge fr-badge--info">{extrema[0]}</span></span
+			><span class="fr-badge fr-badge--info fr-badge--no-icon">{extrema[0]}</span></span
 		>
 		<div
 			class="fr-range fr-range--step {sliderInteracted
@@ -244,9 +244,6 @@
 		margin: 0 1rem;
 		/* font-size: larger; */
 		min-width: 6rem;
-	}
-	.fr-range__left .fr-badge {
-		min-width: 7rem;
 	}
 	.spotlight {
 		color: var(--text-action-high-blue-france);
