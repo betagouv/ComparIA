@@ -1,21 +1,112 @@
 {% extends "base.html" %}
+{% block extra_styles %}
+<style>
+    .bg-blue {
+        /* --background-contrast-info: var(--info-950-100); */
+        background-color: var(--blue-france-975-75);
+    }
 
+    .bg-yellow {
+        background-color: var(--yellow-tournesol-975-75);
+    }
+
+    .bg-green {
+        background-color: var(--green-emeraude-975-75);
+    }
+
+    .bg-grey {
+        background-color: var(--background-alt-grey);
+    }
+
+    .text-blue, h3 {
+        color: var(--text-action-high-blue-france);
+        /* --text-action-high-blue-france: var(--blue-france-sun-113-625); */
+
+        /* color: var(--text-action-high-blue-france) !important; */
+    }
+
+    .text-center {
+        text-align: center;
+    }
+</style>
+{% endblock %}
 {% block content %}
 <main id="contenu">
-    <h2>Partenaires technologiques</h2>
-    Les modèles déployés ne sont pas hébergés sur les infrastructures du ministère de la Culture. Notre service repose sur des dons de crédits cloud pour servir les modèles en inférence.
-    <!-- Vous souhaitez contribuer ou intégrer vos modèles au comparateur ?
-    Contactez-nous -->
-    <h2>Partenaires institutionnels</h2>
-    Nous créons un réseau de partenaires distributeurs intégrant le comparateur dans leur offre de services et de formation. 
-    <!-- Vous souhaitez utiliser le comparateur pour répondre à un besoin métier ?
-    Dites-nous en plus -->
-    <h2>Partenaires académiques</h2>
-    Nous avons à coeur que les jeux de données générés alimentent des travaux de recherche multidisciplinaires mêlant sciences humaines et sociales et data science.
-    <!-- Vous menez un projet de recherche et avez des suggestions ou besoin de précision sur la démarche et/ou les jeux de données produits ?
-    Contactez-nous -->
-    <!-- <h2>Services mis à contribution</h2>
-    Les calculs d’impacts environnementaux reposent sur les produits ci dessous. -->
+    <div class="fr-container">
+        <div class="fr-container bg-blue fr-my-4w fr-py-4w">
+            <h3>Partenaires technologiques</h3>
+            <p>Les modèles déployés ne sont pas hébergés sur les infrastructures du ministère de la Culture. Notre
+                service
+                repose
+                sur des dons de crédits cloud pour servir les modèles en inférence.</p>
+            <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/ovh.png" alt="OVHcloud" width="160px" height="25px" />
+                </div>
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/scaleway.svg" alt="Scaleway" width="143px" height="28px" />
+                </div>
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/huggingface-full.svg" alt="Hugging Face" width="195px" height="52px" />
+                </div>
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/google-full.png" alt="Google" width="103px" height="35px" />
+                </div>
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/etalab.svg" alt="Etalab" width="200px" height="43px" />
+                </div>
+            </div>
+            <p class="text-center fr-mt-4w"><strong>Vous souhaitez contribuer ou intégrer vos modèles au comparateur ?</strong>
+            </p>
+            <p class="text-center"><a href="mailto:contact@languia.beta.gouv.fr" class="fr-btn" rel="noopener external"
+                    target="_blank">Contactez-nous</a></p>
+        </div>
+        <div class="fr-container bg-yellow fr-my-4w fr-py-4w">
+            <h3>Partenaires institutionnels</h3>
+            <p>Nous créons un réseau de partenaires intégrant le comparateur dans leur offre de services et
+                de
+                formation.</p>
+            <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/pix.svg" alt="Pix" width="90px" height="75px" />
+                </div>
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/cnnum.png" alt="Conseil national du numérique" width="112px" height="55px" />
+                </div>
+            </div>
+            <p class="text-center fr-mt-4w"><strong>Vous souhaitez utiliser le comparateur pour répondre à un besoin métier
+                    ?</strong></p>
+            <p class="text-center"><a href="mailto:contact@languia.beta.gouv.fr" class="fr-btn" rel="noopener external"
+                    target="_blank">Dites-nous en plus</a></p>
+        </div>
+        <div class="fr-container bg-grey fr-my-4w fr-py-4w">
+            <h3>Partenaires académiques</h3>
+            <p>Nous avons à coeur que les jeux de données générés alimentent des travaux de recherche
+                multidisciplinaires
+                mêlant
+                sciences humaines et sociales et data science.</p>
+                <div class="text-center">
+                    <img src="assets/orgs/inria.png" alt="Inria" width="166px" height="63px" />
+    
+                </div>
+            <p class="text-center fr-mt-4w"><strong>Vous menez un projet de recherche et avez des suggestions ou besoin de
+                précision sur la démarche et/ou les jeux de données produits ?</strong></p>
+            <p class="text-center"><a href="mailto:contact@languia.beta.gouv.fr" class="fr-btn" rel="noopener external"
+                    target="_blank">Contactez-nous</a></p>
+        </div>
+        <div class="fr-container bg-green fr-my-4w fr-py-4w">
+            <h3>Services mis à contribution</h3>
+            <p>Les calculs d’impacts environnementaux reposent sur les produits ci dessous.</p>
 
+            <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/impactco2.png" alt="Impact CO2" width="123px" height="50px" />
+                </div>
+                <div class="fr-col-md-2 fr-col-6">
+                    <img src="assets/orgs/genai.png" alt="Gen AI Impact" width="110px" height="67px" />
+                </div>
+            </div>
+        </div>
+    </div>
 </main>
 {% endblock %}
