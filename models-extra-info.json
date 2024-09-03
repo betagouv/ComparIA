@@ -104,7 +104,8 @@
 		"distribution": "api-only",
 		"license": "propriétaire Gemini",
 		"conditions": "restricted",
-		"description": "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
+		"description": "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google.",
+		"excerpt": "Ce modèle est idéal pour des applications variées comme la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 	},
 	"Gemma 2-27b-it": {
 		"simple_name": "Gemma 2-27b-it",
@@ -117,6 +118,7 @@
 		"conditions": "restricted",
 		"license": "Gemma",
 		"params": 27,
+		"excerpt": "Modèle performant avec une latence correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.",
 		"description": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
 	},
 	"Gemma-2-9B-it": {
@@ -130,6 +132,7 @@
 		"license": "Gemma",
 		"params": 9,
 		"conditions": "restricted",
+		"excerpt": "Moins performant que le 27B, ce modèle est plus abordable mais présente une latence légèrement supérieure, convenant à des tâches moins complexes.",
 		"description": "Modèle intermédiaire de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 	},
 	"gemma-2-2b-it": {
@@ -174,6 +177,7 @@
 		"dataset": "private",
 		"distribution": "open-weights",
 		"conditions": "free",
+		"excerpt": "Ce modèle très puissant présente un coût élevé qui le réserve à des applications exigeantes de raisonnement et de programmation.",
 		"description": "Modèle le plus puissant de la famille Llama 3.1 avec 405 milliards de paramètres, il est doté de capacités accrues pour des tâches de programmation, de mathématique et de raisonnement.",
 		"params": 405,
 		"license": "Llama 3.1 Community"
@@ -187,6 +191,7 @@
 		"dataset": "private",
 		"distribution": "open-weights",
 		"conditions": "free",
+		"excerpt": "Version plus petite du 405B, ce modèle est rapide et présente un coût réduit, adapté à des applications plus courantes.",
 		"description": "Cadet de la famille Llama 3.1, ce petit modèle est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens.",
 		"params": 8,
 		"license": "Llama 3.1 Community"
@@ -201,7 +206,7 @@
 		"dataset": "private",
 		"distribution": "open-weights",
 		"conditions": "restricted",
-		"excerpt": "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens",
+		"excerpt": "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens mais supporte un contexte relativement restreint de 8000 tokens.",
 		"description": "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il supporte un contexte de 8000 tokens.",
 		"license": "Llama 3 Community"
 	},
@@ -216,6 +221,7 @@
 		"dataset": "private",
 		"conditions": "restricted",
 		"description": "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité.",
+		"excerpt": "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité.",
 		"license": "Llama 3 Community"
 	},
 	"mistral-nemo-2407": {
@@ -229,6 +235,7 @@
 		"dataset": "private",
 		"conditions": "free",
 		"description": "Ce modèle de petit gabarit est entraîné pour des tâches de raisonnement, de connaissances générales et de programmation. Il utilise le tokenizer Tekken, efficace pour compresser des textes allant jusqu’à 128 000 tokens en plus de 100 langues.",
+		"excerpt": "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter un contexte de 128k jetons en plus de 100 langues.",
 		"license": "Apache 2.0"
 	},
 	"Mistral-7B-Instruct-v0.3": {
@@ -264,7 +271,7 @@
 		"distribution": "open-weights",
 		"dataset": "private",
 		"conditions": "free",
-		"excerpt": "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût.",
+		"excerpt": "Plus puissant que son petit frère 8x7B, ce modèle offre de meilleures performances à un prix raisonnable, adapté pour des besoins plus intensifs.",
 		"description": "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût. Seuls 39Mds de paramètres sont actifs sur 141Mds. La fenêtre contextuelle de 64000 tokens permet de rappeler des informations précises à partir de grands documents.",
 		"license": "Apache 2.0"
 	},
@@ -280,7 +287,7 @@
 		"dataset": "private",
 		"conditions": "free",
 		"description": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol. Grâce à l’architecture SMoE (sparse mixture of experts), seule une fraction des paramètres est activée pour chaque inférence, réduisant ainsi les coûts et la latence.",
-		"excerpt": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol.",
+		"excerpt": "Ce modèle entraîné sur un corpus multilingue offre de bonnes performances à un coût moyen, efficace pour des tâches variées.",
 		"license": "Apache 2.0"
 	},
 	"phi-3-mini-4k": {
@@ -294,12 +301,14 @@
 		"dataset": "private",
 		"license": "MIT",
 		"conditions": "free",
-		"description": "Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
+		"description": "Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.",
+		"excerpt": "Performant pour des tâches de génération de code, et de résumé, ce modèle compact supporte un contexte restreint de 4k jetons."
 	},
 	"Phi-3-small-8k-Instruct": {
 		"license": "MIT",
 		"simple_name": "Phi-3-small-8k-Instruct",
 		"description": "Grand frère de la famille Phi3, ce modèle supporte un contexte de 8000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.",
+		"excerpt": "Optimisé pour le raisonnement logique, ce petit modèle supporte un contexte de 8k jetons, adapté pour la génération de code et tâches complexes.",
 		"organisation": "Microsoft",
 		"country": "États-Unis",
 		"icon_path": "microsoft.png",
@@ -338,7 +347,7 @@
 		"dataset": "private",
 		"conditions": "restricted"
 	},
-	"Qwen2-7B-Instruct-GPTQ-Int8": {
+	"Qwen2-7B-instruct": {
 		"simple_name": "Qwen2-7B",
 		"organisation": "Alibaba",
 		"country": "Chine",
@@ -348,6 +357,7 @@
 		"dataset": "private",
 		"conditions": "free",
 		"description": "Petit frère de la famille Qwen2, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes",
+		"excerpt": "Supportant un contexte de 130k jetons, ce petit modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement.",
 		"params": 7,
 		"license": "Apache 2.0"
 	},
