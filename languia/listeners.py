@@ -16,6 +16,7 @@ from languia.utils import (
     refresh_outage_models,
     add_outage_model,
     gen_prompt,
+    Log,
 )
 
 from languia.config import (
@@ -61,7 +62,7 @@ def register_listeners():
         # tos_accepted = accept_tos_checkbox
         # if tos_accepted:
         # logger.info(f"ToS accepted")
-        # {'name': 'languia', 'msg': 'ToS accepted: fwypynv2sy', 'args': ('fwypynv2sy',), 'levelname': 'INFO', 'levelno': 20, 'pathname': '/home/hadrien/git/languia/languia/listeners.py', 'filename': 'listeners.py', 'module': 'listeners', 'exc_info': None, 'exc_text': None, 'stack_info': None, 'lineno': 64, 'funcName': 'enter_arena', 'created': 1725292327.7355227, 'msecs': 735.0, 'relativeCreated': 7554.653644561768, 'thread': 139691558962880, 'threadName': 'AnyIO worker thread', 'processName': 'SpawnProcess-4', 'process': 122874, 'request': <gradio.route_utils.Request object at 0x7f0c7ed0a550>}      
+        # {'name': 'languia', 'msg': 'ToS accepted: fwypynv2sy', 'args': ('fwypynv2sy',), 'levelname': 'INFO', 'levelno': 20, 'pathname': '/home/hadrien/git/languia/languia/listeners.py', 'filename': 'listeners.py', 'module': 'listeners', 'exc_info': None, 'exc_text': None, 'stack_info': None, 'lineno': 64, 'funcName': 'enter_arena', 'created': 1725292327.7355227, 'msecs': 735.0, 'relativeCreated': 7554.653644561768, 'thread': 139691558962880, 'threadName': 'AnyIO worker thread', 'processName': 'SpawnProcess-4', 'process': 122874, 'request': <gradio.route_utils.Request object at 0x7f0c7ed0a550>}
         logger.info(
             # config.Log("ToS accepted: %s" % request.session_hash),
             f"ToS accepted: %s" % request.session_hash,
@@ -248,8 +249,9 @@ def register_listeners():
         request: gr.Request,
     ):
         logger.info(
-            f"bot_response_multi: {get_ip(request)}",
+            f"bot_response_multi",
             extra={"request": request},
+            # Log("reponse des bots",request.session_hash),
         )
 
         conversations = [conversation_a, conversation_b]

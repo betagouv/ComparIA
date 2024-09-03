@@ -176,7 +176,7 @@ def get_matomo_tracker_from_cookies(cookies):
     logger = logging.getLogger("languia")
     for cookie in cookies:
         if cookie[0].startswith("_pk_id."):
-            logger.info(f"Found matomo cookie: {cookie[0]}: {cookie[1]}")
+            logger.debug(f"Found matomo cookie: {cookie[0]}: {cookie[1]}")
             return cookie[1]
     return None
 
