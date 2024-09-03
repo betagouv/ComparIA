@@ -134,7 +134,7 @@ class PostgresHandler(logging.Handler):
                     "message": record.message,
                     "query_params": json.dumps(query_params),
                     "path_params": json.dumps(path_params),
-                    "session_hash":  json.dumps("session_hash"),
+                    "session_hash":  json.dumps(session_hash),
                     "extra": json.dumps(record.__dict__.get("extra")),
                 }
                 cursor.execute(insert_statement, values)
