@@ -16,7 +16,7 @@ from languia.utils import (
     refresh_outage_models,
     add_outage_model,
     gen_prompt,
-    Log,
+    # Log,
 )
 
 from languia.config import (
