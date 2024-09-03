@@ -41,8 +41,8 @@ if any(
         "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
         "user": os.getenv("LANGUIA_DB_USER", "languia"),
         "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
-        "host": os.getenv("LANGUIA_DB_HOST", "localhost"),
-        "port": os.getenv("LANGUIA_DB_PORT", 5678),
+        "host": os.getenv("LANGUIA_DB_HOST", "languia-db"),
+        "port": os.getenv("LANGUIA_DB_PORT", 5432),
     }
 else:
     db = None
