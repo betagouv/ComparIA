@@ -29,6 +29,30 @@ import traceback
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
+# https://docs.python.org/3/howto/logging.html#arbitrary-object-messages
+# https://docs.python.org/3/howto/logging-cookbook.html#formatting-styles
+
+# class Log:
+#     def __init__(self, fmt, /, *args, **kwargs):
+#         self.fmt = fmt
+#         self.args = args
+#         self.kwargs = kwargs
+
+#     def __str__(self):
+#         return self.fmt.format(*self.args, **self.kwargs)
+
+# class ContextFilter(logging.Filter):
+#     def __init__(self, var):
+#         super().__init__()
+#         self.var = var
+
+#     def filter(self, record):
+#         record.var = self.var
+#         return True
+
+# logger = logging.getLogger(__name__)
+# context_filter = ContextFilter('example_value')
+# logger.addFilter(context_filter)
 
 class JSONFormatter(logging.Formatter):
     def format(self, record):
@@ -36,11 +60,11 @@ class JSONFormatter(logging.Formatter):
         msg = super().format(record)
 
         # Parse the message as JSON
-        try:
-            log_data = json.loads(msg)
-        except json.JSONDecodeError:
+        # try:
+        #     log_data = json.loads(msg)
+        # except json.JSONDecodeError:
             # Handle cases where the message isn't valid JSON
-            log_data = {"message": msg}
+        log_data = {"message": msg}
 
         # if 'request' in record.args:
         if hasattr(record, "request"):
@@ -48,6 +72,7 @@ class JSONFormatter(logging.Formatter):
             # request_dict = record.request.kwargs
             log_data["query_params"] = dict(record.request.query_params)
             log_data["path_params"] = dict(record.request.path_params)
+            # TODO: remove IP?
             log_data["ip"] = get_ip(record.request)
             log_data["session_hash"] = record.request.session_hash
             # if isinstance(request_dict, dict):
@@ -55,15 +80,6 @@ class JSONFormatter(logging.Formatter):
             # delattr(record, 'request')
         if hasattr(record, "extra"):
             log_data["extra"] = record.extra
-        # if hasattr(record, "prompt"):
-        #     log_data["prompt"] = record.prompt
-        # if hasattr(record, "details"):
-        #     log_data["details"] = record.details
-        # if hasattr(record, "models"):
-        #     log_data["models"] = record.models
-        # if hasattr(record, "conversations"):
-        #     log_data["conversations"] = record.conversations
-
         # Add the args dictionary to the JSON payload
         # log_data.update(record.args)
         # Convert the updated dictionary back to JSON
@@ -88,6 +104,7 @@ class PostgresHandler(logging.Handler):
     def emit(self, record):
 
         assert isinstance(record, logging.LogRecord)
+        # print((record.__dict__))
         print("LoggingHandler received LogRecord: {}".format(record))
 
         # record = super().format(record)
@@ -105,13 +122,19 @@ class PostgresHandler(logging.Handler):
                     VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                 """
                 )
+                if hasattr(record, "request"):
+                    query_params = dict(record.request.query_params)
+                    path_params = dict(record.request.path_params)
+                    # ip = get_ip(record.request)
+                    session_hash = record.request.session_hash
+                    
                 values = {
                     "time": record.asctime,
                     "level": record.levelname,
                     "message": record.message,
-                    "query_params": json.dumps(record.__dict__.get("query_params")),
-                    "path_params": json.dumps(record.__dict__.get("path_params")),
-                    "session_hash": record.__dict__.get("session_hash"),
+                    "query_params": json.dumps(query_params),
+                    "path_params": json.dumps(path_params),
+                    "session_hash":  json.dumps("session_hash"),
                     "extra": json.dumps(record.__dict__.get("extra")),
                 }
                 cursor.execute(insert_statement, values)
@@ -155,6 +178,7 @@ def get_matomo_tracker_from_cookies(cookies):
         if cookie[0].startswith("_pk_id."):
             logger.info(f"Found matomo cookie: {cookie[0]}: {cookie[1]}")
             return cookie[1]
+    return None
 
 
 def save_profile_to_db(data):
@@ -169,8 +193,8 @@ def save_profile_to_db(data):
     try:
         insert_statement = sql.SQL(
             """
-            INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, confirmed, session_hash, extra)
-            VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(confirmed)s, %(session_hash)s, %(extra)s)
+            INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, confirmed, session_hash, visitor_uuid, extra)
+            VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(confirmed)s, %(session_hash)s, %(visitor_uuid)s, %(extra)s)
         """
         )
         values = {
@@ -181,6 +205,7 @@ def save_profile_to_db(data):
             "profession": (data["profession"]),
             "confirmed": bool(data["confirmed"]),
             "session_hash": str(data["session_hash"]),
+            "visitor_uuid": str(data["visitor_uuid"]),
             "extra": json.dumps(data["extra"]),
         }
         cursor.execute(insert_statement, values)
@@ -216,7 +241,7 @@ def save_profile(
     profile_log_filename = f"profile-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     profile_log_path = os.path.join(LOGDIR, profile_log_filename)
 
-    get_matomo_tracker_from_cookies(request.cookies)
+    visitor_uuid = get_matomo_tracker_from_cookies(request.cookies)
 
     data = {
         "tstamp": str(t),
@@ -226,6 +251,7 @@ def save_profile(
         "profession": profession,
         "confirmed": bool(confirmed),
         "session_hash": str(request.session_hash),
+        "visitor_uuid": str(visitor_uuid),
         # Log redundant info to be sure
         "extra": {
             "which_model_radio": which_model_radio,
@@ -290,6 +316,9 @@ def count_turns(messages):
 
 
 def is_unedited_prompt(opening_prompt, category):
+
+    if category == "unguided":
+        return False
     from languia.config import prompts_table
 
     return opening_prompt in prompts_table[category]
@@ -395,11 +424,7 @@ def vote_last_response(
         "conversation_b": conversation_b,
         "turns": count_turns((conversations[0].conv.messages)),
         "selected_category": category,
-        "is_unedited_prompt": (
-            0
-            if category == "unguided"
-            else (is_unedited_prompt(opening_prompt, category))
-        ),
+        "is_unedited_prompt": (is_unedited_prompt(opening_prompt, category)),
         "template": (
             []
             if conversations[0].conv.name == "zero_shot"
