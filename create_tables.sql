@@ -24,7 +24,7 @@ CREATE TABLE
         selected_category VARCHAR(255),
         is_unedited_prompt BOOLEAN,
         template JSONB,
-        uuid UUID NOT NULL,
+        uuid VARCHAR NOT NULL,
         ip VARCHAR,
         session_hash VARCHAR,
         visitor_uuid VARCHAR,
@@ -44,5 +44,6 @@ CREATE TABLE
         profession VARCHAR(255),
         confirmed BOOLEAN,
         session_hash VARCHAR(255),
+        visitor_uuid VARCHAR(255),
         extra JSONB
     );
