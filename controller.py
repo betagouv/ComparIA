@@ -3,8 +3,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from typing import List, Dict
 import asyncio
-import time
+
 from datetime import datetime
+import pytz
 import logging
 from fastapi.templating import Jinja2Templates
 import traceback
@@ -28,11 +29,13 @@ outages: List[Dict[str, str]] = []
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
 
+france_tz = pytz.timezone("Europe/Paris")
+
 
 @app.post("/outages/", status_code=201)
 async def create_outage(model_name: str, reason: str = None):
     outage = {
-        "detection_time": datetime.now().isoformat(),
+        "detection_time": datetime.now(tz=france_tz).isoformat(),
         "model_name": model_name,
         "reason": reason,
     }

@@ -2,14 +2,9 @@
 The gradio utilities for chatting with a single model.
 """
 
-import datetime
-import json
-import os
-import time
 import uuid
 
 import gradio as gr
-import requests
 
 from fastchat.constants import (
     WORKER_API_TIMEOUT,
@@ -97,7 +92,7 @@ def bot_response(
 ):
     ip = get_ip(request)
     logger.info(f"bot_response. ip: {ip}")
-    start_tstamp = time.time()
+    # start_tstamp = time.time()
     temperature = float(temperature)
     top_p = float(top_p)
     max_new_tokens = int(max_new_tokens)

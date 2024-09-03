@@ -11,3 +11,4 @@ google-auth
 python-slugify
 pandas
 psycopg2-binary
+pytz

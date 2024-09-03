@@ -1,6 +1,6 @@
 CREATE TABLE
     logs (
-        time TIMESTAMP NOT NULL,
+        time TIMESTAMPTZ NOT NULL,
         level VARCHAR(50) NOT NULL,
         message TEXT NOT NULL,
         query_params JSONB,
@@ -11,7 +11,7 @@ CREATE TABLE
 
 CREATE TABLE
     votes (
-        tstamp TIMESTAMP NOT NULL,
+        tstamp TIMESTAMPTZ NOT NULL,
         model_a_name VARCHAR(255) NOT NULL,
         model_b_name VARCHAR(255) NOT NULL,
         model_pair_name JSONB NOT NULL,
@@ -37,7 +37,10 @@ CREATE TABLE
 
 CREATE TABLE
     profiles (
-        tstamp TIMESTAMP NOT NULL,
+-- ALTER COLUMN event_time
+-- SET DATA TYPE TIMESTAMPTZ
+-- USING tstamp AT TIME ZONE 'UTC';
+        tstamp TIMESTAMPTZ NOT NULL,
         chatbot_use VARCHAR(255),
         gender VARCHAR(255),
         age VARCHAR(255),

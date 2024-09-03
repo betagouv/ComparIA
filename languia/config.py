@@ -6,6 +6,11 @@ from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
 import datetime
 
+import pytz
+
+# Get the timezone for France
+france_tz = pytz.timezone("Europe/Paris")
+
 env_debug = os.getenv("LANGUIA_DEBUG")
 
 if env_debug:
@@ -16,7 +21,7 @@ if env_debug:
 else:
     debug = False
 
-t = datetime.datetime.now()
+t = datetime.datetime.now(france_tz)
 hostname = os.uname().nodename
 log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
 import logging

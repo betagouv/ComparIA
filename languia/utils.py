@@ -18,6 +18,8 @@ from psycopg2 import sql
 import logging
 
 import datetime
+import pytz
+france_tz = pytz.timezone("Europe/Paris")
 
 import requests
 
@@ -237,7 +239,7 @@ def save_profile(
     save poll data to file
     """
     logger = logging.getLogger("languia")
-    t = datetime.datetime.now()
+    t = datetime.datetime.now(france_tz)
     profile_log_filename = f"profile-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     profile_log_path = os.path.join(LOGDIR, profile_log_filename)
 
@@ -405,7 +407,7 @@ def vote_last_response(
     form = (details["form"] - 1) * 25 if 1 <= details["form"] <= 5 else None
     style = (details["style"] - 1) * 25 if 1 <= details["style"] <= 5 else None
 
-    t = datetime.datetime.now()
+    t = datetime.datetime.now(france_tz)
 
     # TODO: Put opening_prompt in app_state?
     opening_prompt = str(get_opening_prompt(conversations[0]))
