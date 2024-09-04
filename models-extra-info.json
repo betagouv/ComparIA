@@ -196,6 +196,20 @@
 		"params": 8,
 		"license": "Llama 3.1 Community"
 	},
+	"llama-3.1-70b": {
+		"params": 70,
+		"simple_name": "Llama 3.1 70B",
+		"organisation": "Meta",
+		"country": "États-Unis",
+		"icon_path": "meta.svg",
+		"friendly_size": "L",
+		"dataset": "private",
+		"distribution": "open-weights",
+		"conditions": "free",
+		"excerpt": "Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues.",
+		"description": "Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues.",
+		"license": "Llama 3.1 Community"
+	},
 	"Meta-Llama-3-70B-Instruct": {
 		"params": 70,
 		"simple_name": "Llama 3 70B",
