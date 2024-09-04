@@ -318,6 +318,20 @@
 		"description": "Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.",
 		"excerpt": "Performant pour des tâches de génération de code, et de résumé, ce modèle compact supporte un contexte restreint de 4k jetons."
 	},
+	"phi-3.5-mini-instruct": {
+		"simple_name": "Phi-3.5-mini",
+		"organisation": "Microsoft",
+		"country": "États-Unis",
+		"params": 3.8,
+		"icon_path": "microsoft.png",
+		"friendly_size": "XS",
+		"distribution": "open-weights",
+		"dataset": "private",
+		"license": "MIT",
+		"conditions": "free",
+		"description": "Petit modèle de la famille Phi, remplaçant Phi-3-mini, ce modèle supporte un grand contexte de 128 000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.",
+		"excerpt": "Performant pour des tâches de génération de code et de résumé, ce modèle gère un grand contexte de 128k jetons."
+	},
 	"Phi-3-small-8k-Instruct": {
 		"license": "MIT",
 		"simple_name": "Phi-3-small-8k-Instruct",
