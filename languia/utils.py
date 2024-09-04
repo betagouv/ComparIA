@@ -54,6 +54,7 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 # context_filter = ContextFilter('example_value')
 # logger.addFilter(context_filter)
 
+
 class JSONFormatter(logging.Formatter):
     def format(self, record):
 
@@ -63,7 +64,7 @@ class JSONFormatter(logging.Formatter):
         # try:
         #     log_data = json.loads(msg)
         # except json.JSONDecodeError:
-            # Handle cases where the message isn't valid JSON
+        # Handle cases where the message isn't valid JSON
         log_data = {"message": msg}
 
         # if 'request' in record.args:
@@ -100,7 +101,7 @@ class PostgresHandler(logging.Handler):
                 print(f"Error connecting to database: {e}")
                 stacktrace = traceback.format_exc()
                 print(f"Stacktrace: {stacktrace}")
-                
+
     def emit(self, record):
 
         assert isinstance(record, logging.LogRecord)
@@ -127,14 +128,14 @@ class PostgresHandler(logging.Handler):
                     path_params = dict(record.request.path_params)
                     # ip = get_ip(record.request)
                     session_hash = record.request.session_hash
-                    
+
                 values = {
                     "time": record.asctime,
                     "level": record.levelname,
                     "message": record.message,
                     "query_params": json.dumps(query_params),
                     "path_params": json.dumps(path_params),
-                    "session_hash":  json.dumps(session_hash),
+                    "session_hash": json.dumps(session_hash),
                     "extra": json.dumps(record.__dict__.get("extra")),
                 }
                 cursor.execute(insert_statement, values)
@@ -616,10 +617,10 @@ def calculate_lightbulb_consumption(impact_energy_value):
 
     # Calculate consumption time using Wh
     watthours = impact_energy_value * 1000
-    consumption_days = watthours / (5 * 24)
     consumption_hours = watthours / 5
-    consumption_minutes = watthours / (5 * 60)
-    consumption_seconds = watthours / (5 * 60 * 60)
+    consumption_days = watthours / (5 * 24)
+    consumption_minutes = watthours * 60 / (5)
+    consumption_seconds = watthours * 60 * 60 / (5)
 
     # Determine the most sensible unit based on magnitude
     if consumption_days >= 1:
@@ -646,7 +647,7 @@ def calculate_streaming_hours(impact_gwp_value):
     """
 
     # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
-    streaming_hours = impact_gwp_value * 10000 / 317
+    streaming_hours = (impact_gwp_value * 10000) / 317
 
     # Determine sensible unit based on magnitude
     if streaming_hours >= 24:  # 1 day in hours
@@ -667,6 +668,7 @@ def build_reveal_html(
     model_b_impact,
     model_a_tokens,
     model_b_tokens,
+    reveal,
 ):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
@@ -836,12 +838,12 @@ def get_llm_impact(
             # TODO: add request latency
             # FIXME: multiply by 1_000_000?
             model_active_parameter_count = int(model_extra_info["active_params"])
-            model_total_parameter_count=int(model_extra_info["total_params"])
+            model_total_parameter_count = int(model_extra_info["total_params"])
         else:
             if "params" in model_extra_info:
                 # TODO: add request latency
                 model_active_parameter_count = int(model_extra_info["params"])
-                model_total_parameter_count=int(model_extra_info["params"])
+                model_total_parameter_count = int(model_extra_info["params"])
             else:
                 logger.error(
                     "impact is None for "
@@ -849,19 +851,23 @@ def get_llm_impact(
                     + ", and no params, closed model did not match ecologits list?"
                 )
                 return None
-            
-        
+
         # TODO: move to config.py
         electricity_mix_zone = "WOR"
-        electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
-        if_electricity_mix_adpe=electricity_mix.adpe
-        if_electricity_mix_pe=electricity_mix.pe
-        if_electricity_mix_gwp=electricity_mix.gwp
-        
+        electricity_mix = electricity_mixes.find_electricity_mix(
+            zone=electricity_mix_zone
+        )
+        if_electricity_mix_adpe = electricity_mix.adpe
+        if_electricity_mix_pe = electricity_mix.pe
+        if_electricity_mix_gwp = electricity_mix.gwp
+
         impact = compute_llm_impacts(
             model_active_parameter_count=model_active_parameter_count,
             model_total_parameter_count=model_total_parameter_count,
-            output_token_count=token_count,if_electricity_mix_adpe=if_electricity_mix_adpe,if_electricity_mix_pe=if_electricity_mix_pe,if_electricity_mix_gwp=if_electricity_mix_gwp
+            output_token_count=token_count,
+            if_electricity_mix_adpe=if_electricity_mix_adpe,
+            if_electricity_mix_pe=if_electricity_mix_pe,
+            if_electricity_mix_gwp=if_electricity_mix_gwp,
         )
     return impact
 
@@ -897,7 +903,9 @@ def refresh_outage_models(previous_outage_models, controller_url):
         logger.info("refreshed outage models:" + str(data))
         return data
     else:
-        logger.warning(f"Failed to retrieve outage data. Status code: {response.status_code}")
+        logger.warning(
+            f"Failed to retrieve outage data. Status code: {response.status_code}"
+        )
         return previous_outage_models
 
 
