@@ -177,9 +177,17 @@ def vertex_api_stream_iter(
     text = ""
     for chunk in res:
         if len(chunk.choices) > 0:
-            text += chunk.choices[0].delta.content.replace("\n", "<br />") or ""
+            content = chunk.choices[0].delta.content
+            # llama3.1 405b bugs
+            if content and model_name=="meta/llama3-405b-instruct-maas":
+                logger = logging.getLogger("languia")
+                logger.debug("fixing llama3 405b bug at google")
+                content = content.replace("\\n", "\n")
+                if str.startswith(content, "assistant"):
+                    # strip first 9 letters
+                    content = content[9:]
+            text += content
             data = {
-                # Processing \n for Llama3.1-405B
                 "text": text,
                 "error_code": 0,
             }
