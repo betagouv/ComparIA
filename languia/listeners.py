@@ -180,7 +180,6 @@ def register_listeners():
         )
         conversations = [conversation_a, conversation_b]
 
-        model_list = [conversations[i].model_name for i in range(config.num_sides)]
 
         # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
@@ -196,14 +195,16 @@ def register_listeners():
         # TODO: what do?
 
         for i in range(config.num_sides):
-            # conversations[i].messages.append(gr.ChatMessage(role=f"bot", content=text))
-            # conversations[i].messages.append(gr.ChatMessage(role=f"system", content=text))
-
-            # conversations[i].messages.append(gr.ChatMessage(role=f"bot-{i}", content=text))
             conversations[i].messages.append(gr.ChatMessage(role=f"user", content=text))
-            # TODO: Empty assistant message is needed to show user's first question but why??
-            # conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
-            # conversations[i].skip_next = False
+
+            if len(conversations[i].messages) == 1:
+                app_state.original_user_prompt = text
+                logger.debug(
+                "Saving original prompt: " + app_state.original_user_prompt,
+                extra={"request": request},
+                )
+            # Empty assistant message is needed to be editable by yielding received text afterwards
+            conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
 
         return (
             # 2 conversations
@@ -243,10 +244,6 @@ def register_listeners():
                         use_recommended_config=True,
                     )
                 )
-                # To be edited
-                conversations[i].messages.append(
-                    gr.ChatMessage(role="assistant", content="")
-                )
 
             iters = 0
             while True:
@@ -270,6 +267,7 @@ def register_listeners():
                 f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
                 extra={"request": request, "error": str(e)},
             )
+            app_state.crashed = True
             config.outage_models.append(conversations[i].model_name)
             add_outage_model(
                 config.controller_url,
@@ -285,11 +283,7 @@ def register_listeners():
                 duration=0,
                 message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
             )
-            app_state.original_user_prompt = get_opening_prompt(conversation_a)
-            logger.info(
-                "Saving original prompt: " + app_state.original_user_prompt,
-                extra={"request": request},
-            )
+
             # TODO: reset arena a better way...
             chatbot = gr.Chatbot(
                 # TODO:
@@ -370,48 +364,45 @@ def register_listeners():
         #     if len(data["text"].strip()) == 0:
         #         raise RuntimeError(f"No answer from API for model {model_name}")
 
-        if hasattr(app_state, "original_user_prompt"):
-            if app_state.original_user_prompt != False:
-                logger.error(
+        if hasattr(app_state, "crashed") and app_state.crashed:
+            logger.error(
                     "model crash detected, keeping prompt",
                     extra={"request": request},
                 )
-                original_user_prompt = app_state.original_user_prompt
-                app_state.original_user_prompt = False
-                # TODO: reroll here
-                model_left, model_right = get_battle_pair(
+            app_state.crashed = False
+            model_left, model_right = get_battle_pair(
                     config.models,
                     BATTLE_TARGETS,
                     config.outage_models,
                     SAMPLING_WEIGHTS,
                     SAMPLING_BOOST_MODELS,
                 )
-                conversation_a = ConversationState(model_name=model_left)
-                conversation_b = ConversationState(model_name=model_right)
+            conversation_a = ConversationState(model_name=model_left)
+            conversation_b = ConversationState(model_name=model_right)
 
-                logger.info(
-                    "Repicked 2 models: " + model_left + " and " + model_right,
-                    extra={request: request},
-                )
-                # conversation_a = ConversationState()
-                # conversation_b = ConversationState()
+            logger.info(
+                "Repicked 2 models: " + model_left + " and " + model_right,
+                extra={request: request},
+            )
+            # conversation_a = ConversationState()
+            # conversation_b = ConversationState()
 
-                logger.info(
-                    "prefilling opening prompt",
-                    extra={"request": request},
-                )
-                textbox.value = original_user_prompt
+            logger.info(
+                "prefilling opening prompt",
+                extra={"request": request},
+            )
+            textbox.value = app_state.original_user_prompt
 
-                return (
-                    [conversation_a]
-                    + [conversation_b]
-                    # chatbot
-                    + [[]]
-                    # disable conclude btn
-                    + [gr.update(interactive=False)]
-                    # + [gr.skip()]
-                    + [original_user_prompt]
-                )
+            return (
+                [conversation_a]
+                + [conversation_b]
+                # chatbot
+                + [[]]
+                # disable conclude btn
+                + [gr.update(interactive=False)]
+                # + [gr.skip()]
+                + [app_state.original_user_prompt]
+            )
 
         # logger.info(
         #     "models answered with success",
