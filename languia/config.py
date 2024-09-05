@@ -1,6 +1,7 @@
 import os
 import sentry_sdk
 import json
+import tomllib
 from slugify import slugify
 from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
@@ -161,26 +162,23 @@ arena_head_js = (
 <script type="text/javascript" nomodule src="file=assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
-#     + """
-# <script type="text/javascript">
-
-#     function handleRetryOrRedirect(event) {
-#         // Prevent the default action of the link
-#         event.preventDefault();
-
-#         // Look for the retry button
-#         var retryButton = document.getElementById('retry-modal-btn');
-
-#         if (retryButton) {
-#         // If the retry button exists, simulate a click on it
-#         retryButton.click();
-#         } else {
-#         // If the retry button does not exist, redirect to the main page
-#         window.location.href = event.target.href || event.target.closest('a').href;
-#         }
-#     }
-# </script>
-# """
+    #     + """
+    # <script type="text/javascript">
+    #     function handleRetryOrRedirect(event) {
+    #         // Prevent the default action of the link
+    #         event.preventDefault();
+    #         // Look for the retry button
+    #         var retryButton = document.getElementById('retry-modal-btn');
+    #         if (retryButton) {
+    #         // If the retry button exists, simulate a click on it
+    #         retryButton.click();
+    #         } else {
+    #         // If the retry button does not exist, redirect to the main page
+    #         window.location.href = event.target.href || event.target.closest('a').href;
+    #         }
+    #     }
+    # </script>
+    # """
 )
 
 site_head_js = (
@@ -213,14 +211,15 @@ api_endpoint_info = json.load(open(register_api_endpoint_file))
 
 # TODO: to CSV
 
-all_models_extra_info_json = {
+all_models_extra_info_toml = {
     slugify(k.lower()): v
-    for k, v in json.load(open("./models-extra-info.json")).items()
+    for k, v in tomllib.load(open("./models-extra-info.toml", "rb")).items()
 }
-
+# TODO: refacto?
 models_extra_info = [
-    build_model_extra_info(model, all_models_extra_info_json) for model in models
+    build_model_extra_info(model, all_models_extra_info_toml) for model in models
 ]
+
 models_extra_info.sort(key=lambda x: x["simple_name"])
 
 headers = {"User-Agent": "FastChat Client"}

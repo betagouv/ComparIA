@@ -704,12 +704,12 @@ def build_reveal_html(
     )
 
 
-def build_model_extra_info(name: str, all_models_extra_info_json: dict):
+def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
     # Maybe put orgs countries in an array here
     std_name = slugify(name.lower())
     logger = logging.getLogger("languia")
-    if std_name in all_models_extra_info_json:
-        model = all_models_extra_info_json[std_name]
+    if std_name in all_models_extra_info_toml:
+        model = all_models_extra_info_toml[std_name]
         # TODO: Should use a dict instead
         model["id"] = std_name
         if "excerpt" not in model and "description" in model:
@@ -722,7 +722,6 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
             if "total_params" in model:
                 model["params"] = model["total_params"]
             else:
-                # FIXME: handle this better...
                 logger.warn(
                     "Params not found for model "
                     + std_name
@@ -731,9 +730,7 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
                 size_to_params = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
                 model["params"] = size_to_params[model["friendly_size"]]
 
-        # Let's suppose q8
-        # TODO: give a range?
-        # FIXME: Fix for MoE
+        # We suppose from q4 to fp16
         model["required_ram"] = model["params"]
 
         return model
@@ -742,7 +739,8 @@ def build_model_extra_info(name: str, all_models_extra_info_json: dict):
         "id": "other",
         "simple_name": "Autre",
         "organisation": "Autre",
-        "params": "7",
+        "params": 7,
+        "required_ram": 7,
         "friendly_size": "M",
         "distribution": "open-weights",
         "dataset": "private",
