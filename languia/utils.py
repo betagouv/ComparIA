@@ -161,14 +161,11 @@ def get_ip(request: gr.Request):
         ip = request.client.host
     return ip
 
-# TODO: remove by outputting value as "model-a" or "model-b"
 def get_chosen_model(which_model_radio):
-    if which_model_radio == "Modèle A":
-        chosen_model = "model-a"
-    elif which_model_radio == "Modèle B":
-        chosen_model = "model-b"
+    if which_model_radio in ["model-a", "model-b"]:
+        chosen_model = which_model_radio
     else:
-        chosen_model = "invalid-vote"
+        chosen_model = None
         raise (ValueError)
     return chosen_model
 
@@ -288,13 +285,12 @@ def save_profile(
 
 
 def get_chosen_model_name(which_model_radio, conversations):
-    if which_model_radio == "Modèle A":
+    if which_model_radio == "model-a":
         chosen_model_name = conversations[0].model_name
-    elif which_model_radio == "Modèle B":
+    elif which_model_radio == "model-b":
         chosen_model_name = conversations[1].model_name
     else:
-        chosen_model_name = "invalid-vote"
-        raise (ValueError)
+        chosen_model_name = None
     return chosen_model_name
 
 
