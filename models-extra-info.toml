@@ -137,7 +137,7 @@ dataset = "private"
 license = "Gemma"
 params = 9
 conditions = "restricted"
-excerpt = "Moins performant que le 27B, ce modèle est plus abordable mais présente une latence légèrement supérieure, convenant à des tâches moins complexes."
+excerpt = "Ce modèle est plus abordable mais présente une latence légèrement supérieure, convenant à des tâches moins complexes."
 description = "Modèle intermédiaire de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 
 [gemma-2-2b-it]
