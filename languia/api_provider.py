@@ -84,7 +84,8 @@ def openai_api_stream_iter(
     client = openai.OpenAI(
         base_url=api_base or "https://api.openai.com/v1",
         api_key=api_key,
-        timeout=10,
+        #         timeout=WORKER_API_TIMEOUT,
+        timeout=5,
         # max_retries=
     )
 
