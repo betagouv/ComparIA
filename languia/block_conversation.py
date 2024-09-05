@@ -22,7 +22,7 @@ from fastchat.constants import (
     CONVERSATION_TURN_LIMIT,
     SESSION_EXPIRATION_TIME,
 )
-        
+
 # from fastchat.model.model_adapter import (
 #     get_conversation_template,
 # )
@@ -49,15 +49,16 @@ class ConversationState(gr.State):
         self.template = []
         self.model_name = model_name
 
-    # def dict(self):
-    #     base = self.messages
-    #     base.update(
-    #         {
-    #             "conv_id": self.conv_id,
-    #             "model_name": self.model_name,
-    #         }
-    #     )
-    #     return base
+
+def update_last_message(messages, text):
+    if len(messages) < 1:
+        return [gr.ChatMessage(role="assistant", content=text)]
+    # We append a new assistant message if last one was from user
+    if messages[-1].role == "user":
+        messages.append(gr.ChatMessage(role="assistant", content=text))
+    else:
+        messages[-1].content = text
+    return messages
 
 
 def bot_response(
@@ -71,7 +72,7 @@ def bot_response(
 ):
     ip = get_ip(request)
     logger.info(f"bot_response. ip: {ip}")
-    start_tstamp = time.time()
+    # start_tstamp = time.time()
     temperature = float(temperature)
     top_p = float(top_p)
     max_new_tokens = int(max_new_tokens)
@@ -118,8 +119,7 @@ def bot_response(
 
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
-    # conv.update_last_message("▌")
-    messages[-1].content = html_code
+    update_last_message(messages, html_code)
     yield (state)
 
     data = {"text": ""}
@@ -127,8 +127,7 @@ def bot_response(
     for i, data in enumerate(stream_iter):
         if data["error_code"] == 0:
             output = data["text"].strip()
-            # conv.update_last_message(output + "▌")
-            messages[-1].content = output + html_code
+            messages = update_last_message(messages, output + html_code)
             yield (state)
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
@@ -137,7 +136,9 @@ def bot_response(
     output = data["text"].strip()
     if output == "":
         raise RuntimeError(f"No answer from API for model {model_name}")
-    messages[-1].content = output
+
+    messages = update_last_message(messages, output)
+
     yield (state)
     # TODO: handle them great, or reboot arena saving initial prompt
     # except requests.exceptions.RequestException as e:
@@ -153,27 +154,5 @@ def bot_response(
     #     )
     #     return
 
-    # finish_tstamp = time.time()
-    # # logger.info(f"{output}")
 
-    # filename = get_conv_log_filename(
-    #     # is_vision=state.is_vision, has_csam_image=state.has_csam_image
-    # )
-    # logger.info(f"Saving to: {filename}")
-
-    # with open(filename, "a") as fout:
-    #     data = {
-    #         "tstamp": round(finish_tstamp, 4),
-    #         "type": "chat",
-    #         "model": model_name,
-    #         "gen_params": {
-    #             "temperature": temperature,
-    #             "top_p": top_p,
-    #             "max_new_tokens": max_new_tokens,
-    #         },
-    #         "start": round(start_tstamp, 4),
-    #         "finish": round(finish_tstamp, 4),
-    #         "state": state.dict(),
-    #         "ip": get_ip(request),
-    #     }
-    #     fout.write(json.dumps(data) + "\n")
+# finish_tstamp = time.time()

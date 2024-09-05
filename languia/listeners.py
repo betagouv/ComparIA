@@ -203,8 +203,9 @@ def register_listeners():
                 "Saving original prompt: " + app_state.original_user_prompt,
                 extra={"request": request},
                 )
-            # Empty assistant message is needed to be editable by yielding received text afterwards
-            conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
+            # Added in individual bot_message yielding function
+            # # Empty assistant message is needed to be editable by yielding received text afterwards
+            # conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
 
         return (
             # 2 conversations
@@ -272,6 +273,7 @@ def register_listeners():
             add_outage_model(
                 config.controller_url,
                 conversations[i].model_name,
+                # FIXME: seems equal to None always?
                 reason=str(e),
             )
             logger.error(str(e), extra={"request": request})
