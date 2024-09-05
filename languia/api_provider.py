@@ -191,7 +191,7 @@ def vertex_api_stream_iter(
                 logger.debug("fixing llama3 405b bug at google")
                 content = content.replace("\\n", "\n")
                 if str.startswith(content, "assistant"):
-                    # strip first 9 letters
+                    # strip first 9 letters ("assistant")
                     content = content[9:]
             if content and model_name=="google/gemini-1.5-pro-001":
                 logger.debug("fixing gemini markdown title bug at google")

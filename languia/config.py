@@ -50,6 +50,7 @@ else:
 
 
 def build_logger(logger_filename):
+    # TODO: log "funcName"
     logger = logging.getLogger("languia")
     if debug:
         logger.setLevel(logging.DEBUG)
