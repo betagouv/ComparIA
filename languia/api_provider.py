@@ -186,13 +186,17 @@ def vertex_api_stream_iter(
         if len(chunk.choices) > 0:
             content = chunk.choices[0].delta.content
             # llama3.1 405b bugs
+            logger = logging.getLogger("languia")
             if content and model_name=="meta/llama3-405b-instruct-maas":
-                logger = logging.getLogger("languia")
                 logger.debug("fixing llama3 405b bug at google")
                 content = content.replace("\\n", "\n")
                 if str.startswith(content, "assistant"):
                     # strip first 9 letters
                     content = content[9:]
+            if content and model_name=="google/gemini-1.5-pro-001":
+                logger.debug("fixing gemini markdown title bug at google")
+                content = content.replace("<br />", "\n")
+                
             text += content
             data = {
                 "text": text,
