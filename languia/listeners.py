@@ -7,16 +7,15 @@ from languia.utils import (
     get_battle_pair,
     build_reveal_html,
     vote_last_response,
-    get_intensity,
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
     save_profile,
-    get_chosen_model,
     refresh_outage_models,
     add_outage_model,
     gen_prompt,
-    # Log,
+    to_threeway_chatbot,
+    get_opening_prompt,
 )
 
 from languia.config import (
@@ -181,7 +180,6 @@ def register_listeners():
         )
         conversations = [conversation_a, conversation_b]
 
-        model_list = [conversations[i].model_name for i in range(config.num_sides)]
 
         # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
@@ -197,10 +195,16 @@ def register_listeners():
         # TODO: what do?
 
         for i in range(config.num_sides):
-            conversations[i].conv.append_message(conversations[i].conv.roles[0], text)
-            # TODO: Empty assistant message is needed to show user's first question but why??
-            conversations[i].conv.append_message(conversations[i].conv.roles[1], None)
-            conversations[i].skip_next = False
+            conversations[i].messages.append(gr.ChatMessage(role=f"user", content=text))
+
+            if len(conversations[i].messages) == 1:
+                app_state.original_user_prompt = text
+                logger.debug(
+                "Saving original prompt: " + app_state.original_user_prompt,
+                extra={"request": request},
+                )
+            # Empty assistant message is needed to be editable by yielding received text afterwards
+            conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
 
         return (
             # 2 conversations
@@ -208,36 +212,6 @@ def register_listeners():
             # 1 chatbot
             + [to_threeway_chatbot(conversations)]
         )
-
-    from fastchat.conversation import Conversation
-
-    def to_threeway_chatbot(conversations):
-        threeway_chatbot = []
-        for msg_a, msg_b in zip(
-            conversations[0].conv.messages, conversations[1].conv.messages
-        ):
-            if msg_a[0] == "user":
-                if msg_b[0] != "user":
-                    raise IndexError
-                threeway_chatbot.append({"role": "user", "content": msg_a[1]})
-            else:
-                if msg_a[1]:
-                    threeway_chatbot.append(
-                        {
-                            "role": "assistant",
-                            "content": msg_a[1],
-                            "metadata": {"name": "bot-a"},
-                        }
-                    )
-                if msg_b[1]:
-                    threeway_chatbot.append(
-                        {
-                            "role": "assistant",
-                            "content": msg_b[1],
-                            "metadata": {"name": "bot-b"},
-                        }
-                    )
-        return threeway_chatbot
 
     # TODO: move this
     def bot_response_multi(
@@ -271,8 +245,6 @@ def register_listeners():
                     )
                 )
 
-            chatbot = [to_threeway_chatbot(conversations)]
-            # chatbot = []
             iters = 0
             while True:
                 stop = True
@@ -295,6 +267,7 @@ def register_listeners():
                 f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
                 extra={"request": request, "error": str(e)},
             )
+            app_state.crashed = True
             config.outage_models.append(conversations[i].model_name)
             add_outage_model(
                 config.controller_url,
@@ -310,11 +283,7 @@ def register_listeners():
                 duration=0,
                 message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
             )
-            app_state.original_user_prompt = chatbot[0].content
-            logger.info(
-                "Saving original prompt: " + app_state.original_user_prompt,
-                extra={"request": request},
-            )
+
             # TODO: reset arena a better way...
             chatbot = gr.Chatbot(
                 # TODO:
@@ -395,48 +364,45 @@ def register_listeners():
         #     if len(data["text"].strip()) == 0:
         #         raise RuntimeError(f"No answer from API for model {model_name}")
 
-        if hasattr(app_state, "original_user_prompt"):
-            if app_state.original_user_prompt != False:
-                logger.error(
+        if hasattr(app_state, "crashed") and app_state.crashed:
+            logger.error(
                     "model crash detected, keeping prompt",
                     extra={"request": request},
                 )
-                original_user_prompt = app_state.original_user_prompt
-                app_state.original_user_prompt = False
-                # TODO: reroll here
-                model_left, model_right = get_battle_pair(
+            app_state.crashed = False
+            model_left, model_right = get_battle_pair(
                     config.models,
                     BATTLE_TARGETS,
                     config.outage_models,
                     SAMPLING_WEIGHTS,
                     SAMPLING_BOOST_MODELS,
                 )
-                conversation_a = ConversationState(model_name=model_left)
-                conversation_b = ConversationState(model_name=model_right)
+            conversation_a = ConversationState(model_name=model_left)
+            conversation_b = ConversationState(model_name=model_right)
 
-                logger.info(
-                    "Repicked 2 models: " + model_left + " and " + model_right,
-                    extra={request: request},
-                )
-                # conversation_a = ConversationState()
-                # conversation_b = ConversationState()
+            logger.info(
+                "Repicked 2 models: " + model_left + " and " + model_right,
+                extra={request: request},
+            )
+            # conversation_a = ConversationState()
+            # conversation_b = ConversationState()
 
-                logger.info(
-                    "prefilling opening prompt",
-                    extra={"request": request},
-                )
-                textbox.value = original_user_prompt
+            logger.info(
+                "prefilling opening prompt",
+                extra={"request": request},
+            )
+            textbox.value = app_state.original_user_prompt
 
-                return (
-                    [conversation_a]
-                    + [conversation_b]
-                    # chatbot
-                    + [[]]
-                    # disable conclude btn
-                    + [gr.update(interactive=False)]
-                    # + [gr.skip()]
-                    + [original_user_prompt]
-                )
+            return (
+                [conversation_a]
+                + [conversation_b]
+                # chatbot
+                + [[]]
+                # disable conclude btn
+                + [gr.update(interactive=False)]
+                # + [gr.skip()]
+                + [app_state.original_user_prompt]
+            )
 
         # logger.info(
         #     "models answered with success",
@@ -719,12 +685,8 @@ def register_listeners():
         )
 
         # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = count_output_tokens(
-            conversation_a.conv.roles, conversation_a.conv.messages
-        )
-        model_b_tokens = count_output_tokens(
-            conversation_b.conv.roles, conversation_b.conv.messages
-        )
+        model_a_tokens = count_output_tokens(conversation_a.messages)
+        model_b_tokens = count_output_tokens(conversation_b.messages)
         # TODO:
         # request_latency_a = conversation_a.conv.finish_tstamp - conversation_a.conv.start_tstamp
         # request_latency_b = conversation_b.conv.finish_tstamp - conversation_b.conv.start_tstamp
