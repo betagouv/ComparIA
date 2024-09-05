@@ -22,8 +22,7 @@ from fastchat.constants import (
     CONVERSATION_TURN_LIMIT,
     SESSION_EXPIRATION_TIME,
 )
-from fastchat.conversation import Conversation, SeparatorStyle
-
+        
 # from fastchat.model.model_adapter import (
 #     get_conversation_template,
 # )
