@@ -575,8 +575,15 @@ def register_listeners():
             + (supervote_sliders)
             + [comments_text]
         ),
-        # outputs=[],
-        outputs=[quiz_modal],
+         outputs=[
+            stepper_block,
+            vote_area,
+            supervote_area,
+            feedback_row,
+            results_area,
+            buttons_footer,
+        ],
+        # outputs=[quiz_modal],
         api_name=False,
     )
     def vote_preferences(
@@ -608,74 +615,74 @@ def register_listeners():
             request,
         )
         # quiz_modal.visible = True
-        return Modal(visible=True)
+        # return Modal(visible=True)
 
-    @send_poll_btn.click(
-        inputs=[
-            conversations[0],
-            conversations[1],
-            which_model_radio,
-            chatbot_use,
-            gender,
-            age,
-            profession,
-        ],
-        outputs=[
-            quiz_modal,
-            stepper_block,
-            vote_area,
-            supervote_area,
-            feedback_row,
-            results_area,
-            buttons_footer,
-        ],
-        api_name=False,
-    )
-    @skip_poll_btn.click(
-        inputs=[
-            conversations[0],
-            conversations[1],
-            which_model_radio,
-            chatbot_use,
-            gender,
-            age,
-            profession,
-        ],
-        outputs=[
-            quiz_modal,
-            stepper_block,
-            vote_area,
-            supervote_area,
-            feedback_row,
-            results_area,
-            buttons_footer,
-        ],
-        api_name=False,
-    )
-    def send_poll(
-        conversation_a,
-        conversation_b,
-        which_model_radio,
-        chatbot_use,
-        gender,
-        age,
-        profession,
-        request: gr.Request,
-        event: gr.EventData,
-    ):
-        confirmed = event.target.value == "Envoyer"  # Not "Passer"
+    # @send_poll_btn.click(
+    #     inputs=[
+    #         conversations[0],
+    #         conversations[1],
+    #         which_model_radio,
+    #         chatbot_use,
+    #         gender,
+    #         age,
+    #         profession,
+    #     ],
+    #     outputs=[
+    #         quiz_modal,
+    #         stepper_block,
+    #         vote_area,
+    #         supervote_area,
+    #         feedback_row,
+    #         results_area,
+    #         buttons_footer,
+    #     ],
+    #     api_name=False,
+    # )
+    # @skip_poll_btn.click(
+    #     inputs=[
+    #         conversations[0],
+    #         conversations[1],
+    #         which_model_radio,
+    #         chatbot_use,
+    #         gender,
+    #         age,
+    #         profession,
+    #     ],
+    #     outputs=[
+    #         quiz_modal,
+    #         stepper_block,
+    #         vote_area,
+    #         supervote_area,
+    #         feedback_row,
+    #         results_area,
+    #         buttons_footer,
+    #     ],
+    #     api_name=False,
+    # )
+    # def send_poll(
+    #     conversation_a,
+    #     conversation_b,
+    #     which_model_radio,
+    #     chatbot_use,
+    #     gender,
+    #     age,
+    #     profession,
+    #     request: gr.Request,
+    #     event: gr.EventData,
+    # ):
+    #     confirmed = event.target.value == "Envoyer"  # Not "Passer"
 
-        save_profile(
-            conversation_a,
-            conversation_b,
-            which_model_radio,
-            chatbot_use,
-            gender,
-            age,
-            profession,
-            confirmed,
-            request,
-        )
+    #     save_profile(
+    #         conversation_a,
+    #         conversation_b,
+    #         which_model_radio,
+    #         chatbot_use,
+    #         gender,
+    #         age,
+    #         profession,
+    #         confirmed,
+    #         request,
+    #     )
 
         model_a = get_model_extra_info(
             conversation_a.model_name, config.models_extra_info
@@ -707,7 +714,15 @@ def register_listeners():
             model_b_tokens=model_b_tokens,
         )
         return [
-            Modal(visible=False),
+            # Modal(visible=False),
+            # Comment: this is very ugly but I couldn't get the nicer method of updating named blocks to work.
+            # As a ref:
+            # stepper_block,
+            # vote_area,
+            # supervote_area,
+            # feedback_row,
+            # results_area,
+            # buttons_footer,
             gr.update(
                 value=stepper_html(
                     "Découvrez les modèles d'IA générative avec lesquels vous venez de discuter",
