@@ -123,21 +123,21 @@ class PostgresHandler(logging.Handler):
                     VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                 """
                 )
+                values = {
+                    "time": record.asctime,
+                    "level": record.levelname,
+                    "message": record.message,
+                }
                 if hasattr(record, "request"):
                     query_params = dict(record.request.query_params)
                     path_params = dict(record.request.path_params)
                     # ip = get_ip(record.request)
                     session_hash = record.request.session_hash
+                    values["query_params"] = json.dumps(query_params),
+                    values["path_params"] = json.dumps(path_params),
+                    values["session_hash"] = str(session_hash),
+                    values["extra"] = json.dumps(record.__dict__.get("extra")),
 
-                values = {
-                    "time": record.asctime,
-                    "level": record.levelname,
-                    "message": record.message,
-                    "query_params": json.dumps(query_params),
-                    "path_params": json.dumps(path_params),
-                    "session_hash": json.dumps(session_hash),
-                    "extra": json.dumps(record.__dict__.get("extra")),
-                }
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
         except (psycopg2.Error, Exception) as e:
