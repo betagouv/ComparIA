@@ -191,26 +191,16 @@ with gr.Blocks(
         <div class="fr-notice fr-notice--info"> 
             <div class="fr-container">
                 <div class="fr-notice__body mission">
-                    <p class="fr-notice__title mission">Des réponses détaillées de votre part permettent à la recherche d’améliorer les réponses des futurs modèles sur des enjeux linguistiques et culturels.</p>
+                    <p class="fr-notice__title mission">Des réponses détaillées de votre part permettent à la recherche d’améliorer les réponses des futurs modèles d'IA sur des enjeux linguistiques et culturels.</p>
                 </div>
             </div>
         </div>
-            <h3 class="text-center fr-mt-2w">Quel modèle d'IA avez-vous préféré ?*</h3>""",
+            <h3 class="text-center fr-mt-2w">Quelles réponses préférez-vous ?</h3>""",
         )
 
-        which_model_radio = CustomSlider(
-            minimum=-1.5,
-            maximum=+1.5,
-            value=-3,
-            step=1,
+        which_model_radio = CustomRadioCard(
+            choices = ["Modèle A","Modèle B"],
             show_label=False,
-            extrema=["Modèle A", "Modèle B"],
-            range_labels=[
-                "Je préfère le modèle A",
-                "Le modèle A est un peu mieux",
-                "Le modèle B est un peu mieux",
-                "Je préfère le modèle B",
-            ],
         )
 
         with gr.Column(
@@ -231,7 +221,7 @@ with gr.Blocks(
                     step=1,
                     label="Les réponses étaient-elles pertinentes ?",
                     info="Critères : réponses utiles, correctes factuelles, précises",
-                    elem_classes="fr-my-4w",
+                    elem_classes="fr-mb-4w",
                 )
                 form_slider = FrSlider(
                     value=-1,

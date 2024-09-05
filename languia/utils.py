@@ -161,11 +161,11 @@ def get_ip(request: gr.Request):
         ip = request.client.host
     return ip
 
-
+# TODO: remove by outputting value as "model-a" or "model-b"
 def get_chosen_model(which_model_radio):
-    if which_model_radio in [-1.5, -0.5]:
+    if which_model_radio == "Modèle A":
         chosen_model = "model-a"
-    elif which_model_radio in [0.5, 1.5]:
+    elif which_model_radio == "Modèle B":
         chosen_model = "model-b"
     else:
         chosen_model = "invalid-vote"
@@ -277,20 +277,20 @@ def save_profile(
     return data
 
 
-def get_intensity(which_model_radio):
-    intensity = {
-        -1.5: "strongly",
-        -0.5: "slightly",
-        +0.5: "slightly",
-        +1.5: "strongly",
-    }
-    return intensity[which_model_radio]
+# def get_intensity(which_model_radio):
+#     intensity = {
+#         -1.5: "strongly",
+#         -0.5: "slightly",
+#         +0.5: "slightly",
+#         +1.5: "strongly",
+#     }
+#     return intensity[which_model_radio]
 
 
 def get_chosen_model_name(which_model_radio, conversations):
-    if which_model_radio in [-1.5, -0.5]:
+    if which_model_radio == "Modèle A":
         chosen_model_name = conversations[0].model_name
-    elif which_model_radio in [0.5, 1.5]:
+    elif which_model_radio == "Modèle B":
         chosen_model_name = conversations[1].model_name
     else:
         chosen_model_name = "invalid-vote"
@@ -384,7 +384,7 @@ def vote_last_response(
     logger = logging.getLogger("languia")
 
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
-    intensity = get_intensity(which_model_radio)
+    # intensity = get_intensity(which_model_radio)
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
@@ -416,7 +416,7 @@ def vote_last_response(
             [conversations[0].model_name, conversations[1].model_name]
         ),
         "chosen_model_name": chosen_model_name,
-        "intensity": intensity,
+        "intensity": None,
         "opening_prompt": opening_prompt,
         "conversation_a": conversation_a_messages,
         "conversation_b": conversation_b_messages,
