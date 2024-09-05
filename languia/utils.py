@@ -664,7 +664,6 @@ def build_reveal_html(
     model_b_impact,
     model_a_tokens,
     model_b_tokens,
-    reveal,
 ):
     source = open("templates/reveal.html", "r", encoding="utf-8").read()
     template = Template(source)
