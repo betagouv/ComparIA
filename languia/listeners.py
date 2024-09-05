@@ -3,19 +3,17 @@ import traceback
 
 from languia.utils import (
     stepper_html,
-    get_ip,
     get_battle_pair,
     build_reveal_html,
     vote_last_response,
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
-    save_profile,
+    # save_profile,
     refresh_outage_models,
     add_outage_model,
     gen_prompt,
     to_threeway_chatbot,
-    get_opening_prompt,
 )
 
 from languia.config import (

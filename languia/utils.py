@@ -294,13 +294,6 @@ def get_chosen_model_name(which_model_radio, conversations):
     return chosen_model_name
 
 
-def get_opening_prompt(conversation):
-    for msg in conversation.messages:
-        if msg.role == "user":
-            return msg.content
-    return ValueError("No opening prompt found")
-
-
 def count_turns(messages):
     return len(messages) // 2
 
