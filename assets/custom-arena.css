@@ -706,6 +706,11 @@ li.fr-nav__item {
   -webkit-mask-image: url("file=assets/extra-icons/shuffle.svg");
   mask-image: url("file=assets/extra-icons/shuffle.svg");
 }
+.fr-icon-back::before,
+.fr-icon-back::after {
+  -webkit-mask-image: url("file=assets/extra-icons/back.svg");
+  mask-image: url("file=assets/extra-icons/back.svg");
+}
 
 .fr-icon--question-line {
   -webkit-mask-image: url("file=assets/dsfr/icons/system/question-line.svg");

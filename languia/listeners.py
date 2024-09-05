@@ -515,7 +515,7 @@ def register_listeners():
             if (app_state.selected_model == "B" and vote_radio == "Modèle A") or (
                 app_state.selected_model == "A" and vote_radio == "Modèle B"
             ):
-                # FIXME: creates a CSS display bug where value isn't refreshed
+                # FIXME: creates a CSS display bug  where value isn't refreshed
                 new_supervote_sliders = [
                     gr.update(value=3) for slider in supervote_sliders
                 ]
@@ -537,6 +537,7 @@ def register_listeners():
         ] + new_supervote_sliders
 
     # Step 3
+    # @both_equal_link.click(inputs=[])
 
     @return_btn.click(
         inputs=[],

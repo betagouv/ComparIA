@@ -202,9 +202,10 @@ with gr.Blocks(
             choices = ["Modèle A","Modèle B"],
             show_label=False,
         )
+        # both_equal_link = gr.Button(value="Les deux se valent")
 
         with gr.Column(
-            visible=False, elem_classes="fr-container fr-mb-md-6w fr-mb-16w"
+            visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-6w fr-mb-16w"
         ) as supervote_area:
 
             why_vote = gr.HTML(
@@ -258,8 +259,8 @@ with gr.Blocks(
     ) as buttons_footer:
         with gr.Row(elem_classes="fr-grid-row fr-container fr-my-2w"):
             return_btn = gr.Button(
-                elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-1",
-                value="Retour",
+                elem_classes="fr-btn fr-icon-back fr-btn--secondary fr-col-12 fr-col-md-1",
+                value="Relire la conversation",
             )
             supervote_send_btn = gr.Button(
                 elem_classes="fr-btn fr-col-12 fr-col-md-4 fr-col-offset-md-3",
