@@ -28,12 +28,14 @@
             <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
                 <tr>
                     <th>Modèle</th>
+                    <th>API</th>
                     <th>Tester ?</th>
                     <!-- <th>Stats</th> -->
                 </tr>
                 {% for model_name, model in models.items() %}
                 <tr>
                     <td>{{ model_name }}</td>
+                    <td>{{ model["api_base"] }}</td>
                     <td><a href="/outages/{{ model_name }}">Tester ?</a></a></td>
                     <!-- <td><a href="/outages/{{ model_name }}">Test?</a></a></td> -->
                 </tr>
