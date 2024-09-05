@@ -1,7 +1,7 @@
 import os
 import sentry_sdk
 import json
-import tomllib
+import tomli
 from slugify import slugify
 from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
@@ -214,7 +214,7 @@ api_endpoint_info = json.load(open(register_api_endpoint_file))
 
 all_models_extra_info_toml = {
     slugify(k.lower()): v
-    for k, v in tomllib.load(open("./models-extra-info.toml", "rb")).items()
+    for k, v in tomli.load(open("./models-extra-info.toml", "rb")).items()
 }
 # TODO: refacto?
 models_extra_info = [
