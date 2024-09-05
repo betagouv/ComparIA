@@ -258,8 +258,8 @@ with gr.Blocks(
         elem_classes="fr-container--fluid", elem_id="buttons-footer", visible=False
     ) as buttons_footer:
         with gr.Row(elem_classes="fr-grid-row fr-container fr-my-2w"):
-            return_btn = gr.Button(
-                elem_classes="fr-btn fr-icon-back fr-btn--secondary fr-col-12 fr-col-md-1",
+            return_btn = gr.Button(icon="assets/extra-icons/back.svg",
+                elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-3",
                 value="Relire la conversation",
             )
             supervote_send_btn = gr.Button(

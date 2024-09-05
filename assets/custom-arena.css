@@ -705,12 +705,13 @@ li.fr-nav__item {
 .fr-icon-shuffle::after {
   -webkit-mask-image: url("file=assets/extra-icons/shuffle.svg");
   mask-image: url("file=assets/extra-icons/shuffle.svg");
-}
-.fr-icon-back::before,
-.fr-icon-back::after {
+/* }
+.fr-icon-back::before {
   -webkit-mask-image: url("file=assets/extra-icons/back.svg");
   mask-image: url("file=assets/extra-icons/back.svg");
-}
+  background-color: var(--text-action-high-blue-france);
+
+} */
 
 .fr-icon--question-line {
   -webkit-mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
