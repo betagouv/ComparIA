@@ -181,23 +181,28 @@ def vertex_api_stream_iter(
         temperature=temperature,
         max_tokens=max_new_tokens,
         stream=True,
+        stream_options={"include_usage": True},
     )
     text = ""
     for chunk in res:
         if len(chunk.choices) > 0:
-            content = chunk.choices[0].delta.content
-            # llama3.1 405b bugs
-            logger = logging.getLogger("languia")
-            if content and model_name=="meta/llama3-405b-instruct-maas":
-                logger.debug("fixing llama3 405b bug at google")
-                content = content.replace("\\n", "\n")
-                if str.startswith(content, "assistant"):
-                    # strip first 9 letters ("assistant")
-                    content = content[9:]
-            if content and model_name=="google/gemini-1.5-pro-001":
-                logger.debug("fixing gemini markdown title bug at google")
-                content = content.replace("<br />", "\n")
-                
+            if hasattr(chunk.choices[0], "delta"):
+                content = chunk.choices[0].delta.content
+                # llama3.1 405b bugs
+                logger = logging.getLogger("languia")
+                if content and model_name=="meta/llama3-405b-instruct-maas":
+                    logger.debug("fixing llama3 405b bug at google")
+                    content = content.replace("\\n", "\n")
+                    if str.startswith(content, "assistant"):
+                        # strip first 9 letters ("assistant")
+                        content = content[9:]
+                if content and model_name=="google/gemini-1.5-pro-001":
+                    logger.debug("fixing gemini markdown title bug at google")
+                    content = content.replace("<br />", "\n")
+            else:
+                logger.warning("chunk.choices[0] had no delta:")
+                logger.warning(chunk.choices[0])
+                content = ""
             text += content
             data = {
                 "text": text,
