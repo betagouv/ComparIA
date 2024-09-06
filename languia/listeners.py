@@ -107,14 +107,14 @@ def register_listeners():
             extra={"request": request},
         )
 
-        return [
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(elem_classes="fr-container send-area-enabled"),
-            gr.update(interactive=False),
+        return {
+            free_mode_btn: gr.update(visible=False),
+            send_area: gr.update(visible=True),
+            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
+            shuffle_btn: gr.update(interactive=False),
             # Don't remove or autofocus won't work
-            gr.skip(),
-        ]
+            textbox: gr.skip(),
+        }
 
     # Step 1.1
     @guided_cards.change(
