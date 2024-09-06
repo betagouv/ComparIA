@@ -119,7 +119,7 @@ async def test_model(model_name):
         client = openai.OpenAI(
             base_url=api_base,
             api_key=api_key,
-            timeout=180,
+            timeout=10,
         )
         # Send a test message to the OpenAI API
         res = client.chat.completions.create(
@@ -165,18 +165,18 @@ async def test_model(model_name):
     except Exception as e:
         logging.error(f"Error: {model_name}, {str(e)}")
 
-        traceback.print_exc()
+        stacktrace = traceback.print_exc()
         _outage = await create_outage(model_name, e)
 
-        return {"success": "false", "reason": str(e)}
+        return {"success": "false", "reason": str(e), "stacktrace": stacktrace}
 
 
-async def scheduled_outage_tests():
-    while True:
-        # for model in models:
-        for outage in outages:
-            asyncio.create_task(test_model(outage["model_name"]))
-        await asyncio.sleep(600)  # Test every 10 minutes (600 seconds)
+# async def scheduled_outage_tests():
+#     while True:
+#         # for model in models:
+#         for outage in outages:
+#             asyncio.create_task(test_model(outage["model_name"]))
+#         await asyncio.sleep(600)  # Test every 10 minutes (600 seconds)
 
 
 @app.get(
