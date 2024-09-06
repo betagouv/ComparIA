@@ -534,19 +534,15 @@ def register_listeners():
             "clicked return",
             extra={"request": request},
         )
-        return (
-            [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
-            # vote_area
-            + [gr.update(visible=False)]
-            # supervote_area
-            # + [gr.update(visible=False)]
-            # chat_area
-            + [gr.update(visible=True)]
-            # send_area
-            + [gr.update(visible=True)]
-            # buttons_footer
-            + [gr.update(visible=False)]
-        )
+        return {
+            stepper_block: gr.update(
+                value=stepper_html("Discussion avec les modèles", 2, 4)
+            ),
+            vote_area: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_area: gr.update(visible=True),
+            buttons_footer: gr.update(visible=False),
+        }
 
     @supervote_send_btn.click(
         inputs=(
