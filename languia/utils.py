@@ -166,7 +166,6 @@ def get_chosen_model(which_model_radio):
         chosen_model = which_model_radio
     else:
         chosen_model = None
-        raise (ValueError)
     return chosen_model
 
 
