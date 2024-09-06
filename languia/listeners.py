@@ -178,6 +178,7 @@ def register_listeners():
         )
         conversations = [conversation_a, conversation_b]
 
+
         # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
         # if flagged:
@@ -197,8 +198,8 @@ def register_listeners():
             if len(conversations[i].messages) == 1:
                 app_state.original_user_prompt = text
                 logger.debug(
-                    "Saving original prompt: " + app_state.original_user_prompt,
-                    extra={"request": request},
+                "Saving original prompt: " + app_state.original_user_prompt,
+                extra={"request": request},
                 )
             # Added in individual bot_message yielding function
             # # Empty assistant message is needed to be editable by yielding received text afterwards
@@ -365,17 +366,17 @@ def register_listeners():
 
         if hasattr(app_state, "crashed") and app_state.crashed:
             logger.error(
-                "model crash detected, keeping prompt",
-                extra={"request": request},
-            )
+                    "model crash detected, keeping prompt",
+                    extra={"request": request},
+                )
             app_state.crashed = False
             model_left, model_right = get_battle_pair(
-                config.models,
-                BATTLE_TARGETS,
-                config.outage_models,
-                SAMPLING_WEIGHTS,
-                SAMPLING_BOOST_MODELS,
-            )
+                    config.models,
+                    BATTLE_TARGETS,
+                    config.outage_models,
+                    SAMPLING_WEIGHTS,
+                    SAMPLING_BOOST_MODELS,
+                )
             conversation_a = ConversationState(model_name=model_left)
             conversation_b = ConversationState(model_name=model_right)
 
@@ -536,15 +537,7 @@ def register_listeners():
         ] + new_supervote_sliders
 
     # Step 3
-    @both_equal_link.click(
-        inputs=[],
-        outputs=[supervote_send_btn],
-        api_name=False,
-    )
-    def both_equal():
-        return {
-            supervote_send_btn: gr.update(interactive=True),
-        }
+    # @both_equal_link.click(inputs=[])
 
     @return_btn.click(
         inputs=[],
@@ -583,7 +576,7 @@ def register_listeners():
             + (supervote_sliders)
             + [comments_text]
         ),
-        outputs=[
+         outputs=[
             stepper_block,
             vote_area,
             supervote_area,
@@ -625,72 +618,72 @@ def register_listeners():
         # quiz_modal.visible = True
         # return Modal(visible=True)
 
-        # @send_poll_btn.click(
-        #     inputs=[
-        #         conversations[0],
-        #         conversations[1],
-        #         which_model_radio,
-        #         chatbot_use,
-        #         gender,
-        #         age,
-        #         profession,
-        #     ],
-        #     outputs=[
-        #         quiz_modal,
-        #         stepper_block,
-        #         vote_area,
-        #         supervote_area,
-        #         feedback_row,
-        #         results_area,
-        #         buttons_footer,
-        #     ],
-        #     api_name=False,
-        # )
-        # @skip_poll_btn.click(
-        #     inputs=[
-        #         conversations[0],
-        #         conversations[1],
-        #         which_model_radio,
-        #         chatbot_use,
-        #         gender,
-        #         age,
-        #         profession,
-        #     ],
-        #     outputs=[
-        #         quiz_modal,
-        #         stepper_block,
-        #         vote_area,
-        #         supervote_area,
-        #         feedback_row,
-        #         results_area,
-        #         buttons_footer,
-        #     ],
-        #     api_name=False,
-        # )
-        # def send_poll(
-        #     conversation_a,
-        #     conversation_b,
-        #     which_model_radio,
-        #     chatbot_use,
-        #     gender,
-        #     age,
-        #     profession,
-        #     request: gr.Request,
-        #     event: gr.EventData,
-        # ):
-        #     confirmed = event.target.value == "Envoyer"  # Not "Passer"
+    # @send_poll_btn.click(
+    #     inputs=[
+    #         conversations[0],
+    #         conversations[1],
+    #         which_model_radio,
+    #         chatbot_use,
+    #         gender,
+    #         age,
+    #         profession,
+    #     ],
+    #     outputs=[
+    #         quiz_modal,
+    #         stepper_block,
+    #         vote_area,
+    #         supervote_area,
+    #         feedback_row,
+    #         results_area,
+    #         buttons_footer,
+    #     ],
+    #     api_name=False,
+    # )
+    # @skip_poll_btn.click(
+    #     inputs=[
+    #         conversations[0],
+    #         conversations[1],
+    #         which_model_radio,
+    #         chatbot_use,
+    #         gender,
+    #         age,
+    #         profession,
+    #     ],
+    #     outputs=[
+    #         quiz_modal,
+    #         stepper_block,
+    #         vote_area,
+    #         supervote_area,
+    #         feedback_row,
+    #         results_area,
+    #         buttons_footer,
+    #     ],
+    #     api_name=False,
+    # )
+    # def send_poll(
+    #     conversation_a,
+    #     conversation_b,
+    #     which_model_radio,
+    #     chatbot_use,
+    #     gender,
+    #     age,
+    #     profession,
+    #     request: gr.Request,
+    #     event: gr.EventData,
+    # ):
+    #     confirmed = event.target.value == "Envoyer"  # Not "Passer"
 
-        #     save_profile(
-        #         conversation_a,
-        #         conversation_b,
-        #         which_model_radio,
-        #         chatbot_use,
-        #         gender,
-        #         age,
-        #         profession,
-        #         confirmed,
-        #         request,
-        #     )
+    #     save_profile(
+    #         conversation_a,
+    #         conversation_b,
+    #         which_model_radio,
+    #         chatbot_use,
+    #         gender,
+    #         age,
+    #         profession,
+    #         confirmed,
+    #         request,
+    #     )
 
         model_a = get_model_extra_info(
             conversation_a.model_name, config.models_extra_info

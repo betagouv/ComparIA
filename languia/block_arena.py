@@ -210,10 +210,7 @@ with gr.Blocks(
             ],
             show_label=False,
         )
-        both_equal_link = gr.Button(
-            elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
-            value="Les deux se valent",
-        )
+        # both_equal_link = gr.Button(value="Les deux se valent")
 
         with gr.Column(
             visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-6w fr-mb-16w"
