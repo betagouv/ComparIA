@@ -607,7 +607,7 @@ def register_listeners():
             category = app_state.category
         else:
             category = None
-        # FIXME: check input, sanitize it?
+
         vote_last_response(
             [conversation_a, conversation_b],
             which_model_radio,

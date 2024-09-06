@@ -362,7 +362,6 @@ def save_vote_to_db(data):
 def messages_to_dict_list(messages):
     return [{"role": message.role, "content": message.content} for message in messages]
 
-
 def vote_last_response(
     conversations,
     which_model_radio,
@@ -394,8 +393,7 @@ def vote_last_response(
 
     t = datetime.datetime.now()
 
-    # TODO: Put opening_prompt in app_state?
-    opening_prompt = str(get_opening_prompt(conversations[0]))
+    opening_prompt = conversations[0].messages[0].content
     data = {
         "tstamp": str(t),
         "model_a_name": conversations[0].model_name,
