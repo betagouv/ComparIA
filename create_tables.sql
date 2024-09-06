@@ -18,6 +18,7 @@ CREATE TABLE
         chosen_model_name VARCHAR(255),
         both_equal BOOLEAN NOT NULL,
         opening_prompt text NOT NULL,
+        -- intensity VARCHAR(255),
         conversation_a JSONB NOT NULL,
         conversation_b JSONB NOT NULL,
         turns INT,
