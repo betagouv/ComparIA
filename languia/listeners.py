@@ -130,14 +130,13 @@ def register_listeners():
             f"set_guided_prompt: {category}",
             extra={"request": request},
         )
-        return [
-            gr.update(visible=True),
-            gr.update(value=prompt),
-            # gr.update(visible=True),
-            gr.update(elem_classes="fr-container send-area-enabled"),
-            gr.update(interactive=True),
-            gr.update(visible=False),
-        ]
+        return {
+            send_area: gr.update(visible=True),
+            textbox: gr.update(value=prompt),
+            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
+            shuffle_btn: gr.update(interactive=True),
+            free_mode_btn: gr.update(visible=False),
+        }
 
         # .then(
         #         js="""
