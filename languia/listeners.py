@@ -107,14 +107,14 @@ def register_listeners():
             extra={"request": request},
         )
 
-        return [
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(elem_classes="fr-container send-area-enabled"),
-            gr.update(interactive=False),
+        return {
+            free_mode_btn: gr.update(visible=False),
+            send_area: gr.update(visible=True),
+            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
+            shuffle_btn: gr.update(interactive=False),
             # Don't remove or autofocus won't work
-            gr.skip(),
-        ]
+            textbox: gr.skip(),
+        }
 
     # Step 1.1
     @guided_cards.change(
@@ -130,14 +130,13 @@ def register_listeners():
             f"set_guided_prompt: {category}",
             extra={"request": request},
         )
-        return [
-            gr.update(visible=True),
-            gr.update(value=prompt),
-            # gr.update(visible=True),
-            gr.update(elem_classes="fr-container send-area-enabled"),
-            gr.update(interactive=True),
-            gr.update(visible=False),
-        ]
+        return {
+            send_area: gr.update(visible=True),
+            textbox: gr.update(value=prompt),
+            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
+            shuffle_btn: gr.update(interactive=True),
+            free_mode_btn: gr.update(visible=False),
+        }
 
         # .then(
         #         js="""
@@ -323,36 +322,24 @@ def register_listeners():
             extra={"request": request},
         )
 
-        return (
-            [
-                gr.update(
-                    value="",
-                    placeholder="Continuer à discuter avec les deux modèles",
+        return {
+            textbox: gr.update(
+                value="",
+                placeholder="Continuer à discuter avec les deux modèles",
+            ),
+            stepper_block: gr.update(
+                value=stepper_html(
+                    "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
+                    2,
+                    4,
                 )
-            ]
-            # stepper_block
-            + [
-                gr.update(
-                    value=stepper_html(
-                        "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
-                        2,
-                        4,
-                    )
-                )
-            ]
-            # mode_screen
-            + [gr.update(visible=False)]
-            # chat_area
-            + [gr.update(visible=True)]
-            # send_btn
-            + [gr.update(interactive=False)]
-            # retry_btn
-            # + [gr.update(visible=True)]
-            # shuffle_btn
-            + [gr.update(visible=False)]
-            # conclude_btn
-            + [gr.update(visible=True, interactive=False)]
-        )
+            ),
+            mode_screen: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_btn: gr.update(interactive=False),
+            shuffle_btn: gr.update(visible=False),
+            conclude_btn: gr.update(visible=True, interactive=False),
+        }
 
     def check_answers(conversation_a, conversation_b, request: gr.Request):
 
@@ -482,24 +469,17 @@ def register_listeners():
             "advancing to vote area",
             extra={"request": request},
         )
-        # return {
-        #     conclude_area: gr.update(visible=False),
-        #     chat_area: gr.update(visible=False),
-        #     send_area: gr.update(visible=False),
-        #     vote_area: gr.update(visible=True),
-        # }
-        # [conclude_area, chat_area, send_area, vote_area]
-        return [
-            gr.update(
+        return {
+            stepper_block: gr.update(
                 value=stepper_html(
                     "Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4
                 )
             ),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(visible=True),
-        ]
+            chat_area: gr.update(visible=False),
+            send_area: gr.update(visible=False),
+            vote_area: gr.update(visible=True),
+            buttons_footer: gr.update(visible=True),
+        }
 
     @which_model_radio.change(
         inputs=[which_model_radio],
@@ -554,19 +534,15 @@ def register_listeners():
             "clicked return",
             extra={"request": request},
         )
-        return (
-            [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
-            # vote_area
-            + [gr.update(visible=False)]
-            # supervote_area
-            # + [gr.update(visible=False)]
-            # chat_area
-            + [gr.update(visible=True)]
-            # send_area
-            + [gr.update(visible=True)]
-            # buttons_footer
-            + [gr.update(visible=False)]
-        )
+        return {
+            stepper_block: gr.update(
+                value=stepper_html("Discussion avec les modèles", 2, 4)
+            ),
+            vote_area: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_area: gr.update(visible=True),
+            buttons_footer: gr.update(visible=False),
+        }
 
     @supervote_send_btn.click(
         inputs=(
@@ -714,29 +690,20 @@ def register_listeners():
             model_a_tokens=model_a_tokens,
             model_b_tokens=model_b_tokens,
         )
-        return [
-            # Modal(visible=False),
-            # Comment: this is very ugly but I couldn't get the nicer method of updating named blocks to work.
-            # As a ref:
-            # stepper_block,
-            # vote_area,
-            # supervote_area,
-            # feedback_row,
-            # results_area,
-            # buttons_footer,
-            gr.update(
+        return {
+            stepper_block: gr.update(
                 value=stepper_html(
                     "Découvrez les modèles d'IA générative avec lesquels vous venez de discuter",
                     4,
                     4,
                 )
             ),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(visible=True, value=reveal_html),
-            gr.update(visible=False),
-        ]
+            vote_area: gr.update(visible=False),
+            supervote_area: gr.update(visible=False),
+            feedback_row: gr.update(visible=True),
+            results_area: gr.update(visible=True, value=reveal_html),
+            buttons_footer: gr.update(visible=False)
+        }
 
     # gr.on(
     #     triggers=retry_modal_btn.click,
