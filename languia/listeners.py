@@ -322,36 +322,24 @@ def register_listeners():
             extra={"request": request},
         )
 
-        return (
-            [
-                gr.update(
-                    value="",
-                    placeholder="Continuer à discuter avec les deux modèles",
+        return {
+            textbox: gr.update(
+                value="",
+                placeholder="Continuer à discuter avec les deux modèles",
+            ),
+            stepper_block: gr.update(
+                value=stepper_html(
+                    "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
+                    2,
+                    4,
                 )
-            ]
-            # stepper_block
-            + [
-                gr.update(
-                    value=stepper_html(
-                        "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
-                        2,
-                        4,
-                    )
-                )
-            ]
-            # mode_screen
-            + [gr.update(visible=False)]
-            # chat_area
-            + [gr.update(visible=True)]
-            # send_btn
-            + [gr.update(interactive=False)]
-            # retry_btn
-            # + [gr.update(visible=True)]
-            # shuffle_btn
-            + [gr.update(visible=False)]
-            # conclude_btn
-            + [gr.update(visible=True, interactive=False)]
-        )
+            ),
+            mode_screen: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_btn: gr.update(interactive=False),
+            shuffle_btn: gr.update(visible=False),
+            conclude_btn: gr.update(visible=True, interactive=False),
+        }
 
     def check_answers(conversation_a, conversation_b, request: gr.Request):
 
