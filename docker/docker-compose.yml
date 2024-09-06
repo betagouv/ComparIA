@@ -28,3 +28,12 @@ services:
     volumes:
       - ../register-api-endpoint-file.json:/register-api-endpoint-file.json
     command: ["uvicorn", "controller:app", "--host", "0.0.0.0", "--port", "21001", "--reload"]
+  languia-db:
+    env_file: .env
+    image: postgres:latest
+    volumes:
+      - ./db:/data
+    environment:
+      - POSTGRES_DB=${LANGUIA_DB_NAME}
+      - POSTGRES_USER=${LANGUIA_DB_USER}
+      - POSTGRES_PASSWORD=${LANGUIA_DB_PASSWORD}

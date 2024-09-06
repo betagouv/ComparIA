@@ -1,3 +1,7 @@
+"""
+Utilities to communicate with different APIs
+"""
+
 import os
 import logging
 
@@ -22,7 +26,7 @@ import time
 
 
 def get_api_provider_stream_iter(
-    conv,
+    messages,
     model_name,
     model_api_dict,
     temperature,
@@ -30,11 +34,19 @@ def get_api_provider_stream_iter(
     max_new_tokens,
     state,
 ):
+    messages_dict = []
+    for message in messages:
+        if isinstance(message, ChatMessage):
+            messages_dict.append({
+                "role": message.role,
+                "content": message.content
+            })
+        else:
+            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
     if model_api_dict["api_type"] == "openai":
-        prompt = conv.to_openai_api_messages()
         stream_iter = openai_api_stream_iter(
             model_name=model_api_dict["model_name"],
-            messages=prompt,
+            messages=messages_dict,
             temperature=temperature,
             top_p=top_p,
             max_new_tokens=max_new_tokens,
@@ -42,10 +54,9 @@ def get_api_provider_stream_iter(
             api_key=model_api_dict["api_key"],
         )
     elif model_api_dict["api_type"] == "vertex":
-        prompt = conv.to_openai_api_messages()
         stream_iter = vertex_api_stream_iter(
             model_name=model_api_dict["model_name"],
-            messages=prompt,
+            messages=messages_dict,
             temperature=temperature,
             top_p=top_p,
             max_new_tokens=max_new_tokens,
@@ -73,36 +84,30 @@ def openai_api_stream_iter(
     client = openai.OpenAI(
         base_url=api_base or "https://api.openai.com/v1",
         api_key=api_key,
-        timeout=180,
+        #         timeout=WORKER_API_TIMEOUT,
+        timeout=5,
+        # max_retries=
     )
 
-    # Make requests for logging
-    # text_messages = messages
-
-    # gen_params = {
-    #     "model": model_name,
-    #     "prompt": text_messages,
-    #     "temperature": temperature,
-    #     "top_p": top_p,
-    #     "max_new_tokens": max_new_tokens,
-    # }
-    # logging.info(f"==== request ====\n{gen_params}")
-
+    #
     res = client.chat.completions.create(
         model=model_name,
         messages=messages,
         temperature=temperature,
         max_tokens=max_new_tokens,
         stream=True,
+        stream_options={"include_usage": True},
+        # Not available like this
+        # top_p=top_p,
     )
     text = ""
+    output_tokens = 0
     for chunk in res:
         if len(chunk.choices) > 0:
             text += chunk.choices[0].delta.content or ""
-            data = {
-                "text": text,
-                "error_code": 0,
-            }
+            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
+                output_tokens += chunk.usage.completion_tokens
+            data = {"text": text, "error_code": 0, "output_tokens": output_tokens}
             yield data
 
 
@@ -176,13 +181,30 @@ def vertex_api_stream_iter(
         temperature=temperature,
         max_tokens=max_new_tokens,
         stream=True,
+        stream_options={"include_usage": True},
     )
     text = ""
     for chunk in res:
         if len(chunk.choices) > 0:
-            text += chunk.choices[0].delta.content.replace("\n", "<br />") or ""
+            if hasattr(chunk.choices[0], "delta"):
+                content = chunk.choices[0].delta.content
+                # llama3.1 405b bugs
+                logger = logging.getLogger("languia")
+                if content and model_name=="meta/llama3-405b-instruct-maas":
+                    logger.debug("fixing llama3 405b bug at google")
+                    content = content.replace("\\n", "\n")
+                    if str.startswith(content, "assistant"):
+                        # strip first 9 letters ("assistant")
+                        content = content[9:]
+                if content and model_name=="google/gemini-1.5-pro-001":
+                    logger.debug("fixing gemini markdown title bug at google")
+                    content = content.replace("<br />", "\n")
+            else:
+                logger.warning("chunk.choices[0] had no delta:")
+                logger.warning(chunk.choices[0])
+                content = ""
+            text += content
             data = {
-                # Processing \n for Llama3.1-405B
                 "text": text,
                 "error_code": 0,
             }
@@ -207,3 +229,47 @@ def vertex_api_stream_iter(
     #         "error_code": 0,
     #     }
     #     yield data
+
+
+# Not used
+# def model_worker_stream_iter(
+#     conv,
+#     model_name,
+#     worker_addr,
+#     prompt,
+#     temperature,
+#     repetition_penalty,
+#     top_p,
+#     max_new_tokens,
+#     images,
+# ):
+#     # Make requests
+#     gen_params = {
+#         "model": model_name,
+#         "prompt": prompt,
+#         "temperature": temperature,
+#         "repetition_penalty": repetition_penalty,
+#         "top_p": top_p,
+#         "max_new_tokens": max_new_tokens,
+#         "stop": conv.stop_str,
+#         "stop_token_ids": conv.stop_token_ids,
+#         "echo": False,
+#     }
+
+#     logger.info(f"==== request ====\n{gen_params}")
+
+#     if len(images) > 0:
+#         gen_params["images"] = images
+
+#     # Stream output
+#     response = requests.post(
+#         worker_addr + "/worker_generate_stream",
+#         headers=config.headers,
+#         json=gen_params,
+#         stream=True,
+#         timeout=WORKER_API_TIMEOUT,
+#     )
+#     for chunk in response.iter_lines(decode_unicode=False, delimiter=b"\0"):
+#         if chunk:
+#             data = json.loads(chunk.decode())
+#             yield data

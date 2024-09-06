@@ -1,24 +1,11 @@
 import os
 import sentry_sdk
 import json
+import tomli
 from slugify import slugify
 from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 
-from languia.utils import build_logger
 import datetime
-from random import randrange
-
-t = datetime.datetime.now()
-random = randrange(10000)
-hostname = os.uname().nodename
-log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
-logger = build_logger(log_filename)
-
-num_sides = 2
-enable_moderation = False
-
-if os.getenv("GIT_COMMIT"):
-    git_commit = os.getenv("GIT_COMMIT")
 
 env_debug = os.getenv("LANGUIA_DEBUG")
 
@@ -29,6 +16,81 @@ if env_debug:
         debug = False
 else:
     debug = False
+
+t = datetime.datetime.now()
+hostname = os.uname().nodename
+log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
+import logging
+
+LOGDIR = os.getenv("LOGDIR", "./data")
+
+from logging.handlers import WatchedFileHandler
+
+from languia.utils import JSONFormatter, PostgresHandler
+
+if any(
+    os.getenv(var)
+    for var in [
+        "LANGUIA_DB_NAME",
+        "LANGUIA_DB_USER",
+        "LANGUIA_DB_PASSWORD",
+        "LANGUIA_DB_HOST",
+        "LANGUIA_DB_PORT",
+    ]
+):
+    db = {
+        "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
+        "user": os.getenv("LANGUIA_DB_USER", "languia"),
+        "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
+        "host": os.getenv("LANGUIA_DB_HOST", "languia-db"),
+        "port": os.getenv("LANGUIA_DB_PORT", 5432),
+    }
+else:
+    db = None
+
+
+def build_logger(logger_filename):
+    # TODO: log "funcName"
+    logger = logging.getLogger("languia")
+    if debug:
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.INFO)
+
+    file_formatter = JSONFormatter(
+        '{"time":"%(asctime)s", "name": "%(name)s", \
+        "level": "%(levelname)s", "message": "%(message)s"}',
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    # postgres_formatter = JSONFormatter(
+    #     '{"time":"%(asctime)s", "name": "%(name)s", \
+    #     "level": "%(levelname)s", "message": "%(message)s"}',
+    #     datefmt="%Y-%m-%d %H:%M:%S",
+    # )
+
+    if LOGDIR:
+        os.makedirs(LOGDIR, exist_ok=True)
+        filename = os.path.join(LOGDIR, logger_filename)
+        file_handler = WatchedFileHandler(filename, encoding="utf-8")
+        file_handler.setFormatter(file_formatter)
+        logger.addHandler(file_handler)
+
+    if db:
+        postgres_handler = PostgresHandler(db)
+        # postgres_handler.setFormatter(postgres_formatter)
+        logger.addHandler(postgres_handler)
+
+    return logger
+
+
+logger = build_logger(log_filename)
+
+num_sides = 2
+enable_moderation = False
+
+if os.getenv("GIT_COMMIT"):
+    git_commit = os.getenv("GIT_COMMIT")
+
 
 if not debug:
     assets_absolute_path = "/app/assets"
@@ -101,26 +163,23 @@ arena_head_js = (
 <script type="text/javascript" nomodule src="file=assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
-    + """
-<script type="text/javascript">
-
-    function handleRetryOrRedirect(event) {
-        // Prevent the default action of the link
-        event.preventDefault();
-
-        // Look for the retry button
-        var retryButton = document.getElementById('retry-modal-btn');
-
-        if (retryButton) {
-        // If the retry button exists, simulate a click on it
-        retryButton.click();
-        } else {
-        // If the retry button does not exist, redirect to the main page
-        window.location.href = event.target.href || event.target.closest('a').href;
-        }
-    }
-</script>
-"""
+    #     + """
+    # <script type="text/javascript">
+    #     function handleRetryOrRedirect(event) {
+    #         // Prevent the default action of the link
+    #         event.preventDefault();
+    #         // Look for the retry button
+    #         var retryButton = document.getElementById('retry-modal-btn');
+    #         if (retryButton) {
+    #         // If the retry button exists, simulate a click on it
+    #         retryButton.click();
+    #         } else {
+    #         // If the retry button does not exist, redirect to the main page
+    #         window.location.href = event.target.href || event.target.closest('a').href;
+    #         }
+    #     }
+    # </script>
+    # """
 )
 
 site_head_js = (
@@ -153,14 +212,15 @@ api_endpoint_info = json.load(open(register_api_endpoint_file))
 
 # TODO: to CSV
 
-all_models_extra_info_json = {
+all_models_extra_info_toml = {
     slugify(k.lower()): v
-    for k, v in json.load(open("./models-extra-info.json")).items()
+    for k, v in tomli.load(open("./models-extra-info.toml", "rb")).items()
 }
-
+# TODO: refacto?
 models_extra_info = [
-    build_model_extra_info(model, all_models_extra_info_json) for model in models
+    build_model_extra_info(model, all_models_extra_info_toml) for model in models
 ]
+
 models_extra_info.sort(key=lambda x: x["simple_name"])
 
 headers = {"User-Agent": "FastChat Client"}
@@ -435,21 +495,21 @@ prompts_table = {
         # Recettes
         "Pouvez-vous fournir une recette détaillée pour réaliser un Poulet Yassa, plat emblématique du Sénégal, en utilisant des ingrédients frais et des épices traditionnelles ?",
         "Quelle est la meilleure façon de préparer une bouillabaisse traditionnelle de Marseille, avec des poissons variés, des crustacés, et un bouillon parfumé aux herbes de Provence ?",
-        "Comment cuisiner le Riz djon-djon, un plat haïtien à base de riz noir, champignons, crevettes et épices locales, pour capturer les saveurs authentiques d’Haïti ?",
-        "Pouvez-vous expliquer comment réaliser une fondue au fromage suisse, en choisissant les bons types de fromage et en respectant les techniques de cuisson pour obtenir une texture parfaite ?",
-        "Quelle est la recette traditionnelle des Accras de morue des Antilles, en combinant la morue salée, les épices créoles, et une pâte légère pour un apéritif croustillant ?",
-        "Comment préparer un Tiebou Dieune, le plat national sénégalais, en choisissant les meilleurs poissons, légumes, et en maîtrisant la cuisson du riz parfumé ?",
-        "Pouvez-vous fournir une recette complète pour réaliser un Ragoût de cabri réunionnais, en utilisant des épices locales et des techniques de cuisson traditionnelles pour un plat riche en saveurs ?",
+        "Comment cuisiner le Riz djon-djon, un plat haïtien à base de riz noir, champignons, crevettes et épices locales ?",
+        "Pouvez-vous expliquer comment réaliser une fondue au fromage suisse, en choisissant les bons types de fromage et en respectant les techniques de cuisson ?",
+        "Quelle est la recette traditionnelle des Accras de morue des Antilles, en combinant la morue salée, les épices créoles, et une pâte légère pour l'apéritif ?",
+        "Comment préparer un Tiebou Dieune, le plat sénégalais, en choisissant les meilleurs poissons, légumes, et en maîtrisant la cuisson du riz ?",
+        "Pouvez-vous fournir une recette complète pour réaliser un Ragoût de cabri réunionnais, en utilisant des épices locales et des techniques de cuisson traditionnelles ?",
         "Comment cuisiner un Mafé malien, un ragoût de viande ou de poulet à la sauce d’arachide, en respectant les traditions culinaires du Mali et en équilibrant les saveurs sucrées et salées ?",
         "Quelle est la meilleure méthode pour préparer une tarte flambée (flammekueche) alsacienne, en travaillant la pâte fine, et en choisissant les garnitures classiques comme l'oignon et le lard ?",
         "Pouvez-vous détailler une recette de Poulet aux arachides, un plat typique du Bénin, en utilisant du beurre de cacahuète, des épices, et des techniques de cuisson locales ?",
-        "Comment préparer du Saka-Saka, un plat congolais à base de feuilles de manioc pilées, en ajoutant du poisson fumé et des épices pour un repas traditionnel et nourrissant ?",
+        "Comment préparer du Saka-Saka, un plat congolais à base de feuilles de manioc pilées, en ajoutant du poisson fumé et des épices ?",
         "Quelle est la recette classique de la Quiche lorraine, en utilisant une pâte brisée maison, des lardons, des œufs et de la crème?",
         "Pouvez-vous expliquer comment réaliser un Foutou banane ivoirien, un accompagnement traditionnel à base de banane plantain et d’igname, souvent servi avec une sauce graine ou arachide ?",
-        "Comment préparer un Gâteau basque traditionnel, en choisissant entre la crème pâtissière et la confiture de cerises noires pour la garniture, et en respectant les techniques de pâtisserie du Pays Basque ?",
+        "Comment préparer un Gâteau basque, en choisissant entre la crème pâtissière et la confiture de cerises noires pour la garniture, et en respectant les techniques de pâtisserie du Pays Basque ?",
         "Donne moi la recette de pâte à crêpes pour 6 personnes",
-        "Comment préparer une authentique poutine québécoise à la maison, avec des frites croustillantes, du fromage en grains et une sauce brune savoureuse ?",
-        "Rappelle moi la recette de la quiche lorraine et dis m'en plus sur l'histoire de ce plat (sois concis!)",
+        "Comment préparer une poutine québécoise, avec des frites croustillantes, du fromage en grains et une sauce brune savoureuse ?",
+        "Rappelle moi la recette de la quiche lorraine et dis m'en plus sur l'histoire de ce plat (sois concis !)",
         "Propose moi une bonne recette de poulet basquaise et raconte moi au passage l’histoire de ce plat",
         "Je cherche des recettes à base de figue, peux-tu m’aider?",
         "Nous sommes en octobre j’habite à Pointe à Pitre, propose moi une recette locale avec des fruits et légumes de saison",
@@ -457,11 +517,11 @@ prompts_table = {
         "Pouvez-vous recommander des films francophones qui traitent de la décolonisation en Afrique, en Asie ou aux Caraïbes, en offrant des perspectives historiques et critiques ?",
         "Quels sont les ouvrages majeurs de la littérature féministe écrits par des autrices francophones, qui explorent les enjeux de genre dans différents contextes culturels ?",
         "Pouvez-vous me suggérer des albums de musique fusion sénégalaise qui combinent des éléments de la musique traditionnelle avec des genres modernes comme le jazz ou le hip-hop ?",
-        "Quels sont les meilleurs films d'animation français qui ont été primés à l'international?",
-        "Pouvez-vous recommander des romans écrits par des auteurs francophones qui traitent de l’expérience de l’immigration en Europe, avec un regard critique et humain ?",
+        "Quels sont les films d'animation français qui ont été primés à l'international ?",
+        "Pouvez-vous recommander des romans écrits par des auteurs francophones qui traitent de l’expérience de l’immigration en Europe ?",
         "Quelles sont les œuvres incontournables de la musique électronique belge, avec un focus sur les artistes qui ont influencé la scène musicale en Belgique et à l’international ?",
         "Quels films africains francophones ont remporté des prix dans des festivals internationaux ?",
-        "Pouvez-vous me suggérer des recueils de poésie haïtienne contemporaine qui explorent les thèmes de l’identité, de la résilience, et de l’histoire d’Haïti ?",
+        "Pouvez-vous me suggérer des recueils de poésie haïtienne contemporaine en précisant les thèmes explorés ?",
         "Quelles sont les chansons les plus marquantes créées par des artistes de la diaspora maghrébine en France, qui mélangent musique traditionnelle et influences modernes ?",
         "Pouvez-vous recommander des films classiques du cinéma suisse francophone, qui capturent les paysages, les histoires, et les questions sociales du pays ?",
         "Quels romans francophones belges mettent en lumière la diversité culturelle en Belgique, en explorant les identités multiples et les défis de la coexistence ?",
@@ -474,7 +534,7 @@ prompts_table = {
         "Quelles sont les chansons ou albums marquants produits par des artistes de la diaspora africaine en France, qui reflètent les influences hybrides entre l’Afrique et l’Europe ?",
         "Pouvez-vous me suggérer des films qui explorent l’histoire coloniale dans les Antilles françaises?",
         "Pouvez-vous recommander des artistes ou des albums de musique congolaise contemporaine, en particulier ceux qui réinventent la rumba ou explorent des genres modernes comme l’afrobeat ?",
-        "Quels sont les livres pour jeunes adultes les plus populaires et influents écrits par des auteurs africains francophones, qui abordent des thèmes pertinents pour les jeunes d’aujourd’hui ?",
+        "Quels sont les livres influents écrits par des auteurs africains francophones, qui abordent des thèmes pertinents pour les jeunes d’aujourd’hui ?",
         "Pouvez-vous me suggérer des chansons haïtiennes qui sont connues pour leur contenu engagé et leur rôle dans les mouvements de protestation et de revendication sociale ?",
         "Je prévois une soirée cinéma en famille. Pouvez-vous me suggérer des films réconfortants et adaptés à tous les âges qui plairont à toute la famille ?",
         "Je suis passionné de non-fiction et je souhaite en apprendre davantage sur un sujet spécifique. Quels sont les livres bien documentés et informatifs que vous me recommanderiez sur [insérer le sujet] ?",
@@ -547,7 +607,7 @@ prompts_table = {
         "Quoque ch'est qu'te berdoules ? Réponds en Chtimi.",
         "C’est quoi les mots qui font que t’as l’air 100% québécois, tabarnak ?",
         "Comment « tèt chaje » fait passer ton stress haïtien pour du cool ?",
-        """Explique moi cette strophe de la chanson "Wesh alors" de Jul: "Wesh le sang, wesh la honda / Mes sons tournent à la Jonque' / Tu m'as trahis mais t'es un bon gars / J'suis en fumette mais j'me trompe pas”""",
+        """Explique moi cette strophe de la chanson "Wesh alors" de Jul: "Wesh le sang, wesh la honda / Mes sons tournent à la Jonque' / Tu m'as trahi mais t'es un bon gars / J'suis en fumette mais j'me trompe pas”""",
         "En quoi l'argot belge, avec des expressions comme « zwanze », diffère-t-il du reste de la francophonie ?",
         "Quels sont les contextes d’utilisation des expressions « wakh dem » et « jaay foné » à Dakar ?",
         "Comment l’expression « être un pive » s’intègre-t-elle dans l’argot suisse romand et que signifie-t-elle exactement ?",
@@ -565,22 +625,19 @@ prompts_table = {
         """Explique le terme "FOMO". Imagine que tu es de la génération Z et que tu expliques ce terme à tes grands-parents. Détaille l'acronyme, explique son origine et donne quelques exemples d'utilisation. Sois concis.""",
     ],
     "conseils": [
-        "Comment adapter une alimentation sportive dans un pays où la viande est majoritairement consommée crue ?",
         "Quels plats traditionnels sont les plus adaptés à un régime équilibré après une séance de musculation ?",
         "Quels sont les avantages et inconvénients de la consommation de manioc dans un régime sportif ?",
         "Comment adapter son régime alimentaire à un entraînement en altitude dans les Alpes françaises ?",
-        "Quels sont les superaliments les plus efficaces pour augmenter l'endurance en marathon au Sénégal ?",
-        "Quelle est la meilleure approche nutritionnelle pour un programme de musculation intense en Belgique ?",
-        "Quel est le rôle du foufou dans un régime sportif en République démocratique du Congo ?",
+        "Quels sont les superaliments les plus efficaces pour augmenter l'endurance en marathon ?",
+        "Quelle est la meilleure approche nutritionnelle pour un programme de musculation intense ?",
         "Quels plats à base de poisson sont les plus recommandés pour la récupération musculaire ?",
-        "Quels sont les meilleurs snacks pour un sportif en déplacement en Afrique de l’ouest ?",
+        "Quels sont les meilleurs snacks pour un sportif ?",
         "J'ai besoin d’améliorer ma condition physique. Peux-tu me proposer un programme d’entraînement simple sur 7 jours ?",
         "Je souhaite perdre du poids en adoptant une alimentation équilibrée. Peux-tu me donner un plan de repas pour une semaine ?",
         "Je veux augmenter ma masse musculaire. Pourrais-tu me recommander des exercices de musculation à faire chez moi ?",
         "Je suis débutant en course à pied. Peux-tu me proposer un programme de course à pied pour les 30 prochains jours ?",
-        "Je suis marathonien(ne) en Côte d'Ivoire et je cherche des conseils sur la meilleure façon d'adapter mon alimentation pendant la saison chaude et humide. Quels sont les aliments les plus hydratants et nutritifs ?",
+        "Je suis marathonien(ne) et je cherche des conseils sur la meilleure façon d'adapter mon alimentation. Quels sont les aliments les plus hydratants et nutritifs ?",
         "Quels sont les avantages et inconvénients de la consommation de riz dans un régime sportif ?",
-        "Quels plats locaux privilégier pour un régime équilibré lors d’un voyage en Europe ?",
         "Écris un guide d'initiation à la natation. Tu es un expert compétent et tu sais quelles informations donner aux personnes qui découvrent cette activité. Détaille ce qu'elles doivent savoir pour commencer. Sois concis.",
         "Écris un guide d'initiation à la course à pied. Tu es un expert compétent et tu sais quelles informations donner aux personnes qui découvrent cette activité. Détaille ce qu'elles doivent savoir pour commencer. Sois concis.",
     ],

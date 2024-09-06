@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from typing import List, Dict
 import asyncio
@@ -6,9 +7,20 @@ import time
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
+import traceback
+
+import google.auth
+import google.auth.transport.requests
+import openai
+
+import os
+from typing import Dict
+import json
+
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
+app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 # Outage is now a dictionary with time_of_outage and model_name
 outages: List[Dict[str, str]] = []
@@ -16,20 +28,21 @@ outages: List[Dict[str, str]] = []
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
 
+
 @app.post("/outages/", status_code=201)
-async def create_outage(model_name: str):
+async def create_outage(model_name: str, reason: str = None):
     outage = {
         "detection_time": datetime.now().isoformat(),
         "model_name": model_name,
+        "reason": reason,
     }
 
     # Check if the model name already exists in the outages list
     existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
 
     if existing_outage:
-        existing_outage["detection_time"] = outage["detection_time"]
-    else:
-        outages.append(outage)
+        await remove_outage(model_name)
+    outages.append(outage)
     return outage
 
 
@@ -62,89 +75,117 @@ async def remove_outage(model_name: str):
     raise HTTPException(status_code=404, detail="Model not found in outages")
 
 
-import os
-import openai
-from typing import Dict
-import json
-
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
     register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
 else:
     register_api_endpoint_file = "register-api-endpoint-file.json"
 
-api_endpoint_info = json.load(open(register_api_endpoint_file))
+models = json.load(open(register_api_endpoint_file))
+
+
 @app.get("/outages/{model_name}")
 async def test_model(model_name):
 
     # Log the outage test
-    logging.info(
-        f"Testing outage: {model_name} "
-    )
+    logging.info(f"Testing model: {model_name} ")
 
     # Define test parameters
     test_message = "Say 'this is a test'."
     temperature = 1
     top_p = 1
     max_new_tokens = 10
-
-
-# if api_endpoint_info[model_name]["api_type"] == "openai"
+    stream = False
 
     try:
         # Initialize the OpenAI client
-        api_key = api_endpoint_info[model_name]["api_key"]
-        api_base = api_endpoint_info[model_name]["api_base"]
+        api_type = models[model_name]["api_type"]
+        api_base = models[model_name]["api_base"]
+
+        if api_type == "vertex":
+            if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+                logging.warn("No Google creds detected!")
+
+            # Programmatically get an access token
+            creds, project = google.auth.default(
+                scopes=["https://www.googleapis.com/auth/cloud-platform"]
+            )
+            auth_req = google.auth.transport.requests.Request()
+            creds.refresh(auth_req)
+            # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
+            api_key = creds.token
+        else:
+            api_key = models[model_name]["api_key"]
+            
         client = openai.OpenAI(
             base_url=api_base,
             api_key=api_key,
-            timeout=180,
+            timeout=10,
         )
         # Send a test message to the OpenAI API
         res = client.chat.completions.create(
-            model=api_endpoint_info[model_name]["model_name"],
+            model=models[model_name]["model_name"],
             messages=[{"role": "user", "content": test_message}],
             temperature=temperature,
             max_tokens=max_new_tokens,
-            stream=True,
+            # Test without streaming
+            stream=stream,
         )
 
         # Verify the response
         text = ""
-        for chunk in res:
-            if len(chunk.choices) > 0:
-                text += chunk.choices[0].delta.content or ""
-                break
+        if stream:
+            for chunk in res:
+                if chunk.choices:
+                    text += chunk.choices[0].delta.content or ""
+                    break
+        else:
+            if res.choices:
+                text = res.choices[0].message.content or ""
 
         # Check if the response is successful
         if text:
             logging.info(f"Test successful: {model_name}")
-            logging.info(f"Removing {model_name} from outage list")
-            await remove_outage(model_name)
+            if any(outage["model_name"] == model_name for outage in outages):
+                logging.info(f"Removing {model_name} from outage list")
+                await remove_outage(model_name)
+                return {
+                    "success": "true",
+                    "message": "Removed model from outages list.",
+                    "response": text,
+                }
+            return {"success": "true", "message": "Model responded: " + str(text)}
 
-            return {"success": "true", "error_message": ""}
         else:
+            reason = f"No content from api for model {model_name}"
             logging.error(f"Test failed: {model_name}")
-            await create_outage(model_name)
-            return {"success": "false", "error_message": "No response from OpenAI API"}
+            logging.error(reason)
+            await create_outage(model_name, reason)
+            return {"success": "false", "error_message": reason}
 
     except Exception as e:
         logging.error(f"Error: {model_name}, {str(e)}")
-        
-        outage = await create_outage(model_name)
 
-        return {"success": "false", "error_message": str(e)}
+        stacktrace = traceback.print_exc()
+        _outage = await create_outage(model_name, e)
 
-
-async def scheduled_outage_tests():
-    while True:
-        for outage in outages:
-            asyncio.create_task(test_model(outage['model_name']))
-        await asyncio.sleep(600)  # Test every 10 minutes (600 seconds)
+        return {"success": "false", "reason": str(e), "stacktrace": stacktrace}
 
 
-@app.get("/", response_class=HTMLResponse, )
+# async def scheduled_outage_tests():
+#     while True:
+#         # for model in models:
+#         for outage in outages:
+#             asyncio.create_task(test_model(outage["model_name"]))
+#         await asyncio.sleep(600)  # Test every 10 minutes (600 seconds)
+
+
+@app.get(
+    "/",
+    response_class=HTMLResponse,
+)
 async def index(request: Request):
+
     return templates.TemplateResponse(
         "outages.html",
-        {"outages": outages, "request": request},
+        {"outages": outages, "models": models, "request": request},
     )

@@ -31,12 +31,12 @@ logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 # Set authorization credentials
 auth = None
 
-# Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
-demo = demo.queue(
-    default_concurrency_limit=10,
-    status_update_rate=10,
-    api_open=False,
-)
+# TODO: Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
+# demo = demo.queue(
+#     # default_concurrency_limit=10,
+#     status_update_rate="auto",
+#     api_open=False,
+# )
 
 app = gr.mount_gradio_app(
     app,
@@ -80,6 +80,13 @@ async def models(request: Request):
 async def about(request: Request):
     return templates.TemplateResponse(
         "about.html",
+        {"request": request, "config": config},
+    )
+
+@app.get("/partenaires", response_class=HTMLResponse)
+async def partners(request: Request):
+    return templates.TemplateResponse(
+        "partners.html",
         {"request": request, "config": config},
     )
 

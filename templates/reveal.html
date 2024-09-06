@@ -62,7 +62,7 @@
                     </div>
                     <div class="fr-col-9 text-left">
                         <p><strong><span class="fr-text--xxl">{{ '%0.1f'|
-                                    format(impact.energy.value*100|float) | replace(".", ",") }}</span>Wh</strong>
+                                    format(impact.energy.value*1000|float) | replace(".", ",") }}</span>Wh</strong>
                         </p>
                         <p class="fr-text--xs">énergie conso.<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                 aria-describedby="energie-{{side}}"></a>
@@ -84,7 +84,7 @@
                     </div>
                     <div class="fr-col-9 text-left">
                         <p><strong><span class="fr-text--xxl">{{ '%0.1f'|
-                                    format(impact.gwp.value*100|float) |replace(".", ",") }}</span>g</strong>
+                                    format(impact.gwp.value*1000|float) |replace(".", ",") }}</span>g</strong>
                         </p>
                         <p class="fr-text--xs">CO<sup>2</sup> émis<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                 aria-describedby="co2-{{side}}"></a>
