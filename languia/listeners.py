@@ -690,29 +690,20 @@ def register_listeners():
             model_a_tokens=model_a_tokens,
             model_b_tokens=model_b_tokens,
         )
-        return [
-            # Modal(visible=False),
-            # Comment: this is very ugly but I couldn't get the nicer method of updating named blocks to work.
-            # As a ref:
-            # stepper_block,
-            # vote_area,
-            # supervote_area,
-            # feedback_row,
-            # results_area,
-            # buttons_footer,
-            gr.update(
+        return {
+            stepper_block: gr.update(
                 value=stepper_html(
                     "Découvrez les modèles d'IA générative avec lesquels vous venez de discuter",
                     4,
                     4,
                 )
             ),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(visible=True, value=reveal_html),
-            gr.update(visible=False),
-        ]
+            vote_area: gr.update(visible=False),
+            supervote_area: gr.update(visible=False),
+            feedback_row: gr.update(visible=True),
+            results_area: gr.update(visible=True, value=reveal_html),
+            buttons_footer: gr.update(visible=False)
+        }
 
     # gr.on(
     #     triggers=retry_modal_btn.click,
