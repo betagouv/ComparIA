@@ -469,24 +469,17 @@ def register_listeners():
             "advancing to vote area",
             extra={"request": request},
         )
-        # return {
-        #     conclude_area: gr.update(visible=False),
-        #     chat_area: gr.update(visible=False),
-        #     send_area: gr.update(visible=False),
-        #     vote_area: gr.update(visible=True),
-        # }
-        # [conclude_area, chat_area, send_area, vote_area]
-        return [
-            gr.update(
+        return {
+            stepper_block: gr.update(
                 value=stepper_html(
                     "Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4
                 )
             ),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(visible=True),
-        ]
+            chat_area: gr.update(visible=False),
+            send_area: gr.update(visible=False),
+            vote_area: gr.update(visible=True),
+            buttons_footer: gr.update(visible=True),
+        }
 
     @which_model_radio.change(
         inputs=[which_model_radio],
