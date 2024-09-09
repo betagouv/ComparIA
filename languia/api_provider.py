@@ -191,7 +191,7 @@ def vertex_api_stream_iter(
                 # llama3.1 405b bugs
                 logger = logging.getLogger("languia")
                 if content and model_name=="meta/llama3-405b-instruct-maas":
-                    logger.debug("fixing llama3 405b bug at google")
+                    # logger.debug("fixing llama3 405b bug at google")
                     content = content.replace("\\n", "\n")
                     if str.startswith(content, "assistant"):
                         # strip first 9 letters ("assistant")
