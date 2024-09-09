@@ -480,7 +480,7 @@ def register_listeners():
             buttons_footer: gr.update(visible=True),
         }
 
-    @which_model_radio.change(
+    @which_model_radio.select(
         inputs=[which_model_radio],
         outputs=[supervote_area, supervote_send_btn, why_vote] + supervote_sliders,
         api_name=False,
@@ -508,7 +508,6 @@ def register_listeners():
             why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
         elif vote_radio == "model-b":
             why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
-
         return [
             gr.update(visible=True),
             gr.update(interactive=True),
@@ -518,12 +517,14 @@ def register_listeners():
     # Step 3
     @both_equal_link.click(
         inputs=[],
-        outputs=[supervote_send_btn],
+        outputs=[supervote_send_btn, supervote_area, which_model_radio],
         api_name=False,
     )
     def both_equal():
         return {
+            supervote_area: gr.update(visible=False),
             supervote_send_btn: gr.update(interactive=True),
+            which_model_radio: gr.update(value=None),
         }
 
     @return_btn.click(

@@ -200,11 +200,11 @@ with gr.Blocks(
         which_model_radio = CustomRadioCard(
             choices=[
                 (
-                    """<span class="fr-badge fr-badge--no-icon fr-badge--info self-center justify-center">Modèle A</span>""",
+                    """<span class="fr-badge fr-badge--no-icon fr-badge--info self-center">Modèle A</span>""",
                     "model-a",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--green-tilleul-verveine self-center justify-center">Modèle B</span>""",
+                    """<span class="fr-badge fr-badge--green-tilleul-verveine self-center">Modèle B</span>""",
                     "model-b",
                 ),
             ],
