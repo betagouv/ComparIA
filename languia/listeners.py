@@ -248,6 +248,8 @@ def register_listeners():
                 iters += 1
                 for i in range(config.num_sides):
                     try:
+                        # # Artificially slow faster Google Vertex API
+                        # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
                         # if iters % 30 == 1 or iters < 3:
                         ret = next(gen[i])
                         conversations[i] = ret

@@ -22,8 +22,7 @@
                     }}</span>
                 {% if
                 model['distribution'] == "open-weights" %}<span
-                    class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ '%0.1f'|
-                    format(model['params']|float) |replace(".", ",") }} mds de paramètres</span>{% endif %}
+                    class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ model['params']|round|int }} mds de paramètres</span>{% endif %}
                 <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ model['organisation'] }}</span>
             </p>
             <p class="fr-mb-4w fr-text--sm">{{ model['excerpt'] }}</p>
@@ -61,8 +60,7 @@
                         </svg>
                     </div>
                     <div class="fr-col-9 text-left">
-                        <p><strong><span class="fr-text--xxl">{{ '%0.1f'|
-                                    format(impact.energy.value*1000|float) | replace(".", ",") }}</span>Wh</strong>
+                        <p><strong><span class="fr-text--xxl">{{ (impact.energy.value*1000)|round|int }}</span>Wh</strong>
                         </p>
                         <p class="fr-text--xs">énergie conso.<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                 aria-describedby="energie-{{side}}"></a>
@@ -83,8 +81,7 @@
                         </svg>
                     </div>
                     <div class="fr-col-9 text-left">
-                        <p><strong><span class="fr-text--xxl">{{ '%0.1f'|
-                                    format(impact.gwp.value*1000|float) |replace(".", ",") }}</span>g</strong>
+                        <p><strong><span class="fr-text--xxl">{{ (impact.gwp.value*1000)|round|int }}</span>g</strong>
                         </p>
                         <p class="fr-text--xs">CO<sup>2</sup> émis<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                 aria-describedby="co2-{{side}}"></a>
@@ -187,8 +184,7 @@
                                     {% endif %}</span>{% if
                                 model['distribution'] == "open-weights" %}
                                 <!-- TODO: don't show 1 decimal if it's round -->
-                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{ '%0.1f'|
-                                    format(model['params']|float) | replace(".",",") }} mds de paramètres</span>{% endif
+                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{ model['params']|round|int }} mds de paramètres</span>{% endif
                                 %}
                             </p>
                             <div class="flex fr-mb-1w"><span class="fr-icon-ruler" aria-hidden="true"></span>
