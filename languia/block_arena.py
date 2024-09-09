@@ -231,7 +231,7 @@ with gr.Blocks(
                     minimum=1,
                     maximum=5,
                     step=1,
-                    label="Les réponses étaient-elles pertinentes ?",
+                    label="Les réponses étaient pertinentes",
                     info="Critères : réponses utiles, correctes factuelles, précises",
                     elem_classes="fr-mb-4w",
                 )
@@ -241,7 +241,7 @@ with gr.Blocks(
                     minimum=1,
                     maximum=5,
                     step=1,
-                    label="Les réponses étaient-elles simples à lire ?",
+                    label="Les réponses étaient simples à lire",
                     info="Critères : mise en forme et longueur des réponses adaptées",
                     elem_classes="fr-my-4w",
                 )
@@ -252,7 +252,7 @@ with gr.Blocks(
                     minimum=1,
                     maximum=5,
                     step=1,
-                    label="Le style de la réponse était-il adapté ?",
+                    label="Le style de la réponse était adapté",
                     info="Critères : registre de langue, vocabulaire, orthographe",
                 )
                 supervote_sliders = [relevance_slider, form_slider, style_slider]
