@@ -186,7 +186,7 @@ def vertex_api_stream_iter(
     text = ""
     for chunk in res:
         if len(chunk.choices) > 0:
-            if hasattr(chunk.choices[0], "delta"):
+            if hasattr(chunk.choices[0], "delta") and hasattr(chunk.choices[0].delta, "content"):
                 content = chunk.choices[0].delta.content
                 # llama3.1 405b bugs
                 logger = logging.getLogger("languia")
