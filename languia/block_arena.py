@@ -163,7 +163,7 @@ with gr.Blocks(
         chatbot = gr.Chatbot(
             # TODO:
             type="messages",
-            elem_id=f"main-chatbot",
+            elem_id="main-chatbot",
             # min_width=
             height="100%",
             # Doesn't show because it always has at least our message
@@ -200,11 +200,11 @@ with gr.Blocks(
         which_model_radio = CustomRadioCard(
             choices=[
                 (
-                    """<span class="fr-badge fr-badge--no-icon fr-badge--info">Modèle A</span>""",
+                    """<span class="fr-badge fr-badge--no-icon fr-badge--info self-center justify-center">Modèle A</span>""",
                     "model-a",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--green-tilleul-verveine">Modèle B</span>""",
+                    """<span class="fr-badge fr-badge--green-tilleul-verveine self-center justify-center">Modèle B</span>""",
                     "model-b",
                 ),
             ],
