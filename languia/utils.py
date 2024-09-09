@@ -323,7 +323,7 @@ def save_vote_to_db(data):
     try:
         insert_statement = sql.SQL(
             """
-            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, intensity, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments, extra)
+            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, both_equal, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments, extra)
             VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s, %(extra)s)
         """
         )
