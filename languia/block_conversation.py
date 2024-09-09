@@ -129,9 +129,9 @@ def bot_response(
     for i, data in enumerate(stream_iter):
         if data["error_code"] == 0:
             # Artificially slow faster Google Vertex API
-            if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
-                output = data["text"].strip()
-                messages = update_last_message(messages, output + html_code)
+            # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
+            output = data["text"].strip()
+            messages = update_last_message(messages, output + html_code)
             yield (state)
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
