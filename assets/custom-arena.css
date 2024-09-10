@@ -123,6 +123,16 @@ body.dark {
 
 /* UTILITY CLASSES */
 
+.h-full {
+  height: 100%;
+}
+.h-screen {
+  height: 100vh;
+}
+.min-h-screen {
+  min-height: 100vh;
+}
+
 .inline-block {
   display: inline-block;
 }

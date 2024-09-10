@@ -37,8 +37,8 @@ with gr.Blocks(
     css=config.css,
     head=config.arena_head_js,
     analytics_enabled=False,
-    # js=config.arena_js,
-    js=None,
+    # scroll_to_output = True,
+    js=config.arena_js,
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
@@ -103,6 +103,41 @@ with gr.Blocks(
             elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mt-8w fr-mb-4w",
         )
 
+    with gr.Group(
+        elem_id="chat-area",
+        visible=False,
+        elem_classes="fr-mb-10w fr-mb-md-0",
+    ) as chat_area:
+        label = "Modèles A et B"
+        # {likeable}
+        # placeholder
+        #         placeholder
+        # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
+        chatbot = gr.Chatbot(
+            # TODO:
+            type="messages",
+            elem_id="main-chatbot",
+            # min_width=
+            height="100vh",
+            # height="max(100vh, 100%)",
+            # height="100%",
+            # Doesn't show because it always has at least our message
+            # Note: supports HTML, use it!
+            placeholder="<em>Veuillez écrire aux modèles</em>",
+            # No difference
+            # bubble_full_width=False,
+            layout="panel",  # or "bubble"
+            likeable=False,
+            label=label,
+            # UserWarning: show_label has no effect when container is False.
+            show_label=False,
+            container=False,
+            elem_classes="chatbot",
+            # Should we show it?
+            show_copy_button=False,
+            # autoscroll=True
+        )
+
     with gr.Column(elem_id="send-area", visible=False) as send_area:
         # textbox = gr.Textbox(
         with gr.Column(elem_classes="inline-block"):
@@ -150,40 +185,11 @@ with gr.Blocks(
             #     visible=False,
             # )
 
-    with gr.Group(
-        elem_id="chat-area",
-        visible=False,
-        elem_classes="fr-mb-10w fr-pb-16w fr-mb-md-0",
-    ) as chat_area:
-        label = "Modèles A et B"
-        # {likeable}
-        # placeholder
-        #         placeholder
-        # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
-        chatbot = gr.Chatbot(
-            # TODO:
-            type="messages",
-            elem_id="main-chatbot",
-            # min_width=
-            height="100%",
-            # Doesn't show because it always has at least our message
-            # Note: supports HTML, use it!
-            placeholder="<em>Veuillez écrire aux modèles</em>",
-            # No difference
-            # bubble_full_width=False,
-            layout="panel",  # or "bubble"
-            likeable=False,
-            label=label,
-            # UserWarning: show_label has no effect when container is False.
-            show_label=False,
-            container=False,
-            elem_classes="chatbot",
-            # Should we show it?
-            show_copy_button=False,
-        )
-
     with gr.Column(
-        visible=False, elem_classes="fr-container fr-mb-12w fr-px-md-16w fr-px-0"
+        # h-screen
+        visible=False,
+        elem_classes="fr-container fr-px-md-16w fr-px-0 min-h-screen",
+        elem_id="vote-area",
     ) as vote_area:
         gr.HTML(
             value="""
@@ -280,18 +286,21 @@ with gr.Blocks(
                 interactive=False,
             )
 
-    results_area = gr.HTML(visible=False, elem_classes="fr-container")
+    with gr.Column(
+        elem_id="result-screen", visible=False, elem_classes="h-screen"
+    ) as results_screen:
+        results_area = gr.HTML(visible=True, elem_classes="fr-container")
 
-    with gr.Row(visible=False, elem_id="feedback-row") as feedback_row:
-        # dsfr: This should just be a normal link...
-        # feedback_btns =
-        gr.HTML(
-            value="""
-            <div class="fr-grid-row fr-grid-row--center fr-py-4w">
-            <a class="fr-btn fr-btn--secondary fr-ml-2w" href="../modeles">Liste des modèles</a>
-            </div>
-        """
-        )
+        with gr.Row(visible=True, elem_id="feedback-row") as feedback_row:
+            # dsfr: This should just be a normal link...
+            # feedback_btns =
+            gr.HTML(
+                value="""
+                <div class="fr-grid-row fr-grid-row--center fr-py-4w">
+                <a class="fr-btn fr-btn--secondary fr-ml-2w" href="../modeles">Liste des modèles</a>
+                </div>
+            """
+            )
 
     # with Modal(elem_id="quiz-modal") as quiz_modal:
     #     gr.Markdown(

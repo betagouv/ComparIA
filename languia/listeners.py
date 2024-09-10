@@ -432,6 +432,47 @@ def register_listeners():
             + [conclude_btn]
         ),
     ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+
+        
+  var footer = document.querySelector('#send-area');
+  var content = document.querySelector('#chat-area');
+
+  // Function to adjust footer and content padding
+  function adjustFooter() {
+    const footerHeight = footer.offsetHeight;
+    // const contentHeight = content.offsetHeight;
+    // const viewportHeight = window.innerHeight;
+
+    // Check if the content is smaller than the viewport height
+    // if (contentHeight + footerHeight < viewportHeight) {
+    // footer.style.position = 'relative';
+
+    // If content is smaller than the viewport, let the footer follow the normal flow
+    // content.style.paddingBottom = '0';
+
+    // } else {
+    // footer.style.position = 'fixed';
+    // footer.style.bottom = '0';
+    // footer.style.width = '100%';
+
+    // Add bottom padding to the content equal to footer height so it's not hidden
+    content.style.paddingBottom = `${footerHeight}px`;
+  }
+  // Adjust footer on page load and resize and initially
+  window.addEventListener('load', adjustFooter);
+  window.addEventListener('resize', adjustFooter);
+  adjustFooter();
+  content.scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
+return args;
+}""",
+    ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         inputs=conversations + [temperature, top_p, max_output_tokens],
@@ -474,11 +515,6 @@ return args;
     # // Remove navigation prompt
     # window.onbeforeunload = null;
 
-    @conclude_btn.click(
-        inputs=[],
-        outputs=[stepper_block, chat_area, send_area, vote_area, buttons_footer],
-        api_name=False,
-    )
     def show_vote_area(request: gr.Request):
         logger.info(
             "advancing to vote area",
@@ -490,11 +526,32 @@ return args;
                     "Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4
                 )
             ),
-            chat_area: gr.update(visible=False),
+            # chat_area: gr.update(visible=False),
             send_area: gr.update(visible=False),
             vote_area: gr.update(visible=True),
             buttons_footer: gr.update(visible=True),
         }
+
+    gr.on(
+        triggers=[conclude_btn.click],
+        inputs=[],
+        outputs=[stepper_block, send_area, vote_area, buttons_footer],
+        api_name=False,
+        fn=show_vote_area,
+    ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+console.log("scrolling to #vote-area");
+const voteArea = document.getElementById('vote-area');
+voteArea.scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
+return args;
+}""",
+    )
 
     @which_model_radio.select(
         inputs=[which_model_radio],
@@ -531,21 +588,22 @@ return args;
         ] + new_supervote_sliders
 
     # Step 3
-    @both_equal_link.click(
-        inputs=[],
-        outputs=[supervote_send_btn, supervote_area, which_model_radio],
-        api_name=False,
-    )
-    def both_equal():
-        return {
-            supervote_area: gr.update(visible=False),
-            supervote_send_btn: gr.update(interactive=True),
-            which_model_radio: gr.update(value=None),
-        }
+    # @both_equal_link.click(
+    #     inputs=[],
+    #     outputs=[supervote_send_btn, supervote_area, which_model_radio],
+    #     api_name=False,
+    # )
+    # def both_equal():
+    #     return {
+    #         supervote_area: gr.update(visible=False),
+    #         supervote_send_btn: gr.update(interactive=True),
+    #         which_model_radio: gr.update(value=None),
+    #     }
 
     @return_btn.click(
         inputs=[],
-        outputs=[stepper_block] + [vote_area]
+        outputs=[stepper_block]
+        # + [vote_area]
         # + [supervote_area]
         + [chat_area] + [send_area] + [buttons_footer],
     )
@@ -562,31 +620,12 @@ return args;
             stepper_block: gr.update(
                 value=stepper_html("Discussion avec les modèles", 2, 4)
             ),
-            vote_area: gr.update(visible=False),
+            # vote_area: gr.update(visible=False),
             chat_area: gr.update(visible=True),
             send_area: gr.update(visible=True),
             buttons_footer: gr.update(visible=False),
         }
 
-    @supervote_send_btn.click(
-        inputs=(
-            [conversations[0]]
-            + [conversations[1]]
-            + [which_model_radio]
-            + (supervote_sliders)
-            + [comments_text]
-        ),
-        outputs=[
-            stepper_block,
-            vote_area,
-            supervote_area,
-            feedback_row,
-            results_area,
-            buttons_footer,
-        ],
-        # outputs=[quiz_modal],
-        api_name=False,
-    )
     def vote_preferences(
         conversation_a,
         conversation_b,
@@ -722,13 +761,60 @@ return args;
                     4,
                 )
             ),
-            vote_area: gr.update(visible=False),
-            supervote_area: gr.update(visible=False),
-            feedback_row: gr.update(visible=True),
-            results_area: gr.update(visible=True, value=reveal_html),
-            buttons_footer: gr.update(visible=False)
+            # some components should be interactive=False
+            # vote_area: gr.update(visible=False),
+            # supervote_area: gr.update(visible=False),
+            results_screen: gr.update(visible=True),
+            results_area: gr.update(value=reveal_html),
+            buttons_footer: gr.update(visible=False),
         }
 
+    # @both_equal_link.click(
+    #     inputs=[],
+    #     outputs=[supervote_send_btn, supervote_area, which_model_radio],
+    #     api_name=False,
+    # )
+    # def both_equal():
+    #     return {
+    #         supervote_area: gr.update(visible=False),
+    #         supervote_send_btn: gr.update(interactive=True),
+    #         which_model_radio: gr.update(value=None),
+    #     }
+
+    gr.on(
+        triggers=[supervote_send_btn.click, both_equal_link.click],
+        fn=vote_preferences,
+        inputs=(
+            [conversations[0]]
+            + [conversations[1]]
+            + [which_model_radio]
+            + (supervote_sliders)
+            + [comments_text]
+        ),
+        outputs=[
+            stepper_block,
+            # vote_area,
+            # supervote_area,
+            results_screen,
+            results_area,
+            buttons_footer,
+        ],
+        # outputs=[quiz_modal],
+        api_name=False,
+    ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+console.log("scrolling to #result-screen");
+const resultScreen = document.getElementById('result-screen');
+resultScreen.scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
+return args;
+}""",
+    )
     # gr.on(
     #     triggers=retry_modal_btn.click,
     #     fn=(lambda: Modal(visible=True)),
