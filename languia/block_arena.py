@@ -71,27 +71,27 @@ with gr.Blocks(
             # elem_classes="fr-container",
             choices=[
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
+                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p></div>""",
                     "expression",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
+                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p></div>""",
                     "langues",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
+                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p></div>""",
                     "conseils",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
+                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p></div>""",
                     "loisirs",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p></div>""",
                     "administratif",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
+                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p></div>""",
                     "vie-professionnelle",
                 ),
             ],
@@ -118,9 +118,9 @@ with gr.Blocks(
             type="messages",
             elem_id="main-chatbot",
             # min_width=
-            height="100vh",
+            # height="100vh",
             # height="max(100vh, 100%)",
-            # height="100%",
+            height="100%",
             # Doesn't show because it always has at least our message
             # Note: supports HTML, use it!
             placeholder="<em>Veuillez écrire aux modèles</em>",
@@ -188,7 +188,7 @@ with gr.Blocks(
     with gr.Column(
         # h-screen
         visible=False,
-        elem_classes="fr-container fr-px-md-16w fr-px-0 min-h-screen",
+        elem_classes="fr-container fr-px-md-16w fr-px-0 min-h-screen fr-pt-4w",
         elem_id="vote-area",
     ) as vote_area:
         gr.HTML(
@@ -216,7 +216,7 @@ with gr.Blocks(
             ],
             show_label=False,
         )
-        both_equal_link = gr.Button(
+        both_equal_link = gr.Button(elem_id="both-equal-link",
             elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
             value="Les deux se valent",
         )
@@ -287,8 +287,8 @@ with gr.Blocks(
             )
 
     with gr.Column(
-        elem_id="result-screen", visible=False, elem_classes="h-screen"
-    ) as results_screen:
+        elem_id="reveal-screen", visible=False, elem_classes="min-h-screen fr-pt-4w"
+    ) as reveal_screen:
         results_area = gr.HTML(visible=True, elem_classes="fr-container")
 
         with gr.Row(visible=True, elem_id="feedback-row") as feedback_row:
