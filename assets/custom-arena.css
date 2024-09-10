@@ -132,6 +132,9 @@ body.dark {
 .min-h-screen {
   min-height: 100vh;
 }
+.min-h-32 {
+  min-height: 8rem;
+}
 
 .inline-block {
   display: inline-block;
@@ -195,6 +198,12 @@ h6.text-blue {
 
 .fr-text--xxl {
   font-size: 1.5rem;
+}
+
+button#both-equal-link {
+  border: none !important;
+  box-shadow: none !important;
+  text-decoration: underline;
 }
 
 /* Custom */
@@ -324,6 +333,7 @@ li.fr-nav__item {
 }
 
 #chat-area {
+  background-color: white;
   margin-bottom: 5rem;
 }
 
