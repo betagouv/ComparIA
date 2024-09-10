@@ -466,10 +466,6 @@ def register_listeners():
   window.addEventListener('load', adjustFooter);
   window.addEventListener('resize', adjustFooter);
   adjustFooter();
-  content.scrollIntoView({
-  behavior: 'smooth',
-  block: 'start'
-});
 return args;
 }""",
     ).then(
@@ -523,7 +519,7 @@ return args;
         return {
             stepper_block: gr.update(
                 value=stepper_html(
-                    "Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4
+                    "Votez pour découvrir leurs identités", 3, 4
                 )
             ),
             # chat_area: gr.update(visible=False),
@@ -618,7 +614,7 @@ return args;
         )
         return {
             stepper_block: gr.update(
-                value=stepper_html("Discussion avec les modèles", 2, 4)
+                value=stepper_html("Quelle réponse préférez-vous ?", 2, 4)
             ),
             # vote_area: gr.update(visible=False),
             chat_area: gr.update(visible=True),
@@ -629,7 +625,7 @@ return args;
     def vote_preferences(
         conversation_a,
         conversation_b,
-        which_model_radio,
+        which_model_radio_output,
         relevance_slider,
         form_slider,
         style_slider,
@@ -649,7 +645,7 @@ return args;
 
         vote_last_response(
             [conversation_a, conversation_b],
-            which_model_radio,
+            which_model_radio_output,
             category,
             details,
             request,
@@ -661,7 +657,7 @@ return args;
         #     inputs=[
         #         conversations[0],
         #         conversations[1],
-        #         which_model_radio,
+        #         which_model_radio_output,
         #         chatbot_use,
         #         gender,
         #         age,
@@ -682,7 +678,7 @@ return args;
         #     inputs=[
         #         conversations[0],
         #         conversations[1],
-        #         which_model_radio,
+        #         which_model_radio_output,
         #         chatbot_use,
         #         gender,
         #         age,
@@ -702,7 +698,7 @@ return args;
         # def send_poll(
         #     conversation_a,
         #     conversation_b,
-        #     which_model_radio,
+        #     which_model_radio_output,
         #     chatbot_use,
         #     gender,
         #     age,
@@ -715,7 +711,7 @@ return args;
         #     save_profile(
         #         conversation_a,
         #         conversation_b,
-        #         which_model_radio,
+        #         which_model_radio_output,
         #         chatbot_use,
         #         gender,
         #         age,
@@ -747,7 +743,7 @@ return args;
         reveal_html = build_reveal_html(
             model_a=model_a,
             model_b=model_b,
-            which_model_radio=which_model_radio,
+            which_model_radio=which_model_radio_output,
             model_a_impact=model_a_impact,
             model_b_impact=model_b_impact,
             model_a_tokens=model_a_tokens,
@@ -756,7 +752,7 @@ return args;
         return {
             stepper_block: gr.update(
                 value=stepper_html(
-                    "Découvrez les modèles d'IA générative avec lesquels vous venez de discuter",
+                    "Les IA sont démasquées !",
                     4,
                     4,
                 )
@@ -764,9 +760,11 @@ return args;
             # some components should be interactive=False
             # vote_area: gr.update(visible=False),
             # supervote_area: gr.update(visible=False),
-            results_screen: gr.update(visible=True),
+            reveal_screen: gr.update(visible=True),
             results_area: gr.update(value=reveal_html),
             buttons_footer: gr.update(visible=False),
+            which_model_radio: gr.update(interactive=False),
+            both_equal_link: gr.update(interactive=False),
         }
 
     # @both_equal_link.click(
@@ -795,9 +793,11 @@ return args;
             stepper_block,
             # vote_area,
             # supervote_area,
-            results_screen,
+            reveal_screen,
             results_area,
             buttons_footer,
+            which_model_radio,
+            both_equal_link
         ],
         # outputs=[quiz_modal],
         api_name=False,
@@ -806,9 +806,9 @@ return args;
         inputs=[],
         outputs=[],
         js="""(args) => {
-console.log("scrolling to #result-screen");
-const resultScreen = document.getElementById('result-screen');
-resultScreen.scrollIntoView({
+console.log("scrolling to #reveal-screen");
+const revealScreen = document.getElementById('reveal-screen');
+revealScreen.scrollIntoView({
   behavior: 'smooth',
   block: 'start'
 });
