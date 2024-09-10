@@ -445,6 +445,20 @@ def register_listeners():
         # + [retry_modal_btn]
         + [textbox],
         api_name=False,
+    ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+console.log("scrolling to last row");
+var botRows = document.querySelectorAll('.bot-row');
+var lastBotRow = botRows.item(botRows.length-1);
+lastBotRow.scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
+return args;
+}""",
     )
 
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
