@@ -123,9 +123,13 @@ def bot_response(
     yield (state)
 
     data = {"text": ""}
+
+
     # FIXME: does not detect/raise if 500 error
     for i, data in enumerate(stream_iter):
         if data["error_code"] == 0:
+            # Artificially slow faster Google Vertex API
+            # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
             output = data["text"].strip()
             messages = update_last_message(messages, output + html_code)
             yield (state)

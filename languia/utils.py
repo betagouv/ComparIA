@@ -133,10 +133,15 @@ class PostgresHandler(logging.Handler):
                     path_params = dict(record.request.path_params)
                     # ip = get_ip(record.request)
                     session_hash = record.request.session_hash
-                    values["query_params"] = json.dumps(query_params),
-                    values["path_params"] = json.dumps(path_params),
-                    values["session_hash"] = str(session_hash),
-                    values["extra"] = json.dumps(record.__dict__.get("extra")),
+                    if query_params:
+                        values["query_params"] = json.dumps(query_params)
+                    if path_params:
+                        values["path_params"] = json.dumps(path_params)
+                    if session_hash:
+                        values["session_hash"] = str(session_hash)
+                    if hasattr(record, "extra"):
+                        values["extra"] = json.dumps(record.__dict__.get("extra"))
+
 
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
@@ -166,7 +171,6 @@ def get_chosen_model(which_model_radio):
         chosen_model = which_model_radio
     else:
         chosen_model = None
-        raise (ValueError)
     return chosen_model
 
 
@@ -319,8 +323,8 @@ def save_vote_to_db(data):
     try:
         insert_statement = sql.SQL(
             """
-            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, intensity, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments, extra)
-            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(intensity)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s, %(extra)s)
+            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, both_equal, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments, extra)
+            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s, %(extra)s)
         """
         )
         values = {
@@ -328,8 +332,8 @@ def save_vote_to_db(data):
             "model_a_name": str(data["model_a_name"]),
             "model_b_name": str(data["model_b_name"]),
             "model_pair_name": json.dumps(sorted(data["model_pair_name"])),
-            "chosen_model_name": str(data["chosen_model_name"]),
-            "intensity": str(data["intensity"]),
+            "chosen_model_name": (data["chosen_model_name"]),
+            "both_equal": (data["both_equal"]),
             "opening_prompt": str(data["opening_prompt"]),
             "conversation_a": json.dumps(data["conversation_a"]),
             "conversation_b": json.dumps(data["conversation_b"]),
@@ -373,7 +377,7 @@ def vote_last_response(
 
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     # intensity = get_intensity(which_model_radio)
-
+    both_equal = (chosen_model_name==None) 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
@@ -403,7 +407,8 @@ def vote_last_response(
             [conversations[0].model_name, conversations[1].model_name]
         ),
         "chosen_model_name": chosen_model_name,
-        "intensity": None,
+        "both_equal": both_equal,
+        # "intensity": None,
         "opening_prompt": opening_prompt,
         "conversation_a": conversation_a_messages,
         "conversation_b": conversation_b_messages,

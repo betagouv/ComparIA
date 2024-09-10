@@ -107,14 +107,14 @@ def register_listeners():
             extra={"request": request},
         )
 
-        return [
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(elem_classes="fr-container send-area-enabled"),
-            gr.update(interactive=False),
+        return {
+            free_mode_btn: gr.update(visible=False),
+            send_area: gr.update(visible=True),
+            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
+            shuffle_btn: gr.update(interactive=False),
             # Don't remove or autofocus won't work
-            gr.skip(),
-        ]
+            textbox: gr.skip(),
+        }
 
     # Step 1.1
     @guided_cards.change(
@@ -130,14 +130,13 @@ def register_listeners():
             f"set_guided_prompt: {category}",
             extra={"request": request},
         )
-        return [
-            gr.update(visible=True),
-            gr.update(value=prompt),
-            # gr.update(visible=True),
-            gr.update(elem_classes="fr-container send-area-enabled"),
-            gr.update(interactive=True),
-            gr.update(visible=False),
-        ]
+        return {
+            send_area: gr.update(visible=True),
+            textbox: gr.update(value=prompt),
+            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
+            shuffle_btn: gr.update(interactive=True),
+            free_mode_btn: gr.update(visible=False),
+        }
 
         # .then(
         #         js="""
@@ -178,7 +177,6 @@ def register_listeners():
         )
         conversations = [conversation_a, conversation_b]
 
-
         # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
         # if flagged:
@@ -198,8 +196,8 @@ def register_listeners():
             if len(conversations[i].messages) == 1:
                 app_state.original_user_prompt = text
                 logger.debug(
-                "Saving original prompt: " + app_state.original_user_prompt,
-                extra={"request": request},
+                    "Saving original prompt: " + app_state.original_user_prompt,
+                    extra={"request": request},
                 )
             # Added in individual bot_message yielding function
             # # Empty assistant message is needed to be editable by yielding received text afterwards
@@ -250,6 +248,8 @@ def register_listeners():
                 iters += 1
                 for i in range(config.num_sides):
                     try:
+                        # # Artificially slow faster Google Vertex API
+                        # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
                         # if iters % 30 == 1 or iters < 3:
                         ret = next(gen[i])
                         conversations[i] = ret
@@ -323,36 +323,24 @@ def register_listeners():
             extra={"request": request},
         )
 
-        return (
-            [
-                gr.update(
-                    value="",
-                    placeholder="Continuer à discuter avec les deux modèles",
+        return {
+            textbox: gr.update(
+                value="",
+                placeholder="Continuer à discuter avec les deux modèles",
+            ),
+            stepper_block: gr.update(
+                value=stepper_html(
+                    "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
+                    2,
+                    4,
                 )
-            ]
-            # stepper_block
-            + [
-                gr.update(
-                    value=stepper_html(
-                        "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
-                        2,
-                        4,
-                    )
-                )
-            ]
-            # mode_screen
-            + [gr.update(visible=False)]
-            # chat_area
-            + [gr.update(visible=True)]
-            # send_btn
-            + [gr.update(interactive=False)]
-            # retry_btn
-            # + [gr.update(visible=True)]
-            # shuffle_btn
-            + [gr.update(visible=False)]
-            # conclude_btn
-            + [gr.update(visible=True, interactive=False)]
-        )
+            ),
+            mode_screen: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_btn: gr.update(interactive=False),
+            shuffle_btn: gr.update(visible=False),
+            conclude_btn: gr.update(visible=True, interactive=False),
+        }
 
     def check_answers(conversation_a, conversation_b, request: gr.Request):
 
@@ -366,17 +354,17 @@ def register_listeners():
 
         if hasattr(app_state, "crashed") and app_state.crashed:
             logger.error(
-                    "model crash detected, keeping prompt",
-                    extra={"request": request},
-                )
+                "model crash detected, keeping prompt",
+                extra={"request": request},
+            )
             app_state.crashed = False
             model_left, model_right = get_battle_pair(
-                    config.models,
-                    BATTLE_TARGETS,
-                    config.outage_models,
-                    SAMPLING_WEIGHTS,
-                    SAMPLING_BOOST_MODELS,
-                )
+                config.models,
+                BATTLE_TARGETS,
+                config.outage_models,
+                SAMPLING_WEIGHTS,
+                SAMPLING_BOOST_MODELS,
+            )
             conversation_a = ConversationState(model_name=model_left)
             conversation_b = ConversationState(model_name=model_right)
 
@@ -482,26 +470,19 @@ def register_listeners():
             "advancing to vote area",
             extra={"request": request},
         )
-        # return {
-        #     conclude_area: gr.update(visible=False),
-        #     chat_area: gr.update(visible=False),
-        #     send_area: gr.update(visible=False),
-        #     vote_area: gr.update(visible=True),
-        # }
-        # [conclude_area, chat_area, send_area, vote_area]
-        return [
-            gr.update(
+        return {
+            stepper_block: gr.update(
                 value=stepper_html(
                     "Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4
                 )
             ),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(visible=True),
-        ]
+            chat_area: gr.update(visible=False),
+            send_area: gr.update(visible=False),
+            vote_area: gr.update(visible=True),
+            buttons_footer: gr.update(visible=True),
+        }
 
-    @which_model_radio.change(
+    @which_model_radio.select(
         inputs=[which_model_radio],
         outputs=[supervote_area, supervote_send_btn, why_vote] + supervote_sliders,
         api_name=False,
@@ -529,7 +510,6 @@ def register_listeners():
             why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
         elif vote_radio == "model-b":
             why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
-
         return [
             gr.update(visible=True),
             gr.update(interactive=True),
@@ -537,7 +517,17 @@ def register_listeners():
         ] + new_supervote_sliders
 
     # Step 3
-    # @both_equal_link.click(inputs=[])
+    @both_equal_link.click(
+        inputs=[],
+        outputs=[supervote_send_btn, supervote_area, which_model_radio],
+        api_name=False,
+    )
+    def both_equal():
+        return {
+            supervote_area: gr.update(visible=False),
+            supervote_send_btn: gr.update(interactive=True),
+            which_model_radio: gr.update(value=None),
+        }
 
     @return_btn.click(
         inputs=[],
@@ -554,19 +544,15 @@ def register_listeners():
             "clicked return",
             extra={"request": request},
         )
-        return (
-            [gr.update(value=stepper_html("Discussion avec les modèles", 2, 4))]
-            # vote_area
-            + [gr.update(visible=False)]
-            # supervote_area
-            # + [gr.update(visible=False)]
-            # chat_area
-            + [gr.update(visible=True)]
-            # send_area
-            + [gr.update(visible=True)]
-            # buttons_footer
-            + [gr.update(visible=False)]
-        )
+        return {
+            stepper_block: gr.update(
+                value=stepper_html("Discussion avec les modèles", 2, 4)
+            ),
+            vote_area: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_area: gr.update(visible=True),
+            buttons_footer: gr.update(visible=False),
+        }
 
     @supervote_send_btn.click(
         inputs=(
@@ -576,7 +562,7 @@ def register_listeners():
             + (supervote_sliders)
             + [comments_text]
         ),
-         outputs=[
+        outputs=[
             stepper_block,
             vote_area,
             supervote_area,
@@ -618,72 +604,72 @@ def register_listeners():
         # quiz_modal.visible = True
         # return Modal(visible=True)
 
-    # @send_poll_btn.click(
-    #     inputs=[
-    #         conversations[0],
-    #         conversations[1],
-    #         which_model_radio,
-    #         chatbot_use,
-    #         gender,
-    #         age,
-    #         profession,
-    #     ],
-    #     outputs=[
-    #         quiz_modal,
-    #         stepper_block,
-    #         vote_area,
-    #         supervote_area,
-    #         feedback_row,
-    #         results_area,
-    #         buttons_footer,
-    #     ],
-    #     api_name=False,
-    # )
-    # @skip_poll_btn.click(
-    #     inputs=[
-    #         conversations[0],
-    #         conversations[1],
-    #         which_model_radio,
-    #         chatbot_use,
-    #         gender,
-    #         age,
-    #         profession,
-    #     ],
-    #     outputs=[
-    #         quiz_modal,
-    #         stepper_block,
-    #         vote_area,
-    #         supervote_area,
-    #         feedback_row,
-    #         results_area,
-    #         buttons_footer,
-    #     ],
-    #     api_name=False,
-    # )
-    # def send_poll(
-    #     conversation_a,
-    #     conversation_b,
-    #     which_model_radio,
-    #     chatbot_use,
-    #     gender,
-    #     age,
-    #     profession,
-    #     request: gr.Request,
-    #     event: gr.EventData,
-    # ):
-    #     confirmed = event.target.value == "Envoyer"  # Not "Passer"
+        # @send_poll_btn.click(
+        #     inputs=[
+        #         conversations[0],
+        #         conversations[1],
+        #         which_model_radio,
+        #         chatbot_use,
+        #         gender,
+        #         age,
+        #         profession,
+        #     ],
+        #     outputs=[
+        #         quiz_modal,
+        #         stepper_block,
+        #         vote_area,
+        #         supervote_area,
+        #         feedback_row,
+        #         results_area,
+        #         buttons_footer,
+        #     ],
+        #     api_name=False,
+        # )
+        # @skip_poll_btn.click(
+        #     inputs=[
+        #         conversations[0],
+        #         conversations[1],
+        #         which_model_radio,
+        #         chatbot_use,
+        #         gender,
+        #         age,
+        #         profession,
+        #     ],
+        #     outputs=[
+        #         quiz_modal,
+        #         stepper_block,
+        #         vote_area,
+        #         supervote_area,
+        #         feedback_row,
+        #         results_area,
+        #         buttons_footer,
+        #     ],
+        #     api_name=False,
+        # )
+        # def send_poll(
+        #     conversation_a,
+        #     conversation_b,
+        #     which_model_radio,
+        #     chatbot_use,
+        #     gender,
+        #     age,
+        #     profession,
+        #     request: gr.Request,
+        #     event: gr.EventData,
+        # ):
+        #     confirmed = event.target.value == "Envoyer"  # Not "Passer"
 
-    #     save_profile(
-    #         conversation_a,
-    #         conversation_b,
-    #         which_model_radio,
-    #         chatbot_use,
-    #         gender,
-    #         age,
-    #         profession,
-    #         confirmed,
-    #         request,
-    #     )
+        #     save_profile(
+        #         conversation_a,
+        #         conversation_b,
+        #         which_model_radio,
+        #         chatbot_use,
+        #         gender,
+        #         age,
+        #         profession,
+        #         confirmed,
+        #         request,
+        #     )
 
         model_a = get_model_extra_info(
             conversation_a.model_name, config.models_extra_info
@@ -714,29 +700,20 @@ def register_listeners():
             model_a_tokens=model_a_tokens,
             model_b_tokens=model_b_tokens,
         )
-        return [
-            # Modal(visible=False),
-            # Comment: this is very ugly but I couldn't get the nicer method of updating named blocks to work.
-            # As a ref:
-            # stepper_block,
-            # vote_area,
-            # supervote_area,
-            # feedback_row,
-            # results_area,
-            # buttons_footer,
-            gr.update(
+        return {
+            stepper_block: gr.update(
                 value=stepper_html(
                     "Découvrez les modèles d'IA générative avec lesquels vous venez de discuter",
                     4,
                     4,
                 )
             ),
-            gr.update(visible=False),
-            gr.update(visible=False),
-            gr.update(visible=True),
-            gr.update(visible=True, value=reveal_html),
-            gr.update(visible=False),
-        ]
+            vote_area: gr.update(visible=False),
+            supervote_area: gr.update(visible=False),
+            feedback_row: gr.update(visible=True),
+            results_area: gr.update(visible=True, value=reveal_html),
+            buttons_footer: gr.update(visible=False)
+        }
 
     # gr.on(
     #     triggers=retry_modal_btn.click,
