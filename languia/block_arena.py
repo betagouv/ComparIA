@@ -280,7 +280,7 @@ with gr.Blocks(
                 elem_classes=" fr-container",
                 value="""
                 <div class="fr-py-4w">
-                <a class="block fr-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec 2 nouvelles IA</a>
+                <a class="block fr-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a>
                 <a class="block fr-btn fr-btn--secondary fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
                 </div>
             """
