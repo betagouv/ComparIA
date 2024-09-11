@@ -2,14 +2,12 @@ from languia.block_arena import *
 import traceback
 
 from languia.utils import (
-    stepper_html,
     get_battle_pair,
     build_reveal_html,
     vote_last_response,
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
-    # save_profile,
     refresh_outage_models,
     add_outage_model,
     gen_prompt,
@@ -40,56 +38,50 @@ from languia.config import logger
 
 from languia import config
 
+def init_conversations(request: gr.Request):
+    config.outage_models = refresh_outage_models(
+        config.outage_models, controller_url=config.controller_url
+    )
+    # app_state.model_left, app_state.model_right = get_battle_pair(
+    model_left, model_right = get_battle_pair(
+        config.models,
+        BATTLE_TARGETS,
+        config.outage_models,
+        SAMPLING_WEIGHTS,
+        SAMPLING_BOOST_MODELS,
+    )
+    conversations = [
+        # NOTE: replacement of gr.State() to ConversationState happens here
+        ConversationState(model_name=model_left),
+        ConversationState(model_name=model_right),
+    ]
+    logger.info(
+        "Picked 2 models: " + model_left + " and " + model_right,
+        extra={request: request},
+    )
+    return conversations
 
 # Register listeners
 def register_listeners():
 
-    # Sometimes @demo.load is not triggered!
-
     # Step 0
 
-    # NOTE: part of this logic is implemented in the js loaded with the gradio demo block
-    # TODO: make a cool input-output js function to pass here instead of in main js
     @demo.load(
         inputs=[],
-        outputs=(conversations + [stepper_block, mode_screen]),
+        outputs=(conversations),
         api_name=False,
     )
     def enter_arena(request: gr.Request):
-        # tos_accepted = accept_tos_checkbox
+        # tos_accepted = request...
         # if tos_accepted:
         # logger.info(f"ToS accepted")
-        # {'name': 'languia', 'msg': 'ToS accepted: fwypynv2sy', 'args': ('fwypynv2sy',), 'levelname': 'INFO', 'levelno': 20, 'pathname': '/home/hadrien/git/languia/languia/listeners.py', 'filename': 'listeners.py', 'module': 'listeners', 'exc_info': None, 'exc_text': None, 'stack_info': None, 'lineno': 64, 'funcName': 'enter_arena', 'created': 1725292327.7355227, 'msecs': 735.0, 'relativeCreated': 7554.653644561768, 'thread': 139691558962880, 'threadName': 'AnyIO worker thread', 'processName': 'SpawnProcess-4', 'process': 122874, 'request': <gradio.route_utils.Request object at 0x7f0c7ed0a550>}
         logger.info(
             # config.Log("ToS accepted: %s" % request.session_hash),
             f"ToS accepted: %s" % request.session_hash,
             extra={"request": request},
         )
-
-        config.outage_models = refresh_outage_models(
-            config.outage_models, controller_url=config.controller_url
-        )
-        # app_state.model_left, app_state.model_right = get_battle_pair(
-        model_left, model_right = get_battle_pair(
-            config.models,
-            BATTLE_TARGETS,
-            config.outage_models,
-            SAMPLING_WEIGHTS,
-            SAMPLING_BOOST_MODELS,
-        )
-        conversations = [
-            # NOTE: replacement of gr.State() to ConversationState happens here
-            ConversationState(model_name=model_left),
-            ConversationState(model_name=model_right),
-        ]
-        logger.info(
-            "Picked 2 models: " + model_left + " and " + model_right,
-            extra={request: request},
-        )
-        return conversations + [
-            gr.update(visible=True),
-            gr.update(visible=True),
-        ]
+        conversations = init_conversations(request)
+        return conversations
 
     # Step 1
 
@@ -138,19 +130,6 @@ def register_listeners():
             free_mode_btn: gr.update(visible=False),
         }
 
-        # .then(
-        #         js="""
-        # () =>
-        # {
-        #     console.log("rerolling");
-
-        #   const targetElement = document.getElementById('guided-area');
-        #     targetElement.scrollIntoView({
-        #       behavior: 'smooth'
-        #     });
-        #   }
-        # """)
-
     @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox], api_name=False)
     def shuffle_prompt(guided_cards):
         return gen_prompt(category=guided_cards)
@@ -167,14 +146,8 @@ def register_listeners():
         conversation_b: gr.State,
         text: gr.Text,
         request: gr.Request,
+        evt: gr.EventData
     ):
-
-        # TODO: add turn
-        logger.info(
-            f"add_text",
-            # f"add_text. len: {len(text)}",
-            extra={"request": request, "prompt": text},
-        )
         conversations = [conversation_a, conversation_b]
 
         # FIXME: turn on moderation in battle mode
@@ -199,9 +172,6 @@ def register_listeners():
                     "Saving original prompt: " + app_state.original_user_prompt,
                     extra={"request": request},
                 )
-            # Added in individual bot_message yielding function
-            # # Empty assistant message is needed to be editable by yielding received text afterwards
-            # conversations[i].messages.append(gr.ChatMessage(role=f"assistant", content=""))
 
         return (
             # 2 conversations
@@ -210,19 +180,14 @@ def register_listeners():
             + [to_threeway_chatbot(conversations)]
         )
 
-    # TODO: move this
     def bot_response_multi(
         conversation_a,
         conversation_b,
-        temperature,
-        top_p,
-        max_new_tokens,
         request: gr.Request,
     ):
         logger.info(
-            f"bot_response_multi",
+            "bot_response_multi",
             extra={"request": request},
-            # Log("reponse des bots",request.session_hash),
         )
 
         conversations = [conversation_a, conversation_b]
@@ -233,9 +198,6 @@ def register_listeners():
                 gen.append(
                     bot_response(
                         conversations[i],
-                        temperature,
-                        top_p,
-                        max_new_tokens,
                         request,
                         apply_rate_limit=True,
                         use_recommended_config=True,
@@ -328,13 +290,6 @@ def register_listeners():
                 value="",
                 placeholder="Continuer à discuter avec les deux modèles",
             ),
-            stepper_block: gr.update(
-                value=stepper_html(
-                    "Discutez avec deux modèles d'IA puis donnez votre avis sur les réponses",
-                    2,
-                    4,
-                )
-            ),
             mode_screen: gr.update(visible=False),
             chat_area: gr.update(visible=True),
             send_btn: gr.update(interactive=False),
@@ -348,32 +303,19 @@ def register_listeners():
             "models finished answering",
             extra={"request": request},
         )
-        #     # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything if error in stream mode
-        #     if len(data["text"].strip()) == 0:
-        #         raise RuntimeError(f"No answer from API for model {model_name}")
-
         if hasattr(app_state, "crashed") and app_state.crashed:
             logger.error(
                 "model crash detected, keeping prompt",
                 extra={"request": request},
             )
             app_state.crashed = False
-            model_left, model_right = get_battle_pair(
-                config.models,
-                BATTLE_TARGETS,
-                config.outage_models,
-                SAMPLING_WEIGHTS,
-                SAMPLING_BOOST_MODELS,
-            )
-            conversation_a = ConversationState(model_name=model_left)
-            conversation_b = ConversationState(model_name=model_right)
 
-            logger.info(
-                "Repicked 2 models: " + model_left + " and " + model_right,
-                extra={request: request},
-            )
-            # conversation_a = ConversationState()
-            # conversation_b = ConversationState()
+            conversation_a, conversation_b = init_conversations(request)
+
+            # logger.info(
+            #     "Repicked 2 models: " + model_left + " and " + model_right,
+            #     extra={request: request},
+            # )
 
             logger.info(
                 "prefilling opening prompt",
@@ -424,7 +366,6 @@ def register_listeners():
         inputs=[],
         outputs=(
             [textbox]
-            + [stepper_block]
             + [mode_screen]
             + [chat_area]
             + [send_btn]
@@ -432,9 +373,47 @@ def register_listeners():
             + [conclude_btn]
         ),
     ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+
+        
+  const footer = document.querySelector('#send-area');
+  const content = document.querySelector('#chat-area');
+
+  // Function to adjust footer and content padding
+  function adjustFooter() {
+    const footerHeight = footer.offsetHeight;
+    // const contentHeight = content.offsetHeight;
+    // const viewportHeight = window.innerHeight;
+
+    // Check if the content is smaller than the viewport height
+    // if (contentHeight + footerHeight < viewportHeight) {
+    // footer.style.position = 'relative';
+
+    // If content is smaller than the viewport, let the footer follow the normal flow
+    // content.style.paddingBottom = '0';
+
+    // } else {
+    // footer.style.position = 'fixed';
+    // footer.style.bottom = '0';
+    // footer.style.width = '100%';
+
+    // Add bottom padding to the content equal to footer height so it's not hidden
+    content.style.paddingBottom = `${footerHeight}px`;
+  }
+  // Adjust footer on page load and resize and initially
+  window.addEventListener('load', adjustFooter);
+  window.addEventListener('resize', adjustFooter);
+  adjustFooter();
+return args;
+}""",
+    ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
-        inputs=conversations + [temperature, top_p, max_output_tokens],
+        # inputs=conversations + [temperature, top_p, max_output_tokens],
+        inputs=conversations,
         outputs=conversations + [chatbot],
         api_name=False,
         # should do .success()
@@ -445,6 +424,20 @@ def register_listeners():
         # + [retry_modal_btn]
         + [textbox],
         api_name=False,
+    ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+console.log("scrolling to last row");
+var botRows = document.querySelectorAll('.bot-row');
+var lastBotRow = botRows.item(botRows.length-1);
+lastBotRow.scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
+return args;
+}""",
     )
 
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
@@ -460,27 +453,47 @@ def register_listeners():
     # // Remove navigation prompt
     # window.onbeforeunload = null;
 
-    @conclude_btn.click(
-        inputs=[],
-        outputs=[stepper_block, chat_area, send_area, vote_area, buttons_footer],
-        api_name=False,
-    )
     def show_vote_area(request: gr.Request):
         logger.info(
             "advancing to vote area",
             extra={"request": request},
         )
         return {
-            stepper_block: gr.update(
-                value=stepper_html(
-                    "Donnez votre avis puis les deux IA vous seront dévoilées !", 3, 4
-                )
-            ),
-            chat_area: gr.update(visible=False),
+            # stepper_block: gr.update(
+            #     value=stepper_html(
+            #         "Votez pour découvrir leurs identités", 3, 4
+            #     )
+            # ),
+            # chat_area: gr.update(visible=False),
             send_area: gr.update(visible=False),
             vote_area: gr.update(visible=True),
             buttons_footer: gr.update(visible=True),
         }
+
+    gr.on(
+        triggers=[conclude_btn.click],
+        inputs=[],
+        outputs=[send_area, vote_area, buttons_footer],
+        api_name=False,
+        fn=show_vote_area,
+    ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+console.log("scrolling to #vote-area");
+
+const content = document.querySelector('#chat-area');
+content.style.paddingBottom = `0px`;
+
+const voteArea = document.getElementById('vote-area');
+voteArea.scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
+return args;
+}""",
+    )
 
     @which_model_radio.select(
         inputs=[which_model_radio],
@@ -517,77 +530,22 @@ def register_listeners():
         ] + new_supervote_sliders
 
     # Step 3
-    @both_equal_link.click(
-        inputs=[],
-        outputs=[supervote_send_btn, supervote_area, which_model_radio],
-        api_name=False,
-    )
-    def both_equal():
-        return {
-            supervote_area: gr.update(visible=False),
-            supervote_send_btn: gr.update(interactive=True),
-            which_model_radio: gr.update(value=None),
-        }
-
-    @return_btn.click(
-        inputs=[],
-        outputs=[stepper_block] + [vote_area]
-        # + [supervote_area]
-        + [chat_area] + [send_area] + [buttons_footer],
-    )
-    def return_to_chat(
-        request: gr.Request,
-        #    FIXME: ignored
-        api_name=False,
-    ):
-        logger.info(
-            "clicked return",
-            extra={"request": request},
-        )
-        return {
-            stepper_block: gr.update(
-                value=stepper_html("Discussion avec les modèles", 2, 4)
-            ),
-            vote_area: gr.update(visible=False),
-            chat_area: gr.update(visible=True),
-            send_area: gr.update(visible=True),
-            buttons_footer: gr.update(visible=False),
-        }
-
-    @supervote_send_btn.click(
-        inputs=(
-            [conversations[0]]
-            + [conversations[1]]
-            + [which_model_radio]
-            + (supervote_sliders)
-            + [comments_text]
-        ),
-        outputs=[
-            stepper_block,
-            vote_area,
-            supervote_area,
-            feedback_row,
-            results_area,
-            buttons_footer,
-        ],
-        # outputs=[quiz_modal],
-        api_name=False,
-    )
+    
     def vote_preferences(
         conversation_a,
         conversation_b,
-        which_model_radio,
-        relevance_slider,
-        form_slider,
-        style_slider,
-        comments_text,
+        which_model_radio_output,
+        relevance_slider_output,
+        form_slider_output,
+        style_slider_output,
+        comments_text_output,
         request: gr.Request,
     ):
         details = {
-            "relevance": int(relevance_slider),
-            "form": int(form_slider),
-            "style": int(style_slider),
-            "comments": str(comments_text),
+            "relevance": int(relevance_slider_output),
+            "form": int(form_slider_output),
+            "style": int(style_slider_output),
+            "comments": str(comments_text_output),
         }
         if hasattr(app_state, "category"):
             category = app_state.category
@@ -596,80 +554,11 @@ def register_listeners():
 
         vote_last_response(
             [conversation_a, conversation_b],
-            which_model_radio,
+            which_model_radio_output,
             category,
             details,
             request,
         )
-        # quiz_modal.visible = True
-        # return Modal(visible=True)
-
-        # @send_poll_btn.click(
-        #     inputs=[
-        #         conversations[0],
-        #         conversations[1],
-        #         which_model_radio,
-        #         chatbot_use,
-        #         gender,
-        #         age,
-        #         profession,
-        #     ],
-        #     outputs=[
-        #         quiz_modal,
-        #         stepper_block,
-        #         vote_area,
-        #         supervote_area,
-        #         feedback_row,
-        #         results_area,
-        #         buttons_footer,
-        #     ],
-        #     api_name=False,
-        # )
-        # @skip_poll_btn.click(
-        #     inputs=[
-        #         conversations[0],
-        #         conversations[1],
-        #         which_model_radio,
-        #         chatbot_use,
-        #         gender,
-        #         age,
-        #         profession,
-        #     ],
-        #     outputs=[
-        #         quiz_modal,
-        #         stepper_block,
-        #         vote_area,
-        #         supervote_area,
-        #         feedback_row,
-        #         results_area,
-        #         buttons_footer,
-        #     ],
-        #     api_name=False,
-        # )
-        # def send_poll(
-        #     conversation_a,
-        #     conversation_b,
-        #     which_model_radio,
-        #     chatbot_use,
-        #     gender,
-        #     age,
-        #     profession,
-        #     request: gr.Request,
-        #     event: gr.EventData,
-        # ):
-        #     confirmed = event.target.value == "Envoyer"  # Not "Passer"
-
-        #     save_profile(
-        #         conversation_a,
-        #         conversation_b,
-        #         which_model_radio,
-        #         chatbot_use,
-        #         gender,
-        #         age,
-        #         profession,
-        #         confirmed,
-        #         request,
-        #     )
 
         model_a = get_model_extra_info(
             conversation_a.model_name, config.models_extra_info
@@ -694,27 +583,73 @@ def register_listeners():
         reveal_html = build_reveal_html(
             model_a=model_a,
             model_b=model_b,
-            which_model_radio=which_model_radio,
+            which_model_radio=which_model_radio_output,
             model_a_impact=model_a_impact,
             model_b_impact=model_b_impact,
             model_a_tokens=model_a_tokens,
             model_b_tokens=model_b_tokens,
         )
         return {
-            stepper_block: gr.update(
-                value=stepper_html(
-                    "Découvrez les modèles d'IA générative avec lesquels vous venez de discuter",
-                    4,
-                    4,
-                )
-            ),
-            vote_area: gr.update(visible=False),
-            supervote_area: gr.update(visible=False),
-            feedback_row: gr.update(visible=True),
-            results_area: gr.update(visible=True, value=reveal_html),
-            buttons_footer: gr.update(visible=False)
+            # stepper_block: gr.update(
+            #     value=stepper_html(
+            #         "Les IA sont démasquées !",
+            #         4,
+            #         4,
+            #     )
+            # ),
+            # some components should be interactive=False
+            # vote_area: gr.update(visible=False),
+            # supervote_area: gr.update(visible=False),
+
+            relevance_slider: gr.update(interactive=False),
+            form_slider: gr.update(interactive=False),
+            style_slider: gr.update(interactive=False),
+            comments_text: gr.update(interactive=False),
+            reveal_screen: gr.update(visible=True),
+            results_area: gr.update(value=reveal_html),
+            buttons_footer: gr.update(visible=False),
+            which_model_radio: gr.update(interactive=False),
+            both_equal_link: gr.update(interactive=False),
         }
 
+    gr.on(
+        triggers=[supervote_send_btn.click, both_equal_link.click],
+        fn=vote_preferences,
+        inputs=(
+            [conversations[0]]
+            + [conversations[1]]
+            + [which_model_radio]
+            + (supervote_sliders)
+            + [comments_text]
+        ),
+        outputs=[
+            relevance_slider,
+            form_slider,
+            style_slider,
+            comments_text,
+            reveal_screen,
+            results_area,
+            buttons_footer,
+            which_model_radio,
+            both_equal_link
+        ],
+        # outputs=[quiz_modal],
+        api_name=False,
+    ).then(
+        fn=(lambda *x: x),
+        inputs=[],
+        outputs=[],
+        js="""(args) => {
+console.log("scrolling to #reveal-screen");
+const revealScreen = document.getElementById('reveal-screen');
+revealScreen.scrollIntoView({
+  behavior: 'smooth',
+  block: 'start'
+});
+return args;
+}""",
+    )
+    
     # gr.on(
     #     triggers=retry_modal_btn.click,
     #     fn=(lambda: Modal(visible=True)),
@@ -738,68 +673,9 @@ def register_listeners():
     #     # triggers=[clear_btn.click, retry_btn.click],
     #     fn=clear_history,
     #     inputs=conversations + [chatbot] + [textbox],
-    #     # List of objects to clear
-    #     outputs=conversations
-    #     + [chatbot]
-    #     + [textbox]
-    #     + [chat_area]
-    #     + [vote_area]
-    #     + [supervote_area]
-    #     + [mode_screen]
-    #     + [retry_modal]
-    #     + [conclude_btn]
-    #     + [retry_modal_btn]
-    #     + [shuffle_btn],
     # )
 
     # def clear_history(
-    #     conversation_a,
-    #     conversation_b,
-    #     chatbot,
-    #     textbox,
     #     request: gr.Request,
     # ):
-    #     logger.info("clear_history", extra={request: request})
-    #     #     + chatbots
-    #     # + [textbox]
-    #     # + [chat_area]
-    #     # + [vote_area]
-    #     # + [supervote_area]
-    #     # + [mode_screen],
-    #     config.outage_models = refresh_outage_models(
-    #         config.outage_models, controller_url=config.controller_url
-    #     )
-
-    #     # app_state.model_left, app_state.model_right = get_battle_pair(
-    #     model_left, model_right = get_battle_pair(
-    #         config.models,
-    #         BATTLE_TARGETS,
-    #         config.outage_models,
-    #         SAMPLING_WEIGHTS,
-    #         SAMPLING_BOOST_MODELS,
-    #     )
-    #     conversation_a = ConversationState(model_name=model_left)
-    #     conversation_b = ConversationState(model_name=model_right)
-    #     logger.info(
-    #         "Picked 2 models: " + model_left + " and " + model_right,
-    #         extra={request: request},
-    #     )
-    #     return [
-    #         # Conversations
-    #         conversation_a,
-    #         conversation_b,
-    #         None,
-    #         None,
-    #         gr.update(value="", placeholder="Réinterrogez deux nouveaux modèles"),
-    #         gr.update(visible=False),
-    #         gr.update(visible=False),
-    #         gr.update(visible=False),
-    #         gr.update(visible=True),
-    #         # retry_modal
-    #         Modal(visible=False),
-    #         #  conclude_btn + retry_modal_btn
-    #         gr.update(visible=False),
-    #         gr.update(visible=False),
-    #         # shuffle_btn
-    #         gr.update(visible=True),
-    #     ]
+    # return

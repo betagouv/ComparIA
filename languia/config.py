@@ -199,8 +199,10 @@ with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
 with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
     custom_css = css_file.read()
+with open("./assets/dark.css", encoding="utf-8") as css_file:
+    darkfixes_css = css_file.read()
 
-css = css_dsfr + custom_css
+css = css_dsfr + custom_css + darkfixes_css
 
 models = get_model_list(
     None,

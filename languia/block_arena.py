@@ -5,9 +5,9 @@ Users chat with two anonymous models.
 
 import gradio as gr
 
-from gradio_modal import Modal
+# from gradio_modal import Modal
 
-from languia.utils import stepper_html, header_html, welcome_modal_html
+from languia.utils import header_html, welcome_modal_html
 
 # from custom_components.frbutton.backend.gradio_frbutton import FrButton
 from custom_components.customradiocard.backend.gradio_customradiocard import (
@@ -15,7 +15,8 @@ from custom_components.customradiocard.backend.gradio_customradiocard import (
 )
 from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
-from custom_components.customslider.backend.gradio_customslider import CustomSlider
+
+# from custom_components.customslider.backend.gradio_customslider import CustomSlider
 
 
 from languia import config
@@ -37,8 +38,8 @@ with gr.Blocks(
     css=config.css,
     head=config.arena_head_js,
     analytics_enabled=False,
-    # js=config.arena_js,
-    js=None,
+    # scroll_to_output = True,
+    js=config.arena_js,
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
@@ -55,15 +56,12 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    stepper_block = gr.HTML(
-        stepper_html("Bienvenue ! Comment puis-je vous aider aujourd'hui ?", 1, 4),
-        elem_id="stepper-html",
-        visible=False,
-    )
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-container") as mode_screen:
 
-    with gr.Column(
-        visible=False, elem_id="mode-screen", elem_classes="fr-container"
-    ) as mode_screen:
+        title = gr.HTML(
+            elem_classes="text-center fr-mt-6w fr-mb-1w",
+            value="""<h3>Comment puis-je vous aider aujourd'hui ?</h3>""",
+        )
 
         guided_cards = CustomRadioCard(
             show_label=False,
@@ -71,27 +69,27 @@ with gr.Blocks(
             # elem_classes="fr-container",
             choices=[
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p></div>""",
                     "expression",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p></div>""",
                     "langues",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Vie pratique</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p></div>""",
                     "conseils",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p></div>""",
                     "loisirs",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p></div>""",
                     "administratif",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p></div>""",
                     "vie-professionnelle",
                 ),
             ],
@@ -101,6 +99,42 @@ with gr.Blocks(
             elem_id="free-mode",
             value="Je veux écrire sur mon propre sujet",
             elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mt-8w fr-mb-4w",
+        )
+
+    with gr.Group(
+        elem_id="chat-area",
+        visible=False,
+        elem_classes="fr-mb-10w fr-mb-md-0",
+    ) as chat_area:
+        label = "Modèles A et B"
+
+        # {likeable}
+        # placeholder
+        #         placeholder
+        # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
+        chatbot = gr.Chatbot(
+            # TODO:
+            type="messages",
+            elem_id="main-chatbot",
+            # min_width=
+            # height="100vh",
+            # height="max(100vh, 100%)",
+            height="100%",
+            # Doesn't show because it always has at least our message
+            # Note: supports HTML, use it!
+            placeholder="<em>Veuillez écrire aux modèles</em>",
+            # No difference
+            # bubble_full_width=False,
+            layout="panel",  # or "bubble"
+            likeable=False,
+            label=label,
+            # UserWarning: show_label has no effect when container is False.
+            show_label=False,
+            container=False,
+            elem_classes="chatbot",
+            # Should we show it?
+            show_copy_button=False,
+            # autoscroll=True
         )
 
     with gr.Column(elem_id="send-area", visible=False) as send_area:
@@ -135,66 +169,23 @@ with gr.Blocks(
 
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
-                value="Terminer et donner mon avis sur les IA",
+                value="Voter pour votre IA favorite",
                 elem_classes="fr-btn fr-col-12 fr-col-md-5",
                 visible=False,
                 interactive=False,
             )
 
-            # retry_modal_btn = gr.Button(
-            #     value="",
-            #     elem_id="retry-modal-btn",
-            #     elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
-            #     #  icon="assets/dsfr/icons/system/refresh-line.svg",
-            #     scale=1,
-            #     visible=False,
-            # )
-
-    with gr.Group(
-        elem_id="chat-area",
-        visible=False,
-        elem_classes="fr-mb-10w fr-pb-16w fr-mb-md-0",
-    ) as chat_area:
-        label = "Modèles A et B"
-        # {likeable}
-        # placeholder
-        #         placeholder
-        # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
-        chatbot = gr.Chatbot(
-            # TODO:
-            type="messages",
-            elem_id="main-chatbot",
-            # min_width=
-            height="100%",
-            # Doesn't show because it always has at least our message
-            # Note: supports HTML, use it!
-            placeholder="<em>Veuillez écrire aux modèles</em>",
-            # No difference
-            # bubble_full_width=False,
-            layout="panel",  # or "bubble"
-            likeable=False,
-            label=label,
-            # UserWarning: show_label has no effect when container is False.
-            show_label=False,
-            container=False,
-            elem_classes="chatbot",
-            # Should we show it?
-            show_copy_button=False,
-        )
 
     with gr.Column(
-        visible=False, elem_classes="fr-container fr-mb-12w fr-px-md-16w fr-px-0"
+        # h-screen
+        visible=False,
+        elem_classes="fr-container fr-px-md-16w fr-px-0 min-h-screen fr-pt-4w",
+        elem_id="vote-area",
     ) as vote_area:
         gr.HTML(
             value="""
-        <div class="fr-notice fr-notice--info"> 
-            <div class="fr-container">
-                <div class="fr-notice__body mission">
-                    <p class="fr-notice__title mission">Des réponses détaillées de votre part permettent à la recherche d’améliorer les réponses des futurs modèles d'IA sur des enjeux linguistiques et culturels.</p>
-                </div>
-            </div>
-        </div>
-            <h3 class="text-center fr-mt-2w">Quelles réponses préférez-vous ?</h3>""",
+            <h3 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir leurs identités</h3>
+            <p class="text-center text-grey fr-text--sm">Votre vote permet d’améliorer les réponses des deux IA</p>""",
         )
 
         which_model_radio = CustomRadioCard(
@@ -211,12 +202,13 @@ with gr.Blocks(
             show_label=False,
         )
         both_equal_link = gr.Button(
+            elem_id="both-equal-link",
             elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
             value="Les deux se valent",
         )
 
         with gr.Column(
-            visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-6w fr-mb-16w"
+            visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-16w fr-mb-16w"
         ) as supervote_area:
 
             why_vote = gr.HTML(
@@ -266,128 +258,33 @@ with gr.Blocks(
                 )
 
     with gr.Column(
-        elem_classes="fr-container--fluid", elem_id="buttons-footer", visible=False
+        elem_classes="fr-container--fluid fr-py-2w", elem_id="buttons-footer", visible=False
     ) as buttons_footer:
-        with gr.Row(elem_classes="fr-grid-row fr-container fr-my-2w"):
-            return_btn = gr.Button(
-                icon="assets/extra-icons/back.svg",
-                elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-4",
-                value="Relire la conversation",
-            )
+
             supervote_send_btn = gr.Button(
-                elem_classes="fr-btn fr-col-12 fr-col-md-4 fr-col-offset-md-1",
-                value="Envoyer mes préférences",
+                elem_classes="fr-btn fr-mx-auto",
+                value="Découvrir l'identité des deux IA",
                 interactive=False,
             )
 
-    results_area = gr.HTML(visible=False, elem_classes="fr-container")
+    with gr.Column(
+        elem_id="reveal-screen", visible=False, elem_classes="min-h-screen fr-pt-4w"
+    ) as reveal_screen:
 
-    with gr.Row(visible=False, elem_id="feedback-row") as feedback_row:
-        # dsfr: This should just be a normal link...
-        # feedback_btns =
-        gr.HTML(
-            value="""
-            <div class="fr-grid-row fr-grid-row--center fr-py-4w">
-            <a class="fr-btn fr-btn--secondary fr-ml-2w" href="../modeles">Liste des modèles</a>
-            </div>
-        """
-        )
+        results_area = gr.HTML(visible=True, elem_classes="fr-container")
 
-    # with Modal(elem_id="quiz-modal") as quiz_modal:
-    #     gr.Markdown(
-    #         """
-    #                 ### Dernière étape
-    #                 Ces quelques informations sur votre profil permettront à la recherche d’affiner les réponses des futurs modèles.
-    #                 """
-    #     )
-    #     profession = gr.Dropdown(
-    #         choices=[
-    #             ("Agriculteur", "farmer"),
-    #             (
-    #                 "Artisan, commerçant et chef d'entreprise",
-    #                 "artisan_merchant_and_business_owner",
-    #             ),
-    #             (
-    #                 "Cadre et profession intellectuelle supérieure",
-    #                 "executive_and_senior_intellectual_profession",
-    #             ),
-    #             ("Profession intermédiaire", "intermediate_profession"),
-    #             ("Étudiant", "student"),
-    #             ("Employé", "employee"),
-    #             ("Ouvrier", "worker"),
-    #             ("Retraité", "retired"),
-    #             ("Sans emploi", "unemployed"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Catégorie socioprofessionnelle",
-    #     )
-
-    #     age = gr.Dropdown(
-    #         choices=[
-    #             ("Moins de 18 ans", "under_18"),
-    #             ("Entre 18 et 24 ans", "18_to_24"),
-    #             ("Entre 25 et 34 ans", "25_to_34"),
-    #             ("Entre 35 et 44 ans", "35_to_44"),
-    #             ("Entre 45 et 54 ans", "45_to_54"),
-    #             ("Entre 55 et 64 ans", "55_to_64"),
-    #             ("Plus de 64 ans", "over_64"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Tranche d'âge",
-    #     )
-
-    #     gender = gr.Dropdown(
-    #         choices=[
-    #             ("Femme", "female"),
-    #             ("Homme", "male"),
-    #             ("Autre", "other"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Genre",
-    #     )
-    #     chatbot_use = gr.Dropdown(
-    #         choices=[
-    #             ("Tous les jours", "every_day"),
-    #             ("Toutes les semaines", "every_week"),
-    #             ("Une fois par mois", "once_a_month"),
-    #             ("Moins d'une fois par mois", "less_than_once_a_month"),
-    #             ("Jamais", "never"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Fréquence d'utilisation d'assistants conversationnels",
-    #     )
-    #     with gr.Row(elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--right"):
-    #         skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
-    #         send_poll_btn = gr.Button("Envoyer", elem_classes="fr-btn")
-
-    # TODO: get rid
-    temperature = gr.Slider(
-        visible=False,
-        # minimum=0.0,
-        # maximum=1.0,
-        value=0.7,
-        # step=0.1,
-        interactive=False,
-        label="Temperature",
-    )
-    top_p = gr.Slider(
-        visible=False,
-        minimum=0.0,
-        maximum=1.0,
-        value=1.0,
-        step=0.1,
-        interactive=False,
-        label="Top P",
-    )
-    max_output_tokens = gr.Slider(
-        visible=False,
-        minimum=16,
-        maximum=2048,
-        value=1024,
-        step=64,
-        interactive=False,
-        label="Max output tokens",
-    )
+        with gr.Column(visible=True, elem_id="feedback-row") as feedback_row:
+            # dsfr: This should just be a normal link...
+            # feedback_btns =
+            gr.HTML(
+                elem_classes=" fr-container",
+                value="""
+                <div class="fr-py-4w">
+                <a class="block fr-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec 2 nouvelles IA</a>
+                <a class="block fr-btn fr-btn--secondary fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
+                </div>
+            """
+            )
 
     # Modals
     #     with Modal(elem_id="retry-modal") as retry_modal:

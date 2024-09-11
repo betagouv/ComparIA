@@ -55,10 +55,10 @@ RUN gradio cc install
 # workaround
 RUN npm install @gouvfr/dsfr
 RUN gradio cc build --no-generate-docs --bump-version
-WORKDIR /app/custom_components/customslider
-RUN gradio cc install
-RUN npm install @gouvfr/dsfr
-RUN gradio cc build --no-generate-docs --bump-version
+# WORKDIR /app/custom_components/customslider
+# RUN gradio cc install
+# RUN npm install @gouvfr/dsfr
+# RUN gradio cc build --no-generate-docs --bump-version
 
 # Comment these 2 lines if you want an image with node
 FROM app

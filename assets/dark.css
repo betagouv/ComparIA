@@ -1,0 +1,67 @@
+
+/* FIXME: */
+/* DARK MODE FIXES */
+
+/* @media (prefers-color-scheme: dark) {
+  body {
+    background: var(--bg-dark);
+    color: var(--col-dark);
+  } */
+/* Temporary fixes for dark mode in arena: enforce clear mode */
+/* .dark .fr-label {
+  color: var(--text-default-grey) !important;
+} */
+body.dark {
+  color: var(--body-text-color) !important;
+  background-color: var(--background-default-grey) !important;
+  --body-background-fill: var(--background-default-grey);
+  --body-text-color: var(--text-default-grey);
+}
+
+/* .dark textarea, .dark input, .dark .padded {
+  color: var(--body-text-color) !important;
+  background-color: var(--background-default-grey) !important;
+} */
+
+.dark .chatbot p,
+.dark p,
+#free-mode p,
+#guided-mode p,
+#guided-area p {
+  color: var(--body-text-color);
+}
+
+.dark .chatbot,
+.dark .message-row,
+.dark .user,
+.dark .user:hover,
+.dark .user:active {
+  background-color: var(--background-default-grey) !important;
+}
+
+.dark code {
+  background-color: var(--neutral-100);
+}
+
+.dark .modal-block,
+.dark .options .item,
+.dark .options {
+  background-color: white !important;
+  color: var(--neutral-800) !important;
+}
+
+.dark .modal-block .close,
+.dark .modal-block .block,
+.dark .modal-block .wrap,
+.dark .modal-block .wrap-inner {
+  background-color: white !important;
+}
+
+.dark .modal-block span[data-testid="block-info"] {
+  color: var(--neutral-800) !important;
+}
+
+.dark .code_wrap pre {
+  /* var(--code-background-fill) */
+  background-color: var(--neutral-100) !important;
+}

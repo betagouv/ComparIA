@@ -45,7 +45,7 @@
 <style>
 	label {
 		padding: 1.5rem 1rem 1.5rem 1.5rem !important;
-		height: 150px !important;
+		/* height: 150px !important; */
 		display: flex;
 		align-items: left;
 		transition: var(--button-transition);
