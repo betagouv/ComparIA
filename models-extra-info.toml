@@ -254,7 +254,7 @@ distribution = "open-weights"
 dataset = "private"
 conditions = "free"
 description = "Ce modèle de petit gabarit est entraîné pour des tâches de raisonnement, de connaissances générales et de programmation. Il utilise le tokenizer Tekken, efficace pour compresser des textes allant jusqu’à 128 000 tokens en plus de 100 langues."
-excerpt = "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter un contexte de 128k jetons en plus de 100 langues."
+excerpt = "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter un contexte de 128k tokens en plus de 100 langues."
 license = "Apache 2.0"
 
 ["Mistral-7B-Instruct-v0.3"]
@@ -321,7 +321,7 @@ dataset = "private"
 license = "MIT"
 conditions = "free"
 description = "Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
-excerpt = "Performant pour des tâches de génération de code, et de résumé, ce modèle compact supporte un contexte restreint de 4k jetons."
+excerpt = "Performant pour des tâches de génération de code, et de résumé, ce modèle compact supporte un contexte restreint de 4000 tokens."
 
 ["phi-3.5-mini-instruct"]
 simple_name = "Phi-3.5-mini"
@@ -335,13 +335,13 @@ dataset = "private"
 license = "MIT"
 conditions = "free"
 description = "Petit modèle de la famille Phi, remplaçant Phi-3-mini, ce modèle supporte un grand contexte de 128 000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
-excerpt = "Performant pour des tâches de génération de code et de résumé, ce modèle gère un grand contexte de 128k jetons."
+excerpt = "Performant pour des tâches de génération de code et de résumé, ce modèle gère un grand contexte de 128k tokens."
 
 [Phi-3-small-8k-Instruct]
 license = "MIT"
 simple_name = "Phi-3-small-8k-Instruct"
 description = "Grand frère de la famille Phi3, ce modèle supporte un contexte de 8000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
-excerpt = "Optimisé pour le raisonnement logique, ce petit modèle supporte un contexte de 8k jetons, adapté pour la génération de code et tâches complexes."
+excerpt = "Optimisé pour le raisonnement logique, ce petit modèle supporte un contexte de 8000 tokens, adapté pour la génération de code et tâches complexes."
 organisation = "Microsoft"
 country = "États-Unis"
 icon_path = "microsoft.png"
@@ -390,7 +390,7 @@ distribution = "open-weights"
 dataset = "private"
 conditions = "free"
 description = "Petit frère de la famille Qwen2, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes"
-excerpt = "Supportant un contexte de 130k jetons, ce petit modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
+excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
 params = 7
 license = "Apache 2.0"
 
