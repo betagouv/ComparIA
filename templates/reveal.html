@@ -1,8 +1,11 @@
 <div class="fr-container">
     <h3 class="text-center">Les IA sont démasquées !</h3>
-    <p class="text-center text-grey fr-text--sm">Merci, vos avis permettent aux éditeurs d’IA d’améliorer leurs modèles</p>
+    <p class="text-center text-grey fr-text--sm">Merci, vos avis permettent aux éditeurs d’IA d’améliorer leurs modèles
+    </p>
     <div class="fr-grid-row">
-        {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a, 'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit), (model_b,
+        {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a,
+        'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit),
+        (model_b,
         'model-b', model_b_impact, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b, streaming_b_unit)] %}
 
         <div class="fr-tile fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-md-{% if side == 'model-a' %}n{% endif %}3w">
@@ -22,7 +25,8 @@
                     }}</span>
                 {% if
                 model['distribution'] == "open-weights" %}<span
-                    class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ model['params']|round|int }} mds de paramètres</span>{% endif %}
+                    class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ model['params']|round|int }} mds de
+                    paramètres</span>{% endif %}
                 <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{{ model['organisation'] }}</span>
             </p>
             <p class="fr-mb-4w fr-text--sm h-20">{{ model['excerpt'] }}</p>
@@ -60,7 +64,8 @@
                         </svg>
                     </div>
                     <div class="fr-col-9 text-left">
-                        <p><strong><span class="fr-text--xxl">{{ (impact.energy.value*1000)|round|int }}</span>Wh</strong>
+                        <p><strong><span class="fr-text--xxl">{{ (impact.energy.value*1000)|round|int
+                                    }}</span>Wh</strong>
                         </p>
                         <p class="fr-text--xs">énergie conso.<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                 aria-describedby="energie-{{side}}"></a>
@@ -184,26 +189,29 @@
                                     {% endif %}</span>{% if
                                 model['distribution'] == "open-weights" %}
                                 <!-- TODO: don't show 1 decimal if it's round -->
-                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{ model['params']|round|int }} mds de paramètres</span>{% endif
+                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">{{
+                                    model['params']|round|int }} mds de paramètres</span>{% endif
                                 %}
                             </p>
                             <div class="flex fr-mb-1w"><span class="fr-icon-ruler" aria-hidden="true"></span>
                                 <div class="fr-ml-1v">
                                     <p class="fr-mb-1w"><strong>Taille {{ model['friendly_size'] }}</strong> : {{
                                         size_desc[model["friendly_size"]] }}</p>
-                                        <section class="fr-accordion fr-mb-4w">
-                                            <h3 class="fr-accordion__title">
-                                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="params-{{ model['id'] }}">Les paramètres, qu'est-ce que c'est ?</button>
-                                            </h3>
-                                            <div class="fr-collapse" id="params-{{ model['id'] }}">Les
+                                    <section class="fr-accordion fr-mb-4w">
+                                        <h3 class="fr-accordion__title">
+                                            <button class="fr-accordion__btn" aria-expanded="false"
+                                                aria-controls="params-{{ model['id'] }}">Les paramètres, qu'est-ce que
+                                                c'est ?</button>
+                                        </h3>
+                                        <div class="fr-collapse" id="params-{{ model['id'] }}">Les
                                             paramètres ou
                                             les poids comptés en milliards sont les variables apprises par un modèle au
                                             cours de
                                             son entrainement qui déterminent ses réponses. Plus le nombre de paramètres
                                             est
                                             important, plus il est capable d’effectuer des tâches complexes.
-                                            </div>
-                                        </section>
+                                        </div>
+                                    </section>
                                 </div>
                             </div>
                             <div class="fr-mb-4w">
@@ -234,7 +242,9 @@
                                         </p>
                                         <section class="fr-accordion">
                                             <h3 class="fr-accordion__title">
-                                                <button class="fr-accordion__btn" aria-expanded="false" aria-controls="ram-{{ model['id'] }}">La RAM, à quoi ça sert ?</button>
+                                                <button class="fr-accordion__btn" aria-expanded="false"
+                                                    aria-controls="ram-{{ model['id'] }}">La RAM, à quoi ça sert
+                                                    ?</button>
                                             </h3>
                                             <div class="fr-collapse" id="ram-{{ model['id'] }}">La RAM
                                                 (mémoire
@@ -250,7 +260,7 @@
                                                 ordinateurs moins puissants.
                                             </div>
                                         </section>
-                                        
+
                                     </div>
                                 </div>
                             </div>
