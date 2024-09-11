@@ -63,25 +63,24 @@ def update_last_message(messages, text):
 
 def bot_response(
     state,
-    temperature,
-    top_p,
-    max_new_tokens,
     request: gr.Request,
+    temperature=0.7,
+    top_p=1.0,
+    max_new_tokens=1024,
     apply_rate_limit=True,
-    use_recommended_config=False,
+    use_recommended_config=True,
 ):
-    ip = get_ip(request)
-    logger.info(f"bot_response. ip: {ip}")
     # start_tstamp = time.time()
-    temperature = float(temperature)
-    top_p = float(top_p)
-    max_new_tokens = int(max_new_tokens)
+    # temperature = float(temperature)
+    # top_p = float(top_p)
+    # max_new_tokens = int(max_new_tokens)
 
     if apply_rate_limit:
+        ip = get_ip(request)
         ret = is_limit_reached(state.model_name, ip)
         if ret is not None and ret["is_limit_reached"]:
             error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
-            logger.warn(f"rate limit reached. ip: {ip}. error_msg: {ret['reason']}")
+            logger.warn(f"rate limit reached. error_msg: {ret['reason']}")
             # state.conv.update_last_message(error_msg)
             # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
             raise RuntimeError(error_msg)
@@ -99,10 +98,10 @@ def bot_response(
         if use_recommended_config:
             recommended_config = model_api_dict.get("recommended_config", None)
             if recommended_config is not None:
-                temperature = recommended_config.get("temperature", temperature)
-                top_p = recommended_config.get("top_p", top_p)
+                temperature = recommended_config.get("temperature", float(temperature))
+                top_p = recommended_config.get("top_p", float(top_p))
                 max_new_tokens = recommended_config.get(
-                    "max_new_tokens", max_new_tokens
+                    "max_new_tokens", int(max_new_tokens)
                 )
         try:
             stream_iter = get_api_provider_stream_iter(
