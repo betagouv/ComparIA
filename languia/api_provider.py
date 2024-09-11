@@ -198,7 +198,7 @@ def vertex_api_stream_iter(
                         content = content[9:]
                 if content and model_name=="google/gemini-1.5-pro-001":
                     logger.debug("fixing gemini markdown title bug at google")
-                    content = content.replace("<br />", "\n")
+                    content = content.replace("<br />", "")
             else:
                 logger.warning("chunk.choices[0] had no delta:")
                 logger.warning(chunk.choices[0])
