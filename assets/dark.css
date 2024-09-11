@@ -26,7 +26,6 @@ body.dark {
 .dark .chatbot p,
 .dark p,
 #free-mode p,
-#guided-mode p,
 #guided-area p {
   color: var(--body-text-color);
 }
