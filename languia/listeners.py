@@ -72,10 +72,9 @@ def register_listeners():
         api_name=False,
     )
     def enter_arena(request: gr.Request):
-        # tos_accepted = accept_tos_checkbox
+        # tos_accepted = request...
         # if tos_accepted:
         # logger.info(f"ToS accepted")
-        # {'name': 'languia', 'msg': 'ToS accepted: fwypynv2sy', 'args': ('fwypynv2sy',), 'levelname': 'INFO', 'levelno': 20, 'pathname': '/home/hadrien/git/languia/languia/listeners.py', 'filename': 'listeners.py', 'module': 'listeners', 'exc_info': None, 'exc_text': None, 'stack_info': None, 'lineno': 64, 'funcName': 'enter_arena', 'created': 1725292327.7355227, 'msecs': 735.0, 'relativeCreated': 7554.653644561768, 'thread': 139691558962880, 'threadName': 'AnyIO worker thread', 'processName': 'SpawnProcess-4', 'process': 122874, 'request': <gradio.route_utils.Request object at 0x7f0c7ed0a550>}
         logger.info(
             # config.Log("ToS accepted: %s" % request.session_hash),
             f"ToS accepted: %s" % request.session_hash,
@@ -130,19 +129,6 @@ def register_listeners():
             shuffle_btn: gr.update(interactive=True),
             free_mode_btn: gr.update(visible=False),
         }
-
-        # .then(
-        #         js="""
-        # () =>
-        # {
-        #     console.log("rerolling");
-
-        #   const targetElement = document.getElementById('guided-area');
-        #     targetElement.scrollIntoView({
-        #       behavior: 'smooth'
-        #     });
-        #   }
-        # """)
 
     @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox], api_name=False)
     def shuffle_prompt(guided_cards):
@@ -549,17 +535,17 @@ return args;
         conversation_a,
         conversation_b,
         which_model_radio_output,
-        relevance_slider,
-        form_slider,
-        style_slider,
-        comments_text,
+        relevance_slider_output,
+        form_slider_output,
+        style_slider_output,
+        comments_text_output,
         request: gr.Request,
     ):
         details = {
-            "relevance": int(relevance_slider),
-            "form": int(form_slider),
-            "style": int(style_slider),
-            "comments": str(comments_text),
+            "relevance": int(relevance_slider_output),
+            "form": int(form_slider_output),
+            "style": int(style_slider_output),
+            "comments": str(comments_text_output),
         }
         if hasattr(app_state, "category"):
             category = app_state.category
@@ -614,6 +600,11 @@ return args;
             # some components should be interactive=False
             # vote_area: gr.update(visible=False),
             # supervote_area: gr.update(visible=False),
+
+            relevance_slider: gr.update(interactive=False),
+            form_slider: gr.update(interactive=False),
+            style_slider: gr.update(interactive=False),
+            comments_text: gr.update(interactive=False),
             reveal_screen: gr.update(visible=True),
             results_area: gr.update(value=reveal_html),
             buttons_footer: gr.update(visible=False),
@@ -632,9 +623,10 @@ return args;
             + [comments_text]
         ),
         outputs=[
-            # stepper_block,
-            # vote_area,
-            # supervote_area,
+            relevance_slider,
+            form_slider,
+            style_slider,
+            comments_text,
             reveal_screen,
             results_area,
             buttons_footer,
