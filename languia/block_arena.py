@@ -15,7 +15,7 @@ from custom_components.customradiocard.backend.gradio_customradiocard import (
 )
 from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
-from custom_components.customslider.backend.gradio_customslider import CustomSlider
+# from custom_components.customslider.backend.gradio_customslider import CustomSlider
 
 
 from languia import config
