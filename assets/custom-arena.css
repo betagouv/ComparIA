@@ -72,8 +72,21 @@ footer,
   min-height: 7rem;
 }
 
+.h-20 {
+  height: 5rem;
+  /* 80px */
+}
+
+.inline {
+  display: inline;
+}
+
 .inline-block {
   display: inline-block;
+}
+
+.block {
+  display: block;
 }
 
 .bolder {
@@ -82,10 +95,6 @@ footer,
 
 .bg-white textarea {
   background-color: white !important;
-}
-
-.inline {
-  display: inline;
 }
 
 .text-center {
@@ -322,7 +331,7 @@ li.fr-nav__item {
 }
 
 .message-wrap>.user-row:first-child .flex-wrap.user::after {
-  content: "Votre choix nous aide à améliorer leurs réponses des IA";
+  content: "Votre choix nous aide à améliorer les réponses des IA";
   color: #949494;
   font-size: 0.875rem;
   text-align: center;
@@ -488,8 +497,8 @@ li.fr-nav__item {
 
 #buttons-footer {
   position: fixed;
-  padding: 1em 20%;
-  width: 100%;
+  /* padding: 1em 20%; */
+  /* width: 100%; */
   bottom: 0;
   left: 0;
   background-color: var(--background-alt-grey);

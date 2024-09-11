@@ -216,7 +216,7 @@ with gr.Blocks(
         )
 
         with gr.Column(
-            visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-6w fr-mb-16w"
+            visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-16w fr-mb-16w"
         ) as supervote_area:
 
             why_vote = gr.HTML(
@@ -266,13 +266,12 @@ with gr.Blocks(
                 )
 
     with gr.Column(
-        elem_classes="fr-container--fluid", elem_id="buttons-footer", visible=False
+        elem_classes="fr-container--fluid fr-py-2w", elem_id="buttons-footer", visible=False
     ) as buttons_footer:
-        with gr.Row(elem_classes="fr-grid-row fr-grid-row--center fr-container fr-my-2w"):
 
             supervote_send_btn = gr.Button(
-                elem_classes="fr-btn fr-col-12 fr-col-md-2",
-                value="Découvrir l’identité des deux IA",
+                elem_classes="fr-btn fr-mx-auto",
+                value="Découvrir l'identité des deux IA",
                 interactive=False,
             )
 
@@ -282,14 +281,15 @@ with gr.Blocks(
 
         results_area = gr.HTML(visible=True, elem_classes="fr-container")
 
-        with gr.Row(visible=True, elem_id="feedback-row") as feedback_row:
+        with gr.Column(visible=True, elem_id="feedback-row") as feedback_row:
             # dsfr: This should just be a normal link...
             # feedback_btns =
             gr.HTML(
+                elem_classes=" fr-container",
                 value="""
-                <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-py-4w fr-container">
-                <a class="fr-btn fr-col-12 fr-col-md-2 fr-mb-2w" href="../arene/">Discuter avec 2 nouvelles IA</a>
-                <a class="fr-btn fr-btn--secondary fr-col-12 fr-col-md-2" href="../modeles">Découvrir la liste des IA</a>
+                <div class="fr-py-4w">
+                <a class="block fr-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec 2 nouvelles IA</a>
+                <a class="block fr-btn fr-btn--secondary fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
                 </div>
             """
             )
