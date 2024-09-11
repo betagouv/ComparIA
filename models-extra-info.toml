@@ -123,7 +123,7 @@ dataset = "private"
 conditions = "restricted"
 license = "Gemma"
 params = 27
-excerpt = "Modèle performant avec une latence correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision."
+excerpt = "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision."
 description = "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
 
 [Gemma-2-9B-it]
@@ -137,7 +137,7 @@ dataset = "private"
 license = "Gemma"
 params = 9
 conditions = "restricted"
-excerpt = "Ce modèle est plus abordable mais présente une latence légèrement supérieure, convenant à des tâches moins complexes."
+excerpt = "Ce modèle est d'une taille intermédiaire, mais il tire partie des avancées de la génération Gemma 2."
 description = "Modèle intermédiaire de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 
 [gemma-2-2b-it]
