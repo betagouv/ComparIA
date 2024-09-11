@@ -38,6 +38,7 @@ from languia.config import logger
 
 from languia import config
 
+
 def init_conversations(request: gr.Request):
     config.outage_models = refresh_outage_models(
         config.outage_models, controller_url=config.controller_url
@@ -60,6 +61,7 @@ def init_conversations(request: gr.Request):
         extra={request: request},
     )
     return conversations
+
 
 # Register listeners
 def register_listeners():
@@ -136,7 +138,9 @@ def register_listeners():
 
     @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
     def change_send_btn_state(textbox):
-        if textbox == "":
+        if textbox == "" or (
+            hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses
+        ):
             return gr.update(interactive=False)
         else:
             return gr.update(interactive=True)
@@ -146,7 +150,7 @@ def register_listeners():
         conversation_b: gr.State,
         text: gr.Text,
         request: gr.Request,
-        evt: gr.EventData
+        evt: gr.EventData,
     ):
         conversations = [conversation_a, conversation_b]
 
@@ -172,7 +176,7 @@ def register_listeners():
                     "Saving original prompt: " + app_state.original_user_prompt,
                     extra={"request": request},
                 )
-
+        app_state.awaiting_responses = True
         return (
             # 2 conversations
             conversations
@@ -218,6 +222,11 @@ def register_listeners():
                         stop = False
                     except StopIteration:
                         pass
+                    # TODO: timeout problems on scaleway Ampere models?
+                    # except httpcore.ReadTimeout:
+                    #     pass
+                    # except httpx.ReadTimeout:
+                    #     pass
 
                 yield conversations + [to_threeway_chatbot(conversations)]
 
@@ -288,7 +297,7 @@ def register_listeners():
         return {
             textbox: gr.update(
                 value="",
-                placeholder="Continuer à discuter avec les deux modèles",
+                placeholder="Continuer à discuter avec les deux modèles d'IA",
             ),
             mode_screen: gr.update(visible=False),
             chat_area: gr.update(visible=True),
@@ -297,12 +306,16 @@ def register_listeners():
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
-    def check_answers(conversation_a, conversation_b, request: gr.Request):
+    def check_answers(
+        conversation_a, conversation_b, textbox_output, request: gr.Request
+    ):
 
         logger.debug(
             "models finished answering",
             extra={"request": request},
         )
+        app_state.awaiting_responses = False
+
         if hasattr(app_state, "crashed") and app_state.crashed:
             logger.error(
                 "model crash detected, keeping prompt",
@@ -330,7 +343,8 @@ def register_listeners():
                 + [[]]
                 # disable conclude btn
                 + [gr.update(interactive=False)]
-                # + [gr.skip()]
+                # enable send_btn
+                + [gr.update(interactive=True)]
                 + [app_state.original_user_prompt]
             )
 
@@ -345,14 +359,9 @@ def register_listeners():
             + [chatbot]
             # enable conclude_btn
             + [gr.update(interactive=True)]
-            # show retry_modal_btn
-            # + [gr.update(visible=True)]
-            + [
-                gr.update(
-                    value="",
-                    placeholder="Continuer à discuter avec les deux modèles d'IA",
-                )
-            ]
+            # enable send_btn if textbox not empty
+            + [gr.update(interactive=(textbox_output != ""))]
+            + [gr.skip()]
         )
 
     gr.on(
@@ -419,10 +428,8 @@ return args;
         # should do .success()
     ).then(
         fn=check_answers,
-        inputs=conversations,
-        outputs=conversations + [chatbot] + [conclude_btn]
-        # + [retry_modal_btn]
-        + [textbox],
+        inputs=conversations + [textbox],
+        outputs=conversations + [chatbot] + [conclude_btn] + [send_btn] + [textbox],
         api_name=False,
     ).then(
         fn=(lambda *x: x),
@@ -530,7 +537,7 @@ return args;
         ] + new_supervote_sliders
 
     # Step 3
-    
+
     def vote_preferences(
         conversation_a,
         conversation_b,
@@ -600,7 +607,6 @@ return args;
             # some components should be interactive=False
             # vote_area: gr.update(visible=False),
             # supervote_area: gr.update(visible=False),
-
             relevance_slider: gr.update(interactive=False),
             form_slider: gr.update(interactive=False),
             style_slider: gr.update(interactive=False),
@@ -631,7 +637,7 @@ return args;
             results_area,
             buttons_footer,
             which_model_radio,
-            both_equal_link
+            both_equal_link,
         ],
         # outputs=[quiz_modal],
         api_name=False,
@@ -649,7 +655,7 @@ revealScreen.scrollIntoView({
 return args;
 }""",
     )
-    
+
     # gr.on(
     #     triggers=retry_modal_btn.click,
     #     fn=(lambda: Modal(visible=True)),
