@@ -175,14 +175,6 @@ with gr.Blocks(
                 interactive=False,
             )
 
-            # retry_modal_btn = gr.Button(
-            #     value="",
-            #     elem_id="retry-modal-btn",
-            #     elem_classes="fr-btn fr-btn--secondary fr-icon-refresh-line fr-col-1",
-            #     #  icon="assets/dsfr/icons/system/refresh-line.svg",
-            #     scale=1,
-            #     visible=False,
-            # )
 
     with gr.Column(
         # h-screen
@@ -192,7 +184,7 @@ with gr.Blocks(
     ) as vote_area:
         gr.HTML(
             value="""
-            <h3 class="text-center fr-mt-2w">Votez pour découvrir leurs identités</h3>
+            <h3 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir leurs identités</h3>
             <p class="text-center text-grey fr-text--sm">Votre vote permet d’améliorer les réponses des deux IA</p>""",
         )
 

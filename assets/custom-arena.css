@@ -117,7 +117,9 @@ footer,
   /* color: var(--block-title-text-color); */
   /* color: var(--neutral-500); */
   /* color: var(--text-default-grey); */
-  color: var(--text-mention-grey);
+  /* color: var(--text-mention-grey);
+  color: var(--grey-425-625); */
+  color: #949494;
 
 }
 
