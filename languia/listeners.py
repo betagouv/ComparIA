@@ -40,6 +40,28 @@ from languia.config import logger
 
 from languia import config
 
+def init_conversations(request: gr.Request):
+    config.outage_models = refresh_outage_models(
+        config.outage_models, controller_url=config.controller_url
+    )
+    # app_state.model_left, app_state.model_right = get_battle_pair(
+    model_left, model_right = get_battle_pair(
+        config.models,
+        BATTLE_TARGETS,
+        config.outage_models,
+        SAMPLING_WEIGHTS,
+        SAMPLING_BOOST_MODELS,
+    )
+    conversations = [
+        # NOTE: replacement of gr.State() to ConversationState happens here
+        ConversationState(model_name=model_left),
+        ConversationState(model_name=model_right),
+    ]
+    logger.info(
+        "Picked 2 models: " + model_left + " and " + model_right,
+        extra={request: request},
+    )
+    return conversations
 
 # Register listeners
 def register_listeners():
@@ -65,27 +87,7 @@ def register_listeners():
             f"ToS accepted: %s" % request.session_hash,
             extra={"request": request},
         )
-
-        config.outage_models = refresh_outage_models(
-            config.outage_models, controller_url=config.controller_url
-        )
-        # app_state.model_left, app_state.model_right = get_battle_pair(
-        model_left, model_right = get_battle_pair(
-            config.models,
-            BATTLE_TARGETS,
-            config.outage_models,
-            SAMPLING_WEIGHTS,
-            SAMPLING_BOOST_MODELS,
-        )
-        conversations = [
-            # NOTE: replacement of gr.State() to ConversationState happens here
-            ConversationState(model_name=model_left),
-            ConversationState(model_name=model_right),
-        ]
-        logger.info(
-            "Picked 2 models: " + model_left + " and " + model_right,
-            extra={request: request},
-        )
+        conversations = init_conversations(request)
         return conversations + [
             gr.update(visible=True),
             gr.update(visible=True),
@@ -358,23 +360,14 @@ def register_listeners():
                 extra={"request": request},
             )
             app_state.crashed = False
-            model_left, model_right = get_battle_pair(
-                config.models,
-                BATTLE_TARGETS,
-                config.outage_models,
-                SAMPLING_WEIGHTS,
-                SAMPLING_BOOST_MODELS,
-            )
-            conversation_a = ConversationState(model_name=model_left)
-            conversation_b = ConversationState(model_name=model_right)
 
-            logger.info(
-                "Repicked 2 models: " + model_left + " and " + model_right,
-                extra={request: request},
-            )
-            # conversation_a = ConversationState()
-            # conversation_b = ConversationState()
+            conversation_a, conversation_b = init_conversations(request)
 
+            # logger.info(
+            #     "Repicked 2 models: " + model_left + " and " + model_right,
+            #     extra={request: request},
+            # )
+            
             logger.info(
                 "prefilling opening prompt",
                 extra={"request": request},
