@@ -4,7 +4,7 @@ import os
 import gradio as gr
 
 
-from random import randrange
+from jinja2 import Template
 
 import json
 
@@ -183,111 +183,6 @@ def get_matomo_tracker_from_cookies(cookies):
     return None
 
 
-# def save_profile_to_db(data):
-#     from languia.config import db as db_config
-
-#     logger = logging.getLogger("languia")
-#     if not db_config:
-#         logger.warn("Cannot log to db: no db configured")
-#         return
-#     conn = psycopg2.connect(**db_config)
-#     cursor = conn.cursor()
-#     try:
-#         insert_statement = sql.SQL(
-#             """
-#             INSERT INTO profiles (tstamp, chatbot_use, gender, age, profession, confirmed, session_hash, visitor_uuid, extra)
-#             VALUES (%(tstamp)s, %(chatbot_use)s, %(gender)s, %(age)s, %(profession)s, %(confirmed)s, %(session_hash)s, %(visitor_uuid)s, %(extra)s)
-#         """
-#         )
-#         values = {
-#             "tstamp": (data["tstamp"]),
-#             "chatbot_use": (data["chatbot_use"]),
-#             "gender": (data["gender"]),
-#             "age": (data["age"]),
-#             "profession": (data["profession"]),
-#             "confirmed": bool(data["confirmed"]),
-#             "session_hash": str(data["session_hash"]),
-#             "visitor_uuid": str(data["visitor_uuid"]),
-#             "extra": json.dumps(data["extra"]),
-#         }
-#         cursor.execute(insert_statement, values)
-#         conn.commit()
-#         logger.info(f"Saved profile to db")
-#     except Exception as e:
-#         logger = logging.getLogger("languia")
-#         logger.error(f"Error saving profile to db: {e}")
-#         stacktrace = traceback.format_exc()
-#         print(f"Stacktrace: {stacktrace}")
-#     finally:
-#         cursor.close()
-#         if conn:
-#             conn.close()
-
-
-# def save_profile(
-#     conversation_a,
-#     conversation_b,
-#     which_model_radio,
-#     chatbot_use,
-#     gender,
-#     age,
-#     profession,
-#     confirmed,
-#     request: gr.Request,
-# ):
-#     """
-#     save poll data to file
-#     """
-#     logger = logging.getLogger("languia")
-#     t = datetime.datetime.now()
-#     profile_log_filename = f"profile-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
-#     profile_log_path = os.path.join(LOGDIR, profile_log_filename)
-
-#     visitor_uuid = get_matomo_tracker_from_cookies(request.cookies)
-
-#     data = {
-#         "tstamp": str(t),
-#         "chatbot_use": chatbot_use,
-#         "gender": gender,
-#         "age": age,
-#         "profession": profession,
-#         "confirmed": bool(confirmed),
-#         "session_hash": str(request.session_hash),
-#         "visitor_uuid": str(visitor_uuid),
-#         # Log redundant info to be sure
-#         "extra": {
-#             "which_model_radio": which_model_radio,
-#             "models": [str(x.model_name) for x in [conversation_a, conversation_b]],
-#             "messages": [
-#                 messages_to_dict_list(x)
-#                 for x in [conversation_a.messages, conversation_b.messages]
-#             ],
-#             # "cookies": dict(request.cookies),
-#         },
-#     }
-#     # logger.info(f"poll", extra={"request": request,
-#     #          "chatbot_use":chatbot_use, "gender":gender, "age":age, "profession":profession
-#     #     },
-#     # )
-#     with open(profile_log_path, "a") as fout:
-#         fout.write(json.dumps(data) + "\n")
-
-#     save_profile_to_db(data=data)
-#     logger.info("profile_filled", extra={"request": request, "extra_data": data})
-
-#     return data
-
-
-# def get_intensity(which_model_radio):
-#     intensity = {
-#         -1.5: "strongly",
-#         -0.5: "slightly",
-#         +0.5: "slightly",
-#         +1.5: "strongly",
-#     }
-#     return intensity[which_model_radio]
-
-
 def get_chosen_model_name(which_model_radio, conversations):
     if which_model_radio == "model-a":
         chosen_model_name = conversations[0].model_name
@@ -449,18 +344,6 @@ def vote_last_response(
     return data
 
 
-def stepper_html(title, step, total_steps):
-    return f"""
-    <div class="fr-stepper fr-container fr-pb-2w fr-px-2w">
-    <h2 class="fr-stepper__title">
-        {title}
-        <span class="fr-stepper__state">Étape {step} sur {total_steps}</span>
-    </h2>
-    <div class="fr-stepper__steps" data-fr-current-step="{step}" data-fr-steps="{total_steps}"></div>
-
-</div>"""
-
-
 with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
     welcome_modal_html = welcome_modal_file.read()
 
@@ -569,8 +452,6 @@ def get_matomo_js(matomo_url, matomo_id):
     """
     return js
 
-
-from jinja2 import Template
 
 size_desc = {
     "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
