@@ -5,9 +5,9 @@ Users chat with two anonymous models.
 
 import gradio as gr
 
-from gradio_modal import Modal
+# from gradio_modal import Modal
 
-from languia.utils import stepper_html, header_html, welcome_modal_html
+from languia.utils import header_html, welcome_modal_html
 
 # from custom_components.frbutton.backend.gradio_frbutton import FrButton
 from custom_components.customradiocard.backend.gradio_customradiocard import (
@@ -15,6 +15,7 @@ from custom_components.customradiocard.backend.gradio_customradiocard import (
 )
 from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
+
 # from custom_components.customslider.backend.gradio_customslider import CustomSlider
 
 
@@ -55,15 +56,12 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    stepper_block = gr.HTML(
-        stepper_html("Bienvenue ! Comment puis-je vous aider aujourd'hui ?", 1, 4),
-        elem_id="stepper-html",
-        visible=False,
-    )
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-container") as mode_screen:
 
-    with gr.Column(
-        visible=False, elem_id="mode-screen", elem_classes="fr-container"
-    ) as mode_screen:
+        title = gr.HTML(
+            elem_classes="text-center fr-mt-6w fr-mb-1w",
+            value="""<h3>Comment puis-je vous aider aujourd'hui ?</h3>""",
+        )
 
         guided_cards = CustomRadioCard(
             show_label=False,
@@ -71,27 +69,27 @@ with gr.Blocks(
             # elem_classes="fr-container",
             choices=[
                 (
-                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p></div>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p></div>""",
                     "expression",
                 ),
                 (
-                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p></div>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p></div>""",
                     "langues",
                 ),
                 (
-                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Conseils</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p></div>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Vie pratique</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p></div>""",
                     "conseils",
                 ),
                 (
-                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p></div>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p></div>""",
                     "loisirs",
                 ),
                 (
-                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p></div>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p></div>""",
                     "administratif",
                 ),
                 (
-                    """<div class="min-h-32"><span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p></div>""",
+                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p></div>""",
                     "vie-professionnelle",
                 ),
             ],
@@ -109,6 +107,7 @@ with gr.Blocks(
         elem_classes="fr-mb-10w fr-mb-md-0",
     ) as chat_area:
         label = "Modèles A et B"
+
         # {likeable}
         # placeholder
         #         placeholder
@@ -170,7 +169,7 @@ with gr.Blocks(
 
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
-                value="Terminer et donner mon avis sur les IA",
+                value="Voter pour votre IA favorite",
                 elem_classes="fr-btn fr-col-12 fr-col-md-5",
                 visible=False,
                 interactive=False,
@@ -193,14 +192,8 @@ with gr.Blocks(
     ) as vote_area:
         gr.HTML(
             value="""
-        <div class="fr-notice fr-notice--info"> 
-            <div class="fr-container">
-                <div class="fr-notice__body mission">
-                    <p class="fr-notice__title mission">Des réponses détaillées de votre part permettent à la recherche d’améliorer les réponses des futurs modèles d'IA sur des enjeux linguistiques et culturels.</p>
-                </div>
-            </div>
-        </div>
-            <h3 class="text-center fr-mt-2w">Quelles réponses préférez-vous ?</h3>""",
+            <h3 class="text-center fr-mt-2w">Votez pour découvrir leurs identités</h3>
+            <p class="text-center text-grey fr-text--sm">Votre vote permet d’améliorer les réponses des deux IA</p>""",
         )
 
         which_model_radio = CustomRadioCard(
@@ -216,7 +209,8 @@ with gr.Blocks(
             ],
             show_label=False,
         )
-        both_equal_link = gr.Button(elem_id="both-equal-link",
+        both_equal_link = gr.Button(
+            elem_id="both-equal-link",
             elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
             value="Les deux se valent",
         )
@@ -274,21 +268,18 @@ with gr.Blocks(
     with gr.Column(
         elem_classes="fr-container--fluid", elem_id="buttons-footer", visible=False
     ) as buttons_footer:
-        with gr.Row(elem_classes="fr-grid-row fr-container fr-my-2w"):
-            return_btn = gr.Button(
-                icon="assets/extra-icons/back.svg",
-                elem_classes="fr-btn fr-btn--secondary fr-col-12 fr-col-md-4",
-                value="Relire la conversation",
-            )
+        with gr.Row(elem_classes="fr-grid-row fr-grid-row--center fr-container fr-my-2w"):
+
             supervote_send_btn = gr.Button(
-                elem_classes="fr-btn fr-col-12 fr-col-md-4 fr-col-offset-md-1",
-                value="Envoyer mes préférences",
+                elem_classes="fr-btn fr-col-12 fr-col-md-2",
+                value="Découvrir l’identité des deux IA",
                 interactive=False,
             )
 
     with gr.Column(
         elem_id="reveal-screen", visible=False, elem_classes="min-h-screen fr-pt-4w"
     ) as reveal_screen:
+
         results_area = gr.HTML(visible=True, elem_classes="fr-container")
 
         with gr.Row(visible=True, elem_id="feedback-row") as feedback_row:
@@ -296,107 +287,12 @@ with gr.Blocks(
             # feedback_btns =
             gr.HTML(
                 value="""
-                <div class="fr-grid-row fr-grid-row--center fr-py-4w">
-                <a class="fr-btn fr-btn--secondary fr-ml-2w" href="../modeles">Liste des modèles</a>
+                <div class="fr-grid-row fr-grid-row--center fr-grid-row--gutters fr-py-4w fr-container">
+                <a class="fr-btn fr-col-12 fr-col-md-2 fr-mb-2w" href="../arene/">Discuter avec 2 nouvelles IA</a>
+                <a class="fr-btn fr-btn--secondary fr-col-12 fr-col-md-2" href="../modeles">Découvrir la liste des IA</a>
                 </div>
             """
             )
-
-    # with Modal(elem_id="quiz-modal") as quiz_modal:
-    #     gr.Markdown(
-    #         """
-    #                 ### Dernière étape
-    #                 Ces quelques informations sur votre profil permettront à la recherche d’affiner les réponses des futurs modèles.
-    #                 """
-    #     )
-    #     profession = gr.Dropdown(
-    #         choices=[
-    #             ("Agriculteur", "farmer"),
-    #             (
-    #                 "Artisan, commerçant et chef d'entreprise",
-    #                 "artisan_merchant_and_business_owner",
-    #             ),
-    #             (
-    #                 "Cadre et profession intellectuelle supérieure",
-    #                 "executive_and_senior_intellectual_profession",
-    #             ),
-    #             ("Profession intermédiaire", "intermediate_profession"),
-    #             ("Étudiant", "student"),
-    #             ("Employé", "employee"),
-    #             ("Ouvrier", "worker"),
-    #             ("Retraité", "retired"),
-    #             ("Sans emploi", "unemployed"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Catégorie socioprofessionnelle",
-    #     )
-
-    #     age = gr.Dropdown(
-    #         choices=[
-    #             ("Moins de 18 ans", "under_18"),
-    #             ("Entre 18 et 24 ans", "18_to_24"),
-    #             ("Entre 25 et 34 ans", "25_to_34"),
-    #             ("Entre 35 et 44 ans", "35_to_44"),
-    #             ("Entre 45 et 54 ans", "45_to_54"),
-    #             ("Entre 55 et 64 ans", "55_to_64"),
-    #             ("Plus de 64 ans", "over_64"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Tranche d'âge",
-    #     )
-
-    #     gender = gr.Dropdown(
-    #         choices=[
-    #             ("Femme", "female"),
-    #             ("Homme", "male"),
-    #             ("Autre", "other"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Genre",
-    #     )
-    #     chatbot_use = gr.Dropdown(
-    #         choices=[
-    #             ("Tous les jours", "every_day"),
-    #             ("Toutes les semaines", "every_week"),
-    #             ("Une fois par mois", "once_a_month"),
-    #             ("Moins d'une fois par mois", "less_than_once_a_month"),
-    #             ("Jamais", "never"),
-    #             ("Ne se prononce pas", "no_opinion"),
-    #         ],
-    #         label="Fréquence d'utilisation d'assistants conversationnels",
-    #     )
-    #     with gr.Row(elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--right"):
-    #         skip_poll_btn = gr.Button("Passer", elem_classes="fr-btn fr-btn--secondary")
-    #         send_poll_btn = gr.Button("Envoyer", elem_classes="fr-btn")
-
-    # TODO: get rid
-    temperature = gr.Slider(
-        visible=False,
-        # minimum=0.0,
-        # maximum=1.0,
-        value=0.7,
-        # step=0.1,
-        interactive=False,
-        label="Temperature",
-    )
-    top_p = gr.Slider(
-        visible=False,
-        minimum=0.0,
-        maximum=1.0,
-        value=1.0,
-        step=0.1,
-        interactive=False,
-        label="Top P",
-    )
-    max_output_tokens = gr.Slider(
-        visible=False,
-        minimum=16,
-        maximum=2048,
-        value=1024,
-        step=64,
-        interactive=False,
-        label="Max output tokens",
-    )
 
     # Modals
     #     with Modal(elem_id="retry-modal") as retry_modal:
