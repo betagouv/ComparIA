@@ -142,7 +142,6 @@ class PostgresHandler(logging.Handler):
                     if hasattr(record, "extra"):
                         values["extra"] = json.dumps(record.__dict__.get("extra"))
 
-
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
         except (psycopg2.Error, Exception) as e:
@@ -165,6 +164,7 @@ def get_ip(request: gr.Request):
     else:
         ip = request.client.host
     return ip
+
 
 def get_chosen_model(which_model_radio):
     if which_model_radio in ["model-a", "model-b"]:
@@ -261,6 +261,7 @@ def save_vote_to_db(data):
 def messages_to_dict_list(messages):
     return [{"role": message.role, "content": message.content} for message in messages]
 
+
 def vote_last_response(
     conversations,
     which_model_radio,
@@ -272,7 +273,7 @@ def vote_last_response(
 
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     # intensity = get_intensity(which_model_radio)
-    both_equal = (chosen_model_name==None) 
+    both_equal = chosen_model_name == None
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
@@ -682,9 +683,12 @@ def is_limit_reached(model_name, ip):
 
 
 def count_output_tokens(messages) -> int:
-    """Count output tokens (assuming 4 per message)."""
+    """Count output tokens (assuming 4 letters per token)."""
 
-    return sum(len(msg.content) * 4 for msg in messages if msg.role == "assistant")
+    total_messages = sum(
+        len(msg.content) for msg in messages if msg.role == "assistant"
+    )
+    return int(total_messages / 4)
 
 
 def get_llm_impact(
