@@ -115,7 +115,7 @@ if os.getenv("SENTRY_DSN"):
         environment=sentry_env,
         traces_sample_rate=traces_sample_rate,
     )
-    logger.info("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
+    logger.debug("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
 
 # TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
 # if os.getenv("SENTRY_FRONT_DSN"):

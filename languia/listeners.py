@@ -57,7 +57,7 @@ def init_conversations(request: gr.Request):
         ConversationState(model_name=model_right),
     ]
     logger.info(
-        "Picked 2 models: " + model_left + " and " + model_right,
+        f"selection_modeles: {model_left}, {model_right}",
         extra={request: request},
     )
     return conversations
@@ -74,12 +74,11 @@ def register_listeners():
         api_name=False,
     )
     def enter_arena(request: gr.Request):
+        # TODO: actually check for it
         # tos_accepted = request...
         # if tos_accepted:
-        # logger.info(f"ToS accepted")
         logger.info(
-            # config.Log("ToS accepted: %s" % request.session_hash),
-            f"ToS accepted: %s" % request.session_hash,
+            "init_arene",
             extra={"request": request},
         )
         conversations = init_conversations(request)
@@ -97,7 +96,7 @@ def register_listeners():
         app_state.category = category
 
         logger.info(
-            f"Chose free mode",
+            "mode_libre",
             extra={"request": request},
         )
 
@@ -121,7 +120,7 @@ def register_listeners():
         app_state.category = category
         prompt = gen_prompt(category)
         logger.info(
-            f"set_guided_prompt: {category}",
+            f"categorie_{category}: {prompt}",
             extra={"request": request},
         )
         return {
@@ -134,8 +133,13 @@ def register_listeners():
         }
 
     @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox], api_name=False)
-    def shuffle_prompt(guided_cards):
-        return gen_prompt(category=guided_cards)
+    def shuffle_prompt(guided_cards, request: gr.Request):
+        prompt = gen_prompt(category=guided_cards)
+        logger.info(
+            f"shuffle: {prompt}",
+            extra={"request": request},
+        )
+        return prompt
 
     @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
     def change_send_btn_state(textbox):
@@ -153,7 +157,23 @@ def register_listeners():
         request: gr.Request,
         evt: gr.EventData,
     ):
+
+        logger.info(
+            f"msg_user: {text}",
+            extra={"request": request},
+        )
         conversations = [conversation_a, conversation_b]
+
+        # TODO: Check if "Enter" pressed and no text and return early
+        # if evt.target.elem_id == "main-textbox":
+        #     if text == "" or (
+        #     hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses):
+        #         return (
+        #             # 2 conversations
+        #             conversations
+        #             # 1 chatbot
+        #             + [to_threeway_chatbot(conversations)]
+        #         )
 
         # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
@@ -168,15 +188,15 @@ def register_listeners():
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
         # TODO: what do?
 
+        if len(conversations[0].messages) == 0:
+            app_state.original_user_prompt = text
+            logger.debug(
+                "Saving original prompt: " + app_state.original_user_prompt,
+                extra={"request": request},
+            )
+
         for i in range(config.num_sides):
             conversations[i].messages.append(gr.ChatMessage(role=f"user", content=text))
-
-            if len(conversations[i].messages) == 1:
-                app_state.original_user_prompt = text
-                logger.debug(
-                    "Saving original prompt: " + app_state.original_user_prompt,
-                    extra={"request": request},
-                )
         app_state.awaiting_responses = True
         return (
             # 2 conversations
@@ -190,11 +210,6 @@ def register_listeners():
         conversation_b,
         request: gr.Request,
     ):
-        logger.info(
-            "bot_response_multi",
-            extra={"request": request},
-        )
-
         conversations = [conversation_a, conversation_b]
 
         gen = []
@@ -235,8 +250,12 @@ def register_listeners():
                     break
         except Exception as e:
             logger.error(
-                f"Problem with generating model {conversations[i].model_name}. Adding to outages list.",
-                extra={"request": request, "error": str(e)},
+                f"erreur_modele: {conversations[i].model_name}, '{str(e)}'",
+                extra={
+                    "request": request,
+                    "error": str(e),
+                    "stacktrace": traceback.format_exc(),
+                },
             )
             app_state.crashed = True
             config.outage_models.append(conversations[i].model_name)
@@ -246,14 +265,12 @@ def register_listeners():
                 # FIXME: seems equal to None always?
                 reason=str(e),
             )
-            logger.error(str(e), extra={"request": request})
-            logger.error(traceback.format_exc(), extra={"request": request})
             # gr.Warning(
             #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
             # )
             gr.Warning(
                 duration=0,
-                message="Erreur avec le chargement d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
+                message="Erreur avec l'interrogation d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
             )
 
             # TODO: reset arena a better way...
@@ -270,7 +287,6 @@ def register_listeners():
                 # bubble_full_width=False,
                 layout="panel",  # or "bubble"
                 likeable=False,
-                label=label,
                 # UserWarning: show_label has no effect when container is False.
                 show_label=False,
                 container=False,
@@ -290,10 +306,10 @@ def register_listeners():
         api_name=False,
     ):
         # textbox
-        logger.info(
-            "chatbot launched",
-            extra={"request": request},
-        )
+        # logger.debug(
+        #     "chatbot launched",
+        #     extra={"request": request},
+        # )
 
         return {
             textbox: gr.update(
@@ -307,19 +323,17 @@ def register_listeners():
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
+    # TODO: refacto this
     def check_answers(
         conversation_a, conversation_b, textbox_output, request: gr.Request
     ):
 
-        logger.debug(
-            "models finished answering",
-            extra={"request": request},
-        )
         app_state.awaiting_responses = False
 
         if hasattr(app_state, "crashed") and app_state.crashed:
+            # TODO: which one?
             logger.error(
-                "model crash detected, keeping prompt",
+                "crash_modele",
                 extra={"request": request},
             )
             app_state.crashed = False
@@ -331,10 +345,6 @@ def register_listeners():
             #     extra={request: request},
             # )
 
-            logger.info(
-                "prefilling opening prompt",
-                extra={"request": request},
-            )
             textbox.value = app_state.original_user_prompt
 
             return (
@@ -349,10 +359,14 @@ def register_listeners():
                 + [app_state.original_user_prompt]
             )
 
-        # logger.info(
-        #     "models answered with success",
-        #     extra={"request": request},
-        # )
+        logger.info(
+            f"response_modele_a ({conversation_a.model_name}): {str(conversation_a.messages[-1].content)}",
+            extra={"request": request},
+        )
+        logger.info(
+            f"response_modele_b ({conversation_a.model_name}): {str(conversation_b.messages[-1].content)}",
+            extra={"request": request},
+        )
 
         return (
             [conversation_a]
@@ -445,7 +459,7 @@ return args;
 
     def show_vote_area(request: gr.Request):
         logger.info(
-            "advancing to vote area",
+            "ecran_vote",
             extra={"request": request},
         )
         return {
@@ -491,7 +505,7 @@ return args;
     )
     def build_supervote_area(vote_radio, request: gr.Request):
         logger.info(
-            "(temporarily) voted for " + str(vote_radio),
+            "vote_selection_temp:" + str(vote_radio),
             extra={"request": request},
         )
         if hasattr(app_state, "selected_model"):

@@ -276,7 +276,7 @@ def vote_last_response(
 
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     # intensity = get_intensity(which_model_radio)
-    both_equal = chosen_model_name == None
+    both_equal = chosen_model_name is None
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
@@ -295,16 +295,15 @@ def vote_last_response(
     style = (details["style"] - 1) * 25 if 1 <= details["style"] <= 5 else None
 
     t = datetime.datetime.now()
-
+    model_pair_name = sorted(
+            [conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
     data = {
         "tstamp": str(t),
         "model_a_name": conversations[0].model_name,
         "model_b_name": conversations[1].model_name,
         # sorted
-        "model_pair_name": sorted(
-            [conversations[0].model_name, conversations[1].model_name]
-        ),
+        "model_pair_name": model_pair_name,
         "chosen_model_name": chosen_model_name,
         "both_equal": both_equal,
         # "intensity": None,
@@ -336,11 +335,15 @@ def vote_last_response(
             "path_params": dict(request.path_params),
         },
     }
-
+    vote_string = chosen_model_name or "both_equal"
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     vote_log_path = os.path.join(LOGDIR, vote_log_filename)
     with open(vote_log_path, "a") as fout:
-        logger.info("vote", extra={"request": request, "data": data})
+        logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
+        if relevance or form or style:
+            logger.info(f"preferences: relevance:{relevance}, form:{form}, style:{style}", extra={"request": request})
+        if details["comments"] != "":
+            logger.info(f"commentaires: {details.get('comments', '')}", extra={"request": request})
         fout.write(json.dumps(data) + "\n")
 
     save_vote_to_db(data=data)
@@ -667,7 +670,7 @@ def get_model_list(controller_url, register_api_endpoint_file):
 
     models = list(set(models))
 
-    logger.info(f"All models: {models}")
+    logger.debug(f"All models: {models}")
     return models
 
 
@@ -767,13 +770,13 @@ def refresh_outage_models(previous_outage_models, controller_url):
     try:
         response = requests.get(controller_url + "/outages/", timeout=2)
     except Exception as e:
-        logger.error("Couldn't reach controller: " + str(e))
+        logger.error("controller_inaccessible: " + str(e))
         return previous_outage_models
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
         data = response.json()
-        logger.info("refreshed outage models:" + str(data))
+        logger.debug("refreshed outage models:" + str(data))
         return data
     else:
         logger.warning(
