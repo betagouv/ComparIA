@@ -33,14 +33,12 @@ def get_api_provider_stream_iter(
     top_p,
     max_new_tokens,
     state,
+    request=None,
 ):
     messages_dict = []
     for message in messages:
         if isinstance(message, ChatMessage):
-            messages_dict.append({
-                "role": message.role,
-                "content": message.content
-            })
+            messages_dict.append({"role": message.role, "content": message.content})
         else:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
     if model_api_dict["api_type"] == "openai":
@@ -52,6 +50,7 @@ def get_api_provider_stream_iter(
             max_new_tokens=max_new_tokens,
             api_base=model_api_dict["api_base"],
             api_key=model_api_dict["api_key"],
+            request=request,
         )
     elif model_api_dict["api_type"] == "vertex":
         stream_iter = vertex_api_stream_iter(
@@ -61,6 +60,7 @@ def get_api_provider_stream_iter(
             top_p=top_p,
             max_new_tokens=max_new_tokens,
             api_base=model_api_dict["api_base"],
+            request=request,
         )
     else:
         raise NotImplementedError()
@@ -76,6 +76,7 @@ def openai_api_stream_iter(
     max_new_tokens,
     api_base=None,
     api_key=None,
+    request=None,
 ):
     import openai
 
@@ -112,7 +113,7 @@ def openai_api_stream_iter(
 
 
 def vertex_api_stream_iter(
-    api_base, model_name, messages, temperature, top_p, max_new_tokens
+    api_base, model_name, messages, temperature, top_p, max_new_tokens, request=None
 ):
     # import vertexai
     # from vertexai import generative_models
@@ -122,8 +123,10 @@ def vertex_api_stream_iter(
     #     Image,
     # )
     # GOOGLE_APPLICATION_CREDENTIALS
+    logger = logging.getLogger("languia")
+
     if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-        logging.warn("No Google creds detected!")
+        logger.warn("No Google creds detected!")
 
     import google.auth
     import google.auth.transport.requests
@@ -186,22 +189,25 @@ def vertex_api_stream_iter(
     text = ""
     for chunk in res:
         if len(chunk.choices) > 0:
-            if hasattr(chunk.choices[0], "delta") and hasattr(chunk.choices[0].delta, "content"):
+            if hasattr(chunk.choices[0], "delta") and hasattr(
+                chunk.choices[0].delta, "content"
+            ):
                 content = chunk.choices[0].delta.content
                 # llama3.1 405b bugs
-                logger = logging.getLogger("languia")
-                if content and model_name=="meta/llama3-405b-instruct-maas":
+                if content and model_name == "meta/llama3-405b-instruct-maas":
                     # logger.debug("fixing llama3 405b bug at google")
                     content = content.replace("\\n", "\n")
                     if str.startswith(content, "assistant"):
                         # strip first 9 letters ("assistant")
                         content = content[9:]
-                if content and model_name=="google/gemini-1.5-pro-001":
+                if content and model_name == "google/gemini-1.5-pro-001":
                     logger.debug("fixing gemini markdown title bug at google")
                     content = content.replace("<br />", "")
             else:
-                logger.warning("chunk.choices[0] had no delta:")
-                logger.warning(chunk.choices[0])
+                logger.warning(
+                    "chunk.choices[0] had no delta:", extra={request: request}
+                )
+                logger.warning(chunk.choices[0], extra={request: request})
                 content = ""
             text += content
             data = {

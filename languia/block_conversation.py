@@ -112,9 +112,13 @@ def bot_response(
                 top_p,
                 max_new_tokens,
                 state,
+                request,
             )
         except Exception as e:
-            logger.error(f"Error in get_api_provider_stream_iter. error: {e}")
+            logger.error(
+                f"Error in get_api_provider_stream_iter. error: {e}",
+                extra={request: request},
+            )
 
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
@@ -122,7 +126,6 @@ def bot_response(
     yield (state)
 
     data = {"text": ""}
-
 
     # FIXME: does not detect/raise if 500 error
     for i, data in enumerate(stream_iter):
