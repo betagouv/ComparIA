@@ -391,31 +391,27 @@ def register_listeners():
   const footer = document.querySelector('#send-area');
   const content = document.querySelector('#chat-area');
 
-  // Function to adjust footer and content padding
   function adjustFooter() {
     const footerHeight = footer.offsetHeight;
-    // const contentHeight = content.offsetHeight;
-    // const viewportHeight = window.innerHeight;
-
-    // Check if the content is smaller than the viewport height
-    // if (contentHeight + footerHeight < viewportHeight) {
-    // footer.style.position = 'relative';
-
-    // If content is smaller than the viewport, let the footer follow the normal flow
-    // content.style.paddingBottom = '0';
-
-    // } else {
-    // footer.style.position = 'fixed';
-    // footer.style.bottom = '0';
-    // footer.style.width = '100%';
-
     // Add bottom padding to the content equal to footer height so it's not hidden
     content.style.paddingBottom = `${footerHeight}px`;
   }
-  // Adjust footer on page load and resize and initially
+  // Adjust footer on page load, resize and initially
   window.addEventListener('load', adjustFooter);
   window.addEventListener('resize', adjustFooter);
   adjustFooter();
+setTimeout(() => {
+  console.log("scrolling to last user row if there are at least 2 user rows");
+  var userRows = document.querySelectorAll('.user-row');
+  if (userRows.length >= 2) {
+    var lastUserRow = userRows.item(userRows.length - 1);
+    lastUserRow.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+}, 500);
+
 return args;
 }""",
     ).then(
@@ -431,21 +427,6 @@ return args;
         inputs=conversations + [textbox],
         outputs=conversations + [chatbot] + [conclude_btn] + [send_btn] + [textbox],
         api_name=False,
-    ).then(
-        fn=(lambda *x: x),
-        inputs=[],
-        outputs=[],
-        js="""(args) => {
-setTimeout(() => {
-console.log("scrolling to last row");
-var userRows = document.querySelectorAll('.user-row');
-var lastUserRow = userRows.item(userRows.length-1);
-lastUserRow.scrollIntoView({
-  behavior: 'smooth',
-  block: 'start'
-});}, 500);
-return args;
-}""",
     )
 
     # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
