@@ -295,8 +295,7 @@ def vote_last_response(
     style = (details["style"] - 1) * 25 if 1 <= details["style"] <= 5 else None
 
     t = datetime.datetime.now()
-    model_pair_name = sorted(
-            [conversations[0].model_name, conversations[1].model_name])
+    model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
     data = {
         "tstamp": str(t),
@@ -341,9 +340,15 @@ def vote_last_response(
     with open(vote_log_path, "a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
         if relevance or form or style:
-            logger.info(f"preferences: relevance:{relevance}, form:{form}, style:{style}", extra={"request": request})
+            logger.info(
+                f"preferences: relevance:{relevance}, form:{form}, style:{style}",
+                extra={"request": request},
+            )
         if details["comments"] != "":
-            logger.info(f"commentaires: {details.get('comments', '')}", extra={"request": request})
+            logger.info(
+                f"commentaires: {details.get('comments', '')}",
+                extra={"request": request},
+            )
         fout.write(json.dumps(data) + "\n")
 
     save_vote_to_db(data=data)
@@ -790,8 +795,8 @@ def add_outage_model(controller_url, model_name, reason):
 
     try:
         response = requests.post(
-            json={"reason": str(reason)},
-            url=f"{controller_url}/outages/?model_name={model_name}",
+            params={"reason": str(reason), "model_name": model_name},
+            url=f"{controller_url}/outages/",
             timeout=2,
         )
     except Exception as e:
