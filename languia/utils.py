@@ -128,19 +128,22 @@ class PostgresHandler(logging.Handler):
                     "level": record.levelname,
                     "message": record.message,
                 }
+                if hasattr(record, "extra"):
+                    values["extra"] = json.dumps(record.__dict__.get("extra"))
+                else:
+                    values["extra"] = "{}"
                 if hasattr(record, "request"):
                     query_params = dict(record.request.query_params)
                     path_params = dict(record.request.path_params)
                     # ip = get_ip(record.request)
                     session_hash = record.request.session_hash
-                    if query_params:
-                        values["query_params"] = json.dumps(query_params)
-                    if path_params:
-                        values["path_params"] = json.dumps(path_params)
-                    if session_hash:
-                        values["session_hash"] = str(session_hash)
-                    if hasattr(record, "extra"):
-                        values["extra"] = json.dumps(record.__dict__.get("extra"))
+                    values["query_params"] = json.dumps(query_params)
+                    values["path_params"] = json.dumps(path_params)
+                    values["session_hash"] = str(session_hash)
+                else:
+                    values["query_params"] = "{}"
+                    values["path_params"] = "{}"
+                    values["session_hash"] = ""
 
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
