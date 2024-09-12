@@ -113,7 +113,7 @@ def register_listeners():
     # Step 1.1
     @guided_cards.change(
         inputs=[guided_cards],
-        outputs=[send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
+        outputs=[send_btn, send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
         api_name=False,
     )
     def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
@@ -125,6 +125,7 @@ def register_listeners():
             extra={"request": request},
         )
         return {
+            send_btn: gr.update(interactive=True),
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
             mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
