@@ -331,11 +331,7 @@ def register_listeners():
         app_state.awaiting_responses = False
 
         if hasattr(app_state, "crashed") and app_state.crashed:
-            # TODO: which one?
-            logger.error(
-                "crash_modele",
-                extra={"request": request},
-            )
+
             app_state.crashed = False
 
             conversation_a, conversation_b = init_conversations(request)

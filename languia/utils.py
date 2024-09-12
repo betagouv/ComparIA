@@ -804,7 +804,7 @@ def add_outage_model(controller_url, model_name, reason):
         return
 
     if response.status_code == 201:
-        logger.info("reported outage model: " + model_name)
+        logger.info("modele_desactive: " + model_name)
     else:
         logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
