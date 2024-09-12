@@ -260,7 +260,7 @@ def register_listeners():
             chatbot = gr.Chatbot(
                 # TODO:
                 type="messages",
-                elem_id=f"main-chatbot",
+                elem_id="main-chatbot",
                 # min_width=
                 height="100%",
                 # Doesn't show because it always has at least our message
@@ -579,16 +579,6 @@ return args;
             model_b_tokens=model_b_tokens,
         )
         return {
-            # stepper_block: gr.update(
-            #     value=stepper_html(
-            #         "Les IA sont démasquées !",
-            #         4,
-            #         4,
-            #     )
-            # ),
-            # some components should be interactive=False
-            # vote_area: gr.update(visible=False),
-            # supervote_area: gr.update(visible=False),
             relevance_slider: gr.update(interactive=False),
             form_slider: gr.update(interactive=False),
             style_slider: gr.update(interactive=False),
@@ -630,6 +620,10 @@ return args;
         js="""(args) => {
 setTimeout(() => {
 console.log("scrolling to #reveal-screen");
+
+const voteArea = document.getElementById('vote-area');
+voteArea.classList.remove("min-h-screen");
+
 const revealScreen = document.getElementById('reveal-screen');
 revealScreen.scrollIntoView({
   behavior: 'smooth',
