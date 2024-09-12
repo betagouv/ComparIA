@@ -106,7 +106,7 @@ class PostgresHandler(logging.Handler):
 
         assert isinstance(record, logging.LogRecord)
         # print((record.__dict__))
-        print("LoggingHandler received LogRecord: {}".format(record))
+        # print("LoggingHandler received LogRecord: {}".format(record))
 
         # record = super().format(record)
         self.format(record)
