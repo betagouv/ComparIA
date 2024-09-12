@@ -106,7 +106,6 @@ with gr.Blocks(
         visible=False,
         elem_classes="fr-mb-10w fr-mb-md-0",
     ) as chat_area:
-        label = "Modèles A et B"
 
         # {likeable}
         # placeholder
@@ -127,7 +126,6 @@ with gr.Blocks(
             # bubble_full_width=False,
             layout="panel",  # or "bubble"
             likeable=False,
-            label=label,
             # UserWarning: show_label has no effect when container is False.
             show_label=False,
             container=False,
