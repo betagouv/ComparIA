@@ -29,6 +29,7 @@ stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
 
 
+@app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
 async def create_outage(model_name: str, reason: str = None):
     outage = {
@@ -57,6 +58,7 @@ async def get_outages():
     return (o["model_name"] for o in outages)
 
 
+@app.get("/outages/{model_name}/delete", status_code=204)
 @app.delete("/outages/{model_name}", status_code=204)
 async def remove_outage(model_name: str):
     """
@@ -71,7 +73,8 @@ async def remove_outage(model_name: str):
     for i, outage in enumerate(outages):
         if outage["model_name"] == model_name:
             del outages[i]
-            return
+            return {"success": True,
+            "msg": f"{model_name} removed from outages"}
     raise HTTPException(status_code=404, detail="Model not found in outages")
 
 

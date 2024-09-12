@@ -14,13 +14,15 @@
                     <th>Date de détection</th>
                     <th>Raison</th>
                     <th>Réessayer ?</th>
+                    <th>Réactiver de force ?</th>
                 </tr>
                 {% for outage in outages %}
                 <tr>
                     <td>{{ outage.model_name }}</td>
                     <td>{{ outage.detection_time }}</td>
-                    <td>{{ outage.reason }}</td>
-                    <td><a href="/outages/{{ outage.model_name }}">Réessayer ?</a></a></td>
+                    <td>{{ outage.reason| truncate(500, True) }}</td>
+                    <td><a href="/outages/{{ outage.model_name }}"><strong>Réessayer ?</strong></a></td>
+                    <td><a href="/outages/{{ outage.model_name }}/delete">Réactiver de force ?</a></td>
                 </tr>
                 {% endfor %}
             </table>
@@ -29,15 +31,16 @@
                 <tr>
                     <th>Modèle</th>
                     <th>Tester ?</th>
+                    <th>Désactiver ?</th>
                     <th>API</th>
                     <!-- <th>Stats</th> -->
                 </tr>
                 {% for model_name, model in models.items() %}
                 <tr>
                     <td>{{ model_name }}</td>
-                    <td><a href="/outages/{{ model_name }}">Tester ?</a></a></td>
-                    <td>{{ model["api_base"] }}</td>
-                    <!-- <td><a href="/outages/{{ model_name }}">Test?</a></a></td> -->
+                    <td><a href="/outages/{{ model_name }}">Tester ?</a></td>
+                    <td><a href="/outages/{{ model_name }}/create?reason=Désactivé">Désactiver ?</a></td>
+                    <td>{{ model["api_base"] | truncate(100, True) }}</td>
                 </tr>
                 {% endfor %}
             </table>
