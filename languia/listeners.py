@@ -436,13 +436,14 @@ return args;
         inputs=[],
         outputs=[],
         js="""(args) => {
+setTimeout(() => {
 console.log("scrolling to last row");
-var botRows = document.querySelectorAll('.bot-row');
-var lastBotRow = botRows.item(botRows.length-1);
-lastBotRow.scrollIntoView({
+var userRows = document.querySelectorAll('.user-row');
+var lastUserRow = userRows.item(userRows.length-1);
+lastUserRow.scrollIntoView({
   behavior: 'smooth',
   block: 'start'
-});
+});}, 500);
 return args;
 }""",
     )
@@ -488,16 +489,15 @@ return args;
         inputs=[],
         outputs=[],
         js="""(args) => {
+setTimeout(() => {
 console.log("scrolling to #vote-area");
-
 const content = document.querySelector('#chat-area');
 content.style.paddingBottom = `0px`;
-
 const voteArea = document.getElementById('vote-area');
 voteArea.scrollIntoView({
   behavior: 'smooth',
   block: 'start'
-});
+});}, 500);
 return args;
 }""",
     )
@@ -646,12 +646,13 @@ return args;
         inputs=[],
         outputs=[],
         js="""(args) => {
+setTimeout(() => {
 console.log("scrolling to #reveal-screen");
 const revealScreen = document.getElementById('reveal-screen');
 revealScreen.scrollIntoView({
   behavior: 'smooth',
   block: 'start'
-});
+});}, 500);
 return args;
 }""",
     )
