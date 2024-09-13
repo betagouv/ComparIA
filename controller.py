@@ -166,12 +166,13 @@ async def test_model(model_name):
             return {"success": "false", "error_message": reason}
 
     except Exception as e:
-        logging.error(f"Error: {model_name}, {str(e)}")
+        reason = str(e)
+        logging.error(f"Error: {reason}. Model: {model_name}")
 
         stacktrace = traceback.print_exc()
-        _outage = await create_outage(model_name, e)
+        _outage = await create_outage(model_name, reason)
 
-        return {"success": "false", "reason": str(e), "stacktrace": stacktrace}
+        return {"success": "false", "reason": str(reason), "stacktrace": stacktrace}
 
 
 # async def scheduled_outage_tests():
