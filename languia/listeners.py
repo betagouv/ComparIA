@@ -40,6 +40,7 @@ from languia import config
 
 
 def init_conversations(request: gr.Request):
+    app_state.awaiting_responses = False
     config.outage_models = refresh_outage_models(
         config.outage_models, controller_url=config.controller_url
     )
@@ -213,7 +214,6 @@ def register_listeners():
         conversation_b,
         request: gr.Request,
     ):
-        print("Coucou")
         conversations = [conversation_a, conversation_b]
 
         gen = []
