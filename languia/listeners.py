@@ -200,7 +200,7 @@ def register_listeners():
             )
 
         for i in range(config.num_sides):
-            conversations[i].messages.append(gr.ChatMessage(role=f"user", content=text))
+            conversations[i].messages.append(gr.ChatMessage(role="user", content=text))
         app_state.awaiting_responses = True
         return (
             # 2 conversations
@@ -309,12 +309,7 @@ def register_listeners():
         #  FIXME: ignored
         api_name=False,
     ):
-        # textbox
-        # logger.debug(
-        #     "chatbot launched",
-        #     extra={"request": request},
-        # )
-
+        logger.debug("goto_chatbot")
         return {
             textbox: gr.update(
                 value="",
@@ -405,15 +400,13 @@ def register_listeners():
         inputs=None,
         outputs=None,
         js="""(args) => {
-
-        
   const footer = document.querySelector('#send-area');
-  const content = document.querySelector('#chat-area');
+  const chatArea = document.querySelector('#chat-area');
 
   function adjustFooter() {
     const footerHeight = footer.offsetHeight;
-    // Add bottom padding to the content equal to footer height so it's not hidden
-    content.style.paddingBottom = `${footerHeight}px`;
+    // Add bottom padding to the chatArea equal to footer height so it's not hidden
+    chatArea.style.paddingBottom = `${footerHeight}px`;
   }
   // Adjust footer on page load, resize and initially
   window.addEventListener('load', adjustFooter);
