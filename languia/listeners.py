@@ -69,9 +69,7 @@ def register_listeners():
     # Step 0
 
     @demo.load(
-        inputs=[],
-        outputs=(conversations),
-        api_name=False,
+        inputs=[], outputs=(conversations), api_name=False, show_progress="hidden"
     )
     def enter_arena(request: gr.Request):
         # TODO: actually check for it
@@ -90,6 +88,7 @@ def register_listeners():
         inputs=[],
         outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
         api_name=False,
+        show_progress="hidden",
     )
     def free_mode(request: gr.Request):
         category = "unguided"
@@ -114,6 +113,7 @@ def register_listeners():
         inputs=[guided_cards],
         outputs=[send_btn, send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
         api_name=False,
+        show_progress="hidden",
     )
     def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
         category = guided_cards
@@ -132,7 +132,9 @@ def register_listeners():
             free_mode_btn: gr.update(visible=False),
         }
 
-    @shuffle_btn.click(inputs=[guided_cards], outputs=[textbox], api_name=False)
+    @shuffle_btn.click(
+        inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
+    )
     def shuffle_prompt(guided_cards, request: gr.Request):
         prompt = gen_prompt(category=guided_cards)
         logger.info(
@@ -141,7 +143,9 @@ def register_listeners():
         )
         return prompt
 
-    @textbox.change(inputs=textbox, outputs=send_btn, api_name=False)
+    @textbox.change(
+        inputs=textbox, outputs=send_btn, api_name=False, show_progress="hidden"
+    )
     def change_send_btn_state(textbox):
         if textbox == "" or (
             hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses
@@ -158,22 +162,17 @@ def register_listeners():
         evt: gr.EventData,
     ):
 
-        logger.info(
-            f"msg_user: {text}",
-            extra={"request": request},
-        )
         conversations = [conversation_a, conversation_b]
 
-        # TODO: Check if "Enter" pressed and no text and return early
-        # if evt.target.elem_id == "main-textbox":
-        #     if text == "" or (
-        #     hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses):
-        #         return (
-        #             # 2 conversations
-        #             conversations
-        #             # 1 chatbot
-        #             + [to_threeway_chatbot(conversations)]
-        #         )
+        # Check if "Enter" pressed and no text or still awaiting response and return early
+        if text == "":
+            raise (ValueError("Veuillez entrer votre texte."))
+        if hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses:
+            raise (
+                ValueError(
+                    "Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question."
+                )
+            )
 
         # FIXME: turn on moderation in battle mode
         # flagged = moderation_filter(all_conv_text, model_list, do_moderation=False)
@@ -185,6 +184,10 @@ def register_listeners():
         # FIXME:  CONVERSATION_TURN_LIMIT:
         #     logger.info(f"conversation turn limit. ip: {get_ip(request)}. text: {text}")
 
+        logger.info(
+            f"msg_user: {text}",
+            extra={"request": request},
+        )
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
         # TODO: what do?
 
@@ -210,6 +213,7 @@ def register_listeners():
         conversation_b,
         request: gr.Request,
     ):
+        print("Coucou")
         conversations = [conversation_a, conversation_b]
 
         gen = []
@@ -381,7 +385,9 @@ def register_listeners():
         api_name=False,
         inputs=conversations + [textbox],
         outputs=conversations + [chatbot],
-    ).then(
+        # scroll_to_output=True,
+        show_progress="hidden",
+    ).success(
         fn=goto_chatbot,
         inputs=[],
         outputs=(
@@ -392,10 +398,12 @@ def register_listeners():
             + [shuffle_btn]
             + [conclude_btn]
         ),
+        show_progress="hidden",
+        # scroll_to_output=True
     ).then(
-        fn=(lambda *x: x),
-        inputs=[],
-        outputs=[],
+        fn=(lambda: None),
+        inputs=None,
+        outputs=None,
         js="""(args) => {
 
         
@@ -422,8 +430,6 @@ setTimeout(() => {
     });
   }
 }, 500);
-
-return args;
 }""",
     ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
@@ -432,19 +438,16 @@ return args;
         inputs=conversations,
         outputs=conversations + [chatbot],
         api_name=False,
+        show_progress="hidden",
         # should do .success()
     ).then(
         fn=check_answers,
         inputs=conversations + [textbox],
         outputs=conversations + [chatbot] + [conclude_btn] + [send_btn] + [textbox],
         api_name=False,
+        # scroll_to_output=True,
+        show_progress="hidden",
     )
-
-    # ).then(fn=(lambda *x:x), inputs=[], outputs=[], js="""(args) => {
-    #         console.log("rerolling");
-    #         document.getElementById('send-btn').click();
-    #         return args;
-    #     }""")
 
     # // Enable navigation prompt
     # window.onbeforeunload = function() {
@@ -476,21 +479,22 @@ return args;
         outputs=[send_area, vote_area, buttons_footer],
         api_name=False,
         fn=show_vote_area,
+        # scroll_to_output=True,
+        show_progress="hidden",
     ).then(
-        fn=(lambda *x: x),
-        inputs=[],
-        outputs=[],
+        fn=(lambda: None),
+        inputs=None,
+        outputs=None,
         js="""(args) => {
 setTimeout(() => {
 console.log("scrolling to #vote-area");
-const content = document.querySelector('#chat-area');
-content.style.paddingBottom = `0px`;
+const chatArea = document.querySelector('#chat-area');
+chatArea.style.paddingBottom = `0px`;
 const voteArea = document.getElementById('vote-area');
 voteArea.scrollIntoView({
   behavior: 'smooth',
   block: 'start'
 });}, 500);
-return args;
 }""",
     )
 
@@ -498,6 +502,7 @@ return args;
         inputs=[which_model_radio],
         outputs=[supervote_area, supervote_send_btn, why_vote] + supervote_sliders,
         api_name=False,
+        show_progress="hidden",
     )
     def build_supervote_area(vote_radio, request: gr.Request):
         logger.info(
@@ -623,10 +628,12 @@ return args;
         ],
         # outputs=[quiz_modal],
         api_name=False,
+        # scroll_to_output=True,
+        show_progress="hidden",
     ).then(
-        fn=(lambda *x: x),
-        inputs=[],
-        outputs=[],
+        fn=(lambda: None),
+        inputs=None,
+        outputs=None,
         js="""(args) => {
 setTimeout(() => {
 console.log("scrolling to #reveal-screen");
@@ -639,7 +646,6 @@ revealScreen.scrollIntoView({
   behavior: 'smooth',
   block: 'start'
 });}, 500);
-return args;
 }""",
     )
 
