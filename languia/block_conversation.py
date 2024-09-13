@@ -35,16 +35,18 @@ from languia import config
 import logging as logger
 
 
-# from gradio.components.base import Component
-class ConversationState(gr.State):
-    def __init__(self, model_name="", is_vision=False):
+# Inheriting from gr.State doesn't work
+# class ConversationState(gr.State):
+class ConversationState():
+    def __init__(self, model_name=""):
         # TODO: use std OpenAI format instead
         # self.conv = get_conversation_template(model_name)
         self.messages = []
 
-        # TODO: add template info?
-        # TODO: get it from api
+        # TODO: get it from api if generated
         self.conv_id = uuid.uuid4().hex
+
+        # TODO: add template info? and test it
         self.template_name = "zero_shot"
         self.template = []
         self.model_name = model_name

@@ -45,6 +45,7 @@ with gr.Blocks(
 ) as demo:
     # A tester
     # conversations = [ConversationState() for _ in range(config.num_sides)]
+    # TODO: ConversationState as app_state.conv_a and app_state.conv_b
     conversations = [gr.State() for _ in range(config.num_sides)]
     # model_selectors = [None] * num_sides
 
