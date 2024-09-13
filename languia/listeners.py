@@ -208,12 +208,33 @@ def register_listeners():
             + [to_threeway_chatbot(conversations)]
         )
 
-    def bot_response_multi(
-        conversation_a,
-        conversation_b,
+    
+    def goto_chatbot(
         request: gr.Request,
+        #  FIXME: ignored
+        api_name=False,
     ):
-        print("Coucou")
+        # textbox
+        # logger.debug(
+        #     "chatbot launched",
+        #     extra={"request": request},
+        # )
+
+        return {
+            textbox: gr.update(
+                value="",
+                placeholder="Continuer à discuter avec les deux modèles d'IA",
+            ),
+            mode_screen: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_btn: gr.update(interactive=False),
+            shuffle_btn: gr.update(visible=False),
+            conclude_btn: gr.update(visible=True, interactive=False),
+        }
+
+    def get_answers(
+        conversation_a, conversation_b, textbox_output, request: gr.Request
+    ):
         conversations = [conversation_a, conversation_b]
 
         gen = []
@@ -247,8 +268,10 @@ def register_listeners():
                     #     pass
                     # except httpx.ReadTimeout:
                     #     pass
-
-                yield conversations + [to_threeway_chatbot(conversations)]
+                chatbot = to_threeway_chatbot(conversations)
+                yield conversations + [chatbot] + [
+                    gr.skip()
+                ] + [gr.skip()] + [gr.skip()]
 
                 if stop:
                     break
@@ -266,7 +289,6 @@ def register_listeners():
             add_outage_model(
                 config.controller_url,
                 conversations[i].model_name,
-                # FIXME: seems equal to None always?
                 reason=str(e),
             )
             # gr.Warning(
@@ -303,34 +325,6 @@ def register_listeners():
             )
 
             return (conversation_a, conversation_b, chatbot)
-
-    def goto_chatbot(
-        request: gr.Request,
-        #  FIXME: ignored
-        api_name=False,
-    ):
-        # textbox
-        # logger.debug(
-        #     "chatbot launched",
-        #     extra={"request": request},
-        # )
-
-        return {
-            textbox: gr.update(
-                value="",
-                placeholder="Continuer à discuter avec les deux modèles d'IA",
-            ),
-            mode_screen: gr.update(visible=False),
-            chat_area: gr.update(visible=True),
-            send_btn: gr.update(interactive=False),
-            shuffle_btn: gr.update(visible=False),
-            conclude_btn: gr.update(visible=True, interactive=False),
-        }
-
-    # TODO: refacto this
-    def check_answers(
-        conversation_a, conversation_b, textbox_output, request: gr.Request
-    ):
 
         app_state.awaiting_responses = False
 
@@ -379,6 +373,7 @@ def register_listeners():
             + [gr.skip()]
         )
 
+# TODO: split on add_text and send_initial_text
     gr.on(
         triggers=[textbox.submit, send_btn.click],
         fn=add_text,
@@ -433,28 +428,14 @@ setTimeout(() => {
 }""",
     ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
-        fn=bot_response_multi,
+        fn=get_answers,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
-        inputs=conversations,
-        outputs=conversations + [chatbot],
-        api_name=False,
-        show_progress="hidden",
-        # should do .success()
-    ).then(
-        fn=check_answers,
         inputs=conversations + [textbox],
         outputs=conversations + [chatbot] + [conclude_btn] + [send_btn] + [textbox],
         api_name=False,
         # scroll_to_output=True,
         show_progress="hidden",
     )
-
-    # // Enable navigation prompt
-    # window.onbeforeunload = function() {
-    #     return true;
-    # };
-    # // Remove navigation prompt
-    # window.onbeforeunload = null;
 
     def show_vote_area(request: gr.Request):
         logger.info(
