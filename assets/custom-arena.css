@@ -1,5 +1,12 @@
 /* BUGFIXES */
 /* Gradio overrides */
+.gap {
+  gap: unset !important;
+}
+
+.fr-header__brand.fr-enlarge-link:hover,.fr-header__brand.fr-enlarge-link:active {
+  background-color: inherit;
+}
 
 label,
 fieldset {
@@ -121,6 +128,9 @@ footer,
   color: var(--grey-425-625); */
   color: #949494;
 
+}
+.text-grey-200 {
+  color: var(--grey-200-850) !important;
 }
 
 .text-blue,

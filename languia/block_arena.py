@@ -60,7 +60,7 @@ with gr.Blocks(
     with gr.Column(elem_id="mode-screen", elem_classes="fr-container") as mode_screen:
 
         title = gr.HTML(
-            elem_classes="text-center fr-mt-6w fr-mb-1w",
+            elem_classes="text-center text-grey-200 fr-mt-8w fr-mb-2w",
             value="""<h3>Comment puis-je vous aider aujourd'hui ?</h3>""",
         )
 
