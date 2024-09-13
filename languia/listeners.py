@@ -43,6 +43,7 @@ def init_conversations(request: gr.Request):
     config.outage_models = refresh_outage_models(
         config.outage_models, controller_url=config.controller_url
     )
+    app_state.awaiting_responses = False
     # app_state.model_left, app_state.model_right = get_battle_pair(
     model_left, model_right = get_battle_pair(
         config.models,
@@ -159,7 +160,7 @@ def register_listeners():
         conversation_b: gr.State,
         text: gr.Text,
         request: gr.Request,
-        evt: gr.EventData,
+        # evt: gr.EventData,
     ):
 
         conversations = [conversation_a, conversation_b]
@@ -202,13 +203,13 @@ def register_listeners():
             conversations[i].messages.append(gr.ChatMessage(role=f"user", content=text))
         app_state.awaiting_responses = True
         return (
+            # TODO: can't i just remove this?
             # 2 conversations
             conversations
             # 1 chatbot
             + [to_threeway_chatbot(conversations)]
         )
 
-    
     def goto_chatbot(
         request: gr.Request,
         #  FIXME: ignored
@@ -238,120 +239,89 @@ def register_listeners():
         conversations = [conversation_a, conversation_b]
 
         gen = []
-        try:
-            for i in range(config.num_sides):
-                gen.append(
-                    bot_response(
-                        conversations[i],
-                        request,
-                        apply_rate_limit=True,
-                        use_recommended_config=True,
+        for attempt in range(10):
+            try:
+                for i in range(config.num_sides):
+                    gen.append(
+                        bot_response(
+                            conversations[i],
+                            request,
+                            apply_rate_limit=True,
+                            use_recommended_config=True,
+                        )
                     )
+
+                iters = 0
+                while True:
+                    stop = True
+                    iters += 1
+                    for i in range(config.num_sides):
+                        try:
+                            # # Artificially slow faster Google Vertex API
+                            # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
+                            # if iters % 30 == 1 or iters < 3:
+                            ret = next(gen[i])
+                            conversations[i] = ret
+                            stop = False
+                        except StopIteration:
+                            pass
+                        # TODO: timeout problems on scaleway Ampere models?
+                        # except httpcore.ReadTimeout:
+                        #     pass
+                        # except httpx.ReadTimeout:
+                        #     pass
+                    chatbot = to_threeway_chatbot(conversations)
+                    yield conversations + [chatbot] + [gr.skip()] + [gr.skip()] + [
+                        gr.skip()
+                    ]
+
+                    if stop:
+                        break
+            except Exception as e:
+                logger.error(
+                    f"erreur_modele: {conversations[i].model_name}, '{str(e)}'",
+                    extra={
+                        "request": request,
+                        "error": str(e),
+                        "stacktrace": traceback.format_exc(),
+                    },
+                )
+                config.outage_models.append(conversations[i].model_name)
+                add_outage_model(
+                    config.controller_url,
+                    conversations[i].model_name,
+                    reason=str(e),
+                )
+                # gr.Warning(
+                #     duration=0,
+                #     message="Erreur avec l'interrogation d'un des modèles, veuillez patienter, le comparateur trouve deux nouveaux modèles à interroger.",
+                # )
+
+                # Simpler to repick 2 models
+                conversations = init_conversations(request)
+
+                conversation_a, conversation_b, chatbot = add_text(
+                    conversations[0],
+                    conversations[1],
+                    app_state.original_user_prompt,
+                    request,
                 )
 
-            iters = 0
-            while True:
-                stop = True
-                iters += 1
-                for i in range(config.num_sides):
-                    try:
-                        # # Artificially slow faster Google Vertex API
-                        # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
-                        # if iters % 30 == 1 or iters < 3:
-                        ret = next(gen[i])
-                        conversations[i] = ret
-                        stop = False
-                    except StopIteration:
-                        pass
-                    # TODO: timeout problems on scaleway Ampere models?
-                    # except httpcore.ReadTimeout:
-                    #     pass
-                    # except httpx.ReadTimeout:
-                    #     pass
-                chatbot = to_threeway_chatbot(conversations)
-                yield conversations + [chatbot] + [
-                    gr.skip()
-                ] + [gr.skip()] + [gr.skip()]
-
-                if stop:
-                    break
-        except Exception as e:
-            logger.error(
-                f"erreur_modele: {conversations[i].model_name}, '{str(e)}'",
-                extra={
-                    "request": request,
-                    "error": str(e),
-                    "stacktrace": traceback.format_exc(),
-                },
-            )
-            app_state.crashed = True
-            config.outage_models.append(conversations[i].model_name)
-            add_outage_model(
-                config.controller_url,
-                conversations[i].model_name,
-                reason=str(e),
-            )
-            # gr.Warning(
-            #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
-            # )
-            gr.Warning(
-                duration=0,
-                message="Erreur avec l'interrogation d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
+                # Empty generation queue
+                gen = []
+            else:
+                break
+        else:
+            logger.critical("maximum_attempts_reached")
+            raise (
+                RuntimeError(
+                    "Le comparateur a un problème. Veuillez réessayer plus tard."
+                )
             )
 
-            # TODO: reset arena a better way...
-            chatbot = gr.Chatbot(
-                # TODO:
-                type="messages",
-                elem_id="main-chatbot",
-                # min_width=
-                height="100%",
-                # Doesn't show because it always has at least our message
-                # Note: supports HTML, use it!
-                placeholder="<em>Veuillez écrire au modèle</em>",
-                # No difference
-                # bubble_full_width=False,
-                layout="panel",  # or "bubble"
-                likeable=False,
-                # UserWarning: show_label has no effect when container is False.
-                show_label=False,
-                container=False,
-                # One can dream
-                # autofocus=True,
-                # autoscroll=True,
-                elem_classes="chatbot",
-                # Should we show it?
-                show_copy_button=False,
-            )
-
-            return (conversation_a, conversation_b, chatbot)
+        # Got answer at this point
 
         app_state.awaiting_responses = False
-
-        if hasattr(app_state, "crashed") and app_state.crashed:
-
-            app_state.crashed = False
-
-            conversation_a, conversation_b = init_conversations(request)
-
-            # logger.info(
-            #     "Repicked 2 models: " + model_left + " and " + model_right,
-            #     extra={request: request},
-            # )
-
-            textbox.value = app_state.original_user_prompt
-
-            return (
-                [conversation_a]
-                + [conversation_b]
-                # chatbot
-                + [[]]
-                # disable conclude btn
-                + [gr.update(interactive=False)]
-                # enable send_btn
-                + [gr.update(interactive=True)]
-                + [app_state.original_user_prompt]
-            )
 
         logger.info(
             f"response_modele_a ({conversation_a.model_name}): {str(conversation_a.messages[-1].content)}",
@@ -373,7 +343,7 @@ def register_listeners():
             + [gr.skip()]
         )
 
-# TODO: split on add_text and send_initial_text
+    # TODO: split on add_text and send_initial_text
     gr.on(
         triggers=[textbox.submit, send_btn.click],
         fn=add_text,
