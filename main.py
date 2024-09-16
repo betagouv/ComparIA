@@ -107,7 +107,7 @@ async def policy(request: Request):
     )
 
 
-@app.get("/cgu", response_class=HTMLResponse)
+@app.get("/modalites", response_class=HTMLResponse)
 async def tos(request: Request):
     return templates.TemplateResponse(
         "tos.html",
