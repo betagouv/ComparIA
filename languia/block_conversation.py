@@ -35,13 +35,15 @@ from languia import config
 import logging as logger
 
 
+
 # Inheriting from gr.State doesn't work
 # class ConversationState(gr.State):
-class ConversationState():
+class ConversationState:
     def __init__(self, model_name=""):
         # TODO: use std OpenAI format instead
         # self.conv = get_conversation_template(model_name)
         self.messages = []
+        self.output_tokens = None
 
         # TODO: get it from api if generated
         self.conv_id = uuid.uuid4().hex
@@ -131,6 +133,13 @@ def bot_response(
 
     # FIXME: does not detect/raise if 500 error
     for i, data in enumerate(stream_iter):
+        if "output_tokens" in data:
+            # logger.debug("reported output tokens:" + str(data["output_tokens"]))
+            # Sum of all previous interactions
+            if not state.output_tokens:
+                state.output_tokens = 0
+            state.output_tokens += data["output_tokens"]
+
         if data["error_code"] == 0:
             # Artificially slow faster Google Vertex API
             # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
