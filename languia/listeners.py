@@ -359,7 +359,7 @@ def register_listeners():
             extra={"request": request},
         )
         logger.info(
-            f"response_modele_b ({conversation_a.model_name}): {str(conversation_b.messages[-1].content)}",
+            f"response_modele_b ({conversation_b.model_name}): {str(conversation_b.messages[-1].content)}",
             extra={"request": request},
         )
 
