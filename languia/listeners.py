@@ -85,33 +85,11 @@ def register_listeners():
 
     # Step 1
 
-    @free_mode_btn.click(
-        inputs=[],
-        outputs=[free_mode_btn, send_area, shuffle_btn, textbox],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def free_mode(request: gr.Request):
-        category = "unguided"
-        app_state.category = category
-
-        logger.info(
-            "mode_libre",
-            extra={"request": request},
-        )
-
-        return {
-            free_mode_btn: gr.update(visible=False),
-            send_area: gr.update(visible=True),
-            shuffle_btn: gr.update(visible=False),
-            # Don't remove or autofocus won't work
-            textbox: gr.skip(),
-        }
 
     # Step 1.1
     @guided_cards.change(
         inputs=[guided_cards],
-        outputs=[send_btn, send_area, textbox, shuffle_btn, free_mode_btn],
+        outputs=[send_btn, send_area, textbox, shuffle_btn],
         api_name=False,
         show_progress="hidden",
     )
@@ -128,7 +106,6 @@ def register_listeners():
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
             shuffle_btn: gr.update(visible=True),
-            free_mode_btn: gr.update(visible=False),
         }
 
     @shuffle_btn.click(
