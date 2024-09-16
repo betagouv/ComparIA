@@ -5,6 +5,7 @@ huggingface-hub==0.23.5
 ecologits==0.4.0
 
 tomli
+json5
 gradio_modal
 openai
 sentry_sdk

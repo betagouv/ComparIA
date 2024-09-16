@@ -1,6 +1,6 @@
 import os
 import sentry_sdk
-import json
+import json5
 import tomli
 from slugify import slugify
 from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
@@ -204,15 +204,10 @@ with open("./assets/dark.css", encoding="utf-8") as css_file:
 
 css = css_dsfr + custom_css + darkfixes_css
 
-models = get_model_list(
-    None,
-    # TODO: directly pass api_endpoint_info instead
-    register_api_endpoint_file,
-)
 
-api_endpoint_info = json.load(open(register_api_endpoint_file))
+api_endpoint_info = json5.load(open(register_api_endpoint_file))
 
-# TODO: to CSV
+models = get_model_list(None, api_endpoint_info)
 
 all_models_extra_info_toml = {
     slugify(k.lower()): v

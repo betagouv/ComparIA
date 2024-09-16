@@ -7,7 +7,6 @@ import gradio as gr
 from jinja2 import Template
 
 import json
-
 import psycopg2
 from psycopg2 import sql
 
@@ -653,7 +652,7 @@ def get_model_extra_info(name: str, models_extra_info: list):
     }
 
 
-def get_model_list(controller_url, register_api_endpoint_file):
+def get_model_list(controller_url, api_endpoint_info):
     logger = logging.getLogger("languia")
 
     # Add models from the controller
@@ -667,11 +666,8 @@ def get_model_list(controller_url, register_api_endpoint_file):
         models = []
 
     # Add models from the API providers
-    if register_api_endpoint_file:
-        with open(register_api_endpoint_file) as file:
-            api_endpoint_info = json.load(file)
-        for mdl, mdl_dict in api_endpoint_info.items():
-            models.append(mdl)
+    for mdl, mdl_dict in api_endpoint_info.items():
+        models.append(mdl)
 
     models = list(set(models))
 
