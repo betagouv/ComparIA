@@ -254,7 +254,7 @@ def register_listeners():
                     break
         except Exception as e:
             logger.error(
-                f"erreur_modele: {conversations[i].model_name}, '{str(e)}'",
+                f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{str(traceback.format_exc())}",
                 extra={
                     "request": request,
                     "error": str(e),
