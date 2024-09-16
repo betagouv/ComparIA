@@ -13,7 +13,8 @@ from languia.utils import header_html, welcome_modal_html
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
-from custom_components.frinput.backend.gradio_frinput import FrInput
+from custom_components.customtextbox.backend.gradio_customtextbox import CustomTextbox
+# from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
 
 # from custom_components.customslider.backend.gradio_customslider import CustomSlider
@@ -103,12 +104,6 @@ with gr.Blocks(
                 ),
             ],
         )
-        free_mode_btn = gr.Button(
-            scale=1,
-            elem_id="free-mode",
-            value="Je veux écrire sur mon propre sujet",
-            elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mt-8w fr-mb-4w",
-        )
         shuffle_btn = gr.Button(
             scale=1,
             size="sm",
@@ -152,26 +147,28 @@ with gr.Blocks(
             # autoscroll=True
         )
 
-    with gr.Column(elem_id="send-area", visible=False) as send_area:
+    with gr.Column(elem_id="send-area", visible=True) as send_area:
         # textbox = gr.Textbox(
         with gr.Column(elem_classes="inline-block"):
-            textbox = FrInput(
+            textbox = CustomTextbox(
                 elem_id="main-textbox",
                 show_label=False,
                 lines=1,
                 placeholder="Ecrivez votre premier message aux modèles ici",
                 max_lines=7,
-                elem_classes="inline-block fr-col-12 fr-col-md-10 bg-white",
-                container=False,
+                # elem_classes="inline-block fr-col-12 fr-col-md-10",
+                container=True,
                 autofocus=True,
                 # autoscroll=True
             )
             send_btn = gr.Button(
                 interactive=False,
                 scale=1,
-                value="Envoyer",
+                value="",
+                # value="",
+                icon="assets/dsfr/icons/system/arrow-up-line.svg",
                 elem_id="send-btn",
-                elem_classes="inline-block fr-btn fr-ml-3v",
+                elem_classes="inline-block",
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
@@ -254,7 +251,7 @@ with gr.Blocks(
                 )
                 supervote_sliders = [relevance_slider, form_slider, style_slider]
 
-                comments_text = FrInput(
+                comments_text = CustomTextbox(
                     elem_classes="big-label",
                     label="Détails supplémentaires",
                     show_label=True,

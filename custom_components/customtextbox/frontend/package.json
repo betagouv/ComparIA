@@ -1,0 +1,30 @@
+{
+  "name": "gradio_customtextbox",
+  "version": "0.6.11",
+  "description": "Gradio UI packages",
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "private": false,
+  "main_changeset": true,
+  "main": "Index.svelte",
+  "exports": {
+    ".": "./Index.svelte",
+    "./example": "./Example.svelte",
+    "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "@gradio/atoms": "0.8.0",
+    "@gradio/icons": "0.7.1",
+    "@gradio/statustracker": "0.7.5",
+    "@gradio/utils": "0.6.0"
+  },
+  "devDependencies": {
+    "@gradio/preview": "0.11.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gradio-app/gradio.git",
+    "directory": "js/textbox"
+  }
+}

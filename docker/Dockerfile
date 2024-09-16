@@ -47,7 +47,7 @@ WORKDIR /app/custom_components/customradiocard
 # TODO: factorize this
 RUN gradio cc install
 RUN gradio cc build --no-generate-docs --bump-version
-WORKDIR /app/custom_components/frinput
+WORKDIR /app/custom_components/customtextbox
 RUN gradio cc install
 RUN gradio cc build --no-generate-docs --bump-version
 WORKDIR /app/custom_components/frslider
