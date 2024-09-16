@@ -83,6 +83,7 @@ async def about(request: Request):
         {"request": request, "config": config},
     )
 
+
 @app.get("/partenaires", response_class=HTMLResponse)
 async def partners(request: Request):
     return templates.TemplateResponse(
@@ -111,7 +112,7 @@ async def policy(request: Request):
 async def tos(request: Request):
     return templates.TemplateResponse(
         "tos.html",
-        {"request": request, "config": config},
+        {"request": request, "config": config, "models": config.models_extra_info},
     )
 
 
