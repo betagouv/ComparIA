@@ -1,22 +1,22 @@
-["Albert MFS"]
-simple_name = "Albert MFS"
-organisation = "Albert"
-country = "France"
-icon_path = "marianne.png"
-friendly_size = "S"
-distribution = "open-weights"
-dataset = "communiqué"
-conditions = "free"
+# ["Albert MFS"]
+# simple_name = "Albert MFS"
+# organisation = "Albert"
+# country = "France"
+# icon_path = "marianne.png"
+# friendly_size = "S"
+# distribution = "open-weights"
+# dataset = "communiqué"
+# conditions = "free"
 
-[Alpaca-13B]
-simple_name = "Alpaca-13B"
-organisation = "Stanford"
-country = "États-Unis"
-icon_path = "stanford.png"
-friendly_size = "S"
-distribution = "open-weights"
-dataset = "private"
-conditions = "restricted"
+# [Alpaca-13B]
+# simple_name = "Alpaca-13B"
+# organisation = "Stanford"
+# country = "États-Unis"
+# icon_path = "stanford.png"
+# friendly_size = "S"
+# distribution = "open-weights"
+# dataset = "private"
+# conditions = "restricted"
 
 [Aya23-35B]
 simple_name = "Aya23-35B"
@@ -44,15 +44,15 @@ params = 8
 license = "CC-BY-NC-4.0"
 description = "Aya 23 8B de Cohere est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
 
-["Claude 3 Opus"]
-simple_name = "Claude 3 Opus"
-organisation = "Anthropic"
-country = "États-Unis"
-icon_path = "anthropic.png"
-friendly_size = "L"
-dataset = "private"
-distribution = "api-only"
-conditions = "restricted"
+# ["Claude 3 Opus"]
+# simple_name = "Claude 3 Opus"
+# organisation = "Anthropic"
+# country = "États-Unis"
+# icon_path = "anthropic.png"
+# friendly_size = "L"
+# dataset = "private"
+# distribution = "api-only"
+# conditions = "restricted"
 
 ["Claude 3.5 Sonnet"]
 simple_name = "Claude 3.5 Sonnet"
@@ -87,17 +87,18 @@ distribution = "open-weights"
 dataset = "private"
 conditions = "restricted"
 
-["CroissantLLMChat-v0.1"]
-simple_name = "CroissantLLMChat-v0.1"
-organisation = "ILLUIN"
-country = "France"
-icon_path = "illuin.png"
-friendly_size = "XS"
-distribution = "open-weights"
-dataset = "public"
-conditions = "free"
+# ["CroissantLLMChat-v0.1"]
+# simple_name = "CroissantLLMChat-v0.1"
+# organisation = "ILLUIN"
+# country = "France"
+# icon_path = "illuin.png"
+# friendly_size = "XS"
+# distribution = "open-weights"
+# dataset = "public"
+# conditions = "free"
 
 ["gemini-1.5-pro-001"]
+url = "https://ai.google.dev/gemini-api"
 active_params = 220
 total_params = 440
 simple_name = "Gemini 1.5 Pro"
@@ -127,6 +128,7 @@ excerpt = "Modèle performant avec une taille correcte, son coût relativement �
 description = "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
 
 [Gemma-2-9B-it]
+url = "https://huggingface.co/google/gemma-2-9b-it"
 simple_name = "Gemma 2 9B"
 organisation = "Google"
 country = "États-Unis"
@@ -141,6 +143,7 @@ excerpt = "Ce modèle est d'une taille intermédiaire, mais il tire partie des a
 description = "Modèle intermédiaire de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 
 [gemma-2-2b-it]
+url = "https://huggingface.co/google/gemma-2-2b-it"
 simple_name = "Gemma 2 2B"
 organisation = "Google"
 country = "États-Unis"
@@ -174,6 +177,7 @@ distribution = "api-only"
 conditions = "restricted"
 
 ["llama-3.1-405b"]
+url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct"
 simple_name = "Llama 3.1 405B"
 organisation = "Meta"
 country = "États-Unis"
@@ -188,6 +192,7 @@ params = 405
 license = "Llama 3.1 Community"
 
 ["llama-3.1-8b"]
+url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct"
 simple_name = "Llama 3.1 8B"
 organisation = "Meta"
 country = "États-Unis"
@@ -202,6 +207,7 @@ params = 8
 license = "Llama 3.1 Community"
 
 ["llama-3.1-70b"]
+url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct"
 params = 70
 simple_name = "Llama 3.1 70B"
 organisation = "Meta"
@@ -244,6 +250,7 @@ excerpt = "Petit frère de la famille Llama 3, ce modèle est optimisé pour les
 license = "Llama 3 Community"
 
 [mistral-nemo-2407]
+url = "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407"
 simple_name = "Mistral Nemo"
 params = 12
 organisation = "Mistral"
@@ -257,17 +264,17 @@ description = "Ce modèle de petit gabarit est entraîné pour des tâches de ra
 excerpt = "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter un contexte de 128k tokens en plus de 100 langues."
 license = "Apache 2.0"
 
-["Mistral-7B-Instruct-v0.3"]
-simple_name = "Mistral-7B"
-params = 7
-organisation = "Mistral"
-country = "France"
-icon_path = "mistral.png"
-friendly_size = "S"
-distribution = "open-weights"
-dataset = "private"
-conditions = "free"
-license = "Apache 2.0"
+# ["Mistral-7B-Instruct-v0.3"]
+# simple_name = "Mistral-7B"
+# params = 7
+# organisation = "Mistral"
+# country = "France"
+# icon_path = "mistral.png"
+# friendly_size = "S"
+# distribution = "open-weights"
+# dataset = "private"
+# conditions = "free"
+# license = "Apache 2.0"
 
 [Mistral-Large-2402]
 simple_name = "Mistral-Large-2402"
@@ -280,6 +287,7 @@ distribution = "api-only"
 conditions = "restricted"
 
 ["Mixtral-8x22B-Instruct-v0.1"]
+url = "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1"
 simple_name = "Mixtral 8x22B"
 active_params = 44
 total_params = 176
@@ -295,6 +303,7 @@ description = "L’architecture SMoE (sparse mixture of experts) de ce modèle l
 license = "Apache 2.0"
 
 ["Mixtral-8x7B-Instruct-v0.1"]
+url = "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1"
 simple_name = "Mixtral-8x7B"
 organisation = "Mistral"
 active_params = 14
@@ -310,6 +319,7 @@ excerpt = "Ce modèle entraîné sur un corpus multilingue offre de bonnes perfo
 license = "Apache 2.0"
 
 [phi-3-mini-4k]
+url = "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct"
 simple_name = "Phi-3-Mini"
 organisation = "Microsoft"
 country = "États-Unis"
@@ -324,6 +334,7 @@ description = "Petit frère de la famille Phi3, ce modèle supporte un contexte 
 excerpt = "Performant pour des tâches de génération de code, et de résumé, ce modèle compact supporte un contexte restreint de 4000 tokens."
 
 ["phi-3.5-mini-instruct"]
+url = "https://huggingface.co/microsoft/Phi-3.5-mini-instruct"
 simple_name = "Phi-3.5-mini"
 organisation = "Microsoft"
 country = "États-Unis"
@@ -371,6 +382,7 @@ dataset = "private"
 conditions = "restricted"
 
 [Qwen2-72b-instruct]
+url = "https://huggingface.co/Qwen/Qwen2-72B-Instruct"
 simple_name = "Qwen2-72b-instruct"
 organisation = "Alibaba"
 country = "Chine"
@@ -381,6 +393,7 @@ dataset = "private"
 conditions = "restricted"
 
 [Qwen2-7B-instruct]
+url = "https://huggingface.co/Qwen/Qwen2-7B-Instruct"
 simple_name = "Qwen2-7B"
 organisation = "Alibaba"
 country = "Chine"
@@ -394,34 +407,34 @@ excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue e
 params = 7
 license = "Apache 2.0"
 
-[Vicuna-13B]
-simple_name = "Vicuna-13B"
-organisation = "Meta"
-country = "États-Unis"
-icon_path = "meta.svg"
-friendly_size = "S"
-dataset = "private"
-distribution = "open-weights"
-conditions = "restricted"
+# [Vicuna-13B]
+# simple_name = "Vicuna-13B"
+# organisation = "Meta"
+# country = "États-Unis"
+# icon_path = "meta.svg"
+# friendly_size = "S"
+# dataset = "private"
+# distribution = "open-weights"
+# conditions = "restricted"
 
-[Vicuna-33B]
-simple_name = "Vicuna-33B"
-organisation = "LMSYS"
-country = "États-Unis"
-icon_path = "lmsys.png"
-friendly_size = "M"
-distribution = "open-weights"
-dataset = "private"
-conditions = "restricted"
+# [Vicuna-33B]
+# simple_name = "Vicuna-33B"
+# organisation = "LMSYS"
+# country = "États-Unis"
+# icon_path = "lmsys.png"
+# friendly_size = "M"
+# distribution = "open-weights"
+# dataset = "private"
+# conditions = "restricted"
 
-["Zephyr-ORPO-141b-A35b-v0.1"]
-simple_name = "Zephyr-ORPO-141b-A35b-v0.1"
-organisation = "Hugging Face"
-country = "France"
-friendly_size = "L"
-active_params = 35
-total_params = 141
-icon_path = "huggingface.svg"
-distribution = "open-weights"
-dataset = "private"
-conditions = "restricted"
+# ["Zephyr-ORPO-141b-A35b-v0.1"]
+# simple_name = "Zephyr-ORPO-141b-A35b-v0.1"
+# organisation = "Hugging Face"
+# country = "France"
+# friendly_size = "L"
+# active_params = 35
+# total_params = 141
+# icon_path = "huggingface.svg"
+# distribution = "open-weights"
+# dataset = "private"
+# conditions = "restricted"
