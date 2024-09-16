@@ -103,12 +103,29 @@ def openai_api_stream_iter(
     )
     text = ""
     output_tokens = 0
+    logger = logging.getLogger("languia")
     for chunk in res:
         if len(chunk.choices) > 0:
-            text += chunk.choices[0].delta.content or ""
+            if hasattr(chunk.choices[0], "delta") and hasattr(
+                chunk.choices[0].delta, "content"
+            ):
+                content = chunk.choices[0].delta.content
+            else:
+                logger.warning(
+                    "chunk.choices[0] had no delta:", extra={request: request}
+                )
+                logger.warning(chunk.choices[0], extra={request: request})
+                content = ""
             if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-                output_tokens += chunk.usage.completion_tokens
-            data = {"text": text, "error_code": 0, "output_tokens": output_tokens}
+                # logger.debug(
+                #     "completion_tokens returned: " + str(chunk.usage.completion_tokens)
+                # )
+                output_tokens = chunk.usage.completion_tokens
+            if content:
+                text += content
+            data = {"text": text, "error_code": 0}
+            if output_tokens:
+                data["output_tokens"] = output_tokens
             yield data
 
 
@@ -187,6 +204,7 @@ def vertex_api_stream_iter(
         stream_options={"include_usage": True},
     )
     text = ""
+    output_tokens = 0
     for chunk in res:
         if len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "delta") and hasattr(
@@ -194,6 +212,7 @@ def vertex_api_stream_iter(
             ):
                 content = chunk.choices[0].delta.content
                 # llama3.1 405b bugs
+                logger = logging.getLogger("languia")
                 if content and model_name == "meta/llama3-405b-instruct-maas":
                     # logger.debug("fixing llama3 405b bug at google")
                     content = content.replace("\\n", "\n")
@@ -209,11 +228,16 @@ def vertex_api_stream_iter(
                 )
                 logger.warning(chunk.choices[0], extra={request: request})
                 content = ""
-            text += content
-            data = {
-                "text": text,
-                "error_code": 0,
-            }
+            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
+                # logger.debug(
+                #     "output_tokens returned: " + str(chunk.usage.completion_tokens)
+                # )
+                output_tokens = chunk.usage.completion_tokens
+            if content:
+                text += content
+            data = {"text": text, "error_code": 0}
+            if output_tokens:
+                data["output_tokens"] = output_tokens
             yield data
 
     # generator = GenerativeModel(model_name).generate_content(

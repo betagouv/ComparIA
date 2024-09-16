@@ -563,10 +563,21 @@ voteArea.scrollIntoView({
         model_b = get_model_extra_info(
             conversation_b.model_name, config.models_extra_info
         )
-
+        logger.debug("output_tokens: " + str(conversation_a.output_tokens))
+        logger.debug("output_tokens: " + str(conversation_b.output_tokens))
         # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = count_output_tokens(conversation_a.messages)
-        model_b_tokens = count_output_tokens(conversation_b.messages)
+        model_a_tokens = (
+            conversation_a.output_tokens
+            if conversation_a.output_tokens and conversation_a.output_tokens != 0
+            else count_output_tokens(conversation_a.messages)
+        )
+
+        model_b_tokens = (
+            conversation_b.output_tokens
+            if conversation_b.output_tokens and conversation_b.output_tokens != 0
+            else count_output_tokens(conversation_b.messages)
+        )
+
         # TODO:
         # request_latency_a = conversation_a.conv.finish_tstamp - conversation_a.conv.start_tstamp
         # request_latency_b = conversation_b.conv.finish_tstamp - conversation_b.conv.start_tstamp
