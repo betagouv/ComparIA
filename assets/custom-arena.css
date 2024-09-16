@@ -1,5 +1,9 @@
 /* BUGFIXES */
 /* Gradio overrides */
+:root {
+  --block-background-fill: transparent !important;
+}
+
 .gap {
   gap: unset !important;
 }
@@ -165,15 +169,6 @@ button#both-equal-link {
   text-decoration: underline;
 }
 
-/* Custom */
-.rounded-tile {
-  border-color: var(--border-default-grey);
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 0.25rem;
-  /* 4px */
-}
-
 .flex {
   display: flex;
 }
@@ -229,23 +224,36 @@ li.fr-nav__item {
 
 #send-area {
   position: fixed;
-  padding: 1em 20%;
+  padding: 0 20% 1em;
   width: 100%;
   bottom: 0;
   left: 0;
-  background-color: var(--background-alt-grey);
-  border-top: solid 1px var(--border-default-grey);
+  background-color: transparent;
+  /* background-color: var(--background-alt-grey); */
+  /* border-top: solid 1px var(--border-default-grey); */
   z-index: 100;
 }
-
+/* 
 #send-area .small-icon .button-icon {
   width: 15px;
   height: 14px;
+} */
+
+#send-btn[disabled] {
+  background-color: #E5E5E5;
+
 }
 
 #send-btn {
+  background-color: var(--blue-france-main-525);
   position: absolute;
-  top: 0;
+  display: inline-block;
+  /* bottom: 0;
+  right: 0; */
+  bottom: 14px;
+  right: 16px;
+  border-radius: 2.5rem;
+  width: auto;
 }
 
 #mode-screen .fr-tag {
