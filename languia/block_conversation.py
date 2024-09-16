@@ -32,8 +32,9 @@ from languia.api_provider import get_api_provider_stream_iter
 from languia.utils import get_ip, is_limit_reached
 from languia import config
 
-import logging as logger
+import logging
 
+logger = logging.getLogger("languia")
 
 
 # Inheriting from gr.State doesn't work
