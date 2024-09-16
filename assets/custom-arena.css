@@ -186,6 +186,7 @@ body {
 .app {
   max-width: none !important;
   /* max-width: none; */
+  background-color: #FCFCFD;
 }
 
 /* Gradio unofficial custom component Modal */
@@ -200,6 +201,7 @@ body {
 /* Screen by screen */
 
 /* Screen 0 */
+
 
 li.fr-nav__item {
   margin-bottom: 0;
