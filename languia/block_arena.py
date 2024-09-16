@@ -57,41 +57,49 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-container") as mode_screen:
+    with gr.Column(elem_id="mode-screen") as mode_screen:
 
         title = gr.HTML(
-            elem_classes="text-center text-grey-200 fr-mt-8w fr-mb-2w",
+            # Sur Figma: fr-mt-8w
+            elem_classes="text-center text-grey-200 fr-mt-4w fr-mb-2w",
             value="""<h3>Comment puis-je vous aider aujourd'hui ?</h3>""",
         )
 
         guided_cards = CustomRadioCard(
             show_label=False,
-            # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center",
-            # elem_classes="fr-container",
+            elem_classes="fr-col-12 fr-col-md-8 fr-mx-auto",
             choices=[
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/lightbulb.svg" /><p>Générer de nouvelles idées</p></div>""",
+                    "vie-professionnelle",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/chat-3.svg" /><p>Expliquer simplement un concept</p>""",
                     "expression",
                 ),
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/translate-2.svg" /><p>M’exprimer dans une autre langue</p></div>""",
                     "langues",
                 ),
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Vie pratique</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p></div>""",
-                    "conseils",
-                ),
-                (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p></div>""",
-                    "loisirs",
-                ),
-                (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/mail.svg" /><p>Rédiger un email de réclamation</p></div>""",
                     "administratif",
                 ),
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p></div>""",
-                    "vie-professionnelle",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/bowl.svg" /><p>Découvrir une nouvelle recette de cuisine</p></div>""",
+                    "loisirs",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/clipboard.svg" /><p>Créer un programme d’entraînement</p></div>""",
+                    "conseils",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/earth.svg" /><p>Planifier mon prochain voyage</p></div>""",
+                    "loisirs",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/plant.svg" /><p>Organiser mon temps libre</p></div>""",
+                    "loisirs",
                 ),
             ],
         )
@@ -101,11 +109,19 @@ with gr.Blocks(
             value="Je veux écrire sur mon propre sujet",
             elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mt-8w fr-mb-4w",
         )
+        shuffle_btn = gr.Button(
+            scale=1,
+            size="sm",
+            elem_classes="fr-btn fr-btn--tertiary small-icon fr-mx-auto",
+            visible=False,
+            value="Proposer un autre prompt",
+            # icon="assets/extra-icons/shuffle.svg",
+        )
 
     with gr.Group(
         elem_id="chat-area",
-        visible=False,
         elem_classes="fr-mb-10w fr-mb-md-0",
+        visible=False
     ) as chat_area:
 
         # {likeable}
@@ -157,15 +173,6 @@ with gr.Blocks(
                 elem_id="send-btn",
                 elem_classes="inline-block fr-btn fr-ml-3v",
             )
-        shuffle_btn = gr.Button(
-            scale=1,
-            size="sm",
-            elem_classes="fr-btn fr-btn--tertiary small-icon fr-mx-auto",
-            interactive=False,
-            value="Générer un autre message",
-            icon="assets/extra-icons/shuffle.svg",
-        )
-
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
                 value="Voter pour votre IA favorite",
@@ -173,7 +180,6 @@ with gr.Blocks(
                 visible=False,
                 interactive=False,
             )
-
 
     with gr.Column(
         # h-screen
@@ -257,14 +263,16 @@ with gr.Blocks(
                 )
 
     with gr.Column(
-        elem_classes="fr-container--fluid fr-py-2w", elem_id="buttons-footer", visible=False
+        elem_classes="fr-container--fluid fr-py-2w",
+        elem_id="buttons-footer",
+        visible=False,
     ) as buttons_footer:
 
-            supervote_send_btn = gr.Button(
-                elem_classes="fr-btn fr-mx-auto",
-                value="Découvrir l'identité des deux IA",
-                interactive=False,
-            )
+        supervote_send_btn = gr.Button(
+            elem_classes="fr-btn fr-mx-auto",
+            value="Découvrir l'identité des deux IA",
+            interactive=False,
+        )
 
     with gr.Column(
         elem_id="reveal-screen", visible=False, elem_classes="min-h-screen fr-pt-4w"
@@ -282,7 +290,7 @@ with gr.Blocks(
                 <a class="block fr-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a>
                 <a class="block fr-btn fr-btn--secondary fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
                 </div>
-            """
+            """,
             )
 
     # Modals

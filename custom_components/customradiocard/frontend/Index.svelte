@@ -41,7 +41,7 @@
 	$: disabled = !interactive;
 </script>
 
-<div id={elem_id} class="fr-grid-row fr-grid-row--center {elem_classes} {visible ? '' : 'hide'}">
+<div id={elem_id} class="grid {elem_classes} {visible ? '' : 'hide'}">
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
 		i18n={gradio.i18n}
@@ -64,6 +64,13 @@
 </div>
 
 <style>
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1.5rem; /* adds a 10px gap between grid cells */
+		padding: 0.75rem; /* adds a 20px padding around the grid */
+		margin: 0.75rem; /* adds a 20px margin around the grid */
+	}
 	/* .wrap {
 		display: flex;
 		flex-wrap: wrap;

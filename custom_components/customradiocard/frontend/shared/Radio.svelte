@@ -28,7 +28,7 @@
 <label
 	class:disabled
 	class:selected={is_selected}
-	class="fr-card fr-col-5 fr-col-md-3 fr-mx-1w fr-my-1w"
+	class="custom-card"
 	data-testid="{internal_value}-radio-label"
 	>
 	<input
@@ -51,31 +51,43 @@
 		transition: var(--button-transition);
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
-		border: var(--checkbox-label-border-width) solid
-			var(--checkbox-label-border-color);
-		border-radius: var(--button-small-radius);
-		background: var(--checkbox-label-background-fill);
-		color: var(--checkbox-label-text-color);
+		border: 1px solid #E5E5E5 !important;
+		border-radius: 0.75rem;
+		background-color: white;
+		color: var(--grey-200-850);
+		 /* #cecece */
 		font-weight: var(--checkbox-label-text-weight);
-		font-size: var(--checkbox-label-text-size);
+		font-size: 1rem;
 		line-height: var(--line-md);
 	}
 
-	label:hover {
+	/* label:hover {
 		background: var(--checkbox-label-background-fill-hover);
-	}
+	} */
 	label:focus {
-		background: var(--checkbox-label-background-fill-focus);
+		/* background-color: var(--blue-france-975-75-hover); */
+		background-color: #dcdcfc;
+		/* --blue-france-main-525: #6a6af4; */
+		border: 1px solid var(--blue-france-main-525) !important;
+		color: var(--blue-france-main-525);
 	}
 
 	label.selected {
-		background-color: var(--background-alt-grey) !important;
+		/* --blue-france-975-75: #f5f5fe; */
+
+		/* background-color: var(--blue-france-975-75-active); */
+		background-color: #dcdcfc !important;
 		/* color: var(--checkbox-label-text-color-selected); */
+		background-color: #dcdcfc;
+		/* --blue-france-main-525: #6a6af4; */
+		border: 1px solid var(--blue-france-main-525) !important;
+		color: var(--blue-france-main-525);
 	}
 
 	label > * + * {
 		margin-left: var(--size-2);
 	}
+
 
 	input[type="radio"] {
 		display: none !important;

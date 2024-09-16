@@ -87,7 +87,7 @@ def register_listeners():
 
     @free_mode_btn.click(
         inputs=[],
-        outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
+        outputs=[free_mode_btn, send_area, shuffle_btn, textbox],
         api_name=False,
         show_progress="hidden",
     )
@@ -103,8 +103,7 @@ def register_listeners():
         return {
             free_mode_btn: gr.update(visible=False),
             send_area: gr.update(visible=True),
-            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
-            shuffle_btn: gr.update(interactive=False),
+            shuffle_btn: gr.update(visible=False),
             # Don't remove or autofocus won't work
             textbox: gr.skip(),
         }
@@ -112,7 +111,7 @@ def register_listeners():
     # Step 1.1
     @guided_cards.change(
         inputs=[guided_cards],
-        outputs=[send_btn, send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
+        outputs=[send_btn, send_area, textbox, shuffle_btn, free_mode_btn],
         api_name=False,
         show_progress="hidden",
     )
@@ -128,8 +127,7 @@ def register_listeners():
             send_btn: gr.update(interactive=True),
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
-            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
-            shuffle_btn: gr.update(interactive=True),
+            shuffle_btn: gr.update(visible=True),
             free_mode_btn: gr.update(visible=False),
         }
 
