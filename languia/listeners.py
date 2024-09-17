@@ -89,7 +89,7 @@ def register_listeners():
     # Step 1.1
     @guided_cards.change(
         inputs=[guided_cards],
-        outputs=[send_btn, send_area, textbox, shuffle_btn],
+        outputs=[send_btn, send_area, textbox, shuffle_link],
         api_name=False,
         show_progress="hidden",
     )
@@ -105,10 +105,10 @@ def register_listeners():
             send_btn: gr.update(interactive=True),
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
-            shuffle_btn: gr.update(visible=True),
+            shuffle_link: gr.update(visible=True),
         }
 
-    @shuffle_btn.click(
+    @shuffle_link.click(
         inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
     )
     def shuffle_prompt(guided_cards, request: gr.Request):
@@ -293,7 +293,7 @@ def register_listeners():
             mode_screen: gr.update(visible=False),
             chat_area: gr.update(visible=True),
             send_btn: gr.update(interactive=False),
-            shuffle_btn: gr.update(visible=False),
+            shuffle_link: gr.update(visible=False),
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
@@ -365,7 +365,7 @@ def register_listeners():
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            + [shuffle_btn]
+            + [shuffle_link]
             + [conclude_btn]
         ),
         show_progress="hidden",

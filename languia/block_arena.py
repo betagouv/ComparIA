@@ -104,10 +104,10 @@ with gr.Blocks(
                 ),
             ],
         )
-        shuffle_btn = gr.Button(
+        shuffle_link = gr.Button(
             scale=1,
-            size="sm",
-            elem_classes="fr-btn fr-btn--tertiary small-icon fr-mx-auto",
+            elem_id="shuffle-link",
+            elem_classes="fr-mx-auto",
             visible=False,
             value="Proposer un autre prompt",
             # icon="assets/extra-icons/shuffle.svg",

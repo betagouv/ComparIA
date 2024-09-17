@@ -252,13 +252,18 @@ li.fr-nav__item {
   right: 0; */
   bottom: 14px;
   right: 16px;
-  border-radius: 2.5rem;
+  border-radius: 16px;
   width: auto;
 }
 
-#mode-screen .fr-tag {
-  font-variant: small-caps;
-  /* text-transform: uppercase; */
+#send-btn .button-icon {
+  margin-right: 0px !important;
+}
+
+#shuffle-link {
+  border: none !important;
+  box-shadow: none !important;
+  text-decoration: underline;
 }
 
 #mode-screen.send-area-enabled {
@@ -421,10 +426,10 @@ li.fr-nav__item {
 
 
 #chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
-  content: "Réponse modèle A";
+  content: "Modèle A";
 
-  /* .fr-badge--info */
-  color: var(--text-default-info);
+  color: var(--grey-200-850);
+  font-weight: bold;
   background-color: var(--background-contrast-info);
 
   --idle: transparent;
