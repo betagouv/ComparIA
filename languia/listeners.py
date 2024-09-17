@@ -85,7 +85,6 @@ def register_listeners():
 
     # Step 1
 
-
     # Step 1.1
     @guided_cards.change(
         inputs=[guided_cards],
@@ -135,7 +134,6 @@ def register_listeners():
         conversation_b: gr.State,
         text: gr.Text,
         request: gr.Request,
-        evt: gr.EventData,
     ):
 
         conversations = [conversation_a, conversation_b]
@@ -205,130 +203,97 @@ def register_listeners():
     def bot_response_multi(
         conversation_a,
         conversation_b,
+        textbox_output,
         request: gr.Request,
     ):
         conversations = [conversation_a, conversation_b]
 
         gen = []
-        try:
-            for i in range(config.num_sides):
-                gen.append(
-                    bot_response(
-                        conversations[i],
-                        request,
-                        apply_rate_limit=True,
-                        use_recommended_config=True,
-                    )
-                )
-
-            iters = 0
-            while True:
-                stop = True
-                iters += 1
+        for attempt in range(10):
+            try:
                 for i in range(config.num_sides):
-                    try:
-                        # # Artificially slow faster Google Vertex API
-                        # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
-                        # if iters % 30 == 1 or iters < 3:
-                        ret = next(gen[i])
-                        conversations[i] = ret
-                        stop = False
-                    except StopIteration:
-                        pass
-                    # TODO: timeout problems on scaleway Ampere models?
-                    # except httpcore.ReadTimeout:
-                    #     pass
-                    # except httpx.ReadTimeout:
-                    #     pass
+                    gen.append(
+                        bot_response(
+                            conversations[i],
+                            request,
+                            apply_rate_limit=True,
+                            use_recommended_config=True,
+                        )
+                    )
 
-                yield conversations + [to_threeway_chatbot(conversations)]
+                iters = 0
+                while True:
+                    stop = True
+                    iters += 1
+                    for i in range(config.num_sides):
+                        try:
+                            # # Artificially slow faster Google Vertex API
+                            # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
+                            # if iters % 30 == 1 or iters < 3:
+                            ret = next(gen[i])
+                            conversations[i] = ret
+                            stop = False
+                        except StopIteration:
+                            pass
+                        # TODO: timeout problems on scaleway Ampere models?
+                        # except httpcore.ReadTimeout:
+                        #     pass
+                        # except httpx.ReadTimeout:
+                        #     pass
 
-                if stop:
-                    break
-        except Exception as e:
-            logger.error(
-                f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{str(traceback.format_exc())}",
-                extra={
-                    "request": request,
-                    "error": str(e),
-                    "stacktrace": traceback.format_exc(),
-                },
-            )
-            app_state.crashed = True
-            config.outage_models.append(conversations[i].model_name)
-            add_outage_model(
-                config.controller_url,
-                conversations[i].model_name,
-                # FIXME: seems equal to None always?
-                reason=str(e),
-            )
-            # gr.Warning(
-            #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
-            # )
-            gr.Warning(
-                duration=0,
-                message="Erreur avec l'interrogation d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
-            )
+                    yield {
+                                chatbot: to_threeway_chatbot(conversations),
+                                # enable conclude_btn
+                                conclude_btn: gr.skip(),
+                                # enable send_btn if textbox not empty
+                                send_btn: gr.skip(),
+                                textbox: gr.skip()
+                            }
+                    if stop:
+                        break
+            except Exception as e:
+                logger.error(
+                    f"erreur_modele: {conversations[i].model_name}, '{str(e)}'",
+                    extra={
+                        "request": request,
+                        "error": str(e),
+                        "stacktrace": traceback.format_exc(),
+                    },
+                )
+                config.outage_models.append(conversations[i].model_name)
+                add_outage_model(
+                    config.controller_url,
+                    conversations[i].model_name,
+                    reason=str(e),
+                )
+                # gr.Warning(
+                #     duration=0,
+                #     message="Erreur avec l'interrogation d'un des modèles, veuillez patienter, le comparateur trouve deux nouveaux modèles à interroger.",
+                # )
 
-            # TODO: reset arena a better way...
-            chatbot = gr.Chatbot(
-                # TODO:
-                type="messages",
-                elem_id="main-chatbot",
-                # min_width=
-                height="100%",
-                # Doesn't show because it always has at least our message
-                # Note: supports HTML, use it!
-                placeholder="<em>Veuillez écrire au modèle</em>",
-                # No difference
-                # bubble_full_width=False,
-                layout="panel",  # or "bubble"
-                likeable=False,
-                # UserWarning: show_label has no effect when container is False.
-                show_label=False,
-                container=False,
-                # One can dream
-                # autofocus=True,
-                # autoscroll=True,
-                elem_classes="chatbot",
-                # Should we show it?
-                show_copy_button=False,
-            )
+                # Simpler to repick 2 models
+                conversations = init_conversations(request)
 
-            return (conversation_a, conversation_b, chatbot)
+                # conversation_a, conversation_b, chatbot = add_text(
+                #     conversations[0],
+                #     conversations[1],
+                #     app_state.original_user_prompt,
+                #     request,
+                # )
 
-    # TODO: refacto this
-    def check_answers(
-        conversation_a, conversation_b, textbox_output, request: gr.Request
-    ):
-
-        app_state.awaiting_responses = False
-
-        if hasattr(app_state, "crashed") and app_state.crashed:
-
-            app_state.crashed = False
-
-            conversation_a, conversation_b = init_conversations(request)
-
-            # logger.info(
-            #     "Repicked 2 models: " + model_left + " and " + model_right,
-            #     extra={request: request},
-            # )
-
-            textbox.value = app_state.original_user_prompt
-
-            return (
-                [conversation_a]
-                + [conversation_b]
-                # chatbot
-                + [[]]
-                # disable conclude btn
-                + [gr.update(interactive=False)]
-                # enable send_btn
-                + [gr.update(interactive=True)]
-                + [app_state.original_user_prompt]
+                # Empty generation queue
+                gen = []
+            else:
+                break
+        else:
+            logger.critical("maximum_attempts_reached")
+            raise (
+                RuntimeError(
+                    "Le comparateur a un problème. Veuillez réessayer plus tard."
+                )
             )
 
+        # Got answer at this point
         logger.info(
             f"response_modele_a ({conversation_a.model_name}): {str(conversation_a.messages[-1].content)}",
             extra={"request": request},
@@ -337,17 +302,15 @@ def register_listeners():
             f"response_modele_b ({conversation_b.model_name}): {str(conversation_b.messages[-1].content)}",
             extra={"request": request},
         )
-
-        return (
-            [conversation_a]
-            + [conversation_b]
-            + [chatbot]
+        chatbot_output = to_threeway_chatbot(conversations)
+        return {
+            chatbot: chatbot_output,
             # enable conclude_btn
-            + [gr.update(interactive=True)]
+            conclude_btn: gr.update(interactive=True),
             # enable send_btn if textbox not empty
-            + [gr.update(interactive=(textbox_output != ""))]
-            + [gr.skip()]
-        )
+            send_btn: gr.update(interactive=(textbox != "")),
+            textbox: gr.skip()
+        }
 
     gr.on(
         triggers=[textbox.submit, send_btn.click],
@@ -391,18 +354,12 @@ setTimeout(() => {
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
-        inputs=conversations,
-        outputs=conversations + [chatbot],
+        inputs=conversations + [textbox],
+        outputs=[chatbot, conclude_btn, send_btn, textbox],
         api_name=False,
         show_progress="hidden",
         # should do .success()
-    ).then(
-        fn=check_answers,
-        inputs=conversations + [textbox],
-        outputs=conversations + [chatbot] + [conclude_btn] + [send_btn] + [textbox],
-        api_name=False,
         # scroll_to_output=True,
-        show_progress="hidden",
     )
 
     # // Enable navigation prompt
