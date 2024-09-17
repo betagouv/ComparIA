@@ -413,7 +413,7 @@ voteArea.scrollIntoView({
 
     @which_model_radio.select(
         inputs=[which_model_radio],
-        outputs=[supervote_area, supervote_send_btn, why_vote] + supervote_sliders,
+        outputs=[supervote_area, supervote_send_btn],
         api_name=False,
         show_progress="hidden",
     )
@@ -422,24 +422,6 @@ voteArea.scrollIntoView({
             "vote_selection_temp:" + str(vote_radio),
             extra={"request": request},
         )
-        if hasattr(app_state, "selected_model"):
-            if (app_state.selected_model == "model-b" and vote_radio == "model-a") or (
-                app_state.selected_model == "model-a" and vote_radio == "model-b"
-            ):
-                # FIXME: creates a CSS display bug  where value isn't refreshed
-                new_supervote_sliders = [
-                    gr.update(value=3) for slider in supervote_sliders
-                ]
-            else:
-                new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
-        else:
-            new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
-
-        app_state.selected_model = vote_radio
-        if vote_radio == "model-a":
-            why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
-        elif vote_radio == "model-b":
-            why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
 
         # outputs=[supervote_area, supervote_send_btn, why_vote] +
         # relevance_slider: gr.update(interactive=False),
@@ -449,8 +431,7 @@ voteArea.scrollIntoView({
         return [
             gr.update(visible=True),
             gr.update(interactive=True),
-            gr.update(value=why_text),
-        ] + new_supervote_sliders
+        ]
 
     # Step 3
 
@@ -458,17 +439,22 @@ voteArea.scrollIntoView({
         conversation_a,
         conversation_b,
         which_model_radio_output,
-        relevance_slider_output,
-        form_slider_output,
-        style_slider_output,
-        comments_text_output,
+        positive_a_output,
+        positive_b_output,
+        negative_a_output,
+        negative_b_output,
+        comments_a_output,
+        comments_b_output,
         request: gr.Request,
     ):
         details = {
-            "relevance": int(relevance_slider_output),
-            "form": int(form_slider_output),
-            "style": int(style_slider_output),
-            "comments": str(comments_text_output),
+            # FIXME: better data transformation for groupcheckboxes
+            "positive_a": str(positive_a_output),
+            "positive_b": str(positive_b_output),
+            "negative_a": str(negative_a_output),
+            "negative_b": str(negative_b_output),
+            "comments_a": str(comments_a_output),
+            "comments_b": str(comments_b_output),
         }
         if hasattr(app_state, "category"):
             category = app_state.category
@@ -524,37 +510,47 @@ voteArea.scrollIntoView({
             model_b_tokens=model_b_tokens,
         )
         return {
-            relevance_slider: gr.update(interactive=False),
-            form_slider: gr.update(interactive=False),
-            style_slider: gr.update(interactive=False),
-            comments_text: gr.update(interactive=False),
+            positive_a: gr.update(interactive=False),
+            positive_b: gr.update(interactive=False),
+            negative_a: gr.update(interactive=False),
+            negative_b: gr.update(interactive=False),
+            comments_a: gr.update(interactive=False),
+            comments_b: gr.update(interactive=False),
+            reveal_screen: gr.update(interactive=False),
+            results_area: gr.update(interactive=False),
+            buttons_footer: gr.update(interactive=False),
+            which_model_radio: gr.update(interactive=False),
             reveal_screen: gr.update(visible=True),
             results_area: gr.update(value=reveal_html),
             buttons_footer: gr.update(visible=False),
             which_model_radio: gr.update(interactive=False),
-            both_equal_link: gr.update(interactive=False),
         }
 
     gr.on(
-        triggers=[supervote_send_btn.click, both_equal_link.click],
+        triggers=[supervote_send_btn.click],
         fn=vote_preferences,
         inputs=(
             [conversations[0]]
             + [conversations[1]]
             + [which_model_radio]
-            + (supervote_sliders)
-            + [comments_text]
+            + [positive_a]
+            + [positive_b]
+            + [negative_a]
+            + [negative_b]
+            + [comments_a]
+            + [comments_b]
         ),
         outputs=[
-            relevance_slider,
-            form_slider,
-            style_slider,
-            comments_text,
+            positive_a,
+            positive_b,
+            negative_a,
+            negative_b,
+            comments_a,
+            comments_b,
             reveal_screen,
             results_area,
             buttons_footer,
             which_model_radio,
-            both_equal_link,
         ],
         # outputs=[quiz_modal],
         api_name=False,

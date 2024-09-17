@@ -242,10 +242,10 @@ def save_vote_to_db(data):
             "ip": str(data["ip"]),
             "session_hash": str(data["session_hash"]),
             "visitor_uuid": (data["visitor_uuid"]),
-            "relevance": (data["relevance"]),
-            "form": (data["form"]),
-            "style": (data["style"]),
-            "comments": str(data["comments"]),
+            "details_a": str(data["details_a"]),
+            "details_b": str(data["details_b"]),
+            "comments_a": str(data["comments_a"]),
+            "comments_b": str(data["comments_b"]),
             "extra": json.dumps(data["extra"]),
         }
         cursor.execute(insert_statement, values)
@@ -279,19 +279,8 @@ def vote_last_response(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-    # details = {
-    #         "relevance": relevance_slider,
-    #         "form": form_slider,
-    #         "style": style_slider,
-    #         "comments": comments_text,
-    #     }
 
-    # 1-5 => 0-100
-    relevance = (
-        (details["relevance"] - 1) * 25 if 1 <= details["relevance"] <= 5 else None
-    )
-    form = (details["form"] - 1) * 25 if 1 <= details["form"] <= 5 else None
-    style = (details["style"] - 1) * 25 if 1 <= details["style"] <= 5 else None
+    # FIXME: details!!!
 
     t = datetime.datetime.now()
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
@@ -321,11 +310,10 @@ def vote_last_response(
         "ip": str(get_ip(request)),
         "session_hash": str(request.session_hash),
         "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),
-        "relevance": relevance,
-        "form": form,
-        "style": style,
-        # FIXME: further input sanitizing?
-        "comments": details["comments"],
+        "details_a": str(details["positive_a"])+str(details["negative_a"]),
+        "details_b": str(details["positive_b"])+str(details["negative_b"]),
+        "comments_a": details["comments_a"],
+        "comments_b": details["comments_b"],
         # For redundance
         "extra": {
             "cookies": dict(request.cookies),
@@ -338,14 +326,22 @@ def vote_last_response(
     vote_log_path = os.path.join(LOGDIR, vote_log_filename)
     with open(vote_log_path, "a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
-        if relevance or form or style:
+        logger.info(
+            f"preferences_a: :{details.get('details_a', '')}",
+            extra={"request": request},
+        )
+        logger.info(
+            f"preferences_b: :{details.get('details_b', '')}",
+            extra={"request": request},
+        )
+        if details["comments_a"] != "":
             logger.info(
-                f"preferences: relevance:{relevance}, form:{form}, style:{style}",
+                f"commentaires_a: {details.get('comments_a', '')}",
                 extra={"request": request},
             )
-        if details["comments"] != "":
+        if details["comments_b"] != "":
             logger.info(
-                f"commentaires: {details.get('comments', '')}",
+                f"commentaires_b: {details.get('comments_b', '')}",
                 extra={"request": request},
             )
         fout.write(json.dumps(data) + "\n")

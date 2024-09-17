@@ -193,71 +193,47 @@ with gr.Blocks(
         which_model_radio = CustomRadioCard(
             choices=[
                 (
-                    """<span class="fr-badge fr-badge--no-icon fr-badge--info self-center">Modèle A</span>""",
+                    """<span class="self-center">Modèle A</span>""",
                     "model-a",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--green-tilleul-verveine self-center">Modèle B</span>""",
+                    """<span class="self-center">Les deux se valent</span>""",
+                    "both-equal",
+                ),
+                (
+                    """<span class="self-center">Modèle B</span>""",
                     "model-b",
                 ),
             ],
             show_label=False,
-        )
-        both_equal_link = gr.Button(
-            elem_id="both-equal-link",
-            elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
-            value="Les deux se valent",
         )
 
         with gr.Column(
             visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-16w fr-mb-16w"
         ) as supervote_area:
 
-            why_vote = gr.HTML(
-                """<h4>Pourquoi préférez-vous ce modèle d'IA ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
-                elem_classes="text-center",
-            )
+            with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w") as model_a_prefs:
 
-            with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w"):
-                relevance_slider = FrSlider(
-                    value=-1,
-                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                    minimum=1,
-                    maximum=5,
-                    step=1,
-                    label="Les réponses étaient pertinentes",
-                    info="Critères : réponses utiles, correctes factuelles, précises",
-                    elem_classes="fr-mb-4w",
-                )
-                form_slider = FrSlider(
-                    value=-1,
-                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                    minimum=1,
-                    maximum=5,
-                    step=1,
-                    label="Les réponses étaient simples à lire",
-                    info="Critères : mise en forme et longueur des réponses adaptées",
-                    elem_classes="fr-my-4w",
-                )
-                style_slider = FrSlider(
-                    elem_classes="fr-my-4w",
-                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                    value=-1,
-                    minimum=1,
-                    maximum=5,
-                    step=1,
-                    label="Le style de la réponse était adapté",
-                    info="Critères : registre de langue, vocabulaire, orthographe",
-                )
-                supervote_sliders = [relevance_slider, form_slider, style_slider]
-
-                comments_text = CustomTextbox(
+                positive_a = gr.CheckboxGroup(choices=["Utiles","Complètes","Créatives","Mise en forme claire"])
+                negative_a = gr.CheckboxGroup(choices=["Hallucinatoires","Superficielles","Instructions non respectées"])
+                comments_a = CustomTextbox(
                     elem_classes="big-label",
-                    label="Détails supplémentaires",
+                    label="Détails complémentaires",
                     show_label=True,
                     lines=3,
-                    placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
-                )
+                    placeholder="Les réponses du modèle A sont...")
+
+            with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w") as model_b_prefs:
+                positive_b = gr.CheckboxGroup(choices=["Utiles","Complètes","Créatives","Mise en forme claire"])
+                negative_b = gr.CheckboxGroup(choices=["Hallucinatoires","Superficielles","Instructions non respectées"])
+                
+                comments_b = CustomTextbox(
+                    elem_classes="big-label",
+                    label="Détails complémentaires",
+                    show_label=True,
+                    lines=3,
+                    placeholder="Les réponses du modèle A sont...")
+
 
     with gr.Column(
         elem_classes="fr-container--fluid fr-py-2w",
