@@ -60,7 +60,7 @@ def init_conversations(conversations, request: gr.Request):
         f"selection_modeles: {model_left}, {model_right}",
         extra={request: request},
     )
-    return conversations
+    return {conv_a: conversations[0], conv_b: conversations[1]}
 
 
 # Register listeners
@@ -271,7 +271,7 @@ def register_listeners():
                 # )
 
                 # Simpler to repick 2 models
-                conversations = init_conversations(conversations, request)
+                conv_a, conv_b = init_conversations(conversations, request)
 
                 conversation_a, conversation_b, chatbot_output = add_text(
                     conversations[0],
@@ -448,6 +448,12 @@ voteArea.scrollIntoView({
             why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
         elif vote_radio == "model-b":
             why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
+
+        # outputs=[supervote_area, supervote_send_btn, why_vote] + 
+            # relevance_slider: gr.update(interactive=False),
+            # form_slider: gr.update(interactive=False),
+            # style_slider: gr.update(interactive=False),
+            # comments_text: gr.update(interactive=False),
         return [
             gr.update(visible=True),
             gr.update(interactive=True),
