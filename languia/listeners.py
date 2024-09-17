@@ -240,14 +240,7 @@ def register_listeners():
                         # except httpx.ReadTimeout:
                         #     pass
 
-                    yield {
-                        chatbot: to_threeway_chatbot(conversations),
-                        # enable conclude_btn
-                        conclude_btn: gr.skip(),
-                        # enable send_btn if textbox not empty
-                        send_btn: gr.skip(),
-                        textbox: gr.skip(),
-                    }
+                    yield {chatbot: to_threeway_chatbot(conversations)}
                     if stop:
                         break
             except Exception as e:
@@ -277,7 +270,7 @@ def register_listeners():
                     conversations[0],
                     conversations[1],
                     app_state.original_user_prompt,
-                    request
+                    request,
                 )
                 # Save it to conversations
                 conversations = [conversation_a, conversation_b]
@@ -308,15 +301,14 @@ def register_listeners():
         chatbot_output = to_threeway_chatbot(conversations)
         return {
             chatbot: chatbot_output,
-            # enable conclude_btn
-            conclude_btn: gr.update(interactive=True),
-            # enable send_btn if textbox not empty
-            send_btn: gr.update(interactive=(textbox != "")),
-            textbox: gr.skip(),
         }
 
-    def enable_conclude():
-        return {conclude_btn: gr.update(interactive=True)}
+    def enable_conclude(textbox):
+
+        return {
+            conclude_btn: gr.update(interactive=True),
+            send_btn: gr.update(interactive=(textbox != "")),
+        }
 
     gr.on(
         triggers=[textbox.submit, send_btn.click],
@@ -361,14 +353,14 @@ setTimeout(() => {
         fn=bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
         inputs=conversations + [textbox],
-        outputs=[chatbot, conclude_btn, send_btn, textbox],
+        outputs=[chatbot, textbox],
         api_name=False,
         show_progress="hidden",
         # should do .success()
         # scroll_to_output=True,
         # FIXME: return of bot_response_multi couldn't set conclude_btn and send_btn :'(
     ).then(
-        fn=enable_conclude, inputs=[], outputs=[conclude_btn]
+        fn=enable_conclude, inputs=[textbox], outputs=[conclude_btn, send_btn]
     )
     # // Enable navigation prompt
     # window.onbeforeunload = function() {
@@ -449,11 +441,11 @@ voteArea.scrollIntoView({
         elif vote_radio == "model-b":
             why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
 
-        # outputs=[supervote_area, supervote_send_btn, why_vote] + 
-            # relevance_slider: gr.update(interactive=False),
-            # form_slider: gr.update(interactive=False),
-            # style_slider: gr.update(interactive=False),
-            # comments_text: gr.update(interactive=False),
+        # outputs=[supervote_area, supervote_send_btn, why_vote] +
+        # relevance_slider: gr.update(interactive=False),
+        # form_slider: gr.update(interactive=False),
+        # style_slider: gr.update(interactive=False),
+        # comments_text: gr.update(interactive=False),
         return [
             gr.update(visible=True),
             gr.update(interactive=True),
