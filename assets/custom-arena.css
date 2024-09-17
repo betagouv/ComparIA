@@ -8,7 +8,8 @@
   gap: unset !important;
 }
 
-.fr-header__brand.fr-enlarge-link:hover,.fr-header__brand.fr-enlarge-link:active {
+.fr-header__brand.fr-enlarge-link:hover,
+.fr-header__brand.fr-enlarge-link:active {
   background-color: inherit;
 }
 
@@ -133,6 +134,7 @@ footer,
   color: #949494;
 
 }
+
 .text-grey-200 {
   color: var(--grey-200-850) !important;
 }
@@ -233,6 +235,7 @@ li.fr-nav__item {
   /* border-top: solid 1px var(--border-default-grey); */
   z-index: 100;
 }
+
 /* 
 #send-area .small-icon .button-icon {
   width: 15px;
@@ -252,7 +255,9 @@ li.fr-nav__item {
   right: 0; */
   bottom: 14px;
   right: 16px;
-  border-radius: 16px;
+  /* border-radius: 16px; */
+  /* border-radius: 50%; */
+  border-radius: 2.5rem;
   width: auto;
 }
 
@@ -266,9 +271,6 @@ li.fr-nav__item {
   text-decoration: underline;
 }
 
-#mode-screen.send-area-enabled {
-  margin-bottom: 12rem;
-}
 
 #mode-screen p {
   margin: 0 !important;
@@ -303,7 +305,10 @@ li.fr-nav__item {
 #chat-area .bot button:hover,
 #chat-area .bot button:active {
   background-color: white;
-  border: none;
+  /* border-color: #E5E5E5;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 12px; */
   /* border: 1px solid var(--border-default-grey); */
   --hover-tint: white;
   color: var(--text-default-grey);
@@ -313,11 +318,15 @@ li.fr-nav__item {
 /* #chat-area #chatbot-0 .user-row {
   display: none;
 } */
+.message-wrap>.user-row:first-child {
+  padding-bottom: 0;
+}
 
 .message-wrap>.user-row:first-child .message.user::after {
   content: "Quelle réponse préférez-vous ?";
   color: var(--text-title-grey);
   padding-top: 2rem;
+  padding-bottom: 5px;
   font-size: 1.75rem;
   font-weight: 700;
   text-align: center;
@@ -383,9 +392,9 @@ li.fr-nav__item {
 #chat-area .user button:active {
   text-align: right;
   margin-left: auto;
-  background-color: var(--background-alt-grey);
-  --hover-tint: var(--background-alt-grey);
-  border-radius: 0.75rem;
+  background-color: var(--grey-950-100);
+  --hover-tint: var(--grey-950-100);
+  border-radius: 12px;
 }
 
 #chat-area .user-row {
@@ -409,7 +418,7 @@ li.fr-nav__item {
 #chat-area .message-row,
 #chat-area .flex-wrap,
 #chat-area .styler {
-  background-color: white;
+  background-color: #FCFCFD;
 }
 
 #chat-area,
@@ -419,60 +428,52 @@ li.fr-nav__item {
 }
 
 #chat-area #main-chatbot .message.bot {
-  border-color: var(--border-default-grey);
+  border-color: #E5E5E5;
   border-width: 1px;
   border-style: solid;
+  border-radius: 12px;
+  background-color: white;
 }
 
 
 #chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
   content: "Modèle A";
+}
 
-  color: var(--grey-200-850);
-  font-weight: bold;
-  background-color: var(--background-contrast-info);
+#chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
+  content: "Modèle A";
+}
 
-  --idle: transparent;
-  --hover: var(--background-contrast-info-hover);
-  --active: var(--background-contrast-info-active);
+#chat-area #main-chatbot .message.bot:not(.thought) button::before {
+  color: #A96AFE;
 }
 
 #chat-area #main-chatbot .message.bot.thought .chatbot::before {
-  content: "Réponse modèle B";
-  color: var(--text-label-green-tilleul-verveine);
-  background-color: var(--background-contrast-green-tilleul-verveine);
+  content: "Modèle B";
+}
 
-  --idle: transparent;
-  --hover: var(--background-contrast-green-tilleul-verveine-hover);
-  --active: var(--background-contrast-green-tilleul-verveine-active);
+#chat-area #main-chatbot .message.bot.thought button::before {
+  color: #ff9575;
+  /* --pink-tuile-sun-425-moon-750: #ff9575; */
+}
 
+#chat-area #main-chatbot .message.bot button::before {
+  content: '•';
+  font-size: 96px;
+  /* margin-top: 4px; */
+  margin-left: 0px;
+  line-height: 0;
+  vertical-align: top;
+  margin-top: 6px;
+  display: inline-block;
 }
 
 #chat-area .message.bot .chatbot::before {
 
-  /* .fr-badge css */
-  --text-spacing: 0;
-  --title-spacing: 0;
-  display: inline-flex;
-  flex-direction: row;
-  align-items: center;
-  width: -moz-fit-content;
-  width: fit-content;
 
-  --underline-img: none;
-  --hover-tint: var(--hover);
-  font-size: 0.875rem;
-  line-height: 1.5rem;
-  min-height: 1.5rem;
-  padding: 0 0.5rem;
-  overflow: initial;
-  max-height: none;
-  font-weight: 700;
-  max-width: 100%;
-  text-transform: uppercase;
-  border-radius: 0.25rem;
-  color: var(--text-default-grey);
-  background-color: var(--background-contrast-grey);
+  color: var(--grey-200-850);
+  font-weight: bold;
+  font-size: medium;
 
   margin-bottom: 1em;
 

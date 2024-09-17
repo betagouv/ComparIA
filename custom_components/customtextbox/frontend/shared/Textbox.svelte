@@ -279,7 +279,7 @@
 		--input-background-fill: var(--grey-950-100);
 		--input-placeholder-color: var(--grey-625-425);
 		--body-text-color: #3a3a3a;
-		--input-radius: 42px;
+		--input-radius: 24px;
 		/* --line-sm: 20px; */
 		/* 
   --input-text-weight: 400;
@@ -298,7 +298,7 @@
 		border-radius: var(--input-radius) !important;
 		resize: none;
 		
-		padding: 12px 36px;
+		padding: 12px 60px 12px 12px;
 		display: block;
 		position: relative;
 		outline: none !important;

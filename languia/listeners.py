@@ -375,18 +375,6 @@ def register_listeners():
         inputs=None,
         outputs=None,
         js="""(args) => {
-  const footer = document.querySelector('#send-area');
-  const chatArea = document.querySelector('#chat-area');
-
-  function adjustFooter() {
-    const footerHeight = footer.offsetHeight;
-    // Add bottom padding to the chatArea equal to footer height so it's not hidden
-    chatArea.style.paddingBottom = `${footerHeight}px`;
-  }
-  // Adjust footer on page load, resize and initially
-  window.addEventListener('load', adjustFooter);
-  window.addEventListener('resize', adjustFooter);
-  adjustFooter();
 setTimeout(() => {
   console.log("scrolling to last user row if there are at least 2 user rows");
   var userRows = document.querySelectorAll('.user-row');

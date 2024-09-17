@@ -2,6 +2,7 @@
 LANGU:IA's main code
 Users chat with two anonymous models.
 """
+from themes.dsfr import DSFR
 
 import gradio as gr
 
@@ -31,7 +32,6 @@ from languia import config
 
 app_state = gr.State()
 
-from themes.dsfr import DSFR
 
 with gr.Blocks(
     title="LANGU:IA – Le comparateur d'IA conversationnelles",
@@ -58,7 +58,7 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen") as mode_screen:
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w") as mode_screen:
 
         title = gr.HTML(
             # Sur Figma: fr-mt-8w
@@ -173,7 +173,7 @@ with gr.Blocks(
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
                 value="Voter pour votre IA favorite",
-                elem_classes="fr-btn fr-col-12 fr-col-md-5",
+                elem_classes="fr-col-12 fr-col-md-5",
                 visible=False,
                 interactive=False,
             )
