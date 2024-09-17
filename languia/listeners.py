@@ -242,13 +242,13 @@ def register_listeners():
                         #     pass
 
                     yield {
-                                chatbot: to_threeway_chatbot(conversations),
-                                # enable conclude_btn
-                                conclude_btn: gr.skip(),
-                                # enable send_btn if textbox not empty
-                                send_btn: gr.skip(),
-                                textbox: gr.skip()
-                            }
+                        chatbot: to_threeway_chatbot(conversations),
+                        # enable conclude_btn
+                        conclude_btn: gr.skip(),
+                        # enable send_btn if textbox not empty
+                        send_btn: gr.skip(),
+                        textbox: gr.skip(),
+                    }
                     if stop:
                         break
             except Exception as e:
@@ -274,12 +274,14 @@ def register_listeners():
                 # Simpler to repick 2 models
                 conversations = init_conversations(request)
 
-                # conversation_a, conversation_b, chatbot = add_text(
-                #     conversations[0],
-                #     conversations[1],
-                #     app_state.original_user_prompt,
-                #     request,
-                # )
+                conversation_a, conversation_b, chatbot_output = add_text(
+                    conversations[0],
+                    conversations[1],
+                    app_state.original_user_prompt,
+                    request,
+                )
+                # Save it to conversations
+                conversations = [conversation_a, conversation_b]
 
                 # Empty generation queue
                 gen = []
@@ -294,6 +296,8 @@ def register_listeners():
             )
 
         # Got answer at this point
+        app_state.awaiting_responses = False
+
         logger.info(
             f"response_modele_a ({conversation_a.model_name}): {str(conversation_a.messages[-1].content)}",
             extra={"request": request},
@@ -309,8 +313,11 @@ def register_listeners():
             conclude_btn: gr.update(interactive=True),
             # enable send_btn if textbox not empty
             send_btn: gr.update(interactive=(textbox != "")),
-            textbox: gr.skip()
+            textbox: gr.skip(),
         }
+
+    def enable_conclude():
+        return {conclude_btn: gr.update(interactive=True)}
 
     gr.on(
         triggers=[textbox.submit, send_btn.click],
@@ -360,8 +367,10 @@ setTimeout(() => {
         show_progress="hidden",
         # should do .success()
         # scroll_to_output=True,
+        # FIXME: return of bot_response_multi couldn't set conclude_btn and send_btn :'(
+    ).then(
+        fn=enable_conclude, inputs=[], outputs=[conclude_btn]
     )
-
     # // Enable navigation prompt
     # window.onbeforeunload = function() {
     #     return true;
