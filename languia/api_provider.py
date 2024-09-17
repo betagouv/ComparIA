@@ -62,7 +62,7 @@ def process_response_stream(response, model_name=None, request=None):
 
     for chunk in response:
         if len(chunk.choices) > 0:
-            content = getattr(chunk.choices[0].delta, 'content', "")
+            content = getattr(chunk.choices[0].delta, 'content', "") or ""
             if not hasattr(chunk.choices[0], 'delta') or not chunk.choices[0].delta:
                 logger.warning(f"chunk.choices[0] had no delta: {str(chunk.choices[0])}", extra={"request": request})
                 continue
