@@ -184,6 +184,24 @@ def register_listeners():
             + [to_threeway_chatbot(conversations)]
         )
 
+    def goto_chatbot(
+        request: gr.Request,
+        #  FIXME: ignored
+        api_name=False,
+    ):
+        logger.debug("goto_chatbot")
+        return {
+            textbox: gr.update(
+                value="",
+                placeholder="Continuer à discuter avec les deux modèles d'IA",
+            ),
+            mode_screen: gr.update(visible=False),
+            chat_area: gr.update(visible=True),
+            send_btn: gr.update(interactive=False),
+            shuffle_link: gr.update(visible=False),
+            conclude_btn: gr.update(visible=True, interactive=False),
+        }
+
     def bot_response_multi(
         conversation_a,
         conversation_b,
@@ -278,24 +296,6 @@ def register_listeners():
             )
 
             return (conversation_a, conversation_b, chatbot)
-
-    def goto_chatbot(
-        request: gr.Request,
-        #  FIXME: ignored
-        api_name=False,
-    ):
-        logger.debug("goto_chatbot")
-        return {
-            textbox: gr.update(
-                value="",
-                placeholder="Continuer à discuter avec les deux modèles d'IA",
-            ),
-            mode_screen: gr.update(visible=False),
-            chat_area: gr.update(visible=True),
-            send_btn: gr.update(interactive=False),
-            shuffle_link: gr.update(visible=False),
-            conclude_btn: gr.update(visible=True, interactive=False),
-        }
 
     # TODO: refacto this
     def check_answers(
