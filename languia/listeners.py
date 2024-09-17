@@ -24,8 +24,7 @@ from languia.config import (
 # from fastchat.model.model_adapter import get_conversation_template
 
 from languia.block_conversation import (
-    # TODO: to import/replace State and bot_response?
-    ConversationState,
+    set_conv_state,
     bot_response,
 )
 
@@ -39,7 +38,7 @@ from languia.config import logger
 from languia import config
 
 
-def init_conversations(request: gr.Request):
+def init_conversations(conversations, request: gr.Request):
     app_state.awaiting_responses = False
     config.outage_models = refresh_outage_models(
         config.outage_models, controller_url=config.controller_url
@@ -54,8 +53,8 @@ def init_conversations(request: gr.Request):
     )
     conversations = [
         # NOTE: replacement of gr.State() to ConversationState happens here
-        ConversationState(model_name=model_left),
-        ConversationState(model_name=model_right),
+        set_conv_state(conversations[0], model_name=model_left),
+        set_conv_state(conversations[1], model_name=model_right),
     ]
     logger.info(
         f"selection_modeles: {model_left}, {model_right}",
@@ -80,7 +79,7 @@ def register_listeners():
             "init_arene",
             extra={"request": request},
         )
-        conversations = init_conversations(request)
+        conversations = init_conversations([conv_a, conv_b], request)
         return conversations
 
     # Step 1
@@ -272,13 +271,13 @@ def register_listeners():
                 # )
 
                 # Simpler to repick 2 models
-                conversations = init_conversations(request)
+                conversations = init_conversations(conversations, request)
 
                 conversation_a, conversation_b, chatbot_output = add_text(
                     conversations[0],
                     conversations[1],
                     app_state.original_user_prompt,
-                    request,
+                    request
                 )
                 # Save it to conversations
                 conversations = [conversation_a, conversation_b]

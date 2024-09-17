@@ -36,24 +36,19 @@ import logging
 
 logger = logging.getLogger("languia")
 
+def set_conv_state(state, model_name=""):
+        # self.messages = get_conversation_template(model_name)
+    state.messages = []
+    state.output_tokens = None
 
-# Inheriting from gr.State doesn't work
-# class ConversationState(gr.State):
-class ConversationState:
-    def __init__(self, model_name=""):
-        # TODO: use std OpenAI format instead
-        # self.conv = get_conversation_template(model_name)
-        self.messages = []
-        self.output_tokens = None
+    # TODO: get it from api if generated
+    state.conv_id = uuid.uuid4().hex
 
-        # TODO: get it from api if generated
-        self.conv_id = uuid.uuid4().hex
-
-        # TODO: add template info? and test it
-        self.template_name = "zero_shot"
-        self.template = []
-        self.model_name = model_name
-
+    # TODO: add template info? and test it
+    state.template_name = "zero_shot"
+    state.template = []
+    state.model_name = model_name
+    return state
 
 def update_last_message(messages, text):
     if len(messages) < 1:
