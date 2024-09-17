@@ -32,7 +32,7 @@
 	export let loading_status: LoadingStatus;
 	export let interactive = true;
 
-	let columns = Math.max(choices.length, 4); // default number of columns
+	let columns = Math.min(choices.length, 4); // max 4 columns
 
 	function handle_change(): void {
 		gradio.dispatch("change");
