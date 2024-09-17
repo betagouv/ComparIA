@@ -7,22 +7,7 @@ import logging
 
 
 from gradio import ChatMessage
-import time
 
-# def to_openai_api_messages(self):
-#     """Convert the conversation to OpenAI chat completion format."""
-#     if self.system_message == "":
-#         ret = []
-#     else:
-#         ret = [{"role": "system", "content": self.system_message}]
-
-#     for i, (_, msg) in enumerate(self.messages[self.offset :]):
-#         if i % 2 == 0:
-#             ret.append({"role": "user", "content": msg})
-#         else:
-#             if msg is not None:
-#                 ret.append({"role": "assistant", "content": msg})
-#     return ret
 
 
 def get_api_provider_stream_iter(
@@ -68,6 +53,35 @@ def get_api_provider_stream_iter(
     return stream_iter
 
 
+def process_response_stream(response, model_name=None, request=None):
+    """
+    Processes the stream of responses from the OpenAI API.
+    """
+    text = ""
+    logger = logging.getLogger("languia")
+
+    for chunk in response:
+        if len(chunk.choices) > 0:
+            content = getattr(chunk.choices[0].delta, 'content', "")
+            if not hasattr(chunk.choices[0], 'delta') or not chunk.choices[0].delta:
+                logger.warning(f"chunk.choices[0] had no delta: {str(chunk.choices[0])}", extra={"request": request})
+                continue
+
+            # Special handling for certain models
+            if model_name == "meta/llama3-405b-instruct-maas":
+                content = content.replace("\\n", "\n").lstrip("assistant")
+            elif model_name == "google/gemini-1.5-pro-001":
+                content = content.replace("<br />", "")
+
+            text += content
+
+            data = {"text": text, "error_code": 0}
+            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
+                data["output_tokens"] = chunk.usage.completion_tokens
+
+            yield data
+
+
 def openai_api_stream_iter(
     model_name,
     messages,
@@ -101,34 +115,8 @@ def openai_api_stream_iter(
         # Not available like this
         # top_p=top_p,
     )
-    text = ""
-    output_tokens = 0
-    logger = logging.getLogger("languia")
-    for chunk in res:
-        if len(chunk.choices) > 0:
-            if hasattr(chunk.choices[0], "delta") and hasattr(
-                chunk.choices[0].delta, "content"
-            ):
-                content = chunk.choices[0].delta.content
-            else:
-                logger.warning(
-                    "chunk.choices[0] had no delta:", extra={request: request}
-                )
-                logger.warning(chunk.choices[0], extra={request: request})
-                content = ""
-            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-                # logger.debug(
-                #     "completion_tokens returned: " + str(chunk.usage.completion_tokens)
-                # )
-                output_tokens = chunk.usage.completion_tokens
-            if content:
-                text += content
-            data = {"text": text, "error_code": 0}
-            if output_tokens:
-                data["output_tokens"] = output_tokens
-            yield data
-
-
+    yield from process_response_stream(res, model_name=model_name, request=request)
+    
 def vertex_api_stream_iter(
     api_base, model_name, messages, temperature, top_p, max_new_tokens, request=None
 ):
@@ -203,42 +191,7 @@ def vertex_api_stream_iter(
         stream=True,
         stream_options={"include_usage": True},
     )
-    text = ""
-    output_tokens = 0
-    for chunk in res:
-        if len(chunk.choices) > 0:
-            if hasattr(chunk.choices[0], "delta") and hasattr(
-                chunk.choices[0].delta, "content"
-            ):
-                content = chunk.choices[0].delta.content
-                # llama3.1 405b bugs
-                logger = logging.getLogger("languia")
-                if content and model_name == "meta/llama3-405b-instruct-maas":
-                    # logger.debug("fixing llama3 405b bug at google")
-                    content = content.replace("\\n", "\n")
-                    if str.startswith(content, "assistant"):
-                        # strip first 9 letters ("assistant")
-                        content = content[9:]
-                if content and model_name == "google/gemini-1.5-pro-001":
-                    logger.debug("fixing gemini markdown title bug at google")
-                    content = content.replace("<br />", "")
-            else:
-                logger.warning(
-                    "chunk.choices[0] had no delta:", extra={request: request}
-                )
-                logger.warning(chunk.choices[0], extra={request: request})
-                content = ""
-            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-                # logger.debug(
-                #     "output_tokens returned: " + str(chunk.usage.completion_tokens)
-                # )
-                output_tokens = chunk.usage.completion_tokens
-            if content:
-                text += content
-            data = {"text": text, "error_code": 0}
-            if output_tokens:
-                data["output_tokens"] = output_tokens
-            yield data
+    yield from process_response_stream(res, model_name=model_name, request=request)
 
     # generator = GenerativeModel(model_name).generate_content(
     #     messages,
