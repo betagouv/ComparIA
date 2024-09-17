@@ -44,10 +44,10 @@ with gr.Blocks(
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
-    # A tester
-    # conversations = [ConversationState() for _ in range(config.num_sides)]
-    # TODO: ConversationState as app_state.conv_a and app_state.conv_b
-    conversations = [gr.State() for _ in range(config.num_sides)]
+
+    conv_a = gr.State()
+    conv_b = gr.State()
+    conversations = [conv_a, conv_b]
     # model_selectors = [None] * num_sides
 
     # TODO: check cookies on load!
