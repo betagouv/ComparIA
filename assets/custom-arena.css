@@ -3,6 +3,8 @@
 :root {
   --block-background-fill: transparent !important;
 
+  --blue-france-main-525-hover: #9898F8;
+  --blue-france-main-525-active: #AEAEF9;
 }
 
 .prose.chatbot.md {
@@ -113,8 +115,8 @@ footer,
   font-weight: 700;
 }
 
-.bg-white textarea {
-  background-color: white !important;
+.bg-white {
+  background-color: white;
 }
 
 .text-center {
@@ -152,17 +154,6 @@ footer,
 h6.text-blue {
   /* Not DSFR compliant */
   color: var(--text-action-high-blue-france) !important;
-}
-
-.big-label {
-  font-size: 1.175rem;
-  font-weight: 700;
-}
-
-.big-label textarea,
-.big-label input {
-  font-size: 1rem;
-  font-weight: 400;
 }
 
 .underline {
@@ -210,7 +201,7 @@ body {
 /* Screen 0 */
 
 textarea.fr-input {
-  min-height: unset !important;
+  min-height: 2.5rem !important;
 }
 
 
@@ -244,7 +235,8 @@ li.fr-nav__item {
   width: 100%;
   bottom: 0;
   left: 0;
-  background-color: transparent;
+  background-color: #FCFCFD;
+  /* background-color: transparent; */
   /* background-color: var(--background-alt-grey); */
   /* border-top: solid 1px var(--border-default-grey); */
   z-index: 100;
@@ -256,37 +248,27 @@ li.fr-nav__item {
   height: 14px;
 } */
 
-#send-btn[disabled] {
+.purple-btn[disabled] {
   background-color: #E5E5E5;
   color: #929292;
 
 }
 
-#send-btn {
+.purple-btn {
   background-color: var(--blue-france-main-525);
   color: #F5F5FE;
-  /* position: absolute; */
-  /* display: inline-block; */
-  /* bottom: 0;
-  right: 0; */
-  /* bottom: 14px;
-  right: 16px; */
-  /* border-radius: 16px; */
-  /* border-radius: 50%; */
-  /* border-radius: 2.5rem; */
-  /* width: auto; */
+
+  --hover: var(--blue-france-main-525-hover);
+  --active: var(--blue-france-main-525-active);
 }
 
-/* #send-btn .button-icon {
-  margin-right: 0px !important;
-} */
-
-#shuffle-link {
+.link {
   border: none !important;
   box-shadow: none !important;
   text-decoration: underline;
 }
-#shuffle-link:active,#shuffle-link:hover {
+
+.link:active,.link:hover {
 background-color: inherit !important;
 }
 
@@ -449,7 +431,6 @@ background-color: inherit !important;
   background-color: white;
 }
 
-
 #chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
   content: "Modèle A";
 }
@@ -495,6 +476,15 @@ background-color: inherit !important;
 }
 
 /* VOTE AREA */
+
+
+.rounded-corners {
+  border-color: #E5E5E5;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 12px;
+}
+
 .show-radio input[type=radio] {
   display: block !important;
 }
@@ -517,6 +507,7 @@ background-color: inherit !important;
   background-image: url("file=assets/extra-icons/thumb-down.svg");
 }
 
+/* REVEAL AREA */
 
 @media (min-width: 48em) {
   .your-choice {
@@ -531,24 +522,28 @@ background-color: inherit !important;
   /* width: 100%; */
   bottom: 0;
   left: 0;
-  background-color: var(--background-alt-grey);
-  border-top: solid 1px var(--border-default-grey);
+  background-color: #FCFCFD;
+  /* background-color: var(--background-alt-grey); */
   z-index: 100;
+  /* border-top: solid 1px var(--border-default-grey); */
   /* box-shadow: inset 0 1px 0 0 var(--border-default-grey); */
   /* filter: drop-shadow(var(--raised-shadow)); */
 }
 
 
 #feedback-row {
-  background-color: var(--background-alt-grey);
-  border-top: solid 1px var(--border-default-grey);
+  background-color: #FCFCFD;
+  /* background-color: var(--background-alt-grey); */
+  /* border-top: solid 1px var(--border-default-grey); */
 }
+
+/* MODAL */
+/* Bend the modal component to our will */
 
 .modal-block {
   padding: 2rem;
 }
 
-/* Bend the modal component to our will */
 .modal-block .close {
   margin: 20px 40px;
   border: none;

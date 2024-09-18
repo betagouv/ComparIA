@@ -103,8 +103,7 @@ with gr.Blocks(
         )
         shuffle_link = gr.Button(
             scale=1,
-            elem_id="shuffle-link",
-            elem_classes="fr-mx-auto",
+            elem_classes="fr-mx-auto link",
             visible=False,
             value="Me proposer un autre prompt",
             # icon="assets/extra-icons/shuffle.svg",
@@ -142,7 +141,9 @@ with gr.Blocks(
             # autoscroll=True
         )
 
-    with gr.Column(elem_id="send-area", visible=True) as send_area:
+    with gr.Column(
+        elem_id="send-area", visible=True, elem_classes="fr-pt-1w"
+    ) as send_area:
         # textbox = gr.Textbox(
         with gr.Row(elem_classes="items-start"):
             textbox = FrInput(
@@ -162,12 +163,12 @@ with gr.Blocks(
                 value="Envoyer",
                 # icon="assets/dsfr/icons/system/arrow-up-line.svg",
                 elem_id="send-btn",
-                elem_classes="grow-0",
+                elem_classes="grow-0 purple-btn",
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
                 value="Voter pour votre IA favorite",
-                elem_classes="fr-col-12 fr-col-md-5",
+                elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
                 visible=False,
                 interactive=False,
             )
@@ -212,14 +213,17 @@ with gr.Blocks(
         ) as supervote_area:
 
             # with gr.Column():
-            with gr.Column(elem_classes="fr-col-12 fr-col-md-6"):
+            with gr.Column(
+                elem_classes="fr-col-12 fr-col-md-6 bg-white rounded-corners"
+            ):
 
                 gr.HTML(
                     value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> Modèle A</h4>
     <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
 
-                positive_a = gr.CheckboxGroup(elem_classes="thumb-up-icon flex",
+                positive_a = gr.CheckboxGroup(
+                    elem_classes="thumb-up-icon flex",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -229,7 +233,8 @@ with gr.Blocks(
                     ],
                 )
 
-                negative_a = gr.CheckboxGroup(elem_classes="thumb-down-icon flex",
+                negative_a = gr.CheckboxGroup(
+                    elem_classes="thumb-down-icon flex",
                     show_label=False,
                     choices=[
                         ("Hallucinations", "hallucinations"),
@@ -239,15 +244,16 @@ with gr.Blocks(
                 )
 
                 comments_a = FrInput(
-                    elem_classes="big-label",
-                    label="Détails complémentaires",
-                    show_label=True,
+                    show_label=False,
+                    visible=False,
                     lines=3,
                     placeholder="Les réponses du modèle A sont...",
                 )
 
             # with gr.Column():
-            with gr.Column(elem_classes="fr-col-12 fr-col-md-6"):
+            with gr.Column(
+                elem_classes="fr-col-12 fr-col-md-6 bg-white rounded-corners"
+            ):
 
                 gr.HTML(
                     value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> Modèle B</h4>
@@ -275,21 +281,21 @@ with gr.Blocks(
                     ],
                 )
                 comments_b = FrInput(
-                    elem_classes="big-label",
-                    label="Détails complémentaires",
-                    show_label=True,
+                    show_label=False,
+                    visible=False,
                     lines=3,
                     placeholder="Les réponses du modèle B sont...",
                 )
+            comments_link = gr.Button(value="Ajouter des détails", elem_classes="link")
 
     with gr.Column(
-        elem_classes="fr-container--fluid fr-py-2w",
+        elem_classes="fr-container--fluid fr-py-2w fr-grid-row fr-grid-row--center",
         elem_id="buttons-footer",
         visible=False,
     ) as buttons_footer:
 
         supervote_send_btn = gr.Button(
-            elem_classes="fr-btn fr-mx-auto",
+            elem_classes="purple-btn fr-mx-auto fr-col-10 fr-col-md-4",
             value="Découvrir l'identité des deux IA",
             interactive=False,
         )
@@ -307,7 +313,7 @@ with gr.Blocks(
                 elem_classes=" fr-container",
                 value="""
                 <div class="fr-py-4w">
-                <a class="block fr-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a>
+                <a class="block purple-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a>
                 <a class="block fr-btn fr-btn--secondary fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
                 </div>
             """,

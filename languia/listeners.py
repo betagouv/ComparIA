@@ -434,6 +434,13 @@ voteArea.scrollIntoView({
         ]
 
     # Step 3
+    @comments_link.click(
+        outputs=[comments_a, comments_b, comments_link],
+        api_name=False,
+        show_progress="hidden",
+    )
+    def show_comments():
+        return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
         conversation_a,
