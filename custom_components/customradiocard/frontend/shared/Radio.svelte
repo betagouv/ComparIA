@@ -52,10 +52,10 @@
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
 		border: 1px solid #E5E5E5 !important;
-		border-radius: 0.75rem;
+		border-radius: 0.5rem;
 		background-color: white;
 		color: var(--grey-200-850);
-		 /* #cecece */
+		    /* color: var(--grey-50-1000); */
 		font-weight: var(--checkbox-label-text-weight);
 		font-size: 1rem;
 		line-height: var(--line-md);
@@ -79,7 +79,7 @@
 
 
 	input[type="radio"] {
-		display: none !important;
+		display: none;
 		/* --ring-color: transparent;
 		position: relative;
 		box-shadow: var(--checkbox-shadow);
