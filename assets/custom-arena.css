@@ -414,7 +414,7 @@ background-color: inherit !important;
   margin-left: auto;
   background-color: var(--grey-950-100);
   --hover-tint: var(--grey-950-100);
-  border-radius: 12px;
+  border-radius: 0.75rem
 }
 
 #chat-area .user-row {
@@ -451,7 +451,7 @@ background-color: inherit !important;
   border-color: #E5E5E5;
   border-width: 1px;
   border-style: solid;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   background-color: white;
 }
 
@@ -501,12 +501,18 @@ background-color: inherit !important;
 
 /* VOTE AREA */
 
+.rounded-tile {
+  border-color: #E5E5E5;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 0.25rem;
+}
 
 .rounded-corners {
   border-color: #E5E5E5;
   border-width: 1px;
   border-style: solid;
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 
 .show-radio input[type=radio] {
@@ -518,16 +524,15 @@ background-color: inherit !important;
   padding-right: 22px;
   margin-right: 2em;
   /* width: 22px; */
-  height: 21px;
+  height: 22px;
   background-image: url("file=assets/extra-icons/thumb-up.svg");
 }
 
 .thumb-down-icon::before {
   content: "";
-  padding-right: 22px;
-  margin-right: 2em;
-  /* width: 22px; */
-  height: 21px;
+  padding-right: 24px;
+  margin-right: 0.5em;
+  height: 23px;
   background-image: url("file=assets/extra-icons/thumb-down.svg");
 }
 
