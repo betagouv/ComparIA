@@ -195,7 +195,7 @@ with gr.Blocks(
                     "model-a",
                 ),
                 (
-                    """<span class="self-center justify-center">Les deux se valent</span>""",
+                    """<span class="self-center text-center justify-center">Les deux se valent</span>""",
                     "both-equal",
                 ),
                 (
@@ -218,7 +218,7 @@ with gr.Blocks(
             ):
 
                 gr.HTML(
-                    value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> Modèle A</h4>
+                    value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <strong>Modèle A</strong></p>
     <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
 
@@ -256,7 +256,7 @@ with gr.Blocks(
             ):
 
                 gr.HTML(
-                    value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> Modèle B</h4>
+                    value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> <strong>Modèle B</strong></p>
     <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
 
@@ -310,12 +310,10 @@ with gr.Blocks(
             # dsfr: This should just be a normal link...
             # feedback_btns =
             gr.HTML(
-                elem_classes=" fr-container",
+                elem_classes="fr-container",
                 value="""
-                <div class="fr-py-4w">
-                <a class="block purple-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a>
-                <a class="block fr-btn fr-btn--secondary fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
-                </div>
+                <a class="btn purple-btn fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
+                <a class="fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
             """,
             )
 

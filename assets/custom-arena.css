@@ -262,12 +262,34 @@ li.fr-nav__item {
   --active: var(--blue-france-main-525-active);
 }
 
+.grey-btn {
+  background-color: var(--grey-200-850);
+  color: #F5F5FE;
+  /* --background-action-high-grey-hover: 
+  --background-action-high-grey-active:  */
+  --hover: var(--grey-200-850-hover);
+  --active: var(--grey-200-850-active);
+}
+
+.btn {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  width: fit-content;
+  --underline-img: none;
+  --hover-tint: var(--hover);
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 1rem;
+}
+
 .link {
   border: none !important;
   box-shadow: none !important;
   text-decoration: underline;
 }
-
 .link:active,.link:hover {
 background-color: inherit !important;
 }
