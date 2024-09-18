@@ -64,24 +64,13 @@
 	/* label:hover {
 		background: var(--checkbox-label-background-fill-hover);
 	} */
-	label:focus {
-		/* background-color: var(--blue-france-975-75-hover); */
-		background-color: #dcdcfc;
-		/* --blue-france-main-525: #6a6af4; */
-		border: 1px solid var(--blue-france-main-525) !important;
-		color: var(--blue-france-main-525);
-	}
 
-	label.selected {
+	label.selected, label:focus {
 		/* --blue-france-975-75: #f5f5fe; */
 
-		/* background-color: var(--blue-france-975-75-active); */
-		background-color: #dcdcfc !important;
-		/* color: var(--checkbox-label-text-color-selected); */
-		background-color: #dcdcfc;
 		/* --blue-france-main-525: #6a6af4; */
 		border: 1px solid var(--blue-france-main-525) !important;
-		color: var(--blue-france-main-525);
+		/* color: var(--blue-france-main-525); */
 	}
 
 	label > * + * {

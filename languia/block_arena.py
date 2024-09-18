@@ -144,7 +144,7 @@ with gr.Blocks(
 
     with gr.Column(elem_id="send-area", visible=True) as send_area:
         # textbox = gr.Textbox(
-        with gr.Column(elem_classes="inline-block"):
+        with gr.Row(elem_classes=""):
             textbox = FrInput(
                 elem_id="main-textbox",
                 show_label=False,
@@ -158,12 +158,11 @@ with gr.Blocks(
             )
             send_btn = gr.Button(
                 interactive=False,
-                scale=1,
-                value="",
-                # value="",
-                icon="assets/dsfr/icons/system/arrow-up-line.svg",
+                # scale=1,
+                value="Envoyer",
+                # icon="assets/dsfr/icons/system/arrow-up-line.svg",
                 elem_id="send-btn",
-                elem_classes="inline-block",
+                elem_classes="grow-0",
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
