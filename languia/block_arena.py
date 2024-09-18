@@ -15,13 +15,8 @@ from languia.utils import header_html, welcome_modal_html
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
-from custom_components.customtextbox.backend.gradio_customtextbox import CustomTextbox
 
-# from custom_components.frinput.backend.gradio_frinput import FrInput
-from custom_components.frslider.backend.gradio_frslider import FrSlider
-
-# from custom_components.customslider.backend.gradio_customslider import CustomSlider
-
+from custom_components.frinput.backend.gradio_frinput import FrInput
 
 from languia import config
 
@@ -150,7 +145,7 @@ with gr.Blocks(
     with gr.Column(elem_id="send-area", visible=True) as send_area:
         # textbox = gr.Textbox(
         with gr.Column(elem_classes="inline-block"):
-            textbox = CustomTextbox(
+            textbox = FrInput(
                 elem_id="main-textbox",
                 show_label=False,
                 lines=1,
@@ -217,9 +212,10 @@ with gr.Blocks(
             with gr.Column(elem_classes="fr-col-12 fr-col-md-5"):
 
                 gr.HTML(
-                    value="""<h4><svg class="inline" width='20' height='20'><circle cx='10' cy='10' r='9' fill='#ff9575' stroke='none'/></svg> Modèle A</h4>
-                    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+                    value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> Modèle A</h4>
+    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
+
                 positive_a = gr.CheckboxGroup(
                     show_label=False,
                     choices=[
@@ -239,7 +235,7 @@ with gr.Blocks(
                     ],
                 )
 
-                comments_a = CustomTextbox(
+                comments_a = FrInput(
                     elem_classes="big-label",
                     label="Détails complémentaires",
                     show_label=True,
@@ -267,7 +263,7 @@ with gr.Blocks(
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],
                 )
-                comments_b = CustomTextbox(
+                comments_b = FrInput(
                     elem_classes="big-label",
                     label="Détails complémentaires",
                     show_label=True,
