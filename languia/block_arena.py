@@ -80,7 +80,7 @@ with gr.Blocks(
                     "langues",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/mail.svg" /><p>Rédiger un email de réclamation</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/draft.svg" /><p>Rédiger un document administratif</p></div>""",
                     "administratif",
                 ),
                 (
@@ -92,11 +92,11 @@ with gr.Blocks(
                     "conseils",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/earth.svg" /><p>Planifier mon prochain voyage</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/earth.svg" /><p>Organiser mon prochain voyage</p></div>""",
                     "loisirs",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/plant.svg" /><p>Organiser mon temps libre</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/music-2.svg" /><p>Proposer des idées de films, livres, musiques</p></div>""",
                     "loisirs",
                 ),
             ],
@@ -307,7 +307,7 @@ with gr.Blocks(
         results_area = gr.HTML(visible=True, elem_classes="fr-container")
 
         with gr.Column(visible=True, elem_id="feedback-row") as feedback_row:
-            # dsfr: This should just be a normal link...
+            # dsfr: This should just be a normal link
             # feedback_btns =
             gr.HTML(
                 elem_classes="fr-container",

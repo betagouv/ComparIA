@@ -5,6 +5,8 @@
 
   --blue-france-main-525-hover: #9898F8;
   --blue-france-main-525-active: #AEAEF9;
+
+  --chatbot-body-text-size: 16px !important;
 }
 
 .prose.chatbot.md {
