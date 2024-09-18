@@ -2,6 +2,7 @@
 LANGU:IA's main code
 Users chat with two anonymous models.
 """
+
 from themes.dsfr import DSFR
 
 import gradio as gr
@@ -15,6 +16,7 @@ from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
 from custom_components.customtextbox.backend.gradio_customtextbox import CustomTextbox
+
 # from custom_components.frinput.backend.gradio_frinput import FrInput
 from custom_components.frslider.backend.gradio_frslider import FrSlider
 
@@ -114,9 +116,7 @@ with gr.Blocks(
         )
 
     with gr.Group(
-        elem_id="chat-area",
-        elem_classes="fr-mb-10w fr-mb-md-0",
-        visible=False
+        elem_id="chat-area", elem_classes="fr-mb-10w fr-mb-md-0", visible=False
     ) as chat_area:
 
         # {likeable}
@@ -209,31 +209,63 @@ with gr.Blocks(
         )
 
         with gr.Column(
-            visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-16w fr-mb-16w"
+            visible=False,
+            elem_classes="fr-grid-row fr-grid-row--gutters fr-mt-8w fr-mb-md-16w fr-mb-16w",
         ) as supervote_area:
 
-            with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w") as model_a_prefs:
+            with gr.Column(elem_classes="fr-container fr-col-12 fr-col-md-6"):
 
-                positive_a = gr.CheckboxGroup(choices=["Utiles","Complètes","Créatives","Mise en forme claire"])
-                negative_a = gr.CheckboxGroup(choices=["Hallucinatoires","Superficielles","Instructions non respectées"])
+                positive_a = gr.CheckboxGroup(
+                    show_label=False,
+                    choices=[
+                        ("useful", "Utiles"),
+                        ("complete", "Complètes"),
+                        ("creative", "Créatives"),
+                        ("clear-formatting", "Mise en forme claire"),
+                    ],
+                )
+
+                negative_a = gr.CheckboxGroup(
+                    show_label=False,
+                    choices=[
+                        ("hallucinatory", "Hallucinatoires"),
+                        ("superficial", "Superficielles"),
+                        ("instructions-not-followed", "Instructions non respectées"),
+                    ],
+                )
+
                 comments_a = CustomTextbox(
                     elem_classes="big-label",
                     label="Détails complémentaires",
                     show_label=True,
                     lines=3,
-                    placeholder="Les réponses du modèle A sont...")
+                    placeholder="Les réponses du modèle A sont...",
+                )
 
-            with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w") as model_b_prefs:
-                positive_b = gr.CheckboxGroup(choices=["Utiles","Complètes","Créatives","Mise en forme claire"])
-                negative_b = gr.CheckboxGroup(choices=["Hallucinatoires","Superficielles","Instructions non respectées"])
-                
+            with gr.Column(elem_classes="fr-container fr-col-12 fr-col-md-6"):
+                positive_b = gr.CheckboxGroup(
+                    show_label=False,
+                    choices=[
+                        ("hallucinatory", "Hallucinatoires"),
+                        ("superficial", "Superficielles"),
+                        ("instructions-not-followed", "Instructions non respectées"),
+                    ],
+                )
+                negative_b = gr.CheckboxGroup(
+                    show_label=False,
+                    choices=[
+                        ("hallucinatory", "Hallucinatoires"),
+                        ("superficial", "Superficielles"),
+                        ("instructions-not-followed", "Instructions non respectées"),
+                    ],
+                )
                 comments_b = CustomTextbox(
                     elem_classes="big-label",
                     label="Détails complémentaires",
                     show_label=True,
                     lines=3,
-                    placeholder="Les réponses du modèle A sont...")
-
+                    placeholder="Les réponses du modèle B sont...",
+                )
 
     with gr.Column(
         elem_classes="fr-container--fluid fr-py-2w",

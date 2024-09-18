@@ -448,11 +448,10 @@ voteArea.scrollIntoView({
         request: gr.Request,
     ):
         details = {
-            # FIXME: better data transformation for groupcheckboxes
-            "positive_a": str(positive_a_output),
-            "positive_b": str(positive_b_output),
-            "negative_a": str(negative_a_output),
-            "negative_b": str(negative_b_output),
+            "positive_a": ",".join(positive_a_output) if positive_a_output else None,
+            "positive_b": ",".join(positive_b_output) if positive_b_output else None,
+            "negative_a": ",".join(negative_a_output) if negative_a_output else None,
+            "negative_b": ",".join(negative_b_output) if negative_b_output else None,
             "comments_a": str(comments_a_output),
             "comments_b": str(comments_b_output),
         }

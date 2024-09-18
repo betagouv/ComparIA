@@ -18,7 +18,6 @@ CREATE TABLE
         chosen_model_name VARCHAR(255),
         both_equal BOOLEAN NOT NULL,
         opening_prompt text NOT NULL,
-        -- intensity VARCHAR(255),
         conversation_a JSONB NOT NULL,
         conversation_b JSONB NOT NULL,
         turns INT,
@@ -29,10 +28,12 @@ CREATE TABLE
         ip VARCHAR,
         session_hash VARCHAR,
         visitor_uuid VARCHAR,
-        relevance INT,
-        form INT,
-        style INT,
-        comments TEXT,
+        details_a_positive VARCHAR,
+        details_a_negative VARCHAR,
+        details_b_positive VARCHAR,
+        details_b_negative VARCHAR,
+        comments_a TEXT,
+        comments_b TEXT,
         extra JSONB
     );
 

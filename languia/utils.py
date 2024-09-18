@@ -279,9 +279,6 @@ def vote_last_response(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-
-    # FIXME: details!!!
-
     t = datetime.datetime.now()
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
@@ -310,8 +307,10 @@ def vote_last_response(
         "ip": str(get_ip(request)),
         "session_hash": str(request.session_hash),
         "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),
-        "details_a": str(details["positive_a"])+str(details["negative_a"]),
-        "details_b": str(details["positive_b"])+str(details["negative_b"]),
+        "details_a_positive": (details["positive_a"]),
+        "details_a_negative": (details["negative_a"]),
+        "details_b_positive": (details["positive_b"]),
+        "details_b_negative": (details["negative_b"]),
         "comments_a": details["comments_a"],
         "comments_b": details["comments_b"],
         # For redundance
