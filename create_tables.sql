@@ -25,27 +25,57 @@ CREATE TABLE
         is_unedited_prompt BOOLEAN,
         template JSONB,
         uuid VARCHAR NOT NULL,
-        ip VARCHAR,
-        session_hash VARCHAR,
-        visitor_uuid VARCHAR,
-        details_a_positive VARCHAR,
-        details_a_negative VARCHAR,
-        details_b_positive VARCHAR,
-        details_b_negative VARCHAR,
+        ip VARCHAR(255),
+        session_hash VARCHAR(255),
+        visitor_uuid VARCHAR(255),
+        details_a_positive VARCHAR(500),
+        details_a_negative VARCHAR(500),
+        details_b_positive VARCHAR(500),
+        details_b_negative VARCHAR(500),
         comments_a TEXT,
         comments_b TEXT,
         extra JSONB
     );
 
-CREATE TABLE
-    profiles (
-        tstamp TIMESTAMP NOT NULL,
-        chatbot_use VARCHAR(255),
-        gender VARCHAR(255),
-        age VARCHAR(255),
-        profession VARCHAR(255),
-        confirmed BOOLEAN,
-        session_hash VARCHAR(255),
-        visitor_uuid VARCHAR(255),
-        extra JSONB
-    );
+--
+-- Migration votes v3
+--
+
+-- ALTER TABLE votes
+-- RENAME COLUMN comments TO comments_a;
+
+-- ALTER TABLE votes
+-- ADD COLUMN comments_b TEXT;
+
+-- UPDATE votes
+-- SET comments_b = comments_a;
+-- ALTER TABLE votes DROP COLUMN relevance;
+-- ALTER TABLE votes DROP COLUMN form;
+-- ALTER TABLE votes DROP COLUMN style;
+
+-- ALTER TABLE votes
+-- ADD COLUMN details_a_positive VARCHAR(500);
+-- ALTER TABLE votes
+-- ADD COLUMN details_a_negative VARCHAR(500);
+-- ALTER TABLE votes
+-- ADD COLUMN details_b_positive VARCHAR(500);
+-- ALTER TABLE votes
+-- ADD COLUMN details_b_negative VARCHAR(500);
+
+
+-- 
+-- Unused profiles table
+-- 
+
+-- CREATE TABLE
+--     profiles (
+--         tstamp TIMESTAMP NOT NULL,
+--         chatbot_use VARCHAR(255),
+--         gender VARCHAR(255),
+--         age VARCHAR(255),
+--         profession VARCHAR(255),
+--         confirmed BOOLEAN,
+--         session_hash VARCHAR(255),
+--         visitor_uuid VARCHAR(255),
+--         extra JSONB
+--     );
