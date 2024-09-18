@@ -106,7 +106,7 @@ with gr.Blocks(
             elem_id="shuffle-link",
             elem_classes="fr-mx-auto",
             visible=False,
-            value="Proposer un autre prompt",
+            value="Me proposer un autre prompt",
             # icon="assets/extra-icons/shuffle.svg",
         )
 
@@ -144,7 +144,7 @@ with gr.Blocks(
 
     with gr.Column(elem_id="send-area", visible=True) as send_area:
         # textbox = gr.Textbox(
-        with gr.Row(elem_classes=""):
+        with gr.Row(elem_classes="items-start"):
             textbox = FrInput(
                 elem_id="main-textbox",
                 show_label=False,
@@ -180,22 +180,26 @@ with gr.Blocks(
     ) as vote_area:
         gr.HTML(
             value="""
-            <h3 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir leurs identités</h3>
-            <p class="text-center text-grey fr-text--sm">Votre vote permet d’améliorer les réponses des deux IA</p>""",
+            <h3 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir l'identité des modèles</h3>
+            <p class="text-center text-grey fr-text--sm">L'ensemble des votes permet d’améliorer les modèles d'IA</p>""",
         )
 
         which_model_radio = CustomRadioCard(
+            elem_classes="justify-center",
+            # elem_classes="show-radio self-center justify-center",
             choices=[
                 (
-                    """<span class="self-center">Modèle A</span>""",
+                    """<div class="self-center justify-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <span class="">Modèle A</span>
+                </div>""",
                     "model-a",
                 ),
                 (
-                    """<span class="self-center">Les deux se valent</span>""",
+                    """<span class="self-center justify-center">Les deux se valent</span>""",
                     "both-equal",
                 ),
                 (
-                    """<span class="self-center">Modèle B</span>""",
+                    """<div class="self-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg><span class=""> Modèle B</span>
+                </div>""",
                     "model-b",
                 ),
             ],
@@ -204,18 +208,18 @@ with gr.Blocks(
 
         with gr.Row(
             visible=False,
-            elem_classes="fr-grid-row fr-mt-8w fr-mb-md-16w fr-mb-16w",
+            elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
         ) as supervote_area:
 
             # with gr.Column():
-            with gr.Column(elem_classes="fr-col-12 fr-col-md-5"):
+            with gr.Column(elem_classes="fr-col-12 fr-col-md-6"):
 
                 gr.HTML(
-                    value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> Modèle A</h4>
+                    value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> Modèle A</h4>
     <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
 
-                positive_a = gr.CheckboxGroup(
+                positive_a = gr.CheckboxGroup(elem_classes="thumb-up-icon flex",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -225,10 +229,10 @@ with gr.Blocks(
                     ],
                 )
 
-                negative_a = gr.CheckboxGroup(
+                negative_a = gr.CheckboxGroup(elem_classes="thumb-down-icon flex",
                     show_label=False,
                     choices=[
-                        ("Hallucinatoires", "hallucinatory"),
+                        ("Hallucinations", "hallucinations"),
                         ("Superficielles", "superficial"),
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],
@@ -243,8 +247,15 @@ with gr.Blocks(
                 )
 
             # with gr.Column():
-            with gr.Column(elem_classes="fr-col-12 fr-col-md-5"):
+            with gr.Column(elem_classes="fr-col-12 fr-col-md-6"):
+
+                gr.HTML(
+                    value="""<h4><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> Modèle B</h4>
+    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+                )
+
                 positive_b = gr.CheckboxGroup(
+                    elem_classes="thumb-up-icon flex",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -255,9 +266,10 @@ with gr.Blocks(
                 )
 
                 negative_b = gr.CheckboxGroup(
+                    elem_classes="thumb-down-icon flex",
                     show_label=False,
                     choices=[
-                        ("Hallucinatoires", "hallucinatory"),
+                        ("Hallucinations", "hallucinations"),
                         ("Superficielles", "superficial"),
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],

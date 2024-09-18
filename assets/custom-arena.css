@@ -2,6 +2,11 @@
 /* Gradio overrides */
 :root {
   --block-background-fill: transparent !important;
+
+}
+
+.prose.chatbot.md {
+  opacity: 1 !important;
 }
 
 .gap {
@@ -168,15 +173,17 @@ h6.text-blue {
   font-size: 1.5rem;
 }
 
-button#both-equal-link {
-  border: none !important;
-  box-shadow: none !important;
-  text-decoration: underline;
-}
-
 .flex {
   display: flex;
 }
+
+.items-start {
+  align-items: start;
+}
+
+.gap-0 {
+  gap: 0px;
+}	
 
 /* General */
 body {
@@ -279,7 +286,9 @@ li.fr-nav__item {
   box-shadow: none !important;
   text-decoration: underline;
 }
-
+#shuffle-link:active,#shuffle-link:hover {
+background-color: inherit !important;
+}
 
 #mode-screen p {
   margin: 0 !important;
@@ -313,15 +322,11 @@ li.fr-nav__item {
 #chat-area .bot button,
 #chat-area .bot button:hover,
 #chat-area .bot button:active {
-  background-color: white;
-  /* border-color: #E5E5E5;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 12px; */
-  /* border: 1px solid var(--border-default-grey); */
-  --hover-tint: white;
+  /* background-color: transparent; */
+  --hover-tint: transparent;
+  --active-tint: transparent;
+
   color: var(--text-default-grey);
-  /* --hover-tint: var(--background-alt-blue-france); */
 }
 
 /* #chat-area #chatbot-0 .user-row {
@@ -478,8 +483,6 @@ li.fr-nav__item {
 }
 
 #chat-area .message.bot .chatbot::before {
-
-
   color: var(--grey-200-850);
   font-weight: bold;
   font-size: medium;
@@ -490,6 +493,30 @@ li.fr-nav__item {
   --hover: var(--background-contrast-grey-hover);
   --active: var(--background-contrast-grey-active); */
 }
+
+/* VOTE AREA */
+.show-radio input[type=radio] {
+  display: block !important;
+}
+
+.thumb-up-icon::before {
+  content: "";
+  padding-right: 22px;
+  margin-right: 2em;
+  /* width: 22px; */
+  height: 21px;
+  background-image: url("file=assets/extra-icons/thumb-up.svg");
+}
+
+.thumb-down-icon::before {
+  content: "";
+  padding-right: 22px;
+  margin-right: 2em;
+  /* width: 22px; */
+  height: 21px;
+  background-image: url("file=assets/extra-icons/thumb-down.svg");
+}
+
 
 @media (min-width: 48em) {
   .your-choice {
