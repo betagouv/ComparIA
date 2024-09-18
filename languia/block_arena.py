@@ -208,29 +208,34 @@ with gr.Blocks(
             show_label=False,
         )
 
-        with gr.Column(
+        with gr.Row(
             visible=False,
-            elem_classes="fr-grid-row fr-grid-row--gutters fr-mt-8w fr-mb-md-16w fr-mb-16w",
+            elem_classes="fr-grid-row fr-mt-8w fr-mb-md-16w fr-mb-16w",
         ) as supervote_area:
 
-            with gr.Column(elem_classes="fr-container fr-col-12 fr-col-md-6"):
+            # with gr.Column():
+            with gr.Column(elem_classes="fr-col-12 fr-col-md-5"):
 
+                gr.HTML(
+                    value="""<h4><svg class="inline" width='20' height='20'><circle cx='10' cy='10' r='9' fill='#ff9575' stroke='none'/></svg> Modèle A</h4>
+                    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+                )
                 positive_a = gr.CheckboxGroup(
                     show_label=False,
                     choices=[
-                        ("useful", "Utiles"),
-                        ("complete", "Complètes"),
-                        ("creative", "Créatives"),
-                        ("clear-formatting", "Mise en forme claire"),
+                        ("Utiles", "useful"),
+                        ("Complètes", "complete"),
+                        ("Créatives", "creative"),
+                        ("Mise en forme claire", "clear-formatting"),
                     ],
                 )
 
                 negative_a = gr.CheckboxGroup(
                     show_label=False,
                     choices=[
-                        ("hallucinatory", "Hallucinatoires"),
-                        ("superficial", "Superficielles"),
-                        ("instructions-not-followed", "Instructions non respectées"),
+                        ("Hallucinatoires", "hallucinatory"),
+                        ("Superficielles", "superficial"),
+                        ("Instructions non respectées", "instructions-not-followed"),
                     ],
                 )
 
@@ -242,21 +247,24 @@ with gr.Blocks(
                     placeholder="Les réponses du modèle A sont...",
                 )
 
-            with gr.Column(elem_classes="fr-container fr-col-12 fr-col-md-6"):
+            # with gr.Column():
+            with gr.Column(elem_classes="fr-col-12 fr-col-md-5"):
                 positive_b = gr.CheckboxGroup(
                     show_label=False,
                     choices=[
-                        ("hallucinatory", "Hallucinatoires"),
-                        ("superficial", "Superficielles"),
-                        ("instructions-not-followed", "Instructions non respectées"),
+                        ("Utiles", "useful"),
+                        ("Complètes", "complete"),
+                        ("Créatives", "creative"),
+                        ("Mise en forme claire", "clear-formatting"),
                     ],
                 )
+
                 negative_b = gr.CheckboxGroup(
                     show_label=False,
                     choices=[
-                        ("hallucinatory", "Hallucinatoires"),
-                        ("superficial", "Superficielles"),
-                        ("instructions-not-followed", "Instructions non respectées"),
+                        ("Hallucinatoires", "hallucinatory"),
+                        ("Superficielles", "superficial"),
+                        ("Instructions non respectées", "instructions-not-followed"),
                     ],
                 )
                 comments_b = CustomTextbox(
