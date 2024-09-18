@@ -110,8 +110,8 @@ dataset = "private"
 distribution = "api-only"
 license = "propriétaire Gemini"
 conditions = "restricted"
-description = "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
-excerpt = "Ce modèle est idéal pour des applications variées comme la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
+description = "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
+excerpt = "Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 
 ["Gemma 2-27b-it"]
 simple_name = "Gemma 2-27b-it"
@@ -139,8 +139,8 @@ dataset = "private"
 license = "Gemma"
 params = 9
 conditions = "restricted"
-excerpt = "Ce modèle est d'une taille intermédiaire, mais il tire partie des avancées de la génération Gemma 2."
-description = "Modèle intermédiaire de la famille Gemma 2, ce modèle est particulièrement doué pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
+excerpt = "Ce modèle de petite taille sorti en juin 2024 tire partie des avancées de la génération Gemma 2."
+description = "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 
 [gemma-2-2b-it]
 url = "https://huggingface.co/google/gemma-2-2b-it"
@@ -186,8 +186,8 @@ friendly_size = "XL"
 dataset = "private"
 distribution = "open-weights"
 conditions = "free"
-excerpt = "Ce modèle très puissant présente un coût élevé qui le réserve à des applications exigeantes de raisonnement et de programmation."
-description = "Modèle le plus puissant de la famille Llama 3.1 avec 405 milliards de paramètres, il est doté de capacités accrues pour des tâches de programmation, de mathématique et de raisonnement."
+excerpt = "Sorti en juillet 2024, ce modèle est doté de capacités accrues pour des tâches de programmation, de mathématique et de raisonnement."
+description = "Doté de 405 milliards de paramètres, ce modèle est le plus puissant de la famille Llama 3.1. Son coût élevé en inférence le réserve à des applications exigeantes de raisonnement et de programmation."
 params = 405
 license = "Llama 3.1 Community"
 
