@@ -200,8 +200,7 @@ def count_turns(messages):
 
 
 def is_unedited_prompt(opening_prompt, category):
-
-    if category == "unguided":
+    if not category:
         return False
     from languia.config import prompts_table
 
@@ -235,7 +234,7 @@ def save_vote_to_db(data):
             "conversation_a": json.dumps(data["conversation_a"]),
             "conversation_b": json.dumps(data["conversation_b"]),
             "turns": int(data["turns"]),
-            "selected_category": str(data["selected_category"]),
+            "selected_category": (data["selected_category"]),
             "is_unedited_prompt": data["is_unedited_prompt"],
             "template": json.dumps(data["template"]),
             "uuid": str(data["uuid"]),
