@@ -37,32 +37,6 @@ CREATE TABLE
         extra JSONB
     );
 
---
--- Migration votes v3
---
-
--- ALTER TABLE votes
--- RENAME COLUMN comments TO comments_a;
-
--- ALTER TABLE votes
--- ADD COLUMN comments_b TEXT;
-
--- UPDATE votes
--- SET comments_b = comments_a;
--- ALTER TABLE votes DROP COLUMN relevance;
--- ALTER TABLE votes DROP COLUMN form;
--- ALTER TABLE votes DROP COLUMN style;
-
--- ALTER TABLE votes
--- ADD COLUMN details_a_positive VARCHAR(500);
--- ALTER TABLE votes
--- ADD COLUMN details_a_negative VARCHAR(500);
--- ALTER TABLE votes
--- ADD COLUMN details_b_positive VARCHAR(500);
--- ALTER TABLE votes
--- ADD COLUMN details_b_negative VARCHAR(500);
-
-
 -- 
 -- Unused profiles table
 -- 
