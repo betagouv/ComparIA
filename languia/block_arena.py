@@ -314,7 +314,7 @@ with gr.Blocks(
                 elem_classes="fr-container text-center",
                 value="""
                 <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
-                <a class="fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
+                <a class="fr-mx-auto fr-mb-4w" href="../modeles">Découvrir la liste des IA</a>
             """,
             )
 

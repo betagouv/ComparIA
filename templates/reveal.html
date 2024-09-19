@@ -8,28 +8,48 @@
         (model_b,
         'model-b', model_b_impact, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b, streaming_b_unit)] %}
 
-        <div class="rounded-corners fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-md-{% if side == 'model-a' %}n{% endif %}3w">
+        <div
+            class="rounded-corners fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-md-{% if side == 'model-a' %}n{% endif %}3w">
             {% if chosen_model == side %}
             <span class="fr-badge fr-badge--success your-choice">Votre choix</span>
             {% endif %}
             <h4 class="fr-mb-1w"><img class="inline fr-mt-n2v" src="file=assets/orgs/{{ model['icon_path'] }}"
-                width="34" /> {{ model['organisation'] }}/<strong>{{ model["simple_name"] }}</strong>
+                    width="34" /> {{ model['organisation'] }}/<strong>{{ model["simple_name"] }}</strong>
             </h4>
             <p class="fr-mb-4w">
-                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">{% if model['distribution'] ==
-                    "open-weights"
-                    %}Open source{%
-                    else
-                    %}Propriétaire{% endif %}</span>
-                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">Taille {{ model['friendly_size']
-                    }}
+                {% if model['distribution'] ==
+                "open-weights"
+                %}
+                <span class="fr-badge fr-badge--success fr-badge--no-icon fr-mr-1v">
+                    Open source
+                </span>
+                {%
+                else
+                %}
+                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v">
+                    Propriétaire
+                </span>
+                {% endif %}
+                <span class="fr-badge fr-badge--no-icon fr-mr-1v">
                     {% if
-                    model['distribution'] == "open-weights" %} ({{ model['params']|round|int }} mds de
-                    paramètres)</span>{% endif %}
+                    model['distribution'] == "open-weights" %}{{ model['params']|round|int }} mds de
+                    paramètres{%
+                    else
+                    %}Taille non communiquée
+                    {% endif %}
+                </span>
+                <span class="fr-badge fr-badge--no-icon fr-mr-1v">
+                    Licence {% if
+                    model['distribution'] == "open-weights" %}{{ model['license'] }}{%
+                    else
+                    %}commerciale
+                    {% endif %}
+                </span>
             </p>
             <p class="fr-mb-4w fr-text--sm h-20 text-grey">{{ model['excerpt'] }}</p>
             <h6 class="fr-mb-0">Bilan énergétique de votre discussion</h6>
-            <p class="fr-my-2w fr-text--xs text-grey">La taille du modèle et la longueur de ses réponses ont un impact sur son
+            <p class="fr-my-2w fr-text--xs text-grey">La taille du modèle et la longueur de ses réponses ont un impact
+                sur son
                 bilan.</p>
             <div id="energy-balance" class="fr-grid-row fr-grid-row--middle">
                 <div class="rounded-tile fr-p-1w fr-col-4 fr-col-md-2 fr-ml-n1w fr-mr-1w">
@@ -39,7 +59,8 @@
                         nombre de
                         tokens est grand.</span>
                     <div class="text-center"><!-- seo -->
-                        <svg class="text-center" width="22" height="20" viewBox="0 0 22 20" xmlns="http://www.w3.org/2000/svg">
+                        <svg class="text-center" width="22" height="20" viewBox="0 0 22 20"
+                            xmlns="http://www.w3.org/2000/svg">
                             <path
                                 d="M7.26989 2.5C3.75535 2.5 0.90625 5.11168 0.90625 8.33333C0.90625 11.555 3.75535 14.1667 7.26989 14.1667H8.24342C8.20095 13.8945 8.17898 13.6163 8.17898 13.3333C8.17898 13.0504 8.20095 12.7722 8.24342 12.5H7.26989C4.7595 12.5 2.72443 10.6345 2.72443 8.33333C2.72443 6.03215 4.7595 4.16667 7.26989 4.16667H14.5426C17.053 4.16667 19.0881 6.03215 19.0881 8.33333C19.0881 8.619 19.0567 8.89792 18.997 9.16733C19.5292 9.64567 19.9703 10.209 20.2939 10.8333C20.6865 10.0756 20.9062 9.228 20.9062 8.33333C20.9062 5.11168 18.0572 2.5 14.5426 2.5H7.26989ZM9.99716 13.3333C9.99716 11.0322 12.0323 9.16667 14.5426 9.16667C17.053 9.16667 19.0881 11.0322 19.0881 13.3333C19.0881 14.1826 18.8109 14.9725 18.335 15.6312L20.64 17.7441L19.3543 18.9226L17.0493 16.8097C16.3308 17.2459 15.4691 17.5 14.5426 17.5C12.0323 17.5 9.99716 15.6345 9.99716 13.3333Z"
                                 fill="#009081" />
@@ -102,10 +123,10 @@
                     =
                 </div>
                 <div class="rounded-tile fr-p-1w fr-col-4 fr-col-md-2 fr-mr-1w">
-                    
+
                     <span class="fr-tooltip fr-placement" id="ampoule-{{side}}" role="tooltip" aria-hidden="true">Donnée
                         calculée sur la base de consommation d’une ampoule LED standard de 5W (E14)</span>
-                        <div class="">
+                    <div class="">
                         <!-- lightbulb -->
                         <svg class="" width="14" height="19" viewBox="0 0 14 19" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
@@ -122,14 +143,14 @@
                     </div>
                 </div>
                 <div class="rounded-tile fr-p-1w fr-col-4 fr-col-md-2 fr-mr-1w">
-                    
+
                     <span class="fr-tooltip fr-placement" id="videos-{{side}}" role="tooltip" aria-hidden="true">Donnée
                         calculée selon l’impact carbone d’une heure de vidéo en ligne en haute définition, sur
                         une
                         télévision, en connexion wifi (source <a
                             href="https://impactco2.fr/outils/usagenumerique/streamingvideo" rel="noopener external"
                             target="_blank">ADEME</a>)</span>
-                            <div class="">
+                    <div class="">
                         <!-- youtube -->
                         <svg class="text-center" width="20" height="20" viewBox="0 0 20 20" fill="none"
                             xmlns="http://www.w3.org/2000/svg">

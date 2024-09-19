@@ -499,16 +499,17 @@ background-color: inherit !important;
 
 /* VOTE AREA */
 
+
+#supervote-area input[type="checkbox"] {
+  display: none;
+}
+
 .checkboxes label {
   border-radius: 1.5rem;
   background: white;
   color: #606367;
   border: 1px #DADCE0 solid;
   font-weight: 500;
-}
-
-#supervote-area input[type="checkbox"] {
-  display: none;
 }
 
 .checkboxes label.selected {
