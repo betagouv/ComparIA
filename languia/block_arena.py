@@ -209,12 +209,13 @@ with gr.Blocks(
 
         with gr.Row(
             visible=False,
+            elem_id="supervote-area",
             elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
         ) as supervote_area:
 
             # with gr.Column():
             with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 bg-white rounded-corners"
+                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-n1w fr-mr-md-1w bg-white rounded-corners"
             ):
 
                 gr.HTML(
@@ -223,7 +224,7 @@ with gr.Blocks(
                 )
 
                 positive_a = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex",
+                    elem_classes="thumb-up-icon flex checkboxes",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -234,7 +235,7 @@ with gr.Blocks(
                 )
 
                 negative_a = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex",
+                    elem_classes="thumb-down-icon flex checkboxes",
                     show_label=False,
                     choices=[
                         ("Hallucinations", "hallucinations"),
@@ -252,7 +253,7 @@ with gr.Blocks(
 
             # with gr.Column():
             with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 bg-white rounded-corners"
+                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w bg-white rounded-corners"
             ):
 
                 gr.HTML(
@@ -261,7 +262,7 @@ with gr.Blocks(
                 )
 
                 positive_b = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex",
+                    elem_classes="thumb-up-icon flex checkboxes",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -272,7 +273,7 @@ with gr.Blocks(
                 )
 
                 negative_b = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex",
+                    elem_classes="thumb-down-icon flex checkboxes",
                     show_label=False,
                     choices=[
                         ("Hallucinations", "hallucinations"),
@@ -286,7 +287,7 @@ with gr.Blocks(
                     lines=3,
                     placeholder="Les réponses du modèle B sont...",
                 )
-            comments_link = gr.Button(value="Ajouter des détails", elem_classes="link")
+            comments_link = gr.Button(elem_classes="link fr-mt-2w", value="Ajouter des détails")
 
     with gr.Column(
         elem_classes="fr-container--fluid fr-py-2w fr-grid-row fr-grid-row--center",
@@ -310,9 +311,9 @@ with gr.Blocks(
             # dsfr: This should just be a normal link
             # feedback_btns =
             gr.HTML(
-                elem_classes="fr-container",
+                elem_classes="fr-container text-center",
                 value="""
-                <a class="btn purple-btn fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
+                <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
                 <a class="fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
             """,
             )

@@ -322,7 +322,7 @@ background-color: inherit !important;
 
 #chat-area button {
   cursor: default;
-  padding: 2rem;
+  padding: 1.25rem;
 }
 
 #chat-area .bot button,
@@ -422,7 +422,7 @@ background-color: inherit !important;
 }
 
 #chat-area .chatbot p {
-  padding-top: 0.5rem;
+  /* padding-top: 0.5rem; */
   text-align: left !important;
   color: var(--text-active-grey);
 }
@@ -457,10 +457,7 @@ background-color: inherit !important;
 
 #chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
   content: "Modèle A";
-}
-
-#chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
-  content: "Modèle A";
+  display: inline-block;
 }
 
 #chat-area #main-chatbot .message.bot:not(.thought) button::before {
@@ -469,6 +466,7 @@ background-color: inherit !important;
 
 #chat-area #main-chatbot .message.bot.thought .chatbot::before {
   content: "Modèle B";
+  display: inline-block;
 }
 
 #chat-area #main-chatbot .message.bot.thought button::before {
@@ -500,6 +498,24 @@ background-color: inherit !important;
 }
 
 /* VOTE AREA */
+
+.checkboxes label {
+  border-radius: 1.5rem;
+  background: white;
+  color: #606367;
+  border: 1px #DADCE0 solid;
+  font-weight: 500;
+}
+
+#supervote-area input[type="checkbox"] {
+  display: none;
+}
+
+.checkboxes label.selected {
+  background: var(--blue-france-975-75);
+  color: var(--blue-france-main-525);
+  border: 1px var(--blue-france-main-525) solid;
+}
 
 .rounded-tile {
   border-color: #E5E5E5;
@@ -537,6 +553,24 @@ background-color: inherit !important;
 }
 
 /* REVEAL AREA */
+
+
+#reveal-screen .rounded-tile p {
+  margin-bottom: 0 !important;
+  --text-spacing: 0 !important;
+}
+
+#energy-balance {
+  text-align: center !important;
+}
+
+#reveal-screen .fr-tooltip {
+  /* position: relative; */
+  /* display: inline; */
+  float: right;
+  /* width: 20px;
+  height: 20px; */
+}
 
 @media (min-width: 48em) {
   .your-choice {
