@@ -325,11 +325,11 @@ def vote_last_response(
     with open(vote_log_path, "a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
         logger.info(
-            f"preferences_a: :{details.get('details_a', '')}",
+            f'preferences_a: {details["positive_a"]},{details["negative_a"]}',
             extra={"request": request},
         )
         logger.info(
-            f"preferences_b: :{details.get('details_b', '')}",
+            f'preferences_b: {details["positive_b"]},{details["negative_b"]}',
             extra={"request": request},
         )
         if details["comments_a"] != "":
