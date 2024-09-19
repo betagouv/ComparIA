@@ -216,6 +216,7 @@
 			<input
 				data-testid="password"
 				type="password"
+				class:hidden={visible === false}
 				class="scroll-hide"
 				bind:value
 				bind:this={el}
@@ -232,6 +233,7 @@
 			<input
 				data-testid="textbox"
 				type="email"
+				class:hidden={visible === false}
 				class="scroll-hide"
 				bind:value
 				bind:this={el}
@@ -264,6 +266,7 @@
 		<textarea
 			data-testid="textbox"
 			use:text_area_resize={value}
+			class:hidden={visible === false}
 			class="scroll-hide fr-input"
 			dir={rtl ? "rtl" : "ltr"}
 			bind:value

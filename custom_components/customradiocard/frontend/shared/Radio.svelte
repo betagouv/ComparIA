@@ -28,7 +28,7 @@
 <label
 	class:disabled
 	class:selected={is_selected}
-	class="fr-card fr-col-5 fr-col-md-3 fr-mx-1w fr-my-1w"
+	class="custom-card"
 	data-testid="{internal_value}-radio-label"
 	>
 	<input
@@ -51,34 +51,35 @@
 		transition: var(--button-transition);
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
-		border: var(--checkbox-label-border-width) solid
-			var(--checkbox-label-border-color);
-		border-radius: var(--button-small-radius);
-		background: var(--checkbox-label-background-fill);
-		color: var(--checkbox-label-text-color);
+		border: 1px solid #E5E5E5 !important;
+		border-radius: 0.5rem;
+		background-color: white;
+		color: var(--grey-200-850);
+		    /* color: var(--grey-50-1000); */
 		font-weight: var(--checkbox-label-text-weight);
-		font-size: var(--checkbox-label-text-size);
+		font-size: 1rem;
 		line-height: var(--line-md);
 	}
 
-	label:hover {
+	/* label:hover {
 		background: var(--checkbox-label-background-fill-hover);
-	}
-	label:focus {
-		background: var(--checkbox-label-background-fill-focus);
-	}
+	} */
 
-	label.selected {
-		background-color: var(--background-alt-grey) !important;
-		/* color: var(--checkbox-label-text-color-selected); */
+	label.selected, label:focus {
+		/* --blue-france-975-75: #f5f5fe; */
+
+		/* --blue-france-main-525: #6a6af4; */
+		border: 1px solid var(--blue-france-main-525) !important;
+		/* color: var(--blue-france-main-525); */
 	}
 
 	label > * + * {
 		margin-left: var(--size-2);
 	}
 
+
 	input[type="radio"] {
-		display: none !important;
+		display: none;
 		/* --ring-color: transparent;
 		position: relative;
 		box-shadow: var(--checkbox-shadow);

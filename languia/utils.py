@@ -200,8 +200,7 @@ def count_turns(messages):
 
 
 def is_unedited_prompt(opening_prompt, category):
-
-    if category == "unguided":
+    if not category:
         return False
     from languia.config import prompts_table
 
@@ -220,8 +219,9 @@ def save_vote_to_db(data):
     try:
         insert_statement = sql.SQL(
             """
-            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, both_equal, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, relevance, form, style, comments, extra)
-            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(relevance)s, %(form)s, %(style)s, %(comments)s, %(extra)s)
+            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, both_equal, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, comments_a, extra, comments_b, details_a_positive, details_a_negative, details_b_positive, details_b_negative)
+            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(comments_a)s, %(extra)s, %(comments_b)s, %(details_a_positive)s, %(details_a_negative)s, %(details_b_positive)s, %(details_b_negative)s)
+
         """
         )
         values = {
@@ -235,17 +235,19 @@ def save_vote_to_db(data):
             "conversation_a": json.dumps(data["conversation_a"]),
             "conversation_b": json.dumps(data["conversation_b"]),
             "turns": int(data["turns"]),
-            "selected_category": str(data["selected_category"]),
+            "selected_category": (data["selected_category"]),
             "is_unedited_prompt": data["is_unedited_prompt"],
             "template": json.dumps(data["template"]),
             "uuid": str(data["uuid"]),
             "ip": str(data["ip"]),
             "session_hash": str(data["session_hash"]),
             "visitor_uuid": (data["visitor_uuid"]),
-            "relevance": (data["relevance"]),
-            "form": (data["form"]),
-            "style": (data["style"]),
-            "comments": str(data["comments"]),
+            "details_a_positive": (data["details_a_positive"]),
+            "details_a_negative": (data["details_a_negative"]),
+            "details_b_positive": (data["details_b_positive"]),
+            "details_b_negative": (data["details_b_negative"]),
+            "comments_a": (data["comments_a"]),
+            "comments_b": (data["comments_b"]),
             "extra": json.dumps(data["extra"]),
         }
         cursor.execute(insert_statement, values)
@@ -279,20 +281,6 @@ def vote_last_response(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-    # details = {
-    #         "relevance": relevance_slider,
-    #         "form": form_slider,
-    #         "style": style_slider,
-    #         "comments": comments_text,
-    #     }
-
-    # 1-5 => 0-100
-    relevance = (
-        (details["relevance"] - 1) * 25 if 1 <= details["relevance"] <= 5 else None
-    )
-    form = (details["form"] - 1) * 25 if 1 <= details["form"] <= 5 else None
-    style = (details["style"] - 1) * 25 if 1 <= details["style"] <= 5 else None
-
     t = datetime.datetime.now()
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
@@ -321,11 +309,12 @@ def vote_last_response(
         "ip": str(get_ip(request)),
         "session_hash": str(request.session_hash),
         "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),
-        "relevance": relevance,
-        "form": form,
-        "style": style,
-        # FIXME: further input sanitizing?
-        "comments": details["comments"],
+        "details_a_positive": (details["positive_a"]),
+        "details_a_negative": (details["negative_a"]),
+        "details_b_positive": (details["positive_b"]),
+        "details_b_negative": (details["negative_b"]),
+        "comments_a": details["comments_a"],
+        "comments_b": details["comments_b"],
         # For redundance
         "extra": {
             "cookies": dict(request.cookies),
@@ -338,14 +327,22 @@ def vote_last_response(
     vote_log_path = os.path.join(LOGDIR, vote_log_filename)
     with open(vote_log_path, "a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
-        if relevance or form or style:
+        logger.info(
+            f'preferences_a: {details["positive_a"]},{details["negative_a"]}',
+            extra={"request": request},
+        )
+        logger.info(
+            f'preferences_b: {details["positive_b"]},{details["negative_b"]}',
+            extra={"request": request},
+        )
+        if details["comments_a"] != "":
             logger.info(
-                f"preferences: relevance:{relevance}, form:{form}, style:{style}",
+                f"commentaires_a: {details.get('comments_a', '')}",
                 extra={"request": request},
             )
-        if details["comments"] != "":
+        if details["comments_b"] != "":
             logger.info(
-                f"commentaires: {details.get('comments', '')}",
+                f"commentaires_b: {details.get('comments_b', '')}",
                 extra={"request": request},
             )
         fout.write(json.dumps(data) + "\n")

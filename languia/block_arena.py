@@ -3,6 +3,8 @@ LANGU:IA's main code
 Users chat with two anonymous models.
 """
 
+from themes.dsfr import DSFR
+
 import gradio as gr
 
 # from gradio_modal import Modal
@@ -13,11 +15,8 @@ from languia.utils import header_html, welcome_modal_html
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
+
 from custom_components.frinput.backend.gradio_frinput import FrInput
-from custom_components.frslider.backend.gradio_frslider import FrSlider
-
-# from custom_components.customslider.backend.gradio_customslider import CustomSlider
-
 
 from languia import config
 
@@ -30,7 +29,6 @@ from languia import config
 
 app_state = gr.State()
 
-from themes.dsfr import DSFR
 
 with gr.Blocks(
     title="LANGU:IA – Le comparateur d'IA conversationnelles",
@@ -43,10 +41,10 @@ with gr.Blocks(
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
-    # A tester
-    # conversations = [ConversationState() for _ in range(config.num_sides)]
-    # TODO: ConversationState as app_state.conv_a and app_state.conv_b
-    conversations = [gr.State() for _ in range(config.num_sides)]
+
+    conv_a = gr.State()
+    conv_b = gr.State()
+    conversations = [conv_a, conv_b]
     # model_selectors = [None] * num_sides
 
     # TODO: check cookies on load!
@@ -57,55 +55,62 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-container") as mode_screen:
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w") as mode_screen:
 
         title = gr.HTML(
-            elem_classes="text-center text-grey-200 fr-mt-8w fr-mb-2w",
+            # Sur Figma: fr-mt-8w
+            elem_classes="text-center text-grey-200 fr-mt-4w fr-mb-2w",
             value="""<h3>Comment puis-je vous aider aujourd'hui ?</h3>""",
         )
 
         guided_cards = CustomRadioCard(
             show_label=False,
-            # elem_classes="fr-grid-row fr-grid-row--gutters fr-grid-row--center",
-            # elem_classes="fr-container",
+            elem_classes="fr-col-12 fr-col-md-8 fr-mx-auto",
             choices=[
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--green-tilleul-verveine fr-badge--icon-left fr-icon-booklet">Expression</span><p>Raconter une histoire, expliquer un concept, obtenir un résumé...</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/lightbulb.svg" /><p>Générer de nouvelles idées</p></div>""",
+                    "vie-professionnelle",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/chat-3.svg" /><p>Expliquer simplement un concept</p>""",
                     "expression",
                 ),
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-cumulus fr-badge--icon-left fr-icon-translate-2 fr-mb-1w ">Langues</span><p>M’exprimer en langue régionale ou dans une langue étrangère</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/translate-2.svg" /><p>M’exprimer dans une autre langue</p></div>""",
                     "langues",
                 ),
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--yellow-moutarde fr-badge--icon-left fr-icon-lightbulb fr-mb-1w">Vie pratique</span><p>Obtenir un plan personnalisé : bien être, sport, nutrition...</p></div>""",
-                    "conseils",
-                ),
-                (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--purple-glycine fr-badge--icon-left fr-icon-bike fr-mb-1w">Loisirs</span><p>Organiser mon temps libre : voyages, cuisine, livres, musiques...</p></div>""",
-                    "loisirs",
-                ),
-                (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--icon-left fr-icon-draft fr-mb-1w">Administratif</span><p>Rédiger un document : résiliation d’un bail, email de réclamation</p></div>""",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/draft.svg" /><p>Rédiger un document administratif</p></div>""",
                     "administratif",
                 ),
                 (
-                    """<div class="min-h-28"><span class="fr-badge fr-badge--sm fr-badge--blue-ecume fr-badge--icon-left fr-icon-briefcase">Vie professionnelle</span><p>Générer des idées, rédiger une note, corriger mes travaux...</p></div>""",
-                    "vie-professionnelle",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/bowl.svg" /><p>Découvrir une nouvelle recette de cuisine</p></div>""",
+                    "loisirs",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/clipboard.svg" /><p>Créer un programme d’entraînement</p></div>""",
+                    "conseils",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/earth.svg" /><p>Organiser mon prochain voyage</p></div>""",
+                    "loisirs",
+                ),
+                (
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/music-2.svg" /><p>Proposer des idées de films, livres, musiques</p></div>""",
+                    "loisirs",
                 ),
             ],
         )
-        free_mode_btn = gr.Button(
+        shuffle_link = gr.Button(
             scale=1,
-            elem_id="free-mode",
-            value="Je veux écrire sur mon propre sujet",
-            elem_classes="fr-btn fr-btn--secondary fr-mx-auto fr-mt-8w fr-mb-4w",
+            elem_classes="fr-mx-auto link",
+            visible=False,
+            value="Me proposer un autre prompt",
+            # icon="assets/extra-icons/shuffle.svg",
         )
 
     with gr.Group(
-        elem_id="chat-area",
-        visible=False,
-        elem_classes="fr-mb-10w fr-mb-md-0",
+        elem_id="chat-area", elem_classes="fr-mb-10w fr-mb-md-0", visible=False
     ) as chat_area:
 
         # {likeable}
@@ -136,44 +141,37 @@ with gr.Blocks(
             # autoscroll=True
         )
 
-    with gr.Column(elem_id="send-area", visible=False) as send_area:
+    with gr.Column(
+        elem_id="send-area", visible=True, elem_classes="fr-pt-1w"
+    ) as send_area:
         # textbox = gr.Textbox(
-        with gr.Column(elem_classes="inline-block"):
+        with gr.Row(elem_classes="items-start"):
             textbox = FrInput(
                 elem_id="main-textbox",
                 show_label=False,
                 lines=1,
                 placeholder="Ecrivez votre premier message aux modèles ici",
                 max_lines=7,
-                elem_classes="inline-block fr-col-12 fr-col-md-10 bg-white",
-                container=False,
+                # elem_classes="inline-block fr-col-12 fr-col-md-10",
+                container=True,
                 autofocus=True,
                 # autoscroll=True
             )
             send_btn = gr.Button(
                 interactive=False,
-                scale=1,
+                # scale=1,
                 value="Envoyer",
+                # icon="assets/dsfr/icons/system/arrow-up-line.svg",
                 elem_id="send-btn",
-                elem_classes="inline-block fr-btn fr-ml-3v",
+                elem_classes="grow-0 purple-btn",
             )
-        shuffle_btn = gr.Button(
-            scale=1,
-            size="sm",
-            elem_classes="fr-btn fr-btn--tertiary small-icon fr-mx-auto",
-            interactive=False,
-            value="Générer un autre message",
-            icon="assets/extra-icons/shuffle.svg",
-        )
-
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
                 value="Voter pour votre IA favorite",
-                elem_classes="fr-btn fr-col-12 fr-col-md-5",
+                elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
                 visible=False,
                 interactive=False,
             )
-
 
     with gr.Column(
         # h-screen
@@ -183,88 +181,125 @@ with gr.Blocks(
     ) as vote_area:
         gr.HTML(
             value="""
-            <h3 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir leurs identités</h3>
-            <p class="text-center text-grey fr-text--sm">Votre vote permet d’améliorer les réponses des deux IA</p>""",
+            <h3 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir l'identité des modèles</h3>
+            <p class="text-center text-grey fr-text--sm">L'ensemble des votes permet d’améliorer les modèles d'IA</p>""",
         )
 
         which_model_radio = CustomRadioCard(
+            elem_classes="justify-center",
+            # elem_classes="show-radio self-center justify-center",
             choices=[
                 (
-                    """<span class="fr-badge fr-badge--no-icon fr-badge--info self-center">Modèle A</span>""",
+                    """<div class="self-center justify-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <span class="">Modèle A</span>
+                </div>""",
                     "model-a",
                 ),
                 (
-                    """<span class="fr-badge fr-badge--green-tilleul-verveine self-center">Modèle B</span>""",
+                    """<span class="self-center text-center justify-center">Les deux se valent</span>""",
+                    "both-equal",
+                ),
+                (
+                    """<div class="self-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg><span class=""> Modèle B</span>
+                </div>""",
                     "model-b",
                 ),
             ],
             show_label=False,
         )
-        both_equal_link = gr.Button(
-            elem_id="both-equal-link",
-            elem_classes="fr-btn fr-btn--secondary fr-mx-auto",
-            value="Les deux se valent",
-        )
 
-        with gr.Column(
-            visible=False, elem_classes="fr-container fr-mt-8w fr-mb-md-16w fr-mb-16w"
+        with gr.Row(
+            visible=False,
+            elem_id="supervote-area",
+            elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
         ) as supervote_area:
 
-            why_vote = gr.HTML(
-                """<h4>Pourquoi préférez-vous ce modèle d'IA ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle que vous venez de sélectionner</p>""",
-                elem_classes="text-center",
-            )
+            # with gr.Column():
+            with gr.Column(
+                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-n1w fr-mr-md-1w bg-white rounded-corners"
+            ):
 
-            with gr.Column(elem_classes="fr-container fr-px-0 fr-px-md-16w"):
-                relevance_slider = FrSlider(
-                    value=-1,
-                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                    minimum=1,
-                    maximum=5,
-                    step=1,
-                    label="Les réponses étaient pertinentes",
-                    info="Critères : réponses utiles, correctes factuelles, précises",
-                    elem_classes="fr-mb-4w",
+                gr.HTML(
+                    value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <strong>Modèle A</strong></p>
+    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
-                form_slider = FrSlider(
-                    value=-1,
-                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                    minimum=1,
-                    maximum=5,
-                    step=1,
-                    label="Les réponses étaient simples à lire",
-                    info="Critères : mise en forme et longueur des réponses adaptées",
-                    elem_classes="fr-my-4w",
-                )
-                style_slider = FrSlider(
-                    elem_classes="fr-my-4w",
-                    range_labels=["Pas du tout d'accord", "Tout à fait d'accord"],
-                    value=-1,
-                    minimum=1,
-                    maximum=5,
-                    step=1,
-                    label="Le style de la réponse était adapté",
-                    info="Critères : registre de langue, vocabulaire, orthographe",
-                )
-                supervote_sliders = [relevance_slider, form_slider, style_slider]
 
-                comments_text = FrInput(
-                    elem_classes="big-label",
-                    label="Détails supplémentaires",
-                    show_label=True,
+                positive_a = gr.CheckboxGroup(
+                    elem_classes="thumb-up-icon flex checkboxes",
+                    show_label=False,
+                    choices=[
+                        ("Utiles", "useful"),
+                        ("Complètes", "complete"),
+                        ("Créatives", "creative"),
+                        ("Mise en forme claire", "clear-formatting"),
+                    ],
+                )
+
+                negative_a = gr.CheckboxGroup(
+                    elem_classes="thumb-down-icon flex checkboxes",
+                    show_label=False,
+                    choices=[
+                        ("Hallucinations", "hallucinations"),
+                        ("Superficielles", "superficial"),
+                        ("Instructions non respectées", "instructions-not-followed"),
+                    ],
+                )
+
+                comments_a = FrInput(
+                    show_label=False,
+                    visible=False,
                     lines=3,
-                    placeholder="Ajoutez des précisions sur ce qui vous a plus et moins plu",
+                    placeholder="Les réponses du modèle A sont...",
                 )
+
+            # with gr.Column():
+            with gr.Column(
+                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w bg-white rounded-corners"
+            ):
+
+                gr.HTML(
+                    value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> <strong>Modèle B</strong></p>
+    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+                )
+
+                positive_b = gr.CheckboxGroup(
+                    elem_classes="thumb-up-icon flex checkboxes",
+                    show_label=False,
+                    choices=[
+                        ("Utiles", "useful"),
+                        ("Complètes", "complete"),
+                        ("Créatives", "creative"),
+                        ("Mise en forme claire", "clear-formatting"),
+                    ],
+                )
+
+                negative_b = gr.CheckboxGroup(
+                    elem_classes="thumb-down-icon flex checkboxes",
+                    show_label=False,
+                    choices=[
+                        ("Hallucinations", "hallucinations"),
+                        ("Superficielles", "superficial"),
+                        ("Instructions non respectées", "instructions-not-followed"),
+                    ],
+                )
+                comments_b = FrInput(
+                    show_label=False,
+                    visible=False,
+                    lines=3,
+                    placeholder="Les réponses du modèle B sont...",
+                )
+            comments_link = gr.Button(elem_classes="link fr-mt-2w", value="Ajouter des détails")
 
     with gr.Column(
-        elem_classes="fr-container--fluid fr-py-2w", elem_id="buttons-footer", visible=False
+        elem_classes="fr-container--fluid fr-py-2w fr-grid-row fr-grid-row--center",
+        elem_id="buttons-footer",
+        visible=False,
     ) as buttons_footer:
 
-            supervote_send_btn = gr.Button(
-                elem_classes="fr-btn fr-mx-auto",
-                value="Découvrir l'identité des deux IA",
-                interactive=False,
-            )
+        supervote_send_btn = gr.Button(
+            elem_classes="purple-btn fr-mx-auto fr-col-10 fr-col-md-4",
+            value="Découvrir l'identité des deux IA",
+            interactive=False,
+        )
 
     with gr.Column(
         elem_id="reveal-screen", visible=False, elem_classes="min-h-screen fr-pt-4w"
@@ -273,16 +308,14 @@ with gr.Blocks(
         results_area = gr.HTML(visible=True, elem_classes="fr-container")
 
         with gr.Column(visible=True, elem_id="feedback-row") as feedback_row:
-            # dsfr: This should just be a normal link...
+            # dsfr: This should just be a normal link
             # feedback_btns =
             gr.HTML(
-                elem_classes=" fr-container",
+                elem_classes="fr-container text-center",
                 value="""
-                <div class="fr-py-4w">
-                <a class="block fr-btn fr-mx-auto fr-mb-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a>
-                <a class="block fr-btn fr-btn--secondary fr-mx-auto" href="../modeles">Découvrir la liste des IA</a>
-                </div>
-            """
+                <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
+                <a class="fr-mx-auto fr-mb-4w" href="../modeles">Découvrir la liste des IA</a>
+            """,
             )
 
     # Modals

@@ -24,8 +24,7 @@ from languia.config import (
 # from fastchat.model.model_adapter import get_conversation_template
 
 from languia.block_conversation import (
-    # TODO: to import/replace State and bot_response?
-    ConversationState,
+    set_conv_state,
     bot_response,
 )
 
@@ -39,7 +38,7 @@ from languia.config import logger
 from languia import config
 
 
-def init_conversations(request: gr.Request):
+def init_conversations(conversations, request: gr.Request):
     app_state.awaiting_responses = False
     config.outage_models = refresh_outage_models(
         config.outage_models, controller_url=config.controller_url
@@ -54,14 +53,14 @@ def init_conversations(request: gr.Request):
     )
     conversations = [
         # NOTE: replacement of gr.State() to ConversationState happens here
-        ConversationState(model_name=model_left),
-        ConversationState(model_name=model_right),
+        set_conv_state(conversations[0], model_name=model_left),
+        set_conv_state(conversations[1], model_name=model_right),
     ]
     logger.info(
         f"selection_modeles: {model_left}, {model_right}",
         extra={request: request},
     )
-    return conversations
+    return {conv_a: conversations[0], conv_b: conversations[1]}
 
 
 # Register listeners
@@ -80,39 +79,15 @@ def register_listeners():
             "init_arene",
             extra={"request": request},
         )
-        conversations = init_conversations(request)
+        conversations = init_conversations([conv_a, conv_b], request)
         return conversations
 
     # Step 1
 
-    @free_mode_btn.click(
-        inputs=[],
-        outputs=[free_mode_btn, send_area, mode_screen, shuffle_btn, textbox],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def free_mode(request: gr.Request):
-        category = "unguided"
-        app_state.category = category
-
-        logger.info(
-            "mode_libre",
-            extra={"request": request},
-        )
-
-        return {
-            free_mode_btn: gr.update(visible=False),
-            send_area: gr.update(visible=True),
-            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
-            shuffle_btn: gr.update(interactive=False),
-            # Don't remove or autofocus won't work
-            textbox: gr.skip(),
-        }
-
     # Step 1.1
     @guided_cards.change(
         inputs=[guided_cards],
-        outputs=[send_btn, send_area, textbox, mode_screen, shuffle_btn, free_mode_btn],
+        outputs=[send_btn, send_area, textbox, shuffle_link],
         api_name=False,
         show_progress="hidden",
     )
@@ -128,12 +103,10 @@ def register_listeners():
             send_btn: gr.update(interactive=True),
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
-            mode_screen: gr.update(elem_classes="fr-container send-area-enabled"),
-            shuffle_btn: gr.update(interactive=True),
-            free_mode_btn: gr.update(visible=False),
+            shuffle_link: gr.update(visible=True),
         }
 
-    @shuffle_btn.click(
+    @shuffle_link.click(
         inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
     )
     def shuffle_prompt(guided_cards, request: gr.Request):
@@ -160,7 +133,6 @@ def register_listeners():
         conversation_b: gr.State,
         text: gr.Text,
         request: gr.Request,
-        evt: gr.EventData,
     ):
 
         conversations = [conversation_a, conversation_b]
@@ -209,101 +181,6 @@ def register_listeners():
             + [to_threeway_chatbot(conversations)]
         )
 
-    def bot_response_multi(
-        conversation_a,
-        conversation_b,
-        request: gr.Request,
-    ):
-        conversations = [conversation_a, conversation_b]
-
-        gen = []
-        try:
-            for i in range(config.num_sides):
-                gen.append(
-                    bot_response(
-                        conversations[i],
-                        request,
-                        apply_rate_limit=True,
-                        use_recommended_config=True,
-                    )
-                )
-
-            iters = 0
-            while True:
-                stop = True
-                iters += 1
-                for i in range(config.num_sides):
-                    try:
-                        # # Artificially slow faster Google Vertex API
-                        # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
-                        # if iters % 30 == 1 or iters < 3:
-                        ret = next(gen[i])
-                        conversations[i] = ret
-                        stop = False
-                    except StopIteration:
-                        pass
-                    # TODO: timeout problems on scaleway Ampere models?
-                    # except httpcore.ReadTimeout:
-                    #     pass
-                    # except httpx.ReadTimeout:
-                    #     pass
-
-                yield conversations + [to_threeway_chatbot(conversations)]
-
-                if stop:
-                    break
-        except Exception as e:
-            logger.error(
-                f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{str(traceback.format_exc())}",
-                extra={
-                    "request": request,
-                    "error": str(e),
-                    "stacktrace": traceback.format_exc(),
-                },
-            )
-            app_state.crashed = True
-            config.outage_models.append(conversations[i].model_name)
-            add_outage_model(
-                config.controller_url,
-                conversations[i].model_name,
-                # FIXME: seems equal to None always?
-                reason=str(e),
-            )
-            # gr.Warning(
-            #     message="Erreur avec le chargement d'un des modèles, veuillez recommencer une conversation",
-            # )
-            gr.Warning(
-                duration=0,
-                message="Erreur avec l'interrogation d'un des modèles, le comparateur va trouver deux nouveaux modèles à interroger. Veuillez poser votre question de nouveau.",
-            )
-
-            # TODO: reset arena a better way...
-            chatbot = gr.Chatbot(
-                # TODO:
-                type="messages",
-                elem_id="main-chatbot",
-                # min_width=
-                height="100%",
-                # Doesn't show because it always has at least our message
-                # Note: supports HTML, use it!
-                placeholder="<em>Veuillez écrire au modèle</em>",
-                # No difference
-                # bubble_full_width=False,
-                layout="panel",  # or "bubble"
-                likeable=False,
-                # UserWarning: show_label has no effect when container is False.
-                show_label=False,
-                container=False,
-                # One can dream
-                # autofocus=True,
-                # autoscroll=True,
-                elem_classes="chatbot",
-                # Should we show it?
-                show_copy_button=False,
-            )
-
-            return (conversation_a, conversation_b, chatbot)
-
     def goto_chatbot(
         request: gr.Request,
         #  FIXME: ignored
@@ -318,41 +195,100 @@ def register_listeners():
             mode_screen: gr.update(visible=False),
             chat_area: gr.update(visible=True),
             send_btn: gr.update(interactive=False),
-            shuffle_btn: gr.update(visible=False),
+            shuffle_link: gr.update(visible=False),
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
-    # TODO: refacto this
-    def check_answers(
-        conversation_a, conversation_b, textbox_output, request: gr.Request
+    def bot_response_multi(
+        conversation_a,
+        conversation_b,
+        textbox_output,
+        request: gr.Request,
     ):
+        conversations = [conversation_a, conversation_b]
 
-        app_state.awaiting_responses = False
+        gen = []
+        for attempt in range(10):
+            try:
+                for i in range(config.num_sides):
+                    gen.append(
+                        bot_response(
+                            conversations[i],
+                            request,
+                            apply_rate_limit=True,
+                            use_recommended_config=True,
+                        )
+                    )
 
-        if hasattr(app_state, "crashed") and app_state.crashed:
+                iters = 0
+                while True:
+                    stop = True
+                    iters += 1
+                    for i in range(config.num_sides):
+                        try:
+                            # # Artificially slow faster Google Vertex API
+                            # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
+                            # if iters % 30 == 1 or iters < 3:
+                            ret = next(gen[i])
+                            conversations[i] = ret
+                            stop = False
+                        except StopIteration:
+                            pass
+                        # TODO: timeout problems on scaleway Ampere models?
+                        # except httpcore.ReadTimeout:
+                        #     pass
+                        # except httpx.ReadTimeout:
+                        #     pass
 
-            app_state.crashed = False
+                    yield {chatbot: to_threeway_chatbot(conversations)}
+                    if stop:
+                        break
+            except Exception as e:
+                logger.error(
+                    f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{traceback.format_exc()}",
+                    extra={
+                        "request": request,
+                        "error": str(e),
+                        "stacktrace": traceback.format_exc(),
+                    },
+                )
+                config.outage_models.append(conversations[i].model_name)
+                add_outage_model(
+                    config.controller_url,
+                    conversations[i].model_name,
+                    reason=str(e),
+                )
+                # gr.Warning(
+                #     duration=0,
+                #     message="Erreur avec l'interrogation d'un des modèles, veuillez patienter, le comparateur trouve deux nouveaux modèles à interroger.",
+                # )
 
-            conversation_a, conversation_b = init_conversations(request)
+                # Simpler to repick 2 models
+                conv_a, conv_b = init_conversations(conversations, request)
 
-            # logger.info(
-            #     "Repicked 2 models: " + model_left + " and " + model_right,
-            #     extra={request: request},
-            # )
+                conversation_a, conversation_b, chatbot_output = add_text(
+                    conversations[0],
+                    conversations[1],
+                    app_state.original_user_prompt,
+                    request,
+                )
+                # Save it to conversations
+                conversations = [conversation_a, conversation_b]
 
-            textbox.value = app_state.original_user_prompt
-
-            return (
-                [conversation_a]
-                + [conversation_b]
-                # chatbot
-                + [[]]
-                # disable conclude btn
-                + [gr.update(interactive=False)]
-                # enable send_btn
-                + [gr.update(interactive=True)]
-                + [app_state.original_user_prompt]
+                # Empty generation queue
+                gen = []
+            else:
+                break
+        else:
+            logger.critical("maximum_attempts_reached")
+            raise (
+                RuntimeError(
+                    "Le comparateur a un problème. Veuillez réessayer plus tard."
+                )
             )
+
+        # Got answer at this point
+        app_state.awaiting_responses = False
 
         logger.info(
             f"response_modele_a ({conversation_a.model_name}): {str(conversation_a.messages[-1].content)}",
@@ -362,17 +298,17 @@ def register_listeners():
             f"response_modele_b ({conversation_b.model_name}): {str(conversation_b.messages[-1].content)}",
             extra={"request": request},
         )
+        chatbot_output = to_threeway_chatbot(conversations)
+        return {
+            chatbot: chatbot_output,
+        }
 
-        return (
-            [conversation_a]
-            + [conversation_b]
-            + [chatbot]
-            # enable conclude_btn
-            + [gr.update(interactive=True)]
-            # enable send_btn if textbox not empty
-            + [gr.update(interactive=(textbox_output != ""))]
-            + [gr.skip()]
-        )
+    def enable_conclude(textbox):
+
+        return {
+            conclude_btn: gr.update(interactive=True),
+            send_btn: gr.update(interactive=(textbox != "")),
+        }
 
     gr.on(
         triggers=[textbox.submit, send_btn.click],
@@ -390,7 +326,7 @@ def register_listeners():
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            + [shuffle_btn]
+            + [shuffle_link]
             + [conclude_btn]
         ),
         show_progress="hidden",
@@ -400,18 +336,6 @@ def register_listeners():
         inputs=None,
         outputs=None,
         js="""(args) => {
-  const footer = document.querySelector('#send-area');
-  const chatArea = document.querySelector('#chat-area');
-
-  function adjustFooter() {
-    const footerHeight = footer.offsetHeight;
-    // Add bottom padding to the chatArea equal to footer height so it's not hidden
-    chatArea.style.paddingBottom = `${footerHeight}px`;
-  }
-  // Adjust footer on page load, resize and initially
-  window.addEventListener('load', adjustFooter);
-  window.addEventListener('resize', adjustFooter);
-  adjustFooter();
 setTimeout(() => {
   console.log("scrolling to last user row if there are at least 2 user rows");
   var userRows = document.querySelectorAll('.user-row');
@@ -428,20 +352,16 @@ setTimeout(() => {
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
-        inputs=conversations,
-        outputs=conversations + [chatbot],
+        inputs=conversations + [textbox],
+        outputs=[chatbot, textbox],
         api_name=False,
         show_progress="hidden",
         # should do .success()
-    ).then(
-        fn=check_answers,
-        inputs=conversations + [textbox],
-        outputs=conversations + [chatbot] + [conclude_btn] + [send_btn] + [textbox],
-        api_name=False,
         # scroll_to_output=True,
-        show_progress="hidden",
+        # FIXME: return of bot_response_multi couldn't set conclude_btn and send_btn :'(
+    ).then(
+        fn=enable_conclude, inputs=[textbox], outputs=[conclude_btn, send_btn]
     )
-
     # // Enable navigation prompt
     # window.onbeforeunload = function() {
     #     return true;
@@ -493,7 +413,7 @@ voteArea.scrollIntoView({
 
     @which_model_radio.select(
         inputs=[which_model_radio],
-        outputs=[supervote_area, supervote_send_btn, why_vote] + supervote_sliders,
+        outputs=[supervote_area, supervote_send_btn],
         api_name=False,
         show_progress="hidden",
     )
@@ -502,47 +422,45 @@ voteArea.scrollIntoView({
             "vote_selection_temp:" + str(vote_radio),
             extra={"request": request},
         )
-        if hasattr(app_state, "selected_model"):
-            if (app_state.selected_model == "model-b" and vote_radio == "model-a") or (
-                app_state.selected_model == "model-a" and vote_radio == "model-b"
-            ):
-                # FIXME: creates a CSS display bug  where value isn't refreshed
-                new_supervote_sliders = [
-                    gr.update(value=3) for slider in supervote_sliders
-                ]
-            else:
-                new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
-        else:
-            new_supervote_sliders = [gr.skip() for slider in supervote_sliders]
 
-        app_state.selected_model = vote_radio
-        if vote_radio == "model-a":
-            why_text = """<h4>Pourquoi préférez-vous le modèle A ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle A</p>"""
-        elif vote_radio == "model-b":
-            why_text = """<h4>Pourquoi préférez-vous le modèle B ?</h4><p class="text-grey">Attribuez pour chaque question une note entre 1 et 5 sur le modèle B</p>"""
+        # outputs=[supervote_area, supervote_send_btn, why_vote] +
+        # relevance_slider: gr.update(interactive=False),
+        # form_slider: gr.update(interactive=False),
+        # style_slider: gr.update(interactive=False),
+        # comments_text: gr.update(interactive=False),
         return [
             gr.update(visible=True),
             gr.update(interactive=True),
-            gr.update(value=why_text),
-        ] + new_supervote_sliders
+        ]
 
     # Step 3
+    @comments_link.click(
+        outputs=[comments_a, comments_b, comments_link],
+        api_name=False,
+        show_progress="hidden",
+    )
+    def show_comments():
+        return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
         conversation_a,
         conversation_b,
         which_model_radio_output,
-        relevance_slider_output,
-        form_slider_output,
-        style_slider_output,
-        comments_text_output,
+        positive_a_output,
+        positive_b_output,
+        negative_a_output,
+        negative_b_output,
+        comments_a_output,
+        comments_b_output,
         request: gr.Request,
     ):
         details = {
-            "relevance": int(relevance_slider_output),
-            "form": int(form_slider_output),
-            "style": int(style_slider_output),
-            "comments": str(comments_text_output),
+            "positive_a": ",".join(positive_a_output) if positive_a_output else None,
+            "positive_b": ",".join(positive_b_output) if positive_b_output else None,
+            "negative_a": ",".join(negative_a_output) if negative_a_output else None,
+            "negative_b": ",".join(negative_b_output) if negative_b_output else None,
+            "comments_a": str(comments_a_output),
+            "comments_b": str(comments_b_output),
         }
         if hasattr(app_state, "category"):
             category = app_state.category
@@ -598,37 +516,49 @@ voteArea.scrollIntoView({
             model_b_tokens=model_b_tokens,
         )
         return {
-            relevance_slider: gr.update(interactive=False),
-            form_slider: gr.update(interactive=False),
-            style_slider: gr.update(interactive=False),
-            comments_text: gr.update(interactive=False),
+            positive_a: gr.update(interactive=False),
+            positive_b: gr.update(interactive=False),
+            negative_a: gr.update(interactive=False),
+            negative_b: gr.update(interactive=False),
+            comments_a: gr.update(interactive=False),
+            comments_b: gr.update(interactive=False),
+            comments_link: gr.update(interactive=False),
+            reveal_screen: gr.update(interactive=False),
+            results_area: gr.update(interactive=False),
+            buttons_footer: gr.update(interactive=False),
+            which_model_radio: gr.update(interactive=False),
             reveal_screen: gr.update(visible=True),
             results_area: gr.update(value=reveal_html),
             buttons_footer: gr.update(visible=False),
             which_model_radio: gr.update(interactive=False),
-            both_equal_link: gr.update(interactive=False),
         }
 
     gr.on(
-        triggers=[supervote_send_btn.click, both_equal_link.click],
+        triggers=[supervote_send_btn.click],
         fn=vote_preferences,
         inputs=(
             [conversations[0]]
             + [conversations[1]]
             + [which_model_radio]
-            + (supervote_sliders)
-            + [comments_text]
+            + [positive_a]
+            + [positive_b]
+            + [negative_a]
+            + [negative_b]
+            + [comments_a]
+            + [comments_b]
         ),
         outputs=[
-            relevance_slider,
-            form_slider,
-            style_slider,
-            comments_text,
+            positive_a,
+            positive_b,
+            negative_a,
+            negative_b,
+            comments_a,
+            comments_b,
+            comments_link,
             reveal_screen,
             results_area,
             buttons_footer,
             which_model_radio,
-            both_equal_link,
         ],
         # outputs=[quiz_modal],
         api_name=False,

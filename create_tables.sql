@@ -18,7 +18,6 @@ CREATE TABLE
         chosen_model_name VARCHAR(255),
         both_equal BOOLEAN NOT NULL,
         opening_prompt text NOT NULL,
-        -- intensity VARCHAR(255),
         conversation_a JSONB NOT NULL,
         conversation_b JSONB NOT NULL,
         turns INT,
@@ -26,25 +25,31 @@ CREATE TABLE
         is_unedited_prompt BOOLEAN,
         template JSONB,
         uuid VARCHAR NOT NULL,
-        ip VARCHAR,
-        session_hash VARCHAR,
-        visitor_uuid VARCHAR,
-        relevance INT,
-        form INT,
-        style INT,
-        comments TEXT,
+        ip VARCHAR(255),
+        session_hash VARCHAR(255),
+        visitor_uuid VARCHAR(255),
+        details_a_positive VARCHAR(500),
+        details_a_negative VARCHAR(500),
+        details_b_positive VARCHAR(500),
+        details_b_negative VARCHAR(500),
+        comments_a TEXT,
+        comments_b TEXT,
         extra JSONB
     );
 
-CREATE TABLE
-    profiles (
-        tstamp TIMESTAMP NOT NULL,
-        chatbot_use VARCHAR(255),
-        gender VARCHAR(255),
-        age VARCHAR(255),
-        profession VARCHAR(255),
-        confirmed BOOLEAN,
-        session_hash VARCHAR(255),
-        visitor_uuid VARCHAR(255),
-        extra JSONB
-    );
+-- 
+-- Unused profiles table
+-- 
+
+-- CREATE TABLE
+--     profiles (
+--         tstamp TIMESTAMP NOT NULL,
+--         chatbot_use VARCHAR(255),
+--         gender VARCHAR(255),
+--         age VARCHAR(255),
+--         profession VARCHAR(255),
+--         confirmed BOOLEAN,
+--         session_hash VARCHAR(255),
+--         visitor_uuid VARCHAR(255),
+--         extra JSONB
+--     );
