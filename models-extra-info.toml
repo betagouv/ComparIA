@@ -110,7 +110,7 @@ dataset = "private"
 distribution = "api-only"
 license = "propriétaire Gemini"
 conditions = "restricted"
-description = "Sorti en février 2024 et constamment amélioré, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
+description = "Sorti en février 2024 et amélioré à plusieurs reprises depuis, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
 excerpt = "Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 
 ["Gemma 2-27b-it"]
@@ -139,7 +139,7 @@ dataset = "private"
 license = "Gemma"
 params = 9
 conditions = "restricted"
-excerpt = "Ce modèle de petite taille sorti en juin 2024 tire partie des avancées de la génération Gemma 2."
+excerpt = "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 description = "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 
 [gemma-2-2b-it]
@@ -187,7 +187,7 @@ dataset = "private"
 distribution = "open-weights"
 conditions = "free"
 excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la série Llama de Meta, optimisé pour des tâches complexes de programmation, de mathématique et de raisonnement."
-description = "Doté de 405 milliards de paramètres, ce modèle est le plus puissant de la famille Llama 3.1. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation."
+description = "Doté de 405 milliards de paramètres, ce modèle est le plus gros modèle de langage entraîné à ce jour par l'entreprise Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation. Le modèle a été entraîné sur un corpus de 15 milliards de tokens dont la limite de connaissances est fixée au mois de décembre 2023."
 params = 405
 license = "Llama 3.1 Community"
 
@@ -201,8 +201,8 @@ friendly_size = "S"
 dataset = "private"
 distribution = "open-weights"
 conditions = "free"
-excerpt = "Version la plus légère de Llama 3.1, ce modèle est rapide et adapté aux applications courantes. Sorti en avril 2024."
-description = "Cadet de la famille Llama 3.1, ce petit modèle est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens."
+excerpt = "Version la plus légère de Llama 3.1, ce modèle est rapide et adapté aux applications courantes. Sorti en avril 2024, les données sur lesquelles il a été entraîné remontent au mois de décembre 2023."
+description = "Lancé en avril 2024, ce modèle cadet de la famille Llama 3.1 a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens."
 params = 8
 license = "Llama 3.1 Community"
 
@@ -218,7 +218,7 @@ dataset = "private"
 distribution = "open-weights"
 conditions = "free"
 excerpt = "Doté de 70 milliards de paramètres et sorti en avril 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
-description = "Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
+description = "Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps fors des Jeux olympiques de Paris 2024! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
 license = "Llama 3.1 Community"
 
 [Meta-Llama-3-70B-Instruct]
@@ -402,7 +402,7 @@ friendly_size = "S"
 distribution = "open-weights"
 dataset = "private"
 conditions = "free"
-description = "Petit frère de la famille Qwen2, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes"
+description = "Petit frère de la famille Qwen2 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes."
 excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
 params = 7
 license = "Apache 2.0"
