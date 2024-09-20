@@ -92,9 +92,12 @@ def register_listeners():
         show_progress="hidden",
     )
     def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
-        category = guided_cards
+
+        chosen_prompts_pool = guided_cards
+
+        prompt, category = gen_prompt(chosen_prompts_pool)
         app_state.category = category
-        prompt = gen_prompt(category)
+
         logger.info(
             f"categorie_{category}: {prompt}",
             extra={"request": request},

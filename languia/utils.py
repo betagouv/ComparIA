@@ -747,23 +747,23 @@ def get_llm_impact(
         )
     return impact
 
-
-def gen_prompt(category):
-    from languia.config import prompts_table
-
-    if category in [
-        "expression",
-        "langues",
-        "conseils",
-        "loisirs",
-        "administratif",
-        "vie-professionnelle",
-    ]:
-        prompts = prompts_table[category]
+def get_categories(prompts_pool):
+    
+    prompts_pool_table = {"explain-simply": ["explanations","summaries"],"generate-new-ideas":["ideas", "stories"],"languages":["slang", "regional"]}
+    
+    if prompts_pool in prompts_pool_table:
+        return prompts_pool_table[prompts_pool]
     else:
-        raise ValueError("Invalid prompt category")
-    return prompts[np.random.randint(len(prompts))]
+        # Use this name directly as it's the category name
+        category = prompts_pool
+        return [category]
 
+def gen_prompt(prompts_pool):
+    from languia.config import prompts_table
+    prompts = []
+    for category in get_categories(prompts_pool):
+        prompts.extend([(prompt, category) for prompt in prompts_table[category]])
+    return prompts[np.random.randint(len(prompts))]
 
 def refresh_outage_models(previous_outage_models, controller_url):
     logger = logging.getLogger("languia")

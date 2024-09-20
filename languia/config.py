@@ -229,8 +229,11 @@ else:
 
 enable_moderation = False
 use_remote_storage = False
+
+
 prompts_table = {
-    "expression": [
+    # category expression
+    "summaries": [
         # résumé
         """Ecris un résumé du roman "L'Étranger" d'Albert Camus en mettant l'accent sur le contexte social de l'Algérie coloniale.""",
         """Résumez "La Rue Cases-Nègres" de Joseph Zobel en soulignant les éléments liés à la vie en Martinique dans les années 1930.""",
@@ -269,6 +272,8 @@ prompts_table = {
         """Résumez "Les Paravents" de Jean Genet en expliquant comment la pièce aborde la question de l'identité et du racisme dans un contexte colonial.""",
         """Résumez "Le Mariage de Figaro" de Beaumarchais en expliquant comment la pièce anticipe les bouleversements sociaux de la Révolution française.""",
         """Faites un résumé de "La Dame aux camélias" d'Alexandre Dumas fils en expliquant comment la pièce reflète les tensions morales et sociales de la société bourgeoise du XIXe siècle.""",
+    ],
+    "explanations": [
         # explications
         "Tu es professeur d'économie. Explique-moi la théorie des jeux de façon simple. Donne-moi des exemples d'application dans le monde réel. À la fin, fournis un glossaire des notions et termes à connaître sur le sujet.",
         "Tu es professeur d’informatique. Explique-moi le deep learning de façon simple. Donne-moi des exemples d'application dans le monde réel. À la fin, fournis un glossaire des notions et termes à connaître sur le sujet.",
@@ -282,6 +287,8 @@ prompts_table = {
         "Tu es un commentateur de la culture pop. Explique la déferlante K-pop à travers le monde à une personne qui n'en a jamais entendu parler. Explique pourquoi et comment ce mouvement est devenu un phénomène mondial ces dernières années. Rédige ta réponse dans un style conversationnel, comme si tu parlais à un ami. Sois concis.",
         "Je souhaite définir, comparer et les mouvements de peinture français, hollandais, italiens, espagnols et allemands selon ces critères : époque, artistes, sujets et mécènes. En tant qu’historien de l’art, tu connais très bien le sujet et tu n'hésites pas à faire des recommandations précises de peintures pour chaque catégorie. Présente ta réponse sous forme de tableau organisé de façon logique et facile à lire. ",
         "Raconte moi une anecdote sur l’empire romain",
+    ],
+    "stories": [
         # histoires
         """Écris une histoire en 100 mots, sans utiliser la lettre "e", où un enfant découvre un objet mystérieux dans le grenier de ses grands-parents.""",
         "Raconte une légende urbaine contemporaine dans un quartier connu pour son histoire mystique (précise le quartier et la ville)",
@@ -334,7 +341,8 @@ prompts_table = {
         "Je suis parent et je cherche une histoire du soir à raconter à mes enfants. Choisis trois objets sans rapport apparent et utilise-les comme base pour créer une histoire de 100 mots.",
         "Tu es écrivain de fantasy, élabore un système magique avec des règles et des limitations spécifiques, puis décris comment cette magie façonne la société dans ce monde imaginaire.",
     ],
-    "vie-professionnelle": [
+    # category vie-professionnelle
+    "fixing": [
         # correction
         "Expliquez comment automatiser le calcul des pourcentages dans Excel en créant des formules simples et en les copiant vers d'autres cellules.",
         "Détaillez le processus de correction et d'amélioration des graphiques Excel pour illustrer efficacement les tendances des données.",
@@ -368,6 +376,8 @@ prompts_table = {
         "Améliorez ce paragraphe en y ajoutant des exemples concrets pour illustrer les points clés.",
         "Corrigez et adaptez ce paragraphe pour une audience multiculturelle, en évitant les références trop spécifiques à une seule culture.",
         "Revoyez ce paragraphe pour vous assurer qu'il est conforme aux normes de style en vigueur dans les publications académiques.",
+    ],
+    "editing": [
         # rédaction
         "J'ai besoin de ton aide pour rédiger un message d'absence du bureau. . Tu sais rédiger des messages clairs et faciles à lire. Crée un mail d'absence du bureau qui inclut les informations importantes à mentionner. Sois concis. Le ton doit être poli, direct et simple.",
         "Ta tâche consiste à examiner les notes de réunion fournies et à créer un résumé concis qui capture les informations essentielles, en te concentrant sur les points clés et les actions assignées à des personnes ou à des départements spécifiques au cours de la réunion. Utilise un langage clair et professionnel et structure le résumé de manière logique en utilisant un formatage approprié tel que des titres, des sous-titres et des puces. Veille à ce que le résumé soit concis, facile à comprendre et qu'il donne un aperçu complet mais succinct du contenu de la réunion, en veillant tout particulièrement à indiquer clairement qui est responsable de chaque mesure à prendre.",
@@ -409,6 +419,8 @@ prompts_table = {
         "Rédigez une proposition de partenariat à présenter à un groupe de presse locale pour une campagne de promotion dans leur journal.",
         "Rédigez un rapport d'analyse sur les performances d'une récente campagne publicitaire, incluant des recommandations pour les futures actions.",
         "Préparez un guide de style pour l'utilisation cohérente de la marque dans tous les supports de communication.",
+    ],
+    "ideas": [
         # idées
         "Développez une méthode pour encourager les employés à proposer des idées en dehors de leurs responsabilités habituelles.",
         "Proposez un cadre pour évaluer et prioriser les idées créatives issues de séances de brainstorming.",
@@ -442,6 +454,8 @@ prompts_table = {
         "Je lance une nouvelle application de rencontre et suis à la recherche d'idées marketing créatives pour la faire connaître dans la région parisienne pour le lancement. Peux-tu m'en suggérer une dizaine ?",
         "Donne-moi plusieurs idées créatives pour organiser un team building dans une entreprise de développement de jeu vidéo.",
         "Invente le nom d'un nouveau restaurant gastronomique spécialisé dans la cuisine provençale implanté à Nice. Tu es un rédacteur publicitaire doué pour créer des accroches marketing convaincantes. Utilise tes compétences pour créer un nom qui donnera envie de fréquenter ce restaurant. Utilise des jeux de mots, des rimes  ou tout ce qui permettra de se souvenir du lieu. Fais preuve de créativité et d'imagination.",
+    ],
+    "job": [
         # Emploi
         "Propose-moi 2 à 3 phrases pour remercier la personne qui m’a reçu, en réaffirmant mon intérêt pour le poste proposé. Le ton ne doit pas être trop formel ni d’un enthousiasme débordant.",
         "Rédige une lettre de recommandation professionnelle pour un ancien collègue, en détaillant ses compétences, son attitude au travail, et les projets réussis ensemble.",
@@ -464,7 +478,8 @@ prompts_table = {
         "Quelles méthodes peuvent aider à réduire les biais culturels et les biais de genre lors de l'évaluation des candidatures pour un poste de direction ?",
         """Je suis en train de recruter un candidat pour un poste de responsable de communication dans une institution culturelle. Le candidat idéal doit avoir de l'expérience dans le développement et l'exécution de campagnes de communication multicanal, de solides compétences analytiques et la capacité de collaborer efficacement avec des équipes. Il doit également être passionné par les dernières tendances et technologies en matière de communication. Ta tâche consiste à **générer une série de dix questions** réfléchies et ouvertes à poser en entretien sur la base du contexte donné. Les questions doivent être conçues de manière à susciter des réponses perspicaces et détaillées de la part de la personne interrogée, lui permettant de mettre en valeur ses connaissances, son expérience et son esprit critique. Évite les questions de type "oui/non" ou celles dont les réponses sont évidentes. Privilégie plutôt les questions qui encouragent la réflexion, l'auto-évaluation et le partage d'exemples ou d'anecdotes spécifiques.""",
     ],
-    "loisirs": [
+    # category loisirs
+    "travel": [
         # Voyages
         "Je prévois un séjour en Suisse et j’aimerais faire une randonnée en montagne. Quels sentiers sont adaptés pour un débutant tout en offrant de belles vues sur les Alpes suisses ?",
         "Je me rends à Montréal au printemps. Quels festivals ou événements culturels ne devrais-je pas manquer pendant cette saison et où trouver les meilleurs lieux pour goûter à la gastronomie québécoise ?",
@@ -489,6 +504,8 @@ prompts_table = {
         "Je rêve de visiter le Maroc en automne. Pourrais-tu me conseiller sur les meilleures villes à explorer et les activités à faire à Marrakech et Fès ?",
         "Je prévois un voyage de 4 jours à Montréal. Peux-tu me donner un itinéraire en dehors des grandes attractions touristiques ?",
         "Je prévois un voyage de 4 jours à Québec. Peux-tu me donner un itinéraire en dehors des grandes attractions touristiques ?",
+    ],
+    "recipes": [
         # Recettes
         "Pouvez-vous fournir une recette détaillée pour réaliser un Poulet Yassa, plat emblématique du Sénégal, en utilisant des ingrédients frais et des épices traditionnelles ?",
         "Quelle est la meilleure façon de préparer une bouillabaisse traditionnelle de Marseille, avec des poissons variés, des crustacés, et un bouillon parfumé aux herbes de Provence ?",
@@ -510,7 +527,9 @@ prompts_table = {
         "Propose moi une bonne recette de poulet basquaise et raconte moi au passage l’histoire de ce plat",
         "Je cherche des recettes à base de figue, peux-tu m’aider?",
         "Nous sommes en octobre j’habite à Pointe à Pitre, propose moi une recette locale avec des fruits et légumes de saison",
-        # recommandations
+    ],
+    "recommendations": [
+        # Recommandations
         "Pouvez-vous recommander des films francophones qui traitent de la décolonisation en Afrique, en Asie ou aux Caraïbes, en offrant des perspectives historiques et critiques ?",
         "Quels sont les ouvrages majeurs de la littérature féministe écrits par des autrices francophones, qui explorent les enjeux de genre dans différents contextes culturels ?",
         "Pouvez-vous me suggérer des albums de musique fusion sénégalaise qui combinent des éléments de la musique traditionnelle avec des genres modernes comme le jazz ou le hip-hop ?",
@@ -539,7 +558,8 @@ prompts_table = {
         "Je suis fan d'un artiste ou d'un genre spécifique. Pouvez-vous me fournir des recommandations d'artistes similaires ou complémentaires que je pourrais apprécier ?",
         "J'ai envie de musique joyeuse et entraînante. Quelles sont les chansons ou les albums que vous me conseilleriez pour me remonter le moral ?",
     ],
-    "administratif": [
+    # category administratif
+    "administrative": [
         "Écris un court e-mail pour demander un devis à des électriciens près de chez moi pour un problème de panne. Je dois obtenir une intervention dans la semaine.",
         "Rédige un courrier pour résilier le bail de mon appartement",
         "Comment rédiger une lettre de contestation d'une amende pour excès de vitesse, en expliquant les raisons pour lesquelles l'amende devrait être annulée ou revue ?",
@@ -564,7 +584,8 @@ prompts_table = {
         "Comment rédiger une attestation d'hébergement pour une personne résidant à votre domicile, en précisant les détails nécessaires pour des démarches administratives ?",
         "Quelle est la meilleure approche pour rédiger une lettre demandant un délai supplémentaire pour le paiement d'une facture, en justifiant la demande et en proposant un nouveau calendrier de paiement ?",
     ],
-    "langues": [
+    # category langues
+    "regional": [
         # Regional
         'Traduis cette phrase en occitan et explique les nuances culturelles : "Je vais chez le boulanger."',
         "Écris une conversation en français canadien entre deux amis discutant des activités hivernales.",
@@ -594,6 +615,8 @@ prompts_table = {
         "Pòtès escriure un pichon poèma en occitan sus lo passatge de las sasons? Propose une traduction en français après la réponse en occitan.",
         "Raconte ein tiot conte in picard avéc des personnages du village.",
         '"Wann ich dir so schwätz, verstehsch mich?" Réponds en alsacien',
+    ],
+    "slang": [
         # Argot
         "Être un « pive » en Suisse, c’est quoi le bail ?",
         "Si tu dis « ndeko », tu parles à qui au Congo ? / Quand tu dis « ndeko » au Congo, tu parles de qui exactement ?",
@@ -621,7 +644,8 @@ prompts_table = {
         "Comment « kolat » et « nécro » peuvent-ils te faire passer pour un insider au Congo, même si tu ne comprends pas tout à fait ce qu’est un « nganda » ?",
         """Explique le terme "FOMO". Imagine que tu es de la génération Z et que tu expliques ce terme à tes grands-parents. Détaille l'acronyme, explique son origine et donne quelques exemples d'utilisation. Sois concis.""",
     ],
-    "conseils": [
+    # category conseils
+    "coach": [
         "Quels plats traditionnels sont les plus adaptés à un régime équilibré après une séance de musculation ?",
         "Quels sont les avantages et inconvénients de la consommation de manioc dans un régime sportif ?",
         "Comment adapter son régime alimentaire à un entraînement en altitude dans les Alpes françaises ?",
@@ -639,6 +663,7 @@ prompts_table = {
         "Écris un guide d'initiation à la course à pied. Tu es un expert compétent et tu sais quelles informations donner aux personnes qui découvrent cette activité. Détaille ce qu'elles doivent savoir pour commencer. Sois concis.",
     ],
 }
+
 
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
     os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 24000)

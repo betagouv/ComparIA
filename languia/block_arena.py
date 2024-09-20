@@ -38,6 +38,7 @@ with gr.Blocks(
     analytics_enabled=False,
     # scroll_to_output = True,
     js=config.arena_js,
+    
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
@@ -49,9 +50,7 @@ with gr.Blocks(
 
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
-    # if not tos_cookie:
-    welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
-
+    
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
@@ -69,35 +68,35 @@ with gr.Blocks(
             choices=[
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/lightbulb.svg" /><p>Générer de nouvelles idées</p></div>""",
-                    "vie-professionnelle",
+                    "generate-new-ideas",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/chat-3.svg" /><p>Expliquer simplement un concept</p>""",
-                    "expression",
+                    "explain-simply",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/translate-2.svg" /><p>M’exprimer dans une autre langue</p></div>""",
-                    "langues",
+                    "languages",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/draft.svg" /><p>Rédiger un document administratif</p></div>""",
-                    "administratif",
+                    "administrative",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/bowl.svg" /><p>Découvrir une nouvelle recette de cuisine</p></div>""",
-                    "loisirs",
+                    "recipes",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/clipboard.svg" /><p>Créer un programme d’entraînement</p></div>""",
-                    "conseils",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/clipboard.svg" /><p>Obtenir des conseils sur l’alimentation et le sport</p></div>""",
+                    "coach",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/earth.svg" /><p>Organiser mon prochain voyage</p></div>""",
-                    "loisirs",
+                    "travel",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/music-2.svg" /><p>Proposer des idées de films, livres, musiques</p></div>""",
-                    "loisirs",
+                    "recommendations",
                 ),
             ],
         )
