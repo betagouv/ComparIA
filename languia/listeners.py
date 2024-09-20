@@ -113,7 +113,7 @@ def register_listeners():
         inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
     )
     def shuffle_prompt(guided_cards, request: gr.Request):
-        prompt = gen_prompt(category=guided_cards)
+        prompt, _category = gen_prompt(prompts_pool=guided_cards)
         logger.info(
             f"shuffle: {prompt}",
             extra={"request": request},
