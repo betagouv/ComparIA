@@ -539,7 +539,7 @@ background-color: inherit !important;
 .thumb-up-icon::before {
   content: "";
   padding-right: 22px;
-  margin-right: 2em;
+  margin-right: 0.5em;
   /* width: 22px; */
   height: 22px;
   background-image: url("file=assets/extra-icons/thumb-up.svg");
