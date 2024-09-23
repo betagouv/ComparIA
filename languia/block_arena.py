@@ -50,6 +50,7 @@ with gr.Blocks(
 
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
+    welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
     
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
