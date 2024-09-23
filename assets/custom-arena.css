@@ -327,6 +327,7 @@ li.fr-nav__item {
   padding: 1.25rem;
   user-select: text;
   -webkit-user-select: text !important;
+  overflow-x: auto;
 }
 
 #chat-area .bot button,
