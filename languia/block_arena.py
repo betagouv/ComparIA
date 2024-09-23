@@ -1,5 +1,5 @@
 """
-LANGU:IA's main code
+COMPAR:IA's main code
 Users chat with two anonymous models.
 """
 
@@ -31,7 +31,7 @@ app_state = gr.State()
 
 
 with gr.Blocks(
-    title="LANGU:IA – Le comparateur d'IA conversationnelles",
+    title="COMPAR:IA – Le comparateur d'IA conversationnelles",
     theme=DSFR(),
     css=config.css,
     head=config.arena_head_js,

@@ -22,7 +22,7 @@ ENV GIT_COMMIT=$GIT_COMMIT
 
 COPY . /app
 
-# Specific to LANGU:IA: install required Gradio Custom Components
+# Specific to COMPAR:IA: install required Gradio Custom Components
 # Comment the next line if you want an image with node
 FROM base AS cc
 RUN apt update && apt install -y nodejs npm
