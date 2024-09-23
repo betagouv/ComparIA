@@ -17,7 +17,7 @@ Python library for easily interacting with trained machine learning models
 ## Installation
 
 ```bash
-pip install gradio_frslider
+gradio cc install
 ```
 
 ## Usage
