@@ -189,6 +189,11 @@ body {
   background-color: #FCFCFD;
 }
 
+:root {
+  --text-title-grey: var(--grey-200-850) !important;
+}
+  
+
 /* Gradio unofficial custom component Modal */
 @media (min-width: 768px) {
   .modal-container {
@@ -349,10 +354,10 @@ li.fr-nav__item {
 
 .message-wrap>.user-row:first-child .message.user::after {
   content: "Quelle réponse préférez-vous ?";
-  color: var(--text-title-grey);
+  color: var(--grey-200-850);
   padding-top: 2rem;
   padding-bottom: 5px;
-  font-size: 1.75rem;
+  font-size: 1.5rem;
   font-weight: 700;
   text-align: center;
 }
