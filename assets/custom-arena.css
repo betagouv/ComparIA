@@ -176,7 +176,7 @@ h6.text-blue {
 
 .gap-0 {
   gap: 0px;
-}	
+}
 
 /* General */
 body {
@@ -292,8 +292,10 @@ li.fr-nav__item {
   box-shadow: none !important;
   text-decoration: underline;
 }
-.link:active,.link:hover {
-background-color: inherit !important;
+
+.link:active,
+.link:hover {
+  background-color: inherit !important;
 }
 
 #mode-screen p {
@@ -450,12 +452,19 @@ background-color: inherit !important;
 }
 
 #chat-area #main-chatbot .message.bot {
-  max-width: 45vw;
   border-color: #E5E5E5;
   border-width: 1px;
   border-style: solid;
   border-radius: 0.75rem;
   background-color: white;
+}
+
+@media (min-width: 48em) {
+
+  #chat-area #main-chatbot .message.bot {
+    max-width: 45vw;
+  }
+
 }
 
 #chat-area #main-chatbot .message.bot:not(.thought) .chatbot::before {
