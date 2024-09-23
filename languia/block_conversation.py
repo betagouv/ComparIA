@@ -132,8 +132,10 @@ def bot_response(
         if "output_tokens" in data:
             # logger.debug("reported output tokens:" + str(data["output_tokens"]))
             # Sum of all previous interactions
+            # FIXME: some output cumulative completion_tokens count, and some only output this iteration's completion tokens count...
             if not state.output_tokens:
                 state.output_tokens = 0
+
             state.output_tokens += data["output_tokens"]
 
         if data["error_code"] == 0:
