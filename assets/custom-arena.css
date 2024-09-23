@@ -323,6 +323,8 @@ background-color: inherit !important;
 #chat-area button {
   cursor: default;
   padding: 1.25rem;
+  user-select: text;
+  -webkit-user-select: text !important;
 }
 
 #chat-area .bot button,
