@@ -16,6 +16,7 @@ body.dark {
   background-color: var(--background-default-grey) !important;
   --body-background-fill: var(--background-default-grey);
   --body-text-color: var(--text-default-grey);
+  --block-background-fill: transparent !important;
 }
 
 /* .dark textarea, .dark input, .dark .padded {
@@ -63,4 +64,8 @@ body.dark {
 .dark .code_wrap pre {
   /* var(--code-background-fill) */
   background-color: var(--neutral-100) !important;
+}
+
+.dark .link {
+  color: rgb(64, 64, 64) !important;
 }
