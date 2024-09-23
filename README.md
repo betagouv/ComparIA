@@ -20,7 +20,7 @@ Elle est basée sur [Gradio](https://www.gradio.app/) et [FastChat](https://gith
 pip install -r requirements.txt
 cd custom_components/frinput
 gradio cc install;gradio cc build --no-generate-docs
-cd ../../custom_components/frbutton
+cd ../../custom_components/customradiocard
 gradio cc install;gradio cc build --no-generate-docs
 cd ../..
 ```
