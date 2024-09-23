@@ -448,6 +448,7 @@ background-color: inherit !important;
 }
 
 #chat-area #main-chatbot .message.bot {
+  max-width: 45vw;
   border-color: #E5E5E5;
   border-width: 1px;
   border-style: solid;
