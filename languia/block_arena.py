@@ -186,6 +186,7 @@ with gr.Blocks(
         )
 
         which_model_radio = CustomRadioCard(
+            min_columns=3,
             elem_classes="justify-center",
             # elem_classes="show-radio self-center justify-center",
             choices=[

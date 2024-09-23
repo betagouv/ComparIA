@@ -28,7 +28,7 @@
 	// export let show_label = true;
 	// export let container = false;
 	// export let scale: number | null = null;
-	// export let min_width: number | undefined = undefined;
+	export let min_columns: number | undefined = 2;
 	export let loading_status: LoadingStatus;
 	export let interactive = true;
 
@@ -46,7 +46,7 @@
 <div
 	id={elem_id}
 	class="grid {elem_classes} {visible ? '' : 'hide'}"
-	style="--columns: {columns};"
+	style="--columns: {columns};--min-columns: {min_columns}"
 >
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
@@ -72,11 +72,16 @@
 <style>
 	.grid {
 		display: grid;
-		grid-template-columns: repeat(var(--columns), 1fr);
+		grid-template-columns: repeat(var(--min-columns), 1fr);
 		gap: 1.5rem; /* adds a 10px gap between grid cells */
 		padding: 0.75rem; /* adds a 20px padding around the grid */
 		margin: 0.75rem; /* adds a 20px margin around the grid */
 	}
+	@media (min-width: 48em) {
+	.grid {
+		grid-template-columns: repeat(var(--columns), 1fr);
+	}
+}
 	/* .wrap {
 		display: flex;
 		flex-wrap: wrap;

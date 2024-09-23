@@ -36,6 +36,7 @@ class CustomRadioCard(Component):
         container: bool = True,
         scale: int | None = None,
         min_width: int = 160,
+        min_columns: int | None = 2,
         interactive: bool | None = None,
         visible: bool = True,
         elem_id: str | None = None,
@@ -55,6 +56,7 @@ class CustomRadioCard(Component):
             show_label: if True, will display label.
             container: If True, will place the component in a container - providing some extra padding around the border.
             scale: Relative width compared to adjacent Components in a Row. For example, if Component A has scale=2, and Component B has scale=1, A will be twice as wide as B. Should be an integer.
+            min_columns: columns in responsive mode
             min_width: Minimum pixel width, will wrap if not sufficient screen space to satisfy this value. If a certain scale value results in this Component being narrower than min_width, the min_width parameter will be respected first.
             interactive: If True, choices in this radio group will be selectable; if False, selection will be disabled. If not provided, this is inferred based on whether the component is used as an input or output.
             visible: If False, component will be hidden.
@@ -63,6 +65,7 @@ class CustomRadioCard(Component):
             render: If False, component will not render be rendered in the Blocks context. Should be used if the intention is to assign event listeners now but render the component later.
             key: if assigned, will be used to assume identity across a re-render. Components that have the same key across a re-render will have their value preserved.
         """
+        self.min_columns = min_columns
         self.choices = (
             # Although we expect choices to be a list of tuples, it can be a list of tuples if the Gradio app
             # is loaded with gr.load() since Python tuples are converted to lists in JSON.
