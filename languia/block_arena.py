@@ -313,10 +313,10 @@ with gr.Blocks(
             # dsfr: This should just be a normal link
             # feedback_btns =
             gr.HTML(
-                elem_classes="fr-container text-center",
+                elem_classes="fr-container text-center fr-mb-4w",
                 value="""
                 <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
-                <a class="fr-mx-auto fr-mb-4w" href="../modeles" target="_blank">Découvrir la liste des IA</a>
+                <a class="fr-mx-auto" href="../modeles" target="_blank">Découvrir la liste des IA</a>
             """,
             )
 
