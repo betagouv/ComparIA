@@ -164,6 +164,12 @@ h6.text-blue {
   --underline-hover-width: var(--underline-max-width);
 }
 
+.fr-link.fr-icon-home-4-line[target="_blank"]::after {
+mask-image: none;
+background-color: transparent;
+background-image: none;
+}
+
 .fr-text--xxl {
   font-size: 1.5rem;
 }
