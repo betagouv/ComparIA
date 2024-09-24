@@ -51,7 +51,7 @@
 		transition: var(--button-transition);
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
-		border: 1px solid #E5E5E5 !important;
+		border: 2px solid #E5E5E5 !important;
 		border-radius: 0.5rem;
 		background-color: white;
 		color: var(--grey-200-850);
@@ -69,7 +69,7 @@
 		/* --blue-france-975-75: #f5f5fe; */
 
 		/* --blue-france-main-525: #6a6af4; */
-		border: 1px solid var(--blue-france-main-525) !important;
+		border: 2px solid var(--blue-france-main-525) !important;
 		/* color: var(--blue-france-main-525); */
 	}
 

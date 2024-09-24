@@ -102,11 +102,11 @@ with gr.Blocks(
             ],
         )
         shuffle_link = gr.Button(
-            scale=1,
-            elem_classes="fr-mx-auto link",
+            scale=0,
+            elem_classes="fr-btn--tertiary fr-mx-auto",
             visible=False,
-            value="Me proposer un autre prompt",
-            # icon="assets/extra-icons/shuffle.svg",
+            value="Générer un autre message",
+            icon="assets/extra-icons/shuffle.svg",
         )
 
     with gr.Group(
@@ -176,7 +176,7 @@ with gr.Blocks(
     with gr.Column(
         # h-screen
         visible=False,
-        elem_classes="fr-container fr-px-md-16w fr-px-0 min-h-screen fr-pt-4w",
+        elem_classes="fr-container min-h-screen fr-pt-4w",
         elem_id="vote-area",
     ) as vote_area:
         gr.HTML(
@@ -187,7 +187,8 @@ with gr.Blocks(
 
         which_model_radio = CustomRadioCard(
             min_columns=3,
-            elem_classes="justify-center",
+            elem_id="vote-cards",
+            elem_classes="justify-center fr-mx-auto fr-col-12 fr-col-md-8",
             # elem_classes="show-radio self-center justify-center",
             choices=[
                 (
