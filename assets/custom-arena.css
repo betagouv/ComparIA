@@ -548,15 +548,6 @@ li.fr-nav__item {
   border-radius: 0.25rem;
 }
 
-
-
-.rounded-corners {
-  border-color: #E5E5E5;
-  border-width: 1px;
-  border-style: solid;
-  border-radius: 0.75rem;
-}
-
 .show-radio input[type=radio] {
   display: block !important;
 }

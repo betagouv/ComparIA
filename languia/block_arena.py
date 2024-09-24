@@ -216,7 +216,7 @@ with gr.Blocks(
 
             # with gr.Column():
             with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-n1w fr-mr-md-1w bg-white rounded-corners"
+                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-n1w fr-mr-md-1w bg-white rounded-tile"
             ):
 
                 gr.HTML(
@@ -254,7 +254,7 @@ with gr.Blocks(
 
             # with gr.Column():
             with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w bg-white rounded-corners"
+                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w bg-white rounded-tile"
             ):
 
                 gr.HTML(
