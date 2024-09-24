@@ -195,11 +195,6 @@ site_head_js = (
 with open("./assets/arena.js", encoding="utf-8") as js_file:
     arena_js = js_file.read()
 
-if os.getenv("GIT_COMMIT"):
-    git_commit = os.getenv("GIT_COMMIT")
-    arena_js += f"console.log('Git commit: {git_commit}');"
-    site_head_js += f"""<script type="text/javascript">console.log('Git commit: {git_commit}');</script>"""
-
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
 with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
