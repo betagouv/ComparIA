@@ -9,7 +9,7 @@ import gradio as gr
 
 # from gradio_modal import Modal
 
-from languia.utils import header_html, welcome_modal_html
+from languia.utils import header_html, welcome_modal_html, footer_html
 
 # from custom_components.frbutton.backend.gradio_frbutton import FrButton
 from custom_components.customradiocard.backend.gradio_customradiocard import (
@@ -38,7 +38,6 @@ with gr.Blocks(
     analytics_enabled=False,
     # scroll_to_output = True,
     js=config.arena_js,
-    
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
@@ -51,7 +50,7 @@ with gr.Blocks(
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
     welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
-    
+
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
@@ -289,7 +288,9 @@ with gr.Blocks(
                     lines=3,
                     placeholder="Les réponses du modèle B sont...",
                 )
-            comments_link = gr.Button(elem_classes="link fr-mt-2w", value="Ajouter des détails")
+            comments_link = gr.Button(
+                elem_classes="link fr-mt-2w", value="Ajouter des détails"
+            )
 
     with gr.Column(
         elem_classes="fr-container--fluid fr-py-2w fr-grid-row fr-grid-row--center",
@@ -319,6 +320,7 @@ with gr.Blocks(
                 <a class="fr-mx-auto" href="../modeles" target="_blank">Découvrir la liste des IA</a>
             """,
             )
+        footer_area = gr.HTML(elem_classes="fr-mb-4w",visible=True, value=footer_html)
 
     # Modals
     #     with Modal(elem_id="retry-modal") as retry_modal:

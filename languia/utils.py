@@ -358,6 +358,9 @@ with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_f
 with open("./templates/header-arena.html", encoding="utf-8") as header_file:
     header_html = header_file.read()
 
+with open("./templates/footer.html", encoding="utf-8") as footer_file:
+    footer_html = footer_file.read()
+
 def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
     if model in outage_models:
         return 0

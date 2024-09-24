@@ -48,10 +48,7 @@ fieldset {
   /* padding: var(--size-4) var(--size-8); */
 }
 
-/* TODO: find a better selector... */
-footer,
-.built-with,
-.show-api {
+footer:has(.built-with) {
   display: none !important;
 }
 
