@@ -60,7 +60,7 @@ with gr.Blocks(
         title = gr.HTML(
             # Sur Figma: fr-mt-8w
             elem_classes="text-center text-grey-200 fr-mt-4w fr-mb-2w",
-            value="""<h3>Comment puis-je vous aider aujourd'hui ?</h3>""",
+            value="""<h4>Comment puis-je vous aider aujourd'hui ?</h4>""",
         )
 
         guided_cards = CustomRadioCard(
@@ -181,7 +181,7 @@ with gr.Blocks(
     ) as vote_area:
         gr.HTML(
             value="""
-            <h3 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir l'identité des modèles</h3>
+            <h4 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir l'identité des modèles</h4>
             <p class="text-center text-grey fr-text--sm">L'ensemble des votes permet d’améliorer les modèles d'IA</p>""",
         )
 

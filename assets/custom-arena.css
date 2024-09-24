@@ -363,7 +363,7 @@ li.fr-nav__item {
 }
 
 .message-wrap>.user-row:first-child .flex-wrap.user::after {
-  content: "Votre choix nous aide à améliorer les réponses des IA";
+  content: "Prêtez attention au fond et à la forme, vous donnerez votre avis à la prochaine étape";
   color: #949494;
   font-size: 0.875rem;
   text-align: center;
