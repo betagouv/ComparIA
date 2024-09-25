@@ -68,11 +68,11 @@ with gr.Blocks(
             choices=[
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/lightbulb.svg" /><p>Générer de nouvelles idées</p></div>""",
-                    "generate-new-ideas",
+                    "ideas",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/chat-3.svg" /><p>Expliquer simplement un concept</p>""",
-                    "explain-simply",
+                    "explanations",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/translate-2.svg" /><p>M’exprimer dans une autre langue</p></div>""",
@@ -91,8 +91,8 @@ with gr.Blocks(
                     "coach",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/earth.svg" /><p>Organiser mon prochain voyage</p></div>""",
-                    "travel",
+                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/book-open-line.svg" /><p>Raconter une histoire</p></div>""",
+                    "stories",
                 ),
                 (
                     """<div><img class="fr-mb-3w" src="file=assets/extra-icons/music-2.svg" /><p>Proposer des idées de films, livres, musiques</p></div>""",
@@ -320,7 +320,7 @@ with gr.Blocks(
                 <a class="fr-mx-auto" href="../modeles" target="_blank">Découvrir la liste des IA</a>
             """,
             )
-        footer_area = gr.HTML(elem_classes="fr-mb-4w",visible=True, value=footer_html)
+        footer_area = gr.HTML(elem_classes="fr-pb-2w",visible=True, value=footer_html)
 
     # Modals
     #     with Modal(elem_id="retry-modal") as retry_modal:

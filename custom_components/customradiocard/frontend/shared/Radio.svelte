@@ -51,7 +51,7 @@
 		transition: var(--button-transition);
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
-		border: 2px solid #E5E5E5 !important;
+		border: 1px solid #E5E5E5 !important;
 		border-radius: 0.5rem;
 		background-color: white;
 		color: var(--grey-200-850);
