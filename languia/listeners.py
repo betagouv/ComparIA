@@ -176,6 +176,7 @@ def register_listeners():
             return gr.update(interactive=True)
 
     def add_text(
+        app_state: gr.State,
         conv_a: gr.State,
         conv_b: gr.State,
         text: gr.Text,
@@ -220,13 +221,18 @@ def register_listeners():
 
         for i in range(config.num_sides):
             conversations[i].messages.append(gr.ChatMessage(role="user", content=text))
+        conv_a = conversations[0]
+        conv_b = conversations[1]
         app_state.awaiting_responses = True
-        return (
+        chatbot = to_threeway_chatbot(conversations)
+        return [
+            app_state,
             # 2 conversations
-            conversations
+            conv_a,
+            conv_b,
             # 1 chatbot
-            + [to_threeway_chatbot(conversations)]
-        )
+            chatbot,
+        ]
 
     def goto_chatbot(
         request: gr.Request,
@@ -357,6 +363,7 @@ def register_listeners():
 
                 # FIXME: test if not global state here...
                 conv_a, conv_b, chatbot = add_text(
+                    app_state,
                     conversations[0],
                     conversations[1],
                     app_state.original_user_prompt,
@@ -402,8 +409,8 @@ def register_listeners():
         triggers=[textbox.submit, send_btn.click],
         fn=add_text,
         api_name=False,
-        inputs=[conv_a] + [conv_b] + [textbox],
-        outputs=[conv_a] + [conv_b] + [chatbot],
+        inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
         # scroll_to_output=True,
         show_progress="hidden",
     ).success(
