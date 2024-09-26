@@ -252,7 +252,8 @@ def register_listeners():
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
-    def bot_response_multi(app_state,
+    def bot_response_multi(
+        app_state,
         conv_a,
         conv_b,
         chatbot,
@@ -348,7 +349,7 @@ def register_listeners():
                 )
                 conv_a = set_conv_state(conv_a, model_name=model_left)
                 conv_b = set_conv_state(conv_b, model_name=model_right)
-                
+
                 logger.info(
                     f"selection_modeles: {model_left}, {model_right}",
                     extra={request: request},
@@ -601,7 +602,6 @@ voteArea.scrollIntoView({
             model_b_tokens=model_b_tokens,
         )
         return {
-            app_state: app_state,
             positive_a: gr.update(interactive=False),
             positive_b: gr.update(interactive=False),
             negative_a: gr.update(interactive=False),
@@ -623,8 +623,8 @@ voteArea.scrollIntoView({
         triggers=[supervote_send_btn.click],
         fn=vote_preferences,
         inputs=(
-            [app_state] +
-            [conv_a]
+            [app_state]
+            + [conv_a]
             + [conv_b]
             + [which_model_radio]
             + [positive_a]
