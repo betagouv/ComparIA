@@ -252,7 +252,7 @@ def register_listeners():
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
-    def bot_response_multi(
+    def bot_response_multi(app_state,
         conv_a,
         conv_b,
         chatbot,
@@ -296,7 +296,7 @@ def register_listeners():
                     conv_a = conversations[0]
                     conv_b = conversations[1]
                     chatbot = to_threeway_chatbot(conversations)
-                    yield [conv_a, conv_b, chatbot, textbox]
+                    yield [app_state, conv_a, conv_b, chatbot, textbox]
                     if stop:
                         break
             except Exception as e:
@@ -333,45 +333,38 @@ def register_listeners():
                     state.model_name = model_name
                     return state
 
-                # you can't move this function out, that way app_state is dependent on each user state / not global state
-                def init_conversations(conversations, request: gr.Request):
-                    app_state.awaiting_responses = False
-                    config.outage_models = refresh_outage_models(
-                        config.outage_models, controller_url=config.controller_url
-                    )
-                    # app_state.model_left, app_state.model_right = get_battle_pair(
-                    model_left, model_right = get_battle_pair(
-                        config.models,
-                        BATTLE_TARGETS,
-                        config.outage_models,
-                        SAMPLING_WEIGHTS,
-                        SAMPLING_BOOST_MODELS,
-                    )
-                    conversations = [
-                        # NOTE: replacement of gr.State() to ConversationState happens here
-                        set_conv_state(conversations[0], model_name=model_left),
-                        set_conv_state(conversations[1], model_name=model_right),
-                    ]
-                    logger.info(
-                        f"selection_modeles: {model_left}, {model_right}",
-                        extra={request: request},
-                    )
-                    return {conversations[0], conversations[1]}
-
+                app_state.awaiting_responses = False
+                config.outage_models = refresh_outage_models(
+                    config.outage_models, controller_url=config.controller_url
+                )
                 # Simpler to repick 2 models
-                conv_a, conv_b = init_conversations(conversations, request)
+                # app_state.model_left, app_state.model_right = get_battle_pair(
+                model_left, model_right = get_battle_pair(
+                    config.models,
+                    BATTLE_TARGETS,
+                    config.outage_models,
+                    SAMPLING_WEIGHTS,
+                    SAMPLING_BOOST_MODELS,
+                )
+                conv_a = set_conv_state(conv_a, model_name=model_left)
+                conv_b = set_conv_state(conv_b, model_name=model_right)
+                
+                logger.info(
+                    f"selection_modeles: {model_left}, {model_right}",
+                    extra={request: request},
+                )
 
-                # FIXME: test if not global state here...
-                conv_a, conv_b, chatbot = add_text(
+                app_state, conv_a, conv_b, chatbot = add_text(
                     app_state,
-                    conversations[0],
-                    conversations[1],
+                    conv_a,
+                    conv_b,
                     app_state.original_user_prompt,
                     request,
                 )
                 # Empty generation queue
                 gen = []
-                return [conv_a, conv_b, chatbot, textbox]
+                # continue
+                # pass
             else:
                 break
         else:
@@ -396,7 +389,7 @@ def register_listeners():
         chatbot = to_threeway_chatbot(conversations)
         conv_a = conversations[0]
         conv_b = conversations[1]
-        return [conv_a, conv_b, chatbot, textbox]
+        return [app_state, conv_a, conv_b, chatbot, textbox]
 
     def enable_conclude(textbox):
 
@@ -447,8 +440,8 @@ setTimeout(() => {
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
-        inputs=[conv_a] + [conv_b] + [chatbot] + [textbox],
-        outputs=[conv_a, conv_b, chatbot, textbox],
+        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
+        outputs=[app_state, conv_a, conv_b, chatbot, textbox],
         api_name=False,
         show_progress="hidden",
         # should do .success()
