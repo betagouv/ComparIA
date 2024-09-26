@@ -531,6 +531,7 @@ voteArea.scrollIntoView({
         return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
+        app_state,
         conv_a,
         conv_b,
         which_model_radio_output,
@@ -600,6 +601,7 @@ voteArea.scrollIntoView({
             model_b_tokens=model_b_tokens,
         )
         return {
+            app_state: app_state,
             positive_a: gr.update(interactive=False),
             positive_b: gr.update(interactive=False),
             negative_a: gr.update(interactive=False),
@@ -621,6 +623,7 @@ voteArea.scrollIntoView({
         triggers=[supervote_send_btn.click],
         fn=vote_preferences,
         inputs=(
+            [app_state] +
             [conv_a]
             + [conv_b]
             + [which_model_radio]
@@ -632,6 +635,7 @@ voteArea.scrollIntoView({
             + [comments_b]
         ),
         outputs=[
+            app_state,
             positive_a,
             positive_b,
             negative_a,
