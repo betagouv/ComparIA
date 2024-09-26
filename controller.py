@@ -15,7 +15,7 @@ import openai
 
 import os
 from typing import Dict
-import json
+import json5
 
 templates = Jinja2Templates(directory="templates")
 
@@ -31,7 +31,7 @@ stream_logs.setLevel(logging.INFO)
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
-async def create_outage(model_name: str, reason: str = None):
+async def create_outage(model_name: str, reason: str = None, confirm: bool = True):
     outage = {
         "detection_time": datetime.now().isoformat(),
         "model_name": model_name,
@@ -43,9 +43,15 @@ async def create_outage(model_name: str, reason: str = None):
 
     if existing_outage:
         await remove_outage(model_name)
+    
+    # Double-check the outage!!!
+    if confirm:
+        confirm_outage = await test_model(model_name)
+        if confirm_outage["success"]:
+            return "Didn't add to outages as test was successful"
+    
     outages.append(outage)
     return outage
-
 
 @app.get("/outages/")
 async def get_outages():
@@ -83,7 +89,7 @@ if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
 else:
     register_api_endpoint_file = "register-api-endpoint-file.json"
 
-models = json.load(open(register_api_endpoint_file))
+models = json5.load(open(register_api_endpoint_file))
 
 
 @app.get("/outages/{model_name}")
@@ -152,27 +158,27 @@ async def test_model(model_name):
                 logging.info(f"Removing {model_name} from outage list")
                 await remove_outage(model_name)
                 return {
-                    "success": "true",
+                    "success": True,
                     "message": "Removed model from outages list.",
                     "response": text,
                 }
-            return {"success": "true", "message": "Model responded: " + str(text)}
+            return {"success": True, "message": "Model responded: " + str(text)}
 
         else:
             reason = f"No content from api for model {model_name}"
             logging.error(f"Test failed: {model_name}")
             logging.error(reason)
-            await create_outage(model_name, reason)
-            return {"success": "false", "error_message": reason}
+            await create_outage(model_name, reason, confirm=False)
+            return {"success": False, "error_message": reason}
 
     except Exception as e:
         reason = str(e)
         logging.error(f"Error: {reason}. Model: {model_name}")
 
         stacktrace = traceback.print_exc()
-        _outage = await create_outage(model_name, reason)
+        _outage = await create_outage(model_name, reason, confirm=False)
 
-        return {"success": "false", "reason": str(reason), "stacktrace": stacktrace}
+        return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
 
 # async def scheduled_outage_tests():
