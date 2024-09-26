@@ -1,6 +1,8 @@
 from languia.block_arena import *
 import traceback
 
+import uuid
+
 from languia.utils import (
     get_battle_pair,
     build_reveal_html,
@@ -24,7 +26,6 @@ from languia.config import (
 # from fastchat.model.model_adapter import get_conversation_template
 
 from languia.block_conversation import (
-    set_conv_state,
     bot_response,
 )
 
@@ -38,40 +39,59 @@ from languia.config import logger
 from languia import config
 
 
-def init_conversations(conversations, request: gr.Request):
-    app_state.awaiting_responses = False
-    config.outage_models = refresh_outage_models(
-        config.outage_models, controller_url=config.controller_url
-    )
-    # app_state.model_left, app_state.model_right = get_battle_pair(
-    model_left, model_right = get_battle_pair(
-        config.models,
-        BATTLE_TARGETS,
-        config.outage_models,
-        SAMPLING_WEIGHTS,
-        SAMPLING_BOOST_MODELS,
-    )
-    conversations = [
-        # NOTE: replacement of gr.State() to ConversationState happens here
-        set_conv_state(conversations[0], model_name=model_left),
-        set_conv_state(conversations[1], model_name=model_right),
-    ]
-    logger.info(
-        f"selection_modeles: {model_left}, {model_right}",
-        extra={request: request},
-    )
-    return {conv_a: conversations[0], conv_b: conversations[1]}
-
-
 # Register listeners
 def register_listeners():
 
     # Step 0
 
     @demo.load(
-        inputs=[], outputs=(conversations), api_name=False, show_progress="hidden"
+        inputs=[conv_a, conv_b],
+        outputs=[conv_a, conv_b],
+        api_name=False,
+        show_progress="hidden",
     )
-    def enter_arena(request: gr.Request):
+    def enter_arena(conv_a, conv_b, request: gr.Request):
+
+        # TODO: to get rid of!
+        def set_conv_state(state, model_name=""):
+            # self.messages = get_conversation_template(model_name)
+            state.messages = []
+            state.output_tokens = None
+
+            # TODO: get it from api if generated
+            state.conv_id = uuid.uuid4().hex
+
+            # TODO: add template info? and test it
+            state.template_name = "zero_shot"
+            state.template = []
+            state.model_name = model_name
+            return state
+
+        # you can't move this function out, that way app_state is dependent on each user state / not global state
+        def init_conversations(conversations, request: gr.Request):
+            app_state.awaiting_responses = False
+            config.outage_models = refresh_outage_models(
+                config.outage_models, controller_url=config.controller_url
+            )
+            # app_state.model_left, app_state.model_right = get_battle_pair(
+            model_left, model_right = get_battle_pair(
+                config.models,
+                BATTLE_TARGETS,
+                config.outage_models,
+                SAMPLING_WEIGHTS,
+                SAMPLING_BOOST_MODELS,
+            )
+            # TODO: to get rid of!
+            conversations = [
+                set_conv_state(conversations[0], model_name=model_left),
+                set_conv_state(conversations[1], model_name=model_right),
+            ]
+            logger.info(
+                f"selection_modeles: {model_left}, {model_right}",
+                extra={request: request},
+            )
+            return {conv_a: conversations[0], conv_b: conversations[1]}
+
         # TODO: actually check for it
         # tos_accepted = request...
         # if tos_accepted:
@@ -79,8 +99,8 @@ def register_listeners():
             "init_arene",
             extra={"request": request},
         )
-        conversations = init_conversations([conv_a, conv_b], request)
-        return conversations
+        conv_a, conv_b = init_conversations([conv_a, conv_b], request)
+        return [conv_a, conv_b]
 
     # Step 1
 
@@ -132,13 +152,14 @@ def register_listeners():
             return gr.update(interactive=True)
 
     def add_text(
-        conversation_a: gr.State,
-        conversation_b: gr.State,
+        app_state: gr.State,
+        conv_a: gr.State,
+        conv_b: gr.State,
         text: gr.Text,
         request: gr.Request,
     ):
 
-        conversations = [conversation_a, conversation_b]
+        conversations = [conv_a, conv_b]
 
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
@@ -176,13 +197,18 @@ def register_listeners():
 
         for i in range(config.num_sides):
             conversations[i].messages.append(gr.ChatMessage(role="user", content=text))
+        conv_a = conversations[0]
+        conv_b = conversations[1]
         app_state.awaiting_responses = True
-        return (
+        chatbot = to_threeway_chatbot(conversations)
+        return [
+            app_state,
             # 2 conversations
-            conversations
+            conv_a,
+            conv_b,
             # 1 chatbot
-            + [to_threeway_chatbot(conversations)]
-        )
+            chatbot,
+        ]
 
     def goto_chatbot(
         request: gr.Request,
@@ -203,12 +229,14 @@ def register_listeners():
         }
 
     def bot_response_multi(
-        conversation_a,
-        conversation_b,
-        textbox_output,
+        app_state,
+        conv_a,
+        conv_b,
+        chatbot,
+        textbox,
         request: gr.Request,
     ):
-        conversations = [conversation_a, conversation_b]
+        conversations = [conv_a, conv_b]
 
         gen = []
         for attempt in range(10):
@@ -242,8 +270,10 @@ def register_listeners():
                         #     pass
                         # except httpx.ReadTimeout:
                         #     pass
-
-                    yield {chatbot: to_threeway_chatbot(conversations)}
+                    conv_a = conversations[0]
+                    conv_b = conversations[1]
+                    chatbot = to_threeway_chatbot(conversations)
+                    yield [app_state, conv_a, conv_b, chatbot, textbox]
                     if stop:
                         break
             except Exception as e:
@@ -266,20 +296,53 @@ def register_listeners():
                 #     message="Erreur avec l'interrogation d'un des modèles, veuillez patienter, le comparateur trouve deux nouveaux modèles à interroger.",
                 # )
 
-                # Simpler to repick 2 models
-                conv_a, conv_b = init_conversations(conversations, request)
+                # TODO: refacto! class method?
+                def reset_conv_state(state, model_name=""):
+                    # self.messages = get_conversation_template(model_name)
+                    state.messages = []
+                    state.output_tokens = None
 
-                conversation_a, conversation_b, chatbot_output = add_text(
-                    conversations[0],
-                    conversations[1],
+                    # TODO: get it from api if generated
+                    state.conv_id = uuid.uuid4().hex
+
+                    # TODO: add template info? and test it
+                    state.template_name = "zero_shot"
+                    state.template = []
+                    state.model_name = model_name
+                    return state
+
+                app_state.awaiting_responses = False
+                config.outage_models = refresh_outage_models(
+                    config.outage_models, controller_url=config.controller_url
+                )
+                # Simpler to repick 2 models
+                # app_state.model_left, app_state.model_right = get_battle_pair(
+                model_left, model_right = get_battle_pair(
+                    config.models,
+                    BATTLE_TARGETS,
+                    config.outage_models,
+                    SAMPLING_WEIGHTS,
+                    SAMPLING_BOOST_MODELS,
+                )
+                conv_a = reset_conv_state(conv_a, model_name=model_left)
+                conv_b = reset_conv_state(conv_b, model_name=model_right)
+
+                logger.info(
+                    f"selection_modeles: {model_left}, {model_right}",
+                    extra={request: request},
+                )
+
+                app_state, conv_a, conv_b, chatbot = add_text(
+                    app_state,
+                    conv_a,
+                    conv_b,
                     app_state.original_user_prompt,
                     request,
                 )
-                # Save it to conversations
-                conversations = [conversation_a, conversation_b]
-
                 # Empty generation queue
                 gen = []
+                # continue
+                # pass
             else:
                 break
         else:
@@ -294,17 +357,17 @@ def register_listeners():
         app_state.awaiting_responses = False
 
         logger.info(
-            f"response_modele_a ({conversation_a.model_name}): {str(conversation_a.messages[-1].content)}",
+            f"response_modele_a ({conv_a.model_name}): {str(conv_a.messages[-1].content)}",
             extra={"request": request},
         )
         logger.info(
-            f"response_modele_b ({conversation_b.model_name}): {str(conversation_b.messages[-1].content)}",
+            f"response_modele_b ({conv_b.model_name}): {str(conv_b.messages[-1].content)}",
             extra={"request": request},
         )
-        chatbot_output = to_threeway_chatbot(conversations)
-        return {
-            chatbot: chatbot_output,
-        }
+        chatbot = to_threeway_chatbot(conversations)
+        conv_a = conversations[0]
+        conv_b = conversations[1]
+        return [app_state, conv_a, conv_b, chatbot, textbox]
 
     def enable_conclude(textbox):
 
@@ -317,8 +380,8 @@ def register_listeners():
         triggers=[textbox.submit, send_btn.click],
         fn=add_text,
         api_name=False,
-        inputs=conversations + [textbox],
-        outputs=conversations + [chatbot],
+        inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
         # scroll_to_output=True,
         show_progress="hidden",
     ).success(
@@ -355,8 +418,8 @@ setTimeout(() => {
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
-        inputs=conversations + [textbox],
-        outputs=[chatbot, textbox],
+        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
+        outputs=[app_state, conv_a, conv_b, chatbot, textbox],
         api_name=False,
         show_progress="hidden",
         # should do .success()
@@ -446,8 +509,9 @@ voteArea.scrollIntoView({
         return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
-        conversation_a,
-        conversation_b,
+        app_state,
+        conv_a,
+        conv_b,
         which_model_radio_output,
         positive_a_output,
         positive_b_output,
@@ -471,42 +535,38 @@ voteArea.scrollIntoView({
             category = None
 
         vote_last_response(
-            [conversation_a, conversation_b],
+            [conv_a, conv_b],
             which_model_radio_output,
             category,
             details,
             request,
         )
 
-        model_a = get_model_extra_info(
-            conversation_a.model_name, config.models_extra_info
-        )
-        model_b = get_model_extra_info(
-            conversation_b.model_name, config.models_extra_info
-        )
-        logger.debug("output_tokens: " + str(conversation_a.output_tokens))
-        logger.debug("output_tokens: " + str(conversation_b.output_tokens))
+        model_a = get_model_extra_info(conv_a.model_name, config.models_extra_info)
+        model_b = get_model_extra_info(conv_b.model_name, config.models_extra_info)
+        logger.debug("output_tokens: " + str(conv_a.output_tokens))
+        logger.debug("output_tokens: " + str(conv_b.output_tokens))
         # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
         model_a_tokens = (
-            conversation_a.output_tokens
-            if conversation_a.output_tokens and conversation_a.output_tokens != 0
-            else count_output_tokens(conversation_a.messages)
+            conv_a.output_tokens
+            if conv_a.output_tokens and conv_a.output_tokens != 0
+            else count_output_tokens(conv_a.messages)
         )
 
         model_b_tokens = (
-            conversation_b.output_tokens
-            if conversation_b.output_tokens and conversation_b.output_tokens != 0
-            else count_output_tokens(conversation_b.messages)
+            conv_b.output_tokens
+            if conv_b.output_tokens and conv_b.output_tokens != 0
+            else count_output_tokens(conv_b.messages)
         )
 
         # TODO:
-        # request_latency_a = conversation_a.conv.finish_tstamp - conversation_a.conv.start_tstamp
-        # request_latency_b = conversation_b.conv.finish_tstamp - conversation_b.conv.start_tstamp
+        # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
+        # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
         model_a_impact = get_llm_impact(
-            model_a, conversation_a.model_name, model_a_tokens, None
+            model_a, conv_a.model_name, model_a_tokens, None
         )
         model_b_impact = get_llm_impact(
-            model_b, conversation_b.model_name, model_b_tokens, None
+            model_b, conv_b.model_name, model_b_tokens, None
         )
 
         reveal_html = build_reveal_html(
@@ -540,8 +600,9 @@ voteArea.scrollIntoView({
         triggers=[supervote_send_btn.click],
         fn=vote_preferences,
         inputs=(
-            [conversations[0]]
-            + [conversations[1]]
+            [app_state]
+            + [conv_a]
+            + [conv_b]
             + [which_model_radio]
             + [positive_a]
             + [positive_b]
@@ -551,6 +612,7 @@ voteArea.scrollIntoView({
             + [comments_b]
         ),
         outputs=[
+            app_state,
             positive_a,
             positive_b,
             negative_a,

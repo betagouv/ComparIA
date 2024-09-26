@@ -26,8 +26,21 @@ from languia import config
 # };
 # // Remove navigation prompt
 # window.onbeforeunload = null;
+class Conversation:
+    def __init__(self, messages=[], output_tokens=None, conv_id=None, template=None, model_name=None):
+        self.messages = messages
+        self.output_tokens = output_tokens
+        self.conv_id = conv_id
+        self.template = template
+        self.model_name = model_name
 
-app_state = gr.State()
+class AppState:
+    def __init__(self, awaiting_responses=False, model_left=None, model_right=None, original_user_prompt=None, category=None):
+        self.awaiting_responses = awaiting_responses
+        self.model_left = model_left
+        self.model_right = model_right
+        self.original_user_prompt = original_user_prompt
+        self.category = category
 
 
 with gr.Blocks(
@@ -42,9 +55,25 @@ with gr.Blocks(
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
 
-    conv_a = gr.State()
-    conv_b = gr.State()
-    conversations = [conv_a, conv_b]
+
+        # def set_conv_state(state, model_name=""):
+        #     # self.messages = get_conversation_template(model_name)
+        #     state.messages = []
+        #     state.output_tokens = None
+
+        #     # TODO: get it from api if generated
+        #     state.conv_id = uuid.uuid4().hex
+
+        #     # TODO: add template info? and test it
+        #     state.template_name = "zero_shot"
+        #     state.template = []
+        #     state.model_name = model_name
+        #     return state
+
+    app_state = gr.State(value=AppState())
+
+    conv_a = gr.State(value=Conversation())
+    conv_b = gr.State(value=Conversation())
     # model_selectors = [None] * num_sides
 
     # TODO: check cookies on load!
@@ -116,6 +145,7 @@ with gr.Blocks(
         # placeholder
         #         placeholder
         # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
+        # TODO: test ChatInterface abstraction
         chatbot = gr.Chatbot(
             # TODO:
             type="messages",
