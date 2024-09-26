@@ -39,31 +39,6 @@ from languia.config import logger
 from languia import config
 
 
-# def init_conversations(conversations, request: gr.Request):
-#     app_state.awaiting_responses = False
-#     config.outage_models = refresh_outage_models(
-#         config.outage_models, controller_url=config.controller_url
-#     )
-#     # app_state.model_left, app_state.model_right = get_battle_pair(
-#     model_left, model_right = get_battle_pair(
-#         config.models,
-#         BATTLE_TARGETS,
-#         config.outage_models,
-#         SAMPLING_WEIGHTS,
-#         SAMPLING_BOOST_MODELS,
-#     )
-#     conversations = [
-#         # NOTE: replacement of gr.State() to ConversationState happens here
-#         set_conv_state(conversations[0], model_name=model_left),
-#         set_conv_state(conversations[1], model_name=model_right),
-#     ]
-#     logger.info(
-#         f"selection_modeles: {model_left}, {model_right}",
-#         extra={request: request},
-#     )
-#     return {conv_a: conversations[0], conv_b: conversations[1]}
-
-
 # Register listeners
 def register_listeners():
 
@@ -77,6 +52,7 @@ def register_listeners():
     )
     def enter_arena(conv_a, conv_b, request: gr.Request):
 
+        # TODO: to get rid of!
         def set_conv_state(state, model_name=""):
             # self.messages = get_conversation_template(model_name)
             state.messages = []
@@ -105,8 +81,8 @@ def register_listeners():
                 SAMPLING_WEIGHTS,
                 SAMPLING_BOOST_MODELS,
             )
+            # TODO: to get rid of!
             conversations = [
-                # NOTE: replacement of gr.State() to ConversationState happens here
                 set_conv_state(conversations[0], model_name=model_left),
                 set_conv_state(conversations[1], model_name=model_right),
             ]
@@ -320,7 +296,8 @@ def register_listeners():
                 #     message="Erreur avec l'interrogation d'un des modèles, veuillez patienter, le comparateur trouve deux nouveaux modèles à interroger.",
                 # )
 
-                def set_conv_state(state, model_name=""):
+                # TODO: refacto! class method?
+                def reset_conv_state(state, model_name=""):
                     # self.messages = get_conversation_template(model_name)
                     state.messages = []
                     state.output_tokens = None
@@ -347,8 +324,8 @@ def register_listeners():
                     SAMPLING_WEIGHTS,
                     SAMPLING_BOOST_MODELS,
                 )
-                conv_a = set_conv_state(conv_a, model_name=model_left)
-                conv_b = set_conv_state(conv_b, model_name=model_right)
+                conv_a = reset_conv_state(conv_a, model_name=model_left)
+                conv_b = reset_conv_state(conv_b, model_name=model_right)
 
                 logger.info(
                     f"selection_modeles: {model_left}, {model_right}",
