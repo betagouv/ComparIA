@@ -69,7 +69,7 @@
 		/* --blue-france-975-75: #f5f5fe; */
 
 		/* --blue-france-main-525: #6a6af4; */
-		border: 2px solid var(--blue-france-main-525) !important;
+		outline: 2px solid var(--blue-france-main-525);
 		/* color: var(--blue-france-main-525); */
 	}
 
