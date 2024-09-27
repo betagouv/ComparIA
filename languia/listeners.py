@@ -4,6 +4,8 @@ import traceback
 import uuid
 
 from languia.utils import (
+    get_ip,
+    get_matomo_tracker_from_cookies,
     get_battle_pair,
     build_reveal_html,
     vote_last_response,
@@ -96,7 +98,7 @@ def register_listeners():
         # tos_accepted = request...
         # if tos_accepted:
         logger.info(
-            "init_arene",
+            f"init_arene, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
         conv_a, conv_b = init_conversations([conv_a, conv_b], request)
@@ -285,6 +287,7 @@ def register_listeners():
                         "stacktrace": traceback.format_exc(),
                     },
                 )
+                # TODO: do that only when controller is offline
                 config.outage_models.append(conversations[i].model_name)
                 add_outage_model(
                     config.controller_url,
