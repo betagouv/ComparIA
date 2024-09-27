@@ -1,5 +1,5 @@
 """
-COMPAR:IA's main code
+Compar:IA's main code
 Users chat with two anonymous models.
 """
 
@@ -44,7 +44,7 @@ class AppState:
 
 
 with gr.Blocks(
-    title="COMPAR:IA – Le comparateur d'IA conversationnelles",
+    title="Compar:IA – Le comparateur d'IA conversationnelles",
     theme=DSFR(),
     css=config.css,
     head=config.arena_head_js,
