@@ -32,11 +32,12 @@ logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 auth = None
 
 # TODO: Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
-# demo = demo.queue(
-#     # default_concurrency_limit=10,
-#     status_update_rate="auto",
-#     api_open=False,
-# )
+demo = demo.queue(
+    default_concurrency_limit=None,
+    # default_concurrency_limit=40,
+    # status_update_rate="auto",
+    api_open=False,
+)
 
 app = gr.mount_gradio_app(
     app,

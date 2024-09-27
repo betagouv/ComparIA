@@ -281,6 +281,23 @@ def vote_last_response(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
+# >>> import geoip2.database
+# >>>
+# >>> # This creates a Reader object. You should use the same object
+# >>> # across multiple requests as creation of it is expensive.
+# >>> with geoip2.database.Reader('/path/to/GeoLite2-City.mmdb') as reader:
+# >>>
+# >>>     # Replace "city" with the method corresponding to the database
+# >>>     # that you are using, e.g., "country".
+# >>>     response = reader.city('203.0.113.0')
+# >>>
+# >>>     response.country.iso_code
+# 'US'
+# >>>     response.country.name
+# 'United States'
+# >>>     response.country.names['zh-CN']
+
+
     t = datetime.datetime.now()
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
