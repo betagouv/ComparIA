@@ -77,7 +77,7 @@ license = "CC-BY-NC-4.0"
 conditions = "restricted"
 description = "Grand frère de la famille Command R de Cohere, ce modèle de langage est orienté pour l'usage professionnel et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
 
-["Command R"]
+[c4ai-command-r-08-2024]
 simple_name = "Command R"
 organisation = "Cohere"
 country = "Canada"
@@ -86,6 +86,9 @@ friendly_size = "M"
 distribution = "open-weights"
 dataset = "private"
 conditions = "restricted"
+license = "CC-BY-NC-4.0"
+excerpt = "Actualisé en août 2024, ce modèle de Cohere, plus petit que Command R+, est multilingue et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
+description = "Actualisé en août 2024, ce modèle de Cohere, plus petit que Command R+, est multilingue et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
 
 # ["CroissantLLMChat-v0.1"]
 # simple_name = "CroissantLLMChat-v0.1"

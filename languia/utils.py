@@ -281,22 +281,21 @@ def vote_last_response(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-# >>> import geoip2.database
-# >>>
-# >>> # This creates a Reader object. You should use the same object
-# >>> # across multiple requests as creation of it is expensive.
-# >>> with geoip2.database.Reader('/path/to/GeoLite2-City.mmdb') as reader:
-# >>>
-# >>>     # Replace "city" with the method corresponding to the database
-# >>>     # that you are using, e.g., "country".
-# >>>     response = reader.city('203.0.113.0')
-# >>>
-# >>>     response.country.iso_code
-# 'US'
-# >>>     response.country.name
-# 'United States'
-# >>>     response.country.names['zh-CN']
-
+    # >>> import geoip2.database
+    # >>>
+    # >>> # This creates a Reader object. You should use the same object
+    # >>> # across multiple requests as creation of it is expensive.
+    # >>> with geoip2.database.Reader('/path/to/GeoLite2-City.mmdb') as reader:
+    # >>>
+    # >>>     # Replace "city" with the method corresponding to the database
+    # >>>     # that you are using, e.g., "country".
+    # >>>     response = reader.city('203.0.113.0')
+    # >>>
+    # >>>     response.country.iso_code
+    # 'US'
+    # >>>     response.country.name
+    # 'United States'
+    # >>>     response.country.names['zh-CN']
 
     t = datetime.datetime.now()
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
@@ -489,6 +488,7 @@ size_desc = {
     "L": "Les grands modèles, avec plus de 70 milliards de paramètres, nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
     "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
 }
+
 license_desc = {
     "MIT": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur.",
     "Apache 2.0": "Cette licence permet d'utiliser, modifier et distribuer librement, même à des fins commerciales. Outre la liberté d’utilisation, elle garantit la protection juridique en incluant une clause de non-atteinte aux brevets et la transparence : toutes les modifications doivent être documentées et sont donc traçables.",
@@ -766,10 +766,11 @@ def get_llm_impact(
         )
     return impact
 
+
 # def get_categories(prompts_pool):
-    
+
 #     prompts_pool_table = {"explain-simply": ["explanations","summaries"],"generate-new-ideas":["ideas", "stories"],"languages":["slang", "regional"]}
-    
+
 #     if prompts_pool in prompts_pool_table:
 #         return prompts_pool_table[prompts_pool]
 #     else:
@@ -777,13 +778,16 @@ def get_llm_impact(
 #         category = prompts_pool
 #         return [category]
 
+
 def gen_prompt(category):
     from languia.config import prompts_table
+
     prompts = prompts_table[category]
     # [category]
     # for category in get_categories(prompts_pool):
-        # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
+    # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
     return prompts[np.random.randint(len(prompts))]
+
 
 def refresh_outage_models(previous_outage_models, controller_url):
     logger = logging.getLogger("languia")
