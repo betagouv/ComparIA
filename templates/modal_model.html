@@ -32,7 +32,7 @@
                             <span class="fr-badge fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                 {% if
                                 model['distribution'] == "open-weights" %}{{ model['params']|round|int }} mds de
-                                paramètres <a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                paramètres&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line"
                                     aria-describedby="params-{{ model['id'] }}"></a>
                                 {%
                                 else
@@ -50,7 +50,7 @@
                         <p>{{ model['description'] }}</p>
                         <div>
                             <h6 class="fr-mb-0">Taille</h6>
-                            <p class="fr-mb-4w text-grey">
+                            <p class="fr-mb-4w text-grey fr-text--sm">
                                 {% if
                                 model['distribution'] == "open-weights" %}
                                 Doté de {{ model['params']|round|int }} milliards de paramètres, ce modèle fait partie
@@ -71,10 +71,10 @@
                         </div>
                         <div class="fr-mb-4w">
                             <h6 class="fr-mb-0">Conditions d'utilisation</h6>
-                            <div class="fr-mb-1w text-grey">
+                            <div class="fr-mb-1w text-grey ">
                                 {% if
                                 model['distribution'] == "open-weights" %}
-                                <p>
+                                <p class="fr-text--sm">
                                     Licence {{
                                     model['license'] }}&nbsp;: {{ license_desc[model["license"]]|default("Les
                                     informations de
@@ -82,28 +82,45 @@
                                 </p>
                                 <div class="grid model-details">
                                     <div class="rounded-tile relative fr-px-1v fr-py-1w">
+                                        {% if model["license"] in license_attrs and
+                                        license_attrs[model["license"]].get('warning_commercial', False) %}
+                                        <img src="assets/extra-icons/orangecheck.svg" alt="">
+                                        {% else %}
+                                        <img src="assets/extra-icons/greencheck.svg" alt="">{% endif %}
+                                        <span class="text-grey-200 fr-text--xs fr-mb-0">Utilisation commerciale</span>
+                                    </div>
+                                    <div class="rounded-tile relative fr-px-1v fr-py-1w">
+
+                                        <img src="assets/extra-icons/greencheck.svg" alt="">
+                                        <span class="text-grey-200 fr-text--xs fr-mb-0">Modification autorisée</span>
+                                    </div>
+                                    <div class="rounded-tile relative fr-px-1v fr-py-1w">
+                                        <img src="assets/extra-icons/greencheck.svg" alt="">
+                                        <span class="text-grey-200 fr-text--xs fr-mb-0">Attribution requise</span>
+                                    </div>
+                                    <div class="rounded-tile relative fr-px-1v fr-py-1w">
                                         <a class="fr-icon fr-icon--xs fr-icon--question-line"
                                             aria-describedby="license-type-{{ model['id'] }}"></a>
-                                        <span class="fr-badge">{% if
+                                        <span class="fr-badge fr-badge--sm">{% if
                                             model['conditions'] == "free" %}Permissive{% elif model['conditions'] ==
                                             "copyleft" %}Copyleft{% else %}Sous conditions{% endif
                                             %}
                                         </span>
-                                        <span class="text-grey-200">Type de licence</span>
+                                        <span class="text-grey-200 fr-text--xs fr-mb-0">Type de licence</span>
                                     </div>
                                     <div class="rounded-tile relative fr-px-1v fr-py-1w">
                                         <a class="fr-icon fr-icon--xs fr-icon--question-line"
                                             aria-describedby="ram-{{ model['id'] }}"></a>
-                                        <span class="fr-badge">{{
+                                        <span class="fr-badge fr-badge--sm">{{
                                             (model['required_ram'] // 2)|int }} à {{ (model['required_ram'] * 2)|int }}
                                             Go</span>
-                                            <span class="text-grey-200">RAM nécessaire</span>
-                                            
+                                        <span class="text-grey-200 fr-text--xs fr-mb-0">RAM nécessaire </span>
+
                                     </div>
                                 </div>
                                 {%
                                 else %}
-                                <p>
+                                <p class="fr-text--sm">
                                     {{ license_desc[model["license"]]|default("Les
                                     informations de
                                     licence n'ont pas été remplies pour ce modèle.") }}</p>

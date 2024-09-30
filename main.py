@@ -14,7 +14,7 @@ import gradio as gr
 
 from languia import config
 
-from languia.utils import size_desc, license_desc
+from languia.utils import size_desc, license_desc, license_attrs
 
 app = FastAPI()
 
@@ -73,6 +73,7 @@ async def models(request: Request):
             "models": config.models_extra_info,
             "size_desc": size_desc,
             "license_desc": license_desc,
+            "license_attrs": license_attrs,
         },
     )
 

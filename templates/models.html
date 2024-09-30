@@ -21,34 +21,41 @@
         border-style: solid;
         border-radius: 0.25rem;
     }
-    .model-details .fr-icon--question-line {
-        display: inline;
-        position: absolute;
-        right: 0.5em;
-    }
+
     .grid {
         display: grid;
     }
+
     .text-grey {
         color: var(--grey-625-425) !important;
 
     }
 
-    .model-details.grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 1em;
+    .model-details .fr-icon--question-line {
+        /* display: inline;
+        position: absolute;
+        right: 0.5em; */
+        margin-top: -0.5em;
+        width: 100%;
+        text-align: right;
     }
+
+    .model-details.grid {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+
     .model-details .rounded-tile {
         display: flex;
-        align-items: center;
+        text-align: center;
         flex-direction: column;
-        position: relative;
+        align-items: center;
     }
 
 
-.text-grey-200 {
-  color: var(--grey-200-850) !important;
-}
+    .text-grey-200 {
+        color: var(--grey-200-850) !important;
+    }
 </style>
 {% endblock %}
 {% block content %}

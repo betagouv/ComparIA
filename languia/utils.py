@@ -498,16 +498,17 @@ license_desc = {
     "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
     "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités",
 }
+
 license_attrs = {
     # Utilisation commerciale
     # Modification autorisée
     # Attribution requise
-    "MIT": {"commercial": True, "can_modify": True, "attribution": True},
-    "Apache 2.0": {"commercial": True, "can_modify": True, "attribution": True},
-    "Gemma": {"copyleft": True},
-    # "Llama 3 Community": {"commercial": quantic_state},
-    # "Llama 3.1 Community": {"commercial": quantic_state},
-    "CC-BY-NC-4.0": {"commercial": False, "copyleft": True},
+    # "MIT": {"commercial": True, "can_modify": True, "attribution": True},
+    # "Apache 2.0": {"commercial": True, "can_modify": True, "attribution": True},
+    # "Gemma": {"copyleft": True},
+    "Llama 3 Community": {"warning_commercial": True},
+    "Llama 3.1 Community": {"warning_commercial": True},
+    # "CC-BY-NC-4.0": {"commercial": False, "copyleft": True},
 }
 
 
