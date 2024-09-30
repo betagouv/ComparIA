@@ -7,15 +7,54 @@
 <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-system/icons-system.css">
 <link rel="stylesheet" href="assets/extra-icons.css">
 <style>
-    .text-blue,
-    .fr-modal__title.text-blue,
-    h6.text-blue {
-        /* Not DSFR compliant */
-        color: var(--text-action-high-blue-france) !important;
+    .github-title {
+        /* --text-default-grey: var(--grey-200-850); */
+
+        color: var(--text-default-grey) !important;
+        font-weight: 400 !important;
+        font-size: 1.1rem;
     }
 
-    .flex {
+    .rounded-tile {
+        border-color: #E5E5E5;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 0.25rem;
+    }
+
+    .grid {
+        display: grid;
+    }
+
+    .text-grey {
+        color: var(--grey-625-425) !important;
+
+    }
+
+    .model-details .fr-icon--question-line {
+        /* display: inline;
+        position: absolute;
+        right: 0.5em; */
+        margin-top: -0.5em;
+        width: 100%;
+        text-align: right;
+    }
+
+    .model-details.grid {
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+        gap: 0.5rem;
+    }
+
+    .model-details .rounded-tile {
         display: flex;
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+    }
+
+
+    .text-grey-200 {
+        color: var(--grey-200-850) !important;
     }
 </style>
 {% endblock %}
