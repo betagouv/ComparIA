@@ -728,16 +728,6 @@ li.fr-nav__item {
   background-image: url("file=assets/extra-icons/stack.svg");
 }
 
-.fr-icon-ruler::before,
-.fr-icon-ruler::after {
-  -webkit-mask-image: url("file=assets/extra-icons/ruler.svg");
-  mask-image: url("file=assets/extra-icons/ruler.svg");
-}
-
-.fr-icon-ruler::before {
-  background-image: url("file=assets/extra-icons/ruler.svg");
-}
-
 .fr-icon-download-line::before,
 .fr-icon-download-line::after {
   -webkit-mask-image: url("file=assets/dsfr/icons/system/download-line.svg");

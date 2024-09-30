@@ -1,5 +1,9 @@
-.fr-icon-ruler::before,
-.fr-icon-ruler::after {
-    -webkit-mask-image: url("../assets/extra-icons/ruler.svg");
-    mask-image: url("../assets/extra-icons/ruler.svg");
-}
+.fr-icon--question-line {
+    -webkit-mask-image: url("dsfr/icons/system/question-line.svg");
+    mask-image: url("dsfr/icons/system/question-line.svg");
+    background-color: var(--text-active-grey);
+    color: var(--text-active-grey) !important;
+    display: inline-block;
+    mask-size: 100%;
+    mask-repeat: no-repeat;
+  }

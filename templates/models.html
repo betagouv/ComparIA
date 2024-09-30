@@ -93,6 +93,7 @@
         </div>
     </div>
 </main>
+{% set j2_context = 'fastapi' %}
 
 {% for model in models %}
 {% include 'modal_model.html' %}

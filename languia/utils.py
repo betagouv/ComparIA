@@ -5,6 +5,7 @@ import gradio as gr
 
 
 from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader
 
 import json
 import psycopg2
@@ -579,8 +580,9 @@ def build_reveal_html(
     model_a_tokens,
     model_b_tokens,
 ):
-    source = open("templates/reveal.html", "r", encoding="utf-8").read()
-    template = Template(source)
+    env = Environment(loader=FileSystemLoader('templates'))
+
+    template = env.get_template('reveal.html')
     chosen_model = get_chosen_model(which_model_radio)
     lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(
         model_a_impact.energy.value
