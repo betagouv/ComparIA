@@ -532,7 +532,7 @@ prompts_table = {
         "Peux-tu recommander des films francophones qui traitent de la décolonisation en Afrique, en Asie ou aux Caraïbes, en offrant des perspectives historiques et critiques ?",
         "Quels sont les ouvrages majeurs de la littérature féministe écrits par des autrices francophones, qui explorent les enjeux de genre dans différents contextes culturels ?",
         "Peux-tu me suggérer des albums de musique fusion sénégalaise qui combinent des éléments de la musique traditionnelle avec des genres modernes comme le jazz ou le hip-hop ?",
-        "Quels sont les films d'animation français qui ont été primés à l'international?",
+        "Quels sont les films d'animation français qui ont été primés à l'international ?",
         "Pouvez-vous recommander des romans écrits par des auteurs francophones qui traitent de l’expérience de l’immigration en Europe ?",
         "Quelles sont les œuvres incontournables de la musique électronique belge, avec un focus sur les artistes qui ont influencé la scène musicale en Belgique et à l’international ?",
         "Quels films africains francophones ont remporté des prix dans des festivals internationaux ?",
