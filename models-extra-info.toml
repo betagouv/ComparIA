@@ -192,7 +192,7 @@ conditions = "free"
 excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la série Llama de Meta, optimisé pour des tâches complexes de programmation, de mathématique et de raisonnement."
 description = "Doté de 405 milliards de paramètres, ce modèle est le plus gros modèle de langage entraîné à ce jour par l'entreprise Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation. Le modèle a été entraîné sur un corpus de 15 milliards de tokens dont la limite de connaissances est fixée au mois de décembre 2023."
 params = 405
-license = "Llama 3.1 Community"
+license = "Llama 3.1"
 
 ["llama-3.1-8b"]
 url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct"
@@ -207,7 +207,7 @@ conditions = "free"
 excerpt = "Version la plus légère de Llama 3.1, ce modèle est rapide et adapté aux applications courantes. Sorti en avril 2024, les données sur lesquelles il a été entraîné remontent au mois de décembre 2023."
 description = "Lancé en avril 2024, ce modèle cadet de la famille Llama 3.1 a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens."
 params = 8
-license = "Llama 3.1 Community"
+license = "Llama 3.1"
 
 ["llama-3.1-70b"]
 url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct"
@@ -222,7 +222,7 @@ distribution = "open-weights"
 conditions = "free"
 excerpt = "Doté de 70 milliards de paramètres et sorti en avril 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
 description = "Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps fors des Jeux olympiques de Paris 2024! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
-license = "Llama 3.1 Community"
+license = "Llama 3.1"
 
 [Meta-Llama-3-70B-Instruct]
 params = 70

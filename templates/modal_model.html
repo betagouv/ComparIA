@@ -15,6 +15,13 @@
                                 model["simple_name"] }}</strong>
                         </h6>
                         <p class="fr-mb-4w">
+                            <!-- <span class="fr-tooltip fr-placement" id="tokens-{{ model['id'] }}" role="tooltip" aria-hidden="true">L’IA
+                                analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre
+                                lettres, cette unité de texte est appelée token ("jeton"). Plus un texte est long, plus le
+                                nombre de
+                                tokens est grand.</span>
+                            <p><a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                    aria-describedby="tokens-{{ model['id'] }}"></a> -->
                             {% if model['distribution'] ==
                             "open-weights"
                             %}
@@ -122,13 +129,7 @@
 
                             </div>
                         </div>
-                        <!-- <span class="fr-tooltip fr-placement" id="tokens-{{side}}" role="tooltip" aria-hidden="true">L’IA
-                            analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre
-                            lettres, cette unité de texte est appelée token ("jeton"). Plus un texte est long, plus le
-                            nombre de
-                            tokens est grand.</span>
-                        <p><a class="fr-icon fr-icon--xs fr-icon--question-line"
-                                aria-describedby="tokens-{{side}}"></a> -->
+                        
                         <h6>Pour aller plus loin</h6>
                         <p class="text-grey">
                             {% if
