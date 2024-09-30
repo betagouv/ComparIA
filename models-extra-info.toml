@@ -26,7 +26,7 @@ icon_path = "cohere.png"
 friendly_size = "M"
 distribution = "open-weights"
 dataset = "private"
-conditions = "restricted"
+conditions = "copyleft"
 params = 35
 license = "CC-BY-NC-4.0"
 description = "Aya 23 35B de Cohere est un modèle de taille moyenne de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
@@ -39,7 +39,7 @@ icon_path = "cohere.png"
 friendly_size = "S"
 distribution = "open-weights"
 dataset = "private"
-conditions = "restricted"
+conditions = "copyleft"
 params = 8
 license = "CC-BY-NC-4.0"
 description = "Aya 23 8B de Cohere est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
@@ -74,7 +74,7 @@ distribution = "open-weights"
 dataset = "private"
 params = 104
 license = "CC-BY-NC-4.0"
-conditions = "restricted"
+conditions = "copyleft"
 description = "Grand frère de la famille Command R de Cohere, ce modèle de langage est orienté pour l'usage professionnel et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
 
 [c4ai-command-r-08-2024]
@@ -85,7 +85,7 @@ icon_path = "cohere.png"
 friendly_size = "M"
 distribution = "open-weights"
 dataset = "private"
-conditions = "restricted"
+conditions = "copyleft"
 license = "CC-BY-NC-4.0"
 excerpt = "Actualisé en août 2024, ce modèle de Cohere, plus petit que Command R+, est multilingue et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
 description = "Actualisé en août 2024, ce modèle de Cohere, plus petit que Command R+, est multilingue et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
@@ -124,7 +124,7 @@ icon_path = "google.png"
 friendly_size = "M"
 distribution = "open-weights"
 dataset = "private"
-conditions = "restricted"
+conditions = "copyleft"
 license = "Gemma"
 params = 27
 excerpt = "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision."
@@ -141,7 +141,7 @@ distribution = "open-weights"
 dataset = "private"
 license = "Gemma"
 params = 9
-conditions = "restricted"
+conditions = "copyleft"
 excerpt = "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 description = "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 
@@ -156,7 +156,7 @@ distribution = "open-weights"
 dataset = "private"
 license = "Gemma"
 params = 2
-conditions = "restricted"
+conditions = "copyleft"
 description = "Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros."
 
 ["GPT-3.5-Turbo-0613"]
@@ -362,7 +362,7 @@ icon_path = "microsoft.png"
 friendly_size = "S"
 distribution = "open-weights"
 dataset = "private"
-conditions = "restricted"
+conditions = "free"
 
 ["Qwen1.5-32B-Chat"]
 simple_name = "Qwen1.5-32B"
@@ -373,6 +373,7 @@ friendly_size = "M"
 dataset = "private"
 distribution = "open-weights"
 conditions = "restricted"
+license = "Apache 2.0"
 
 [Qwen2-57B-A14B-Instruct]
 simple_name = "Qwen2-57B-A14B-Instruct"
@@ -383,6 +384,7 @@ friendly_size = "M"
 distribution = "open-weights"
 dataset = "private"
 conditions = "restricted"
+license = "Apache 2.0"
 
 [Qwen2-72b-instruct]
 url = "https://huggingface.co/Qwen/Qwen2-72B-Instruct"
@@ -394,6 +396,7 @@ friendly_size = "L"
 distribution = "open-weights"
 dataset = "private"
 conditions = "restricted"
+license = "Apache 2.0"
 
 [Qwen2-7B-instruct]
 url = "https://huggingface.co/Qwen/Qwen2-7B-Instruct"

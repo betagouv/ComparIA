@@ -21,18 +21,34 @@
         border-style: solid;
         border-radius: 0.25rem;
     }
-
+    .model-details .fr-icon--question-line {
+        display: inline;
+        position: absolute;
+        right: 0.5em;
+    }
     .grid {
-        grid-template-columns: 1fr 1fr;
+        display: grid;
     }
     .text-grey {
         color: var(--grey-625-425) !important;
 
     }
 
-    .flex {
-        display: flex;
+    .model-details.grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
     }
+    .model-details .rounded-tile {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        position: relative;
+    }
+
+
+.text-grey-200 {
+  color: var(--grey-200-850) !important;
+}
 </style>
 {% endblock %}
 {% block content %}
