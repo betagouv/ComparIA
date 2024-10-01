@@ -111,6 +111,10 @@ footer:has(.built-with) {
   display: block;
 }
 
+.grid {
+  display: grid;
+}
+
 .bolder {
   font-weight: 700;
 }
