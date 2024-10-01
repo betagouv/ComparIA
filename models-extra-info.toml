@@ -79,6 +79,7 @@ description = "Grand frère de la famille Command R de Cohere, ce modèle de lan
 
 [c4ai-command-r-08-2024]
 simple_name = "Command R"
+params = 35
 organisation = "Cohere"
 country = "Canada"
 icon_path = "cohere.png"
@@ -87,8 +88,8 @@ distribution = "open-weights"
 dataset = "private"
 conditions = "copyleft"
 license = "CC-BY-NC-4.0"
-excerpt = "Actualisé en août 2024, ce modèle de Cohere, plus petit que Command R+, est multilingue et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
-description = "Actualisé en août 2024, ce modèle de Cohere, plus petit que Command R+, est multilingue et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
+excerpt = "Actualisé en août 2024, ce modèle multilingue de l'entreprise canadienne Cohere, a été entrainé sur 23 langues et est conçu pour les tâches de recherche et d'extraction d'informations."
+description = "Actualisé en août 2024, ce modèle multilingue de l'entreprise canadienne Cohere, plus petit que Command R+, a été entrainé sur 23 langues et est conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
 
 # ["CroissantLLMChat-v0.1"]
 # simple_name = "CroissantLLMChat-v0.1"

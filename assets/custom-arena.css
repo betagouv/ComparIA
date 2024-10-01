@@ -93,12 +93,11 @@ footer:has(.built-with) {
   min-height: 7rem;
 }
 
-@media (min-width: 48em) {
+/* @media (min-width: 48em) {
 .h-md-20 {
   height: 5rem;
-  /* 80px */
 }
-}
+} */
 
 .inline {
   display: inline;
@@ -612,7 +611,7 @@ li.fr-nav__item {
   grid-gap: 5px;
 }
 
-#reveal-screen .fr-icon--question-line {
+#energy-balance .fr-icon--question-line {
   display: inline;
   position: absolute;
   right: 0.5em;
@@ -634,7 +633,7 @@ li.fr-nav__item {
 }
 
   .your-choice {
-    float:right;
+    float: right;
   }
 }
 
@@ -658,6 +657,32 @@ li.fr-nav__item {
   /* background-color: var(--background-alt-grey); */
   /* border-top: solid 1px var(--border-default-grey); */
 }
+
+/* FICHE MODÈLE */
+
+.model-details.grid {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.model-details .fr-icon--question-line {
+  justify-self: right;
+}
+
+.model-details .rounded-tile {
+  display: grid;
+  text-align: center;
+  justify-items: center;
+
+  align-items: end;
+}
+
+
+.model-details.grid {
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  gap: 0.5rem;
+}
+
 
 /* MODAL */
 /* Bend the modal component to our will */
@@ -726,16 +751,6 @@ li.fr-nav__item {
 
 .fr-icon-stack::before {
   background-image: url("file=assets/extra-icons/stack.svg");
-}
-
-.fr-icon-ruler::before,
-.fr-icon-ruler::after {
-  -webkit-mask-image: url("file=assets/extra-icons/ruler.svg");
-  mask-image: url("file=assets/extra-icons/ruler.svg");
-}
-
-.fr-icon-ruler::before {
-  background-image: url("file=assets/extra-icons/ruler.svg");
 }
 
 .fr-icon-download-line::before,
