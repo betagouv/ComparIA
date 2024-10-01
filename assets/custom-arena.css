@@ -130,6 +130,7 @@ footer:has(.built-with) {
 .self-center {
   align-self: center;
 }
+
 .justify-self-center {
   justify-self: center;
 }
@@ -137,9 +138,11 @@ footer:has(.built-with) {
 .justify-center {
   justify-content: center;
 }
+
 .relative {
   position: relative;
 }
+
 .text-left {
   text-align: left;
 }
@@ -170,9 +173,9 @@ h6.text-blue {
 }
 
 .fr-link.fr-icon-home-4-line[target="_blank"]::after {
-mask-image: none;
-background-color: transparent;
-background-image: none;
+  mask-image: none;
+  background-color: transparent;
+  background-image: none;
 }
 
 .fr-text--xxl {
@@ -205,7 +208,7 @@ body {
 :root {
   --text-title-grey: var(--grey-200-850) !important;
 }
-  
+
 
 /* Gradio unofficial custom component Modal */
 @media (min-width: 768px) {
@@ -539,6 +542,7 @@ li.fr-nav__item {
 #supervote-area input[type="checkbox"] {
   display: none;
 }
+
 .checkboxes label span {
   margin-left: 0;
 }
@@ -586,7 +590,8 @@ li.fr-nav__item {
   background-image: url("file=assets/extra-icons/thumb-down.svg");
   background-position-y: 6px;
   background-repeat: no-repeat;
-  margin-right: 0.5em;}
+  margin-right: 0.5em;
+}
 
 /* REVEAL AREA */
 
@@ -598,6 +603,7 @@ li.fr-nav__item {
   font-weight: 400 !important;
   font-size: 1.1rem;
 }
+
 #reveal-screen h6 {
   font-size: 1.1rem;
 }
@@ -631,10 +637,10 @@ li.fr-nav__item {
 }
 
 @media (min-width: 48em) {
-  
-#energy-balance {
-  grid-template-columns: 1fr 1fr 1fr 0.1fr 1fr 1fr;
-}
+
+  #energy-balance {
+    grid-template-columns: 1fr 1fr 1fr 0.1fr 1fr 1fr;
+  }
 
   .your-choice {
     float: right;
@@ -671,6 +677,8 @@ li.fr-nav__item {
 
 .model-details .fr-icon--question-line {
   justify-self: right;
+  top: 5px;
+  position: relative;
 }
 
 .model-details .rounded-tile {
