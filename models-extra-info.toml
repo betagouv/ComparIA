@@ -414,7 +414,7 @@ excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue e
 params = 7
 license = "Apache 2.0"
 
-[Yi-1.5-9B-Chat]
+["Yi-1.5-9B-Chat"]
 url = "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
 simple_name = "Yi-1.5 9B"
 organisation = "01-ai"

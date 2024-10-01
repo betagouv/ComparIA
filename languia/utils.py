@@ -658,7 +658,7 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
         "conditions": "restricted",
         "description": "Un modèle open source disponible via Hugging Face.",
         "excerpt": "Un modèle open source",
-        "icon_path": "huggingface.png",
+        "icon_path": "huggingface.svg",
         "license": "Autre",
     }
 
@@ -679,7 +679,7 @@ def get_model_extra_info(name: str, models_extra_info: list):
         "conditions": "restricted",
         "description": "Un modèle open source disponible via Hugging Face.",
         "excerpt": "Un modèle open source",
-        "icon_path": "huggingface.png",
+        "icon_path": "huggingface.svg",
         "license": "Autre",
     }
 
