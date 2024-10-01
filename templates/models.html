@@ -31,25 +31,26 @@
 
     }
 
-    .model-details .fr-icon--question-line {
-        /* display: inline;
-        position: absolute;
-        right: 0.5em; */
-        margin-top: -0.5em;
-        width: 100%;
-        text-align: right;
-    }
-
     .model-details.grid {
         grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         gap: 0.5rem;
     }
 
+    .model-details .fr-icon--question-line {
+        /* display: inline;
+        position: absolute;
+        right: 0.5em; */
+
+        justify-self: right;
+        /* margin-top: -0.5em; */
+        /* text-align: right; */
+    }
+
     .model-details .rounded-tile {
-        display: flex;
+        display: grid;
         text-align: center;
-        flex-direction: column;
-        align-items: center;
+        justify-items: center;
+        align-items: end;
     }
 
 

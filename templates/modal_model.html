@@ -77,10 +77,10 @@
                         </div>
                         <div class="fr-mb-4w">
                             <h6 class="fr-mb-0">Conditions d'utilisation</h6>
-                            <div class="fr-mb-1w text-grey ">
+                            <div class="fr-mb-1w">
                                 {% if
                                 model['distribution'] == "open-weights" %}
-                                <p class="fr-text--sm">
+                                <p class="fr-text--sm text-grey">
                                     Licence {{
                                     model['license'] }}&nbsp;: {{ license_desc[model["license"]]|default("Les
                                     informations de
