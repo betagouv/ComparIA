@@ -414,6 +414,21 @@ excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue e
 params = 7
 license = "Apache 2.0"
 
+[Yi-1.5-9B-Chat]
+url = "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
+simple_name = "Yi-1.5 9B"
+organisation = "01-ai"
+country = "Chine"
+icon_path = "yi.svg"
+friendly_size = "S"
+distribution = "open-weights"
+dataset = "private"
+conditions = "free"
+description = "Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en code, maths, raisonnement, suivi d'instructions, avec une solide compréhension du langage."
+excerpt = "Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en code, maths, raisonnement, suivi d'instructions, avec une solide compréhension du langage."
+params = 9
+license = "Apache 2.0"
+
 # [Vicuna-13B]
 # simple_name = "Vicuna-13B"
 # organisation = "Meta"
