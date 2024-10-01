@@ -677,7 +677,7 @@ li.fr-nav__item {
   display: grid;
   text-align: center;
   justify-items: center;
-
+  align-content: space-between;
   align-items: end;
 }
 
