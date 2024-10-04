@@ -1,18 +1,18 @@
-<div class="fr-container">
+<div>
     <div class="text-center">
         <span class="step-badge">Étape 3/3</span>
     </div>
 
     <h4 class="text-center fr-mt-2w fr-mb-3w">Les IA sont démasquées !</h4>
 
-    <div class="fr-grid-row">
+    <div class="grid grid-cols-2">
         {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a,
         'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit),
         (model_b,
         'model-b', model_b_impact, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b, streaming_b_unit)] %}
 
         <div
-            class="rounded-tile fr-col-md-6 fr-col-12 text-left fr-p-4w fr-ml-md-{% if side == 'model-a' %}n{% endif %}3w">
+            class="rounded-tile text-left fr-mb-1w fr-p-4w fr-mx-3v">
             {% if chosen_model == side %}
             <span class="your-choice fr-mb-2w fr-mb-md-0">Votre vote</span>
             {% endif %}

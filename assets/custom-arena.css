@@ -200,6 +200,10 @@ h6.text-blue {
   gap: 0px;
 }
 
+.grid-cols-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
 /* General */
 body {
   margin: auto !important;

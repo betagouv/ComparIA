@@ -340,7 +340,7 @@ with gr.Blocks(
         elem_id="reveal-screen", visible=False, elem_classes="min-h-screen fr-pt-4w"
     ) as reveal_screen:
 
-        results_area = gr.HTML(visible=True, elem_classes="fr-container")
+        results_area = gr.HTML(visible=True)
 
         with gr.Column(visible=True, elem_id="feedback-row") as feedback_row:
             # dsfr: This should just be a normal link
@@ -355,7 +355,7 @@ with gr.Blocks(
                 <a class="fr-mx-auto btn fr-btn--tertiary" href="../modeles" target="_blank">Découvrir la liste des IA</a>
             """,
             )
-        footer_area = gr.HTML(elem_classes="fr-pb-2w",visible=True, value=footer_html)
+        footer_area = gr.HTML(visible=True, value=footer_html)
 
     # Modals
     #     with Modal(elem_id="retry-modal") as retry_modal:
