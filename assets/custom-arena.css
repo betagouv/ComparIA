@@ -659,6 +659,7 @@ li.fr-nav__item {
 }
 
 #buttons-footer {
+  min-height: 7rem;
   position: fixed;
   /* padding: 1em 20%; */
   /* width: 100%; */

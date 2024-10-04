@@ -323,7 +323,7 @@ with gr.Blocks(
             )
 
     with gr.Column(
-        elem_classes="fr-container--fluid fr-py-2w fr-grid-row fr-grid-row--center",
+        elem_classes="fr-container--fluid fr-py-2w fr-grid-row",
         elem_id="buttons-footer",
         visible=False,
     ) as buttons_footer:
