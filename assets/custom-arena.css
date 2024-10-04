@@ -259,6 +259,8 @@ li.fr-nav__item {
 }
 
 #send-area {
+  min-height: 7rem;
+
   position: fixed;
   padding: 0 20% 1em;
   width: 100%;
