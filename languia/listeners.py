@@ -275,7 +275,7 @@ def register_listeners():
                     conv_a = conversations[0]
                     conv_b = conversations[1]
                     chatbot = to_threeway_chatbot(conversations)
-                    yield [app_state, conv_a, conv_b, chatbot, textbox]
+                    yield [app_state, conv_a, conv_b, chatbot, gr.skip()]
                     if stop:
                         break
             except Exception as e:
