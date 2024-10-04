@@ -716,6 +716,11 @@ li.fr-nav__item {
 
 /* FICHE MODÈLE */
 
+.fr-badge .fr-icon--question-line {
+  position: relative;
+  top: 5px;
+}
+
 .model-details.grid {
   grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
   gap: 0.5rem;
@@ -723,8 +728,6 @@ li.fr-nav__item {
 
 .model-details .fr-icon--question-line {
   justify-self: right;
-  top: 5px;
-  position: relative;
 }
 
 .model-details .rounded-tile {
