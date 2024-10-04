@@ -381,7 +381,7 @@ li.fr-nav__item {
 .message-wrap>.user-row:first-child .message.user::after {
   content: "Discussion avec deux IA anonymes";
   color: var(--grey-200-850);
-  padding-top: 2rem;
+  padding-top: 5rem;
   padding-bottom: 5px;
   font-size: 1.5rem;
   font-weight: 700;
@@ -396,7 +396,33 @@ li.fr-nav__item {
   display: block;
 }
 
+.step-badge {
+
+  border-radius: 3.75em;
+  text-align: center;
+  background-color: #ECECFE;
+  padding: 5px 10px;
+  font-weight: bold;
+}
+
 @media (min-width: 48em) {
+
+  .message-wrap>.message-row:nth-child(2) .flex-wrap::before {
+
+    content: "Étape 1/3";
+    display: block;
+    font-weight: bold;
+    position: absolute;
+    top: -6rem;
+    border-radius: 3.75em;
+    text-align: center;
+    background-color: #ECECFE;
+    padding: 5px 10px;
+    /* margin: auto; */
+    width: auto;
+    left: 46%;
+  }
+
   /*! media md */
 
   #chat-area .flex-wrap.bot {

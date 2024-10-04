@@ -208,10 +208,11 @@ with gr.Blocks(
         elem_classes="fr-container min-h-screen fr-pt-4w",
         elem_id="vote-area",
     ) as vote_area:
-        gr.HTML(
+        gr.HTML(elem_classes="text-center",
             value="""
-            <h4 class="text-center fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
-            <p class="text-center text-grey fr-text--sm">Votre préférence enrichit le jeu de données Compar:IA dont l’objectif est<br />d’affiner les futurs modèles d’IA sur le français</p>""",
+            <span class="step-badge">Étape 2/3</span>
+            <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
+            <p class="text-grey fr-text--sm">Votre préférence enrichit le jeu de données Compar:IA dont l’objectif est<br />d’affiner les futurs modèles d’IA sur le français</p>""",
         )
 
         which_model_radio = CustomRadioCard(
@@ -246,7 +247,7 @@ with gr.Blocks(
 
             # with gr.Column():
             with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-n1w fr-mr-md-1w bg-white rounded-tile"
+                elem_classes="fr-col-12 fr-col-md-6 fr-mr-md-n1w fr-mb-1w bg-white rounded-tile"
             ):
 
                 gr.HTML(
@@ -284,7 +285,7 @@ with gr.Blocks(
 
             # with gr.Column():
             with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w bg-white rounded-tile"
+                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w fr-mb-1w bg-white rounded-tile"
             ):
 
                 gr.HTML(
@@ -319,7 +320,7 @@ with gr.Blocks(
                     placeholder="Les réponses du modèle B sont...",
                 )
             comments_link = gr.Button(
-                elem_classes="link fr-mt-2w", value="Ajouter des détails"
+                elem_classes="link fr-mt-1w", value="Ajouter des détails"
             )
 
     with gr.Column(
