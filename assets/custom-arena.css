@@ -379,7 +379,7 @@ li.fr-nav__item {
 }
 
 .message-wrap>.user-row:first-child .message.user::after {
-  content: "Quelle réponse préférez-vous ?";
+  content: "Discussion avec deux IA anonymes";
   color: var(--grey-200-850);
   padding-top: 2rem;
   padding-bottom: 5px;
@@ -616,7 +616,7 @@ li.fr-nav__item {
   font-size: 1.1rem;
 }
 
-#reveal-screen .rounded-tile p {
+#energy-balance p {
   margin-bottom: 0 !important;
   --text-spacing: 0 !important;
 }
@@ -637,6 +637,9 @@ li.fr-nav__item {
 
 .your-choice {
   display: inline-block;
+
+  margin-top: -0.5em;
+
   border-radius: 3rem;
   line-height: 2rem;
   padding: 0 1rem;

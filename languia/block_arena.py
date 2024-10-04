@@ -195,8 +195,8 @@ with gr.Blocks(
                 elem_classes="grow-0 purple-btn",
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            conclude_btn = gr.Button(
-                value="Voter pour votre IA favorite",
+            conclude_btn = gr.Button(size="lg",
+                value="Passer à l'étape suivante",
                 elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
                 visible=False,
                 interactive=False,
@@ -210,8 +210,8 @@ with gr.Blocks(
     ) as vote_area:
         gr.HTML(
             value="""
-            <h4 class="text-center fr-mt-2w fr-mb-1v">Votez pour découvrir l'identité des modèles</h4>
-            <p class="text-center text-grey fr-text--sm">L'ensemble des votes permet d’améliorer les modèles d'IA</p>""",
+            <h4 class="text-center fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
+            <p class="text-center text-grey fr-text--sm">Votre préférence enrichit le jeu de données Compar:IA dont l’objectif est<br />d’affiner les futurs modèles d’IA sur le français</p>""",
         )
 
         which_model_radio = CustomRadioCard(
@@ -330,7 +330,8 @@ with gr.Blocks(
 
         supervote_send_btn = gr.Button(
             elem_classes="purple-btn fr-mx-auto fr-col-10 fr-col-md-4",
-            value="Découvrir l'identité des deux IA",
+            value="Passer à l'étape suivante",
+            size="lg",
             interactive=False,
         )
 
@@ -346,6 +347,9 @@ with gr.Blocks(
             gr.HTML(
                 elem_classes="fr-container text-center fr-mb-4w",
                 value="""
+                    <h4 class="text-center fr-mt-8w fr-mb-1v">Merci pour votre contribution</h4>
+                    <p class="text-center text-grey fr-text--sm">Le jeu de données Compar:IA sera bientôt publié, continuez à l’alimenter en recommençant l’expérience !
+    </p>
                 <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
                 <a class="fr-mx-auto" href="../modeles" target="_blank">Découvrir la liste des IA</a>
             """,

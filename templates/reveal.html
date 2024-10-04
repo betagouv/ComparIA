@@ -1,8 +1,6 @@
 <div class="fr-container">
     <h4 class="text-center fr-mb-1v">Les IA sont démasquées !</h4>
-    <p class="text-center text-grey fr-text--sm">Merci pour votre contribution, vous aurez bientôt accès au jeu de
-        données partagé
-    </p>
+
     <div class="fr-grid-row">
         {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a,
         'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit),
@@ -14,11 +12,11 @@
             {% if chosen_model == side %}
             <span class="your-choice fr-mb-2w fr-mb-md-0">Votre vote</span>
             {% endif %}
-            <h6 class="fr-mb-1w github-title"><img class="inline fr-mt-n2v"
+            <h6 class="fr-mb-2w github-title"><img class="inline fr-mt-n2v"
                     src="file=assets/orgs/{{ model['icon_path'] }}" width="34" /> {{ model['organisation'] }}/<strong>{{
                     model["simple_name"] }}</strong>
             </h6>
-            <p class="fr-mb-4w">
+            <p class="fr-mb-2w">
                 {% if model['distribution'] ==
                 "open-weights"
                 %}
@@ -49,8 +47,8 @@
                 </span>
             </p>
             <p class="fr-mb-4w fr-text--sm text-grey">{{ model['excerpt'] }}</p>
-            <h6 class="fr-mb-0">Bilan énergétique de votre discussion</h6>
-            <p class="fr-my-2w fr-text--xs text-grey">La taille du modèle et la longueur de ses réponses ont un impact
+            <h6 class="fr-mb-1v">Bilan énergétique de votre discussion</h6>
+            <p class="fr-mb-1v fr-text--xs text-grey">La taille du modèle et la longueur de ses réponses ont un impact
                 sur son
                 bilan.</p>
             <div id="energy-balance">
@@ -101,11 +99,7 @@
                 </div>
                 <div class="rounded-tile relative fr-px-1v fr-py-1w">
                     <p><a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="co2-{{side}}"></a></p>
-                    <span class="fr-tooltip fr-placement" id="co2-{{side}}" role="tooltip" aria-hidden="true">Le CO2
-                        émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour
-                        faire
-                        fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation
-                        énergétique.</span>
+                    <span class="fr-tooltip fr-placement" id="co2-{{side}}" role="tooltip" aria-hidden="true">Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée.</span>
                     <div class="">
                         <!-- cloud -->
                         <svg class="fr-mx-auto" width="21" height="17" viewBox="0 0 21 17" fill="none"
