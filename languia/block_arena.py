@@ -352,7 +352,7 @@ with gr.Blocks(
                     <p class="text-center text-grey fr-text--sm">Le jeu de données Compar:IA sera bientôt publié, continuez à l’alimenter en recommençant l’expérience !
     </p>
                 <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
-                <a class="fr-mx-auto" href="../modeles" target="_blank">Découvrir la liste des IA</a>
+                <a class="fr-mx-auto btn fr-btn--tertiary" href="../modeles" target="_blank">Découvrir la liste des IA</a>
             """,
             )
         footer_area = gr.HTML(elem_classes="fr-pb-2w",visible=True, value=footer_html)

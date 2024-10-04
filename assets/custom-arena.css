@@ -286,6 +286,10 @@ li.fr-nav__item {
   border-style: solid;
 }
 
+.fr-btn--tertiary[target="_blank"]::after {
+  display: none !important;
+}
+
 .purple-btn[disabled] {
   background-color: #E5E5E5;
   color: #929292;
