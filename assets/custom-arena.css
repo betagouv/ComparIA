@@ -638,12 +638,17 @@ li.fr-nav__item {
 /* REVEAL AREA */
 
 /* Github-like title */
-#reveal-screen .github-title {
+.github-title {
   /* --text-default-grey: var(--grey-200-850); */
 
   color: var(--text-default-grey) !important;
   font-weight: 400 !important;
   font-size: 1.1rem;
+  
+}
+
+.github-title img {
+  top: .5em
 }
 
 #reveal-screen h6 {

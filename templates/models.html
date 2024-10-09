@@ -5,11 +5,17 @@
 <link rel="stylesheet" href="assets/custom-site.css">
 <style>
     .github-title {
-        /* --text-default-grey: var(--grey-200-850); */
-
         color: var(--text-default-grey) !important;
         font-weight: 400 !important;
         font-size: 1.1rem;
+    }
+
+    .github-title img {
+        top: .5em
+    }
+
+    .relative {
+        position: relative;
     }
 
     .rounded-tile {
@@ -49,10 +55,10 @@
         align-content: space-between;
     }
 
-
     .text-grey-200 {
         color: var(--grey-200-850) !important;
     }
+
 </style>
 {% endblock %}
 {% block content %}
@@ -66,18 +72,41 @@
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
-                            <p class="fr-mb-1w">{% if
-                                model['distribution'] == "open-weights" %}<span
-                                    class="fr-badge fr-badge--yellow-moutarde fr-badge--sm fr-mr-1v">Modèle
-                                    ouvert</span>{%
-                                else %}<span class="fr-badge fr-badge--purple-glycine fr-badge--sm fr-mr-1v">Modèle
-                                    propriétaire</span>{% endif%} <span
-                                    class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon">Taille {{
-                                    model['friendly_size'] }}</span> <img class="inline fr-mb-n1v fr-ml-1w"
-                                    src="assets/orgs/{{ model['icon_path'] }}" width="20" /></p>
-                            <h3 class="fr-card__title"><a href="#" data-fr-opened="false"
-                                    aria-controls="fr-modal-{{ model['id'] }}">{{
-                                    model['simple_name'] }}</a></h3>
+                            <h6 class="fr-card__title"><a href="#" data-fr-opened="false"
+                                    aria-controls="fr-modal-{{ model['id'] }}"></a></h6>
+                            <h6 class="fr-mb-2w github-title"><img class="relative fr-mt-n2v"
+                                        src="assets/orgs/{{ model['icon_path'] }}" width="34" /> {{
+                                    model['organisation']
+                                    }}/<strong>{{
+                                        model["simple_name"] }}</strong>
+                            </h6>
+                            <p class="fr-mb-4w">
+
+                                {% if model['distribution'] ==
+                                "open-weights"
+                                %}
+                                <span class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                    Open source
+                                </span>
+                                {%
+                                else
+                                %}
+                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                    Propriétaire
+                                </span>
+                                {% endif %}
+                                <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                    {% if
+                                    model['distribution'] == "open-weights" %}{{ model['params']|round|int }} mds de
+                                    paramètres&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                        aria-describedby="params-{{ model['id'] }}"></a>
+                                    {%
+                                    else
+                                    %}Taille estimée ({{ model['friendly_size'] }})
+                                    {% endif %}
+                                </span>
+
+                            </p>
                             <p class="fr-card__desc">{{ model['excerpt'] }}</p>
                             <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
                         class="fr-link--icon-right fr-link">    En savoir plus</a> -->
