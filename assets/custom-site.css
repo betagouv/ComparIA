@@ -7,3 +7,8 @@
     mask-size: 100%;
     mask-repeat: no-repeat;
   }
+
+  .fr-badge .fr-icon--question-line {
+    position: relative;
+    top: 5px;
+  }

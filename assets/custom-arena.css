@@ -780,7 +780,7 @@ li.fr-nav__item {
 
 .fr-icon-chat-delete-line::before,
 .fr-icon-chat-delete-line::after {
-  background-color: var(--text-action-high-blue-france);
+  background-color: var(--blue-france-main-525);
   /* background-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg"); */
 
   -webkit-mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
@@ -789,7 +789,7 @@ li.fr-nav__item {
 
 .fr-icon-pass-expired-line::before,
 .fr-icon-pass-expired-line::after {
-  background-color: var(--text-action-high-blue-france);
+  background-color: var(--blue-france-main-525);
   /* background-image: url("file=assets/extra-icons/pass-expired.svg"); */
 
   -webkit-mask-image: url("file=assets/extra-icons/pass-expired.svg");
@@ -847,7 +847,7 @@ li.fr-nav__item {
 .fr-icon-success-line::after {
   -webkit-mask-image: url("file=assets/dsfr/icons/system/fr--success-line.svg");
   mask-image: url("file=assets/dsfr/icons/system/fr--success-line.svg");
-  background-color: var(--text-action-high-blue-france);
+  background-color: var(--blue-france-main-525);
 }
 
 
