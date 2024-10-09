@@ -38,6 +38,14 @@ CREATE TABLE
         city VARCHAR(500)
     );
 
+-- Migration
+UPDATE votes SET ip = NULL;
+ALTER TABLE votes
+RENAME COLUMN ip TO country;
+ALTER TABLE votes ALTER COLUMN country TYPE VARCHAR(255);
+ALTER TABLE votes
+ADD COLUMN city VARCHAR(500);
+
 -- 
 -- Unused profiles table
 -- 
