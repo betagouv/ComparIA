@@ -48,6 +48,8 @@ if any(
 else:
     db = None
 
+geoip_address = os.getenv("LANGUIA_GEOIP_URL", None)
+
 
 def build_logger(logger_filename):
     # TODO: log "funcName"
@@ -305,7 +307,6 @@ prompts_table = {
         "Raconte moi une anecdote sur l’empire romain",
         "Explique le **concept de la décentralisation** dans le contexte des systèmes informatiques à une personne familière avec les réseaux sociaux.",
         "Tu es professeur de philosophie politique. Résume le **système politique de la France** pour quelqu'un qui connaît bien les systèmes politiques des États-Unis.",
-       
     ],
     "stories": [
         # histoires",

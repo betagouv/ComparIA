@@ -25,7 +25,7 @@ CREATE TABLE
         is_unedited_prompt BOOLEAN,
         template JSONB,
         uuid VARCHAR NOT NULL,
-        ip VARCHAR(255),
+        country VARCHAR(255),
         session_hash VARCHAR(255),
         visitor_uuid VARCHAR(255),
         details_a_positive VARCHAR(500),
@@ -34,7 +34,8 @@ CREATE TABLE
         details_b_negative VARCHAR(500),
         comments_a TEXT,
         comments_b TEXT,
-        extra JSONB
+        extra JSONB,
+        city VARCHAR(500)
     );
 
 -- 
