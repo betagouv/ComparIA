@@ -602,6 +602,7 @@ def build_reveal_html(
         model_b_impact=model_b_impact,
         size_desc=size_desc,
         license_desc=license_desc,
+        license_attrs=license_attrs,
         model_a_tokens=model_a_tokens,
         model_b_tokens=model_b_tokens,
         streaming_a=streaming_a,
