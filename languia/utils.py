@@ -509,7 +509,7 @@ license_attrs = {
     # "Gemma": {"copyleft": True},
     "Llama 3 Community": {"warning_commercial": True},
     "Llama 3.1": {"warning_commercial": True},
-    # "CC-BY-NC-4.0": {"commercial": False, "copyleft": True},
+    "CC-BY-NC-4.0": {"prohibit_commercial": True},
 }
 
 
