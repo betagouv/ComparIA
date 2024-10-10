@@ -11,7 +11,7 @@
     }
 
     .github-title img {
-        top: .5em
+        vertical-align: middle;
     }
 
     .relative {
@@ -58,7 +58,6 @@
     .text-grey-200 {
         color: var(--grey-200-850) !important;
     }
-
 </style>
 {% endblock %}
 {% block content %}
@@ -75,17 +74,18 @@
                             <h6 class="fr-card__title"><a href="#" data-fr-opened="false"
                                     aria-controls="fr-modal-{{ model['id'] }}"></a></h6>
                             <h6 class="fr-mb-2w github-title"><img class="relative fr-mt-n2v"
-                                        src="assets/orgs/{{ model['icon_path'] }}" width="34" /> {{
-                                    model['organisation']
-                                    }}/<strong>{{
-                                        model["simple_name"] }}</strong>
+                                    src="assets/orgs/{{ model['icon_path'] }}" width="34" /> {{
+                                model['organisation']
+                                }}/<strong>{{
+                                    model["simple_name"] }}</strong>
                             </h6>
                             <p class="fr-mb-4w">
 
                                 {% if model['distribution'] ==
                                 "open-weights"
                                 %}
-                                <span class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                <span
+                                    class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                     Open source
                                 </span>
                                 {%

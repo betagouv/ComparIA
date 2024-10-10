@@ -646,10 +646,9 @@ li.fr-nav__item {
   font-size: 1.1rem;
   
 }
-
+/* 
 .github-title img {
-  top: .5em
-}
+  vertical-align: middle;} */
 
 #reveal-screen h6 {
   font-size: 1.1rem;
