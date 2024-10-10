@@ -91,6 +91,9 @@
                                         {% if model["license"] in license_attrs and
                                         license_attrs[model["license"]].get('warning_commercial', False) %}
                                         <img src="{{ src }}assets/extra-icons/orangecheck.svg" alt="">
+                                        {% elif model["license"] in license_attrs and
+                                        license_attrs[model["license"]].get('prohibit_commercial', False) %}
+                                        <img src="{{ src }}assets/extra-icons/redcheck.svg" alt="">
                                         {% else %}
                                         <img src="{{ src }}assets/extra-icons/greencheck.svg" alt="">{% endif %}
                                         <span class="text-grey-200 fr-text--xs fr-mb-0">Utilisation commerciale</span>
