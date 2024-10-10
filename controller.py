@@ -9,6 +9,8 @@ from fastapi.templating import Jinja2Templates
 import traceback
 
 import sentry_sdk
+from fastapi import BackgroundTasks
+
 # from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 import google.auth
@@ -16,7 +18,7 @@ import google.auth.transport.requests
 import openai
 
 import os
-from typing import Dict
+# from typing import Dict
 import json5
 
 if os.getenv("SENTRY_DSN"):
@@ -62,6 +64,19 @@ async def create_outage(model_name: str, reason: str = None, confirm: bool = Tru
         
         outages.append(outage)
         return outage
+
+    except HTTPException as e:
+        if e.status_code == 422:
+            print("Couldn't get the whole reason: ")
+            print(reason)
+            outage = {
+                "detection_time": datetime.now().isoformat(),
+                "model_name": model_name,
+                "reason": "Too long to be posted",
+            }
+            outages.append(outage)
+        else:
+            raise
     except Exception as e:
         if os.getenv("SENTRY_DSN"):
             sentry_sdk.capture_exception(e)
@@ -201,14 +216,6 @@ async def test_model(model_name):
         return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
 
-# async def scheduled_outage_tests():
-#     while True:
-#         for key, value in models.items():
-#         # for outage in outages:
-#             asyncio.create_task(test_model(key))
-#         await asyncio.sleep(3600)  # Test every 3600 seconds
-
-
 @app.get(
     "/",
     response_class=HTMLResponse,
@@ -219,3 +226,9 @@ async def index(request: Request):
         "outages.html",
         {"outages": outages, "models": models, "request": request},
     )
+
+@app.get("/test_all_models")
+async def test_all_models(background_tasks: BackgroundTasks):
+    for key, value in models.items():
+        background_tasks.add_task(test_model, key)
+    return HTMLResponse(content="Tasks have been scheduled", status_code=202)
