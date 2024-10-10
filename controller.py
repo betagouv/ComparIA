@@ -227,8 +227,8 @@ async def index(request: Request):
         {"outages": outages, "models": models, "request": request},
     )
 
-@app.get("/test_all_models")
-async def test_all_models(background_tasks: BackgroundTasks):
-    for key, value in models.items():
-        background_tasks.add_task(test_model, key)
-    return HTMLResponse(content="Tasks have been scheduled", status_code=202)
+# @app.get("/test_all_models")
+# async def test_all_models(background_tasks: BackgroundTasks):
+#     for key, value in models.items():
+#         background_tasks.add_task(test_model, key)
+#     return HTMLResponse(content="Tasks have been scheduled", status_code=202)
