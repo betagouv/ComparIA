@@ -617,7 +617,6 @@ def build_reveal_html(
         model_a_impact=model_a_impact,
         model_b_impact=model_b_impact,
         size_desc=size_desc,
-        license_attrs=license_attrs,
         license_desc=license_desc,
         license_attrs=license_attrs,
         model_a_tokens=model_a_tokens,
