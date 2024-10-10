@@ -122,6 +122,7 @@ if os.getenv("SENTRY_DSN"):
         environment=sentry_env,
         traces_sample_rate=traces_sample_rate,
         profiles_sample_rate=profiles_sample_rate,
+        project_root=os.getcwd()
     )
     logger.debug(
         "Sentry loaded with traces_sample_rate="
