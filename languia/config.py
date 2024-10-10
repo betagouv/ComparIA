@@ -92,7 +92,8 @@ enable_moderation = False
 
 if os.getenv("GIT_COMMIT"):
     git_commit = os.getenv("GIT_COMMIT")
-
+else:
+    git_commit = None
 
 if not debug:
     assets_absolute_path = "/app/assets"
@@ -115,12 +116,21 @@ if os.getenv("SENTRY_DSN"):
     else:
         sentry_env = "development"
     sentry_sdk.init(
+        release=git_commit,
+        attach_stacktrace=True,
         dsn=os.getenv("SENTRY_DSN"),
         environment=sentry_env,
         traces_sample_rate=traces_sample_rate,
         profiles_sample_rate=profiles_sample_rate,
     )
-    logger.debug("Sentry loaded with traces_sample_rate=" + str(traces_sample_rate))
+    logger.debug(
+        "Sentry loaded with traces_sample_rate="
+        + str(traces_sample_rate)
+        + " and profiles_sample_rate="
+        + profiles_sample_rate
+        + " for release "
+        + str(git_commit)
+    )
 
 # TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
 # if os.getenv("SENTRY_FRONT_DSN"):
