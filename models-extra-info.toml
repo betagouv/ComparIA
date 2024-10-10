@@ -414,6 +414,21 @@ excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue e
 params = 7
 license = "Apache 2.0"
 
+["Qwen2.5-32B-instruct"]
+url = "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct"
+simple_name = "Qwen2.5-32B"
+organisation = "Alibaba"
+country = "Chine"
+icon_path = "qwen.jpg"
+friendly_size = "L"
+distribution = "open-weights"
+dataset = "private"
+conditions = "free"
+description = "Modèle intermédiaire de la famille Qwen2.5 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes."
+excerpt = "Supportant un contexte de 130k tokens, ce modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
+params = 32
+license = "Apache 2.0"
+
 ["Yi-1.5-9B-Chat"]
 url = "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
 simple_name = "Yi-1.5 9B"
