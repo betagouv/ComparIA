@@ -14,7 +14,7 @@ def get_ip_info(ip):
                 "city": response.city.name,
                 "country_name": response.country.name,
                 # "country_iso_code": response.country.iso_code,
-                # "subdivision_name": response.subdivisions.most_specific.name,
+                "subdivision_name": response.subdivisions.most_specific.name,
                 # "subdivision_iso_code": response.subdivisions.most_specific.iso_code,
                 # "postal_code": response.postal.code,
                 "latitude": response.location.latitude,
