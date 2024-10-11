@@ -32,7 +32,9 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 class ContextTooLongError(ValueError):
     def __str__(self):
         return "Context too long."
+
     pass
+
 
 class EmptyResponseError(RuntimeError):
     def __str__(self):
@@ -392,8 +394,8 @@ with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
 
-def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
-    if model in outage_models:
+def get_sample_weight(model, broken_endpoints, sampling_weights, sampling_boost_models):
+    if model in broken_endpoints:
         return 0
     # Give a 1 weight if model not in weights
     weight = sampling_weights.get(model, 1)
@@ -403,12 +405,61 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
     return weight
 
 
-# TODO: add to outage_models for next n min when detected an error
+def pick_endpoint(model_id, broken_endpoints):
+    from languia.config import api_endpoint_info
+
+    for endpoint in api_endpoint_info:
+        if (
+            endpoint.get("model_id") == model_id
+            and endpoint.get("api_id") not in broken_endpoints
+        ):
+            return endpoint
+    return None
+
+
+def get_endpoint(endpoint_id):
+    from languia.config import api_endpoint_info
+
+    for endpoint in api_endpoint_info:
+        if endpoint.get("endpoint_id") == endpoint_id:
+            return endpoint
+    return None
+
+
+def get_endpoints(model_id, broken_endpoints):
+
+    from languia.config import api_endpoint_info
+
+    endpoints = []
+    for endpoint in api_endpoint_info:
+        if (
+            endpoint.get("model_id") == model_id
+            and endpoint.get("api_id") not in broken_endpoints
+        ):
+            endpoints.append(endpoint)
+    return endpoints
+
+
+def get_unavailable_models(all_model_ids, broken_endpoints):
+    unavailable_models = []
+    for model_id in all_model_ids:
+        if get_endpoints(model_id, broken_endpoints) == []:
+            unavailable_models.append(model_id)
+    return unavailable_models
+
+
+# TODO: add to broken_endpoints for next n min when detected an error
 # TODO: simplify battle targets formula
 def get_battle_pair(
-    models, battle_targets, outage_models, sampling_weights, sampling_boost_models
+    all_models,
+    battle_targets,
+    broken_endpoints,
+    sampling_weights,
+    sampling_boost_models,
 ):
-    models = [model for model in models if model not in outage_models]
+
+    unavailable_models = get_unavailable_models(broken_endpoints, all_models)
+    models = [model for model in all_models if model not in unavailable_models]
     logger = logging.getLogger("languia")
     if len(models) == 0:
         logger.critical("Model list doesn't contain any model")
@@ -428,7 +479,7 @@ def get_battle_pair(
     # model_weights = []
     # for model in models:
     #     weight = get_sample_weight(
-    #         model, outage_models, sampling_weights, sampling_boost_models
+    #         model, broken_endpoints, sampling_weights, sampling_boost_models
     #     )
     #     model_weights.append(weight)
     # total_weight = np.sum(model_weights)
@@ -445,7 +496,7 @@ def get_battle_pair(
         if model == chosen_model:
             continue
         # weight = get_sample_weight(
-        #     model, outage_models, sampling_weights, sampling_boost_models
+        #     model, broken_endpoints, sampling_weights, sampling_boost_models
         # )
         # if (
         #     weight != 0
@@ -719,10 +770,11 @@ def get_model_list(_controller_url, api_endpoint_info):
     models = []
 
     # Add models from the API providers
-    for mdl, mdl_dict in api_endpoint_info.items():
-        models.append(mdl)
-
-    models = list(set(models))
+    models.extend(
+        mdl_dict.get("model_id")
+        for mdl_dict in api_endpoint_info
+        if mdl_dict.get("model_id") not in models
+    )
 
     logger.debug(f"All models: {models}")
     return models
@@ -802,18 +854,6 @@ def get_llm_impact(
     return impact
 
 
-# def get_categories(prompts_pool):
-
-#     prompts_pool_table = {"explain-simply": ["explanations","summaries"],"generate-new-ideas":["ideas", "stories"],"languages":["slang", "regional"]}
-
-#     if prompts_pool in prompts_pool_table:
-#         return prompts_pool_table[prompts_pool]
-#     else:
-#         # Use this name directly as it's the category name
-#         category = prompts_pool
-#         return [category]
-
-
 def gen_prompt(category):
     from languia.config import prompts_table
 
@@ -824,13 +864,13 @@ def gen_prompt(category):
     return prompts[np.random.randint(len(prompts))]
 
 
-def refresh_outage_models(previous_outage_models, controller_url):
+def refresh_outages(previous_outages, controller_url):
     logger = logging.getLogger("languia")
     try:
         response = requests.get(controller_url + "/outages/", timeout=1)
     except Exception as e:
         logger.error("controller_inaccessible: " + str(e))
-        return previous_outage_models
+        return previous_outages
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -841,17 +881,26 @@ def refresh_outage_models(previous_outage_models, controller_url):
         logger.warning(
             f"Failed to retrieve outage data. Status code: {response.status_code}"
         )
-        return previous_outage_models
+        return previous_outages
 
 
-def test_all_models(controller_url):
+def add_outage_model(controller_url, model_name, endpoint_name, reason):
+    logger = logging.getLogger("languia")
+
     try:
-        requests.get(
-        url=f"{controller_url}/test_all_models",
-        timeout=2,
+        response = requests.post(
+            params={
+                "reason": str(reason),
+                "model_name": model_name,
+                "endpoint": endpoint_name,
+            },
+            # params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
+            url=f"{controller_url}/outages/",
+            timeout=2,
         )
     except Exception:
         pass
+
 
 def test_model(controller_url, model_name):
     return requests.get(
@@ -859,6 +908,7 @@ def test_model(controller_url, model_name):
         url=f"{controller_url}/outages/{model_name}",
         timeout=2,
     )
+
 
 def on_endpoint_error(controller_url, model_name, reason):
     logger = logging.getLogger("languia")
@@ -872,7 +922,7 @@ def on_endpoint_error(controller_url, model_name, reason):
         # pass
 
     # if response.status_code == 201:
-    # logger.info("modele_desactive: " + model_name)
+    #     logger.info(f"endpoint_desactive: {model_name} at {endpoint_name}")
     # else:
     #     logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 

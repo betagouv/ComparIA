@@ -43,11 +43,12 @@ from languia.utils import (
     get_model_extra_info,
     count_output_tokens,
     get_llm_impact,
-    refresh_outage_models,
+    refresh_outages,
     on_endpoint_error,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
+    pick_endpoint
 )
 
 from languia.config import (
@@ -81,7 +82,7 @@ def register_listeners():
     def enter_arena(conv_a, conv_b, request: gr.Request):
 
         # TODO: to get rid of!
-        def set_conv_state(state, model_name=""):
+        def set_conv_state(state, model_name, endpoint):
             # self.messages = get_conversation_template(model_name)
             state.messages = []
             state.output_tokens = None
@@ -93,26 +94,31 @@ def register_listeners():
             state.template_name = "zero_shot"
             state.template = []
             state.model_name = model_name
+            state.endpoint = endpoint
             return state
 
         # you can't move this function out, that way app_state is dependent on each user state / not global state
         def init_conversations(conversations, request: gr.Request):
             app_state.awaiting_responses = False
-            config.outage_models = refresh_outage_models(
-                config.outage_models, controller_url=config.controller_url
+            config.outages = refresh_outages(
+                config.outages, controller_url=config.controller_url
             )
+
+            outages = [outage.get('api_id') for outage in config.outages]                        
             # app_state.model_left, app_state.model_right = get_battle_pair(
             model_left, model_right = get_battle_pair(
                 config.models,
                 BATTLE_TARGETS,
-                config.outage_models,
+                outages,
                 SAMPLING_WEIGHTS,
                 SAMPLING_BOOST_MODELS,
             )
-            # TODO: to get rid of!
+            endpoint_left = pick_endpoint(model_left, outages)
+            endpoint_right = pick_endpoint(model_right, outages)
+            # TODO: replace by class method
             conversations = [
-                set_conv_state(conversations[0], model_name=model_left),
-                set_conv_state(conversations[1], model_name=model_right),
+                set_conv_state(conversations[0], model_name=model_left, endpoint=endpoint_left),
+                set_conv_state(conversations[1], model_name=model_right, endpoint=endpoint_right),
             ]
             logger.info(
                 f"selection_modeles: {model_left}, {model_right}",
@@ -379,17 +385,17 @@ document.getElementById("fr-modal-welcome-close").blur();
                         state.model_name = model_name
                         return state
 
-                    config.outage_models = refresh_outage_models(
-                        config.outage_models, controller_url=config.controller_url
+                    config.outages = refresh_outages(
+                        config.outages, controller_url=config.controller_url
                     )
                     # Temporarily add the at-fault model
-                    config.outage_models.append(error_with_model)
+                    config.outages.append(error_with_model)
                     # Simpler to repick 2 models
                     # app_state.model_left, app_state.model_right = get_battle_pair(
                     model_left, model_right = get_battle_pair(
                         config.models,
                         BATTLE_TARGETS,
-                        config.outage_models,
+                        config.outages,
                         SAMPLING_WEIGHTS,
                         SAMPLING_BOOST_MODELS,
                     )
