@@ -36,7 +36,7 @@
                 {% endif %}
                 <span class="fr-badge fr-badge--no-icon fr-mr-1v fr-mb-1v">
                     {% if
-                    model['distribution'] == "open-weights" %}{{ model['params']|round|int }} mds de
+                    model['distribution'] == "open-weights" %}{{ model['params']|int }} mds de
                     paramètres{%
                     else
                     %}Taille estimée ({{ model['friendly_size'] }})
