@@ -220,8 +220,8 @@ def save_vote_to_db(data):
     try:
         insert_statement = sql.SQL(
             """
-            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, both_equal, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, comments_a, extra, comments_b, details_a_positive, details_a_negative, details_b_positive, details_b_negative)
-            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(comments_a)s, %(extra)s, %(comments_b)s, %(details_a_positive)s, %(details_a_negative)s, %(details_b_positive)s, %(details_b_negative)s)
+            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, both_equal, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, country, session_hash, visitor_uuid, comments_a, extra, comments_b, details_a_positive, details_a_negative, details_b_positive, details_b_negative, city)
+            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(country)s, %(session_hash)s, %(visitor_uuid)s, %(comments_a)s, %(extra)s, %(comments_b)s, %(details_a_positive)s, %(details_a_negative)s, %(details_b_positive)s, %(details_b_negative)s, %(city)s)
 
         """
         )
@@ -240,7 +240,7 @@ def save_vote_to_db(data):
             "is_unedited_prompt": data["is_unedited_prompt"],
             "template": json.dumps(data["template"]),
             "uuid": str(data["uuid"]),
-            "ip": str(data["ip"]),
+            "country": (data["country"]),
             "session_hash": str(data["session_hash"]),
             "visitor_uuid": (data["visitor_uuid"]),
             "details_a_positive": (data["details_a_positive"]),
@@ -250,6 +250,7 @@ def save_vote_to_db(data):
             "comments_a": (data["comments_a"]),
             "comments_b": (data["comments_b"]),
             "extra": json.dumps(data["extra"]),
+            "city": (data["city"]),
         }
         cursor.execute(insert_statement, values)
         conn.commit()
@@ -267,6 +268,21 @@ def messages_to_dict_list(messages):
     return [{"role": message.role, "content": message.content} for message in messages]
 
 
+def get_geoip(ip: str):
+    from languia.config import geoip_address
+
+    if geoip_address:
+        try:
+            response = requests.get(geoip_address, params={"ip": ip})
+            response.raise_for_status()  # Check if the request was successful
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"GET request failed: {e}")
+            return None
+    else:
+        return None
+
+
 def vote_last_response(
     conversations,
     which_model_radio,
@@ -282,25 +298,19 @@ def vote_last_response(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-    # >>> import geoip2.database
-    # >>>
-    # >>> # This creates a Reader object. You should use the same object
-    # >>> # across multiple requests as creation of it is expensive.
-    # >>> with geoip2.database.Reader('/path/to/GeoLite2-City.mmdb') as reader:
-    # >>>
-    # >>>     # Replace "city" with the method corresponding to the database
-    # >>>     # that you are using, e.g., "country".
-    # >>>     response = reader.city('203.0.113.0')
-    # >>>
-    # >>>     response.country.iso_code
-    # 'US'
-    # >>>     response.country.name
-    # 'United States'
-    # >>>     response.country.names['zh-CN']
-
     t = datetime.datetime.now()
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
+
+    ip = get_ip(request)
+    geoip_response = get_geoip(ip)
+    if not geoip_response:
+        country = None
+        city = None
+    else:
+        country = geoip_response.get("country", None)
+        city = geoip_response.get("city", None)
+
     data = {
         "tstamp": str(t),
         "model_a_name": conversations[0].model_name,
@@ -322,8 +332,7 @@ def vote_last_response(
             else conversations[0].template
         ),
         "uuid": conversations[0].conv_id + "-" + conversations[1].conv_id,
-        # Warning: IP is a PII
-        "ip": str(get_ip(request)),
+        "country": country,
         "session_hash": str(request.session_hash),
         "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),
         "details_a_positive": (details["positive_a"]),
@@ -338,7 +347,9 @@ def vote_last_response(
             "query_params": dict(request.query_params),
             "path_params": dict(request.path_params),
         },
+        "city": city,
     }
+
     vote_string = chosen_model_name or "both_equal"
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     vote_log_path = os.path.join(LOGDIR, vote_log_filename)
@@ -352,16 +363,21 @@ def vote_last_response(
             f'preferences_b: {details["positive_b"]},{details["negative_b"]}',
             extra={"request": request},
         )
-        if details["comments_a"] != "":
+        if details.get("comments_a") != "":
             logger.info(
                 f"commentaires_a: {details.get('comments_a', '')}",
                 extra={"request": request},
             )
-        if details["comments_b"] != "":
+        if details.get("comments_b") != "":
             logger.info(
                 f"commentaires_b: {details.get('comments_b', '')}",
                 extra={"request": request},
             )
+        logger.info(
+                f"geoip: {city}, {country}",
+                extra={"request": request},
+            )
+
         fout.write(json.dumps(data) + "\n")
 
     save_vote_to_db(data=data)
@@ -580,9 +596,9 @@ def build_reveal_html(
     model_a_tokens,
     model_b_tokens,
 ):
-    env = Environment(loader=FileSystemLoader('templates'))
+    env = Environment(loader=FileSystemLoader("templates"))
 
-    template = env.get_template('reveal.html')
+    template = env.get_template("reveal.html")
     chosen_model = get_chosen_model(which_model_radio)
     lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(
         model_a_impact.energy.value
