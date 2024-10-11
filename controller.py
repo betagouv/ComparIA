@@ -124,7 +124,7 @@ if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
 else:
     register_api_endpoint_file = "register-api-endpoint-file.json"
 
-models = json5.load(open(register_api_endpoint_file))
+endpoints = json5.load(open(register_api_endpoint_file))
 
 
 @app.get("/outages/{model_name}")
@@ -140,80 +140,82 @@ async def test_model(model_name):
     max_new_tokens = 10
     stream = False
 
-    try:
-        # Initialize the OpenAI client
-        api_type = models[model_name]["api_type"]
-        api_base = models[model_name]["api_base"]
+    model_endpoints = [endpoint for endpoint in endpoints if endpoint["model_id"] == model_name]
+    for endpoint in model_endpoints:
+        try:
+            # Initialize the OpenAI client
+            api_type = endpoint["api_type"]
+            api_base = endpoint["api_base"]
 
-        if api_type == "vertex":
-            if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-                logging.warn("No Google creds detected!")
+            if api_type == "vertex":
+                if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+                    logging.warn("No Google creds detected!")
 
-            # Programmatically get an access token
-            creds, project = google.auth.default(
-                scopes=["https://www.googleapis.com/auth/cloud-platform"]
+                # Programmatically get an access token
+                creds, project = google.auth.default(
+                    scopes=["https://www.googleapis.com/auth/cloud-platform"]
+                )
+                auth_req = google.auth.transport.requests.Request()
+                creds.refresh(auth_req)
+                # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
+                api_key = creds.token
+            else:
+                api_key = endpoint["api_key"]
+                
+            client = openai.OpenAI(
+                base_url=api_base,
+                api_key=api_key,
+                timeout=10,
             )
-            auth_req = google.auth.transport.requests.Request()
-            creds.refresh(auth_req)
-            # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
-            api_key = creds.token
-        else:
-            api_key = models[model_name]["api_key"]
-            
-        client = openai.OpenAI(
-            base_url=api_base,
-            api_key=api_key,
-            timeout=10,
-        )
-        # Send a test message to the OpenAI API
-        res = client.chat.completions.create(
-            model=models[model_name]["model_name"],
-            messages=[{"role": "user", "content": test_message}],
-            temperature=temperature,
-            max_tokens=max_new_tokens,
-            # Test without streaming
-            stream=stream,
-        )
+            # Send a test message to the OpenAI API
+            res = client.chat.completions.create(
+                model=endpoint["model_name"],
+                messages=[{"role": "user", "content": test_message}],
+                temperature=temperature,
+                max_tokens=max_new_tokens,
+                # Test without streaming
+                stream=stream,
+            )
 
-        # Verify the response
-        text = ""
-        if stream:
-            for chunk in res:
-                if chunk.choices:
-                    text += chunk.choices[0].delta.content or ""
-                    break
-        else:
-            if res.choices:
-                text = res.choices[0].message.content or ""
+            # Verify the response
+            text = ""
+            if stream:
+                for chunk in res:
+                    if chunk.choices:
+                        text += chunk.choices[0].delta.content or ""
+                        break
+            else:
+                if res.choices:
+                    text = res.choices[0].message.content or ""
 
-        # Check if the response is successful
-        if text:
-            logging.info(f"Test successful: {model_name}")
-            if any(outage["model_name"] == model_name for outage in outages):
-                logging.info(f"Removing {model_name} from outage list")
-                await remove_outage(model_name)
-                return {
-                    "success": True,
-                    "message": "Removed model from outages list.",
-                    "response": text,
-                }
-            return {"success": True, "message": "Model responded: " + str(text)}
+            # Check if the response is successful
+            if text:
+                logging.info(f"Test successful: {model_name}")
+                if any(outage["model_name"] == model_name for outage in outages):
+                    logging.info(f"Removing {model_name} from outage list")
+                    await remove_outage(model_name)
+                    return {
+                        "success": True,
+                        "message": "Removed model from outages list.",
+                        "response": text,
+                    }
+                return {"success": True, "message": "Model responded: " + str(text)}
 
-        else:
-            reason = f"No content from api for model {model_name}"
-            logging.error(f"Test failed: {model_name}")
-            logging.error(reason)
-            await create_outage(model_name, reason, confirm=False)
-            return {"success": False, "error_message": reason}
+            else:
+                reason = f"No content from api for model {model_name}"
+                logging.error(f"Test failed: {model_name}")
+                logging.error(reason)
+                await create_outage(model_name, reason, confirm=False)
+                return {"success": False, "error_message": reason}
 
-    except Exception as e:
-        reason = str(e)
-        logging.error(f"Error: {reason}. Model: {model_name}")
+        except Exception as e:
+            reason = str(e)
+            logging.error(f"Error: {reason}. Model: {model_name}")
 
-        stacktrace = traceback.print_exc()
-        _outage = await create_outage(model_name, reason, confirm=False)
+            stacktrace = traceback.print_exc()
+            _outage = await create_outage(model_name, reason, confirm=False)
 
-        return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
+            return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
 
 @app.get(
@@ -224,7 +226,7 @@ async def index(request: Request):
 
     return templates.TemplateResponse(
         "outages.html",
-        {"outages": outages, "models": models, "request": request},
+        {"outages": outages, "endpoints": endpoints, "request": request},
     )
 
 # @app.get("/test_all_models")

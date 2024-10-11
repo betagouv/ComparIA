@@ -236,7 +236,7 @@ models_extra_info.sort(key=lambda x: x["simple_name"])
 
 headers = {"User-Agent": "FastChat Client"}
 
-if os.getenv("LANGUIA_CONTROLLER_URL") != None:
+if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
     controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
 else:
     controller_url = "http://localhost:21001"
@@ -361,7 +361,7 @@ prompts_table = {
         "Imagine une histoire où un ingénieur invente une machine qui peut recréer des souvenirs oubliés.",
         "Ecris moi une histoire en vers pour endormir mon fils de cinq ans ce soir.",
         "Ecris moi une fable en rimes pour endormir ma fille de sept ans ce soir.",
-        "Tu es conteur professionnel, crée une histoire du trois minutes à raconter à mes deux enfants en bas âges. Utilise un langage riche et imaginatif et des figures de style pour stimuler l’imagination et susciter des émotions.",
+        "Tu es conteur professionnel, crée une histoire de trois minutes à raconter à mes deux enfants en bas âges. Utilise un langage riche et imaginatif et des figures de style pour stimuler l’imagination et susciter des émotions.",
         "Je suis parent et je cherche une histoire du soir à raconter à mes enfants. Choisis trois objets sans rapport apparent et utilise-les comme base pour créer une histoire de 100 mots.",
         "Tu es écrivain de fantasy, élabore un système magique avec des règles et des limitations spécifiques, puis décris comment cette magie façonne la société dans ce monde imaginaire.",
     ],
