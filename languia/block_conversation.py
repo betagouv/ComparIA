@@ -79,11 +79,10 @@ def bot_response(
     if model_api_endpoints == []:
         logger.critical("No endpoint for model name: " + str(model_name))
     else:
-        if not state.get("endpoint"):
-            endpoint = random.choice(model_api_endpoints)
-            endpoint_name = endpoint["api_base"].split("/")[2]
-            logger.info(f"picked_endpoint: {endpoint_name} for {model_name}")
-            state.endpoint = endpoint
+
+        endpoint = random.choice(model_api_endpoints)
+        endpoint_name = endpoint["api_base"].split("/")[2]
+        logger.info(f"picked_endpoint: {endpoint_name} for {model_name}")
         if use_recommended_config:
             recommended_config = endpoint.get("recommended_config", None)
             if recommended_config is not None:

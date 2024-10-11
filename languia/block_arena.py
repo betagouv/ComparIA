@@ -27,13 +27,12 @@ from languia import config
 # // Remove navigation prompt
 # window.onbeforeunload = null;
 class Conversation:
-    def __init__(self, messages=[], output_tokens=None, conv_id=None, template=None, model_name=None, endpoint=None):
+    def __init__(self, messages=[], output_tokens=None, conv_id=None, template=None, model_name=None):
         self.messages = messages
         self.output_tokens = output_tokens
         self.conv_id = conv_id
         self.template = template
         self.model_name = model_name
-        self.endpoint = endpoint
 
 class AppState:
     def __init__(self, awaiting_responses=False, model_left=None, model_right=None, original_user_prompt=None, category=None):

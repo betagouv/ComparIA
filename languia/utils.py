@@ -826,12 +826,12 @@ def refresh_outage_models(previous_outage_models, controller_url):
         return previous_outage_models
 
 
-def add_outage_model(controller_url, model_name, endpoint_name, reason):
+def add_outage_model(controller_url, model_name, reason):
     logger = logging.getLogger("languia")
 
     try:
         response = requests.post(
-            params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
+            params={"reason": str(reason), "model_name": model_name},
             url=f"{controller_url}/outages/",
             timeout=2,
         )
@@ -840,7 +840,7 @@ def add_outage_model(controller_url, model_name, endpoint_name, reason):
         return
 
     if response.status_code == 201:
-        logger.info(f"endpoint_desactive: {model_name} at {endpoint_name}")
+        logger.info("modele_desactive: " + model_name)
     else:
         logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 

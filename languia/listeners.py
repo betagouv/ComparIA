@@ -289,11 +289,9 @@ def register_listeners():
                 )
                 # TODO: do that only when controller is offline
                 config.outage_models.append(conversations[i].model_name)
-                endpoint_name = conversations[i].endpoint.api_base.split("/")[2]
                 add_outage_model(
-                    controller_url=config.controller_url,
-                    model_name=conversations[i].model_name,
-                    endpoint_name=endpoint_name,
+                    config.controller_url,
+                    conversations[i].model_name,
                     reason=str(e),
                 )
                 # gr.Warning(
