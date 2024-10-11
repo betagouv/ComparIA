@@ -3,6 +3,8 @@ import traceback
 
 import uuid
 
+import openai
+
 from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
@@ -16,6 +18,7 @@ from languia.utils import (
     add_outage_model,
     gen_prompt,
     to_threeway_chatbot,
+    EmptyResponseError,
 )
 
 from languia.config import (
@@ -265,6 +268,21 @@ def register_listeners():
                             ret = next(gen[i])
                             conversations[i] = ret
                             stop = False
+                        # When context is too long, Albert apis answer:
+                        # openai.BadRequestError: Error code: 400 - {'detail': 'Context length too large'}
+                        # When context is too long, HF apis answer:
+                        # "openai.APIError: An error occurred during streaming"
+                        except (openai.APIError, openai.BadRequestError):
+                            logger.error(
+                                f"erreur_milieu_discussion: {conversations[i].model_name}"
+                            )
+                            raise
+                        except EmptyResponseError as e:
+                            
+                            logger.error(
+                                f"erreur_milieu_discussion: {conversations[i].model_name}"
+                            )
+                            raise e
                         except StopIteration:
                             pass
                         # TODO: timeout problems on scaleway Ampere models?
@@ -278,7 +296,7 @@ def register_listeners():
                     yield [app_state, conv_a, conv_b, chatbot, gr.skip()]
                     if stop:
                         break
-            except Exception as e:
+            except (EmptyResponseError, Exception, openai.BadRequestError) as e:
                 logger.error(
                     f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{traceback.format_exc()}",
                     extra={
@@ -298,55 +316,74 @@ def register_listeners():
                 #     duration=0,
                 #     message="Erreur avec l'interrogation d'un des modèles, veuillez patienter, le comparateur trouve deux nouveaux modèles à interroger.",
                 # )
+                # If it's the first message in conversation, re-roll
+                # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
+                if len(conversations[i].messages) < 2:
 
-                # TODO: refacto! class method?
-                def reset_conv_state(state, model_name=""):
-                    # self.messages = get_conversation_template(model_name)
-                    state.messages = []
-                    state.output_tokens = None
+                    # TODO: refacto! class method?
+                    def reset_conv_state(state, model_name=""):
+                        # self.messages = get_conversation_template(model_name)
+                        state.messages = []
+                        state.output_tokens = None
 
-                    # TODO: get it from api if generated
-                    state.conv_id = uuid.uuid4().hex
+                        # TODO: get it from api if generated
+                        state.conv_id = uuid.uuid4().hex
 
-                    # TODO: add template info? and test it
-                    state.template_name = "zero_shot"
-                    state.template = []
-                    state.model_name = model_name
-                    return state
+                        # TODO: add template info? and test it
+                        state.template_name = "zero_shot"
+                        state.template = []
+                        state.model_name = model_name
+                        return state
 
-                app_state.awaiting_responses = False
-                config.outage_models = refresh_outage_models(
-                    config.outage_models, controller_url=config.controller_url
-                )
-                # Simpler to repick 2 models
-                # app_state.model_left, app_state.model_right = get_battle_pair(
-                model_left, model_right = get_battle_pair(
-                    config.models,
-                    BATTLE_TARGETS,
-                    config.outage_models,
-                    SAMPLING_WEIGHTS,
-                    SAMPLING_BOOST_MODELS,
-                )
-                conv_a = reset_conv_state(conv_a, model_name=model_left)
-                conv_b = reset_conv_state(conv_b, model_name=model_right)
+                    app_state.awaiting_responses = False
+                    config.outage_models = refresh_outage_models(
+                        config.outage_models, controller_url=config.controller_url
+                    )
+                    # Simpler to repick 2 models
+                    # app_state.model_left, app_state.model_right = get_battle_pair(
+                    model_left, model_right = get_battle_pair(
+                        config.models,
+                        BATTLE_TARGETS,
+                        config.outage_models,
+                        SAMPLING_WEIGHTS,
+                        SAMPLING_BOOST_MODELS,
+                    )
+                    conv_a = reset_conv_state(conv_a, model_name=model_left)
+                    conv_b = reset_conv_state(conv_b, model_name=model_right)
 
-                logger.info(
-                    f"selection_modeles: {model_left}, {model_right}",
-                    extra={request: request},
-                )
+                    logger.info(
+                        f"selection_modeles: {model_left}, {model_right}",
+                        extra={request: request},
+                    )
 
-                app_state, conv_a, conv_b, chatbot = add_text(
-                    app_state,
-                    conv_a,
-                    conv_b,
-                    app_state.original_user_prompt,
-                    request,
-                )
-                # Empty generation queue
-                gen = []
-                # continue
-                # pass
+                    app_state, conv_a, conv_b, chatbot = add_text(
+                        app_state,
+                        conv_a,
+                        conv_b,
+                        app_state.original_user_prompt,
+                        request,
+                    )
+                    # Empty generation queue
+                    gen = []
+                    # continue
+                    # pass
+
+                # Case where conversation was already going on, endpoint error or context error
+                # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
+                else:
+
+                    app_state.awaiting_responses = False
+                    logger.error(
+                        f"erreur_milieu_discussion: {conversations[i].model_name}, "
+                        + str(e)
+                    )
+                    raise gr.Error(
+                        duration=0,
+                        message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
+                    )
+                    # break
             else:
+                # TODO: ???
                 break
         else:
             logger.critical("maximum_attempts_reached")
