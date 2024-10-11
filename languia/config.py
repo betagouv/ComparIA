@@ -126,7 +126,7 @@ if os.getenv("SENTRY_DSN"):
         "Sentry loaded with traces_sample_rate="
         + str(traces_sample_rate)
         + " and profiles_sample_rate="
-        + profiles_sample_rate
+        + str(profiles_sample_rate)
         + " for release "
         + str(git_commit)
     )
