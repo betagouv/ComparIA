@@ -42,11 +42,12 @@ stream_logs.setLevel(logging.INFO)
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
-async def create_outage(model_name: str, reason: str = None, confirm: bool = True):
+async def create_outage(model_name: str, endpoint: str, reason: str = None, confirm: bool = True):
     try:
         outage = {
             "detection_time": datetime.now().isoformat(),
             "model_name": model_name,
+            "endpoint_name": endpoint,
             "reason": reason,
         }
 
@@ -72,6 +73,7 @@ async def create_outage(model_name: str, reason: str = None, confirm: bool = Tru
             outage = {
                 "detection_time": datetime.now().isoformat(),
                 "model_name": model_name,
+                "endpoint_name": endpoint,
                 "reason": "Too long to be posted",
             }
             outages.append(outage)
@@ -188,7 +190,7 @@ async def test_model(model_name):
                 if res.choices:
                     text = res.choices[0].message.content or ""
 
-            # Check if the response is successful
+# FIXME: only remove the endpoint+model pair
             if text:
                 logging.info(f"Test successful: {model_name}")
                 if any(outage["model_name"] == model_name for outage in outages):
