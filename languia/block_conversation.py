@@ -35,6 +35,7 @@ import logging
 
 logger = logging.getLogger("languia")
 
+
 def update_last_message(messages, text):
     if len(messages) < 1:
         return [gr.ChatMessage(role="assistant", content=text)]
@@ -112,7 +113,6 @@ def bot_response(
 
     data = {"text": ""}
 
-    # FIXME: does not detect/raise if 500 error
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
             # logger.debug("reported output tokens:" + str(data["output_tokens"]))
