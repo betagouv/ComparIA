@@ -142,16 +142,16 @@ def register_listeners():
         )
         return prompt
 
-    @textbox.change(
-        inputs=textbox, outputs=send_btn, api_name=False, show_progress="hidden"
-    )
-    def change_send_btn_state(textbox):
-        if textbox == "" or (
-            hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses
-        ):
-            return gr.update(interactive=False)
-        else:
-            return gr.update(interactive=True)
+    # @textbox.change(
+    #     inputs=textbox, outputs=send_btn, api_name=False, show_progress="hidden"
+    # )
+    # def change_send_btn_state(textbox):
+    #     if textbox == "" or (
+    #         hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses
+    #     ):
+    #         return gr.update(interactive=False)
+    #     else:
+    #         return gr.update(interactive=True)
 
     def add_text(
         app_state: gr.State,
