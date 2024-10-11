@@ -160,7 +160,6 @@ with gr.Blocks(
             # No difference
             # bubble_full_width=False,
             layout="panel",  # or "bubble"
-            likeable=False,
             # UserWarning: show_label has no effect when container is False.
             show_label=False,
             container=False,
