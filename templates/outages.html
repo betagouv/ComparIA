@@ -46,7 +46,7 @@
             <tr>
                 <td>{{ model_name }}</td>
                 <td><a href="/outages/{{ model_name }}">Tester ?</a></td>
-                <td><a href="/outages/{{ model_name }}/create?reason=Désactivé">Désactiver ?</a></td>
+                <td><a href="/outages/{{ model_name }}/create?confirm=false">Désactiver ?</a></td>
                 <td>{{ model["api_base"] | string | truncate(100, True) }}</td>
             </tr>
             {% endfor %}

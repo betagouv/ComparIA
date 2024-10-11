@@ -3,26 +3,37 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from typing import List, Dict
 import asyncio
-import time
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
 import traceback
+
+import sentry_sdk
+from fastapi import BackgroundTasks
+
+# from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 import google.auth
 import google.auth.transport.requests
 import openai
 
 import os
-from typing import Dict
+# from typing import Dict
 import json5
+
+if os.getenv("SENTRY_DSN"):
+    sentry_sdk.init(
+    dsn=os.getenv("SENTRY_DSN"), 
+    # integrations=[FastApiIntegration()], + Starlette
+    traces_sample_rate=1.0,  
+    profiles_sample_rate=1.0,
+)
 
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
-# Outage is now a dictionary with time_of_outage and model_name
 outages: List[Dict[str, str]] = []
 
 stream_logs = logging.StreamHandler()
@@ -32,26 +43,45 @@ stream_logs.setLevel(logging.INFO)
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
 async def create_outage(model_name: str, reason: str = None, confirm: bool = True):
-    outage = {
-        "detection_time": datetime.now().isoformat(),
-        "model_name": model_name,
-        "reason": reason,
-    }
+    try:
+        outage = {
+            "detection_time": datetime.now().isoformat(),
+            "model_name": model_name,
+            "reason": reason,
+        }
 
-    # Check if the model name already exists in the outages list
-    existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
+        # Check if the model name already exists in the outages list
+        existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
 
-    if existing_outage:
-        await remove_outage(model_name)
-    
-    # Double-check the outage!!!
-    if confirm:
-        confirm_outage = await test_model(model_name)
-        if confirm_outage["success"]:
-            return "Didn't add to outages as test was successful"
-    
-    outages.append(outage)
-    return outage
+        if existing_outage:
+            await remove_outage(model_name)
+        
+        # Double-check the outage!!!
+        if confirm:
+            confirm_outage = await test_model(model_name)
+            if confirm_outage["success"]:
+                return "Didn't add to outages as test was successful"
+        
+        outages.append(outage)
+        return outage
+
+    except HTTPException as e:
+        if e.status_code == 422:
+            print("Couldn't get the whole reason: ")
+            print(reason)
+            outage = {
+                "detection_time": datetime.now().isoformat(),
+                "model_name": model_name,
+                "reason": "Too long to be posted",
+            }
+            outages.append(outage)
+        else:
+            raise
+    except Exception as e:
+        if os.getenv("SENTRY_DSN"):
+            sentry_sdk.capture_exception(e)
+        raise
+
 
 @app.get("/outages/")
 async def get_outages():
@@ -76,12 +106,17 @@ async def remove_outage(model_name: str):
     Raises:
         HTTPException: If the model is not found in outages.
     """
-    for i, outage in enumerate(outages):
-        if outage["model_name"] == model_name:
-            del outages[i]
-            return {"success": True,
-            "msg": f"{model_name} removed from outages"}
-    raise HTTPException(status_code=404, detail="Model not found in outages")
+    try:
+        for i, outage in enumerate(outages):
+            if outage["model_name"] == model_name:
+                del outages[i]
+                return {"success": True,
+                "msg": f"{model_name} removed from outages"}
+        raise HTTPException(status_code=404, detail="Model not found in outages")
+    except Exception as e:
+        if os.getenv("SENTRY_DSN"):
+            sentry_sdk.capture_exception(e)
+        raise
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
@@ -101,7 +136,7 @@ async def test_model(model_name):
     # Define test parameters
     test_message = "Say 'this is a test'."
     temperature = 1
-    top_p = 1
+    # top_p = 1
     max_new_tokens = 10
     stream = False
 
@@ -181,14 +216,6 @@ async def test_model(model_name):
         return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
 
-# async def scheduled_outage_tests():
-#     while True:
-#         # for model in models:
-#         for outage in outages:
-#             asyncio.create_task(test_model(outage["model_name"]))
-#         await asyncio.sleep(600)  # Test every 10 minutes (600 seconds)
-
-
 @app.get(
     "/",
     response_class=HTMLResponse,
@@ -199,3 +226,9 @@ async def index(request: Request):
         "outages.html",
         {"outages": outages, "models": models, "request": request},
     )
+
+# @app.get("/test_all_models")
+# async def test_all_models(background_tasks: BackgroundTasks):
+#     for key, value in models.items():
+#         background_tasks.add_task(test_model, key)
+#     return HTMLResponse(content="Tasks have been scheduled", status_code=202)
