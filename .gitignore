@@ -46,4 +46,3 @@ docker/.env
 model-info-file.json
 register-api-endpoint-file*.json
 docker/.env
-utils/GeoLite2-City.mmdb
