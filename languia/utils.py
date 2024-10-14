@@ -677,6 +677,7 @@ def get_model_extra_info(name: str, models_extra_info: list):
     return {
         "id": "other",
         "params": 7,
+        "required_ram": 7,
         "simple_name": "Autre",
         "organisation": "Autre",
         "friendly_size": "M",
