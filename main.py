@@ -25,7 +25,7 @@ templates = Jinja2Templates(directory="templates")
 
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
 gr.set_static_paths(paths=[config.assets_absolute_path])
-# Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
+# broken... using path set up by fastapi instead 
 logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 
 # Set authorization credentials

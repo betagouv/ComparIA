@@ -785,161 +785,161 @@ li.fr-nav__item {
 .fr-icon-discuss-line::after {
   background-color: var(--text-action-high-blue-france);
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
-  mask-image: url("file=assets/dsfr/icons/communication/discuss-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/communication/discuss-line.svg");
+  mask-image: url("../assets/dsfr/icons/communication/discuss-line.svg");
 
 }
 
 .fr-icon-chat-delete-line::before,
 .fr-icon-chat-delete-line::after {
   background-color: var(--blue-france-main-525);
-  /* background-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg"); */
+  /* background-image: url("../assets/dsfr/icons/communication/chat-delete-line.svg"); */
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
-  mask-image: url("file=assets/dsfr/icons/communication/chat-delete-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/communication/chat-delete-line.svg");
+  mask-image: url("../assets/dsfr/icons/communication/chat-delete-line.svg");
 }
 
 .fr-icon-pass-expired-line::before,
 .fr-icon-pass-expired-line::after {
   background-color: var(--blue-france-main-525);
-  /* background-image: url("file=assets/extra-icons/pass-expired.svg"); */
+  /* background-image: url("../assets/extra-icons/pass-expired.svg"); */
 
-  -webkit-mask-image: url("file=assets/extra-icons/pass-expired.svg");
-  mask-image: url("file=assets/extra-icons/pass-expired.svg");
+  -webkit-mask-image: url("../assets/extra-icons/pass-expired.svg");
+  mask-image: url("../assets/extra-icons/pass-expired.svg");
 }
 
 .fr-icon-refresh-line::before,
 .fr-icon-refresh-line::after {
   background-color: var(--text-action-high-blue-france);
 
-  -webkit-mask-image: url("file=assets/extra-icons/refresh-blue.svg");
-  mask-image: url("file=assets/extra-icons/refresh-blue.svg");
+  -webkit-mask-image: url("../assets/extra-icons/refresh-blue.svg");
+  mask-image: url("../assets/extra-icons/refresh-blue.svg");
 }
 
 .fr-icon-stack::before,
 .fr-icon-stack::after {
-  -webkit-mask-image: url("file=assets/extra-icons/stack.svg");
-  mask-image: url("file=assets/extra-icons/stack.svg");
+  -webkit-mask-image: url("../assets/extra-icons/stack.svg");
+  mask-image: url("../assets/extra-icons/stack.svg");
 }
 
 .fr-icon-stack::before {
-  background-image: url("file=assets/extra-icons/stack.svg");
+  background-image: url("../assets/extra-icons/stack.svg");
 }
 
 .fr-icon-download-line::before,
 .fr-icon-download-line::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/system/download-line.svg");
-  mask-image: url("file=assets/dsfr/icons/system/download-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/system/download-line.svg");
+  mask-image: url("../assets/dsfr/icons/system/download-line.svg");
 }
 
 .fr-icon-download-line::before {
-  background-image: url("file=assets/dsfr/icons/system/download-line.svg");
+  background-image: url("../assets/dsfr/icons/system/download-line.svg");
 }
 
 .fr-icon-copyright-line::before,
 .fr-icon-copyright-line::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
-  mask-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/business/copyright-line.svg");
+  mask-image: url("../assets/dsfr/icons/business/copyright-line.svg");
 }
 
 .fr-icon-copyright-line::before {
-  background-image: url("file=assets/dsfr/icons/business/copyright-line.svg");
+  background-image: url("../assets/dsfr/icons/business/copyright-line.svg");
 }
 
 .fr-icon-home-4-line::before,
 .fr-icon-home-4-line::after {
-  background-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+  background-image: url("../assets/dsfr/icons/buildings/home-4-line.svg");
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
-  mask-image: url("file=assets/dsfr/icons/buildings/home-4-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/buildings/home-4-line.svg");
+  mask-image: url("../assets/dsfr/icons/buildings/home-4-line.svg");
 }
 
 
 .fr-icon-success-line::before,
 .fr-icon-success-line::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/system/fr--success-line.svg");
-  mask-image: url("file=assets/dsfr/icons/system/fr--success-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/system/fr--success-line.svg");
+  mask-image: url("../assets/dsfr/icons/system/fr--success-line.svg");
   background-color: var(--blue-france-main-525);
 }
 
 
 .fr-icon-code-view::before {
-  background-image: url("file=assets/dsfr/icons/editor/code-view.svg");
+  background-image: url("../assets/dsfr/icons/editor/code-view.svg");
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/editor/code-view.svg");
-  mask-image: url("file=assets/dsfr/icons/editor/code-view.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/editor/code-view.svg");
+  mask-image: url("../assets/dsfr/icons/editor/code-view.svg");
 }
 
 .fr-icon-table-2::before {
-  background-image: url("file=assets/dsfr/icons/editor/table-2.svg");
+  background-image: url("../assets/dsfr/icons/editor/table-2.svg");
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/editor/table-2.svg");
-  mask-image: url("file=assets/dsfr/icons/editor/table-2.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/editor/table-2.svg");
+  mask-image: url("../assets/dsfr/icons/editor/table-2.svg");
 }
 
 .fr-icon-equalizer-line::before {
-  background-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
+  background-image: url("../assets/dsfr/icons/media/equalizer-line.svg");
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
-  mask-image: url("file=assets/dsfr/icons/media/equalizer-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/media/equalizer-line.svg");
+  mask-image: url("../assets/dsfr/icons/media/equalizer-line.svg");
 }
 
 .fr-icon-article-line::before {
-  background-image: url("file=assets/dsfr/icons/document/article-line.svg");
+  background-image: url("../assets/dsfr/icons/document/article-line.svg");
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/document/article-line.svg");
-  mask-image: url("file=assets/dsfr/icons/document/article-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/document/article-line.svg");
+  mask-image: url("../assets/dsfr/icons/document/article-line.svg");
 }
 
 .fr-icon-leaf-line::before {
-  background-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
+  background-image: url("../assets/dsfr/icons/others/leaf-line.svg");
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
-  mask-image: url("file=assets/dsfr/icons/others/leaf-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/others/leaf-line.svg");
+  mask-image: url("../assets/dsfr/icons/others/leaf-line.svg");
 }
 
 .fr-icon-arrow-right-line::before,
 .fr-icon-arrow-right-line::after {
-  background-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+  background-image: url("../assets/dsfr/icons/system/arrow-right-line.svg");
 
-  -webkit-mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
-  mask-image: url("file=assets/dsfr/icons/system/arrow-right-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/system/arrow-right-line.svg");
+  mask-image: url("../assets/dsfr/icons/system/arrow-right-line.svg");
 }
 
 .fr-icon-translate-2::before,
 .fr-icon-translate-2::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/editor/translate-2.svg");
-  mask-image: url("file=assets/dsfr/icons/editor/translate-2.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/editor/translate-2.svg");
+  mask-image: url("../assets/dsfr/icons/editor/translate-2.svg");
 }
 
 .fr-icon-booklet::before,
 .fr-icon-booklet::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/document/booklet-line.svg");
-  mask-image: url("file=assets/dsfr/icons/document/booklet-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/document/booklet-line.svg");
+  mask-image: url("../assets/dsfr/icons/document/booklet-line.svg");
 }
 
 .fr-icon-lightbulb::before,
 .fr-icon-lightbulb::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/others/lightbulb-line.svg");
-  mask-image: url("file=assets/dsfr/icons/others/lightbulb-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/others/lightbulb-line.svg");
+  mask-image: url("../assets/dsfr/icons/others/lightbulb-line.svg");
 }
 
 .fr-icon-bike::before,
 .fr-icon-bike::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/map/bike-line.svg");
-  mask-image: url("file=assets/dsfr/icons/map/bike-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/map/bike-line.svg");
+  mask-image: url("../assets/dsfr/icons/map/bike-line.svg");
 }
 
 .fr-icon-draft::before,
 .fr-icon-draft::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/document/draft-line.svg");
-  mask-image: url("file=assets/dsfr/icons/document/draft-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/document/draft-line.svg");
+  mask-image: url("../assets/dsfr/icons/document/draft-line.svg");
 }
 
 .fr-icon-briefcase::before,
 .fr-icon-briefcase::after {
-  -webkit-mask-image: url("file=assets/dsfr/icons/business/briefcase-line.svg");
-  mask-image: url("file=assets/dsfr/icons/business/briefcase-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/business/briefcase-line.svg");
+  mask-image: url("../assets/dsfr/icons/business/briefcase-line.svg");
 }
 
 .fr-icon-shuffle::before {
@@ -954,15 +954,15 @@ li.fr-nav__item {
 
 /*
 .fr-icon-back::before {
-  -webkit-mask-image: url("file=assets/extra-icons/back.svg");
-  mask-image: url("file=assets/extra-icons/back.svg");
+  -webkit-mask-image: url("../assets/extra-icons/back.svg");
+  mask-image: url("../assets/extra-icons/back.svg");
   background-color: var(--text-action-high-blue-france);
 
 } */
 
 .fr-icon--question-line {
-  -webkit-mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
-  mask-image: url("file=assets/dsfr/icons/system/question-line.svg");
+  -webkit-mask-image: url("../assets/dsfr/icons/system/question-line.svg");
+  mask-image: url("../assets/dsfr/icons/system/question-line.svg");
   background-color: var(--text-active-grey);
   color: var(--text-active-grey) !important;
   display: inline-block;
