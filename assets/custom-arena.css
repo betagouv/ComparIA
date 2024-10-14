@@ -200,8 +200,14 @@ h6.text-blue {
   gap: 0px;
 }
 
-.grid-cols-2 {
-  grid-template-columns: 1fr 1fr;
+.grid-cols-1 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48em) {
+  .grid-cols-md-2 {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 /* General */
@@ -644,8 +650,9 @@ li.fr-nav__item {
   color: var(--text-default-grey) !important;
   font-weight: 400 !important;
   font-size: 1.1rem;
-  
+
 }
+
 /* 
 .github-title img {
   vertical-align: middle;} */
@@ -725,11 +732,6 @@ li.fr-nav__item {
   top: 5px;
 }
 
-.model-details.grid {
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-  gap: 0.5rem;
-}
-
 .model-details .fr-icon--question-line {
   justify-self: right;
 }
@@ -742,12 +744,18 @@ li.fr-nav__item {
   align-items: end;
 }
 
-
 .model-details.grid {
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 0.5rem;
 }
 
+@media (min-width: 48em) {
+
+  .model-details.grid {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    gap: 0.5rem;
+  }
+}
 
 /* MODAL */
 /* Bend the modal component to our will */

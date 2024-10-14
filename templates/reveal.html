@@ -5,7 +5,7 @@
 
     <h4 class="text-center fr-mt-2w fr-mb-3w">Les IA sont démasquées !</h4>
 
-    <div class="grid grid-cols-2">
+    <div class="grid grid-cols-md-2 grid-cols-1">
         {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a,
         'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit),
         (model_b,
@@ -50,7 +50,7 @@
                     {% endif %}
                 </span>
             </p>
-            <p class="fr-mb-4w fr-text--sm text-grey">{{ model['excerpt'] }}</p>
+            <p class="fr-mb-4w fr-text--sm text-grey-200">{{ model['excerpt'] }}</p>
             <h6 class="fr-mb-1v">Bilan énergétique de votre discussion</h6>
             <p class="fr-mb-1v fr-text--xs text-grey">La taille du modèle et la longueur de ses réponses ont un impact
                 sur son
