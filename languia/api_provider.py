@@ -65,11 +65,11 @@ def process_response_stream(response, model_name=None, request=None):
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
-        if chunk.choices[0].get("finish_reason") == "stop":
+        if chunk.choices[0].finish_reason == "stop":
             data["text"] = text
             data["error_code"] = 0
             return data
-        elif chunk.choices[0].get("finish_reason") == "length":
+        elif chunk.choices[0].finish_reason == "length":
             raise ContextTooLongError
         try:
             content = chunk.choices[0].delta.content
