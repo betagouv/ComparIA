@@ -24,7 +24,7 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 templates = Jinja2Templates(directory="templates")
 
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
-gr.set_static_paths(paths=["assets/"])
+gr.set_static_paths(paths=[config.assets_absolute_path])
 # Note: access via e.g. DOMAIN/file=assets/fonts/Marianne-Bold.woff
 logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 
@@ -51,7 +51,6 @@ app = gr.mount_gradio_app(
         "/tmp/gradio",
         "custom_components",
     ],
-    # allowed_paths=[config.assets_absolute_path, "/tmp", "custom_components"],
     show_error=config.debug,
 )
 

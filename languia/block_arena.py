@@ -96,45 +96,44 @@ with gr.Blocks(
             elem_classes="fr-col-12 fr-col-md-8 fr-mx-auto",
             choices=[
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/lightbulb.svg" /><p>Générer de nouvelles idées</p></div>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/lightbulb.svg" /><p>Générer de nouvelles idées</p></div>""",
                     "ideas",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/chat-3.svg" /><p>Expliquer simplement un concept</p>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/chat-3.svg" /><p>Expliquer simplement un concept</p>""",
                     "explanations",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/translate-2.svg" /><p>M’exprimer dans une autre langue</p></div>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/translate-2.svg" /><p>M’exprimer dans une autre langue</p></div>""",
                     "languages",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/draft.svg" /><p>Rédiger un document administratif</p></div>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/draft.svg" /><p>Rédiger un document administratif</p></div>""",
                     "administrative",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/bowl.svg" /><p>Découvrir une nouvelle recette de cuisine</p></div>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/bowl.svg" /><p>Découvrir une nouvelle recette de cuisine</p></div>""",
                     "recipes",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/clipboard.svg" /><p>Obtenir des conseils sur l’alimentation et le sport</p></div>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/clipboard.svg" /><p>Obtenir des conseils sur l’alimentation et le sport</p></div>""",
                     "coach",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/book-open-line.svg" /><p>Raconter une histoire</p></div>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/book-open-line.svg" /><p>Raconter une histoire</p></div>""",
                     "stories",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="file=assets/extra-icons/music-2.svg" /><p>Proposer des idées de films, livres, musiques</p></div>""",
+                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/music-2.svg" /><p>Proposer des idées de films, livres, musiques</p></div>""",
                     "recommendations",
                 ),
             ],
         )
         shuffle_link = gr.Button(
             scale=0,
-            elem_classes="fr-btn--sm fr-btn--tertiary fr-mx-auto",
+            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
             visible=False,
             value="Générer un autre message",
-            icon="assets/extra-icons/shuffle.svg",
         )
 
     with gr.Group(

@@ -942,10 +942,14 @@ li.fr-nav__item {
   mask-image: url("file=assets/dsfr/icons/business/briefcase-line.svg");
 }
 
-.fr-icon-shuffle::before,
-.fr-icon-shuffle::after {
-  -webkit-mask-image: url("file=assets/extra-icons/shuffle.svg");
-  mask-image: url("file=assets/extra-icons/shuffle.svg");
+.fr-icon-shuffle::before {
+  -webkit-mask-image: url("../assets/extra-icons/shuffle.svg");
+  mask-image: url("../assets/extra-icons/shuffle.svg");
+
+  mask-size: 16px 16px;
+  mask-position: 0 50%;
+  mask-repeat: no-repeat;
+
 }
 
 /*

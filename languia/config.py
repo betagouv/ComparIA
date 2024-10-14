@@ -96,8 +96,8 @@ else:
 if not debug:
     assets_absolute_path = "/app/assets"
 else:
-    assets_absolute_path = os.path.dirname(__file__) + "/assets"
-
+    assets_absolute_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets"))
+    # print("assets_absolute_path: "+assets_absolute_path)
 if os.getenv("SENTRY_SAMPLE_RATE"):
     traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
 else:
