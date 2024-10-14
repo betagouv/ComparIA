@@ -113,8 +113,6 @@ def bot_response(
     update_last_message(messages, html_code)
     yield (state)
 
-    data = {"text": ""}
-
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
             # logger.debug("reported output tokens:" + str(data["output_tokens"]))
@@ -136,7 +134,7 @@ def bot_response(
 
     # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
 
-    output = data["text"].strip()
+    output = data.get("text").strip()
     if output == "":
         logger.error(f"reponse_vide: {model_name}, {endpoint_name}, data: "+str(data))
         # logger.error(data)
@@ -145,19 +143,5 @@ def bot_response(
     messages = update_last_message(messages, output)
 
     yield (state)
-    # TODO: handle them great, or reboot arena saving initial prompt
-    # except requests.exceptions.RequestException as e:
-    #     conv.update_last_message(
-    #         f"{SERVER_ERROR_MSG}\n\n"
-    #         f"(error_code: {ErrorCode.GRADIO_REQUEST_ERROR}, {e})"
-    #     )
-    #     return
-    # except Exception as e:
-    #     conv.update_last_message(
-    #         f"{SERVER_ERROR_MSG}\n\n"
-    #         f"(error_code: {ErrorCode.GRADIO_STREAM_UNKNOWN_ERROR}, {e})"
-    #     )
-    #     return
-
 
 # finish_tstamp = time.time()

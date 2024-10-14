@@ -8,7 +8,7 @@ import logging
 
 from gradio import ChatMessage
 
-
+from languia.utils import ContextTooLongError
 
 def get_api_provider_stream_iter(
     messages,
@@ -60,29 +60,39 @@ def process_response_stream(response, model_name=None, request=None):
     text = ""
     logger = logging.getLogger("languia")
 
+    data = dict()
     for chunk in response:
+
+        if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
+            data["output_tokens"] = chunk.usage.completion_tokens
+        if chunk.choices[0].get("finish_reason") == "stop":
+            data["text"] = text
+            data["error_code"] = 0
+            return data
+        elif chunk.choices[0].get("finish_reason") == "length":
+            raise ContextTooLongError
         try:
-            if len(chunk.choices) > 0:
-                content = getattr(chunk.choices[0].delta, 'content', "") or ""
-                if not hasattr(chunk.choices[0], 'delta') or not chunk.choices[0].delta:
-                    logger.warning(f"chunk.choices[0] had no delta: {str(chunk.choices[0])}", extra={"request": request})
-                    continue
+            content = chunk.choices[0].delta.content
+            if not content:
+                logger.info("no_content_in_chunk: " + str(chunk))
+                continue
+                # raise ValueError("Content is empty")
 
-                # Special handling for certain models
-                if model_name == "meta/llama3-405b-instruct-maas":
-                    content = content.replace("\\n", "\n").lstrip("assistant")
-                elif model_name == "google/gemini-1.5-pro-001":
-                    content = content.replace("<br />", "")
+            # Special handling for certain models
+            if model_name == "meta/llama3-405b-instruct-maas":
+                content = content.replace("\\n", "\n").lstrip("assistant")
+            elif model_name == "google/gemini-1.5-pro-001":
+                content = content.replace("<br />", "")
 
-                text += content
+            text += content
 
-                data = {"text": text, "error_code": 0}
-                if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-                    data["output_tokens"] = chunk.usage.completion_tokens
+            data["text"] = text
+            data["error_code"] = 0
 
-                yield data
-        except:
-            raise
+            yield data
+        except Exception as e:
+            logger.error("erreur_chunk: " + str(chunk))
+            raise e
 
 
 def openai_api_stream_iter(
@@ -119,7 +129,8 @@ def openai_api_stream_iter(
         # top_p=top_p,
     )
     yield from process_response_stream(res, model_name=model_name, request=request)
-    
+
+
 def vertex_api_stream_iter(
     api_base, model_name, messages, temperature, top_p, max_new_tokens, request=None
 ):
