@@ -42,41 +42,36 @@ stream_logs.setLevel(logging.INFO)
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
-async def create_outage(model_name: str, reason: str = None, confirm: bool = True):
+async def create_outage(model_name: str, endpoint: str, reason: str = None, confirm: bool = True):
     try:
         outage = {
             "detection_time": datetime.now().isoformat(),
             "model_name": model_name,
+            "endpoint_name": endpoint,
             "reason": reason,
         }
 
-        # Check if the model name already exists in the outages list
-        existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
-
-        if existing_outage:
-            await remove_outage(model_name)
-        
         # Double-check the outage!!!
         if confirm:
             confirm_outage = await test_model(model_name)
-            if confirm_outage["success"]:
-                return "Didn't add to outages as test was successful"
+            print(confirm_outage)
+            if confirm_outage.get("success", False):
+                        
+                # Check if the model name already exists in the outages list
+                existing_outage = next((o for o in outages if o["model_name"] == model_name and  o["endpoint_name"] == endpoint), None)
+
+                if existing_outage:
+                    await remove_outage(model_name, endpoint)
+                return "Didn't add to outages and removed as test was successful"
         
         outages.append(outage)
+
+        if existing_outage:
+            await remove_outage(model_name, endpoint)
+        # Check if the model name already exists in the outages list
+        existing_outage = next((o for o in outages if o["model_name"] == model_name and  o["endpoint_name"] == endpoint), None)
         return outage
 
-    except HTTPException as e:
-        if e.status_code == 422:
-            print("Couldn't get the whole reason: ")
-            print(reason)
-            outage = {
-                "detection_time": datetime.now().isoformat(),
-                "model_name": model_name,
-                "reason": "Too long to be posted",
-            }
-            outages.append(outage)
-        else:
-            raise
     except Exception as e:
         if os.getenv("SENTRY_DSN"):
             sentry_sdk.capture_exception(e)
@@ -91,7 +86,7 @@ async def get_outages():
     Returns:
         List[str]: A list of model names.
     """
-    return (o["model_name"] for o in outages)
+    return ({o["model_name"], o['endpoint_name']} for o in outages)
 
 
 @app.get("/outages/{model_name}/delete", status_code=204)
@@ -188,7 +183,7 @@ async def test_model(model_name):
                 if res.choices:
                     text = res.choices[0].message.content or ""
 
-            # Check if the response is successful
+# FIXME: only remove the endpoint+model pair
             if text:
                 logging.info(f"Test successful: {model_name}")
                 if any(outage["model_name"] == model_name for outage in outages):
