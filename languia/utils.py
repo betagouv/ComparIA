@@ -806,13 +806,13 @@ def gen_prompt(category):
     return prompts[np.random.randint(len(prompts))]
 
 
-def refresh_outage_models(previous_outage_models, controller_url):
+def refresh_outages(previous_outages, controller_url):
     logger = logging.getLogger("languia")
     try:
         response = requests.get(controller_url + "/outages/", timeout=2)
     except Exception as e:
         logger.error("controller_inaccessible: " + str(e))
-        return previous_outage_models
+        return previous_outages
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -823,7 +823,7 @@ def refresh_outage_models(previous_outage_models, controller_url):
         logger.warning(
             f"Failed to retrieve outage data. Status code: {response.status_code}"
         )
-        return previous_outage_models
+        return previous_outages
 
 
 def add_outage_model(controller_url, model_name, endpoint_name, reason):
