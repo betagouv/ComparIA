@@ -61,28 +61,25 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     for chunk in response:
-        try:
-            if len(chunk.choices) > 0:
-                content = getattr(chunk.choices[0].delta, 'content', "") or ""
-                if not hasattr(chunk.choices[0], 'delta') or not chunk.choices[0].delta:
-                    logger.warning(f"chunk.choices[0] had no delta: {str(chunk.choices[0])}", extra={"request": request})
-                    continue
+        if len(chunk.choices) > 0:
+            content = getattr(chunk.choices[0].delta, 'content', "") or ""
+            if not hasattr(chunk.choices[0], 'delta') or not chunk.choices[0].delta:
+                logger.warning(f"chunk.choices[0] had no delta: {str(chunk.choices[0])}", extra={"request": request})
+                continue
 
-                # Special handling for certain models
-                if model_name == "meta/llama3-405b-instruct-maas":
-                    content = content.replace("\\n", "\n").lstrip("assistant")
-                elif model_name == "google/gemini-1.5-pro-001":
-                    content = content.replace("<br />", "")
+            # Special handling for certain models
+            if model_name == "meta/llama3-405b-instruct-maas":
+                content = content.replace("\\n", "\n").lstrip("assistant")
+            elif model_name == "google/gemini-1.5-pro-001":
+                content = content.replace("<br />", "")
 
-                text += content
+            text += content
 
-                data = {"text": text, "error_code": 0}
-                if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-                    data["output_tokens"] = chunk.usage.completion_tokens
+            data = {"text": text, "error_code": 0}
+            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
+                data["output_tokens"] = chunk.usage.completion_tokens
 
-                yield data
-        except:
-            raise
+            yield data
 
 
 def openai_api_stream_iter(

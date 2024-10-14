@@ -14,7 +14,6 @@
             <tr>
                 <th>Modèle</th>
                 <th>Date de détection</th>
-                <th>Endpoint</th>
                 <th>Raison</th>
                 <th>Réessayer ?</th>
                 <th>Réactiver de force ?</th>
@@ -23,7 +22,6 @@
             <tr>
                 <td>{{ outage.model_name }}</td>
                 <td>{{ outage.detection_time }}</td>
-                <td><em>Pas encore disponible</em></td>
                 <td>{% if outage.reason %}
                     {{ outage.reason|string|truncate(500, True) }}
                     {% else %}
@@ -44,11 +42,11 @@
                 <th>API</th>
                 <!-- <th>Stats</th> -->
             </tr>
-            {% for model in endpoints %}
+            {% for model_name, model in models.items() %}
             <tr>
-                <td>{{ model['model_id'] }}</td>
-                <td><a href="/outages/{{ model['model_id'] }}">Tester ?</a></td>
-                <td><a href="/outages/{{ model['model_id'] }}/create?confirm=false">Désactiver ?</a></td>
+                <td>{{ model_name }}</td>
+                <td><a href="/outages/{{ model_name }}">Tester ?</a></td>
+                <td><a href="/outages/{{ model_name }}/create?confirm=false">Désactiver ?</a></td>
                 <td>{{ model["api_base"] | string | truncate(100, True) }}</td>
             </tr>
             {% endfor %}

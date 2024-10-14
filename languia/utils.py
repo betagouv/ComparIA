@@ -29,11 +29,6 @@ import traceback
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
-class ContextTooLongError(ValueError):
-    pass
-class EmptyResponseError(RuntimeError):
-    pass
-
 # https://docs.python.org/3/howto/logging.html#arbitrary-object-messages
 # https://docs.python.org/3/howto/logging-cookbook.html#formatting-styles
 
@@ -585,9 +580,9 @@ def build_reveal_html(
     model_a_tokens,
     model_b_tokens,
 ):
-    env = Environment(loader=FileSystemLoader("templates"))
+    env = Environment(loader=FileSystemLoader('templates'))
 
-    template = env.get_template("reveal.html")
+    template = env.get_template('reveal.html')
     chosen_model = get_chosen_model(which_model_radio)
     lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(
         model_a_impact.energy.value
@@ -676,7 +671,7 @@ def get_model_extra_info(name: str, models_extra_info: list):
             return model
     return {
         "id": "other",
-        "params": 7,
+        "params": "7",
         "simple_name": "Autre",
         "organisation": "Autre",
         "friendly_size": "M",
@@ -690,21 +685,24 @@ def get_model_extra_info(name: str, models_extra_info: list):
     }
 
 
-def get_model_list(_controller_url, api_endpoint_info):
+def get_model_list(controller_url, api_endpoint_info):
     logger = logging.getLogger("languia")
 
     # Add models from the controller
-    # if controller_url:
-    #     ret = requests.post(controller_url + "/refresh_all_workers")
-    #     assert ret.status_code == 200
+    if controller_url:
+        ret = requests.post(controller_url + "/refresh_all_workers")
+        assert ret.status_code == 200
 
-    #     ret = requests.post(controller_url + "/list_language_models")
-    #     models = ret.json()["models"]
-    # else:
-    models = []
+        ret = requests.post(controller_url + "/list_language_models")
+        models = ret.json()["models"]
+    else:
+        models = []
 
     # Add models from the API providers
-    models.extend(mdl["model_id"] for mdl in api_endpoint_info if mdl["model_id"] not in models)
+    for mdl, mdl_dict in api_endpoint_info.items():
+        models.append(mdl)
+
+    models = list(set(models))
 
     logger.debug(f"All models: {models}")
     return models
