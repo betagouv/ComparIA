@@ -832,6 +832,7 @@ def add_outage_model(controller_url, model_name, endpoint_name, reason):
     try:
         response = requests.post(
             params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
+            # params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
             url=f"{controller_url}/outages/",
             timeout=2,
         )
