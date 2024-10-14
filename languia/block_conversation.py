@@ -74,17 +74,17 @@ def bot_response(
             raise RuntimeError(error_msg)
 
     messages, model_name = state.messages, state.model_name
-    model_api_endpoints = [endpoint for endpoint in config.api_endpoint_info if endpoint["model_id"] == model_name]
-        
-    if model_api_endpoints == []:
-        logger.critical("No endpoint for model name: " + str(model_name))
-    else:
+    model_api_dict = (
+        config.api_endpoint_info[model_name]
+        if model_name in config.api_endpoint_info
+        else None
+    )
 
-        endpoint = random.choice(model_api_endpoints)
-        endpoint_name = endpoint["api_base"].split("/")[2]
-        logger.info(f"picked_endpoint: {endpoint_name} for {model_name}")
+    if model_api_dict is None:
+        logger.critical("No model for model name: " + model_name)
+    else:
         if use_recommended_config:
-            recommended_config = endpoint.get("recommended_config", None)
+            recommended_config = model_api_dict.get("recommended_config", None)
             if recommended_config is not None:
                 temperature = recommended_config.get("temperature", float(temperature))
                 top_p = recommended_config.get("top_p", float(top_p))
@@ -95,7 +95,7 @@ def bot_response(
             stream_iter = get_api_provider_stream_iter(
                 messages,
                 model_name,
-                endpoint,
+                model_api_dict,
                 temperature,
                 top_p,
                 max_new_tokens,
@@ -136,9 +136,9 @@ def bot_response(
 
     output = data.get("text").strip()
     if output == "":
-        logger.error(f"reponse_vide: {model_name}, {endpoint_name}, data: "+str(data))
+        logger.error(f"reponse_vide: {model_name}, data: "+str(data))
         # logger.error(data)
-        raise EmptyResponseError(f"No answer from API {endpoint_name} for model {model_name}")
+        raise EmptyResponseError(f"No answer from API for model {model_name}")
 
     messages = update_last_message(messages, output)
 
