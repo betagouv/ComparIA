@@ -193,7 +193,7 @@ conditions = "restricted"
 excerpt = "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
 description = "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts (MoE), dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
 params = 40
-license = "Llama 3.1"
+license = "propriétaire Liquid"
 
 ["llama-3.1-405b"]
 url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct"
