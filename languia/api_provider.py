@@ -10,7 +10,6 @@ from gradio import ChatMessage
 
 from languia.utils import ContextTooLongError
 
-
 def get_api_provider_stream_iter(
     messages,
     model_name,
@@ -62,23 +61,21 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     data = dict()
-    # data["text"] = ""
-    buffer = ""
-    buffer_output_tokens = 0
-
     for chunk in response:
 
+        if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
+            data["output_tokens"] = chunk.usage.completion_tokens
         if chunk.choices[0].finish_reason == "stop":
             data["text"] = text
             data["error_code"] = 0
-            data["output_tokens"] = buffer_output_tokens
             return data
-        # elif chunk.choices[0].finish_reason == "length":
-        #     raise ContextTooLongError
+        elif chunk.choices[0].finish_reason == "length":
+            raise ContextTooLongError
         try:
             content = chunk.choices[0].delta.content
             if not content:
                 logger.info("no_content_in_chunk: " + str(chunk))
+                continue
                 # raise ValueError("Content is empty")
 
             # Special handling for certain models
@@ -87,25 +84,12 @@ def process_response_stream(response, model_name=None, request=None):
             elif model_name == "google/gemini-1.5-pro-001":
                 content = content.replace("<br />", "")
 
-            # Add the new output to the buffer
             text += content
-            buffer += content
 
             data["text"] = text
             data["error_code"] = 0
 
-            # Check for sentence-ending condition (a period or 20 words)
-            if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-                    buffer_output_tokens += chunk.usage.completion_tokens
-            if len(buffer.split()) >= 30:
-                # if len(buffer.split()) >= 30 or len(text.split()) < 30:
-                # if "\n" in buffer or "." in buffer:
-
-                # Reset word count after yielding
-                buffer = ""
-                data["output_tokens"] = buffer_output_tokens
-                buffer_output_tokens = 0
-                yield data
+            yield data
         except Exception as e:
             logger.error("erreur_chunk: " + str(chunk))
             raise e
