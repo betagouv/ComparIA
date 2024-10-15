@@ -65,34 +65,39 @@ def process_response_stream(response, model_name=None, request=None):
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
-        if chunk.choices[0].finish_reason == "stop":
-            data["text"] = text
-            data["error_code"] = 0
-            return data
-        elif chunk.choices[0].finish_reason == "length":
-            raise ContextTooLongError
-        try:
-            content = chunk.choices[0].delta.content
-            if not content:
-                logger.info("no_content_in_chunk: " + str(chunk))
-                continue
-                # raise ValueError("Content is empty")
+        if hasattr(chunk, "choices") and len(chunk.choices) > 0:
+            if hasattr(chunk.choices[0], "finish_reason"):
+                if chunk.choices[0].finish_reason == "stop":
+                    data["text"] = text
+                    data["error_code"] = 0
+                    return data
+                elif chunk.choices[0].finish_reason == "length":
+                    raise ContextTooLongError
+            # try:
+                if hasattr(chunk.choices[0], "delta") and hasattr(chunk.choices[0].delta, "content"):
+                    content = chunk.choices[0].delta.content
+                else:
+                    content = ""
+                if not content:
+                    logger.info("no_content_in_chunk: " + str(chunk))
+                    continue
+                    # raise ValueError("Content is empty")
 
-            # Special handling for certain models
-            if model_name == "meta/llama3-405b-instruct-maas":
-                content = content.replace("\\n", "\n").lstrip("assistant")
-            elif model_name == "google/gemini-1.5-pro-001":
-                content = content.replace("<br />", "")
+                # Special handling for certain models
+                if model_name == "meta/llama3-405b-instruct-maas":
+                    content = content.replace("\\n", "\n").lstrip("assistant")
+                elif model_name == "google/gemini-1.5-pro-001":
+                    content = content.replace("<br />", "")
 
-            text += content
+                text += content
 
-            data["text"] = text
-            data["error_code"] = 0
+                data["text"] = text
+                data["error_code"] = 0
 
-            yield data
-        except Exception as e:
-            logger.error("erreur_chunk: " + str(chunk))
-            raise e
+                yield data
+        # except Exception as e:
+        #     logger.error("erreur_chunk: " + str(chunk))
+        #     raise e
 
 
 def openai_api_stream_iter(
