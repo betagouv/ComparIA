@@ -76,12 +76,12 @@ with gr.Blocks(
     conv_b = gr.State(value=Conversation())
     # model_selectors = [None] * num_sides
 
+    # gr.HTML(elem_id="header-placeholder")
+    header = gr.HTML(header_html, elem_id="header-html")
+
     # TODO: check cookies on load!
     # tos_cookie = check_for_tos_cookie(request)
     welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
-
-    # gr.HTML(elem_id="header-placeholder")
-    header = gr.HTML(header_html, elem_id="header-html")
 
     with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w") as mode_screen:
 
