@@ -68,7 +68,7 @@ def process_response_stream(response, model_name=None, request=None):
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
         if chunk.choices[0].finish_reason == "stop":
-            data["text"] += buffer
+            # data["text"] += buffer
             data["error_code"] = 0
             return data
         elif chunk.choices[0].finish_reason == "length":
@@ -86,17 +86,17 @@ def process_response_stream(response, model_name=None, request=None):
             elif model_name == "google/gemini-1.5-pro-001":
                 content = content.replace("<br />", "")
 
+            # Add the new output to the buffer
             text += content
+            buffer += content
 
             data["text"] = text
             data["error_code"] = 0
 
-            # Add the new output to the buffer
-            buffer += content
 
             # Check for sentence-ending condition (a period or 20 words)
             if len(buffer.split()) >= 30:
-            # if "." in buffer or len(buffer.split()) >= 100:
+            # if "\n" in buffer or "." in buffer:
 
                 # Reset word count after yielding
                 buffer = ""
