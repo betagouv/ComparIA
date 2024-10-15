@@ -61,6 +61,8 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     data = dict()
+    buffer = ""
+
     for chunk in response:
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
@@ -89,11 +91,19 @@ def process_response_stream(response, model_name=None, request=None):
             data["text"] = text
             data["error_code"] = 0
 
-            yield data
+            # Add the new output to the buffer
+            buffer += content
+
+            # Check for sentence-ending condition (a period or 20 words)
+            if len(buffer.split()) >= 30:
+            # if "." in buffer or len(buffer.split()) >= 100:
+
+                # Reset word count after yielding
+                buffer = ""
+                yield data
         except Exception as e:
             logger.error("erreur_chunk: " + str(chunk))
             raise e
-
 
 def openai_api_stream_iter(
     model_name,
