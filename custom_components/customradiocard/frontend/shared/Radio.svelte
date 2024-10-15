@@ -51,7 +51,7 @@
 		transition: var(--button-transition);
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
-		border: 1px solid #E5E5E5 !important;
+		outline: 1px solid #E5E5E5;
 		border-radius: 0.5rem;
 		background-color: white;
 		color: var(--grey-200-850);
@@ -88,29 +88,29 @@
 		background-color: var(--checkbox-background-color);
 		line-height: var(--line-sm); */
 	}
-
+/* 
 	input:checked,
 	input:checked:hover {
-		border-color: var(--checkbox-border-color-selected);
+		outline-color: var(--checkbox-border-color-selected);
 		background-image: var(--radio-circle);
 		background-color: var(--checkbox-background-color-selected);
 	}
 
 	input:hover {
-		border-color: var(--checkbox-border-color-hover);
+		outline-color: var(--checkbox-border-color-hover);
 		background-color: var(--checkbox-background-color-hover);
 	}
 
 	input:focus {
-		border-color: var(--checkbox-border-color-focus);
+		outline-color: var(--checkbox-border-color-focus);
 		background-color: var(--checkbox-background-color-focus);
 	}
 
 	input:checked:focus {
-		border-color: var(--checkbox-border-color-focus);
+		outline-color: var(--checkbox-border-color-focus);
 		background-image: var(--radio-circle);
 		background-color: var(--checkbox-background-color-selected);
-	}
+	} */
 
 	input[disabled],
 	.disabled {
