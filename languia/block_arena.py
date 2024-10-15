@@ -137,7 +137,7 @@ with gr.Blocks(
         )
 
     with gr.Group(
-        elem_id="chat-area", elem_classes="fr-mb-10w fr-mb-md-0", visible=False
+        elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
 
         # {likeable}
