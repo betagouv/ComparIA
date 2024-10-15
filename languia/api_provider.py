@@ -62,13 +62,14 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     data = dict()
+    # data["text"] = ""
     buffer = ""
     buffer_output_tokens = 0
 
     for chunk in response:
 
         if chunk.choices[0].finish_reason == "stop":
-            # data["text"] += buffer
+            data["text"] = text
             data["error_code"] = 0
             data["output_tokens"] = buffer_output_tokens
             return data
@@ -78,7 +79,6 @@ def process_response_stream(response, model_name=None, request=None):
             content = chunk.choices[0].delta.content
             if not content:
                 logger.info("no_content_in_chunk: " + str(chunk))
-                continue
                 # raise ValueError("Content is empty")
 
             # Special handling for certain models

@@ -131,7 +131,8 @@ def bot_response(
             yield (state)
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
-
+    # else: 
+    #     raise EmptyResponseError(f"No answer from API for model {model_name}")
     # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
 
     output = data.get("text").strip()
