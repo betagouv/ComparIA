@@ -10,6 +10,7 @@ from gradio import ChatMessage
 
 from languia.utils import ContextTooLongError
 
+
 def get_api_provider_stream_iter(
     messages,
     model_name,
@@ -93,10 +94,11 @@ def process_response_stream(response, model_name=None, request=None):
             data["text"] = text
             data["error_code"] = 0
 
-
             # Check for sentence-ending condition (a period or 20 words)
+
             if len(buffer.split()) >= 30:
-            # if "\n" in buffer or "." in buffer:
+                # if len(buffer.split()) >= 30 or len(text.split()) < 30:
+                # if "\n" in buffer or "." in buffer:
 
                 # Reset word count after yielding
                 buffer = ""
@@ -104,6 +106,7 @@ def process_response_stream(response, model_name=None, request=None):
         except Exception as e:
             logger.error("erreur_chunk: " + str(chunk))
             raise e
+
 
 def openai_api_stream_iter(
     model_name,

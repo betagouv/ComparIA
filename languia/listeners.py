@@ -285,12 +285,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                             # # Artificially slow faster Google Vertex API
                             # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
                             # if iters % 30 == 1 or iters < 3:
+                            # if not (model_api_dict["api_type"] == "vertex" and i < 15):
+                            #     ret = next(gen[i])
+                            # elif (model_api_dict["api_type"] == "vertex" and i < 1):
                             ret = next(gen[i])
                             conversations[i] = ret
                             stop = False
-                        # When context is too long, Albert apis answer:
+                        # When context is too long, Albert API answers:
                         # openai.BadRequestError: Error code: 400 - {'detail': 'Context length too large'}
-                        # When context is too long, HF apis answer:
+                        # When context is too long, HF API answers:
                         # "openai.APIError: An error occurred during streaming"
                         except (openai.APIError, openai.BadRequestError):
                             # logger.error(
