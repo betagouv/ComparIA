@@ -49,12 +49,6 @@ def register_listeners():
 
     # Step 0
 
-    @demo.load(
-        inputs=[conv_a, conv_b],
-        outputs=[conv_a, conv_b],
-        api_name=False,
-        show_progress="hidden",
-    )
     def enter_arena(conv_a, conv_b, request: gr.Request):
 
         # TODO: to get rid of!
@@ -106,6 +100,35 @@ def register_listeners():
         )
         conv_a, conv_b = init_conversations([conv_a, conv_b], request)
         return [conv_a, conv_b]
+
+    gr.on(
+        triggers=[demo.load],
+        fn=enter_arena,
+        inputs=[conv_a, conv_b],
+        outputs=[conv_a, conv_b],
+        api_name=False,
+        show_progress="hidden",
+    ).then(
+        fn=(lambda: None),
+        inputs=None,
+        outputs=None,
+        js="""(args) => {
+setTimeout(() => {
+document.getElementById("fr-modal-welcome-close").blur()
+
+const cookieExists = document.cookie.includes('comparia_already_visited');
+// Check if "already_visited" cookie exists
+if (!cookieExists) {
+    document.cookie = 'name=comparia_already_visited; SameSite=None; Secure;'
+    console.log("First visit: Cookie created, modal stays open");
+} else {
+    const modal = document.getElementById("fr-modal-welcome");
+    dsfr(modal).modal.conceal();
+    console.log("Cookie exists: Modal closed");
+}
+}, 500);
+}""",
+    )
 
     # Step 1
 
