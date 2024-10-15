@@ -16,7 +16,6 @@ function() {
   window.addEventListener('click', adjustFooter);
   adjustFooter();
 
-
-
 }
+
 
