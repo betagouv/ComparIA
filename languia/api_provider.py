@@ -72,8 +72,8 @@ def process_response_stream(response, model_name=None, request=None):
             # data["text"] += buffer
             data["error_code"] = 0
             return data
-        elif chunk.choices[0].finish_reason == "length":
-            raise ContextTooLongError
+        # elif chunk.choices[0].finish_reason == "length":
+        #     raise ContextTooLongError
         try:
             content = chunk.choices[0].delta.content
             if not content:
