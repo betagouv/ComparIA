@@ -94,25 +94,18 @@ def register_listeners():
         # TODO: actually check for it
         # tos_accepted = request...
         # if tos_accepted:
-
-        already_visited = any(cookie[1] == "comparia_already_visited" for cookie in request.cookies.items())
-
         logger.info(
             f"init_arene, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
         conv_a, conv_b = init_conversations([conv_a, conv_b], request)
-
-        show_welcome_modal = gr.HTML(value="") if already_visited else gr.skip()
-
-
-        return [conv_a, conv_b, show_welcome_modal]
+        return [conv_a, conv_b]
 
     gr.on(
         triggers=[demo.load],
         fn=enter_arena,
         inputs=[conv_a, conv_b],
-        outputs=[conv_a, conv_b, welcome_modal],
+        outputs=[conv_a, conv_b],
         api_name=False,
         show_progress="hidden",
     ).then(
@@ -128,6 +121,10 @@ const cookieExists = document.cookie.includes('comparia_already_visited');
 if (!cookieExists) {
     document.cookie = 'name=comparia_already_visited; SameSite=None; Secure;'
     console.log("First visit: Cookie created, modal stays open");
+} else {
+    const modal = document.getElementById("fr-modal-welcome");
+    dsfr(modal).modal.conceal();
+    console.log("Cookie exists: Modal closed");
 }
 }, 500);
 }""",
