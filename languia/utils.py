@@ -29,10 +29,14 @@ import traceback
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
+
 class ContextTooLongError(ValueError):
     pass
+
+
 class EmptyResponseError(RuntimeError):
     pass
+
 
 # https://docs.python.org/3/howto/logging.html#arbitrary-object-messages
 # https://docs.python.org/3/howto/logging-cookbook.html#formatting-styles
@@ -408,7 +412,13 @@ def get_battle_pair(
     if len(models) == 0:
         logger.critical("Model list doesn't contain any model")
         # Maybe sleep then kill container?
-        raise ValueError("Model list doesn't contain any model")
+        raise gr.Error(
+            duration=0,
+            message="Le comparateur a un problème et les modèles ne sont plus disponibles, veuillez revenir plus tard.",
+        )
+        # os.kill(os.getpid(), signal.SIGINT)
+        # parent = psutil.Process(psutil.Process(os.getpid()).ppid())
+        # parent.kill()
 
     if len(models) == 1:
         logger.warn("Only one model configured! Making it fight with itself")
