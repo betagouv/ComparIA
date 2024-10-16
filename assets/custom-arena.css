@@ -1,9 +1,9 @@
 /* BUGFIXES */
 
 /* Hide all warning messages from Gradio to hide the "Warning: this connection might break on mobile" */
-.toast-body.warning {
+/* .toast-body.warning {
   display: none;
-}
+} */
 
 /* Gradio overrides */
 :root {
