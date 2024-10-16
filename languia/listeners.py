@@ -333,6 +333,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         "error": str(e),
                         "stacktrace": traceback.format_exc(),
                     },
+                    exc_info=True,
                 )
                 # TODO: do that only when controller is offline
                 config.outage_models.append(conversations[i].model_name)
@@ -404,7 +405,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                     app_state.awaiting_responses = False
                     logger.error(
                         f"erreur_milieu_discussion: {conversations[i].model_name}, "
-                        + str(e)
+                        + str(e),
+                        extra={request: request},
+                        exc_info=True,
                     )
                     raise gr.Error(
                         duration=0,
@@ -439,7 +442,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         return [app_state, conv_a, conv_b, chatbot, textbox]
 
     def enable_conclude(textbox):
-
+        # print(app_state.__dict__)
         return {
             conclude_btn: gr.update(interactive=True),
             send_btn: gr.update(interactive=(textbox != "")),

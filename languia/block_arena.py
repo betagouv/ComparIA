@@ -42,6 +42,9 @@ class AppState:
         self.original_user_prompt = original_user_prompt
         self.category = category
 
+    # def to_dict(self) -> dict:
+    #     return self.__dict__.copy()
+
 
 with gr.Blocks(
     title="Compar:IA – Le comparateur d'IA conversationnelles",

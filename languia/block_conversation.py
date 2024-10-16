@@ -30,7 +30,12 @@ from fastchat.constants import (
 from languia.api_provider import get_api_provider_stream_iter
 
 
-from languia.utils import get_ip, is_limit_reached, ContextTooLongError, EmptyResponseError
+from languia.utils import (
+    get_ip,
+    is_limit_reached,
+    ContextTooLongError,
+    EmptyResponseError,
+)
 from languia import config
 
 import logging
@@ -106,6 +111,7 @@ def bot_response(
             logger.error(
                 f"Error in get_api_provider_stream_iter. error: {e}",
                 extra={request: request},
+                exc_info=True,
             )
 
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
@@ -131,18 +137,23 @@ def bot_response(
             yield (state)
         else:
             raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
-    # else: 
+    # else:
     #     raise EmptyResponseError(f"No answer from API for model {model_name}")
     # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
 
     output = data.get("text").strip()
     if output == "":
-        logger.error(f"reponse_vide: {model_name}, data: "+str(data))
+        logger.error(
+            f"reponse_vide: {model_name}, data: " + str(data),
+            exc_info=True,
+            extra={request: request},
+        )
         # logger.error(data)
         raise EmptyResponseError(f"No answer from API for model {model_name}")
 
     messages = update_last_message(messages, output)
 
     yield (state)
+
 
 # finish_tstamp = time.time()
