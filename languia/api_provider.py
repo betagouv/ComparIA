@@ -72,7 +72,9 @@ def process_response_stream(response, model_name=None, request=None):
                     data["error_code"] = 0
                     break
                 elif chunk.choices[0].finish_reason == "length":
-                    raise ContextTooLongError
+                    # cannot raise ContextTooLong because sometimes only the model stops because of current answer's (output) length limit,
+                    # raise ContextTooLongError
+                    break
             # try:
                 if hasattr(chunk.choices[0], "delta") and hasattr(chunk.choices[0].delta, "content"):
                     content = chunk.choices[0].delta.content
