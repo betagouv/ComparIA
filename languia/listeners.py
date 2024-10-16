@@ -327,7 +327,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 openai.BadRequestError,
             ) as e:
                 logger.error(
-                    f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{traceback.format_exc()}",
+                    f"erreur_modele: {str(conversations[i].model_name)}, {str(e)}\n{str(traceback.format_exc())}",
                     extra={
                         "request": request,
                         "error": str(e),
@@ -406,10 +406,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                         f"erreur_milieu_discussion: {conversations[i].model_name}, "
                         + str(e)
                     )
-                    raise gr.Error(
-                        duration=0,
-                        message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
-                    )
+
+                    app_state.interrupted_conversation = True
+                    # from block_conversation import html_code
+                    # # Remove up to 2 entries w/ only "En attente de la réponse"
+                    # if chatbot[-1] == html_code:
+                    #     chatbot = chatbot[:-1]
+                    # if chatbot[-1] == html_code:
+                    #     chatbot = chatbot[:-1]
+                    return [app_state, conv_a, conv_b, chatbot, textbox]
                     # break
             else:
                 # TODO: ???
@@ -438,11 +443,16 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b = conversations[1]
         return [app_state, conv_a, conv_b, chatbot, textbox]
 
-    def enable_conclude(textbox):
-
+    def enable_conclude_or_fail(app_state, textbox_input):
+        if app_state.interrupted_conversation:
+            raise gr.Error(
+                duration=0,
+                message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
+            ) 
         return {
+            textbox: gr.skip(),
             conclude_btn: gr.update(interactive=True),
-            send_btn: gr.update(interactive=(textbox != "")),
+            send_btn: gr.update(interactive=(textbox_input != "")),
         }
 
     gr.on(
@@ -495,7 +505,9 @@ setTimeout(() => {
         # scroll_to_output=True,
         # FIXME: return of bot_response_multi couldn't set conclude_btn and send_btn :'(
     ).then(
-        fn=enable_conclude, inputs=[textbox], outputs=[conclude_btn, send_btn]
+        fn=enable_conclude_or_fail,
+        inputs=[app_state, textbox],
+        outputs=[textbox, conclude_btn, send_btn],
     )
     # // Enable navigation prompt
     # window.onbeforeunload = function() {
