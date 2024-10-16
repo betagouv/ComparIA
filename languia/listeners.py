@@ -132,7 +132,7 @@ document.getElementById("fr-modal-welcome-close").blur();
     # Step 1.1
     @guided_cards.change(
         inputs=[guided_cards],
-        outputs=[send_btn, send_area, textbox, shuffle_link],
+        outputs=[app_state, send_btn, send_area, textbox, shuffle_link],
         api_name=False,
         show_progress="hidden",
     )
@@ -148,6 +148,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             extra={"request": request},
         )
         return {
+            app_state: app_state,
             send_btn: gr.update(interactive=True),
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
