@@ -445,10 +445,20 @@ document.getElementById("fr-modal-welcome-close").blur();
 
     def enable_conclude_or_fail(app_state, textbox_input):
         if app_state.interrupted_conversation:
-            raise gr.Error(
+            gr.Warning(
                 duration=0,
                 message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
             ) 
+            return {
+                textbox: gr.update(visible=False),
+                conclude_btn: gr.update(interactive=True),
+                send_btn: gr.update(visible=False),
+            }
+            # raise gr.Error(
+            #     duration=0,
+            #     message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
+            # )
+
         return {
             textbox: gr.skip(),
             conclude_btn: gr.update(interactive=True),
