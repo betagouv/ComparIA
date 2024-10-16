@@ -20,6 +20,7 @@ from custom_components.frinput.backend.gradio_frinput import FrInput
 
 from languia import config
 
+
 # // Enable navigation prompt
 # window.onbeforeunload = function() {
 #     return true;
@@ -27,20 +28,37 @@ from languia import config
 # // Remove navigation prompt
 # window.onbeforeunload = null;
 class Conversation:
-    def __init__(self, messages=[], output_tokens=None, conv_id=None, template=None, model_name=None):
+    def __init__(
+        self,
+        messages=[],
+        output_tokens=None,
+        conv_id=None,
+        template=None,
+        model_name=None,
+    ):
         self.messages = messages
         self.output_tokens = output_tokens
         self.conv_id = conv_id
         self.template = template
         self.model_name = model_name
 
+
 class AppState:
-    def __init__(self, awaiting_responses=False, model_left=None, model_right=None, original_user_prompt=None, category=None):
+    def __init__(
+        self,
+        awaiting_responses=False,
+        model_left=None,
+        model_right=None,
+        original_user_prompt=None,
+        category=None,
+        interrupted_conversation=False,
+    ):
         self.awaiting_responses = awaiting_responses
         self.model_left = model_left
         self.model_right = model_right
         self.original_user_prompt = original_user_prompt
         self.category = category
+        self.interrupted_conversation = interrupted_conversation
 
 
 with gr.Blocks(
@@ -55,20 +73,19 @@ with gr.Blocks(
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
 
+    # def set_conv_state(state, model_name=""):
+    #     # self.messages = get_conversation_template(model_name)
+    #     state.messages = []
+    #     state.output_tokens = None
 
-        # def set_conv_state(state, model_name=""):
-        #     # self.messages = get_conversation_template(model_name)
-        #     state.messages = []
-        #     state.output_tokens = None
+    #     # TODO: get it from api if generated
+    #     state.conv_id = uuid.uuid4().hex
 
-        #     # TODO: get it from api if generated
-        #     state.conv_id = uuid.uuid4().hex
-
-        #     # TODO: add template info? and test it
-        #     state.template_name = "zero_shot"
-        #     state.template = []
-        #     state.model_name = model_name
-        #     return state
+    #     # TODO: add template info? and test it
+    #     state.template_name = "zero_shot"
+    #     state.template = []
+    #     state.model_name = model_name
+    #     return state
 
     app_state = gr.State(value=AppState())
 
@@ -194,7 +211,8 @@ with gr.Blocks(
                 elem_classes="grow-0 purple-btn",
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            conclude_btn = gr.Button(size="lg",
+            conclude_btn = gr.Button(
+                size="lg",
                 value="Passer à l'étape suivante",
                 elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
                 visible=False,
@@ -207,7 +225,8 @@ with gr.Blocks(
         elem_classes="fr-container min-h-screen fr-pt-4w",
         elem_id="vote-area",
     ) as vote_area:
-        gr.HTML(elem_classes="text-center",
+        gr.HTML(
+            elem_classes="text-center",
             value="""
             <span class="step-badge">Étape 2/3</span>
             <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>

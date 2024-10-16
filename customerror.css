@@ -1,0 +1,27 @@
+
+.toast-text {
+    font-size: medium;
+    color: gray;
+}
+.toast-body {
+    border: 2px solid lightgray;
+    background: white;
+}
+
+.toast-body {
+    display: flex;
+    align-items: flex-start;
+}
+
+
+.toast-wrap.svelte-pu0yf1 {
+    display: flex;
+    position: relative;
+    top: -9em;
+    align-self: center;
+    z-index: var(--layer-top);
+}
+
+.toast-title {
+    color: black;
+}
