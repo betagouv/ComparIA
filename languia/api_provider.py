@@ -70,7 +70,7 @@ def process_response_stream(response, model_name=None, request=None):
                 if chunk.choices[0].finish_reason == "stop":
                     data["text"] = text
                     data["error_code"] = 0
-                    return data
+                    break
                 elif chunk.choices[0].finish_reason == "length":
                     raise ContextTooLongError
             # try:
@@ -79,8 +79,8 @@ def process_response_stream(response, model_name=None, request=None):
                 else:
                     content = ""
                 if not content:
-                    logger.info("no_content_in_chunk: " + str(chunk))
-                    continue
+                    logger.debug("no_content_in_chunk: " + str(chunk))
+                    # continue
                     # raise ValueError("Content is empty")
 
                 # Special handling for certain models
@@ -94,7 +94,8 @@ def process_response_stream(response, model_name=None, request=None):
                 data["text"] = text
                 data["error_code"] = 0
 
-                yield data
+        yield data
+    yield data
         # except Exception as e:
         #     logger.error("erreur_chunk: " + str(chunk))
         #     raise e
