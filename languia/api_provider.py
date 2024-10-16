@@ -72,7 +72,7 @@ def process_response_stream(response, model_name=None, request=None):
                     data["error_code"] = 0
                     break
                 elif chunk.choices[0].finish_reason == "length":
-                    # cannot raise ContextTooLong because sometimes only the model stops because of current answer's (output) length limit,
+                    # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
                     break
             # try:
