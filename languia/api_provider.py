@@ -81,6 +81,7 @@ def process_response_stream(response, model_name=None, request=None):
                 else:
                     content = ""
                 if not content:
+                    content = ""
                     logger.debug("no_content_in_chunk: " + str(chunk))
                     # continue
                     # raise ValueError("Content is empty")
