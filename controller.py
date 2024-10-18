@@ -42,7 +42,7 @@ stream_logs.setLevel(logging.INFO)
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
-async def create_outage(model_name: str, reason: str = None, confirm: bool = True):
+def create_outage(model_name: str, reason: str = None, confirm: bool = True):
     try:
         outage = {
             "detection_time": datetime.now().isoformat(),
@@ -54,11 +54,11 @@ async def create_outage(model_name: str, reason: str = None, confirm: bool = Tru
         existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
 
         if existing_outage:
-            await remove_outage(model_name)
+            remove_outage(model_name)
         
         # Double-check the outage!!!
         if confirm:
-            confirm_outage = await test_model(model_name)
+            confirm_outage = test_model(model_name)
             if confirm_outage["success"]:
                 return "Didn't add to outages as test was successful"
         
@@ -84,7 +84,7 @@ async def create_outage(model_name: str, reason: str = None, confirm: bool = Tru
 
 
 @app.get("/outages/")
-async def get_outages():
+def get_outages():
     """
     Retrieves a list of all models currently off.
 
@@ -96,7 +96,7 @@ async def get_outages():
 
 @app.get("/outages/{model_name}/delete", status_code=204)
 @app.delete("/outages/{model_name}", status_code=204)
-async def remove_outage(model_name: str):
+def remove_outage(model_name: str):
     """
     Removes an outage entry by model name.
 
@@ -128,7 +128,7 @@ models = json5.load(open(register_api_endpoint_file))
 
 
 @app.get("/outages/{model_name}")
-async def test_model(model_name):
+def test_model(model_name):
 
     # Log the outage test
     logging.info(f"Testing model: {model_name} ")
@@ -191,7 +191,7 @@ async def test_model(model_name):
             logging.info(f"Test successful: {model_name}")
             if any(outage["model_name"] == model_name for outage in outages):
                 logging.info(f"Removing {model_name} from outage list")
-                await remove_outage(model_name)
+                remove_outage(model_name)
                 return {
                     "success": True,
                     "message": "Removed model from outages list.",
@@ -203,7 +203,7 @@ async def test_model(model_name):
             reason = f"No content from api for model {model_name}"
             logging.error(f"Test failed: {model_name}")
             logging.error(reason)
-            await create_outage(model_name, reason, confirm=False)
+            create_outage(model_name, reason, confirm=False)
             return {"success": False, "error_message": reason}
 
     except Exception as e:
@@ -211,7 +211,7 @@ async def test_model(model_name):
         logging.error(f"Error: {reason}. Model: {model_name}")
 
         stacktrace = traceback.print_exc()
-        _outage = await create_outage(model_name, reason, confirm=False)
+        _outage = create_outage(model_name, reason, confirm=False)
 
         return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
@@ -220,7 +220,7 @@ async def test_model(model_name):
     "/",
     response_class=HTMLResponse,
 )
-async def index(request: Request):
+def index(request: Request):
 
     return templates.TemplateResponse(
         "outages.html",
@@ -228,7 +228,7 @@ async def index(request: Request):
     )
 
 # @app.get("/test_all_models")
-# async def test_all_models(background_tasks: BackgroundTasks):
+# def test_all_models(background_tasks: BackgroundTasks):
 #     for key, value in models.items():
 #         background_tasks.add_task(test_model, key)
 #     return HTMLResponse(content="Tasks have been scheduled", status_code=202)
