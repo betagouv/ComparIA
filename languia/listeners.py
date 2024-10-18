@@ -694,14 +694,10 @@ voteArea.scrollIntoView({
             comments_a: gr.update(interactive=False),
             comments_b: gr.update(interactive=False),
             comments_link: gr.update(interactive=False),
-            reveal_screen: gr.update(interactive=False),
-            results_area: gr.update(interactive=False),
-            buttons_footer: gr.update(interactive=False),
             which_model_radio: gr.update(interactive=False),
             reveal_screen: gr.update(visible=True),
             results_area: gr.update(value=reveal_html),
             buttons_footer: gr.update(visible=False),
-            which_model_radio: gr.update(interactive=False),
         }
 
     gr.on(
