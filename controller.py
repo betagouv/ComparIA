@@ -38,6 +38,7 @@ outages: List[Dict[str, str]] = []
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
 
+scheduled_tasks = set()
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
@@ -141,6 +142,10 @@ def test_model(model_name):
     max_new_tokens = 10
     stream = False
 
+    # Mark task as done
+    if model_name in scheduled_tasks:
+        scheduled_tasks.remove(model_name)
+
     try:
         # Initialize the OpenAI client
         api_type = models[model_name]["api_type"]
@@ -190,6 +195,7 @@ def test_model(model_name):
             if any(outage["model_name"] == model_name for outage in outages):
                 logging.info(f"Removing {model_name} from outage list")
                 remove_outages(model_name)
+                   
                 return {
                     "success": True,
                     "message": "Removed model from outages list.",
@@ -231,11 +237,14 @@ def test_all_models(background_tasks: BackgroundTasks):
     Initiates background tasks to test all models asynchronously.
     """
     for key, value in models.items():
-        try:
-            background_tasks.add_task(test_model, key)
-        except Exception:
-            pass
+        if key not in scheduled_tasks:
+            try:
+                background_tasks.add_task(test_model, key)
+                scheduled_tasks.add(key)
+            except Exception:
+                pass
     return RedirectResponse(url="/?scheduled_tests=true", status_code=302)
+
 
 
 # async def periodic_test_all_models():
