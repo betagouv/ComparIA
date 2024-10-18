@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from typing import List, Dict
@@ -42,7 +42,7 @@ stream_logs.setLevel(logging.INFO)
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
-def create_outage(model_name: str, reason: str = None, confirm: bool = True):
+def create_outage(model_name: str, reason: str = None, confirm: bool = True, background_tasks: BackgroundTasks = None):
     try:
         outage = {
             "detection_time": datetime.now().isoformat(),
@@ -63,6 +63,11 @@ def create_outage(model_name: str, reason: str = None, confirm: bool = True):
                 return "Didn't add to outages as test was successful"
         
         outages.append(outage)
+
+        # Schedule background task to test the model periodically
+        if background_tasks:
+            background_tasks.add_task(periodic_test_model, model_name)
+
         return outage
 
     except HTTPException as e:
@@ -136,7 +141,6 @@ def test_model(model_name):
     # Define test parameters
     test_message = "Say 'this is a test'."
     temperature = 1
-    # top_p = 1
     max_new_tokens = 10
     stream = False
 
@@ -149,13 +153,11 @@ def test_model(model_name):
             if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
                 logging.warn("No Google creds detected!")
 
-            # Programmatically get an access token
             creds, project = google.auth.default(
                 scopes=["https://www.googleapis.com/auth/cloud-platform"]
             )
             auth_req = google.auth.transport.requests.Request()
             creds.refresh(auth_req)
-            # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
             api_key = creds.token
         else:
             api_key = models[model_name]["api_key"]
@@ -171,7 +173,6 @@ def test_model(model_name):
             messages=[{"role": "user", "content": test_message}],
             temperature=temperature,
             max_tokens=max_new_tokens,
-            # Test without streaming
             stream=stream,
         )
 
@@ -227,8 +228,25 @@ def index(request: Request):
         {"outages": outages, "models": models, "request": request},
     )
 
-# @app.get("/test_all_models")
-# def test_all_models(background_tasks: BackgroundTasks):
-#     for key, value in models.items():
-#         background_tasks.add_task(test_model, key)
-#     return HTMLResponse(content="Tasks have been scheduled", status_code=202)
+
+@app.get("/test_all_models")
+def test_all_models(background_tasks: BackgroundTasks):
+    """
+    Initiates background tasks to test all models asynchronously.
+    """
+    for key, value in models.items():
+        try:
+            background_tasks.add_task(test_model, key)
+        except Exception:
+            pass
+    return HTMLResponse(content="Tasks have been scheduled", status_code=202)
+
+
+# async def periodic_test_model(model_name: str):
+#     """
+#     Periodically test a model in the background.
+#     """
+#     while True:
+#         logging.info(f"Periodic testing for model: {model_name}")
+#         test_model(model_name)
+#         await asyncio.sleep(3600)  # Test every hour
