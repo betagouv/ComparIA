@@ -69,6 +69,20 @@
             {% endif %}
             {% endfor %}
         </table>
+
+        <h3 class="fr-h3">Tests récents</h3>
+        <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
+            <tr>
+                <th>Date</th>
+                <th>Modèle</th>
+            </tr>
+            {% for test in tests %}
+            <tr>
+                <td>il y a {{ now - test['timestamp'] }}s</td>
+                <td>{{ test['model_name'] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </body>
 

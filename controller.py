@@ -19,14 +19,15 @@ import openai
 import time
 
 import os
+
 # from typing import Dict
 import json5
 
 # if os.getenv("SENTRY_DSN"):
 #     sentry_sdk.init(
-#     dsn=os.getenv("SENTRY_DSN"), 
+#     dsn=os.getenv("SENTRY_DSN"),
 #     # integrations=[FastApiIntegration()], + Starlette
-#     traces_sample_rate=1.0,  
+#     traces_sample_rate=1.0,
 #     profiles_sample_rate=1.0,
 # )
 
@@ -44,6 +45,7 @@ tests: List = []
 
 scheduled_tasks = set()
 
+
 # @app.post("/outages/", status_code=201)
 @app.get("/outages/{model_name}/create", status_code=201)
 def disable_model(model_name: str, reason: str = None):
@@ -55,18 +57,20 @@ def disable_model(model_name: str, reason: str = None):
         }
 
         # Check if the model name already exists in the outages list
-        existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
+        existing_outage = next(
+            (o for o in outages if o["model_name"] == model_name), None
+        )
 
         if existing_outage:
             # remove_outages(model_name)
             return existing_outage
-        
+
         # Double-check the outage!!!
         # if confirm:
         #     confirm_outage = test_model(model_name)
         #     if confirm_outage["success"]:
         #         return "Didn't add to outages as test was successful"
-        
+
         outages.append(outage)
 
         # Schedule background task to test the model periodically
@@ -122,8 +126,7 @@ def remove_outages(model_name: str):
             del outages[i]
     # else:
     #     raise HTTPException(status_code=404, detail="Model not found in outages")
-    return {"success": True,
-            "msg": f"{model_name} removed from outages"}
+    return {"success": True, "msg": f"{model_name} removed from outages"}
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
@@ -142,14 +145,17 @@ def test_model(model_name):
 
     for test in tests:
         diff = int(time.time() - test["timestamp"])
-        if test["model_name"] == model_name and (diff < 60*10):
+        if test["model_name"] == model_name and (diff < 60 * 10):
             print(f"Already tested '{model_name}' {diff} seconds ago!")
-            return {"success": False, "reason": f"Already tested '{model_name}' {diff} seconds ago!"}
+            return {
+                "success": False,
+                "reason": f"Already tested '{model_name}' {diff} seconds ago!",
+            }
 
-    test = {"model_name": model_name, "timestamp": time.time()}
+    test = {"model_name": model_name, "timestamp": int(time.time())}
     tests.append(test)
-    if len(tests) > 50:
-        tests = tests[-50:]
+    if len(tests) > 25:
+        tests = tests[-25:]
 
     # Log the outage test
     logging.info(f"Testing model: {model_name} ")
@@ -181,7 +187,7 @@ def test_model(model_name):
             api_key = creds.token
         else:
             api_key = models[model_name]["api_key"]
-            
+
         client = openai.OpenAI(
             base_url=api_base,
             api_key=api_key,
@@ -213,7 +219,7 @@ def test_model(model_name):
             if any(outage["model_name"] == model_name for outage in outages):
                 logging.info(f"Removing {model_name} from outage list")
                 remove_outages(model_name)
-                   
+
                 return {
                     "success": True,
                     "message": "Removed model from outages list.",
@@ -242,10 +248,17 @@ def test_model(model_name):
     "/",
     response_class=HTMLResponse,
 )
-def index( request: Request, scheduled_tests: bool = False):
+def index(request: Request, scheduled_tests: bool = False):
     return templates.TemplateResponse(
         "outages.html",
-        {"outages": outages, "models": models, "request": request, "scheduled_tests": scheduled_tests},
+        {
+            "tests": tests,
+            "outages": outages,
+            "models": models,
+            "request": request,
+            "scheduled_tests": scheduled_tests,
+            "now": int(time.time())
+        },
     )
 
 
@@ -262,7 +275,6 @@ def test_all_models(background_tasks: BackgroundTasks):
             except Exception:
                 pass
     return RedirectResponse(url="/?scheduled_tests=true", status_code=302)
-
 
 
 # async def periodic_test_all_models():
