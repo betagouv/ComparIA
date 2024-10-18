@@ -16,7 +16,7 @@ from languia.utils import (
     count_output_tokens,
     get_llm_impact,
     refresh_outage_models,
-    add_outage_model,
+    on_endpoint_error,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
@@ -327,10 +327,11 @@ document.getElementById("fr-modal-welcome-close").blur();
                 openai.APIError,
                 openai.BadRequestError,
             ) as e:
+                error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
                     sentry_sdk.capture_exception(e)
                 logger.error(
-                    f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{traceback.format_exc()}",
+                    f"erreur_modele: {error_with_model}, '{str(e)}'\n{traceback.format_exc()}",
                     extra={
                         "request": request,
                         "error": str(e),
@@ -338,11 +339,10 @@ document.getElementById("fr-modal-welcome-close").blur();
                     },
                     exc_info=True,
                 )
-                # TODO: do that only when controller is offline
-                config.outage_models.append(conversations[i].model_name)
-                add_outage_model(
+
+                on_endpoint_error(
                     config.controller_url,
-                    conversations[i].model_name,
+                    error_with_model,
                     reason=str(e),
                 )
                 # gr.Warning(
@@ -372,6 +372,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                     config.outage_models = refresh_outage_models(
                         config.outage_models, controller_url=config.controller_url
                     )
+                    # Temporarily add the at-fault model
+                    config.outage_models.append(error_with_model)
                     # Simpler to repick 2 models
                     # app_state.model_left, app_state.model_right = get_battle_pair(
                     model_left, model_right = get_battle_pair(

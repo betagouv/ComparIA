@@ -3,8 +3,7 @@ import os
 
 import gradio as gr
 
-
-from jinja2 import Template
+# from jinja2 import Template
 from jinja2 import Environment, FileSystemLoader
 
 import json
@@ -841,23 +840,37 @@ def refresh_outage_models(previous_outage_models, controller_url):
         return previous_outage_models
 
 
-def add_outage_model(controller_url, model_name, reason):
-    logger = logging.getLogger("languia")
-
+def test_all_models(controller_url):
     try:
-        response = requests.post(
-            params={"reason": str(reason), "model_name": model_name},
-            url=f"{controller_url}/outages/",
-            timeout=2,
+        requests.get(
+        url=f"{controller_url}/test_all_models",
+        timeout=2,
         )
-    except Exception as e:
-        logger.error("Failed to post outage data: " + str(e))
-        return
+    except Exception:
+        pass
 
-    if response.status_code == 201:
-        logger.info("modele_desactive: " + model_name)
-    else:
-        logger.error(f"Failed to post outage data. Status code: {response.status_code}")
+def test_model(controller_url, model_name):
+    return requests.get(
+        # params={"model_name": model_name},
+        url=f"{controller_url}/outages/{model_name}",
+        timeout=2,
+    )
+
+def on_endpoint_error(controller_url, model_name, reason):
+    logger = logging.getLogger("languia")
+    try:
+        return test_model(controller_url, model_name)
+        # await test_model(controller_url, model_name)
+        # return True
+    except Exception as e:
+        logger.warning("Failed to request endpoint testing: " + str(e))
+        return False
+        # pass
+
+    # if response.status_code == 201:
+    # logger.info("modele_desactive: " + model_name)
+    # else:
+    #     logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
 
 def to_threeway_chatbot(conversations):
