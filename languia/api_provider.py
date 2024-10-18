@@ -10,6 +10,7 @@ from gradio import ChatMessage
 
 from languia.utils import ContextTooLongError
 
+
 def get_api_provider_stream_iter(
     messages,
     model_name,
@@ -61,10 +62,15 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     data = dict()
-    for chunk in response:
+    # data["text"] = ""
+    buffer = ""
+    buffer_output_tokens = 0
+
+    for i, chunk in enumerate(response):
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-            data["output_tokens"] = chunk.usage.completion_tokens
+            buffer_output_tokens += chunk.usage.completion_tokens
+            # data["output_tokens"] = chunk.usage.completion_tokens
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
@@ -75,8 +81,10 @@ def process_response_stream(response, model_name=None, request=None):
                     # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
                     break
-            # try:
-                if hasattr(chunk.choices[0], "delta") and hasattr(chunk.choices[0].delta, "content"):
+                # try:
+                if hasattr(chunk.choices[0], "delta") and hasattr(
+                    chunk.choices[0].delta, "content"
+                ):
                     content = chunk.choices[0].delta.content
                 else:
                     content = ""
@@ -93,15 +101,27 @@ def process_response_stream(response, model_name=None, request=None):
                     content = content.replace("<br />", "")
 
                 text += content
+                buffer += content
 
                 data["text"] = text
                 data["error_code"] = 0
 
-        yield data
+        if len(buffer.split()) >= 30 or i <= 1:
+            # if len(buffer.split()) >= 30 or len(text.split()) < 30:
+            # if "\n" in buffer or "." in buffer:
+
+            # Reset word count after yielding
+            data["output_tokens"] = buffer_output_tokens
+            buffer = ""
+            buffer_output_tokens = 0
+
+            yield data
+    # data["output_tokens"] = buffer_output_tokens
+
     yield data
-        # except Exception as e:
-        #     logger.error("erreur_chunk: " + str(chunk))
-        #     raise e
+    # except Exception as e:
+    #     logger.error("erreur_chunk: " + str(chunk))
+    #     raise e
 
 
 def openai_api_stream_iter(
