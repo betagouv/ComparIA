@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from typing import List, Dict
-# import asyncio
+import asyncio
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
@@ -42,7 +42,7 @@ stream_logs.setLevel(logging.INFO)
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
-def disable_model(model_name: str, reason: str = None, background_tasks: BackgroundTasks = None):
+def disable_model(model_name: str, reason: str = None):
     try:
         outage = {
             "detection_time": datetime.now().isoformat(),
@@ -71,18 +71,18 @@ def disable_model(model_name: str, reason: str = None, background_tasks: Backgro
 
         return outage
 
-    except HTTPException as e:
-        if e.status_code == 422:
-            print("Couldn't get the whole reason: ")
-            print(reason)
-            outage = {
-                "detection_time": datetime.now().isoformat(),
-                "model_name": model_name,
-                "reason": "Too long to be posted",
-            }
-            outages.append(outage)
-        else:
-            raise
+    # except HTTPException as e:
+    #     if e.status_code == 422:
+    #         print("Couldn't get the whole reason: ")
+    #         print(reason)
+    #         outage = {
+    #             "detection_time": datetime.now().isoformat(),
+    #             "model_name": model_name,
+    #             "reason": "Too long to be posted",
+    #         }
+    #         outages.append(outage)
+    #     else:
+    #         raise
     except Exception as _e:
         # if os.getenv("SENTRY_DSN"):
         #     sentry_sdk.capture_exception(e)
@@ -112,17 +112,14 @@ def remove_outages(model_name: str):
     Raises:
         HTTPException: If the model is not found in outages.
     """
-    try:
-        for i, outage in enumerate(outages):
-            if outage["model_name"] == model_name:
-                del outages[i]
-                return {"success": True,
-                "msg": f"{model_name} removed from outages"}
-        raise HTTPException(status_code=404, detail="Model not found in outages")
-    except Exception as e:
-        # if os.getenv("SENTRY_DSN"):
-        #     sentry_sdk.capture_exception(e)
-        raise
+    # try:
+    for i, outage in enumerate(outages):
+        if outage["model_name"] == model_name:
+            del outages[i]
+    # else:
+    #     raise HTTPException(status_code=404, detail="Model not found in outages")
+    return {"success": True,
+            "msg": f"{model_name} removed from outages"}
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
@@ -213,7 +210,7 @@ def test_model(model_name):
         logging.error(f"Error: {reason}. Model: {model_name}")
 
         stacktrace = traceback.print_exc()
-        _outage = disable_model(model_name, reason, confirm=False)
+        _outage = disable_model(model_name, reason)
 
         return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
@@ -222,11 +219,10 @@ def test_model(model_name):
     "/",
     response_class=HTMLResponse,
 )
-def index(request: Request):
-
+def index( request: Request, scheduled_tests: bool = False):
     return templates.TemplateResponse(
         "outages.html",
-        {"outages": outages, "models": models, "request": request},
+        {"outages": outages, "models": models, "request": request, "scheduled_tests": scheduled_tests},
     )
 
 
@@ -240,14 +236,20 @@ def test_all_models(background_tasks: BackgroundTasks):
             background_tasks.add_task(test_model, key)
         except Exception:
             pass
-    return HTMLResponse(content="Tasks have been scheduled", status_code=202)
+    return RedirectResponse(url="/?scheduled_tests=true", status_code=302)
 
 
-# async def periodic_test_model(model_name: str):
+# async def periodic_test_all_models():
 #     """
 #     Periodically test a model in the background.
 #     """
 #     while True:
-#         logging.info(f"Periodic testing for model: {model_name}")
-#         test_model(model_name)
+#         logging.info("Periodic testing models")
+#         test_all_models()
 #         await asyncio.sleep(3600)  # Test every hour
+
+
+# @app.on_event("startup")
+# async def start_periodic_tasks():
+#     # Schedule the periodic model testing task
+#     asyncio.create_task(periodic_test_all_models())

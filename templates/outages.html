@@ -4,36 +4,52 @@
 <head>
     <title>Dashboard Compar:IA</title>
     <link rel="stylesheet" href="assets/dsfr/dsfr.min.css">
+    <meta http-equiv="refresh" content="5">
+
 </head>
 
 <body>
-    <div class="fr-container">
-        <h1 class="fr-h1">Dashboard Compar:IA</h1>
-        <h3 class="fr-h3">Erreurs d'API</h3>
+    <div class="fr-container fr-mx-6w fr-my-4w">
+        <h1 class="fr-h1"><a href="/">Dashboard Compar:IA</a></h1>
+        {% if scheduled_tests %}
+        <div class="fr-alert fr-alert--success fr-mb-4w">
+            <h3 class="fr-alert__title">Tests programmés</h3>
+            <p>Les tests des modèles ont bien été programmés</p>
+        </div>
+        {% endif %}
+
+        <h3 class="fr-h3">Actions</h3>
+        <div class="fr-mb-4w">
+            <ul>
+                <li><a href="/test_all_models">Tester tous les modèles</a>
+                </li>
+            </ul>
+        </div>
+        <h3 class="fr-h3">Modèles désactivés</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
                 <th>Modèle</th>
                 <th>Date de détection</th>
-                <th>Raison</th>
                 <th>Réessayer ?</th>
                 <th>Réactiver de force ?</th>
+                <th>Raison</th>
             </tr>
             {% for outage in outages %}
             <tr>
                 <td>{{ outage.model_name }}</td>
                 <td>{{ outage.detection_time }}</td>
+                <td><a href="/outages/{{ outage.model_name }}"><strong>Réessayer ?</strong></a></td>
+                <td><a href="/outages/{{ outage.model_name }}/delete">Réactiver de force ?</a></td>
                 <td>{% if outage.reason %}
                     {{ outage.reason|string|truncate(500, True) }}
                     {% else %}
                     <em>Pas d'erreur fournie</em>
                     {% endif %}
                 </td>
-                <td><a href="/outages/{{ outage.model_name }}"><strong>Réessayer ?</strong></a></td>
-                <td><a href="/outages/{{ outage.model_name }}/delete">Réactiver de force ?</a></td>
             </tr>
             {% endfor %}
         </table>
-        <h3 class="fr-h3">Tous les modèles</h3>
+        <h3 class="fr-h3">Modèles actifs</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
                 <th>Modèle</th>
@@ -43,12 +59,14 @@
                 <!-- <th>Stats</th> -->
             </tr>
             {% for model_name, model in models.items() %}
+            {% if model_name not in outages | map(attribute='model_name') %}
             <tr>
                 <td>{{ model_name }}</td>
                 <td><a href="/outages/{{ model_name }}">Tester ?</a></td>
-                <td><a href="/outages/{{ model_name }}/create?confirm=false">Désactiver ?</a></td>
+                <td><a href="/outages/{{ model_name }}/create">Désactiver ?</a></td>
                 <td>{{ model["api_base"] | string | truncate(100, True) }}</td>
             </tr>
+            {% endif %}
             {% endfor %}
         </table>
     </div>

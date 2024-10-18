@@ -1,6 +1,7 @@
 from languia.block_arena import *
 import traceback
-
+import os
+import sentry_sdk
 import uuid
 
 import openai
@@ -326,6 +327,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                 openai.APIError,
                 openai.BadRequestError,
             ) as e:
+                if os.getenv("SENTRY_DSN"):
+                    sentry_sdk.capture_exception(e)
                 logger.error(
                     f"erreur_modele: {conversations[i].model_name}, '{str(e)}'\n{traceback.format_exc()}",
                     extra={
@@ -409,6 +412,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                         extra={request: request},
                         exc_info=True,
                     )
+
+                    if os.getenv("SENTRY_DSN"):
+                        sentry_sdk.capture_exception(e)
                     raise gr.Error(
                         duration=0,
                         message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
