@@ -1,13 +1,26 @@
 import psycopg2
 import sys
 import re
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+from languia.config import prompts_table
 
 # Function to extract selected_category from the unstructured msg field
 def extract_selected_category(msg):
     # Assuming `selected_category` appears like "selected_category: some_category" in the msg
-    match = re.search(r"categorie_([^\s,]+)", msg)
+    match = re.search(r"categorie_([^\s,]+):", msg)
     if match:
+        print(match)
         return match.group(1)
+    return None
+
+# Function to find category from prompts_table based on opening_prompt
+def find_category_from_prompt(opening_prompt):
+    for category, prompts in prompts_table.items():
+        if opening_prompt in prompts:
+            return category
     return None
 
 # Function to find the relevant log entry by session_hash
@@ -23,9 +36,10 @@ def find_selected_category_in_logs(conn, session_hash):
         logs_record = cur.fetchall()
         for log in logs_record:
             msg = log[0]
-            print(msg)
-            # if extract_selected_category(msg):
-                # return extract_selected_category(msg)
+            
+            if extract_selected_category(msg):
+                print(msg)
+                return extract_selected_category(msg)
             # Extract selected_category from the msg
     return None
 
@@ -34,9 +48,9 @@ def update_selected_category(conn):
     with conn.cursor() as cur:
         # Fetch records where selected_category is NULL
         query = """
-        SELECT tstamp, uuid, is_unedited_prompt, selected_category, session_hash
+        SELECT tstamp, uuid, opening_prompt, is_unedited_prompt, selected_category, session_hash
         FROM votes
-        WHERE selected_category IS NULL
+        WHERE selected_category IS NULL AND is_unedited_prompt = FALSE
         ORDER BY tstamp DESC;
         """
         cur.execute(query)
@@ -44,15 +58,16 @@ def update_selected_category(conn):
 
         # Iterate through records
         for record in records:
-            tstamp, uuid, is_unedited_prompt, selected_category, session_hash = record
+            tstamp, uuid, opening_prompt, is_unedited_prompt, selected_category, session_hash = record
             
-            print(f"Looking for session_hash '{session_hash}' in logs...")
+            # print(f"Looking for session_hash '{session_hash}' in logs...")
             
             # Find the selected_category in the logs database using session_hash
+            # new_category = find_category_from_prompt(opening_prompt)
             new_category = find_selected_category_in_logs(conn, session_hash)
             
             if new_category:
-                print(f"Found new category: {new_category} for uuid: {uuid}")
+                # print(f"Found new category: {new_category} for uuid: {uuid}")
                 
                 # Update the PostgreSQL table with the new selected_category
                 update_query = """
@@ -60,8 +75,8 @@ def update_selected_category(conn):
                 SET selected_category = %s
                 WHERE uuid = %s;
                 """
-                print(update_query)
-#                cur.execute(update_query, (new_category, uuid))
+                # print(update_query)
+                cur.execute(update_query, (new_category, uuid))
                 print(f"Updated uuid {uuid} with category {new_category}")
     
     # Commit the changes to the database
