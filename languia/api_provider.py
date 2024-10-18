@@ -66,7 +66,7 @@ def process_response_stream(response, model_name=None, request=None):
     buffer = ""
     buffer_output_tokens = 0
 
-    for chunk in response:
+    for i, chunk in enumerate(response):
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             buffer_output_tokens += chunk.usage.completion_tokens
@@ -106,7 +106,7 @@ def process_response_stream(response, model_name=None, request=None):
                 data["text"] = text
                 data["error_code"] = 0
 
-        if len(buffer.split()) >= 30:
+        if len(buffer.split()) >= 30 or i <= 1:
             # if len(buffer.split()) >= 30 or len(text.split()) < 30:
             # if "\n" in buffer or "." in buffer:
 
