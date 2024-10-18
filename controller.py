@@ -16,6 +16,8 @@ import google.auth
 import google.auth.transport.requests
 import openai
 
+import time
+
 import os
 # from typing import Dict
 import json5
@@ -37,6 +39,8 @@ outages: List[Dict[str, str]] = []
 
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
+
+tests: List = []
 
 scheduled_tasks = set()
 
@@ -132,8 +136,20 @@ models = json5.load(open(register_api_endpoint_file))
 
 @app.get("/outages/{model_name}")
 def test_model(model_name):
+    global tests
     if model_name == "None":
         return {"success": False, "error_message": "Don't test 'None'!"}
+
+    for test in tests:
+        diff = int(time.time() - test["timestamp"])
+        if test["model_name"] == model_name and (diff < 60*10):
+            print(f"Already tested '{model_name}' {diff} seconds ago!")
+            return {"success": False, "reason": f"Already tested '{model_name}' {diff} seconds ago!"}
+
+    test = {"model_name": model_name, "timestamp": time.time()}
+    tests.append(test)
+    if len(tests) > 50:
+        tests = tests[-50:]
 
     # Log the outage test
     logging.info(f"Testing model: {model_name} ")
