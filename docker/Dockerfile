@@ -2,7 +2,8 @@
 # FROM debian:11-slim
 FROM python:3.10-slim AS base
 
-# RUN apt-get update -y && apt-get install -y python3.9 python3.9-distutils curl
+# Debug tools
+RUN apt-get update -y && apt-get install -y curl postgresql-client
 # RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 # RUN python3.9 get-pip.py
 COPY ./requirements.txt /requirements.txt
