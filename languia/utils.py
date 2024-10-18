@@ -823,7 +823,7 @@ def gen_prompt(category):
 def refresh_outage_models(previous_outage_models, controller_url):
     logger = logging.getLogger("languia")
     try:
-        response = requests.get(controller_url + "/outages/", timeout=2)
+        response = requests.get(controller_url + "/outages/", timeout=1)
     except Exception as e:
         logger.error("controller_inaccessible: " + str(e))
         return previous_outage_models
