@@ -14,7 +14,7 @@ import gradio as gr
 
 from languia import config
 
-from languia.utils import size_desc, license_desc, license_attrs
+from languia.utils import size_desc, license_desc, license_attrs, test_all_models
 
 app = FastAPI()
 
@@ -30,6 +30,10 @@ logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 
 # Set authorization credentials
 auth = None
+
+# Clashes with hot reloading
+if not config.debug:
+    test_all_models(config.controller_url)
 
 # TODO: Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
 demo = demo.queue(
