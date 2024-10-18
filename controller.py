@@ -40,8 +40,8 @@ stream_logs.setLevel(logging.INFO)
 
 scheduled_tasks = set()
 
+# @app.post("/outages/", status_code=201)
 @app.get("/outages/{model_name}/create", status_code=201)
-@app.post("/outages/", status_code=201)
 def disable_model(model_name: str, reason: str = None):
     try:
         outage = {
