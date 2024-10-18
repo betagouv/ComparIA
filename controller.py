@@ -132,6 +132,8 @@ models = json5.load(open(register_api_endpoint_file))
 
 @app.get("/outages/{model_name}")
 def test_model(model_name):
+    if model_name == "None":
+        return {"success": False, "error_message": "Don't test 'None'!"}
 
     # Log the outage test
     logging.info(f"Testing model: {model_name} ")
