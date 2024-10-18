@@ -2,14 +2,14 @@ from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from typing import List, Dict
-import asyncio
+# import asyncio
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
 import traceback
 
-import sentry_sdk
-from fastapi import BackgroundTasks
+# import sentry_sdk
+# from fastapi import BackgroundTasks
 
 # from sentry_sdk.integrations.fastapi import FastApiIntegration
 
@@ -21,13 +21,13 @@ import os
 # from typing import Dict
 import json5
 
-if os.getenv("SENTRY_DSN"):
-    sentry_sdk.init(
-    dsn=os.getenv("SENTRY_DSN"), 
-    # integrations=[FastApiIntegration()], + Starlette
-    traces_sample_rate=1.0,  
-    profiles_sample_rate=1.0,
-)
+# if os.getenv("SENTRY_DSN"):
+#     sentry_sdk.init(
+#     dsn=os.getenv("SENTRY_DSN"), 
+#     # integrations=[FastApiIntegration()], + Starlette
+#     traces_sample_rate=1.0,  
+#     profiles_sample_rate=1.0,
+# )
 
 templates = Jinja2Templates(directory="templates")
 
@@ -42,7 +42,7 @@ stream_logs.setLevel(logging.INFO)
 
 @app.get("/outages/{model_name}/create", status_code=201)
 @app.post("/outages/", status_code=201)
-def create_outage(model_name: str, reason: str = None, confirm: bool = True, background_tasks: BackgroundTasks = None):
+def disable_model(model_name: str, reason: str = None, background_tasks: BackgroundTasks = None):
     try:
         outage = {
             "detection_time": datetime.now().isoformat(),
@@ -54,19 +54,20 @@ def create_outage(model_name: str, reason: str = None, confirm: bool = True, bac
         existing_outage = next((o for o in outages if o["model_name"] == model_name), None)
 
         if existing_outage:
-            remove_outage(model_name)
+            # remove_outages(model_name)
+            return existing_outage
         
         # Double-check the outage!!!
-        if confirm:
-            confirm_outage = test_model(model_name)
-            if confirm_outage["success"]:
-                return "Didn't add to outages as test was successful"
+        # if confirm:
+        #     confirm_outage = test_model(model_name)
+        #     if confirm_outage["success"]:
+        #         return "Didn't add to outages as test was successful"
         
         outages.append(outage)
 
         # Schedule background task to test the model periodically
-        if background_tasks:
-            background_tasks.add_task(periodic_test_model, model_name)
+        # if background_tasks:
+        #     background_tasks.add_task(periodic_test_model, model_name)
 
         return outage
 
@@ -82,9 +83,9 @@ def create_outage(model_name: str, reason: str = None, confirm: bool = True, bac
             outages.append(outage)
         else:
             raise
-    except Exception as e:
-        if os.getenv("SENTRY_DSN"):
-            sentry_sdk.capture_exception(e)
+    except Exception as _e:
+        # if os.getenv("SENTRY_DSN"):
+        #     sentry_sdk.capture_exception(e)
         raise
 
 
@@ -101,7 +102,7 @@ def get_outages():
 
 @app.get("/outages/{model_name}/delete", status_code=204)
 @app.delete("/outages/{model_name}", status_code=204)
-def remove_outage(model_name: str):
+def remove_outages(model_name: str):
     """
     Removes an outage entry by model name.
 
@@ -119,8 +120,8 @@ def remove_outage(model_name: str):
                 "msg": f"{model_name} removed from outages"}
         raise HTTPException(status_code=404, detail="Model not found in outages")
     except Exception as e:
-        if os.getenv("SENTRY_DSN"):
-            sentry_sdk.capture_exception(e)
+        # if os.getenv("SENTRY_DSN"):
+        #     sentry_sdk.capture_exception(e)
         raise
 
 
@@ -192,7 +193,7 @@ def test_model(model_name):
             logging.info(f"Test successful: {model_name}")
             if any(outage["model_name"] == model_name for outage in outages):
                 logging.info(f"Removing {model_name} from outage list")
-                remove_outage(model_name)
+                remove_outages(model_name)
                 return {
                     "success": True,
                     "message": "Removed model from outages list.",
@@ -204,7 +205,7 @@ def test_model(model_name):
             reason = f"No content from api for model {model_name}"
             logging.error(f"Test failed: {model_name}")
             logging.error(reason)
-            create_outage(model_name, reason, confirm=False)
+            disable_model(model_name, reason, confirm=False)
             return {"success": False, "error_message": reason}
 
     except Exception as e:
@@ -212,7 +213,7 @@ def test_model(model_name):
         logging.error(f"Error: {reason}. Model: {model_name}")
 
         stacktrace = traceback.print_exc()
-        _outage = create_outage(model_name, reason, confirm=False)
+        _outage = disable_model(model_name, reason, confirm=False)
 
         return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
