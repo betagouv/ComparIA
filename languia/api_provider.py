@@ -66,7 +66,6 @@ def process_response_stream(response, model_name=None, request=None):
     buffer = ""
     buffer_output_tokens = 0
 
-
     for chunk in response:
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
@@ -82,8 +81,10 @@ def process_response_stream(response, model_name=None, request=None):
                     # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
                     break
-            # try:
-                if hasattr(chunk.choices[0], "delta") and hasattr(chunk.choices[0].delta, "content"):
+                # try:
+                if hasattr(chunk.choices[0], "delta") and hasattr(
+                    chunk.choices[0].delta, "content"
+                ):
                     content = chunk.choices[0].delta.content
                 else:
                     content = ""
@@ -92,7 +93,6 @@ def process_response_stream(response, model_name=None, request=None):
                     logger.debug("no_content_in_chunk: " + str(chunk))
                     # continue
                     # raise ValueError("Content is empty")
-
 
                 # Special handling for certain models
                 if model_name == "meta/llama3-405b-instruct-maas":
@@ -115,11 +115,13 @@ def process_response_stream(response, model_name=None, request=None):
             buffer = ""
             buffer_output_tokens = 0
 
-        yield data
+            yield data
+    # data["output_tokens"] = buffer_output_tokens
+
     yield data
-        # except Exception as e:
-        #     logger.error("erreur_chunk: " + str(chunk))
-        #     raise e
+    # except Exception as e:
+    #     logger.error("erreur_chunk: " + str(chunk))
+    #     raise e
 
 
 def openai_api_stream_iter(
