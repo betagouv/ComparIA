@@ -1,8 +1,7 @@
-from fastapi import FastAPI, HTTPException, Request, BackgroundTasks
+from fastapi import FastAPI, Request, BackgroundTasks
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from typing import List, Dict
-import asyncio
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
