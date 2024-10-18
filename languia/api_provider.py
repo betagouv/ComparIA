@@ -10,6 +10,7 @@ from gradio import ChatMessage
 
 from languia.utils import ContextTooLongError
 
+
 def get_api_provider_stream_iter(
     messages,
     model_name,
@@ -61,10 +62,16 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     data = dict()
+    # data["text"] = ""
+    buffer = ""
+    buffer_output_tokens = 0
+
+
     for chunk in response:
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-            data["output_tokens"] = chunk.usage.completion_tokens
+            buffer_output_tokens += chunk.usage.completion_tokens
+            # data["output_tokens"] = chunk.usage.completion_tokens
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
@@ -86,6 +93,7 @@ def process_response_stream(response, model_name=None, request=None):
                     # continue
                     # raise ValueError("Content is empty")
 
+
                 # Special handling for certain models
                 if model_name == "meta/llama3-405b-instruct-maas":
                     content = content.replace("\\n", "\n").lstrip("assistant")
@@ -93,9 +101,19 @@ def process_response_stream(response, model_name=None, request=None):
                     content = content.replace("<br />", "")
 
                 text += content
+                buffer += content
 
                 data["text"] = text
                 data["error_code"] = 0
+
+        if len(buffer.split()) >= 30:
+            # if len(buffer.split()) >= 30 or len(text.split()) < 30:
+            # if "\n" in buffer or "." in buffer:
+
+            # Reset word count after yielding
+            data["output_tokens"] = buffer_output_tokens
+            buffer = ""
+            buffer_output_tokens = 0
 
         yield data
     yield data
