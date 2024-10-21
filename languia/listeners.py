@@ -218,11 +218,12 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
-            raise (ValueError("Veuillez entrer votre texte."))
+            raise (gr.Error("Veuillez entrer votre texte.",duration=10))
         if hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses:
             raise (
-                ValueError(
-                    "Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question."
+                gr.Error(
+                    message="Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question.",
+                    duration=10,
                 )
             )
 
@@ -439,7 +440,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                         for i in range(config.num_sides)
                     ]
                     sleep(1)
-                    
 
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
@@ -454,13 +454,13 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                     if os.getenv("SENTRY_DSN"):
                         sentry_sdk.capture_exception(e)
-                     # Reinit faulty generator, e.g. to try another endpoint or just retry
+                    # Reinit faulty generator, e.g. to try another endpoint or just retry
                     gen[i] = bot_response(
-                            conversations[i],
-                            request,
-                            apply_rate_limit=True,
-                            use_recommended_config=True,
-                        )
+                        conversations[i],
+                        request,
+                        apply_rate_limit=True,
+                        use_recommended_config=True,
+                    )
                     sleep(1)
                     continue
             else:
@@ -469,9 +469,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         else:
             logger.critical("maximum_attempts_reached")
             raise gr.Error(
-                        duration=0,
-                        message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
-                    )
+                duration=0,
+                message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
+            )
 
         # Got answer at this point
         app_state.awaiting_responses = False
