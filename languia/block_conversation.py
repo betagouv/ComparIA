@@ -1,38 +1,12 @@
 """
 The gradio utilities for chatting with a single model.
 """
-
-import datetime
-import json
-import os
-import time
-
-import random
-
 import gradio as gr
-import requests
 
-from fastchat.constants import (
-    WORKER_API_TIMEOUT,
-    ErrorCode,
-    MODERATION_MSG,
-    CONVERSATION_LIMIT_MSG,
-    RATE_LIMIT_MSG,
-    SERVER_ERROR_MSG,
-    INPUT_CHAR_LEN_LIMIT,
-    CONVERSATION_TURN_LIMIT,
-    SESSION_EXPIRATION_TIME,
-)
-
-# from fastchat.model.model_adapter import (
-#     get_conversation_template,
-# )
 from languia.api_provider import get_api_provider_stream_iter
 
 
 from languia.utils import (
-    get_ip,
-    is_limit_reached,
     ContextTooLongError,
     EmptyResponseError,
 )
@@ -68,15 +42,15 @@ def bot_response(
     # top_p = float(top_p)
     # max_new_tokens = int(max_new_tokens)
 
-    if apply_rate_limit:
-        ip = get_ip(request)
-        ret = is_limit_reached(state.model_name, ip)
-        if ret is not None and ret["is_limit_reached"]:
-            error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
-            logger.warn(f"rate limit reached. error_msg: {ret['reason']}")
-            # state.conv.update_last_message(error_msg)
-            # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-            raise RuntimeError(error_msg)
+    # if apply_rate_limit:
+    #     ip = get_ip(request)
+    #     ret = is_limit_reached(state.model_name, ip)
+    #     if ret is not None and ret["is_limit_reached"]:
+    #         error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
+    #         logger.warn(f"rate limit reached. error_msg: {ret['reason']}")
+    #         # state.conv.update_last_message(error_msg)
+    #         # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
+    #         raise RuntimeError(error_msg)
 
     messages, model_name = state.messages, state.model_name
     model_api_dict = (
@@ -121,28 +95,19 @@ def bot_response(
 
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
-            # logger.debug("reported output tokens:" + str(data["output_tokens"]))
-            # Sum of all previous interactions
-            # FIXME: some output cumulative completion_tokens count, and some only output this iteration's completion tokens count...
             if not state.output_tokens:
                 state.output_tokens = 0
 
             state.output_tokens += data["output_tokens"]
 
-        if data["error_code"] == 0:
-            # Artificially slow faster Google Vertex API
-            # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
-            output = data.get("text").strip()
+        output = data.get("text")
+        if output:
+            output.strip()
             messages = update_last_message(messages, output + html_code)
             yield (state)
-        else:
-            raise RuntimeError(data["text"] + f"\n\n(error_code: {data['error_code']})")
-    # else:
-    #     raise EmptyResponseError(f"No answer from API for model {model_name}")
-    # FIXME: weird way of checking if the stream never answered, openai api doesn't seem to raise anything
 
-    output = data.get("text").strip()
-    if output == "":
+    output = data.get("text")
+    if not output or output == "":
         logger.error(
             f"reponse_vide: {model_name}, data: " + str(data),
             exc_info=True,
@@ -156,4 +121,4 @@ def bot_response(
     yield (state)
 
 
-# finish_tstamp = time.time()
+    # finish_tstamp = time.time()
