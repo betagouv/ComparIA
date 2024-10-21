@@ -59,7 +59,7 @@ from languia.config import (
 
 # from fastchat.model.model_adapter import get_conversation_template
 
-from languia.block_conversation import (
+from languia.conversation import (
     bot_response,
 )
 

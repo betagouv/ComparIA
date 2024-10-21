@@ -65,10 +65,8 @@ def process_response_stream(response, model_name=None, request=None):
     # data["text"] = ""
     buffer = ""
     buffer_output_tokens = 0
-    data["error_code"] = 0
 
     for chunk in response:
-        data["error_code"] = 0
 
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             buffer_output_tokens += chunk.usage.completion_tokens
