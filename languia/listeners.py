@@ -31,7 +31,7 @@ import traceback
 import os
 import sentry_sdk
 import uuid
-
+from time import sleep
 import openai
 
 from languia.utils import (
@@ -293,17 +293,16 @@ document.getElementById("fr-modal-welcome-close").blur();
     ):
         conversations = [conv_a, conv_b]
 
-        gen = []
-        for i in range(config.num_sides):
-            gen.append(
-                bot_response(
-                    conversations[i],
-                    request,
-                    apply_rate_limit=True,
-                    use_recommended_config=True,
-                )
+        gen = [
+            bot_response(
+                conversations[i],
+                request,
+                apply_rate_limit=True,
+                use_recommended_config=True,
             )
-        for attempt in range(10):
+            for i in range(config.num_sides)
+        ]
+        for attempt in range(5):
             try:
                 while True:
                     try:
@@ -347,9 +346,14 @@ document.getElementById("fr-modal-welcome-close").blur();
                     },
                     exc_info=True,
                 )
+                # Reinit faulty generator, e.g to get a new endpoint maybe
+                gen[i] = bot_response(
+                    conversations[i],
+                    request,
+                    apply_rate_limit=True,
+                    use_recommended_config=True,
+                )
 
-                # Retry if empty error
-                # TODO: recreate faulty generator? in order to pick differnet endpoint for example?
                 continue
             except (
                 Exception,
@@ -424,10 +428,18 @@ document.getElementById("fr-modal-welcome-close").blur();
                         app_state.original_user_prompt,
                         request,
                     )
-                    # Empty generation queue
-                    gen = []
-                    # continue
-                    # pass
+                    # Reinit both generators
+                    gen = [
+                        bot_response(
+                            conversations[i],
+                            request,
+                            apply_rate_limit=True,
+                            use_recommended_config=True,
+                        )
+                        for i in range(config.num_sides)
+                    ]
+                    sleep(1)
+                    
 
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
@@ -442,21 +454,24 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                     if os.getenv("SENTRY_DSN"):
                         sentry_sdk.capture_exception(e)
-                    raise gr.Error(
-                        duration=0,
-                        message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
-                    )
-                    # break
+                     # Reinit faulty generator, e.g. to try another endpoint or just retry
+                    gen[i] = bot_response(
+                            conversations[i],
+                            request,
+                            apply_rate_limit=True,
+                            use_recommended_config=True,
+                        )
+                    sleep(1)
+                    continue
             else:
                 # If no exception, we break out of the 10 attempts loop
                 break
         else:
             logger.critical("maximum_attempts_reached")
-            raise (
-                RuntimeError(
-                    "Le comparateur a un problème. Veuillez réessayer plus tard."
-                )
-            )
+            raise gr.Error(
+                        duration=0,
+                        message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
+                    )
 
         # Got answer at this point
         app_state.awaiting_responses = False
