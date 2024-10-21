@@ -98,6 +98,7 @@ def process_response_stream(response, model_name=None, request=None):
                 logger.debug("no_content_in_chunk: " + str(chunk))
                 chunks_log.append(chunk)
 
+                # TODO: check if it's the first yield and keep all empty and not-first yields
                 # if os.getenv("SENTRY_DSN"):
                 #     sentry_sdk.capture_message(str(chunks_log))
                 continue
