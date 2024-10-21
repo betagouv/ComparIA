@@ -33,7 +33,7 @@ def bot_response(
     request: gr.Request,
     temperature=0.7,
     top_p=1.0,
-    max_new_tokens=1024,
+    max_new_tokens=2048,
     apply_rate_limit=True,
     use_recommended_config=True,
 ):
