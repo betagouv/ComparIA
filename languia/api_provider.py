@@ -79,6 +79,7 @@ def process_response_stream(response, model_name=None, request=None):
                 elif chunk.choices[0].finish_reason == "length":
                     # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
+                    logger.warning("context_too_long: " + str(chunk))
                     break
                 # try:
                 if hasattr(chunk.choices[0], "delta") and hasattr(
