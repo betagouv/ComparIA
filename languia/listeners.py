@@ -306,43 +306,33 @@ document.getElementById("fr-modal-welcome-close").blur();
                         )
                     )
 
-                iters = 0
                 while True:
-                    stop = True
-                    iters += 1
-                    for i in range(config.num_sides):
-                        try:
-                            # # Artificially slow faster Google Vertex API
-                            # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
-                            # if iters % 30 == 1 or iters < 3:
-                            # if not (model_api_dict["api_type"] == "vertex" and i < 15):
-                            #     ret = next(gen[i])
-                            # elif (model_api_dict["api_type"] == "vertex" and i < 1):
-                            ret = next(gen[i])
-                            conversations[i] = ret
-                            stop = False
-                        # When context is too long, Albert API answers:
-                        # openai.BadRequestError: Error code: 400 - {'detail': 'Context length too large'}
-                        # When context is too long, HF API answers:
-                        # "openai.APIError: An error occurred during streaming"
-                        except (openai.APIError, openai.BadRequestError):
-                            # logger.error(
-                            #     f"erreur_milieu_discussion: {conversations[i].model_name}"
-                            # )
-                            raise
-                        except StopIteration:
-                            pass
-                        # TODO: timeout problems on scaleway Ampere models?
-                        # except httpcore.ReadTimeout:
-                        #     pass
-                        # except httpx.ReadTimeout:
-                        #     pass
+                    try:
+                        response_a = next(gen[0])
+                        conversations[0] = response_a
+                    except StopIteration:
+                        response_a = None
+                    try:
+                        response_b = next(gen[1])
+                        conversations[1] = response_b
+                    except StopIteration:
+                        response_b = None
+                    if response_a is None and response_b is None:
+                        break
+
                     conv_a = conversations[0]
                     conv_b = conversations[1]
                     chatbot = to_threeway_chatbot(conversations)
                     yield [app_state, conv_a, conv_b, chatbot, gr.skip()]
-                    if stop:
-                        break
+            # When context is too long, Albert API answers:
+            # openai.BadRequestError: Error code: 400 - {'detail': 'Context length too large'}
+            # When context is too long, HF API answers:
+            # "openai.APIError: An error occurred during streaming"
+            # TODO: timeout problems on scaleway Ampere models?
+            # except httpcore.ReadTimeout:
+            #     pass
+            # except httpx.ReadTimeout:
+            #     pass
             except EmptyResponseError as e:
                 error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
