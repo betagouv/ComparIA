@@ -132,7 +132,7 @@ def bot_response(
         if data["error_code"] == 0:
             # Artificially slow faster Google Vertex API
             # if not (model_api_dict["api_type"] == "vertex" and i % 15 != 0):
-            output = data["text"].strip()
+            output = data.get("text").strip()
             messages = update_last_message(messages, output + html_code)
             yield (state)
         else:
