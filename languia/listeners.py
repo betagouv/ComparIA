@@ -330,12 +330,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                             #     f"erreur_milieu_discussion: {conversations[i].model_name}"
                             # )
                             raise
-                        except EmptyResponseError as e:
-
-                            # logger.error(
-                            #     f"erreur_milieu_discussion: {conversations[i].model_name}"
-                            # )
-                            raise e
                         except StopIteration:
                             pass
                         # TODO: timeout problems on scaleway Ampere models?
@@ -349,8 +343,23 @@ document.getElementById("fr-modal-welcome-close").blur();
                     yield [app_state, conv_a, conv_b, chatbot, gr.skip()]
                     if stop:
                         break
+            except EmptyResponseError as e:
+                error_with_model = conversations[i].model_name
+                if os.getenv("SENTRY_DSN"):
+                    sentry_sdk.capture_exception(e)
+                logger.error(
+                    f"reponse_vide: {error_with_model}, essai {attempt}",
+                    extra={
+                        "request": request,
+                        "error": str(e),
+                        "stacktrace": traceback.format_exc(),
+                    },
+                    exc_info=True,
+                )
+
+                # Retry if empty error
+                continue
             except (
-                EmptyResponseError,
                 Exception,
                 openai.APIError,
                 openai.BadRequestError,
@@ -373,10 +382,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     error_with_model,
                     reason=str(e),
                 )
-                # gr.Warning(
-                #     duration=0,
-                #     message="Erreur avec l'interrogation d'un des modèles, veuillez patienter, le comparateur trouve deux nouveaux modèles à interroger.",
-                # )
+
                 # If it's the first message in conversation, re-roll
                 # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
                 if len(conversations[i].messages) < 3:
@@ -434,7 +440,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
                 else:
-                    # print(conversations[i].messages)
                     app_state.awaiting_responses = False
                     logger.error(
                         f"erreur_milieu_discussion: {conversations[i].model_name}, "
@@ -451,7 +456,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     )
                     # break
             else:
-                # TODO: ???
+                # If no exception, we break out of the 10 attempts loop
                 break
         else:
             logger.critical("maximum_attempts_reached")
