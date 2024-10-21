@@ -77,10 +77,12 @@
                 <th>Modèle</th>
             </tr>
             {% for test in tests %}
-            <tr>
-                <td>il y a {{ now - test['timestamp'] }}s</td>
+            {% set diff = now - test['timestamp'] %}
+            {% if diff < 60 %} {% set time_ago=diff ~ "s" %} {% else %} {% set minutes=diff // 60 %} {% set seconds=diff
+                % 60 %} {% set time_ago=minutes ~ "min " ~ seconds ~ "s" %} {% endif %} <tr>
+                <td>il y a {{ time_ago }}</td>
                 <td>{{ test['model_name'] }}</td>
-            </tr>
+                </tr>
             {% endfor %}
         </table>
     </div>

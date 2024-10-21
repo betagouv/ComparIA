@@ -145,11 +145,17 @@ def test_model(model_name):
 
     for test in tests:
         diff = int(time.time() - test["timestamp"])
-        if test["model_name"] == model_name and (diff < 60 * 10):
-            print(f"Already tested '{model_name}' {diff} seconds ago!")
+        if test["model_name"] == model_name and (diff < 60 * 5):
+            if diff < 60:
+                time_ago = f"{diff}s"
+            else:
+                minutes = diff // 60
+                seconds = diff % 60
+                time_ago = f"{minutes}min {seconds}s"
+            print(f"Already tested '{model_name}' {time_ago} ago!")
             return {
                 "success": False,
-                "reason": f"Already tested '{model_name}' {diff} seconds ago!",
+                "reason": f"Already tested '{model_name}' {time_ago} ago!",
             }
 
     test = {"model_name": model_name, "timestamp": int(time.time())}
@@ -257,7 +263,7 @@ def index(request: Request, scheduled_tests: bool = False):
             "models": models,
             "request": request,
             "scheduled_tests": scheduled_tests,
-            "now": int(time.time())
+            "now": int(time.time()),
         },
     )
 
