@@ -364,7 +364,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
                     sentry_sdk.capture_exception(e)
-                logger.error(
+                logger.exception(
                     f"erreur_modele: {error_with_model}, '{str(e)}'\n{traceback.format_exc()}",
                     extra={
                         "request": request,
@@ -445,13 +445,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
                 else:
                     app_state.awaiting_responses = False
-                    logger.error(
+                    logger.exception(
                         f"erreur_milieu_discussion: {conversations[i].model_name}, "
                         + str(e),
                         extra={request: request},
                         exc_info=True,
                     )
-
                     if os.getenv("SENTRY_DSN"):
                         sentry_sdk.capture_exception(e)
                     # Reinit faulty generator, e.g. to try another endpoint or just retry
