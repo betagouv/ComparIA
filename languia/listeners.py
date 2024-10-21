@@ -349,6 +349,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 )
 
                 # Retry if empty error
+                # TODO: recreate faulty generator? in order to pick differnet endpoint for example?
                 continue
             except (
                 Exception,
