@@ -3,7 +3,7 @@ The gradio utilities for chatting with a single model.
 """
 import gradio as gr
 
-from languia.api_provider import get_api_provider_stream_iter
+from languia.api_provider import openai_stream
 
 
 from languia.utils import (
@@ -71,9 +71,8 @@ def bot_response(
                     "max_new_tokens", int(max_new_tokens)
                 )
         try:
-            stream_iter = get_api_provider_stream_iter(
+            stream_iter = openai_stream(
                 messages,
-                model_name,
                 model_api_dict,
                 temperature,
                 top_p,
@@ -83,7 +82,7 @@ def bot_response(
             )
         except Exception as e:
             logger.error(
-                f"Error in get_api_provider_stream_iter. error: {e}",
+                f"Error in openai_stream. error: {e}",
                 extra={request: request},
                 exc_info=True,
             )
