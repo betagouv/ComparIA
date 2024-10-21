@@ -294,25 +294,26 @@ document.getElementById("fr-modal-welcome-close").blur();
         conversations = [conv_a, conv_b]
 
         gen = []
+        for i in range(config.num_sides):
+            gen.append(
+                bot_response(
+                    conversations[i],
+                    request,
+                    apply_rate_limit=True,
+                    use_recommended_config=True,
+                )
+            )
         for attempt in range(10):
             try:
-                for i in range(config.num_sides):
-                    gen.append(
-                        bot_response(
-                            conversations[i],
-                            request,
-                            apply_rate_limit=True,
-                            use_recommended_config=True,
-                        )
-                    )
-
                 while True:
                     try:
+                        i = 0
                         response_a = next(gen[0])
                         conversations[0] = response_a
                     except StopIteration:
                         response_a = None
                     try:
+                        i = 1
                         response_b = next(gen[1])
                         conversations[1] = response_b
                     except StopIteration:
@@ -392,7 +393,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                         state.model_name = model_name
                         return state
 
-                    app_state.awaiting_responses = False
                     config.outage_models = refresh_outage_models(
                         config.outage_models, controller_url=config.controller_url
                     )
@@ -415,6 +415,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         extra={request: request},
                     )
 
+                    app_state.awaiting_responses = False
                     app_state, conv_a, conv_b, chatbot = add_text(
                         app_state,
                         conv_a,
