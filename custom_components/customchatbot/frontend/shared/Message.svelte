@@ -102,99 +102,87 @@
 </script>
 
 <div class="message-row {layout} {role}-row">
-	<div
-		class:role
-		class="flex-wrap"
-		class:component-wrap={messages[0].type === "component"}
-	>
 	<!-- {#if role === "user"} -->
-	
 
-		{#each messages as message, thought_index}
-			<div
-				class="message {role} {get_message_bot_position(message)}"
+	{#each messages as message, thought_index}
+		<div
+			class="message {role} {get_message_bot_position(message)}"
+			class:message-markdown-disabled={!render_markdown}
+			style:text-align={rtl && role === "user" ? "left" : "right"}
+			class:thought={thought_index > 0}
+		>
+			<button
+				data-testid={role}
+				class:latest={i === value.length - 1}
 				class:message-markdown-disabled={!render_markdown}
-				style:text-align={rtl && role === "user" ? "left" : "right"}
-				class:thought={thought_index > 0}
+				style:user-select="text"
+				class:selectable
+				style:cursor={selectable ? "default" : "default"}
+				style:text-align={rtl ? "right" : "left"}
+				on:click={() => handle_select(i, message)}
+				on:keydown={(e) => {
+					if (e.key === "Enter") {
+						handle_select(i, message);
+					}
+				}}
+				dir={rtl ? "rtl" : "ltr"}
+				aria-label={role +
+					"'s message: " +
+					get_message_label_data(message)}
 			>
-				<button
-					data-testid={role}
-					class:latest={i === value.length - 1}
-					class:message-markdown-disabled={!render_markdown}
-					style:user-select="text"
-					class:selectable
-					style:cursor={selectable ? "default" : "default"}
-					style:text-align={rtl ? "right" : "left"}
-					on:click={() => handle_select(i, message)}
-					on:keydown={(e) => {
-						if (e.key === "Enter") {
-							handle_select(i, message);
-						}
-					}}
-					dir={rtl ? "rtl" : "ltr"}
-					aria-label={role +
-						"'s message: " +
-						get_message_label_data(message)}
-				>
-					{#if message.type === "text"}
-						{#if message.role === "assistant"}
-							{#if message.metadata?.bot === "a"}
-								<svg class="inline" width="26" height="26"
-									><circle
-										cx="13"
-										cy="13"
-										r="12"
-										fill="#A96AFE"
-										stroke="none"
-									></circle></svg
-								>
-								<h3>Modèle A</h3>
-							{:else if message.metadata?.bot === "b"}
-								<svg class="inline" width="26" height="26"
-									><circle
-										cx="13"
-										cy="13"
-										r="12"
-										fill="#A96AFE"
-										stroke="none"
-									></circle></svg
-								>
-								<h3>Modèle B</h3>
-							{/if}
-
-							<Markdown
-								message={message.content}
-								{latex_delimiters}
-								{sanitize_html}
-								{render_markdown}
-								{line_breaks}
-								on:load={scroll}
-								{root}
-							/>
-						{:else}
-							<Markdown
-								message={message.content}
-								{latex_delimiters}
-								{sanitize_html}
-								{render_markdown}
-								{line_breaks}
-								on:load={scroll}
-								{root}
-							/>
+				{#if message.type === "text"}
+					{#if message.role === "assistant"}
+						{#if message.metadata?.bot === "a"}
+							<svg class="inline" width="26" height="26"
+								><circle
+									cx="13"
+									cy="13"
+									r="12"
+									fill="#A96AFE"
+									stroke="none"
+								></circle></svg
+							>
+							<h3>Modèle A</h3>
+						{:else if message.metadata?.bot === "b"}
+							<svg class="inline" width="26" height="26"
+								><circle
+									cx="13"
+									cy="13"
+									r="12"
+									fill="#A96AFE"
+									stroke="none"
+								></circle></svg
+							>
+							<h3>Modèle B</h3>
 						{/if}
-					{/if}
-				</button>
-			</div>
 
-			{#if layout === "panel"}
-				<ButtonPanel {...button_panel_props} />
-			{/if}
-		{/each}
-	</div>
+						<Markdown
+							message={message.content}
+							{latex_delimiters}
+							{sanitize_html}
+							{render_markdown}
+							{line_breaks}
+							on:load={scroll}
+							{root}
+						/>
+					{:else}
+						<Markdown
+							message={message.content}
+							{latex_delimiters}
+							{sanitize_html}
+							{render_markdown}
+							{line_breaks}
+							on:load={scroll}
+							{root}
+						/>
+					{/if}
+				{/if}
+			</button>
+		</div>
+
+		<ButtonPanel {...button_panel_props} />
+	{/each}
 </div>
-{#if layout === "bubble"}
-	<ButtonPanel {...button_panel_props} />
-{/if}
 
 <style>
 	.message {
@@ -293,34 +281,20 @@
 		background-color: var(--color-accent-soft);
 	}
 
-	.bot {
+	.bot-row {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		border-width: 1px;
-		border-radius: var(--radius-lg);
-		border-bottom-left-radius: 0;
-		border-color: var(--border-color-primary);
-		background-color: var(--background-fill-secondary);
-		box-shadow: var(--shadow-drop);
 		align-self: flex-start;
-		text-align: right;
-		padding: var(--spacing-sm) var(--spacing-xl);
 	}
 
 	.panel .user :global(*) {
 		text-align: right;
 	}
 
-	/* Colors */
-	.bubble .bot {
-		border-color: var(--border-color-primary);
-	}
-
 	.message-row {
 		display: flex;
 		position: relative;
 	}
-
 
 	/* panel mode styles */
 	.panel {
@@ -398,7 +372,6 @@
 		border: none;
 		background: none;
 	}
-
 
 	.panel .bot,
 	.panel .user {
