@@ -16,7 +16,7 @@
 		Message,
 		ExampleMessage,
 		TupleFormat,
-		NormalisedMessage
+		NormalisedMessage,
 	} from "./types";
 
 	import { normalise_tuples, normalise_messages } from "./shared/utils";
@@ -103,7 +103,8 @@
 			show_progress={loading_status.show_progress === "hidden"
 				? "hidden"
 				: "minimal"}
-			on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
+			on:clear_status={() =>
+				gradio.dispatch("clear_status", loading_status)}
 		/>
 	{/if}
 	<div class="wrapper">
@@ -135,7 +136,8 @@
 			on:like={(e) => gradio.dispatch("like", e.detail)}
 			on:share={(e) => gradio.dispatch("share", e.detail)}
 			on:error={(e) => gradio.dispatch("error", e.detail)}
-			on:example_select={(e) => gradio.dispatch("example_select", e.detail)}
+			on:example_select={(e) =>
+				gradio.dispatch("example_select", e.detail)}
 			on:retry={(e) => gradio.dispatch("retry", e.detail)}
 			on:undo={(e) => gradio.dispatch("undo", e.detail)}
 			on:clear={() => {
