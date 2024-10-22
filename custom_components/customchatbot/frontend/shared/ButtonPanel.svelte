@@ -16,7 +16,6 @@
 	export let show: boolean;
 	export let message: NormalisedMessage | NormalisedMessage[];
 	export let position: "right" | "left";
-	export let avatar: FileData | null;
 	export let generating: boolean;
 
 	export let handle_action: (selected: string | null) => void;
@@ -50,8 +49,7 @@
 
 {#if show}
 	<div
-		class="message-buttons-{position} {layout} message-buttons {avatar !==
-			null && 'with-avatar'}"
+		class="message-buttons-{position} {layout} message-buttons"
 	>
 		<IconButtonWrapper top_panel={false}>
 			{#if show_copy}
@@ -105,10 +103,6 @@
 		margin-left: auto;
 	}
 
-	.bubble.with-avatar {
-		margin-left: calc(var(--spacing-xl) * 5);
-		margin-right: calc(var(--spacing-xl) * 5);
-	}
 
 	.panel {
 		display: flex;
