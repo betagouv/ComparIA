@@ -5,6 +5,7 @@ import gradio as gr
 
 from languia.api_provider import get_api_provider_stream_iter
 
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 from languia.utils import (
     ContextTooLongError,
@@ -19,7 +20,7 @@ logger = logging.getLogger("languia")
 
 def update_last_message(messages, text):
     if len(messages) < 1:
-        return [gr.ChatMessage(role="assistant", content=text)]
+        return [ChatMessage(role="assistant", content=text)]
     # We append a new assistant message if last one was from user
     if messages[-1].role == "user":
         messages.append(gr.ChatMessage(role="assistant", content=text))
