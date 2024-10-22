@@ -887,7 +887,7 @@ def to_threeway_chatbot(conversations):
                     {
                         "role": "assistant",
                         "content": msg_a.content,
-                        "metadata": {"name": "bot-a"},
+                        "metadata": {"title": "Modèle A"},
                     }
                 )
             if msg_b:
@@ -895,7 +895,7 @@ def to_threeway_chatbot(conversations):
                     {
                         "role": "assistant",
                         "content": msg_b.content,
-                        "metadata": {"name": "bot-b"},
+                        "metadata": {"title": "Modèle B"},
                     }
                 )
     return threeway_chatbot
