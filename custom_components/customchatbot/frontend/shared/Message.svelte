@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { is_component_message, is_last_bot_message } from "../shared/utils";
-	import { Image } from "@gradio/image/shared";
-	import Component from "./Component.svelte";
-	import type { FileData, Client } from "@gradio/client";
+	import { is_component_message } from "../shared/utils";
+	import type { Client } from "@gradio/client";
 	import type { NormalisedMessage } from "../types";
-	import MessageBox from "./MessageBox.svelte";
 	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
 	import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
@@ -68,6 +65,14 @@
 		return `a component of type ${message.content.component ?? "unknown"}`;
 	}
 
+	function get_message_bot_position(message: NormalisedMessage): string {
+		if (message.role === "assistant") {
+			return message.metadata.bot === "a" ? "left" : "right";
+		} else {
+			return "";
+		}
+	}
+
 	type ButtonPanelProps = {
 		show: boolean;
 		handle_action: (selected: string | null) => void;
@@ -96,38 +101,29 @@
 	};
 </script>
 
-<div
-	class="message-row {layout} {role}-row"
->
+<div class="message-row {layout} {role}-row">
 	<div
 		class:role
 		class="flex-wrap"
 		class:component-wrap={messages[0].type === "component"}
 	>
+	<!-- {#if role === "user"} -->
+	
+
 		{#each messages as message, thought_index}
 			<div
-				class="message {role} {is_component_message(message)
-					? message?.content.component
-					: ''}"
-				class:message-fit={layout === "bubble" && !bubble_full_width}
-				class:panel-full-width={true}
+				class="message {role} {get_message_bot_position(message)}"
 				class:message-markdown-disabled={!render_markdown}
 				style:text-align={rtl && role === "user" ? "left" : "right"}
-				class:component={message.type === "component"}
-				class:html={is_component_message(message) &&
-					message.content.component === "html"}
 				class:thought={thought_index > 0}
 			>
-
-				<!-- expanded={is_last_bot_message(messages, value)} -->
-
 				<button
 					data-testid={role}
 					class:latest={i === value.length - 1}
 					class:message-markdown-disabled={!render_markdown}
 					style:user-select="text"
 					class:selectable
-					style:cursor={selectable ? "pointer" : "default"}
+					style:cursor={selectable ? "default" : "default"}
 					style:text-align={rtl ? "right" : "left"}
 					on:click={() => handle_select(i, message)}
 					on:keydown={(e) => {
@@ -141,22 +137,40 @@
 						get_message_label_data(message)}
 				>
 					{#if message.type === "text"}
-						{#if message.metadata.title}
-						{#if message.metadata.title === "Modèle A"}
-						<svg class="inline" width="26" height="26"><circle cx="13" cy="13" r="12" fill="#A96AFE" stroke="none"></circle></svg>
-						{:else if message.metadata.title === "Modèle B"}
-						<svg class="inline" width="26" height="26"><circle cx="13" cy="13" r="12" fill="#A96AFE" stroke="none"></circle></svg>
-						<h3>{message.metadata.title}</h3>{/if}
+						{#if message.role === "assistant"}
+							{#if message.metadata?.bot === "a"}
+								<svg class="inline" width="26" height="26"
+									><circle
+										cx="13"
+										cy="13"
+										r="12"
+										fill="#A96AFE"
+										stroke="none"
+									></circle></svg
+								>
+								<h3>Modèle A</h3>
+							{:else if message.metadata?.bot === "b"}
+								<svg class="inline" width="26" height="26"
+									><circle
+										cx="13"
+										cy="13"
+										r="12"
+										fill="#A96AFE"
+										stroke="none"
+									></circle></svg
+								>
+								<h3>Modèle B</h3>
+							{/if}
 
-								<Markdown
-									message={message.content}
-									{latex_delimiters}
-									{sanitize_html}
-									{render_markdown}
-									{line_breaks}
-									on:load={scroll}
-									{root}
-								/>
+							<Markdown
+								message={message.content}
+								{latex_delimiters}
+								{sanitize_html}
+								{render_markdown}
+								{line_breaks}
+								on:load={scroll}
+								{root}
+							/>
 						{:else}
 							<Markdown
 								message={message.content}
@@ -178,7 +192,6 @@
 		{/each}
 	</div>
 </div>
-
 {#if layout === "bubble"}
 	<ButtonPanel {...button_panel_props} />
 {/if}
@@ -281,6 +294,8 @@
 	}
 
 	.bot {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
 		border-width: 1px;
 		border-radius: var(--radius-lg);
 		border-bottom-left-radius: 0;
@@ -306,31 +321,6 @@
 		position: relative;
 	}
 
-	/* bubble mode styles */
-	.bubble {
-		margin: calc(var(--spacing-xl) * 2);
-		margin-bottom: var(--spacing-xl);
-	}
-
-	.bubble.user-row {
-		align-self: flex-end;
-		max-width: calc(100% - var(--spacing-xl) * 6);
-	}
-
-	.bubble.bot-row {
-		align-self: flex-start;
-		max-width: calc(100% - var(--spacing-xl) * 6);
-	}
-
-	.bubble .user-row {
-		flex-direction: row;
-		justify-content: flex-end;
-	}
-
-
-	.bubble .message-fit {
-		width: fit-content !important;
-	}
 
 	/* panel mode styles */
 	.panel {
@@ -384,9 +374,8 @@
 		}
 	}
 
-
 	.selectable {
-		cursor: pointer;
+		cursor: default;
 	}
 
 	@keyframes dot-flashing {
@@ -401,45 +390,6 @@
 		}
 	}
 
-	/* Image preview */
-	.message :global(.preview) {
-		object-fit: contain;
-		width: 95%;
-		max-height: 93%;
-	}
-	.image-preview {
-		position: absolute;
-		z-index: 999;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		overflow: auto;
-		background-color: rgba(0, 0, 0, 0.9);
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-	.image-preview :global(svg) {
-		stroke: white;
-	}
-	.image-preview-close-button {
-		position: absolute;
-		top: 10px;
-		right: 10px;
-		background: none;
-		border: none;
-		font-size: 1.5em;
-		cursor: pointer;
-		height: 30px;
-		width: 30px;
-		padding: 3px;
-		background: var(--bg-color);
-		box-shadow: var(--shadow-drop);
-		border: 1px solid var(--button-secondary-border-color);
-		border-radius: var(--radius-lg);
-	}
-
 	.message > button {
 		width: 100%;
 	}
@@ -449,9 +399,6 @@
 		background: none;
 	}
 
-	.thought {
-		margin-top: var(--spacing-xxl);
-	}
 
 	.panel .bot,
 	.panel .user {
