@@ -196,6 +196,16 @@ h6.text-blue {
   align-items: start;
 }
 
+@media (min-width: 48em) {
+  .flex-md-row {
+    flex-direction: column;
+  }
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
 .gap-0 {
   gap: 0px;
 }
@@ -270,9 +280,8 @@ li.fr-nav__item {
 
 #send-area {
   min-height: 7rem;
-
+  padding: 1em;
   position: fixed;
-  padding: 0 20% 1em;
   width: 100%;
   bottom: 0;
   left: 0;
@@ -281,6 +290,12 @@ li.fr-nav__item {
   /* background-color: var(--background-alt-grey); */
   /* border-top: solid 1px var(--border-default-grey); */
   z-index: 100;
+}
+
+@media (min-width: 48em) {
+  #send-area {
+    padding: 0 20% 1em;
+  }
 }
 
 /* 

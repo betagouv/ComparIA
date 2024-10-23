@@ -176,7 +176,7 @@ with gr.Blocks(
         elem_id="send-area", visible=True, elem_classes="fr-pt-1w"
     ) as send_area:
         # textbox = gr.Textbox(
-        with gr.Row(elem_classes="items-start"):
+        with gr.Row(elem_classes="flex-md-row flex-col items-start"):
             textbox = FrInput(
                 elem_id="main-textbox",
                 show_label=False,
