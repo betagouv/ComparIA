@@ -9,7 +9,7 @@ import sentry_sdk
 
 from gradio import ChatMessage
 
-# from languia.utils import ContextTooLongError
+from languia.utils import ContextTooLongError, EmptyResponseError
 
 
 def get_api_provider_stream_iter(
@@ -69,7 +69,6 @@ def process_response_stream(response, model_name=None, request=None):
     chunks_log = []
 
     for chunk in response:
-
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             buffer_output_tokens += chunk.usage.completion_tokens
             # data["output_tokens"] = chunk.usage.completion_tokens
@@ -102,7 +101,6 @@ def process_response_stream(response, model_name=None, request=None):
                 # if os.getenv("SENTRY_DSN"):
                 #     sentry_sdk.capture_message(str(chunks_log))
                 continue
-                # raise ValueError("Content is empty")
 
             # Special handling for certain models
             if model_name == "meta/llama3-405b-instruct-maas":
@@ -126,7 +124,10 @@ def process_response_stream(response, model_name=None, request=None):
 
             yield data
     # data["output_tokens"] = buffer_output_tokens
-
+    else:
+        if os.getenv("SENTRY_DSN"):
+            sentry_sdk.capture_message(response.response.__dict__)
+        raise EmptyResponseError
     yield data
     # except Exception as e:
     #     logger.error("erreur_chunk: " + str(chunk))

@@ -81,6 +81,7 @@ def bot_response(
                 state,
                 request,
             )
+            # We could check if stream is already closed
         except Exception as e:
             logger.error(
                 f"Error in get_api_provider_stream_iter. error: {e}",
@@ -114,6 +115,7 @@ def bot_response(
             extra={request: request},
         )
         # logger.error(data)
+        # FIXME: normally already raised earlier
         raise EmptyResponseError(f"No answer from API for model {model_name}")
 
     messages = update_last_message(messages, output)
