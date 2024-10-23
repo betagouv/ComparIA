@@ -170,7 +170,7 @@ def test_model(model_name):
     test_message = "Say 'this is a test'."
     temperature = 1
     max_new_tokens = 10
-    stream = False
+    stream = True
 
     # Mark task as done
     if model_name in scheduled_tasks:
@@ -206,6 +206,7 @@ def test_model(model_name):
             temperature=temperature,
             max_tokens=max_new_tokens,
             stream=stream,
+            stream_options={"include_usage": True},
         )
 
         # Verify the response
@@ -214,7 +215,6 @@ def test_model(model_name):
             for chunk in res:
                 if chunk.choices:
                     text += chunk.choices[0].delta.content or ""
-                    break
         else:
             if res.choices:
                 text = res.choices[0].message.content or ""
@@ -237,7 +237,7 @@ def test_model(model_name):
             reason = f"No content from api for model {model_name}"
             logging.error(f"Test failed: {model_name}")
             logging.error(reason)
-            disable_model(model_name, reason, confirm=False)
+            disable_model(model_name, reason)
             return {"success": False, "error_message": reason}
 
     except Exception as e:
