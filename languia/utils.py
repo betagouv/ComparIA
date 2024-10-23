@@ -30,11 +30,13 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 
 
 class ContextTooLongError(ValueError):
+    def __str__(self):
+        return "Context too long."
     pass
-
 
 class EmptyResponseError(RuntimeError):
-    pass
+    def __str__(self):
+        return "Empty response."
 
 
 # https://docs.python.org/3/howto/logging.html#arbitrary-object-messages
@@ -413,7 +415,7 @@ def get_battle_pair(
         # Maybe sleep then kill container?
         raise gr.Error(
             duration=0,
-            message="Le comparateur a un problème et les modèles ne sont plus disponibles, veuillez revenir plus tard.",
+            message="Le comparateur a un problème et aucun des modèles n'est disponible, veuillez revenir plus tard.",
         )
         # os.kill(os.getpid(), signal.SIGINT)
         # parent = psutil.Process(psutil.Process(os.getpid()).ppid())
@@ -887,6 +889,7 @@ def to_threeway_chatbot(conversations):
                     {
                         "role": "assistant",
                         "content": msg_a.content,
+                        # TODO: add duration here?
                         "metadata": {"name": "bot-a"},
                     }
                 )
