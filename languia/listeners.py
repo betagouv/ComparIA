@@ -303,7 +303,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
             for i in range(config.num_sides)
         ]
-        for attempt in range(5):
+        for attempt in range(1,4):
             try:
                 while True:
                     try:
@@ -334,38 +334,18 @@ document.getElementById("fr-modal-welcome-close").blur();
             #     pass
             # except httpx.ReadTimeout:
             #     pass
-            except EmptyResponseError as e:
-                error_with_model = conversations[i].model_name
-                if os.getenv("SENTRY_DSN"):
-                    sentry_sdk.capture_exception(e)
-                logger.error(
-                    f"reponse_vide: {error_with_model}, essai {attempt}",
-                    extra={
-                        "request": request,
-                        "error": str(e),
-                        "stacktrace": traceback.format_exc(),
-                    },
-                    exc_info=True,
-                )
-                # Reinit faulty generator, e.g to get a new endpoint maybe
-                gen[i] = bot_response(
-                    conversations[i],
-                    request,
-                    apply_rate_limit=True,
-                    use_recommended_config=True,
-                )
-
-                continue
             except (
                 Exception,
                 openai.APIError,
                 openai.BadRequestError,
+                EmptyResponseError
             ) as e:
                 error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
                     sentry_sdk.capture_exception(e)
+
                 logger.exception(
-                    f"erreur_modele: {error_with_model}, '{str(e)}'\n{traceback.format_exc()}",
+                    f"erreur_modele: {error_with_model}, '{e}'\n{traceback.format_exc()}",
                     extra={
                         "request": request,
                         "error": str(e),
@@ -439,7 +419,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         )
                         for i in range(config.num_sides)
                     ]
-                    sleep(1)
+                    pass
 
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
@@ -453,6 +433,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     )
                     if os.getenv("SENTRY_DSN"):
                         sentry_sdk.capture_exception(e)
+
                     # Reinit faulty generator, e.g. to try another endpoint or just retry
                     gen[i] = bot_response(
                         conversations[i],
@@ -460,10 +441,14 @@ document.getElementById("fr-modal-welcome-close").blur();
                         apply_rate_limit=True,
                         use_recommended_config=True,
                     )
-                    sleep(1)
+
+                    # Exponential backoff
+                    sleeping = min(2 * attempt, 10)
+                    logger.debug(f"Sleeping {sleeping}s...")                    
+                    
                     continue
             else:
-                # If no exception, we break out of the 10 attempts loop
+                # If no exception, we break out of the attempts loop
                 break
         else:
             logger.critical("maximum_attempts_reached")
