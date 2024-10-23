@@ -145,10 +145,10 @@ def openai_api_stream_iter(
 ):
     import openai
 
-    api_key = api_key or os.environ["OPENAI_API_KEY"]
+    api_key = api_key
 
     client = openai.OpenAI(
-        base_url=api_base or "https://api.openai.com/v1",
+        base_url=api_base,
         api_key=api_key,
         #         timeout=WORKER_API_TIMEOUT,
         timeout=5,
