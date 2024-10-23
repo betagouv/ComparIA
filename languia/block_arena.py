@@ -273,7 +273,8 @@ with gr.Blocks(
                     elem_classes="thumb-down-icon flex checkboxes",
                     show_label=False,
                     choices=[
-                        ("Hallucinations", "hallucinations"),
+                        # FIXME: say "incorrect"
+                        ("Incorrectes", "hallucinations"),
                         ("Superficielles", "superficial"),
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],
