@@ -90,7 +90,7 @@ def bot_response(
 
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
-    update_last_message(messages, html_code)
+    # update_last_message(messages, html_code)
     yield (state)
 
     for i, data in enumerate(stream_iter):
