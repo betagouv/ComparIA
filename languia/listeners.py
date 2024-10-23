@@ -124,7 +124,7 @@ def register_listeners():
         # tos_accepted = request...
         # if tos_accepted:
         logger.info(
-            f"init_arene, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
+            f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
         conv_a, conv_b = init_conversations([conv_a, conv_b], request)
