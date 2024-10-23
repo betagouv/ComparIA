@@ -14,7 +14,6 @@ from languia.utils import ContextTooLongError, EmptyResponseError
 
 def get_api_provider_stream_iter(
     messages,
-    model_name,
     model_api_dict,
     temperature,
     top_p,

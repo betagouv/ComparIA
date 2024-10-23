@@ -73,7 +73,6 @@ def bot_response(
         try:
             stream_iter = get_api_provider_stream_iter(
                 messages,
-                model_name,
                 model_api_dict,
                 temperature,
                 top_p,
