@@ -5,6 +5,7 @@ import gradio as gr
 
 from languia.api_provider import get_api_provider_stream_iter
 
+import time
 
 from languia.utils import (
     ContextTooLongError,
@@ -37,7 +38,8 @@ def bot_response(
     apply_rate_limit=True,
     use_recommended_config=True,
 ):
-    # start_tstamp = time.time()
+    start_tstamp = time.time()
+    print("start:"+str(start_tstamp))
     # temperature = float(temperature)
     # top_p = float(top_p)
     # max_new_tokens = int(max_new_tokens)
@@ -119,7 +121,7 @@ def bot_response(
 
     messages = update_last_message(messages, output)
 
+    finish_tstamp = time.time()
+    print("finish:"+str(finish_tstamp))
     yield (state)
 
-
-    # finish_tstamp = time.time()
