@@ -183,6 +183,7 @@ with gr.Blocks(
                 lines=1,
                 placeholder="Ecrivez votre premier message aux modèles ici",
                 max_lines=7,
+                elem_classes="w-full",
                 # elem_classes="inline-block fr-col-12 fr-col-md-10",
                 container=True,
                 autofocus=True,
@@ -194,7 +195,7 @@ with gr.Blocks(
                 value="Envoyer",
                 # icon="assets/dsfr/icons/system/arrow-up-line.svg",
                 elem_id="send-btn",
-                elem_classes="grow-0 purple-btn",
+                elem_classes="grow-0 purple-btn w-full",
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(size="lg",

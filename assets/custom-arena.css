@@ -196,9 +196,13 @@ h6.text-blue {
   align-items: start;
 }
 
+.w-full {
+  width: 100%;
+}
+
 @media (min-width: 48em) {
   .flex-md-row {
-    flex-direction: column;
+    flex-direction: row !important;
   }
 }
 
@@ -290,6 +294,10 @@ li.fr-nav__item {
   /* background-color: var(--background-alt-grey); */
   /* border-top: solid 1px var(--border-default-grey); */
   z-index: 100;
+}
+
+#send-area .form {
+  width: 100%;
 }
 
 @media (min-width: 48em) {
