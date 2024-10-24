@@ -104,7 +104,7 @@ description = "Actualisé en août 2024, ce modèle multilingue de l'entreprise 
 ["chocolatine-14b-instruct-dpo-v1.2"]
 url = "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF"
 simple_name = "Chocolatine 14B"
-organisation = "Microsoft"
+organisation = "jpacifico"
 country = "États-Unis"
 params = 14
 icon_path = "huggingface.svg"
@@ -131,7 +131,8 @@ conditions = "restricted"
 description = "Sorti en février 2024 et amélioré à plusieurs reprises depuis, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
 excerpt = "Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 
-["Gemma 2-27b-it"]
+[gemma-2-27b-it]
+url = "https://huggingface.co/google/gemma-2-27b-it"
 simple_name = "Gemma 2 27b"
 organisation = "Google"
 country = "États-Unis"
@@ -481,6 +482,21 @@ dataset = "private"
 conditions = "free"
 description = "Petit frère de la famille Qwen2 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes."
 excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
+params = 7
+license = "Apache 2.0"
+
+["Qwen2.5-7B-instruct"]
+url = "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct"
+simple_name = "Qwen2.5-7B"
+organisation = "Alibaba"
+country = "Chine"
+icon_path = "qwen.jpg"
+friendly_size = "S"
+distribution = "open-weights"
+dataset = "private"
+conditions = "free"
+description = "Petit modèle de la famille Qwen2.5 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes."
+excerpt = "Supportant un contexte de 130k tokens, ce modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
 params = 7
 license = "Apache 2.0"
 
