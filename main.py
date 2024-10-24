@@ -35,13 +35,14 @@ auth = None
 if not config.debug:
     test_all_models(config.controller_url)
 
-# TODO: Fine-tune for performance https://www.gradio.app/guides/setting-up-a-demo-for-maximum-performance
 demo = demo.queue(
     default_concurrency_limit=None,
     # default_concurrency_limit=40,
     # status_update_rate="auto",
     api_open=False,
 )
+# Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
+# demo.startup_events()
 
 app = gr.mount_gradio_app(
     app,
