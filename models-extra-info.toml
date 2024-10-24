@@ -101,6 +101,20 @@ description = "Actualisé en août 2024, ce modèle multilingue de l'entreprise 
 # dataset = "public"
 # conditions = "free"
 
+["chocolatine-14b-instruct-dpo-v1.2"]
+url = "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF"
+simple_name = "Chocolatine 14B"
+organisation = "Microsoft"
+country = "États-Unis"
+params = 14
+icon_path = "huggingface.svg"
+friendly_size = "M"
+distribution = "open-weights"
+license = "MIT"
+conditions = "free"
+excerpt = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française."
+description = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
+
 ["gemini-1.5-pro-001"]
 url = "https://ai.google.dev/gemini-api"
 active_params = 220
@@ -118,7 +132,7 @@ description = "Sorti en février 2024 et amélioré à plusieurs reprises depuis
 excerpt = "Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 
 ["Gemma 2-27b-it"]
-simple_name = "Gemma 2-27b-it"
+simple_name = "Gemma 2 27b"
 organisation = "Google"
 country = "États-Unis"
 icon_path = "google.png"
@@ -180,6 +194,20 @@ dataset = "private"
 distribution = "api-only"
 conditions = "restricted"
 
+["hermes-3-llama-3.1-405b"]
+url = "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B"
+simple_name = "Hermes 3 405B"
+organisation = "Nous"
+country = "États-Unis"
+icon_path = "nous.webp"
+friendly_size = "XL"
+distribution = "open-weights"
+params = 405
+conditions = "free"
+excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la série Hermes. C'est une adaptation du modèle Llama 3.1 405B de Meta."
+description = "Doté de 405 milliards de paramètres, ce modèle est la version la plus large de la troisième itération des modèles Hermes. Ce modèle Hermes 3 est un fine-tune conçu par l'entreprise américaine 'Nous Research' à partir du modèle Llama 3.1 405B de Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation."
+license = "Llama 3.1"
+
 ["lfm-40b"]
 url = "https://www.liquid.ai/liquid-foundation-models"
 simple_name = "LFM 40B MoE"
@@ -237,7 +265,21 @@ dataset = "private"
 distribution = "open-weights"
 conditions = "free"
 excerpt = "Doté de 70 milliards de paramètres et sorti en avril 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
-description = "Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps fors des Jeux olympiques de Paris 2024! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
+description = "Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps forts des Jeux olympiques de Paris 2024 ! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
+license = "Llama 3.1"
+
+["llama-3.1-nemotron-70b-instruct"]
+url = "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct"
+params = 70
+simple_name = "Llama 3.1 Nemotron 70B"
+organisation = "NVIDIA"
+country = "États-Unis"
+icon_path = "nvidia.svg"
+friendly_size = "L"
+distribution = "open-weights"
+conditions = "free"
+excerpt = "Doté de 70 milliards de paramètres, ce modèle est un fine-tune conçu par le concepteur de cartes graphiques NVIDIA à partir du modèle Llama 3.1 70B de Meta."
+description = "Doté de 70 milliards de paramètres, ce modèle est un fine-tune conçu par le concepteur de cartes graphiques NVIDIA à partir du modèle Llama 3.1 70B de Meta. Sorti en octobre 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
 license = "Llama 3.1"
 
 [Meta-Llama-3-70B-Instruct]
@@ -283,6 +325,20 @@ description = "Sorti en juillet 2024, ce modèle de petit gabarit est entraîné
 excerpt = "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter un contexte de 128k tokens en plus de 100 langues. Sorti en juillet 2024."
 license = "Apache 2.0"
 
+[ministral-8b-instruct-2410]
+url = "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410"
+simple_name = "Ministral"
+params = 8
+organisation = "Mistral"
+country = "France"
+icon_path = "mistral.png"
+friendly_size = "S"
+distribution = "open-weights"
+conditions = "free"
+description = "Sorti en octobre 2024, ce modèle de petit gabarit est entraîné pour des tâches de raisonnement, de connaissances générales et de programmation. Il utilise le tokenizer Tekken, efficace pour compresser des textes. Il parle plus de 100 langues."
+excerpt = "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter plus de 100 langues. Sorti en octobre 2024."
+license = "Mistral AI Non-Production"
+
 # ["Mistral-7B-Instruct-v0.3"]
 # simple_name = "Mistral-7B"
 # params = 7
@@ -295,15 +351,14 @@ license = "Apache 2.0"
 # conditions = "free"
 # license = "Apache 2.0"
 
-[Mistral-Large-2402]
-simple_name = "Mistral-Large-2402"
-organisation = "Mistral"
-country = "France"
-icon_path = "mistral.png"
-friendly_size = "L"
-dataset = "private"
-distribution = "api-only"
-conditions = "restricted"
+# [Mistral-Large-2402]
+# simple_name = "Mistral-Large-2402"
+# organisation = "Mistral"
+# country = "France"
+# icon_path = "mistral.png"
+# friendly_size = "L"
+# distribution = "api-only"
+# conditions = "restricted"
 
 ["Mixtral-8x22B-Instruct-v0.1"]
 url = "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1"
