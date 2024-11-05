@@ -25,7 +25,7 @@
                 </li>
             </ul>
         </div>
-        <h3 class="fr-h3">Modèles désactivés</h3>
+        <h3 class="fr-h3">Incidents</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
                 <th>Modèle</th>
@@ -49,24 +49,24 @@
             </tr>
             {% endfor %}
         </table>
-        <h3 class="fr-h3">Modèles actifs</h3>
+        <h3 class="fr-h3">Endpoints</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
+                <th>Nom</th>
                 <th>Modèle</th>
                 <th>Tester ?</th>
                 <th>Désactiver ?</th>
                 <th>API</th>
                 <!-- <th>Stats</th> -->
             </tr>
-            {% for model_name, model in models.items() %}
-            {% if model_name not in outages | map(attribute='model_name') %}
+            {% for endpoint in endpoints %}
             <tr>
-                <td>{{ model_name }}</td>
+                <td>{{ endpoint['api_id'] }}</td>
+                <td>{{ endpoint['model_id'] }}</td>
                 <td><a href="/outages/{{ model_name }}">Tester ?</a></td>
                 <td><a href="/outages/{{ model_name }}/create">Désactiver ?</a></td>
-                <td>{{ model["api_base"] | string | truncate(100, True) }}</td>
+                <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
             </tr>
-            {% endif %}
             {% endfor %}
         </table>
 
