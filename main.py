@@ -33,7 +33,7 @@ auth = None
 
 # Clashes with hot reloading
 # if not config.debug:
-#     test_all_models(config.controller_url)
+#     test_all_endpoints(config.controller_url)
 
 demo = demo.queue(
     default_concurrency_limit=None,

@@ -274,32 +274,32 @@ def index(request: Request, scheduled_tests: bool = False):
     )
 
 
-@app.get("/test_all_models")
-def test_all_models(background_tasks: BackgroundTasks):
+@app.get("/test_all_endpoints")
+def test_all_endpoints(background_tasks: BackgroundTasks):
     """
     Initiates background tasks to test all models asynchronously.
     """
-    for key, value in models.items():
-        if key not in scheduled_tasks:
+    for endpoint in endpoints:
+        if endpoint.get("api_id") not in scheduled_tasks:
             try:
-                background_tasks.add_task(test_model, key)
-                scheduled_tasks.add(key)
+                background_tasks.add_task(test_model, endpoint.get("api_id"))
+                scheduled_tasks.add(endpoint.get("api_id"))
             except Exception:
                 pass
     return RedirectResponse(url="/?scheduled_tests=true", status_code=302)
 
 
-# async def periodic_test_all_models():
+# async def periodic_test_all_endpoints():
 #     """
 #     Periodically test a model in the background.
 #     """
 #     while True:
 #         logging.info("Periodic testing models")
-#         test_all_models()
+#         test_all_endpoints()
 #         await asyncio.sleep(3600)  # Test every hour
 
 
 # @app.on_event("startup")
 # async def start_periodic_tasks():
 #     # Schedule the periodic model testing task
-#     asyncio.create_task(periodic_test_all_models())
+#     asyncio.create_task(periodic_test_all_endpoints())
