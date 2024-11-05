@@ -70,9 +70,7 @@ def disable_endpoint(api_id: str, reason: str = None):
         }
 
         # Check if the api_id already exists in the outages list
-        existing_outage = next(
-            (o for o in outages if o["api_id"] == api_id), None
-        )
+        existing_outage = next((o for o in outages if o["api_id"] == api_id), None)
 
         if existing_outage:
             # remove_outages(model_name)
@@ -118,7 +116,6 @@ def disable_endpoint(api_id: str, reason: str = None):
         return outage
 
 
-
 @app.get("/outages/")
 def get_outages():
     """
@@ -127,8 +124,7 @@ def get_outages():
     Returns:
         List[str]: A list of model names.
     """
-    return ({o["model_name"], o['endpoint_name']} for o in outages)
-
+    return ({o["model_name"], o["endpoint_name"]} for o in outages)
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
@@ -160,11 +156,8 @@ def test_model(api_id):
     #             "reason": f"Already tested '{model_name}' {time_ago} ago!",
     #         }
     from languia.utils import get_endpoint
+
     endpoint = get_endpoint(api_id)
-    test = {"model_id": endpoint.get('model_id'), "api_id": api_id, "timestamp": int(time.time())}
-    # tests.append(test)
-    # if len(tests) > 25:
-    #     tests = tests[-25:]
 
     # Log the outage test
     logging.info(f"Testing endpoint: {api_id} ")
@@ -222,18 +215,12 @@ def test_model(api_id):
         else:
             if res.choices:
                 text = res.choices[0].message.content or ""
-# FIXME: only remove the endpoint+model pair
-            if text:
-                logging.info(f"Test successful: {model_name}")
-                if any(outage["model_name"] == model_name for outage in outages):
-                    logging.info(f"Removing {model_name} from outage list")
-                    remove_outage(model_name)
-                    return {
-                        "success": True,
-                        "message": "Removed model from outages list.",
-                        "response": text,
-                    }
-                return {"success": True, "message": "Model responded: " + str(text)}
+
+        test = {
+            "model_id": endpoint.get("model_id"),
+            "api_id": api_id,
+            "timestamp": int(time.time()),
+        }
 
         # Check if the response is successful
         if text:
@@ -242,20 +229,23 @@ def test_model(api_id):
                 logging.info(f"Removing {api_id} from outage list")
                 remove_outages(api_id)
 
-                return {
+            test.update(
+                {
                     "success": True,
-                    "message": "Removed model from outages list.",
-                    "response": text,
+                    "info": "Removed model from outages list.",
+                    "message": "Model responded: " + str(text),
                 }
-            return {"success": True, "message": "Model responded: " + str(text)}
-
+            )
         else:
             reason = f"No content from api {api_id}"
             # logging.error(f"Test failed: {model_name}")
             logging.error(reason)
+            test.update({"success": False, "message": reason})
+        tests.append(test)
+        if len(tests) > 25:
+            tests = tests[-25:]
             # disable_endpoint(model_name, reason)
-            return {"success": False, "error_message": reason}
-
+        return test
     except Exception as e:
         reason = str(e)
         logging.error(f"Error: {reason}. Endpoint: {api_id}")
@@ -263,7 +253,7 @@ def test_model(api_id):
         stacktrace = traceback.print_exc()
         _outage = disable_endpoint(api_id, reason)
 
-        return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
+        return {"success": False, "message": str(reason), "stacktrace": stacktrace}
 
 
 @app.get(

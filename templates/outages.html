@@ -28,6 +28,7 @@
         <h3 class="fr-h3">Incidents</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
+                <th>Endpoint</th>
                 <th>Modèle</th>
                 <th>Date de détection</th>
                 <th>Réessayer ?</th>
@@ -36,10 +37,11 @@
             </tr>
             {% for outage in outages %}
             <tr>
-                <td>{{ outage.model_name }}</td>
+                <td>{{ outage.api_id }}</td>
+                <td>{{ outage.model_id }}</td>
                 <td>{{ outage.detection_time }}</td>
-                <td><a href="/outages/{{ outage.model_name }}"><strong>Réessayer ?</strong></a></td>
-                <td><a href="/outages/{{ outage.model_name }}/delete">Réactiver de force ?</a></td>
+                <td><a href="/outages/{{ outage.api_id }}"><strong>Réessayer ?</strong></a></td>
+                <td><a href="/outages/{{ outage.api_id }}/delete">Réactiver de force ?</a></td>
                 <td>{% if outage.reason %}
                     {{ outage.reason|string|truncate(500, True) }}
                     {% else %}
@@ -75,13 +77,17 @@
             <tr>
                 <th>Date</th>
                 <th>Modèle</th>
+                <th>Endpoint</th>
+                <th>Résultat</th>
             </tr>
             {% for test in tests %}
             {% set diff = now - test['timestamp'] %}
             {% if diff < 60 %} {% set time_ago=diff ~ "s" %} {% else %} {% set minutes=diff // 60 %} {% set seconds=diff
                 % 60 %} {% set time_ago=minutes ~ "min " ~ seconds ~ "s" %} {% endif %} <tr>
                 <td>il y a {{ time_ago }}</td>
-                <td>{{ test['model_name'] }}</td>
+                <td>{{ test['model_id'] }}</td>
+                <td>{{ test['api_id'] }}</td>
+                <td>{{ test['message'] }}</td>
                 </tr>
             {% endfor %}
         </table>
