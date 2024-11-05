@@ -7,10 +7,16 @@ import logging
 from fastapi.templating import Jinja2Templates
 import traceback
 
+from languia.api_provider import get_api_provider_stream_iter
+
 # import sentry_sdk
 # from fastapi import BackgroundTasks
 
 # from sentry_sdk.integrations.fastapi import FastApiIntegration
+
+from languia import api_provider
+
+from gradio import ChatMessage
 
 import google.auth
 import google.auth.transport.requests
@@ -46,8 +52,8 @@ tests: List = []
 scheduled_tasks = set()
 
 
-@app.get("/outages/{model_name}/delete", status_code=204)
-@app.delete("/outages/{model_name}", status_code=204)
+@app.get("/outages/{api_id}/delete", status_code=204)
+@app.delete("/outages/{api_id}", status_code=204)
 def remove_outages(api_id: str):
     # try:
     for i, outage in enumerate(outages):
@@ -73,9 +79,7 @@ def disable_endpoint(api_id: str, reason: str = None):
 
     outages.append(outage)
 
-
     return outage
-
 
 
 @app.get("/outages/")
@@ -101,7 +105,7 @@ endpoints = json5.load(open(register_api_endpoint_file))
 
 
 @app.get("/outages/{api_id}")
-def test_model(api_id):
+def test_endpoint(api_id):
     global tests
     if api_id == "None":
         return {"success": False, "error_message": "Don't test 'None'!"}
@@ -125,17 +129,12 @@ def test_model(api_id):
     endpoint = get_endpoint(api_id)
 
     # Log the outage test
-    logging.info(f"Testing endpoint: {api_id} ")
+    logging.info(f"Testing endpoint: {api_id}")
 
     # Define test parameters
-    test_message = "Say 'this is a test'."
     temperature = 1
     max_new_tokens = 10
     stream = True
-
-    # Mark task as done
-    # if model_name in scheduled_tasks:
-    #     scheduled_tasks.remove(model_name)
 
     try:
         endpoint = get_endpoint(api_id)
@@ -143,43 +142,26 @@ def test_model(api_id):
         api_type = endpoint.get("api_type")
         api_base = endpoint.get("api_base")
 
-        if api_type == "vertex":
-            if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-                logging.warn("No Google creds detected!")
-
-            creds, project = google.auth.default(
-                scopes=["https://www.googleapis.com/auth/cloud-platform"]
-            )
-            auth_req = google.auth.transport.requests.Request()
-            creds.refresh(auth_req)
-            api_key = creds.token
-        else:
-            api_key = endpoint.get("api_key")
-
-        client = openai.OpenAI(
-            base_url=api_base,
-            api_key=api_key,
-            timeout=10,
-        )
-        # Send a test message to the OpenAI API
-        res = client.chat.completions.create(
-            model=endpoint.get("model_name"),
-            messages=[{"role": "user", "content": test_message}],
-            temperature=temperature,
-            max_tokens=max_new_tokens,
-            stream=stream,
-            stream_options={"include_usage": True},
+        stream_iter = get_api_provider_stream_iter(
+            [ChatMessage(role="user", content="ONLY say 'this is a test'.")],
+            endpoint,
+            temperature,
+            max_new_tokens,
         )
 
         # Verify the response
         text = ""
-        if stream:
-            for chunk in res:
-                if chunk.choices:
-                    text += chunk.choices[0].delta.content or ""
-        else:
-            if res.choices:
-                text = res.choices[0].message.content or ""
+        for data in stream_iter:
+            if "output_tokens" in data:
+                print(
+                    f"reported output tokens for api {endpoint['api_id']}:"
+                    + str(data["output_tokens"])
+                )
+
+            output = data.get("text")
+            if output:
+                output.strip()
+                text += output
 
         test = {
             "model_id": endpoint.get("model_id"),
@@ -247,7 +229,7 @@ def test_all_endpoints(background_tasks: BackgroundTasks):
     for endpoint in endpoints:
         if endpoint.get("api_id") not in scheduled_tasks:
             try:
-                background_tasks.add_task(test_model, endpoint.get("api_id"))
+                background_tasks.add_task(test_endpoint, endpoint.get("api_id"))
                 scheduled_tasks.add(endpoint.get("api_id"))
             except Exception:
                 pass
