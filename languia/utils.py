@@ -902,18 +902,18 @@ def refresh_outages(previous_outages, controller_url):
 #         pass
 
 
-def test_model(controller_url, model_name):
+def test_endpoint(controller_url, api_id):
     return requests.get(
         # params={"model_name": model_name},
-        url=f"{controller_url}/outages/{model_name}",
+        url=f"{controller_url}/outages/{api_id}",
         timeout=2,
     )
 
 
-def on_endpoint_error(controller_url, model_name, reason):
+def on_endpoint_error(controller_url, api_id, reason):
     logger = logging.getLogger("languia")
     try:
-        return test_model(controller_url, model_name)
+        return test_endpoint(controller_url, api_id)
         # await test_model(controller_url, model_name)
         # return True
     except Exception as e:

@@ -139,8 +139,8 @@ def test_endpoint(api_id):
     try:
         endpoint = get_endpoint(api_id)
         # Initialize the OpenAI client
-        api_type = endpoint.get("api_type")
-        api_base = endpoint.get("api_base")
+        # api_type = endpoint.get("api_type")
+        # api_base = endpoint.get("api_base")
 
         stream_iter = get_api_provider_stream_iter(
             [ChatMessage(role="user", content="ONLY say 'this is a test'.")],
