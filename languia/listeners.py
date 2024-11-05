@@ -48,7 +48,7 @@ from languia.utils import (
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
-    pick_endpoint
+    pick_endpoint,
 )
 
 from languia.config import (
@@ -104,7 +104,7 @@ def register_listeners():
                 config.outages, controller_url=config.controller_url
             )
 
-            outages = [outage.get('api_id') for outage in config.outages]                        
+            outages = [outage.get("api_id") for outage in config.outages]
             # app_state.model_left, app_state.model_right = get_battle_pair(
             model_left, model_right = get_battle_pair(
                 config.models,
@@ -117,8 +117,12 @@ def register_listeners():
             endpoint_right = pick_endpoint(model_right, outages)
             # TODO: replace by class method
             conversations = [
-                set_conv_state(conversations[0], model_name=model_left, endpoint=endpoint_left),
-                set_conv_state(conversations[1], model_name=model_right, endpoint=endpoint_right),
+                set_conv_state(
+                    conversations[0], model_name=model_left, endpoint=endpoint_left
+                ),
+                set_conv_state(
+                    conversations[1], model_name=model_right, endpoint=endpoint_right
+                ),
             ]
             logger.info(
                 f"selection_modeles: {model_left}, {model_right}",
@@ -224,7 +228,7 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
-            raise (gr.Error("Veuillez entrer votre texte.",duration=10))
+            raise (gr.Error("Veuillez entrer votre texte.", duration=10))
         if hasattr(app_state, "awaiting_responses") and app_state.awaiting_responses:
             raise (
                 gr.Error(
@@ -309,7 +313,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
             for i in range(config.num_sides)
         ]
-        for attempt in range(1,4):
+        for attempt in range(1, 4):
             try:
                 while True:
                     try:
@@ -344,7 +348,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 Exception,
                 openai.APIError,
                 openai.BadRequestError,
-                EmptyResponseError
+                EmptyResponseError,
             ) as e:
                 error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
@@ -450,8 +454,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                     # Exponential backoff
                     sleeping = min(2 * attempt, 10)
-                    logger.debug(f"Sleeping {sleeping}s...")                    
-                    
+                    logger.debug(f"Sleeping {sleeping}s...")
+
                     continue
             else:
                 # If no exception, we break out of the attempts loop
