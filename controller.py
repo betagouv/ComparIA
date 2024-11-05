@@ -46,87 +46,50 @@ tests: List = []
 scheduled_tasks = set()
 
 
+@app.get("/outages/{model_name}/delete", status_code=204)
+@app.delete("/outages/{model_name}", status_code=204)
+def remove_outages(api_id: str):
+    # try:
+    for i, outage in enumerate(outages):
+        if outage["api_id"] == api_id:
+            del outages[i]
+    # else:
+    #     raise HTTPException(status_code=404, detail="Model not found in outages")
+    return {"success": True, "msg": f"{api_id} removed from outages"}
+
+
 # @app.post("/outages/", status_code=201)
-@app.get("/outages/{model_name}/create", status_code=201)
-def disable_model(model_name: str, reason: str = None):
-    try:
-        outage = {
-            "detection_time": datetime.now().isoformat(),
-            "model_name": model_name,
-            "reason": reason,
-        }
+@app.get("/outages/{api_id}/create", status_code=201)
+def disable_endpoint(api_id: str, reason: str = None):
+    outage = {
+        "detection_time": datetime.now().isoformat(),
+        "api_id": api_id,
+        # "model_id": api_id,
+        "reason": reason,
+    }
 
-        # Check if the model name already exists in the outages list
-        existing_outage = next(
-            (o for o in outages if o["model_name"] == model_name), None
-        )
+    # Check if the api_id already exists in the outages list
+    existing_outage = next((o for o in outages if o["api_id"] == api_id), None)
 
-        if existing_outage:
-            # remove_outages(model_name)
-            return existing_outage
+    outages.append(outage)
 
-        # Double-check the outage!!!
-        # if confirm:
-        #     confirm_outage = test_model(model_name)
-        #     if confirm_outage["success"]:
-        #         return "Didn't add to outages as test was successful"
 
-        outages.append(outage)
+    return outage
 
-        # Schedule background task to test the model periodically
-        # if background_tasks:
-        #     background_tasks.add_task(periodic_test_model, model_name)
-
-        return outage
-
-    # except HTTPException as e:
-    #     if e.status_code == 422:
-    #         print("Couldn't get the whole reason: ")
-    #         print(reason)
-    #         outage = {
-    #             "detection_time": datetime.now().isoformat(),
-    #             "model_name": model_name,
-    #             "reason": "Too long to be posted",
-    #         }
-    #         outages.append(outage)
-    #     else:
-    #         raise
-    except Exception as _e:
-        # if os.getenv("SENTRY_DSN"):
-        #     sentry_sdk.capture_exception(e)
-        raise
 
 
 @app.get("/outages/")
 def get_outages():
-    """
-    Retrieves a list of all models currently off.
-
-    Returns:
-        List[str]: A list of model names.
-    """
-    return (o["model_name"] for o in outages)
+    return (o["api_id"] for o in outages)
 
 
-@app.get("/outages/{model_name}/delete", status_code=204)
-@app.delete("/outages/{model_name}", status_code=204)
-def remove_outages(model_name: str):
-    """
-    Removes an outage entry by model name.
-
-    Args:
-        model_name (str): The model name to remove from outages.
-
-    Raises:
-        HTTPException: If the model is not found in outages.
-    """
-    # try:
+@app.get("/outages/{api_id}/delete", status_code=204)
+@app.delete("/outages/{api_id}", status_code=204)
+def remove_outages(api_id: str):
     for i, outage in enumerate(outages):
-        if outage["model_name"] == model_name:
+        if outage["api_id"] == api_id:
             del outages[i]
-    # else:
-    #     raise HTTPException(status_code=404, detail="Model not found in outages")
-    return {"success": True, "msg": f"{model_name} removed from outages"}
+    return {"success": True, "msg": f"{api_id} removed from outages"}
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
@@ -134,37 +97,35 @@ if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
 else:
     register_api_endpoint_file = "register-api-endpoint-file.json"
 
-models = json5.load(open(register_api_endpoint_file))
+endpoints = json5.load(open(register_api_endpoint_file))
 
 
-@app.get("/outages/{model_name}")
-def test_model(model_name):
+@app.get("/outages/{api_id}")
+def test_model(api_id):
     global tests
-    if model_name == "None":
+    if api_id == "None":
         return {"success": False, "error_message": "Don't test 'None'!"}
 
-    for test in tests:
-        diff = int(time.time() - test["timestamp"])
-        if test["model_name"] == model_name and (diff < 60 * 5):
-            if diff < 60:
-                time_ago = f"{diff}s"
-            else:
-                minutes = diff // 60
-                seconds = diff % 60
-                time_ago = f"{minutes}min {seconds}s"
-            print(f"Already tested '{model_name}' {time_ago} ago!")
-            return {
-                "success": False,
-                "reason": f"Already tested '{model_name}' {time_ago} ago!",
-            }
+    # for test in tests:
+    #     diff = int(time.time() - test["timestamp"])
+    #     if test["model_name"] == model_name and (diff < 60 * 5):
+    #         if diff < 60:
+    #             time_ago = f"{diff}s"
+    #         else:
+    #             minutes = diff // 60
+    #             seconds = diff % 60
+    #             time_ago = f"{minutes}min {seconds}s"
+    #         print(f"Already tested '{model_name}' {time_ago} ago!")
+    #         return {
+    #             "success": False,
+    #             "reason": f"Already tested '{model_name}' {time_ago} ago!",
+    #         }
+    from languia.utils import get_endpoint
 
-    test = {"model_name": model_name, "timestamp": int(time.time())}
-    tests.append(test)
-    if len(tests) > 25:
-        tests = tests[-25:]
+    endpoint = get_endpoint(api_id)
 
     # Log the outage test
-    logging.info(f"Testing model: {model_name} ")
+    logging.info(f"Testing endpoint: {api_id} ")
 
     # Define test parameters
     test_message = "Say 'this is a test'."
@@ -173,13 +134,14 @@ def test_model(model_name):
     stream = True
 
     # Mark task as done
-    if model_name in scheduled_tasks:
-        scheduled_tasks.remove(model_name)
+    # if model_name in scheduled_tasks:
+    #     scheduled_tasks.remove(model_name)
 
     try:
+        endpoint = get_endpoint(api_id)
         # Initialize the OpenAI client
-        api_type = models[model_name]["api_type"]
-        api_base = models[model_name]["api_base"]
+        api_type = endpoint.get("api_type")
+        api_base = endpoint.get("api_base")
 
         if api_type == "vertex":
             if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
@@ -192,7 +154,7 @@ def test_model(model_name):
             creds.refresh(auth_req)
             api_key = creds.token
         else:
-            api_key = models[model_name]["api_key"]
+            api_key = endpoint.get("api_key")
 
         client = openai.OpenAI(
             base_url=api_base,
@@ -201,7 +163,7 @@ def test_model(model_name):
         )
         # Send a test message to the OpenAI API
         res = client.chat.completions.create(
-            model=models[model_name]["model_name"],
+            model=endpoint.get("model_name"),
             messages=[{"role": "user", "content": test_message}],
             temperature=temperature,
             max_tokens=max_new_tokens,
@@ -219,35 +181,44 @@ def test_model(model_name):
             if res.choices:
                 text = res.choices[0].message.content or ""
 
+        test = {
+            "model_id": endpoint.get("model_id"),
+            "api_id": api_id,
+            "timestamp": int(time.time()),
+        }
+
         # Check if the response is successful
         if text:
-            logging.info(f"Test successful: {model_name}")
-            if any(outage["model_name"] == model_name for outage in outages):
-                logging.info(f"Removing {model_name} from outage list")
-                remove_outages(model_name)
+            logging.info(f"Test successful: {api_id}")
+            if any(outage["api_id"] == api_id for outage in outages):
+                logging.info(f"Removing {api_id} from outage list")
+                remove_outages(api_id)
 
-                return {
+            test.update(
+                {
                     "success": True,
-                    "message": "Removed model from outages list.",
-                    "response": text,
+                    "info": "Removed model from outages list.",
+                    "message": "Model responded: " + str(text),
                 }
-            return {"success": True, "message": "Model responded: " + str(text)}
-
+            )
         else:
-            reason = f"No content from api for model {model_name}"
-            logging.error(f"Test failed: {model_name}")
+            reason = f"No content from api {api_id}"
+            # logging.error(f"Test failed: {model_name}")
             logging.error(reason)
-            disable_model(model_name, reason)
-            return {"success": False, "error_message": reason}
-
+            test.update({"success": False, "message": reason})
+        tests.append(test)
+        if len(tests) > 25:
+            tests = tests[-25:]
+            # disable_endpoint(model_name, reason)
+        return test
     except Exception as e:
         reason = str(e)
-        logging.error(f"Error: {reason}. Model: {model_name}")
+        logging.error(f"Error: {reason}. Endpoint: {api_id}")
 
         stacktrace = traceback.print_exc()
-        _outage = disable_model(model_name, reason)
+        _outage = disable_endpoint(api_id, reason)
 
-        return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
+        return {"success": False, "message": str(reason), "stacktrace": stacktrace}
 
 
 @app.get(
@@ -260,7 +231,7 @@ def index(request: Request, scheduled_tests: bool = False):
         {
             "tests": tests,
             "outages": outages,
-            "models": models,
+            "endpoints": endpoints,
             "request": request,
             "scheduled_tests": scheduled_tests,
             "now": int(time.time()),
@@ -268,32 +239,32 @@ def index(request: Request, scheduled_tests: bool = False):
     )
 
 
-@app.get("/test_all_models")
-def test_all_models(background_tasks: BackgroundTasks):
+@app.get("/test_all_endpoints")
+def test_all_endpoints(background_tasks: BackgroundTasks):
     """
     Initiates background tasks to test all models asynchronously.
     """
-    for key, value in models.items():
-        if key not in scheduled_tasks:
+    for endpoint in endpoints:
+        if endpoint.get("api_id") not in scheduled_tasks:
             try:
-                background_tasks.add_task(test_model, key)
-                scheduled_tasks.add(key)
+                background_tasks.add_task(test_model, endpoint.get("api_id"))
+                scheduled_tasks.add(endpoint.get("api_id"))
             except Exception:
                 pass
     return RedirectResponse(url="/?scheduled_tests=true", status_code=302)
 
 
-# async def periodic_test_all_models():
+# async def periodic_test_all_endpoints():
 #     """
 #     Periodically test a model in the background.
 #     """
 #     while True:
 #         logging.info("Periodic testing models")
-#         test_all_models()
+#         test_all_endpoints()
 #         await asyncio.sleep(3600)  # Test every hour
 
 
 # @app.on_event("startup")
 # async def start_periodic_tasks():
 #     # Schedule the periodic model testing task
-#     asyncio.create_task(periodic_test_all_models())
+#     asyncio.create_task(periodic_test_all_endpoints())

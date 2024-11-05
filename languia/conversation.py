@@ -55,17 +55,19 @@ def bot_response(
     #         raise RuntimeError(error_msg)
 
     messages, model_name = state.messages, state.model_name
-    model_api_dict = (
-        config.api_endpoint_info[model_name]
-        if model_name in config.api_endpoint_info
-        else None
-    )
-
-    if model_api_dict is None:
-        logger.critical("No model for model name: " + model_name)
+    model_api_endpoints = [endpoint for endpoint in config.api_endpoint_info if endpoint["model_id"] == model_name]
+        
+    if model_api_endpoints == []:
+        logger.critical("No endpoint for model name: " + str(model_name))
     else:
+        if state.endpoint is None:
+            state.endpoint = random.choice(model_api_endpoints)
+            endpoint_name = state.endpoint["api_base"].split("/")[2]
+            logger.info(f"picked_endpoint: {endpoint_name} for {model_name}")
+        endpoint = state.endpoint
+        endpoint_name = endpoint["api_base"].split("/")[2]
         if use_recommended_config:
-            recommended_config = model_api_dict.get("recommended_config", None)
+            recommended_config = endpoint.get("recommended_config", None)
             if recommended_config is not None:
                 temperature = recommended_config.get("temperature", float(temperature))
                 top_p = recommended_config.get("top_p", float(top_p))
@@ -75,19 +77,17 @@ def bot_response(
         try:
             stream_iter = get_api_provider_stream_iter(
                 messages,
-                model_api_dict,
+                endpoint,
                 temperature,
                 top_p,
                 max_new_tokens,
                 state,
                 request,
             )
-            # We could check if stream is already closed
         except Exception as e:
             logger.error(
                 f"Error in get_api_provider_stream_iter. error: {e}",
                 extra={request: request},
-                exc_info=True,
             )
 
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
@@ -97,6 +97,9 @@ def bot_response(
 
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
+            # logger.debug("reported output tokens:" + str(data["output_tokens"]))
+            # Sum of all previous interactions
+            # FIXME: some output cumulative completion_tokens count, and some only output this iteration's completion tokens count...
             if not state.output_tokens:
                 state.output_tokens = 0
 
@@ -116,12 +119,8 @@ def bot_response(
             extra={request: request},
         )
         # logger.error(data)
-        # FIXME: normally already raised earlier
-        raise EmptyResponseError(f"No answer from API for model {model_name}")
+        raise EmptyResponseError(f"No answer from API {endpoint_name} for model {model_name}")
 
     messages = update_last_message(messages, output)
 
-    finish_tstamp = time.time()
-    print("finish:"+str(finish_tstamp))
     yield (state)
-

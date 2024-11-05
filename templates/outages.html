@@ -21,13 +21,14 @@
         <h3 class="fr-h3">Actions</h3>
         <div class="fr-mb-4w">
             <ul>
-                <li><a href="/test_all_models">Tester tous les modèles</a>
+                <li><a href="/test_all_endpoints">Tester tous les modèles</a>
                 </li>
             </ul>
         </div>
-        <h3 class="fr-h3">Modèles désactivés</h3>
+        <h3 class="fr-h3">Incidents</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
+                <th>Endpoint</th>
                 <th>Modèle</th>
                 <th>Date de détection</th>
                 <th>Réessayer ?</th>
@@ -36,10 +37,11 @@
             </tr>
             {% for outage in outages %}
             <tr>
-                <td>{{ outage.model_name }}</td>
+                <td>{{ outage.api_id }}</td>
+                <td>{{ outage.model_id }}</td>
                 <td>{{ outage.detection_time }}</td>
-                <td><a href="/outages/{{ outage.model_name }}"><strong>Réessayer ?</strong></a></td>
-                <td><a href="/outages/{{ outage.model_name }}/delete">Réactiver de force ?</a></td>
+                <td><a href="/outages/{{ outage.api_id }}"><strong>Réessayer ?</strong></a></td>
+                <td><a href="/outages/{{ outage.api_id }}/delete">Réactiver de force ?</a></td>
                 <td>{% if outage.reason %}
                     {{ outage.reason|string|truncate(500, True) }}
                     {% else %}
@@ -49,24 +51,24 @@
             </tr>
             {% endfor %}
         </table>
-        <h3 class="fr-h3">Modèles actifs</h3>
+        <h3 class="fr-h3">Endpoints</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
+                <th>Nom</th>
                 <th>Modèle</th>
                 <th>Tester ?</th>
                 <th>Désactiver ?</th>
                 <th>API</th>
                 <!-- <th>Stats</th> -->
             </tr>
-            {% for model_name, model in models.items() %}
-            {% if model_name not in outages | map(attribute='model_name') %}
+            {% for endpoint in endpoints %}
             <tr>
-                <td>{{ model_name }}</td>
-                <td><a href="/outages/{{ model_name }}">Tester ?</a></td>
-                <td><a href="/outages/{{ model_name }}/create">Désactiver ?</a></td>
-                <td>{{ model["api_base"] | string | truncate(100, True) }}</td>
+                <td>{{ endpoint['api_id'] }}</td>
+                <td>{{ endpoint['model_id'] }}</td>
+                <td><a href="/outages/{{ endpoint['api_id'] }}">Tester ?</a></td>
+                <td><a href="/outages/{{ endpoint['api_id'] }}/create">Désactiver ?</a></td>
+                <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
             </tr>
-            {% endif %}
             {% endfor %}
         </table>
 
@@ -75,13 +77,17 @@
             <tr>
                 <th>Date</th>
                 <th>Modèle</th>
+                <th>Endpoint</th>
+                <th>Résultat</th>
             </tr>
             {% for test in tests %}
             {% set diff = now - test['timestamp'] %}
             {% if diff < 60 %} {% set time_ago=diff ~ "s" %} {% else %} {% set minutes=diff // 60 %} {% set seconds=diff
                 % 60 %} {% set time_ago=minutes ~ "min " ~ seconds ~ "s" %} {% endif %} <tr>
                 <td>il y a {{ time_ago }}</td>
-                <td>{{ test['model_name'] }}</td>
+                <td>{{ test['model_id'] }}</td>
+                <td>{{ test['api_id'] }}</td>
+                <td>{{ test['message'] }}</td>
                 </tr>
             {% endfor %}
         </table>

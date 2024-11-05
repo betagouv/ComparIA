@@ -743,4 +743,4 @@ BATTLE_TARGETS = {
 SAMPLING_BOOST_MODELS = []
 
 # outage models won't be sampled.
-outage_models = []
+outages = []
