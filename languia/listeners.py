@@ -350,12 +350,13 @@ document.getElementById("fr-modal-welcome-close").blur();
                 openai.BadRequestError,
                 EmptyResponseError,
             ) as e:
+                error_with_endpoint = conversations[i].endpoint.get('api_id')
                 error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
                     sentry_sdk.capture_exception(e)
 
                 logger.exception(
-                    f"erreur_modele: {error_with_model}, '{e}'\n{traceback.format_exc()}",
+                    f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
                     extra={
                         "request": request,
                         "error": str(e),
@@ -366,7 +367,7 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                 on_endpoint_error(
                     config.controller_url,
-                    error_with_model,
+                    error_with_endpoint,
                     reason=str(e),
                 )
 
@@ -393,7 +394,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         config.outages, controller_url=config.controller_url
                     )
                     # Temporarily add the at-fault model
-                    config.outages.append(error_with_model)
+                    config.outages.append(error_with_endpoint)
                     # Simpler to repick 2 models
                     # app_state.model_left, app_state.model_right = get_battle_pair(
                     model_left, model_right = get_battle_pair(
@@ -403,8 +404,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                         SAMPLING_WEIGHTS,
                         SAMPLING_BOOST_MODELS,
                     )
-                    conv_a = reset_conv_state(conv_a, model_name=model_left)
-                    conv_b = reset_conv_state(conv_b, model_name=model_right)
+
+                    conv_a = reset_conv_state(conv_a, model_name=model_left, endpoint=pick_endpoint(model_left, config.outages))
+                    conv_b = reset_conv_state(conv_b, model_name=model_right, endpoint=pick_endpoint(model_left, config.outages))
 
                     logger.info(
                         f"selection_modeles: {model_left}, {model_right}",
