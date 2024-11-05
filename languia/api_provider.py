@@ -16,9 +16,7 @@ def get_api_provider_stream_iter(
     messages,
     model_api_dict,
     temperature,
-    top_p,
     max_new_tokens,
-    state,
     request=None,
 ):
     messages_dict = []
@@ -32,7 +30,6 @@ def get_api_provider_stream_iter(
             model_name=model_api_dict["model_name"],
             messages=messages_dict,
             temperature=temperature,
-            top_p=top_p,
             max_new_tokens=max_new_tokens,
             api_base=model_api_dict["api_base"],
             api_key=model_api_dict["api_key"],
@@ -43,7 +40,7 @@ def get_api_provider_stream_iter(
             model_name=model_api_dict["model_name"],
             messages=messages_dict,
             temperature=temperature,
-            top_p=top_p,
+            # top_p=top_p,
             max_new_tokens=max_new_tokens,
             api_base=model_api_dict["api_base"],
             request=request,
@@ -125,6 +122,7 @@ def process_response_stream(response, model_name=None, request=None):
     # data["output_tokens"] = buffer_output_tokens
     else:
         if os.getenv("SENTRY_DSN"):
+            # sentry_sdk.capture_message(response.__dict__)
             sentry_sdk.capture_message(response.response.__dict__)
         raise EmptyResponseError
     yield data
@@ -137,7 +135,6 @@ def openai_api_stream_iter(
     model_name,
     messages,
     temperature,
-    top_p,
     max_new_tokens,
     api_base=None,
     api_key=None,
@@ -170,7 +167,7 @@ def openai_api_stream_iter(
 
 
 def vertex_api_stream_iter(
-    api_base, model_name, messages, temperature, top_p, max_new_tokens, request=None
+    api_base, model_name, messages, temperature, max_new_tokens, request=None
 ):
     # import vertexai
     # from vertexai import generative_models

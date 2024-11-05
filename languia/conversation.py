@@ -33,7 +33,7 @@ def bot_response(
     state,
     request: gr.Request,
     temperature=0.7,
-    top_p=1.0,
+    # top_p=1.0,
     max_new_tokens=2048,
     apply_rate_limit=True,
     use_recommended_config=True,
@@ -70,7 +70,7 @@ def bot_response(
             recommended_config = endpoint.get("recommended_config", None)
             if recommended_config is not None:
                 temperature = recommended_config.get("temperature", float(temperature))
-                top_p = recommended_config.get("top_p", float(top_p))
+                # top_p = recommended_config.get("top_p", float(top_p))
                 max_new_tokens = recommended_config.get(
                     "max_new_tokens", int(max_new_tokens)
                 )
@@ -79,9 +79,7 @@ def bot_response(
                 messages,
                 endpoint,
                 temperature,
-                top_p,
                 max_new_tokens,
-                state,
                 request,
             )
         except Exception as e:
@@ -97,7 +95,7 @@ def bot_response(
 
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
-            # logger.debug("reported output tokens:" + str(data["output_tokens"]))
+            logger.debug(f"reported output tokens for api {endpoint['api_id']}:" + str(data["output_tokens"]))
             # Sum of all previous interactions
             # FIXME: some output cumulative completion_tokens count, and some only output this iteration's completion tokens count...
             if not state.output_tokens:
