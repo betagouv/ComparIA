@@ -61,70 +61,35 @@ def remove_outages(api_id: str):
 # @app.post("/outages/", status_code=201)
 @app.get("/outages/{api_id}/create", status_code=201)
 def disable_endpoint(api_id: str, reason: str = None):
-    try:
-        outage = {
-            "detection_time": datetime.now().isoformat(),
-            "api_id": api_id,
-            "model_id": api_id,
-            "reason": reason,
-        }
+    outage = {
+        "detection_time": datetime.now().isoformat(),
+        "api_id": api_id,
+        # "model_id": api_id,
+        "reason": reason,
+    }
 
-        # Check if the api_id already exists in the outages list
-        existing_outage = next((o for o in outages if o["api_id"] == api_id), None)
+    # Check if the api_id already exists in the outages list
+    existing_outage = next((o for o in outages if o["api_id"] == api_id), None)
 
-        if existing_outage:
-            # remove_outages(model_name)
-            return existing_outage
+    outages.append(outage)
 
-        # Double-check the outage!!!
-        # if confirm:
-        #     confirm_outage = test_model(model_name)
-        #     if confirm_outage["success"]:
-        #         return "Didn't add to outages as test was successful"
 
-        outages.append(outage)
+    return outage
 
-        # Schedule background task to test the model periodically
-        # if background_tasks:
-        #     background_tasks.add_task(periodic_test_model, model_name)
-
-        return outage
-
-    # except HTTPException as e:
-    #     if e.status_code == 422:
-    #         print("Couldn't get the whole reason: ")
-    #         print(reason)
-    #         outage = {
-    #             "detection_time": datetime.now().isoformat(),
-    #             "model_name": model_name,
-    #             "reason": "Too long to be posted",
-    #         }
-    #         outages.append(outage)
-    #     else:
-    #         raise
-    except Exception as _e:
-        # if os.getenv("SENTRY_DSN"):
-        #     sentry_sdk.capture_exception(e)
-
-        outages.append(outage)
-
-        if existing_outage:
-            remove_outages(api_id)
-        # Check if the model name already exists in the outages list
-        existing_outage = next((o for o in outages if o["api_id"] == api_id), None)
-
-        return outage
 
 
 @app.get("/outages/")
 def get_outages():
-    """
-    Retrieves a list of all models currently off.
+    return (o["api_id"] for o in outages)
 
-    Returns:
-        List[str]: A list of model names.
-    """
-    return ({o["model_name"], o["endpoint_name"]} for o in outages)
+
+@app.get("/outages/{api_id}/delete", status_code=204)
+@app.delete("/outages/{api_id}", status_code=204)
+def remove_outages(api_id: str):
+    for i, outage in enumerate(outages):
+        if outage["api_id"] == api_id:
+            del outages[i]
+    return {"success": True, "msg": f"{api_id} removed from outages"}
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
