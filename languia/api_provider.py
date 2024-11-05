@@ -66,8 +66,8 @@ def process_response_stream(response, model_name=None, request=None):
 
     for chunk in response:
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-            buffer_output_tokens += chunk.usage.completion_tokens
-            # data["output_tokens"] = chunk.usage.completion_tokens
+            # buffer_output_tokens = chunk.usage.completion_tokens
+            data["output_tokens"] = chunk.usage.completion_tokens
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
@@ -114,9 +114,9 @@ def process_response_stream(response, model_name=None, request=None):
             # if "\n" in buffer or "." in buffer:
 
             # Reset word count after yielding
-            data["output_tokens"] = buffer_output_tokens
-            buffer = ""
-            buffer_output_tokens = 0
+            # data["output_tokens"] = buffer_output_tokens
+            # buffer = ""
+            # buffer_output_tokens = 0
 
             yield data
     # data["output_tokens"] = buffer_output_tokens
