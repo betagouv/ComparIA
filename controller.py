@@ -48,39 +48,30 @@ scheduled_tasks = set()
 
 @app.get("/outages/{model_name}/delete", status_code=204)
 @app.delete("/outages/{model_name}", status_code=204)
-def remove_outages(model_name: str):
-    """
-    Removes an outage entry by model name.
-
-    Args:
-        model_name (str): The model name to remove from outages.
-
-    Raises:
-        HTTPException: If the model is not found in outages.
-    """
+def remove_outages(api_id: str):
     # try:
     for i, outage in enumerate(outages):
-        if outage["model_name"] == model_name:
+        if outage["api_id"] == api_id:
             del outages[i]
     # else:
     #     raise HTTPException(status_code=404, detail="Model not found in outages")
-    return {"success": True, "msg": f"{model_name} removed from outages"}
+    return {"success": True, "msg": f"{api_id} removed from outages"}
 
 
 # @app.post("/outages/", status_code=201)
-@app.get("/outages/{model_name}/create", status_code=201)
-def disable_model(model_name: str, reason: str = None):
+@app.get("/outages/{api_id}/create", status_code=201)
+def disable_endpoint(api_id: str, reason: str = None):
     try:
         outage = {
             "detection_time": datetime.now().isoformat(),
-            "model_name": model_name,
-            "endpoint_name": endpoint,
+            "api_id": api_id,
+            "model_id": api_id,
             "reason": reason,
         }
 
-        # Check if the model name already exists in the outages list
+        # Check if the api_id already exists in the outages list
         existing_outage = next(
-            (o for o in outages if o["model_name"] == model_name), None
+            (o for o in outages if o["api_id"] == api_id), None
         )
 
         if existing_outage:
@@ -120,9 +111,9 @@ def disable_model(model_name: str, reason: str = None):
         outages.append(outage)
 
         if existing_outage:
-            remove_outage(model_name, endpoint)
+            remove_outages(api_id)
         # Check if the model name already exists in the outages list
-        existing_outage = next((o for o in outages if o["model_name"] == model_name and  o["endpoint_name"] == endpoint), None)
+        existing_outage = next((o for o in outages if o["api_id"] == api_id), None)
 
         return outage
 
@@ -148,129 +139,131 @@ else:
 endpoints = json5.load(open(register_api_endpoint_file))
 
 
-# @app.get("/outages/{api_id}")
-# def test_model(api_id):
-#     global tests
-#     if api_id == "None":
-#         return {"success": False, "error_message": "Don't test 'None'!"}
+@app.get("/outages/{api_id}")
+def test_model(api_id):
+    global tests
+    if api_id == "None":
+        return {"success": False, "error_message": "Don't test 'None'!"}
 
-#     for test in tests:
-#         diff = int(time.time() - test["timestamp"])
-#         if test["model_name"] == model_name and (diff < 60 * 5):
-#             if diff < 60:
-#                 time_ago = f"{diff}s"
-#             else:
-#                 minutes = diff // 60
-#                 seconds = diff % 60
-#                 time_ago = f"{minutes}min {seconds}s"
-#             print(f"Already tested '{model_name}' {time_ago} ago!")
-#             return {
-#                 "success": False,
-#                 "reason": f"Already tested '{model_name}' {time_ago} ago!",
-#             }
+    # for test in tests:
+    #     diff = int(time.time() - test["timestamp"])
+    #     if test["model_name"] == model_name and (diff < 60 * 5):
+    #         if diff < 60:
+    #             time_ago = f"{diff}s"
+    #         else:
+    #             minutes = diff // 60
+    #             seconds = diff % 60
+    #             time_ago = f"{minutes}min {seconds}s"
+    #         print(f"Already tested '{model_name}' {time_ago} ago!")
+    #         return {
+    #             "success": False,
+    #             "reason": f"Already tested '{model_name}' {time_ago} ago!",
+    #         }
+    from languia.utils import get_endpoint
+    endpoint = get_endpoint(api_id)
+    test = {"model_id": endpoint.get('model_id'), "api_id": api_id, "timestamp": int(time.time())}
+    # tests.append(test)
+    # if len(tests) > 25:
+    #     tests = tests[-25:]
 
-#     test = {"model_name": model_name, "timestamp": int(time.time())}
-#     tests.append(test)
-#     if len(tests) > 25:
-#         tests = tests[-25:]
+    # Log the outage test
+    logging.info(f"Testing endpoint: {api_id} ")
 
-#     # Log the outage test
-#     logging.info(f"Testing model: {model_name} ")
+    # Define test parameters
+    test_message = "Say 'this is a test'."
+    temperature = 1
+    max_new_tokens = 10
+    stream = True
 
-#     # Define test parameters
-#     test_message = "Say 'this is a test'."
-#     temperature = 1
-#     max_new_tokens = 10
-#     stream = True
+    # Mark task as done
+    # if model_name in scheduled_tasks:
+    #     scheduled_tasks.remove(model_name)
 
-#     # Mark task as done
-#     if model_name in scheduled_tasks:
-#         scheduled_tasks.remove(model_name)
+    try:
+        endpoint = get_endpoint(api_id)
+        # Initialize the OpenAI client
+        api_type = endpoint.get("api_type")
+        api_base = endpoint.get("api_base")
 
-#     try:
-#         # Initialize the OpenAI client
-#         api_type = endpoints("model_name")["api_type"]
-#         api_base = endpoints[model_name]["api_base"]
+        if api_type == "vertex":
+            if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+                logging.warn("No Google creds detected!")
 
-#         if api_type == "vertex":
-#             if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-#                 logging.warn("No Google creds detected!")
+            creds, project = google.auth.default(
+                scopes=["https://www.googleapis.com/auth/cloud-platform"]
+            )
+            auth_req = google.auth.transport.requests.Request()
+            creds.refresh(auth_req)
+            api_key = creds.token
+        else:
+            api_key = endpoint.get("api_key")
 
-#             creds, project = google.auth.default(
-#                 scopes=["https://www.googleapis.com/auth/cloud-platform"]
-#             )
-#             auth_req = google.auth.transport.requests.Request()
-#             creds.refresh(auth_req)
-#             api_key = creds.token
-#         else:
-#             api_key = models[model_name]["api_key"]
+        client = openai.OpenAI(
+            base_url=api_base,
+            api_key=api_key,
+            timeout=10,
+        )
+        # Send a test message to the OpenAI API
+        res = client.chat.completions.create(
+            model=endpoint.get("model_name"),
+            messages=[{"role": "user", "content": test_message}],
+            temperature=temperature,
+            max_tokens=max_new_tokens,
+            stream=stream,
+            stream_options={"include_usage": True},
+        )
 
-#         client = openai.OpenAI(
-#             base_url=api_base,
-#             api_key=api_key,
-#             timeout=10,
-#         )
-#         # Send a test message to the OpenAI API
-#         res = client.chat.completions.create(
-#             model=models[model_name]["model_name"],
-#             messages=[{"role": "user", "content": test_message}],
-#             temperature=temperature,
-#             max_tokens=max_new_tokens,
-#             stream=stream,
-#             stream_options={"include_usage": True},
-#         )
+        # Verify the response
+        text = ""
+        if stream:
+            for chunk in res:
+                if chunk.choices:
+                    text += chunk.choices[0].delta.content or ""
+        else:
+            if res.choices:
+                text = res.choices[0].message.content or ""
+# FIXME: only remove the endpoint+model pair
+            if text:
+                logging.info(f"Test successful: {model_name}")
+                if any(outage["model_name"] == model_name for outage in outages):
+                    logging.info(f"Removing {model_name} from outage list")
+                    remove_outage(model_name)
+                    return {
+                        "success": True,
+                        "message": "Removed model from outages list.",
+                        "response": text,
+                    }
+                return {"success": True, "message": "Model responded: " + str(text)}
 
-#         # Verify the response
-#         text = ""
-#         if stream:
-#             for chunk in res:
-#                 if chunk.choices:
-#                     text += chunk.choices[0].delta.content or ""
-#         else:
-#             if res.choices:
-#                 text = res.choices[0].message.content or ""
-# # FIXME: only remove the endpoint+model pair
-#             if text:
-#                 logging.info(f"Test successful: {model_name}")
-#                 if any(outage["model_name"] == model_name for outage in outages):
-#                     logging.info(f"Removing {model_name} from outage list")
-#                     remove_outage(model_name)
-#                     return {
-#                         "success": True,
-#                         "message": "Removed model from outages list.",
-#                         "response": text,
-#                     }
-#                 return {"success": True, "message": "Model responded: " + str(text)}
+        # Check if the response is successful
+        if text:
+            logging.info(f"Test successful: {api_id}")
+            if any(outage["api_id"] == api_id for outage in outages):
+                logging.info(f"Removing {api_id} from outage list")
+                remove_outages(api_id)
 
-#         # Check if the response is successful
-#         if text:
-#             logging.info(f"Test successful: {model_name}")
-#             if any(outage["model_name"] == model_name for outage in outages):
-#                 logging.info(f"Removing {model_name} from outage list")
-#                 remove_outages(model_name)
+                return {
+                    "success": True,
+                    "message": "Removed model from outages list.",
+                    "response": text,
+                }
+            return {"success": True, "message": "Model responded: " + str(text)}
 
-#                 return {
-#                     "success": True,
-#                     "message": "Removed model from outages list.",
-#                     "response": text,
-#                 }
-#             return {"success": True, "message": "Model responded: " + str(text)}
+        else:
+            reason = f"No content from api {api_id}"
+            # logging.error(f"Test failed: {model_name}")
+            logging.error(reason)
+            # disable_endpoint(model_name, reason)
+            return {"success": False, "error_message": reason}
 
-#         else:
-#             reason = f"No content from api for model {model_name}"
-#             logging.error(f"Test failed: {model_name}")
-#             logging.error(reason)
-#             disable_model(model_name, reason)
-#             return {"success": False, "error_message": reason}
+    except Exception as e:
+        reason = str(e)
+        logging.error(f"Error: {reason}. Endpoint: {api_id}")
 
-#     except Exception as e:
-#         reason = str(e)
-#         logging.error(f"Error: {reason}. Model: {model_name}")
+        stacktrace = traceback.print_exc()
+        _outage = disable_endpoint(api_id, reason)
 
-#         stacktrace = traceback.print_exc()
-#         _outage = disable_model(model_name, reason)
-
-#         return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
+        return {"success": False, "reason": str(reason), "stacktrace": stacktrace}
 
 
 @app.get(

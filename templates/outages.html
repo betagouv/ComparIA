@@ -63,8 +63,8 @@
             <tr>
                 <td>{{ endpoint['api_id'] }}</td>
                 <td>{{ endpoint['model_id'] }}</td>
-                <td><a href="/outages/{{ model_name }}">Tester ?</a></td>
-                <td><a href="/outages/{{ model_name }}/create">Désactiver ?</a></td>
+                <td><a href="/outages/{{ endpoint['api_id'] }}">Tester ?</a></td>
+                <td><a href="/outages/{{ endpoint['api_id'] }}/create">Désactiver ?</a></td>
                 <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
             </tr>
             {% endfor %}

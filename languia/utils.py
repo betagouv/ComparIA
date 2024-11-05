@@ -421,7 +421,7 @@ def get_endpoint(endpoint_id):
     from languia.config import api_endpoint_info
 
     for endpoint in api_endpoint_info:
-        if endpoint.get("endpoint_id") == endpoint_id:
+        if endpoint.get("api_id") == endpoint_id:
             return endpoint
     return None
 
