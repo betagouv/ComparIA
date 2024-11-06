@@ -124,7 +124,7 @@ def process_response_stream(response, model_name=None, request=None):
         if os.getenv("SENTRY_DSN"):
             # sentry_sdk.capture_message(response.__dict__)
             sentry_sdk.capture_message(response.response.__dict__)
-        raise EmptyResponseError
+        raise EmptyResponseError(response)
     yield data
     # except Exception as e:
     #     logger.error("erreur_chunk: " + str(chunk))

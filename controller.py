@@ -126,12 +126,12 @@ def test_endpoint(api_id):
         # Check if the response is successful
         if text:
             logging.info(f"Test successful: {api_id}")
-            remove_outages(api_id)
+            if remove_outages(api_id):
+                test.update({"info": "Removed model from outages list."})
 
             test.update(
                 {
                     "success": True,
-                    "info": "Removed model from outages list.",
                     "message": "Model responded: " + str(text),
                 }
             )

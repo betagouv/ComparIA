@@ -37,8 +37,16 @@ class ContextTooLongError(ValueError):
 
 
 class EmptyResponseError(RuntimeError):
+    def __init__(self, response=None, *args: object) -> None:
+        super().__init__(*args)
+        self.response = response
+
     def __str__(self):
-        return "Empty response."
+        msg = "Empty response"
+        if self.response and hasattr(self.response, "response"):
+            msg += ": "
+            msg += str(self.response.response.__dict__)
+        return msg
 
 
 # https://docs.python.org/3/howto/logging.html#arbitrary-object-messages
