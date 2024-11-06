@@ -9,18 +9,7 @@ import traceback
 
 from languia.api_provider import get_api_provider_stream_iter
 
-# import sentry_sdk
-# from fastapi import BackgroundTasks
-
-# from sentry_sdk.integrations.fastapi import FastApiIntegration
-
-from languia import api_provider
-
 from gradio import ChatMessage
-
-import google.auth
-import google.auth.transport.requests
-import openai
 
 import time
 
@@ -29,20 +18,12 @@ import os
 # from typing import Dict
 import json5
 
-# if os.getenv("SENTRY_DSN"):
-#     sentry_sdk.init(
-#     dsn=os.getenv("SENTRY_DSN"),
-#     # integrations=[FastApiIntegration()], + Starlette
-#     traces_sample_rate=1.0,
-#     profiles_sample_rate=1.0,
-# )
-
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
-outages: List[Dict[str, str]] = []
+outages = {}
 
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
@@ -52,48 +33,34 @@ tests: List = []
 scheduled_tasks = set()
 
 
-@app.get("/outages/{api_id}/delete", status_code=204)
-@app.delete("/outages/{api_id}", status_code=204)
-def remove_outages(api_id: str):
-    # try:
-    for i, outage in enumerate(outages):
-        if outage["api_id"] == api_id:
-            del outages[i]
-    # else:
-    #     raise HTTPException(status_code=404, detail="Model not found in outages")
-    return {"success": True, "msg": f"{api_id} removed from outages"}
-
-
-# @app.post("/outages/", status_code=201)
-@app.get("/outages/{api_id}/create", status_code=201)
-def disable_endpoint(api_id: str, reason: str = None):
+@app.post("/outages/{api_id}/create", status_code=201)
+def disable_endpoint(api_id: str, test: dict = None):
+    global outages
+    print("disabling " + api_id)
     outage = {
         "detection_time": datetime.now().isoformat(),
         "api_id": api_id,
         # "model_id": api_id,
-        "reason": reason,
     }
-
-    # Check if the api_id already exists in the outages list
-    existing_outage = next((o for o in outages if o["api_id"] == api_id), None)
-
-    outages.append(outage)
+    outage.update(test)
+    outages[outage["api_id"]] = outage
 
     return outage
 
 
 @app.get("/outages/")
 def get_outages():
-    return (o["api_id"] for o in outages)
+    return (api_id for api_id, _outage in outages.items())
 
 
 @app.get("/outages/{api_id}/delete", status_code=204)
 @app.delete("/outages/{api_id}", status_code=204)
 def remove_outages(api_id: str):
-    for i, outage in enumerate(outages):
-        if outage["api_id"] == api_id:
-            del outages[i]
-    return {"success": True, "msg": f"{api_id} removed from outages"}
+    if api_id in outages:
+        del outages[api_id]
+        return True
+    else:
+        return False
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
@@ -110,20 +77,6 @@ def test_endpoint(api_id):
     if api_id == "None":
         return {"success": False, "error_message": "Don't test 'None'!"}
 
-    # for test in tests:
-    #     diff = int(time.time() - test["timestamp"])
-    #     if test["model_name"] == model_name and (diff < 60 * 5):
-    #         if diff < 60:
-    #             time_ago = f"{diff}s"
-    #         else:
-    #             minutes = diff // 60
-    #             seconds = diff % 60
-    #             time_ago = f"{minutes}min {seconds}s"
-    #         print(f"Already tested '{model_name}' {time_ago} ago!")
-    #         return {
-    #             "success": False,
-    #             "reason": f"Already tested '{model_name}' {time_ago} ago!",
-    #         }
     from languia.utils import get_endpoint
 
     endpoint = get_endpoint(api_id)
@@ -138,9 +91,6 @@ def test_endpoint(api_id):
 
     try:
         endpoint = get_endpoint(api_id)
-        # Initialize the OpenAI client
-        # api_type = endpoint.get("api_type")
-        # api_base = endpoint.get("api_base")
 
         stream_iter = get_api_provider_stream_iter(
             [ChatMessage(role="user", content="ONLY say 'this is a test'.")],
@@ -151,12 +101,14 @@ def test_endpoint(api_id):
 
         # Verify the response
         text = ""
+        output_tokens = None
         for data in stream_iter:
             if "output_tokens" in data:
                 print(
                     f"reported output tokens for api {endpoint['api_id']}:"
                     + str(data["output_tokens"])
                 )
+                output_tokens = data["output_tokens"]
 
             output = data.get("text")
             if output:
@@ -168,13 +120,13 @@ def test_endpoint(api_id):
             "api_id": api_id,
             "timestamp": int(time.time()),
         }
+        if output_tokens:
+            test.update(output_tokens=output_tokens)
 
         # Check if the response is successful
         if text:
             logging.info(f"Test successful: {api_id}")
-            if any(outage["api_id"] == api_id for outage in outages):
-                logging.info(f"Removing {api_id} from outage list")
-                remove_outages(api_id)
+            remove_outages(api_id)
 
             test.update(
                 {
@@ -196,11 +148,21 @@ def test_endpoint(api_id):
     except Exception as e:
         reason = str(e)
         logging.error(f"Error: {reason}. Endpoint: {api_id}")
-
         stacktrace = traceback.print_exc()
-        _outage = disable_endpoint(api_id, reason)
+        test = {
+            "model_id": endpoint.get("model_id"),
+            "api_id": api_id,
+            "timestamp": int(time.time()),
+            "success": False,
+            "message": reason,
+            "stacktrace": stacktrace,
+        }
 
-        return {"success": False, "message": str(reason), "stacktrace": stacktrace}
+        disable_endpoint(api_id, test)
+        tests.append(test)
+        if len(tests) > 25:
+            tests = tests[-25:]
+        return test
 
 
 @app.get(
@@ -208,6 +170,7 @@ def test_endpoint(api_id):
     response_class=HTMLResponse,
 )
 def index(request: Request, scheduled_tests: bool = False):
+    global tests
     return templates.TemplateResponse(
         "outages.html",
         {

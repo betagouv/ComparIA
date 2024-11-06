@@ -350,7 +350,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 openai.BadRequestError,
                 EmptyResponseError,
             ) as e:
-                error_with_endpoint = conversations[i].endpoint.get('api_id')
+                error_with_endpoint = conversations[i].endpoint.get("api_id")
                 error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
                     sentry_sdk.capture_exception(e)
@@ -375,8 +375,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
                 if len(conversations[i].messages) < 3:
 
-                    # TODO: refacto! class method?
-                    def reset_conv_state(state, model_name=""):
+                    # TODO: refacto! class method
+                    def reset_conv_state(state, model_name="", endpoint=None):
                         # self.messages = get_conversation_template(model_name)
                         state.messages = []
                         state.output_tokens = None
@@ -388,6 +388,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                         state.template_name = "zero_shot"
                         state.template = []
                         state.model_name = model_name
+                        if endpoint:
+                            state.endpoint = endpoint
+                        else:
+                            state.endpoint = pick_endpoint(
+                                model_id=model_name, broken_endpoints=config.outages
+                            )
                         return state
 
                     config.outages = refresh_outages(
@@ -405,8 +411,16 @@ document.getElementById("fr-modal-welcome-close").blur();
                         SAMPLING_BOOST_MODELS,
                     )
 
-                    conv_a = reset_conv_state(conv_a, model_name=model_left, endpoint=pick_endpoint(model_left, config.outages))
-                    conv_b = reset_conv_state(conv_b, model_name=model_right, endpoint=pick_endpoint(model_left, config.outages))
+                    conv_a = reset_conv_state(
+                        conv_a,
+                        model_name=model_left,
+                        endpoint=pick_endpoint(model_left, config.outages),
+                    )
+                    conv_b = reset_conv_state(
+                        conv_b,
+                        model_name=model_right,
+                        endpoint=pick_endpoint(model_left, config.outages),
+                    )
 
                     logger.info(
                         f"selection_modeles: {model_left}, {model_right}",

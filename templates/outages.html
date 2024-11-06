@@ -35,15 +35,15 @@
                 <th>Réactiver de force ?</th>
                 <th>Raison</th>
             </tr>
-            {% for outage in outages %}
+            {% for api_id, outage in outages.items() %}
             <tr>
-                <td>{{ outage.api_id }}</td>
+                <td>{{ api_id }}</td>
                 <td>{{ outage.model_id }}</td>
                 <td>{{ outage.detection_time }}</td>
-                <td><a href="/outages/{{ outage.api_id }}"><strong>Réessayer ?</strong></a></td>
-                <td><a href="/outages/{{ outage.api_id }}/delete">Réactiver de force ?</a></td>
-                <td>{% if outage.reason %}
-                    {{ outage.reason|string|truncate(500, True) }}
+                <td><a href="/outages/{{ api_id }}"><strong>Réessayer ?</strong></a></td>
+                <td><a href="/outages/{{ api_id }}/delete">Réactiver de force ?</a></td>
+                <td>{% if outage.message %}
+                    {{ outage.message|string|truncate(500, True) }}
                     {% else %}
                     <em>Pas d'erreur fournie</em>
                     {% endif %}
@@ -52,6 +52,7 @@
             {% endfor %}
         </table>
         <h3 class="fr-h3">Endpoints</h3>
+        <h4 class="fr-h4">Endpoints actifs</h4>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
                 <th>Nom</th>
@@ -62,13 +63,37 @@
                 <!-- <th>Stats</th> -->
             </tr>
             {% for endpoint in endpoints %}
+                {% if endpoint['api_id'] not in outages %}
+                <tr>
+                    <td>{{ endpoint['api_id'] }}</td>
+                    <td>{{ endpoint['model_id'] }}</td>
+                    <td><a href="/outages/{{ endpoint['api_id'] }}">Tester ?</a></td>
+                    <td><a href="/outages/{{ endpoint['api_id'] }}/create">Désactiver ?</a></td>
+                    <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+        <h4 class="fr-h4">Endpoints désactivés</h4>
+        <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
-                <td>{{ endpoint['api_id'] }}</td>
-                <td>{{ endpoint['model_id'] }}</td>
-                <td><a href="/outages/{{ endpoint['api_id'] }}">Tester ?</a></td>
-                <td><a href="/outages/{{ endpoint['api_id'] }}/create">Désactiver ?</a></td>
-                <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
+                <th>Nom</th>
+                <th>Modèle</th>
+                <th>Tester ?</th>
+                <th>Réactiver ?</th>
+                <th>API</th>
+                <!-- <th>Stats</th> -->
             </tr>
+            {% for endpoint in endpoints %}
+                {% if endpoint['api_id'] in outages %}
+                <tr>
+                    <td>{{ endpoint['api_id'] }}</td>
+                    <td>{{ endpoint['model_id'] }}</td>
+                    <td><a href="/outages/{{ endpoint['api_id'] }}">Tester ?</a></td>
+                    <td><a href="/outages/{{ endpoint['api_id'] }}/delete">Réactiver ?</a></td>
+                    <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
+                </tr>
+                {% endif %}
             {% endfor %}
         </table>
 
@@ -78,6 +103,7 @@
                 <th>Date</th>
                 <th>Modèle</th>
                 <th>Endpoint</th>
+                <th>Nombre de tokens</th>
                 <th>Résultat</th>
             </tr>
             {% for test in tests %}
@@ -87,9 +113,10 @@
                 <td>il y a {{ time_ago }}</td>
                 <td>{{ test['model_id'] }}</td>
                 <td>{{ test['api_id'] }}</td>
+                <td>{{ test.get('output_tokens', '') }}</td>
                 <td>{{ test['message'] }}</td>
                 </tr>
-            {% endfor %}
+                {% endfor %}
         </table>
     </div>
 </body>

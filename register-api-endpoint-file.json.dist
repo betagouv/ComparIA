@@ -7,7 +7,7 @@
     "anony_only": false,
     "recommended_config": {
       "temperature": 0.7,
-      "top_p": 1.0
+
     },
     "text-arena": true,
     "vision-arena": false
