@@ -61,7 +61,7 @@ def process_response_stream(response, model_name=None, request=None):
     data = dict()
     # data["text"] = ""
     buffer = ""
-    buffer_output_tokens = 0
+    # buffer_output_tokens = 0
     chunks_log = []
 
     for chunk in response:
@@ -115,7 +115,7 @@ def process_response_stream(response, model_name=None, request=None):
 
             # Reset word count after yielding
             # data["output_tokens"] = buffer_output_tokens
-            # buffer = ""
+            buffer = ""
             # buffer_output_tokens = 0
 
             yield data
