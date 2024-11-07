@@ -104,7 +104,8 @@ def register_listeners():
                 config.outages, controller_url=config.controller_url
             )
 
-            outages = [outage.get("api_id") for outage in config.outages]
+            # outages = [outage.get("api_id") for outage in config.outages]
+            outages = config.outages
             # app_state.model_left, app_state.model_right = get_battle_pair(
             model_left, model_right = get_battle_pair(
                 config.models,
