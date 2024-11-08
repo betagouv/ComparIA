@@ -106,7 +106,7 @@
 
 	{#each messages as message, thought_index}
 		<div
-			class="message {role} {get_message_bot_position(message)}"
+			class="message rounded-tile {role} {get_message_bot_position(message)}"
 			class:message-markdown-disabled={!render_markdown}
 			style:text-align={rtl && role === "user" ? "left" : "right"}
 			class:thought={thought_index > 0}
@@ -142,7 +142,7 @@
 									stroke="none"
 								></circle></svg
 							>
-							<h3>Modèle A</h3>
+							<h3 class="inline">Modèle A</h3>
 						{:else if message.metadata?.bot === "b"}
 							<svg class="inline" width="26" height="26"
 								><circle
@@ -153,7 +153,7 @@
 									stroke="none"
 								></circle></svg
 							>
-							<h3>Modèle B</h3>
+							<h3 class="inline">Modèle B</h3>
 						{/if}
 
 						<Markdown
@@ -178,9 +178,9 @@
 					{/if}
 				{/if}
 			</button>
+			<ButtonPanel {...button_panel_props} />
 		</div>
 
-		<ButtonPanel {...button_panel_props} />
 	{/each}
 </div>
 
@@ -190,6 +190,9 @@
 		width: 100%;
 	}
 
+	.prose {
+		color: var(--text-default-grey);
+	}
 
 	.component {
 		padding: 0;
@@ -197,60 +200,56 @@
 		width: fit-content;
 		overflow: hidden;
 	}
-
-	.component.gallery {
-		border: none;
-	}
-
-	.message-row :global(img) {
-		margin: var(--size-2);
-		max-height: 300px;
-	}
-
-	.file-pil {
-		display: block;
-		width: fit-content;
-		padding: var(--spacing-sm) var(--spacing-lg);
-		border-radius: var(--radius-md);
-		background: var(--background-fill-secondary);
-		color: var(--body-text-color);
-		text-decoration: none;
-		margin: 0;
-		font-family: var(--font-mono);
-		font-size: var(--text-sm);
-	}
-
-	.file {
-		width: auto !important;
-		max-width: fit-content !important;
-	}
-
-	@media (max-width: 600px) or (max-width: 480px) {
-		.component {
-			width: 100%;
-		}
-	}
-
-	.message :global(.prose) {
-		font-size: var(--chatbot-text-size);
-	}
-
-	.message-bubble-border {
-		border-width: 1px;
-		border-radius: var(--radius-md);
-	}
-
-	
-
-	.panel-full-width {
+	/* .message-wrap,
+	.message-row,
+	.flex-wrap,
+	.styler {
+		background-color: #fcfcfd;
+	} */
+	.message-row {
+		justify-content: flex-end;
 		width: 100%;
 	}
+
+	.message.bot {
+		border-color: #e5e5e5;
+		border-width: 1px;
+		border-style: solid;
+		border-radius: 0.5rem;
+		background-color: white;
+	}
+
+	.rounded-tile {
+		border-color: #e5e5e5;
+		border-width: 1px;
+		border-style: solid;
+		border-radius: 0.25rem;
+	}
+
+	/* .message-row :global(img) {
+		margin: var(--size-2);
+		max-height: 300px;
+	} */
+
 	.message-markdown-disabled {
 		white-space: pre-line;
 	}
 
+	@media (min-width: 48em) {
+		.user-row {
+			width: 60%;
+		}
+	}
 	.user {
-		border-width: 1px;
+		text-align: right;
+		margin-left: auto;
+		background-color: var(--grey-950-100);
+		--hover-tint: var(--grey-950-100);
+		border-radius: 0.75rem;
+
+		min-width: 100%;
+
+		/* border-width: 1px;
 		border-radius: var(--radius-md);
 		align-self: flex-start;
 		border-bottom-right-radius: 0;
@@ -259,44 +258,32 @@
 		text-align: right;
 		padding: var(--spacing-sm) var(--spacing-xl);
 		border-color: var(--border-color-accent-subdued);
-		background-color: var(--color-accent-soft);
+		background-color: var(--color-accent-soft); */
 	}
 
 	.bot-row {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		align-self: flex-start;
+
 	}
 
-	.panel .user :global(*) {
-		text-align: right;
+	.bot button,
+	.bot button:hover,
+	.bot button:active,
+	.user button,
+	.user button:hover,
+	.user button:active {
+		background-color: transparent;
+		--hover-tint: transparent;
+		--active-tint: transparent;
+
+		color: var(--text-default-grey);
 	}
 
-	.message-row {
-		display: flex;
-		position: relative;
-	}
-
-	/* panel mode styles */
-	.panel {
-		margin: 0;
-		padding: calc(var(--spacing-lg) * 2) calc(var(--spacing-lg) * 2);
-	}
-
-	.panel.bot-row {
-		background: var(--background-fill-secondary);
-	}
-
-	.panel .panel-full-width {
-		width: 100%;
-	}
-
-	.panel .user :global(*) {
-		text-align: right;
-	}
 
 	/* message content */
-	 /* {
+	/* {
 		display: flex;
 		flex-direction: column;
 		width: calc(100% - var(--spacing-xxl));
@@ -327,19 +314,6 @@
 		border-color: var(--border-color-accent-subdued);
 		background-color: var(--color-accent-soft);
 	}
-	@media (max-width: 480px) {
-		.user-row.bubble {
-			align-self: flex-end;
-		}
-
-		.bot-row.bubble {
-			align-self: flex-start;
-		}
-		.message {
-			width: 100%;
-		}
-	}
-
 	.selectable {
 		cursor: default;
 	}
@@ -398,14 +372,6 @@
 	.panel .message {
 		margin-bottom: var(--spacing-md);
 	}
-
-	/* .step-badge {
-		border-radius: 3.75em;
-		text-align: center;
-		background-color: #ececfe;
-		padding: 5px 10px;
-		font-weight: bold;
-	} */
 
 	h1,
 	h2,

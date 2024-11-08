@@ -78,7 +78,6 @@
 	export let placeholder: string | null = null;
 	export let upload: Client["upload"];
 	export let msg_format: "tuples" | "messages" = "tuples";
-	export let examples: ExampleMessage[] | null = null;
 	export let _retryable = false;
 	export let _undoable = false;
 	export let like_user_message = false;
@@ -182,12 +181,6 @@
 
 	$: groupedMessages = value && group_messages(value, msg_format);
 
-	function handle_example_select(i: number, example: ExampleMessage): void {
-		dispatch("example_select", {
-			index: i,
-			value: { text: example.text, files: example.files },
-		});
-	}
 
 	function handle_like(
 		i: number,
@@ -368,6 +361,7 @@
 	.panel-wrap {
 		width: 100%;
 		overflow-y: auto;
+		background-color: #fcfcfd;
 	}
 
 	.bubble-wrap {
@@ -377,31 +371,38 @@
 		padding-top: var(--spacing-xxl);
 	}
 
+	.step-badge {
+		border-radius: 3.75em;
+		text-align: center;
+		background-color: #ececfe;
+		padding: 5px 10px;
+		font-weight: bold;
+	}
 	@media (prefers-color-scheme: dark) {
 		.bubble-wrap {
 			background: var(--background-fill-secondary);
 		}
 	}
 
-	.message-wrap {
+	/* .message-wrap {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
 		margin-bottom: var(--spacing-xxl);
-	}
+	} */
 
-	.message-wrap :global(.prose.chatbot.md) {
+	/* .message-wrap :global(.prose.chatbot.md) {
 		opacity: 0.8;
 		overflow-wrap: break-word;
-	}
+	} */
 
-	.message-wrap :global(.message-row .md img) {
+	/* .message-wrap :global(.message-row .md img) {
 		border-radius: var(--radius-xl);
 		margin: var(--size-2);
 		width: 400px;
 		max-width: 30vw;
 		max-height: 30vw;
-	}
+	} */
 
 	/* link styles */
 	.message-wrap :global(.message a) {
@@ -434,7 +435,7 @@
 		margin-top: 0;
 	}
 
-	.message-wrap :global(pre) {
+	/* .message-wrap :global(pre) {
 		position: relative;
 	}
 
@@ -453,11 +454,11 @@
 		flex-direction: column;
 		justify-content: space-between;
 		margin-bottom: var(--spacing-xxl);
-	}
+	} */
 
-	.panel-wrap :global(.message-row:first-child) {
+	/* .panel-wrap :global(.message-row:first-child) {
 		padding-top: calc(var(--spacing-xxl) * 2);
-	}
+	} */
 
 	.scroll-down-button-container {
 		position: absolute;
@@ -480,14 +481,4 @@
 		transform: translateY(-2px);
 	}
 
-	/* CHAT AREA */
-
-	button {
-		cursor: default;
-		padding: 1.25rem;
-		user-select: text;
-		-webkit-user-select: text;
-		-webkit-user-select: text !important;
-		overflow-x: auto;
-	}
 </style>
