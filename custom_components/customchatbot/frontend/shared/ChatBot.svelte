@@ -68,7 +68,6 @@
 	export let show_copy_all_button = false;
 	export let rtl = false;
 	export let show_copy_button = false;
-	export let avatar_images: [FileData | null, FileData | null] = [null, null];
 	export let sanitize_html = true;
 	export let bubble_full_width = true;
 	export let render_markdown = true;
@@ -287,28 +286,8 @@
 		<div class="message-wrap" use:copy>
 			{#each groupedMessages as messages, i}
 				{@const role = messages[0].role === "user" ? "user" : "bot"}
-				{@const avatar_img = avatar_images[role === "user" ? 0 : 1]}
-				{@const opposite_avatar_img =
-					avatar_images[role === "user" ? 0 : 1]}
-				{#if is_image_preview_open}
-					<div class="image-preview">
-						<img
-							src={image_preview_source}
-							alt={image_preview_source_alt}
-						/>
-						<IconButtonWrapper>
-							<IconButton
-								Icon={Clear}
-								on:click={() => (is_image_preview_open = false)}
-								label={"Clear"}
-							/>
-						</IconButtonWrapper>
-					</div>
-				{/if}
 				<Message
 					{messages}
-					{opposite_avatar_img}
-					{avatar_img}
 					{role}
 					{layout}
 					{dispatch}
@@ -354,50 +333,6 @@
 					<Markdown message={placeholder} {latex_delimiters} {root} />
 				</div>
 			{/if}
-			{#if examples !== null}
-				<div class="examples">
-					{#each examples as example, i}
-						<button
-							class="example"
-							on:click={() => handle_example_select(i, example)}
-						>
-							{#if example.icon !== undefined}
-								<div class="example-icon-container">
-									<Image
-										class="example-icon"
-										src={example.icon.url}
-										alt="example-icon"
-									/>
-								</div>
-							{/if}
-							{#if example.display_text !== undefined}
-								<span class="example-display-text"
-									>{example.display_text}</span
-								>
-							{:else}
-								<span class="example-text">{example.text}</span>
-							{/if}
-							{#if example.files !== undefined && example.files.length > 1}
-								<span class="example-file"
-									><em>{example.files.length} Files</em></span
-								>
-							{:else if example.files !== undefined && example.files[0] !== undefined && example.files[0].mime_type?.includes("image")}
-								<div class="example-image-container">
-									<Image
-										class="example-image"
-										src={example.files[0].url}
-										alt="example-image"
-									/>
-								</div>
-							{:else if example.files !== undefined && example.files[0] !== undefined}
-								<span class="example-file"
-									><em>{example.files[0].orig_name}</em></span
-								>
-							{/if}
-						</button>
-					{/each}
-				</div>
-			{/if}
 		</div>
 	{/if}
 </div>
@@ -426,79 +361,6 @@
 		justify-content: center;
 		height: 100%;
 		flex-grow: 1;
-	}
-
-	.examples :global(img) {
-		pointer-events: none;
-	}
-
-	.examples {
-		margin: auto;
-		padding: var(--spacing-xxl);
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: var(--spacing-xxl);
-		max-width: calc(min(4 * 200px + 5 * var(--spacing-xxl), 100%));
-	}
-
-	.example {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		padding: var(--spacing-xl);
-		border: 0.05px solid var(--border-color-primary);
-		border-radius: var(--radius-xl);
-		background-color: var(--background-fill-secondary);
-		cursor: pointer;
-		transition: var(--button-transition);
-		max-width: var(--size-56);
-		width: 100%;
-		justify-content: center;
-	}
-
-	.example:hover {
-		background-color: var(--color-accent-soft);
-		border-color: var(--border-color-accent);
-	}
-
-	.example-icon-container {
-		display: flex;
-		align-self: flex-start;
-		margin-left: var(--spacing-md);
-		width: var(--size-6);
-		height: var(--size-6);
-	}
-
-	.example-display-text,
-	.example-text,
-	.example-file {
-		font-size: var(--text-md);
-		width: 100%;
-		text-align: center;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.example-display-text,
-	.example-file {
-		margin-top: var(--spacing-md);
-	}
-
-	.example-image-container {
-		flex-grow: 1;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin-top: var(--spacing-xl);
-	}
-
-	.example-image-container :global(img) {
-		max-height: 100%;
-		max-width: 100%;
-		height: var(--size-32);
-		width: 100%;
-		object-fit: cover;
-		border-radius: var(--radius-xl);
 	}
 
 	.panel-wrap {
@@ -614,20 +476,6 @@
 			var(--shadow-drop),
 			0 2px 2px rgba(0, 0, 0, 0.05);
 		transform: translateY(-2px);
-	}
-
-	.image-preview {
-		position: absolute;
-		z-index: 999;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		overflow: auto;
-		background-color: var(--background-fill-secondary);
-		display: flex;
-		justify-content: center;
-		align-items: center;
 	}
 
 	/* CHAT AREA */

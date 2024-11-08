@@ -70,7 +70,6 @@
 			? normalise_tuples(value as TupleFormat, root)
 			: normalise_messages(value as Message[], root);
 
-	export let avatar_images: [FileData | null, FileData | null] = [null, null];
 	export let like_user_message = false;
 	export let loading_status: LoadingStatus | undefined = undefined;
 	export let height: number | string | undefined;
@@ -144,7 +143,6 @@
 				value = [];
 				gradio.dispatch("clear");
 			}}
-			{avatar_images}
 			{sanitize_html}
 			{bubble_full_width}
 			{line_breaks}

@@ -11,8 +11,6 @@
 	import ButtonPanel from "./ButtonPanel.svelte";
 
 	export let value: NormalisedMessage[];
-	export let avatar_img: FileData | null;
-	export let opposite_avatar_img: FileData | null = null;
 	export let role = "user";
 	export let messages: NormalisedMessage[] = [];
 	export let layout: "bubble" | "panel";
@@ -81,7 +79,6 @@
 		message: NormalisedMessage[] | NormalisedMessage;
 		position: "left" | "right";
 		layout: "bubble" | "panel";
-		avatar: FileData | null;
 	};
 
 	let button_panel_props: ButtonPanelProps;
@@ -95,25 +92,13 @@
 		show_copy_button,
 		message: msg_format === "tuples" ? messages[0] : messages,
 		position: role === "user" ? "right" : "left",
-		avatar: avatar_img,
 		layout,
 	};
 </script>
 
 <div
 	class="message-row {layout} {role}-row"
-	class:with_avatar={avatar_img !== null}
-	class:with_opposite_avatar={opposite_avatar_img !== null}
 >
-	{#if avatar_img !== null}
-		<div class="avatar-container">
-			<Image
-				class="avatar-image"
-				src={avatar_img?.url}
-				alt="{role} avatar"
-			/>
-		</div>
-	{/if}
 	<div
 		class:role
 		class="flex-wrap"
@@ -133,6 +118,9 @@
 					message.content.component === "html"}
 				class:thought={thought_index > 0}
 			>
+
+				<!-- expanded={is_last_bot_message(messages, value)} -->
+
 				<button
 					data-testid={role}
 					class:latest={i === value.length - 1}
@@ -154,10 +142,12 @@
 				>
 					{#if message.type === "text"}
 						{#if message.metadata.title}
-							<MessageBox
-								title={message.metadata.title}
-								expanded={is_last_bot_message(messages, value)}
-							>
+						{#if message.metadata.title === "Modèle A"}
+						<svg class="inline" width="26" height="26"><circle cx="13" cy="13" r="12" fill="#A96AFE" stroke="none"></circle></svg>
+						{:else if message.metadata.title === "Modèle B"}
+						<svg class="inline" width="26" height="26"><circle cx="13" cy="13" r="12" fill="#A96AFE" stroke="none"></circle></svg>
+						<h3>{message.metadata.title}</h3>{/if}
+
 								<Markdown
 									message={message.content}
 									{latex_delimiters}
@@ -167,7 +157,6 @@
 									on:load={scroll}
 									{root}
 								/>
-							</MessageBox>
 						{:else}
 							<Markdown
 								message={message.content}
@@ -179,37 +168,6 @@
 								{root}
 							/>
 						{/if}
-					{:else if message.type === "component" && message.content.component in _components}
-						<Component
-							{target}
-							{theme_mode}
-							props={message.content.props}
-							type={message.content.component}
-							components={_components}
-							value={message.content.value}
-							{i18n}
-							{upload}
-							{_fetch}
-							on:load={() => scroll()}
-						/>
-					{:else if message.type === "component" && message.content.component === "file"}
-						<a
-							data-testid="chatbot-file"
-							class="file-pil"
-							href={message.content.value.url}
-							target="_blank"
-							download={window.__is_colab__
-								? null
-								: message.content.value?.orig_name ||
-									message.content.value?.path
-										.split("/")
-										.pop() ||
-									"file"}
-						>
-							{message.content.value?.orig_name ||
-								message.content.value?.path.split("/").pop() ||
-								"file"}
-						</a>
 					{/if}
 				</button>
 			</div>
@@ -229,23 +187,6 @@
 	.message {
 		position: relative;
 		width: 100%;
-	}
-
-	/* avatar styles */
-	.avatar-container {
-		flex-shrink: 0;
-		width: 35px;
-		height: 35px;
-		border-radius: 50%;
-		border: 1px solid var(--border-color-primary);
-		overflow: hidden;
-	}
-
-	.avatar-container :global(img) {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		padding: 6px;
 	}
 
 	/* message wrapper */
@@ -386,17 +327,6 @@
 		justify-content: flex-end;
 	}
 
-	.bubble .with_avatar.user-row {
-		margin-right: calc(var(--spacing-xl) * 2) !important;
-	}
-
-	.bubble .with_avatar.bot-row {
-		margin-left: calc(var(--spacing-xl) * 2) !important;
-	}
-
-	.bubble .with_opposite_avatar.user-row {
-		margin-left: calc(var(--spacing-xxl) + 35px + var(--spacing-xxl));
-	}
 
 	.bubble .message-fit {
 		width: fit-content !important;
@@ -410,11 +340,6 @@
 
 	.panel.bot-row {
 		background: var(--background-fill-secondary);
-	}
-
-	.panel .with_avatar {
-		padding-left: calc(var(--spacing-xl) * 2) !important;
-		padding-right: calc(var(--spacing-xl) * 2) !important;
 	}
 
 	.panel .panel-full-width {
@@ -459,47 +384,6 @@
 		}
 	}
 
-	.avatar-container {
-		align-self: flex-start;
-		position: relative;
-		display: flex;
-		justify-content: flex-start;
-		align-items: flex-start;
-		width: 35px;
-		height: 35px;
-		flex-shrink: 0;
-		bottom: 0;
-		border-radius: 50%;
-		border: 1px solid var(--border-color-primary);
-	}
-	.user-row > .avatar-container {
-		order: 2;
-	}
-
-	.user-row.bubble > .avatar-container {
-		margin-left: var(--spacing-xxl);
-	}
-
-	.bot-row.bubble > .avatar-container {
-		margin-left: var(--spacing-xxl);
-	}
-
-	.panel.user-row > .avatar-container {
-		order: 0;
-	}
-
-	.bot-row.bubble > .avatar-container {
-		margin-right: var(--spacing-xxl);
-		margin-left: 0;
-	}
-
-	.avatar-container:not(.thumbnail-item) :global(img) {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: 50%;
-		padding: 6px;
-	}
 
 	.selectable {
 		cursor: pointer;
