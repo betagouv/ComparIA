@@ -36,6 +36,7 @@
 	export let show_like: boolean;
 	export let show_retry: boolean;
 	export let show_undo: boolean;
+	export let showLikeMessage: boolean;
 	export let msg_format: "tuples" | "messages";
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
@@ -179,6 +180,11 @@
 			</button>
 			<ButtonPanel {...button_panel_props} />
 		</div>
+		{#if message.showLikeMessage}
+        <div class="like-message">
+			Thank you for liking this message!
+		  </div>
+		{/if}
 	{/each}
 </div>
 

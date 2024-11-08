@@ -181,7 +181,6 @@
 
 	$: groupedMessages = value && group_messages(value, msg_format);
 
-
 	function handle_like(
 		i: number,
 		message: NormalisedMessage,
@@ -222,6 +221,11 @@
 				value: message_group.map((m) => m.content),
 				liked: selected === "like",
 			});
+		}
+
+		// Set showLikeMessage to true for the liked message
+		if (selected === "like") {
+			value[i].showLikeMessage = true;
 		}
 	}
 </script>
@@ -302,6 +306,7 @@
 					handle_action={(selected) =>
 						handle_like(i, messages[0], selected)}
 					scroll={is_browser ? scroll : () => {}}
+					showLikeMessage={messages[i]?.showLikeMessage}
 				/>
 				{#if role === "user" && i === 0}
 					<div class="prose text-center svelte-1ybaih5">
@@ -387,7 +392,7 @@
 	.message-wrap {
 		margin: 2em;
 	}
-	
+
 	/* .message-wrap {
 		display: flex;
 		flex-direction: column;
@@ -484,5 +489,4 @@
 			0 2px 2px rgba(0, 0, 0, 0.05);
 		transform: translateY(-2px);
 	}
-
 </style>

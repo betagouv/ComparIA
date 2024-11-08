@@ -25,11 +25,13 @@ export interface Message {
 export interface TextMessage extends Message {
 	type: "text";
 	content: string;
+	showLikeMessage: boolean;
 }
 
 export interface ComponentMessage extends Message {
 	type: "component";
 	content: ComponentData;
+	showLikeMessage: boolean;
 }
 
 export interface ExampleMessage {
