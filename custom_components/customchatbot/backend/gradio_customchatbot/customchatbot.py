@@ -153,7 +153,7 @@ class CustomChatbot(Component):
 
     def __init__(
         self,
-        value: (list[MessageDict | Message] | TupleFormat | Callable | None) = None,
+        value: list[MessageDict | Message] | TupleFormat | Callable | None = None,
         *,
         type: Literal["messages", "tuples"] | None = None,
         label: str | None = None,
@@ -369,7 +369,9 @@ class CustomChatbot(Component):
                     f"Invalid component for CustomChatbot component: {chat_message.component}"
                 )
         else:
-            raise ValueError(f"Invalid message for CustomChatbot component: {chat_message}")
+            raise ValueError(
+                f"Invalid message for CustomChatbot component: {chat_message}"
+            )
 
     def _preprocess_messages_tuples(
         self, payload: ChatbotDataTuples
@@ -437,14 +439,16 @@ class CustomChatbot(Component):
 
     def _postprocess_content(
         self,
-        chat_message: str
-        | tuple
-        | list
-        | FileDataDict
-        | FileData
-        | GradioComponent
-        | ComponentMessage
-        | None,
+        chat_message: (
+            str
+            | tuple
+            | list
+            | FileDataDict
+            | FileData
+            | GradioComponent
+            | ComponentMessage
+            | None
+        ),
     ) -> str | FileMessage | ComponentMessage | None:
         if chat_message is None:
             return None
@@ -473,7 +477,9 @@ class CustomChatbot(Component):
             filepath = str(chat_message[0])
             return self._create_file_message(chat_message, filepath)
         else:
-            raise ValueError(f"Invalid message for CustomChatbot component: {chat_message}")
+            raise ValueError(
+                f"Invalid message for CustomChatbot component: {chat_message}"
+            )
 
     def _postprocess_messages_tuples(self, value: TupleFormat) -> ChatbotDataTuples:
         processed_messages = []
@@ -552,4 +558,4 @@ class CustomChatbot(Component):
                 Message(role="user", content="Hello!").model_dump(),
                 Message(role="assistant", content="How can I help you?").model_dump(),
             ]
-        return [["Hello!", None]]
+        return [["user", "Hello!"], ["assistant", "Yo!"]]
