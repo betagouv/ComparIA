@@ -117,7 +117,7 @@ class PostgresHandler(logging.Handler):
         if not self.connection or self.connection.closed:
             try:
                 self.connection = psycopg2.connect(**self.db_config)
-            except Exception as e:
+            except psycopg2.Error as e:
                 print(f"Error connecting to database: {e}")
                 stacktrace = traceback.format_exc()
                 print(f"Stacktrace: {stacktrace}")
@@ -167,7 +167,7 @@ class PostgresHandler(logging.Handler):
 
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
-        except (psycopg2.Error, Exception) as e:
+        except (psycopg2.Error) as e:
             # Don't use logger on purpose to avoid endless loops
             print(f"Error logging to Postgres: {e}")
             stacktrace = traceback.format_exc()
