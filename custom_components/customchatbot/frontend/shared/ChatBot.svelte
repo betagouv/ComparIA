@@ -27,7 +27,7 @@
 	import type { ExampleMessage } from "../types";
 	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
 	import type { FileData, Client } from "@gradio/client";
-	import type { I18nFormatter } from "js/core/src/gradio_helper";
+	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import Pending from "./Pending.svelte";
 	import { ShareError } from "@gradio/utils";
 	import { Gradio } from "@gradio/utils";
@@ -68,12 +68,11 @@
 	export let rtl = false;
 	export let show_copy_button = false;
 	export let sanitize_html = true;
-	export let bubble_full_width = true;
 	export let render_markdown = true;
 	export let line_breaks = true;
 	export let autoscroll = true;
 	export let theme_mode: "system" | "light" | "dark";
-	export let i18n: I18nFormatter;
+	// export let i18n: I18nFormatter;
 	export let layout: "bubble" | "panel" = "bubble";
 	export let placeholder: string | null = null;
 	export let upload: Client["upload"];
@@ -277,45 +276,48 @@
 		<div class="message-wrap" use:copy>
 			{#each groupedMessages as messages, i}
 				{@const role = messages[0].role === "user" ? "user" : "bot"}
-				<Message
-					{messages}
-					{role}
-					{layout}
-					{dispatch}
-					{i18n}
-					{_fetch}
-					{line_breaks}
-					{theme_mode}
-					{target}
-					{root}
-					{upload}
-					{selectable}
-					{sanitize_html}
-					{bubble_full_width}
-					{render_markdown}
-					{rtl}
-					{i}
-					{value}
-					{latex_delimiters}
-					{_components}
-					{generating}
-					{msg_format}
-					show_like={role === "user"
-						? likeable && like_user_message
-						: likeable}
-					show_retry={_retryable &&
-						is_last_bot_message(messages, value)}
-					show_undo={_undoable &&
-						is_last_bot_message(messages, value)}
-					show_copy_button={role === "user"
-						? false
-						: show_copy_button}
-					handle_action={(selected) =>
-						handle_like(i, messages[0], selected)}
-					scroll={is_browser ? scroll : () => {}}
-					showLikeMessage={messages[i]?.showLikeMessage}
-					showDislikeMessage={messages[i]?.showDislikeMessage}
-				/>
+				<div class="message-row {layout} {role}-row">
+					{#each messages as message}
+						<Message
+							messages={[message]}
+							{role}
+							{layout}
+							{dispatch}
+							{_fetch}
+							{line_breaks}
+							{theme_mode}
+							{target}
+							{root}
+							{upload}
+							{selectable}
+							{sanitize_html}
+							{render_markdown}
+							{rtl}
+							{i}
+							{value}
+							{latex_delimiters}
+							{_components}
+							{generating}
+							{msg_format}
+							show_like={role === "user"
+								? likeable && like_user_message
+								: likeable}
+							show_retry={_retryable &&
+								is_last_bot_message([message], value)}
+							show_undo={_undoable &&
+								is_last_bot_message([message], value)}
+							show_copy_button={role === "user"
+								? false
+								: show_copy_button}
+							handle_action={(selected) =>
+								handle_like(i, message, selected)}
+							scroll={is_browser ? scroll : () => {}}
+							showLikeMessage={message.showLikeMessage}
+							showDislikeMessage={message.showDislikeMessage}
+						/>
+					{/each}
+				</div>
+
 				{#if role === "user" && i === 0}
 					<div class="prose text-center svelte-1ybaih5">
 						<span class="step-badge">Étape 1/3</span>
@@ -476,6 +478,27 @@
 	/* .panel-wrap :global(.message-row:first-child) {
 		padding-top: calc(var(--spacing-xxl) * 2);
 	} */
+
+	.message-row {
+		justify-content: flex-end;
+		width: 100%;
+		margin: 2em;
+	}
+	.user-row {
+		display: flex;
+		justify-content: flex-end;
+		width: 100%;
+	}
+
+	.bot-row {
+		display: grid;
+		column-gap: 2em;
+		grid-template-columns: 1fr 1fr;
+		/* align-self: flex-start; */
+
+		/* grid-template-columns: repeat(2, 1fr); */
+		grid-auto-rows: 1fr;
+	}
 
 	.scroll-down-button-container {
 		position: absolute;

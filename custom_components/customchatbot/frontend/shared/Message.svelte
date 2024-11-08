@@ -3,7 +3,7 @@
 	import type { Client } from "@gradio/client";
 	import type { NormalisedMessage } from "../types";
 	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
-	import type { I18nFormatter } from "js/core/src/gradio_helper";
+	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
 
@@ -11,7 +11,7 @@
 	export let role = "user";
 	export let messages: NormalisedMessage[] = [];
 	export let layout: "bubble" | "panel";
-	export let bubble_full_width: boolean;
+	// export let bubble_full_width: boolean;
 	export let render_markdown: boolean;
 	export let latex_delimiters: {
 		left: string;
@@ -23,7 +23,7 @@
 	export let _fetch: typeof fetch;
 	export let rtl: boolean;
 	export let dispatch: any;
-	export let i18n: I18nFormatter;
+	// export let i18n: I18nFormatter;
 	export let line_breaks: boolean;
 	export let upload: Client["upload"];
 	export let target: HTMLElement | null;
@@ -103,101 +103,95 @@
 	};
 </script>
 
-<div class="message-row {layout} {role}-row">
-	<!-- {#if role === "user"} -->
+<!-- {#if role === "user"} -->
 
-	{#each messages as message, thought_index}
-		<div
-			class="message {role} {get_message_bot_position(message)}"
+{#each messages as message, thought_index}
+	<div
+		class="message {role} {get_message_bot_position(message)}"
+		class:message-markdown-disabled={!render_markdown}
+		class:thought={thought_index > 0}
+	>
+		<button
+			data-testid={role}
+			class:latest={i === value.length - 1}
 			class:message-markdown-disabled={!render_markdown}
-			class:thought={thought_index > 0}
+			style:user-select="text"
+			class:selectable
+			style:cursor={selectable ? "default" : "default"}
+			style:text-align={rtl ? "right" : "left"}
+			on:click={() => handle_select(i, message)}
+			on:keydown={(e) => {
+				if (e.key === "Enter") {
+					handle_select(i, message);
+				}
+			}}
+			dir={rtl ? "rtl" : "ltr"}
+			aria-label={role + "'s message: " + get_message_label_data(message)}
 		>
-			<button
-				data-testid={role}
-				class:latest={i === value.length - 1}
-				class:message-markdown-disabled={!render_markdown}
-				style:user-select="text"
-				class:selectable
-				style:cursor={selectable ? "default" : "default"}
-				style:text-align={rtl ? "right" : "left"}
-				on:click={() => handle_select(i, message)}
-				on:keydown={(e) => {
-					if (e.key === "Enter") {
-						handle_select(i, message);
-					}
-				}}
-				dir={rtl ? "rtl" : "ltr"}
-				aria-label={role +
-					"'s message: " +
-					get_message_label_data(message)}
-			>
-				{#if message.type === "text"}
-					{#if message.role === "assistant"}
-						{#if message.metadata?.bot === "a"}
-							<svg class="inline" width="26" height="26"
-								><circle
-									cx="13"
-									cy="13"
-									r="12"
-									fill="#A96AFE"
-									stroke="none"
-								></circle></svg
-							>
-							<h3 class="inline">Modèle A</h3>
-						{:else if message.metadata?.bot === "b"}
-							<svg class="inline" width="26" height="26"
-								><circle
-									cx="13"
-									cy="13"
-									r="12"
-									fill="#ff9575"
-									stroke="none"
-								></circle></svg
-							>
-							<h3 class="inline">Modèle B</h3>
-						{/if}
-
-						<Markdown
-							message={message.content}
-							{latex_delimiters}
-							{sanitize_html}
-							{render_markdown}
-							{line_breaks}
-							on:load={scroll}
-							{root}
-						/>
-					{:else}
-						<Markdown
-							message={message.content}
-							{latex_delimiters}
-							{sanitize_html}
-							{render_markdown}
-							{line_breaks}
-							on:load={scroll}
-							{root}
-						/>
+			{#if message.type === "text"}
+				{#if message.role === "assistant"}
+					{#if message.metadata?.bot === "a"}
+						<svg class="inline" width="26" height="26"
+							><circle
+								cx="13"
+								cy="13"
+								r="12"
+								fill="#A96AFE"
+								stroke="none"
+							></circle></svg
+						>
+						<h3 class="inline">Modèle A</h3>
+					{:else if message.metadata?.bot === "b"}
+						<svg class="inline" width="26" height="26"
+							><circle
+								cx="13"
+								cy="13"
+								r="12"
+								fill="#ff9575"
+								stroke="none"
+							></circle></svg
+						>
+						<h3 class="inline">Modèle B</h3>
 					{/if}
+
+					<Markdown
+						message={message.content}
+						{latex_delimiters}
+						{sanitize_html}
+						{render_markdown}
+						{line_breaks}
+						on:load={scroll}
+						{root}
+					/>
+				{:else}
+					<Markdown
+						message={message.content}
+						{latex_delimiters}
+						{sanitize_html}
+						{render_markdown}
+						{line_breaks}
+						on:load={scroll}
+						{root}
+					/>
 				{/if}
-				<ButtonPanel {...button_panel_props} />
-			</button>
-			{#if message.showLikeMessage}
-				<div class="like-message">
-					Thank you for liking this message!
-				</div>
 			{/if}
-			{#if message.showDislikeMessage}
-				<div class="like-message">
-					Thank you for disliking this message!
-				</div>
-			{/if}
-		</div>
-	{/each}
-</div>
+			<ButtonPanel {...button_panel_props} />
+		</button>
+		{#if message.showLikeMessage}
+			<div class="like-message">Thank you for liking this message!</div>
+		{/if}
+		{#if message.showDislikeMessage}
+			<div class="like-message">
+				Thank you for disliking this message!
+			</div>
+		{/if}
+	</div>
+{/each}
 
 <style>
 	.message {
 		position: relative;
-		width: 100%;
+		/* width: 100%; */
 	}
 
 	.prose {
@@ -216,11 +210,7 @@
 	.styler {
 		background-color: #fcfcfd;
 	} */
-	.message-row {
-		justify-content: flex-end;
-		width: 100%;
-		margin: 2em;
-	}
+
 
 	.message.bot button {
 		border-color: #e5e5e5;
@@ -239,19 +229,14 @@
 	.message-markdown-disabled {
 		white-space: pre-line;
 	}
-
-	.user-row {
-		display: flex;
-		justify-content: flex-end;
-		width: 100%;
-	}
-
+	
 	@media (min-width: 48em) {
 		.user {
-			width: 60%;
+			width: 60% !important;
 		}
 	}
 	.user {
+		width: 100%;
 		margin-left: auto;
 		background-color: var(--grey-950-100);
 		--hover-tint: var(--grey-950-100);
@@ -269,15 +254,6 @@
 		background-color: var(--color-accent-soft); */
 	}
 
-	.bot-row {
-		display: grid;
-		column-gap: 2em;
-		grid-template-columns: 1fr 1fr;
-		/* align-self: flex-start; */
-
-		/* grid-template-columns: repeat(2, 1fr); */
-		grid-auto-rows: 1fr;
-	}
 
 	.bot button,
 	.bot button:hover,
