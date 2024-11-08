@@ -124,8 +124,9 @@ def process_response_stream(response, model_name=None, request=None):
             yield data
     # data["output_tokens"] = buffer_output_tokens
     else:
-        if os.getenv("SENTRY_DSN"):
-            sentry_sdk.capture_message(response.response.__dict__)
+        # if os.getenv("SENTRY_DSN"):
+            # sentry_sdk.capture_message(response.__dict__)
+            # sentry_sdk.capture_message(response.response.__dict__)
         raise EmptyResponseError
     yield data
     # except Exception as e:
