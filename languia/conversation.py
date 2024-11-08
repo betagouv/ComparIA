@@ -3,7 +3,7 @@ The gradio utilities for chatting with a single model.
 """
 import gradio as gr
 
-from languia.api_provider import get_api_provider_stream_iter
+from languia.api_provider import openai_stream
 
 import time
 
@@ -64,6 +64,7 @@ def bot_response(
             state.endpoint = random.choice(model_api_endpoints)
             endpoint_name = state.endpoint["api_base"].split("/")[2]
             logger.info(f"picked_endpoint: {endpoint_name} for {model_name}")
+            yield (state)
         endpoint = state.endpoint
         endpoint_name = endpoint["api_base"].split("/")[2]
         if use_recommended_config:
@@ -75,7 +76,7 @@ def bot_response(
                     "max_new_tokens", int(max_new_tokens)
                 )
         try:
-            stream_iter = get_api_provider_stream_iter(
+            stream_iter = openai_stream(
                 messages,
                 endpoint,
                 temperature,
@@ -84,16 +85,15 @@ def bot_response(
             )
         except Exception as e:
             logger.error(
-                f"Error in get_api_provider_stream_iter. error: {e}",
+                f"Error in openai_stream. error: {e}",
                 extra={request: request},
             )
 
     html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
     # update_last_message(messages, html_code)
-    yield (state)
 
-    for i, data in enumerate(stream_iter):
+    for data in stream_iter:
         if "output_tokens" in data:
             logger.debug(f"reported output tokens for api {endpoint['api_id']}:" + str(data["output_tokens"]))
             # Sum of all previous interactions

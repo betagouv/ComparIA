@@ -7,7 +7,7 @@ import logging
 from fastapi.templating import Jinja2Templates
 import traceback
 
-from languia.api_provider import get_api_provider_stream_iter
+from languia.api_provider import openai_stream
 
 from gradio import ChatMessage
 
@@ -73,96 +73,84 @@ endpoints = json5.load(open(register_api_endpoint_file))
 
 @app.get("/outages/{api_id}")
 def test_endpoint(api_id):
+
     global tests
     if api_id == "None":
         return {"success": False, "error_message": "Don't test 'None'!"}
 
-    from languia.utils import get_endpoint
+    import openai, os
 
-    endpoint = get_endpoint(api_id)
+    if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
+        register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
+    else:
+        register_api_endpoint_file = "register-api-endpoint-file.json"
 
-    # Log the outage test
-    logging.info(f"Testing endpoint: {api_id}")
+    # from languia.utils import get_endpoint
+    # endpoint = get_endpoint(api_id)
+    
+    from languia.config import api_endpoint_info
+    # import json5  
+    # api_endpoint_info = json5.load(open(register_api_endpoint_file))
 
-    # Define test parameters
-    temperature = 1
-    max_new_tokens = 10
-    stream = True
+    for endpoint in api_endpoint_info:
+        print(endpoint)
+        if endpoint.get("api_id") == api_id:
+            break
+        endpoint = None
+    # api_key = os.getenv("OPENROUTER_API_KEY")
+    # api_base = "https://openrouter.ai/api/v1/"
+    # model_name = "nousresearch/hermes-3-llama-3.1-405b:free"
 
-    try:
-        endpoint = get_endpoint(api_id)
+    api_base = endpoint["api_base"]
+    api_key = endpoint["api_key"]
+    model_name = endpoint["model_name"]
 
-        stream_iter = get_api_provider_stream_iter(
-            [ChatMessage(role="user", content="ONLY say 'this is a test'.")],
-            endpoint,
-            temperature,
-            max_new_tokens,
-        )
+    print (api_base)
+    print (api_key)
+    print (model_name)
 
-        # Verify the response
-        text = ""
-        output_tokens = None
-        for data in stream_iter:
-            if "output_tokens" in data:
-                print(
-                    f"reported output tokens for api {endpoint['api_id']}:"
-                    + str(data["output_tokens"])
-                )
-                output_tokens = data["output_tokens"]
+    messages_dict = [{"role": "user", "content": "Say hello!"}]
 
-            output = data.get("text")
-            if output:
-                output.strip()
-                text += output
+    client = openai.OpenAI(
+        base_url=api_base,
+        api_key=api_key,
+        # max_retries=
+        #         timeout=WORKER_API_TIMEOUT,
+        # timeout=5,
+        #     timeout=httpx.Timeout(5, read=5, write=5, connect=2
+        # )
+    )
 
-        test = {
-            "model_id": endpoint.get("model_id"),
-            "api_id": api_id,
-            "timestamp": int(time.time()),
-        }
-        if output_tokens:
-            test.update(output_tokens=output_tokens)
+    response = client.chat.completions.create(
+        model=model_name,
+        messages=messages_dict,
+        temperature=1,
+        max_tokens=100,
+        stream=True,
+        stream_options={"include_usage": True},
+        # Not available like this
+        # top_p=top_p,
+    )
+    # Verify the response
+    text = ""
+    output_tokens = None
+    for chunk in response:
+        if "output_tokens" in chunk:
+            print(f"reported output tokens for api test:" + str(chunk["output_tokens"]))
+            output_tokens = chunk["output_tokens"]
 
-        # Check if the response is successful
-        if text:
-            logging.info(f"Test successful: {api_id}")
-            if remove_outages(api_id):
-                test.update({"info": "Removed model from outages list."})
+        if len(chunk.choices) > 0:
+            text += chunk.choices[0].delta.content or ""
 
-            test.update(
-                {
-                    "success": True,
-                    "message": "Model responded: " + str(text),
-                }
-            )
-        else:
-            reason = f"No content from api {api_id}"
-            # logging.error(f"Test failed: {model_name}")
-            logging.error(reason)
-            test.update({"success": False, "message": reason})
-        tests.append(test)
-        if len(tests) > 25:
-            tests = tests[-25:]
-            # disable_endpoint(model_name, reason)
-        return test
-    except Exception as e:
-        reason = str(e)
-        logging.error(f"Error: {reason}. Endpoint: {api_id}")
-        stacktrace = traceback.print_exc()
-        test = {
-            "model_id": endpoint.get("model_id"),
-            "api_id": api_id,
-            "timestamp": int(time.time()),
-            "success": False,
-            "message": reason,
-            "stacktrace": stacktrace,
-        }
+    if output_tokens:
+        print(output_tokens)
 
-        disable_endpoint(api_id, test)
-        tests.append(test)
-        if len(tests) > 25:
-            tests = tests[-25:]
-        return test
+    # Check if the response is successful
+    if text:
+        print(text)
+    else:
+        print("Argh!")
+    return text
 
 
 @app.get(
