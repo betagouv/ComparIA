@@ -2,9 +2,9 @@
 	import { afterUpdate } from "svelte";
 	import render_math_in_element from "katex/contrib/auto-render";
 	import "katex/dist/katex.min.css";
+	import { create_marked } from "./utils";
 	import { sanitize } from "@gradio/sanitize";
 	import "./prism.css";
-	import { fade } from "svelte/transition";
 
 	export let chatbot = true;
 	export let message: string;
@@ -22,72 +22,10 @@
 	let el: HTMLSpanElement;
 	let html: string;
 
-	export function create_marked({
-		header_links,
-		line_breaks,
-		latex_delimiters,
-	}: {
-		header_links: boolean;
-		line_breaks: boolean;
-		latex_delimiters: { left: string; right: string; display: boolean }[];
-	}): typeof marked {
-		const marked = new Marked();
-
-		marked.use(
-			{
-				gfm: true,
-				pedantic: false,
-				breaks: line_breaks,
-			},
-			markedHighlight({
-				highlight: (code: string, lang: string) => {
-					if (Prism.languages[lang]) {
-						return Prism.highlight(
-							code,
-							Prism.languages[lang],
-							lang,
-						);
-					}
-					return code;
-				},
-			}),
-			{ renderer },
-		);
-
-		if (header_links) {
-			marked.use(gfmHeadingId());
-			marked.use({
-				extensions: [
-					{
-						name: "heading",
-						level: "block",
-						renderer(token) {
-							const raw = token.raw
-								.toLowerCase()
-								.trim()
-								.replace(/<[!\/a-z].*?>/gi, "");
-							const id = "h" + slugger.slug(raw);
-							const level = token.depth;
-							const text = this.parser.parseInline(token.tokens!);
-
-							return `<h${level} id="${id}"><a class="md-header-anchor" href="#${id}">${LINK_ICON_CODE}</a>${text}</h${level}>\n`;
-						},
-					},
-				],
-			});
-		}
-		const latexTokenizer = createLatexTokenizer(latex_delimiters);
-		marked.use({
-			extensions: [latexTokenizer],
-		});
-
-		return marked;
-	}
-
 	const marked = create_marked({
 		header_links,
 		line_breaks,
-		latex_delimiters,
+		latex_delimiters
 	});
 
 	function escapeRegExp(string: string): string {
@@ -104,7 +42,7 @@
 				const rightDelimiter = escapeRegExp(delimiter.right);
 				const regex = new RegExp(
 					`${leftDelimiter}([\\s\\S]+?)${rightDelimiter}`,
-					"g",
+					"g"
 				);
 				parsedValue = parsedValue.replace(regex, (match, p1) => {
 					latexBlocks.push(match);
@@ -116,7 +54,7 @@
 
 			parsedValue = parsedValue.replace(
 				/%%%LATEX_BLOCK_(\d+)%%%/g,
-				(match, p1) => latexBlocks[parseInt(p1, 10)],
+				(match, p1) => latexBlocks[parseInt(p1, 10)]
 			);
 		}
 
@@ -137,13 +75,12 @@
 		if (latex_delimiters.length > 0 && value) {
 			const containsDelimiter = latex_delimiters.some(
 				(delimiter) =>
-					value.includes(delimiter.left) &&
-					value.includes(delimiter.right),
+					value.includes(delimiter.left) && value.includes(delimiter.right)
 			);
 			if (containsDelimiter) {
 				render_math_in_element(el, {
 					delimiters: latex_delimiters,
-					throwOnError: false,
+					throwOnError: false
 				});
 			}
 		}
@@ -158,13 +95,7 @@
 	});
 </script>
 
-<span
-	transition:fade={{ duration: 500 }}
-	class:chatbot
-	bind:this={el}
-	class="md"
-	class:prose={render_markdown}
->
+<span class:chatbot bind:this={el} class="md" class:prose={render_markdown}>
 	{@html html}
 </span>
 

@@ -2,7 +2,7 @@
 	import { is_component_message } from "../shared/utils";
 	import type { Client } from "@gradio/client";
 	import type { NormalisedMessage } from "../types";
-	import { MarkdownCode as Markdown } from "./MarkdownCode.svelte";
+	import {MarkdownCode as Markdown} from "./markdown-code";
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
