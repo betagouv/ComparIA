@@ -302,7 +302,9 @@
 						is_last_bot_message(messages, value)}
 					show_undo={_undoable &&
 						is_last_bot_message(messages, value)}
-					{show_copy_button}
+					show_copy_button={role === "user"
+						? false
+						: show_copy_button}
 					handle_action={(selected) =>
 						handle_like(i, messages[0], selected)}
 					scroll={is_browser ? scroll : () => {}}
