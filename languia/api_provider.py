@@ -21,9 +21,9 @@ def get_api_provider_stream_iter(
 ):
     messages_dict = []
     for message in messages:
-        if isinstance(message, ChatMessage):
+        try:
             messages_dict.append({"role": message.role, "content": message.content})
-        else:
+        except:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
     if model_api_dict["api_type"] == "openai":
         stream_iter = openai_api_stream_iter(
