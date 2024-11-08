@@ -25,14 +25,14 @@
 </button>
 
 <style>
-	.box {
+	/* .box {
 		border-radius: 4px;
 		cursor: pointer;
 		max-width: max-content;
 		background: var(--color-accent-soft);
 		border: 1px solid var(--border-color-accent-subdued);
 		font-size: 0.8em;
-	}
+	} */
 
 	.title {
 		display: flex;

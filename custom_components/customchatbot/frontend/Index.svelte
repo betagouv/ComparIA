@@ -10,11 +10,9 @@
 	import { Block, BlockLabel } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import { Chat } from "@gradio/icons";
-	import type { FileData } from "@gradio/client";
 	import { StatusTracker } from "@gradio/statustracker";
 	import type {
 		Message,
-		ExampleMessage,
 		TupleFormat,
 		NormalisedMessage,
 	} from "./types";
@@ -76,7 +74,6 @@
 	export let min_height: number | string | undefined;
 	export let max_height: number | string | undefined;
 	export let placeholder: string | null = null;
-	export let examples: ExampleMessage[] | null = null;
 	export let theme_mode: "system" | "light" | "dark";
 </script>
 
@@ -149,7 +146,6 @@
 			{autoscroll}
 			{layout}
 			{placeholder}
-			{examples}
 			{_retryable}
 			{_undoable}
 			upload={(...args) => gradio.client.upload(...args)}

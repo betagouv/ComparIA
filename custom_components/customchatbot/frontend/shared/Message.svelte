@@ -106,9 +106,8 @@
 
 	{#each messages as message, thought_index}
 		<div
-			class="message rounded-tile {role} {get_message_bot_position(message)}"
+			class="message {role} {get_message_bot_position(message)}"
 			class:message-markdown-disabled={!render_markdown}
-			style:text-align={rtl && role === "user" ? "left" : "right"}
 			class:thought={thought_index > 0}
 		>
 			<button
@@ -180,7 +179,6 @@
 			</button>
 			<ButtonPanel {...button_panel_props} />
 		</div>
-
 	{/each}
 </div>
 
@@ -209,21 +207,16 @@
 	.message-row {
 		justify-content: flex-end;
 		width: 100%;
+		margin: 2em;
 	}
 
 	.message.bot {
 		border-color: #e5e5e5;
 		border-width: 1px;
 		border-style: solid;
+		/* border-radius: 0.5rem; */
 		border-radius: 0.5rem;
 		background-color: white;
-	}
-
-	.rounded-tile {
-		border-color: #e5e5e5;
-		border-width: 1px;
-		border-style: solid;
-		border-radius: 0.25rem;
 	}
 
 	/* .message-row :global(img) {
@@ -235,19 +228,22 @@
 		white-space: pre-line;
 	}
 
+	.user-row {
+		display: flex;
+		justify-content: flex-end;
+		width: 100%;
+	}
+
 	@media (min-width: 48em) {
-		.user-row {
+		.user {
 			width: 60%;
 		}
 	}
 	.user {
-		text-align: right;
 		margin-left: auto;
 		background-color: var(--grey-950-100);
 		--hover-tint: var(--grey-950-100);
 		border-radius: 0.75rem;
-
-		min-width: 100%;
 
 		/* border-width: 1px;
 		border-radius: var(--radius-md);
@@ -263,9 +259,12 @@
 
 	.bot-row {
 		display: grid;
+		column-gap: 2em;
 		grid-template-columns: 1fr 1fr;
-		align-self: flex-start;
+		/* align-self: flex-start; */
 
+		/* grid-template-columns: repeat(2, 1fr); */
+		grid-auto-rows: 1fr;
 	}
 
 	.bot button,
@@ -280,7 +279,6 @@
 
 		color: var(--text-default-grey);
 	}
-
 
 	/* message content */
 	/* {
@@ -303,7 +301,7 @@
 		overflow-wrap: break-word;
 	} */
 
-	.user {
+	/* .user {
 		border-width: 1px;
 		border-radius: var(--radius-md);
 		align-self: flex-start;
@@ -313,7 +311,7 @@
 		padding: var(--spacing-sm) var(--spacing-xl);
 		border-color: var(--border-color-accent-subdued);
 		background-color: var(--color-accent-soft);
-	}
+	} */
 	.selectable {
 		cursor: default;
 	}
@@ -332,6 +330,7 @@
 
 	.message > button {
 		width: 100%;
+		padding: 1.25rem;
 	}
 	.html {
 		padding: 0;
@@ -339,18 +338,18 @@
 		background: none;
 	}
 
-	.panel .bot,
+	/* .panel .bot,
 	.panel .user {
 		border: none;
 		box-shadow: none;
 		background-color: var(--background-fill-secondary);
-	}
+	} */
 
-	.panel.user-row {
+	/* .panel.user-row {
 		background-color: var(--color-accent-soft);
-	}
+	} */
 
-	.panel .user-row,
+	/* .panel .user-row,
 	.panel .bot-row {
 		align-self: flex-start;
 	}
@@ -371,7 +370,7 @@
 
 	.panel .message {
 		margin-bottom: var(--spacing-md);
-	}
+	} */
 
 	h1,
 	h2,
@@ -383,11 +382,9 @@
 		font-size: 1.25rem !important;
 	}
 
-	@media (min-width: 48em) {
-		.message.bot {
-			max-width: 45vw;
-		}
-	}
+	/* @media (min-width: 48em) {
+
+	} */
 
 	p {
 		text-align: left !important;

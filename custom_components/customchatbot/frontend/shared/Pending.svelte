@@ -19,7 +19,7 @@
 
 <style>
 	.pending {
-		background: var(--color-accent-soft);
+		/* background: var(--color-accent-soft); */
 		display: flex;
 		flex-direction: row;
 		justify-content: center;

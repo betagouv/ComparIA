@@ -384,6 +384,10 @@
 		}
 	}
 
+	.message-wrap {
+		margin: 2em;
+	}
+	
 	/* .message-wrap {
 		display: flex;
 		flex-direction: column;
@@ -426,14 +430,14 @@
 	}
 
 	/* KaTeX */
-	.message-wrap :global(span.katex) {
+	/* .message-wrap :global(span.katex) {
 		font-size: var(--text-lg);
 		direction: ltr;
 	}
 
 	.message-wrap :global(span.katex-display) {
 		margin-top: 0;
-	}
+	} */
 
 	/* .message-wrap :global(pre) {
 		position: relative;
