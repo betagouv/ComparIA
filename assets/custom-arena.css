@@ -263,7 +263,7 @@ li.fr-nav__item {
 }
 
 #header-html {
-  overflow: visible;
+  overflow: visible !important;
   /* Required < 100 to be behind modal */
   z-index: 98;
 }

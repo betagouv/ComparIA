@@ -148,7 +148,7 @@
 									cx="13"
 									cy="13"
 									r="12"
-									fill="#A96AFE"
+									fill="#ff9575"
 									stroke="none"
 								></circle></svg
 							>
