@@ -75,105 +75,105 @@ class EmptyResponseError(RuntimeError):
 # logger.addFilter(context_filter)
 
 
-class JSONFormatter(logging.Formatter):
-    def format(self, record):
+# class JSONFormatter(logging.Formatter):
+#     def format(self, record):
 
-        msg = super().format(record)
+#         msg = super().format(record)
 
-        # Parse the message as JSON
-        # try:
-        #     log_data = json.loads(msg)
-        # except json.JSONDecodeError:
-        # Handle cases where the message isn't valid JSON
-        log_data = {"message": msg}
+#         # Parse the message as JSON
+#         # try:
+#         #     log_data = json.loads(msg)
+#         # except json.JSONDecodeError:
+#         # Handle cases where the message isn't valid JSON
+#         log_data = {"message": msg}
 
-        # if 'request' in record.args:
-        if hasattr(record, "request"):
-            # log_data = record.request
-            # request_dict = record.request.kwargs
-            log_data["query_params"] = dict(record.request.query_params)
-            log_data["path_params"] = dict(record.request.path_params)
-            # TODO: remove IP?
-            log_data["ip"] = get_ip(record.request)
-            log_data["session_hash"] = record.request.session_hash
-            # if isinstance(request_dict, dict):
-            #     request_json = json.dumps(request_dict)
-            # delattr(record, 'request')
-        if hasattr(record, "extra"):
-            log_data["extra"] = record.extra
-        # Add the args dictionary to the JSON payload
-        # log_data.update(record.args)
-        # Convert the updated dictionary back to JSON
-        return json.dumps(log_data)
+#         # if 'request' in record.args:
+#         if hasattr(record, "request"):
+#             # log_data = record.request
+#             # request_dict = record.request.kwargs
+#             log_data["query_params"] = dict(record.request.query_params)
+#             log_data["path_params"] = dict(record.request.path_params)
+#             # TODO: remove IP?
+#             log_data["ip"] = get_ip(record.request)
+#             log_data["session_hash"] = record.request.session_hash
+#             # if isinstance(request_dict, dict):
+#             #     request_json = json.dumps(request_dict)
+#             # delattr(record, 'request')
+#         if hasattr(record, "extra"):
+#             log_data["extra"] = record.extra
+#         # Add the args dictionary to the JSON payload
+#         # log_data.update(record.args)
+#         # Convert the updated dictionary back to JSON
+#         return json.dumps(log_data)
 
 
-class PostgresHandler(logging.Handler):
-    def __init__(self, db_config):
-        super().__init__()
-        self.db_config = db_config
-        self.connection = None
+# class PostgresHandler(logging.Handler):
+#     def __init__(self, db_config):
+#         super().__init__()
+#         self.db_config = db_config
+#         self.connection = None
 
-    def connect(self):
-        if not self.connection or self.connection.closed:
-            try:
-                self.connection = psycopg2.connect(**self.db_config)
-            except psycopg2.Error as e:
-                print(f"Error connecting to database: {e}")
-                stacktrace = traceback.format_exc()
-                print(f"Stacktrace: {stacktrace}")
+#     def connect(self):
+#         if not self.connection or self.connection.closed:
+#             try:
+#                 self.connection = psycopg2.connect(**self.db_config)
+#             except Exception as e:
+#                 print(f"Error connecting to database: {e}")
+#                 stacktrace = traceback.format_exc()
+#                 print(f"Stacktrace: {stacktrace}")
 
-    def emit(self, record):
+#     def emit(self, record):
 
-        assert isinstance(record, logging.LogRecord)
-        # print((record.__dict__))
-        # print("LoggingHandler received LogRecord: {}".format(record))
+#         assert isinstance(record, logging.LogRecord)
+#         # print((record.__dict__))
+#         # print("LoggingHandler received LogRecord: {}".format(record))
 
-        # record = super().format(record)
-        self.format(record)
+#         # record = super().format(record)
+#         self.format(record)
 
-        try:
-            self.connect()
-            with self.connection.cursor() as cursor:
+#         try:
+#             self.connect()
+#             with self.connection.cursor() as cursor:
 
-                # del(record.__dict__["request"])
+#                 # del(record.__dict__["request"])
 
-                insert_statement = sql.SQL(
-                    """
-                    INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
-                    VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
-                """
-                )
-                values = {
-                    "time": record.asctime,
-                    "level": record.levelname,
-                    "message": record.message,
-                }
-                if hasattr(record, "extra"):
-                    values["extra"] = json.dumps(record.__dict__.get("extra"))
-                else:
-                    values["extra"] = "{}"
-                if hasattr(record, "request"):
-                    query_params = dict(record.request.query_params)
-                    path_params = dict(record.request.path_params)
-                    # ip = get_ip(record.request)
-                    session_hash = record.request.session_hash
-                    values["query_params"] = json.dumps(query_params)
-                    values["path_params"] = json.dumps(path_params)
-                    values["session_hash"] = str(session_hash)
-                else:
-                    values["query_params"] = "{}"
-                    values["path_params"] = "{}"
-                    values["session_hash"] = ""
+#                 insert_statement = sql.SQL(
+#                     """
+#                     INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
+#                     VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
+#                 """
+#                 )
+#                 values = {
+#                     "time": record.asctime,
+#                     "level": record.levelname,
+#                     "message": record.message,
+#                 }
+#                 if hasattr(record, "extra"):
+#                     values["extra"] = json.dumps(record.__dict__.get("extra"))
+#                 else:
+#                     values["extra"] = "{}"
+#                 if hasattr(record, "request"):
+#                     query_params = dict(record.request.query_params)
+#                     path_params = dict(record.request.path_params)
+#                     # ip = get_ip(record.request)
+#                     session_hash = record.request.session_hash
+#                     values["query_params"] = json.dumps(query_params)
+#                     values["path_params"] = json.dumps(path_params)
+#                     values["session_hash"] = str(session_hash)
+#                 else:
+#                     values["query_params"] = "{}"
+#                     values["path_params"] = "{}"
+#                     values["session_hash"] = ""
 
-                cursor.execute(insert_statement, values)
-                self.connection.commit()
-        except (psycopg2.Error) as e:
-            # Don't use logger on purpose to avoid endless loops
-            print(f"Error logging to Postgres: {e}")
-            stacktrace = traceback.format_exc()
-            print(f"Stacktrace: {stacktrace}")
-            # Could do:
-            # self.handleError(record)
+#                 cursor.execute(insert_statement, values)
+#                 self.connection.commit()
+#         except (psycopg2.Error, Exception) as e:
+#             # Don't use logger on purpose to avoid endless loops
+#             print(f"Error logging to Postgres: {e}")
+#             stacktrace = traceback.format_exc()
+#             print(f"Stacktrace: {stacktrace}")
+#             # Could do:
+#             # self.handleError(record)
 
 
 def get_ip(request: gr.Request):

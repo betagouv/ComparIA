@@ -26,7 +26,7 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 
 from logging.handlers import WatchedFileHandler
 
-from languia.utils import JSONFormatter, PostgresHandler
+# from languia.utils import JSONFormatter, PostgresHandler
 
 if any(
     os.getenv(var)
@@ -49,41 +49,41 @@ else:
     db = None
 
 
-def build_logger(logger_filename):
-    # TODO: log "funcName"
-    logger = logging.getLogger("languia")
-    if debug:
-        logger.setLevel(logging.DEBUG)
-    else:
-        logger.setLevel(logging.INFO)
+# def build_logger(logger_filename):
+#     # TODO: log "funcName"
+#     logger = logging.getLogger("languia")
+#     if debug:
+#         logger.setLevel(logging.DEBUG)
+#     else:
+#         logger.setLevel(logging.INFO)
 
-    file_formatter = JSONFormatter(
-        '{"time":"%(asctime)s", "name": "%(name)s", \
-        "level": "%(levelname)s", "message": "%(message)s"}',
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-    # postgres_formatter = JSONFormatter(
-    #     '{"time":"%(asctime)s", "name": "%(name)s", \
-    #     "level": "%(levelname)s", "message": "%(message)s"}',
-    #     datefmt="%Y-%m-%d %H:%M:%S",
-    # )
+#     file_formatter = JSONFormatter(
+#         '{"time":"%(asctime)s", "name": "%(name)s", \
+#         "level": "%(levelname)s", "message": "%(message)s"}',
+#         datefmt="%Y-%m-%d %H:%M:%S",
+#     )
+#     # postgres_formatter = JSONFormatter(
+#     #     '{"time":"%(asctime)s", "name": "%(name)s", \
+#     #     "level": "%(levelname)s", "message": "%(message)s"}',
+#     #     datefmt="%Y-%m-%d %H:%M:%S",
+#     # )
 
-    if LOGDIR:
-        os.makedirs(LOGDIR, exist_ok=True)
-        filename = os.path.join(LOGDIR, logger_filename)
-        file_handler = WatchedFileHandler(filename, encoding="utf-8")
-        file_handler.setFormatter(file_formatter)
-        logger.addHandler(file_handler)
+#     if LOGDIR:
+#         os.makedirs(LOGDIR, exist_ok=True)
+#         filename = os.path.join(LOGDIR, logger_filename)
+#         file_handler = WatchedFileHandler(filename, encoding="utf-8")
+#         file_handler.setFormatter(file_formatter)
+#         logger.addHandler(file_handler)
 
-    if db:
-        postgres_handler = PostgresHandler(db)
-        # postgres_handler.setFormatter(postgres_formatter)
-        logger.addHandler(postgres_handler)
+#     if db:
+#         postgres_handler = PostgresHandler(db)
+#         # postgres_handler.setFormatter(postgres_formatter)
+#         logger.addHandler(postgres_handler)
 
-    return logger
+#     return logger
 
-
-logger = build_logger(log_filename)
+logger = logging
+# logger = build_logger(log_filename)
 
 num_sides = 2
 enable_moderation = False
