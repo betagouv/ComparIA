@@ -268,7 +268,8 @@ def save_vote_to_db(data):
         stacktrace = traceback.format_exc()
         print(f"Stacktrace: {stacktrace}", exc_info=True)
     finally:
-        cursor.close()
+        if cursor:
+            cursor.close()
         if conn:
             conn.close()
 
