@@ -3,7 +3,7 @@ Compar:IA's main code
 Users chat with two anonymous models.
 """
 
-from themes.dsfr import DSFR
+from languia.themes.dsfr import DSFR
 
 import gradio as gr
 
