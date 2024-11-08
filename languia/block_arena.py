@@ -11,7 +11,7 @@ import gradio as gr
 
 from languia.utils import header_html, welcome_modal_html, footer_html
 
-# from custom_components.frbutton.backend.gradio_frbutton import FrButton
+from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
@@ -149,7 +149,7 @@ with gr.Blocks(
         #         placeholder
         # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
         # TODO: test ChatInterface abstraction
-        chatbot = gr.Chatbot(
+        chatbot = CustomChatbot(
             # TODO:
             type="messages",
             elem_id="main-chatbot",
