@@ -37,6 +37,7 @@
 	export let show_retry: boolean;
 	export let show_undo: boolean;
 	export let showLikeMessage: boolean;
+	export let showDislikeMessage: boolean;
 	export let msg_format: "tuples" | "messages";
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
@@ -177,14 +178,19 @@
 						/>
 					{/if}
 				{/if}
+				<ButtonPanel {...button_panel_props} />
 			</button>
-			<ButtonPanel {...button_panel_props} />
+			{#if message.showLikeMessage}
+				<div class="like-message">
+					Thank you for liking this message!
+				</div>
+			{/if}
+			{#if message.showDislikeMessage}
+				<div class="like-message">
+					Thank you for disliking this message!
+				</div>
+			{/if}
 		</div>
-		{#if message.showLikeMessage}
-        <div class="like-message">
-			Thank you for liking this message!
-		  </div>
-		{/if}
 	{/each}
 </div>
 
@@ -216,7 +222,7 @@
 		margin: 2em;
 	}
 
-	.message.bot {
+	.message.bot button {
 		border-color: #e5e5e5;
 		border-width: 1px;
 		border-style: solid;

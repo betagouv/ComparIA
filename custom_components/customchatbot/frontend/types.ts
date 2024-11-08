@@ -26,12 +26,14 @@ export interface TextMessage extends Message {
 	type: "text";
 	content: string;
 	showLikeMessage: boolean;
+	showDislikeMessage: boolean;
 }
 
 export interface ComponentMessage extends Message {
 	type: "component";
 	content: ComponentData;
 	showLikeMessage: boolean;
+	showDislikeMessage: boolean;
 }
 
 export interface ExampleMessage {

@@ -226,6 +226,11 @@
 		// Set showLikeMessage to true for the liked message
 		if (selected === "like") {
 			value[i].showLikeMessage = true;
+			value[i].showDislikeMessage = false;
+		}
+		if (selected === "dislike") {
+			value[i].showLikeMessage = false;
+			value[i].showDislikeMessage = true;
 		}
 	}
 </script>
@@ -309,6 +314,7 @@
 						handle_like(i, messages[0], selected)}
 					scroll={is_browser ? scroll : () => {}}
 					showLikeMessage={messages[i]?.showLikeMessage}
+					showDislikeMessage={messages[i]?.showDislikeMessage}
 				/>
 				{#if role === "user" && i === 0}
 					<div class="prose text-center svelte-1ybaih5">
