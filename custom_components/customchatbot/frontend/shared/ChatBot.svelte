@@ -5,7 +5,7 @@
 		is_last_bot_message,
 		group_messages,
 		load_components,
-		get_components_from_messages
+		get_components_from_messages,
 	} from "./utils";
 	import type { NormalisedMessage } from "../types";
 	import { copy } from "@gradio/utils";
@@ -18,7 +18,7 @@
 		type SvelteComponent,
 		type ComponentType,
 		tick,
-		onMount
+		onMount,
 	} from "svelte";
 	import { Image } from "@gradio/image/shared";
 
@@ -49,7 +49,7 @@
 		_components = await load_components(
 			get_components_from_messages(value),
 			_components,
-			load_component
+			load_component,
 		);
 	}
 
@@ -192,14 +192,14 @@
 	function handle_example_select(i: number, example: ExampleMessage): void {
 		dispatch("example_select", {
 			index: i,
-			value: { text: example.text, files: example.files }
+			value: { text: example.text, files: example.files },
 		});
 	}
 
 	function handle_like(
 		i: number,
 		message: NormalisedMessage,
-		selected: string | null
+		selected: string | null,
 	): void {
 		if (selected === "undo" || selected === "retry") {
 			const val_ = value as NormalisedMessage[];
@@ -211,7 +211,7 @@
 			}
 			dispatch(selected, {
 				index: val_[last_index].index,
-				value: val_[last_index].content
+				value: val_[last_index].content,
 			});
 			return;
 		}
@@ -220,7 +220,7 @@
 			dispatch("like", {
 				index: message.index,
 				value: message.content,
-				liked: selected === "like"
+				liked: selected === "like",
 			});
 		} else {
 			if (!groupedMessages) return;
@@ -228,13 +228,13 @@
 			const message_group = groupedMessages[i];
 			const [first, last] = [
 				message_group[0],
-				message_group[message_group.length - 1]
+				message_group[message_group.length - 1],
 			];
 
 			dispatch("like", {
 				index: [first.index, last.index] as [number, number],
 				value: message_group.map((m) => m.content),
-				liked: selected === "like"
+				liked: selected === "like",
 			});
 		}
 	}
@@ -250,11 +250,14 @@
 						// @ts-ignore
 						const formatted = await format_chat_for_sharing(value);
 						dispatch("share", {
-							description: formatted
+							description: formatted,
 						});
 					} catch (e) {
 						console.error(e);
-						let message = e instanceof ShareError ? e.message : "Share failed.";
+						let message =
+							e instanceof ShareError
+								? e.message
+								: "Share failed.";
 						dispatch("error", message);
 					}
 				}}
@@ -262,7 +265,10 @@
 				<Community />
 			</IconButton>
 		{/if}
-		<IconButton Icon={Trash} on:click={() => dispatch("clear")} label={"Clear"}
+		<IconButton
+			Icon={Trash}
+			on:click={() => dispatch("clear")}
+			label={"Clear"}
 		></IconButton>
 		{#if show_copy_all_button}
 			<CopyAll {value} />
@@ -282,10 +288,14 @@
 			{#each groupedMessages as messages, i}
 				{@const role = messages[0].role === "user" ? "user" : "bot"}
 				{@const avatar_img = avatar_images[role === "user" ? 0 : 1]}
-				{@const opposite_avatar_img = avatar_images[role === "user" ? 0 : 1]}
+				{@const opposite_avatar_img =
+					avatar_images[role === "user" ? 0 : 1]}
 				{#if is_image_preview_open}
 					<div class="image-preview">
-						<img src={image_preview_source} alt={image_preview_source_alt} />
+						<img
+							src={image_preview_source}
+							alt={image_preview_source_alt}
+						/>
 						<IconButtonWrapper>
 							<IconButton
 								Icon={Clear}
@@ -320,11 +330,16 @@
 					{_components}
 					{generating}
 					{msg_format}
-					show_like={role === "user" ? likeable && like_user_message : likeable}
-					show_retry={_retryable && is_last_bot_message(messages, value)}
-					show_undo={_undoable && is_last_bot_message(messages, value)}
+					show_like={role === "user"
+						? likeable && like_user_message
+						: likeable}
+					show_retry={_retryable &&
+						is_last_bot_message(messages, value)}
+					show_undo={_undoable &&
+						is_last_bot_message(messages, value)}
 					{show_copy_button}
-					handle_action={(selected) => handle_like(i, messages[0], selected)}
+					handle_action={(selected) =>
+						handle_like(i, messages[0], selected)}
 					scroll={is_browser ? scroll : () => {}}
 				/>
 			{/each}
@@ -356,7 +371,9 @@
 								</div>
 							{/if}
 							{#if example.display_text !== undefined}
-								<span class="example-display-text">{example.display_text}</span>
+								<span class="example-display-text"
+									>{example.display_text}</span
+								>
 							{:else}
 								<span class="example-text">{example.text}</span>
 							{/if}
@@ -611,5 +628,16 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+	}
+
+	/* CHAT AREA */
+
+	button {
+		cursor: default;
+		padding: 1.25rem;
+		user-select: text;
+		-webkit-user-select: text;
+		-webkit-user-select: text !important;
+		overflow-x: auto;
 	}
 </style>

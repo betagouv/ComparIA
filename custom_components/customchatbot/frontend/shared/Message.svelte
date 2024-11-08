@@ -48,7 +48,7 @@
 	function handle_select(i: number, message: NormalisedMessage): void {
 		dispatch("select", {
 			index: message.index,
-			value: message.content
+			value: message.content,
 		});
 	}
 
@@ -96,7 +96,7 @@
 		message: msg_format === "tuples" ? messages[0] : messages,
 		position: role === "user" ? "right" : "left",
 		avatar: avatar_img,
-		layout
+		layout,
 	};
 </script>
 
@@ -107,7 +107,11 @@
 >
 	{#if avatar_img !== null}
 		<div class="avatar-container">
-			<Image class="avatar-image" src={avatar_img?.url} alt="{role} avatar" />
+			<Image
+				class="avatar-image"
+				src={avatar_img?.url}
+				alt="{role} avatar"
+			/>
 		</div>
 	{/if}
 	<div
@@ -144,7 +148,9 @@
 						}
 					}}
 					dir={rtl ? "rtl" : "ltr"}
-					aria-label={role + "'s message: " + get_message_label_data(message)}
+					aria-label={role +
+						"'s message: " +
+						get_message_label_data(message)}
 				>
 					{#if message.type === "text"}
 						{#if message.metadata.title}
@@ -195,7 +201,9 @@
 							download={window.__is_colab__
 								? null
 								: message.content.value?.orig_name ||
-									message.content.value?.path.split("/").pop() ||
+									message.content.value?.path
+										.split("/")
+										.pop() ||
 									"file"}
 						>
 							{message.content.value?.orig_name ||
@@ -251,6 +259,11 @@
 		overflow-wrap: break-word;
 		width: 100%;
 		height: 100%;
+	}
+
+	.flex-wrap {
+		border: none !important;
+		box-shadow: none !important;
 	}
 
 	.component {
@@ -588,5 +601,40 @@
 
 	.panel .message {
 		margin-bottom: var(--spacing-md);
+	}
+
+	/* .step-badge {
+		border-radius: 3.75em;
+		text-align: center;
+		background-color: #ececfe;
+		padding: 5px 10px;
+		font-weight: bold;
+	} */
+
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6 {
+		font-weight: 700;
+		font-size: 1.25rem !important;
+	}
+
+	@media (min-width: 48em) {
+		.message.bot {
+			max-width: 45vw;
+		}
+	}
+
+	p {
+		text-align: left !important;
+		color: var(--text-active-grey);
+	}
+
+	ol,
+	ul {
+		font-size: initial !important;
+		color: var(--text-active-grey);
 	}
 </style>
