@@ -182,6 +182,7 @@
 
 	function handle_like(
 		i: number,
+		j: number,
 		message: NormalisedMessage,
 		selected: string | null,
 	): void {
@@ -209,27 +210,26 @@
 		} else {
 			if (!groupedMessages) return;
 
-			const message_group = groupedMessages[i];
-			const [first, last] = [
-				message_group[0],
-				message_group[message_group.length - 1],
-			];
-
+			const msg = groupedMessages[i][j];
+			// const [first, last] = [
+			// 	message_group[0],
+			// 	message_group[message_group.length - 1],
+			// ];
 			dispatch("like", {
-				index: [first.index, last.index] as [number, number],
-				value: message_group.map((m) => m.content),
+				index: msg.index,
+				value: msg.content,
 				liked: selected === "like",
 			});
 		}
 
 		// Set showLikeMessage to true for the liked message
 		if (selected === "like") {
-			value[i].showLikeMessage = true;
-			value[i].showDislikeMessage = false;
+			value[i+j].showLikeMessage = true;
+			value[i+j].showDislikeMessage = false;
 		}
 		if (selected === "dislike") {
-			value[i].showLikeMessage = false;
-			value[i].showDislikeMessage = true;
+			value[i+j].showLikeMessage = false;
+			value[i+j].showDislikeMessage = true;
 		}
 	}
 </script>
@@ -277,7 +277,7 @@
 			{#each groupedMessages as messages, i}
 				{@const role = messages[0].role === "user" ? "user" : "bot"}
 				<div class="message-row {layout} {role}-row">
-					{#each messages as message}
+					{#each messages as message, j}
 						<Message
 							messages={[message]}
 							{role}
@@ -310,7 +310,7 @@
 								? false
 								: show_copy_button}
 							handle_action={(selected) =>
-								handle_like(i, message, selected)}
+								handle_like(i, j, message, selected)}
 							scroll={is_browser ? scroll : () => {}}
 							showLikeMessage={message.showLikeMessage}
 							showDislikeMessage={message.showDislikeMessage}
