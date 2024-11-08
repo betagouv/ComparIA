@@ -73,6 +73,7 @@ from languia.config import logger
 
 from languia import config
 
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 # Register listeners
 def register_listeners():
@@ -263,7 +264,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         for i in range(config.num_sides):
-            conversations[i].messages.append(gr.ChatMessage(role="user", content=text))
+            conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a = conversations[0]
         conv_b = conversations[1]
         app_state.awaiting_responses = True

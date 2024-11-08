@@ -7,7 +7,7 @@ import logging
 
 import sentry_sdk
 
-from gradio import ChatMessage
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 from languia.utils import ContextTooLongError, EmptyResponseError
 
