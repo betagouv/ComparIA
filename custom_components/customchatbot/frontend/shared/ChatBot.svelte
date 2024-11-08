@@ -20,9 +20,8 @@
 		tick,
 		onMount,
 	} from "svelte";
-	import { Image } from "@gradio/image/shared";
 
-	import { Clear, Trash, Community, ScrollDownArrow } from "@gradio/icons";
+	import { Trash, Community, ScrollDownArrow } from "@gradio/icons";
 	import { IconButtonWrapper, IconButton } from "@gradio/atoms";
 	import type { SelectData, LikeData } from "@gradio/utils";
 	import type { ExampleMessage } from "../types";
@@ -101,7 +100,6 @@
 		like: LikeData;
 		undo: UndoRetryData;
 		retry: UndoRetryData;
-		clear: undefined;
 		share: any;
 		error: string;
 		example_select: SelectData;
@@ -161,23 +159,19 @@
 		};
 	});
 
-	let image_preview_source: string;
-	let image_preview_source_alt: string;
-	let is_image_preview_open = false;
-
-	afterUpdate(() => {
-		if (!div) return;
-		div.querySelectorAll("img").forEach((n) => {
-			n.addEventListener("click", (e) => {
-				const target = e.target as HTMLImageElement;
-				if (target) {
-					image_preview_source = target.src;
-					image_preview_source_alt = target.alt;
-					is_image_preview_open = true;
-				}
-			});
-		});
-	});
+	// afterUpdate(() => {
+	// 	if (!div) return;
+	// 	div.querySelectorAll("img").forEach((n) => {
+	// 		n.addEventListener("click", (e) => {
+	// 			const target = e.target as HTMLImageElement;
+	// 			if (target) {
+	// 				image_preview_source = target.src;
+	// 				image_preview_source_alt = target.alt;
+	// 				is_image_preview_open = true;
+	// 			}
+	// 		});
+	// 	});
+	// });
 
 	$: {
 		if (!dequal(value, old_value)) {
@@ -264,11 +258,6 @@
 				<Community />
 			</IconButton>
 		{/if}
-		<IconButton
-			Icon={Trash}
-			on:click={() => dispatch("clear")}
-			label={"Clear"}
-		></IconButton>
 		{#if show_copy_all_button}
 			<CopyAll {value} />
 		{/if}
@@ -321,6 +310,19 @@
 						handle_like(i, messages[0], selected)}
 					scroll={is_browser ? scroll : () => {}}
 				/>
+				{#if role === "user" && i === 0}
+					<div class="prose text-center svelte-1ybaih5">
+						<span class="step-badge">Étape 1/3</span>
+						<h4 class="fr-mt-2w fr-mb-1v">
+							Quel modèle d’IA préférez-vous ?
+						</h4>
+						<p class="text-grey fr-text--sm">
+							Votre préférence enrichit le jeu de données
+							Compar:IA dont l’objectif est<br />d’affiner les
+							futurs modèles d’IA sur le français
+						</p>
+					</div>
+				{/if}
 			{/each}
 			{#if pending_message}
 				<Pending {layout} />

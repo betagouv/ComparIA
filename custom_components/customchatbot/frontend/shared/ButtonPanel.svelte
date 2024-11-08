@@ -1,7 +1,6 @@
 <script lang="ts">
 	import LikeDislike from "./LikeDislike.svelte";
 	import Copy from "./Copy.svelte";
-	import type { FileData } from "@gradio/client";
 	import DownloadIcon from "./Download.svelte";
 	import { DownloadLink } from "@gradio/wasm/svelte";
 	import type { NormalisedMessage, TextMessage } from "../types";
