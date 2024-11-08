@@ -43,9 +43,9 @@ class EmptyResponseError(RuntimeError):
 
     def __str__(self):
         msg = "Empty response"
-        if self.response and hasattr(self.response, "response"):
-            msg += ": "
-            msg += str(self.response.response.__dict__)
+        # if self.response and hasattr(self.response, "response"):
+        #     msg += ": "
+        #     msg += str(self.response.response.__dict__)
         return msg
 
 
