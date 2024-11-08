@@ -110,15 +110,10 @@ export function normalise_messages(
 				metadata: message.metadata,
 				content: redirect_src_url(message.content, root),
 				type: "text",
-				index: i
-			};
-		} else if ("file" in message.content) {
-			return {
-				content: convert_file_message_to_component_message(message.content),
-				metadata: message.metadata,
-				role: message.role,
-				type: "component",
-				index: i
+				index: i,
+				showLikeMessage: false,
+				showDislikeMessage: false,
+
 			};
 		}
 		return { type: "component", ...message } as ComponentMessage;

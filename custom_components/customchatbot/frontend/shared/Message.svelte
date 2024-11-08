@@ -36,8 +36,8 @@
 	export let show_like: boolean;
 	export let show_retry: boolean;
 	export let show_undo: boolean;
-	export let showLikeMessage: boolean;
-	export let showDislikeMessage: boolean;
+	export const showLikeMessage: boolean = false;
+	export const showDislikeMessage: boolean = false;
 	export let msg_format: "tuples" | "messages";
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
