@@ -163,13 +163,12 @@ with gr.Blocks(
             # No difference
             # bubble_full_width=False,
             layout="panel",  # or "bubble"
-            # likeable=False,
+            likeable=True,
             # UserWarning: show_label has no effect when container is False.
             show_label=False,
             container=False,
             elem_classes="chatbot",
-            # Should we show it?
-            show_copy_button=False,
+            show_copy_button=True,
             # autoscroll=True
         )
 
