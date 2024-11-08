@@ -257,9 +257,7 @@
 		border-radius: var(--radius-md);
 	}
 
-	.message-fit {
-		width: fit-content !important;
-	}
+	
 
 	.panel-full-width {
 		width: 100%;
