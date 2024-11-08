@@ -6,6 +6,8 @@
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
+	// import LikePanel from "./LikePanel.svelte";
+	import DislikePanel from "./DislikePanel.svelte";
 
 	export let value: NormalisedMessage[];
 	export let role = "user";
@@ -101,6 +103,20 @@
 		position: role === "user" ? "right" : "left",
 		layout,
 	};
+
+	type DislikePanelProps = {
+		show: boolean;
+		handle_action: (selected: string | null) => void;
+		disliked: boolean[];
+	};
+
+	let dislike_panel_props: DislikePanelProps;
+	$: dislike_panel_props = {
+		// show: message.showDislikeMessage,
+		show: true,
+		handle_action,
+		disliked: [true],
+	};
 </script>
 
 <!-- {#if role === "user"} -->
@@ -178,12 +194,10 @@
 			<ButtonPanel {...button_panel_props} />
 		</button>
 		{#if message.showLikeMessage}
-			<div class="like-message">Thank you for liking this message!</div>
+			<DislikePanel {...dislike_panel_props} />
 		{/if}
 		{#if message.showDislikeMessage}
-			<div class="like-message">
-				Thank you for disliking this message!
-			</div>
+			<DislikePanel {...dislike_panel_props} />
 		{/if}
 	</div>
 {/each}
@@ -211,7 +225,6 @@
 		background-color: #fcfcfd;
 	} */
 
-
 	.message.bot button {
 		border-color: #e5e5e5;
 		border-width: 1px;
@@ -229,7 +242,7 @@
 	.message-markdown-disabled {
 		white-space: pre-line;
 	}
-	
+
 	@media (min-width: 48em) {
 		.user {
 			width: 60% !important;
@@ -253,7 +266,6 @@
 		border-color: var(--border-color-accent-subdued);
 		background-color: var(--color-accent-soft); */
 	}
-
 
 	.bot button,
 	.bot button:hover,
