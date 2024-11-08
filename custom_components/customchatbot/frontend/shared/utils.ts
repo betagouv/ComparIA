@@ -180,48 +180,39 @@ export function is_last_bot_message(
 	return is_last && is_bot;
 }
 
-// export function group_messages(
-// 	messages: NormalisedMessage[],
-// 	msg_format: "messages" | "tuples"
-// ): NormalisedMessage[][] {
-// 	const groupedMessages: NormalisedMessage[][] = [];
-// 	let currentGroup: NormalisedMessage[] = [];
-// 	let currentRole: MessageRole | null = null;
-
-// 	for (const message of messages) {
-// 		if (msg_format === "tuples") {
-// 			currentRole = null;
-// 		}
 export function group_messages(
 	messages: NormalisedMessage[],
 	msg_format: "messages" | "tuples"
 ): NormalisedMessage[][] {
-	return messages
-		.filter(message => message.role === "assistant" || message.role === "user")
-		.map(message => [message]);
+	const groupedMessages: NormalisedMessage[][] = [];
+	let currentGroup: NormalisedMessage[] = [];
+	let currentRole: MessageRole | null = null;
+
+	for (const message of messages) {
+		if (msg_format === "tuples") {
+			currentRole = null;
+		}
+
+		if (!(message.role === "assistant" || message.role === "user")) {
+			continue;
+		}
+		if (message.role === currentRole) {
+			currentGroup.push(message);
+		} else {
+			if (currentGroup.length > 0) {
+				groupedMessages.push(currentGroup);
+			}
+			currentGroup = [message];
+			currentRole = message.role;
+		}
+	}
+
+	if (currentGroup.length > 0) {
+		groupedMessages.push(currentGroup);
+	}
+
+	return groupedMessages;
 }
-
-
-// 		if (!(message.role === "assistant" || message.role === "user")) {
-// 			continue;
-// 		}
-// 		if (message.role === currentRole) {
-// 			currentGroup.push(message);
-// 		} else {
-// 			if (currentGroup.length > 0) {
-// 				groupedMessages.push(currentGroup);
-// 			}
-// 			currentGroup = [message];
-// 			currentRole = message.role;
-// 		}
-// 	}
-
-// 	if (currentGroup.length > 0) {
-// 		groupedMessages.push(currentGroup);
-// 	}
-
-// 	return groupedMessages;
-// }
 
 export async function load_components(
 	component_names: string[],
