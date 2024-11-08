@@ -4,6 +4,7 @@
 	import "katex/dist/katex.min.css";
 	import { sanitize } from "@gradio/sanitize";
 	import "./prism.css";
+	import { fade } from "svelte/transition";
 
 	export let chatbot = true;
 	export let message: string;
@@ -82,7 +83,7 @@
 
 		return marked;
 	}
-	
+
 	const marked = create_marked({
 		header_links,
 		line_breaks,
@@ -157,7 +158,13 @@
 	});
 </script>
 
-<span class:chatbot bind:this={el} class="md" class:prose={render_markdown}>
+<span
+	transition:fade={{ duration: 500 }}
+	class:chatbot
+	bind:this={el}
+	class="md"
+	class:prose={render_markdown}
+>
 	{@html html}
 </span>
 
