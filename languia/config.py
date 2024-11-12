@@ -600,7 +600,7 @@ prompts_table = {
         "Ecris un tiot poème in ch'ti sus l'biauté d'la nature. Propose aussi une traduction en français de ta réponse.",
         "Pòtès escriure un pichon poèma en occitan sus lo passatge de las sasons? Propose une traduction en français après la réponse en occitan.",
         "Raconte ein tiot conte in picard avéc des personnages du village.",
-        """"Wann ich dir so schwätz, verstehsch mich? Réponds en alsacien.""",
+        """Wann ich dir so schwätz, verstehsch mich? Réponds en alsacien.""",
     ],
     # category conseils
     "coach": [
