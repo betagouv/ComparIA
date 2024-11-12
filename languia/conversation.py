@@ -116,7 +116,6 @@ def bot_response(
             extra={request: request},
         )
         # logger.error(data)
-        # FIXME: normally already raised earlier
         raise EmptyResponseError(f"No answer from API for model {model_name}")
 
     messages = update_last_message(messages, output)
