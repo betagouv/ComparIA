@@ -608,6 +608,9 @@ voteArea.scrollIntoView({
 });}, 500);
 }""",
     )
+    @chatbot.like(inputs=[chatbot],api_name=False,show_progress="hidden")
+    def record_like(chatbot, event: gr.EventData):
+        print(event)
 
     @which_model_radio.select(
         inputs=[which_model_radio],
