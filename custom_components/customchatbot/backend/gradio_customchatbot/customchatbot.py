@@ -145,9 +145,9 @@ class CustomChatbot(Component):
         Events.change,
         Events.select,
         Events.like,
-        Events.retry,
-        Events.undo,
-        Events.example_select,
+        # Events.retry,
+        # Events.undo,
+        # Events.example_select,
         Events.clear,
     ]
 
