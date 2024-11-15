@@ -5,6 +5,7 @@
 	import { create_marked } from "./utils";
 	import { sanitize } from "@gradio/sanitize";
 	import "./prism.css";
+	import { fade } from "svelte/transition";
 
 	export let chatbot = true;
 	export let message: string;
@@ -25,7 +26,7 @@
 	const marked = create_marked({
 		header_links,
 		line_breaks,
-		latex_delimiters
+		latex_delimiters,
 	});
 
 	function escapeRegExp(string: string): string {
@@ -42,7 +43,7 @@
 				const rightDelimiter = escapeRegExp(delimiter.right);
 				const regex = new RegExp(
 					`${leftDelimiter}([\\s\\S]+?)${rightDelimiter}`,
-					"g"
+					"g",
 				);
 				parsedValue = parsedValue.replace(regex, (match, p1) => {
 					latexBlocks.push(match);
@@ -54,7 +55,7 @@
 
 			parsedValue = parsedValue.replace(
 				/%%%LATEX_BLOCK_(\d+)%%%/g,
-				(match, p1) => latexBlocks[parseInt(p1, 10)]
+				(match, p1) => latexBlocks[parseInt(p1, 10)],
 			);
 		}
 
@@ -75,12 +76,13 @@
 		if (latex_delimiters.length > 0 && value) {
 			const containsDelimiter = latex_delimiters.some(
 				(delimiter) =>
-					value.includes(delimiter.left) && value.includes(delimiter.right)
+					value.includes(delimiter.left) &&
+					value.includes(delimiter.right),
 			);
 			if (containsDelimiter) {
 				render_math_in_element(el, {
 					delimiters: latex_delimiters,
-					throwOnError: false
+					throwOnError: false,
 				});
 			}
 		}
@@ -95,7 +97,13 @@
 	});
 </script>
 
-<span class:chatbot bind:this={el} class="md" class:prose={render_markdown}>
+<span
+	transition:fade={{ duration: 500 }}
+	class:chatbot
+	bind:this={el}
+	class="md"
+	class:prose={render_markdown}
+>
 	{@html html}
 </span>
 
