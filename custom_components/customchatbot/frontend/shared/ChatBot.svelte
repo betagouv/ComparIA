@@ -201,6 +201,16 @@
 			return;
 		}
 
+		// Set showLikeMessage to true for the liked message
+		if (selected === "like") {
+			value[i+j].showLikeMessage = true;
+			value[i+j].showDislikePanel = false;
+		}
+		if (selected === "dislike") {
+			value[i+j].showLikeMessage = false;
+			value[i+j].showDislikePanel = true;
+		}
+
 		if (msg_format === "tuples") {
 			dispatch("like", {
 				index: message.index,
@@ -222,15 +232,6 @@
 			});
 		}
 
-		// Set showLikeMessage to true for the liked message
-		if (selected === "like") {
-			value[i+j].showLikeMessage = true;
-			value[i+j].showDislikeMessage = false;
-		}
-		if (selected === "dislike") {
-			value[i+j].showLikeMessage = false;
-			value[i+j].showDislikeMessage = true;
-		}
 	}
 </script>
 
@@ -313,7 +314,7 @@
 								handle_like(i, j, message, selected)}
 							scroll={is_browser ? scroll : () => {}}
 							showLikeMessage={message.showLikeMessage}
-							showDislikeMessage={message.showDislikeMessage}
+							showDislikePanel={message.showDislikePanel}
 						/>
 					{/each}
 				</div>

@@ -2,21 +2,32 @@
 	import IconButton from "./IconButton.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 	import type { Gradio, SelectData } from "@gradio/utils";
+	import {
+		afterUpdate,
+		createEventDispatcher,
+		type SvelteComponent,
+		type ComponentType,
+		tick,
+		onMount,
+	} from "svelte";
 
-	// export let handle_action: (selected: string | null) => void;
 
-	export let gradio: Gradio<{
-		change: never;
+	const dispatch = createEventDispatcher<{
+		change: undefined;
 		select: SelectData;
-		input: never;
-		clear_status: LoadingStatus;
-	}>;
+		input: undefined;
+	}>();
+
+	export let show: boolean;        // Define the 'show' prop as a boolean
+
+	export let handle_action: (selected: string | null) => void;
 
 	export let value: (string | number)[] = [];
-	export let choices: [string, string | number][] = [("Rien", "rien"), ("Tout", "tout")];
+	export let old_value = value.slice();
+	export let choices: [string, string | number][] = [["Rien", "rien"], ["Tout", "tout"]]; // Example choices, adjust as necessary
 	// $: disabled = !interactive;
 
-	let selected: "like" | "dislike" | null = null;
+	// let selected: "like" | "dislike" | null = null;
 
 	function toggle_choice(choice: string | number): void {
 		if (value.includes(choice)) {
@@ -24,7 +35,16 @@
 		} else {
 			value = [...value, choice];
 		}
-		gradio.dispatch("input");
+		console.log("yo")
+		console.log(choice)
+
+		choice = "choice";
+		handle_action(choice);
+	}
+
+	$: if (JSON.stringify(old_value) !== JSON.stringify(value)) {
+		old_value = value;
+		dispatch("change");
 	}
 </script>
 
@@ -36,7 +56,7 @@
 			<input
 				on:change={() => toggle_choice(internal_value)}
 				on:input={(evt) =>
-					gradio.dispatch("select", {
+					dispatch("select", {
 						index: i,
 						value: internal_value,
 						selected: evt.currentTarget.checked,
@@ -44,7 +64,7 @@
 				on:keydown={(event) => {
 					if (event.key === "Enter") {
 						toggle_choice(internal_value);
-						gradio.dispatch("select", {
+						dispatch("select", {
 							index: i,
 							value: internal_value,
 							selected: !value.includes(internal_value),
@@ -60,15 +80,3 @@
 		</label>
 	{/each}
 </div>
-<!-- 
-<IconButton
-	Icon={selected === "like" ? ThumbUpActive : ThumbUpDefault}
-	label={selected === "like" ? "clicked like" : "like"}
-	color={selected === "like"
-		? "var(--color-accent)"
-		: "var(--block-label-text-color)"}
-	on:click={() => {
-		selected = "like";
-		handle_action(selected);
-	}}
-/> -->

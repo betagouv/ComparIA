@@ -13,6 +13,8 @@
 
 
 	export let value: NormalisedMessage[];
+	export let dislikeValue: (string | number)[] = [];
+
 	export let role = "user";
 	export let messages: NormalisedMessage[] = [];
 	export let layout: "bubble" | "panel";
@@ -41,8 +43,9 @@
 	export let show_like: boolean;
 	export let show_retry: boolean;
 	export let show_undo: boolean;
-	export const showLikeMessage: boolean = false;
-	export const showDislikeMessage: boolean = false;
+	export let showLikeMessage: boolean = false;
+	export let showDislikePanel: boolean = false;
+	
 	export let msg_format: "tuples" | "messages";
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
@@ -108,18 +111,19 @@
 	};
 
 	type DislikePanelProps = {
-		show: boolean;
-		handle_action: (selected: string | null) => void;
-		disliked: boolean[];
-	};
+  show: boolean;
+  value: (string | number)[];
+  choices: [string, string | number][];
+  handle_action: (selected: string | null) => void;
+};
 
-	let dislike_panel_props: DislikePanelProps;
-	$: dislike_panel_props = {
-		// show: message.showDislikeMessage,
-		show: true,
-		handle_action,
-		disliked: [true],
-	};
+  let dislike_panel_props: DislikePanelProps;
+  $: dislike_panel_props = {
+    show: showDislikePanel,
+    value: dislikeValue, // Assuming 'value' is the array that holds selected choices
+    choices: [["Rien", "rien"], ["Tout", "tout"]], // Example choices, adjust as necessary
+    handle_action: handle_action, // Pass down the handle_action function
+  };
 </script>
 
 <!-- {#if role === "user"} -->
@@ -138,7 +142,7 @@
 			class:selectable
 			style:cursor={selectable ? "default" : "default"}
 			style:text-align={rtl ? "right" : "left"}
-			on:click={() => handle_select(i, message)}
+			on:select={() => handle_select(i, message)}
 			on:keydown={(e) => {
 				if (e.key === "Enter") {
 					handle_select(i, message);
@@ -208,9 +212,17 @@
 		<!-- {#if message.showLikeMessage}
 			<DislikePanel {...dislike_panel_props} />
 		{/if}
-		{#if message.showDislikeMessage}
-			<DislikePanel {...dislike_panel_props} />
-		{/if} -->
+	-->
+		{#if message.showDislikePanel}
+
+		<DislikePanel 
+		show={showDislikePanel}
+		value={dislikeValue}
+		on:input={handle_action} 
+		on:change={handle_action} 
+		{...dislike_panel_props}
+	   />
+	   		{/if}
 	</div>
 {/each}
 

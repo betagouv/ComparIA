@@ -112,7 +112,7 @@ export function normalise_messages(
 				type: "text",
 				index: i,
 				showLikeMessage: false,
-				showDislikeMessage: false,
+				showDislikePanel: false,
 
 			};
 		}

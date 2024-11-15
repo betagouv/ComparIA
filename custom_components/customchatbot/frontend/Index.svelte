@@ -28,7 +28,7 @@
 	export let label: string;
 	export let show_label = true;
 	export let root: string;
-	export let _selectable = false;
+	export let _selectable = true;
 	export let likeable = false;
 	export let show_share_button = false;
 	export let rtl = false;
@@ -80,6 +80,8 @@
 id={elem_id}
 class:hidden={visible === false}
 >
+<!-- on:select={(e) => gradio.dispatch("select", e.detail)} -->
+
 		<ChatBot
 			selectable={_selectable}
 			{likeable}
@@ -94,8 +96,8 @@ class:hidden={visible === false}
 			{rtl}
 			{show_copy_button}
 			{like_user_message}
-			on:change={() => gradio.dispatch("change", value)}
 			on:select={(e) => gradio.dispatch("select", e.detail)}
+			on:change={() => gradio.dispatch("change", value)}
 			on:like={(e) => gradio.dispatch("like", e.detail)}
 			on:share={(e) => gradio.dispatch("share", e.detail)}
 			on:error={(e) => gradio.dispatch("error", e.detail)}

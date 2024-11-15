@@ -609,7 +609,15 @@ voteArea.scrollIntoView({
 });}, 500);
 }""",
     )
-    
+
+    @chatbot.select(inputs=[chatbot],api_name=False,show_progress="hidden")
+    def record_like(chatbot, event: gr.EventData):
+        # print(conv_a.__dict__)
+        # print(conv_b.__dict__)
+        # print(chatbot[event._data['index']])
+        # TODO: check if already liked, or don't fire same event twice
+        print(event._data)
+
     @chatbot.like(inputs=[conv_a] + [conv_b] + [chatbot],api_name=False,show_progress="hidden")
     def record_like(conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request):
         # print(conv_a.__dict__)
