@@ -167,7 +167,7 @@ with gr.Blocks(
             # UserWarning: show_label has no effect when container is False.
             show_label=False,
             container=False,
-            elem_classes="chatbot fr-mb-2w",
+            elem_classes="chatbot",
             show_copy_button=True,
             # autoscroll=True
         )

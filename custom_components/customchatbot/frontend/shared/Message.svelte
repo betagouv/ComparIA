@@ -194,7 +194,9 @@
 				{/if}
 			</div>
 			{/if}
+			{#if message.role === "assistant"}			
 			<ButtonPanel {...button_panel_props} />
+			{/if}
 		</button>
 		<!-- {#if message.showLikeMessage}
 			<DislikePanel {...dislike_panel_props} />
@@ -239,10 +241,14 @@
 		/* border-radius: 0.5rem; */
 		border-radius: 0.5rem;
 		background-color: white;
-		height: 100%;
 		display: grid;
-
+		
 	}
+	@media (min-width: 48em) {
+		.message.bot button {
+			height: 100%;
+		}
+		}
 
 	/* .message-row :global(img) {
 		margin: var(--size-2);
@@ -260,7 +266,6 @@
 	}
 	.user {
 		width: 100%;
-		margin-right: 2em;
 		margin-left: auto;
 		background-color: var(--grey-950-100);
 		--hover-tint: var(--grey-950-100);

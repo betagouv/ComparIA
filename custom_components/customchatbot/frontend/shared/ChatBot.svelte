@@ -484,22 +484,30 @@
 	.message-row {
 		justify-content: flex-end;
 		width: 100%;
-		padding: 2em;
 	}
+
 	.user-row {
 		display: flex;
 		justify-content: flex-end;
 		width: 100%;
-	}
+		padding: 2em;
 
+	}
 	.bot-row {
 		display: grid;
-		column-gap: 2em;
-		grid-template-columns: 1fr 1fr;
+		gap: 2em;
+		grid-template-columns: 1fr;
 		/* align-self: flex-start; */
 
 		/* grid-template-columns: repeat(2, 1fr); */
-		grid-auto-rows: 1fr;
+	}
+	@media (min-width: 48em) {
+
+		.bot-row {
+			padding: 2em;
+			grid-template-columns: 1fr 1fr;
+			grid-auto-rows: 1fr;
+		}
 	}
 
 	.scroll-down-button-container {

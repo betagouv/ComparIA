@@ -93,7 +93,7 @@
 		margin: 0px calc(var(--spacing-xl) * 2);
 	} */
 .button-panel {
-	margin-top: 0.5em;
+	margin-top: 2em;
 	align-self: end;
 }
 

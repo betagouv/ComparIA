@@ -35,7 +35,6 @@
 	export let show_copy_button = true;
 	export let show_copy_all_button = false;
 	export let sanitize_html = true;
-	export let bubble_full_width = true;
 	export let layout: "bubble" | "panel" = "bubble";
 	export let type: "tuples" | "messages" = "tuples";
 	export let render_markdown = true;
@@ -77,43 +76,11 @@
 	export let theme_mode: "system" | "light" | "dark";
 </script>
 
-<Block
-	{elem_id}
-	{elem_classes}
-	{visible}
-	padding={false}
-	{scale}
-	{min_width}
-	{height}
-	{min_height}
-	{max_height}
-	allow_overflow={true}
-	flex={true}
-	overflow_behavior="auto"
+<div class="wrapper {elem_classes}"
+id={elem_id}
+class:hidden={visible === false}
 >
-	{#if loading_status}
-		<StatusTracker
-			autoscroll={gradio.autoscroll}
-			i18n={gradio.i18n}
-			{...loading_status}
-			show_progress={loading_status.show_progress === "hidden"
-				? "hidden"
-				: "minimal"}
-			on:clear_status={() =>
-				gradio.dispatch("clear_status", loading_status)}
-		/>
-	{/if}
-	<div class="wrapper">
-		{#if show_label}
-			<BlockLabel
-				{show_label}
-				Icon={Chat}
-				float={true}
-				label={label || "Chatbot"}
-			/>
-		{/if}
 		<ChatBot
-			i18n={gradio.i18n}
 			selectable={_selectable}
 			{likeable}
 			{show_share_button}
@@ -141,7 +108,6 @@
 				gradio.dispatch("clear");
 			}}
 			{sanitize_html}
-			{bubble_full_width}
 			{line_breaks}
 			{autoscroll}
 			{layout}
@@ -154,9 +120,7 @@
 			msg_format={type}
 			root={gradio.root}
 		/>
-	</div>
-</Block>
-
+</div>
 <style>
 	.wrapper {
 		display: flex;
