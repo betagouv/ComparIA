@@ -149,7 +149,7 @@
 				{#if message.role === "assistant"}
 					<div class="model-title">
 						{#if message.metadata?.bot === "a"}
-						<svg class="inline" width="26" height="26"
+						<svg class="inline" width="26" height="32"
 							><circle
 								cx="13"
 								cy="13"
@@ -160,7 +160,7 @@
 						>
 						<h3 class="inline">Modèle A</h3>
 					{:else if message.metadata?.bot === "b"}
-						<svg class="inline" width="26" height="26"
+						<svg class="inline" width="26" height="32"
 							><circle
 								cx="13"
 								cy="13"
