@@ -12,7 +12,6 @@
 	export let hasPopup = false;
 	export let color = "var(--block-label-text-color)";
 	export let transparent = false;
-	export let background = "var(--block-background-fill)";
 	$: _color = highlight ? "#6A6AF4" : color;
 </script>
 
