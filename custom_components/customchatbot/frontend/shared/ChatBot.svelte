@@ -332,6 +332,7 @@
 					</div>
 				{/if}
 			{/each}
+			{@debug pending_message}
 			{#if pending_message}
 				<Pending {layout} />
 			{/if}
@@ -393,6 +394,7 @@
 		padding: 5px 10px;
 		font-weight: bold;
 	}
+
 	@media (prefers-color-scheme: dark) {
 		.bubble-wrap {
 			background: var(--background-fill-secondary);
@@ -400,7 +402,7 @@
 	}
 
 	.message-wrap {
-		margin: 2em;
+		padding: 2em;
 	}
 
 	/* .message-wrap {
@@ -482,7 +484,7 @@
 	.message-row {
 		justify-content: flex-end;
 		width: 100%;
-		margin: 2em;
+		padding: 2em;
 	}
 	.user-row {
 		display: flex;

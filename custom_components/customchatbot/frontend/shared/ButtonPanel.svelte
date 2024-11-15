@@ -45,7 +45,7 @@
 		is_component_message(message) &&
 		message.content.value?.url;
 </script>
-
+<div class="button-panel">
 {#if show}
 	<div
 		class="message-buttons-left {layout} message-buttons"
@@ -86,11 +86,16 @@
 			{/if}
 	</div>
 {/if}
+</div>
 
 <style>
 	/* .bubble :global(.icon-button-wrapper) {
 		margin: 0px calc(var(--spacing-xl) * 2);
 	} */
+.button-panel {
+	margin-top: 0.5em;
+	align-self: end;
+}
 
 	.message-buttons-left {
 		float: left;
@@ -100,6 +105,7 @@
 	.message-buttons-right {
 		display: flex;
 		float: right;
+		gap: 0.5em;
 	}
 
 /* 

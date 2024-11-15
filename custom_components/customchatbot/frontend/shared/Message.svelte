@@ -145,8 +145,10 @@
 			aria-label={role + "'s message: " + get_message_label_data(message)}
 		>
 			{#if message.type === "text"}
+			<div>
 				{#if message.role === "assistant"}
-					{#if message.metadata?.bot === "a"}
+					<div class="model-title">
+						{#if message.metadata?.bot === "a"}
 						<svg class="inline" width="26" height="26"
 							><circle
 								cx="13"
@@ -169,7 +171,7 @@
 						>
 						<h3 class="inline">Modèle B</h3>
 					{/if}
-
+					</div>
 					<Markdown
 						message={message.content}
 						{latex_delimiters}
@@ -190,19 +192,24 @@
 						{root}
 					/>
 				{/if}
+			</div>
 			{/if}
 			<ButtonPanel {...button_panel_props} />
 		</button>
-		{#if message.showLikeMessage}
+		<!-- {#if message.showLikeMessage}
 			<DislikePanel {...dislike_panel_props} />
 		{/if}
 		{#if message.showDislikeMessage}
 			<DislikePanel {...dislike_panel_props} />
-		{/if}
+		{/if} -->
 	</div>
 {/each}
 
 <style>
+	.model-title {
+		margin-bottom: 0.5em;
+	}
+
 	.message {
 		position: relative;
 		/* width: 100%; */
@@ -232,6 +239,9 @@
 		/* border-radius: 0.5rem; */
 		border-radius: 0.5rem;
 		background-color: white;
+		height: 100%;
+		display: grid;
+
 	}
 
 	/* .message-row :global(img) {
@@ -250,6 +260,7 @@
 	}
 	.user {
 		width: 100%;
+		margin-right: 2em;
 		margin-left: auto;
 		background-color: var(--grey-950-100);
 		--hover-tint: var(--grey-950-100);
@@ -269,7 +280,14 @@
 
 	.bot button,
 	.bot button:hover,
-	.bot button:active,
+	.bot button:active {
+		background-color: white;
+		--hover-tint: white;
+		--active-tint: white;
+
+		color: var(--text-default-grey);
+	}
+
 	.user button,
 	.user button:hover,
 	.user button:active {
@@ -331,6 +349,7 @@
 	.message > button {
 		width: 100%;
 		padding: 1.25rem;
+		padding-right: 1.75rem;
 	}
 	.html {
 		padding: 0;

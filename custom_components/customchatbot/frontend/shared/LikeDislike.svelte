@@ -11,7 +11,7 @@
 </script>
 
 <IconButton
-border=true
+border={true}
 	Icon={selected === "dislike" ? ThumbDownActive : ThumbDownDefault}
 	label={selected === "dislike" ? "clicked dislike" : "dislike"}
 	highlight={selected === "dislike"}
@@ -22,7 +22,7 @@ border=true
 />
 
 <IconButton
-border=true
+border={true}
 	Icon={selected === "like" ? ThumbUpActive : ThumbUpDefault}
 	label={selected === "like" ? "clicked like" : "like"}
 	highlight={selected === "like"}
@@ -36,5 +36,4 @@ border=true
 />
 
 <style>
-	
 	</style>
