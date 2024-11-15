@@ -608,9 +608,23 @@ voteArea.scrollIntoView({
 });}, 500);
 }""",
     )
-    @chatbot.like(inputs=[chatbot],api_name=False,show_progress="hidden")
-    def record_like(chatbot, event: gr.EventData):
-        print(event)
+    
+    @chatbot.like(inputs=[conv_a] + [conv_b] + [chatbot],api_name=False,show_progress="hidden")
+    def record_like(conv_a, conv_b, chatbot, event: gr.EventData):
+        # print(conv_a.__dict__)
+        # print(conv_b.__dict__)
+        # print(chatbot[event._data['index']])
+        # TODO: check if already liked, or don't fire same event twice
+        print(event._data)
+        # id
+        # timestamp
+        # model_a_name
+        # model_b_name
+        # refers_to_model
+        # opening_msg
+        # conv_a
+        # conv_b
+
 
     @which_model_radio.select(
         inputs=[which_model_radio],

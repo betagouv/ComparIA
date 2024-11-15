@@ -9,6 +9,9 @@
 	// import LikePanel from "./LikePanel.svelte";
 	import DislikePanel from "./DislikePanel.svelte";
 
+	import Pending from "./Pending.svelte";
+
+
 	export let value: NormalisedMessage[];
 	export let role = "user";
 	export let messages: NormalisedMessage[] = [];
@@ -181,6 +184,10 @@
 						on:load={scroll}
 						{root}
 					/>
+					{#if generating}
+						<Pending  />
+						<!-- <br /><br /><em>En attente de la réponse…</em> -->
+					{/if}
 				{:else}
 					<Markdown
 						message={message.content}

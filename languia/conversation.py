@@ -89,7 +89,7 @@ def bot_response(
                 extra={request: request},
             )
 
-    html_code = "<br /><br /><em>En attente de la réponse…</em>"
+    # html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
     # update_last_message(messages, html_code)
     # yield (state)
@@ -107,7 +107,7 @@ def bot_response(
         output = data.get("text")
         if output:
             output.strip()
-            messages = update_last_message(messages, output + html_code)
+            messages = update_last_message(messages, output)
             yield (state)
 
     output = data.get("text")
