@@ -253,11 +253,6 @@ body {
 
 /* Screen 0 */
 
-textarea.fr-input {
-  min-height: 2.5rem !important;
-}
-
-
 li.fr-nav__item {
   margin-bottom: 0;
 }
