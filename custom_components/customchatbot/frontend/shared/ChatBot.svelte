@@ -22,7 +22,7 @@
 	} from "svelte";
 
 	import { Trash, Community, ScrollDownArrow } from "@gradio/icons";
-	import { IconButtonWrapper, IconButton } from "@gradio/atoms";
+	import IconButton from "./IconButton.svelte";
 	import type { SelectData, LikeData } from "@gradio/utils";
 	import type { ExampleMessage } from "../types";
 	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
@@ -235,7 +235,7 @@
 </script>
 
 {#if value !== null && value.length > 0}
-	<IconButtonWrapper>
+	<div>
 		{#if show_share_button}
 			<IconButton
 				Icon={Community}
@@ -262,7 +262,7 @@
 		{#if show_copy_all_button}
 			<CopyAll {value} />
 		{/if}
-	</IconButtonWrapper>
+		</div>
 {/if}
 
 <div

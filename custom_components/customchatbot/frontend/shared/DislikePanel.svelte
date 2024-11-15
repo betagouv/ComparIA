@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconButton } from "@gradio/atoms";
+	import IconButton from "./IconButton.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 	import type { Gradio, SelectData } from "@gradio/utils";
 

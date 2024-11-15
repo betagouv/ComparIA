@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { IconButton } from "@gradio/atoms";
+	import IconButton from "./IconButton.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 	import ThumbDownDefault from "./ThumbDownDefault.svelte";
 	import ThumbUpActive from "./ThumbUpActive.svelte";
@@ -11,11 +11,10 @@
 </script>
 
 <IconButton
+border=true
 	Icon={selected === "dislike" ? ThumbDownActive : ThumbDownDefault}
 	label={selected === "dislike" ? "clicked dislike" : "dislike"}
-	color={selected === "dislike"
-		? "var(--color-accent)"
-		: "var(--block-label-text-color)"}
+	highlight={selected === "dislike"}
 	on:click={() => {
 		selected = "dislike";
 		handle_action(selected);
@@ -23,8 +22,10 @@
 />
 
 <IconButton
+border=true
 	Icon={selected === "like" ? ThumbUpActive : ThumbUpDefault}
 	label={selected === "like" ? "clicked like" : "like"}
+	highlight={selected === "like"}
 	color={selected === "like"
 		? "var(--color-accent)"
 		: "var(--block-label-text-color)"}
@@ -33,3 +34,7 @@
 		handle_action(selected);
 	}}
 />
+
+<style>
+	
+	</style>

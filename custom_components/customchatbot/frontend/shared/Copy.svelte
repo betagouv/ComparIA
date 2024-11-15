@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
 	import { Copy, Check } from "@gradio/icons";
-	import { IconButton } from "@gradio/atoms";
+	import IconButton from "./IconButton.svelte";
 
 	let copied = false;
 	export let value: string;

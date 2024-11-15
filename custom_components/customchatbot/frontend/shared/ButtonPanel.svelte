@@ -6,7 +6,7 @@
 	import type { NormalisedMessage, TextMessage } from "../types";
 	import { is_component_message } from "./utils";
 	import { Retry, Undo } from "@gradio/icons";
-	import { IconButtonWrapper, IconButton } from "@gradio/atoms";
+	import IconButton from "./IconButton.svelte";
 
 	export let likeable: boolean;
 	export let show_retry: boolean;
@@ -14,7 +14,7 @@
 	export let show_copy_button: boolean;
 	export let show: boolean;
 	export let message: NormalisedMessage | NormalisedMessage[];
-	export let position: "right" | "left";
+	// export let position: "right" | "left";
 	export let generating: boolean;
 
 	export let handle_action: (selected: string | null) => void;
@@ -48,14 +48,17 @@
 
 {#if show}
 	<div
-		class="message-buttons-{position} {layout} message-buttons"
+		class="message-buttons-left {layout} message-buttons"
 	>
-		<IconButtonWrapper top_panel={false}>
-			{#if show_copy}
-				<Copy value={message_text} />
-			{/if}
-			{#if show_download && !Array.isArray(message) && is_component_message(message)}
-				<DownloadLink
+	{#if show_copy}
+	<Copy value={message_text} />
+	{/if}
+</div>
+<div
+	class="message-buttons-right {layout} message-buttons"
+>
+{#if show_download && !Array.isArray(message) && is_component_message(message)}
+<DownloadLink
 					href={message?.content?.value.url}
 					download={message.content.value.orig_name || "image"}
 				>
@@ -81,32 +84,29 @@
 			{#if likeable}
 				<LikeDislike {handle_action} />
 			{/if}
-		</IconButtonWrapper>
 	</div>
 {/if}
 
 <style>
-	.bubble :global(.icon-button-wrapper) {
+	/* .bubble :global(.icon-button-wrapper) {
 		margin: 0px calc(var(--spacing-xl) * 2);
-	}
+	} */
 
 	.message-buttons-left {
-		align-self: flex-start;
+		float: left;
+		display: flex;
+	}
+	
+	.message-buttons-right {
+		display: flex;
+		float: right;
 	}
 
-	.bubble.message-buttons-right {
-		align-self: flex-end;
-	}
-
-	.message-buttons-right :global(.icon-button-wrapper) {
-		margin-left: auto;
-	}
-
-
+/* 
 	.panel {
 		display: flex;
 		align-self: flex-start;
 		padding: 0 var(--spacing-xl);
 		z-index: var(--layer-1);
-	}
+	} */
 </style>
