@@ -389,6 +389,68 @@ def vote_last_response(
 
     return data
 
+def record_reaction(
+    conversations,
+    request: gr.Request,
+):
+
+    # intensity = get_intensity(which_model_radio)
+    conversation_a_messages = messages_to_dict_list(conversations[0].messages)
+    conversation_b_messages = messages_to_dict_list(conversations[1].messages)
+
+    # model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
+    opening_prompt = conversations[0].messages[0].content
+    conv_turns = count_turns((conversations[0].messages))
+
+    data = {
+        # id
+        "timestamp": datetime.datetime.now(),
+        "model_a_name": conversations[0].model_name,
+        "model_b_name": conversations[1].model_name,
+        # refers_to_model (model name)
+        # msg_rank
+        "opening_msg": opening_prompt,
+        "conversation_a": conversation_a_messages,
+        "conversation_b": conversation_b_messages,
+        # model_pos: 'a' or 'b'
+        "conv_turns": conv_turns,
+        "template": (
+            []
+            if conversations[0].template_name == "zero_shot"
+            else conversations[0].template
+        ),
+        "conversation_pair_id": conversations[0].conv_id + "-" + conversations[1].conv_id,
+        "conv_a_id": conversations[0].conv_id,
+        "conv_b_id": conversations[1].conv_id,
+        "session_hash": str(request.session_hash),
+        # visitor_id
+        "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),        # refers_to_conv_id (conv_a_id value or conv_b_id)
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        # country
+        # city
+        # response_content
+        # question_content
+        # like (bool)
+        # dislike (bool)
+        # comment
+        # useful
+        # creative
+        # clear_formatting
+        # incorrect
+        # superficial
+        # instructions_not_followed
+        # Not asked:
+        # "model_pair_name": model_pair_name,
+    }
+    reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
+    reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
+    with open(reaction_log_path, "a") as fout:
+        fout.write(json.dumps(data) + "\n")
+
+    # save_reaction_to_db(data=data)
+
+    return data
 
 with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
     welcome_modal_html = welcome_modal_file.read()

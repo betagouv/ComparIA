@@ -49,6 +49,7 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
+    record_reaction
 )
 
 from languia.config import (
@@ -610,7 +611,7 @@ voteArea.scrollIntoView({
     )
     
     @chatbot.like(inputs=[conv_a] + [conv_b] + [chatbot],api_name=False,show_progress="hidden")
-    def record_like(conv_a, conv_b, chatbot, event: gr.EventData):
+    def record_like(conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request):
         # print(conv_a.__dict__)
         # print(conv_b.__dict__)
         # print(chatbot[event._data['index']])
@@ -620,10 +621,41 @@ voteArea.scrollIntoView({
         # timestamp
         # model_a_name
         # model_b_name
-        # refers_to_model
+        # refers_to_model (model name)
+        # msg_rank
         # opening_msg
         # conv_a
         # conv_b
+        # model_pos: 'a' or 'b'
+        # conv_turns
+        # template
+        # conversation_pair_id
+        # conv_a_id
+        # conv_b_id
+        # session_hash
+        # refers_to_conv_id (conv_a_id value or conv_b_id)
+        # visitor_id
+        # ip
+        # country
+        # city
+        # response_content
+        # question_content
+        # like (bool)
+        # dislike (bool)
+        # comment
+        # useful
+        # creative
+        # clear_formatting
+        # incorrect
+        # superficial
+        # instructions_not_followed
+
+        record_reaction(
+            [conv_a, conv_b],
+            request,
+        )
+
+
 
 
     @which_model_radio.select(
