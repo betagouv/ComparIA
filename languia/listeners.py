@@ -73,6 +73,7 @@ from languia.config import logger
 
 from languia import config
 
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 # Register listeners
 def register_listeners():
@@ -263,7 +264,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         for i in range(config.num_sides):
-            conversations[i].messages.append(gr.ChatMessage(role="user", content=text))
+            conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a = conversations[0]
         conv_b = conversations[1]
         app_state.awaiting_responses = True
@@ -607,6 +608,23 @@ voteArea.scrollIntoView({
 });}, 500);
 }""",
     )
+    
+    @chatbot.like(inputs=[conv_a] + [conv_b] + [chatbot],api_name=False,show_progress="hidden")
+    def record_like(conv_a, conv_b, chatbot, event: gr.EventData):
+        # print(conv_a.__dict__)
+        # print(conv_b.__dict__)
+        # print(chatbot[event._data['index']])
+        # TODO: check if already liked, or don't fire same event twice
+        print(event._data)
+        # id
+        # timestamp
+        # model_a_name
+        # model_b_name
+        # refers_to_model
+        # opening_msg
+        # conv_a
+        # conv_b
+
 
     @which_model_radio.select(
         inputs=[which_model_radio],

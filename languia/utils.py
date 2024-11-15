@@ -949,7 +949,7 @@ def to_threeway_chatbot(conversations):
                         "role": "assistant",
                         "content": msg_a.content,
                         # TODO: add duration here?
-                        "metadata": {"name": "bot-a"},
+                        "metadata": {"bot": "a"},
                     }
                 )
             if msg_b:
@@ -957,7 +957,7 @@ def to_threeway_chatbot(conversations):
                     {
                         "role": "assistant",
                         "content": msg_b.content,
-                        "metadata": {"name": "bot-b"},
+                        "metadata": {"bot": "b"},
                     }
                 )
     return threeway_chatbot

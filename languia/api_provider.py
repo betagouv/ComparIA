@@ -7,7 +7,7 @@ import logging
 
 import sentry_sdk
 
-from gradio import ChatMessage
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 from languia.utils import ContextTooLongError, EmptyResponseError
 
@@ -21,9 +21,9 @@ def get_api_provider_stream_iter(
 ):
     messages_dict = []
     for message in messages:
-        if isinstance(message, ChatMessage):
+        try:
             messages_dict.append({"role": message.role, "content": message.content})
-        else:
+        except:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
     if model_api_dict["api_type"] == "openai":
         stream_iter = openai_api_stream_iter(

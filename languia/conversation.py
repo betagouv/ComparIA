@@ -7,6 +7,7 @@ import random
 from languia.api_provider import get_api_provider_stream_iter
 
 import time
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 from languia.utils import (
     ContextTooLongError,
@@ -21,7 +22,7 @@ logger = logging.getLogger("languia")
 
 def update_last_message(messages, text):
     if len(messages) < 1:
-        return [gr.ChatMessage(role="assistant", content=text)]
+        return [ChatMessage(role="assistant", content=text)]
     # We append a new assistant message if last one was from user
     if messages[-1].role == "user":
         messages.append(gr.ChatMessage(role="assistant", content=text))
@@ -89,10 +90,10 @@ def bot_response(
                 extra={request: request},
             )
 
-    html_code = "<br /><br /><em>En attente de la réponse…</em>"
+    # html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
     # update_last_message(messages, html_code)
-    yield (state)
+    # yield (state)
 
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
@@ -107,7 +108,7 @@ def bot_response(
         output = data.get("text")
         if output:
             output.strip()
-            messages = update_last_message(messages, output + html_code)
+            messages = update_last_message(messages, output)
             yield (state)
 
     output = data.get("text")
