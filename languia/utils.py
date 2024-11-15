@@ -401,10 +401,11 @@ def record_reaction(
     # model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
     conv_turns = count_turns((conversations[0].messages))
+    t = datetime.datetime.now()
 
     data = {
         # id
-        "timestamp": datetime.datetime.now(),
+        # "timestamp": t,
         "model_a_name": conversations[0].model_name,
         "model_b_name": conversations[1].model_name,
         # refers_to_model (model name)
