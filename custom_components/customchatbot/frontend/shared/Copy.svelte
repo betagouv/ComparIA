@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
-	import { Copy, Check } from "@gradio/icons";
+	import CopyIcon from "./CopyIcon.svelte";
+	import { Check } from "@gradio/icons";
 	import IconButton from "./IconButton.svelte";
 
 	let copied = false;
@@ -48,5 +49,5 @@
 <IconButton
 	on:click={handle_copy}
 	label={copied ? "Copied message" : "Copy message"}
-	Icon={copied ? Check : Copy}
+	Icon={copied ? Check : CopyIcon}
 />
