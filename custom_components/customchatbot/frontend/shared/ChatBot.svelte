@@ -319,7 +319,7 @@
 				</div>
 
 				{#if role === "user" && i === 0}
-					<div class="prose text-center svelte-1ybaih5">
+					<div class="prose text-center fr-mb-4w fr-mb-md-0">
 						<span class="step-badge">Étape 1/3</span>
 						<h4 class="fr-mt-2w fr-mb-1v">
 							Quel modèle d’IA préférez-vous ?
@@ -332,7 +332,6 @@
 					</div>
 				{/if}
 			{/each}
-			{@debug pending_message}
 			{#if pending_message}
 				<Pending {layout} />
 			{/if}
