@@ -627,35 +627,51 @@ voteArea.scrollIntoView({
 }""",
     )
 
+    def sync_reactions(state_reactions, request):
+        for data in state_reactions:
+            # if data == None:
+            #     continue
+            chatbot_index = data["index"]
+            role = chatbot[chatbot_index]["metadata"]["bot"]
+
+            if data["liked"]:
+                reaction = "like"
+            elif data["liked"] == False:
+                reaction = "dislike"
+            else:
+                reaction = "none"
+
+            # Alternative:
+            # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
+            # role_index = chatbot_index % 3
+            # FIXME: don't forget to offset template messages if any
+            msg_index = (chatbot_index // 3) + 1
+
+            record_reaction(
+                conversations=[conv_a, conv_b],
+                model_pos=role,
+                msg_index=msg_index,
+                response_content=data["value"],
+                reaction=reaction,
+                request=request,
+            )
+
     @chatbot.like(
-        inputs=[conv_a] + [conv_b] + [chatbot], api_name=False, show_progress="hidden"
+        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
+        outputs=[app_state],
+        api_name=False,
+        show_progress="hidden",
     )
-    def record_like(conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request):
+    def record_like(
+        app_state, conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request
+    ):
         # print(event._data)
-        chatbot_index = event._data["index"]
-        role = chatbot[chatbot_index]["metadata"]["bot"]
 
-        if event._data["liked"]:
-            reaction = "like"
-        elif event._data["liked"] == False:
-            reaction = "dislike"
-        else:
-            reaction = "none"
+        while len(app_state.reactions) < event._data["index"]:
+            app_state.reactions.extend([None])
+        app_state.reactions[event._data.index] = event._data
 
-        # Alternative:
-        # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
-        # role_index = chatbot_index % 3
-        # FIXME: don't forget to offset template messages if any
-        msg_index = (chatbot_index // 3) + 1
-
-        record_reaction(
-            conversations=[conv_a, conv_b],
-            model_pos=role,
-            msg_index=msg_index,
-            response_content=event._data["value"],
-            reaction=reaction,
-            request=request,
-        )
+        sync_reactions(app_state.reactions, request=request)
 
     @which_model_radio.select(
         inputs=[which_model_radio],

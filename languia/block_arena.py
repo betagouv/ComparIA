@@ -42,6 +42,7 @@ class AppState:
         self.model_right = model_right
         self.original_user_prompt = original_user_prompt
         self.category = category
+        self.reactions = []
 
     # def to_dict(self) -> dict:
     #     return self.__dict__.copy()
