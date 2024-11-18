@@ -203,35 +203,39 @@
 
 		// Set showLikeMessage to true for the liked message
 		if (selected === "like") {
-			value[i+j].showLikeMessage = true;
-			value[i+j].showDislikePanel = false;
-		}
-		if (selected === "dislike") {
-			value[i+j].showLikeMessage = false;
-			value[i+j].showDislikePanel = true;
+			value[i + j].showLikeMessage = true;
+			value[i + j].showDislikePanel = false;
+		} else if (selected === "dislike") {
+			value[i + j].showLikeMessage = false;
+			value[i + j].showDislikePanel = true;
+		} else if (selected === "none") {
+			value[i + j].showLikeMessage = false;
+			value[i + j].showDislikePanel = false;
 		}
 
-		if (msg_format === "tuples") {
-			dispatch("like", {
-				index: message.index,
-				value: message.content,
-				liked: selected === "like",
-			});
-		} else {
 			if (!groupedMessages) return;
 
 			const msg = groupedMessages[i][j];
-			// const [first, last] = [
-			// 	message_group[0],
-			// 	message_group[message_group.length - 1],
-			// ];
-			dispatch("like", {
-				index: msg.index,
-				value: msg.content,
-				liked: selected === "like",
-			});
+			if (selected === "like") {
+				dispatch("like", {
+					index: msg.index,
+					value: msg.content,
+					liked: selected === "like",
+				});
+			} else if (selected === "dislike") {
+				dispatch("like", {
+					index: msg.index,
+					value: msg.content,
+					liked: !(selected === "dislike"),
+				});
+			} else if (selected === "none") {
+				dispatch("like", {
+					index: msg.index,
+					value: msg.content,
+					liked: null,
+				});
+			}
 		}
-
 	}
 </script>
 
@@ -263,7 +267,7 @@
 		{#if show_copy_all_button}
 			<CopyAll {value} />
 		{/if}
-		</div>
+	</div>
 {/if}
 
 <div
@@ -491,7 +495,6 @@
 		justify-content: flex-end;
 		width: 100%;
 		padding: 2em;
-
 	}
 	.bot-row {
 		display: grid;
@@ -502,7 +505,6 @@
 		/* grid-template-columns: repeat(2, 1fr); */
 	}
 	@media (min-width: 48em) {
-
 		.bot-row {
 			padding: 2em;
 			grid-template-columns: 1fr 1fr;
