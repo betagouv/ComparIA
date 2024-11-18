@@ -610,61 +610,34 @@ voteArea.scrollIntoView({
 }""",
     )
 
-    @chatbot.select(inputs=[chatbot],api_name=False,show_progress="hidden")
-    def record_like(chatbot, event: gr.EventData):
-        # print(conv_a.__dict__)
-        # print(conv_b.__dict__)
-        # print(chatbot[event._data['index']])
-        # TODO: check if already liked, or don't fire same event twice
-        print(event._data)
 
     @chatbot.like(inputs=[conv_a] + [conv_b] + [chatbot],api_name=False,show_progress="hidden")
     def record_like(conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request):
-        # print(conv_a.__dict__)
-        # print(conv_b.__dict__)
-        # print(chatbot[event._data['index']])
-        # TODO: check if already liked, or don't fire same event twice
-        print(event._data)
-        # id
-        # timestamp
-        # model_a_name
-        # model_b_name
-        # refers_to_model (model name)
-        # msg_rank
-        # opening_msg
-        # conv_a
-        # conv_b
-        # model_pos: 'a' or 'b'
-        # conv_turns
-        # template
-        # conversation_pair_id
-        # conv_a_id
-        # conv_b_id
-        # session_hash
-        # refers_to_conv_id (conv_a_id value or conv_b_id)
-        # visitor_id
-        # ip
-        # country
-        # city
-        # response_content
-        # question_content
-        # like (bool)
-        # dislike (bool)
-        # comment
-        # useful
-        # creative
-        # clear_formatting
-        # incorrect
-        # superficial
-        # instructions_not_followed
+        # print(event._data)
+        chatbot_index = event._data['index']
+        role = chatbot[chatbot_index]['metadata']['bot']
+
+        if event._data['liked']:
+            reaction = "like"
+        elif event._data['liked'] == False:
+            reaction = "dislike"
+        else:
+            reaction = "none"
+
+        # Alternative:
+        # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
+        # role_index = chatbot_index % 3
+        # FIXME: don't forget to offset template messages if any
+        msg_index = (chatbot_index // 3) + 1
 
         record_reaction(
-            [conv_a, conv_b],
-            request,
+            conversations=[conv_a, conv_b],
+            model_pos = role,
+            msg_index = msg_index,
+            response_content = event._data['value'],
+            reaction=reaction,
+            request=request,
         )
-
-
-
 
     @which_model_radio.select(
         inputs=[which_model_radio],

@@ -79,7 +79,7 @@ CREATE TABLE reactions (
     model_a_name VARCHAR(500) NOT NULL,                             -- Model A name
     model_b_name VARCHAR(500) NOT NULL,                             -- Model B name
     refers_to_model VARCHAR(500),                                   -- Refers to model name (optional)
-    msg_rank INT,                                                   -- Message rank (optional, could be an integer or rating)
+    msg_index INT NOT NULL,                                                   -- Message rank (optional, could be an integer or rating)
     opening_msg TEXT NOT NULL,                                      -- Opening message (prompt)
     conversation_a JSONB NOT NULL,                                  -- Conversation A (JSONB format for the conversation's messages)
     conversation_b JSONB NOT NULL,                                  -- Conversation B (JSONB format for the conversation's messages)
@@ -105,5 +105,7 @@ CREATE TABLE reactions (
     incorrect BOOLEAN,                                              -- Is the conversation incorrect? (boolean)
     superficial BOOLEAN,                                            -- Is the conversation superficial? (boolean)
     instructions_not_followed BOOLEAN,                              -- Did the conversation not follow instructions? (boolean)
+    model_pair_name JSONB,
+    msg_rank INT NOT NULL,                                                   -- Message rank (optional, could be an integer or rating)
     -- CONSTRAINT fk_session_hash FOREIGN KEY (session_hash) REFERENCES sessions(session_hash) -- Example for foreign key relationship if necessary
 );

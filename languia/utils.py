@@ -391,29 +391,45 @@ def vote_last_response(
 
 def record_reaction(
     conversations,
+    model_pos,
+    msg_index,
+    response_content,
+    reaction,
     request: gr.Request,
 ):
+    logger = logging.getLogger("languia")
+    current_conversation = conversations[0] if model_pos == "a" else conversations[1]
 
-    # intensity = get_intensity(which_model_radio)
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-    # model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
+    if current_conversation.messages[msg_index].content != response_content:
+        logger.warning("Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'")
+        logger.warning("Calculated index: {msg_index}")
+
+    model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
     conv_turns = count_turns((conversations[0].messages))
     t = datetime.datetime.now()
+    refers_to_model = current_conversation.model_name
+    msg_rank = msg_index - 1
+    question_content = current_conversation.messages[msg_rank].content
+
+    like = (reaction == "like")
+    dislike = (reaction == "dislike")
 
     data = {
         # id
         # "timestamp": t,
         "model_a_name": conversations[0].model_name,
         "model_b_name": conversations[1].model_name,
-        # refers_to_model (model name)
-        # msg_rank
+        "refers_to_model": refers_to_model, # (model name)
+        "msg_index": msg_index,
         "opening_msg": opening_prompt,
         "conversation_a": conversation_a_messages,
         "conversation_b": conversation_b_messages,
-        # model_pos: 'a' or 'b'
+        "model_pos": model_pos,
+        # conversation can be longer if like is on older messages
         "conv_turns": conv_turns,
         "template": (
             []
@@ -424,14 +440,15 @@ def record_reaction(
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,
         "session_hash": str(request.session_hash),
-        # visitor_id
-        "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),        # refers_to_conv_id (conv_a_id value or conv_b_id)
+        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),        # refers_to_conv_id (conv_a_id value or conv_b_id)
         # Warning: IP is a PII
         "ip": str(get_ip(request)),
         # country
         # city
-        # response_content
-        # question_content
+        "response_content": response_content,
+        "question_content": question_content,
+        "like": like,
+        "dislike": dislike,
         # like (bool)
         # dislike (bool)
         # comment
@@ -442,14 +459,15 @@ def record_reaction(
         # superficial
         # instructions_not_followed
         # Not asked:
-        # "model_pair_name": model_pair_name,
+        "msg_rank": msg_rank,
+        "model_pair_name": model_pair_name,
     }
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
     with open(reaction_log_path, "a") as fout:
         fout.write(json.dumps(data) + "\n")
-
-    # save_reaction_to_db(data=data)
+    print(json.dumps(data))
+    # upsert_reaction_to_db(data=data)
 
     return data
 
