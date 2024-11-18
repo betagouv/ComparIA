@@ -46,7 +46,6 @@
 	export let showLikeMessage: boolean = false;
 	export let showDislikePanel: boolean = false;
 	
-	export let msg_format: "tuples" | "messages";
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
 
@@ -105,7 +104,7 @@
 		show_undo,
 		generating,
 		show_copy_button,
-		message: msg_format === "tuples" ? messages[0] : messages,
+		message: messages,
 		position: role === "user" ? "right" : "left",
 		layout,
 	};

@@ -76,7 +76,6 @@
 	export let layout: "bubble" | "panel" = "bubble";
 	export let placeholder: string | null = null;
 	export let upload: Client["upload"];
-	export let msg_format: "tuples" | "messages" = "tuples";
 	export let _retryable = false;
 	export let _undoable = false;
 	export let like_user_message = false;
@@ -178,7 +177,7 @@
 		}
 	}
 
-	$: groupedMessages = value && group_messages(value, msg_format);
+	$: groupedMessages = value && group_messages(value, "messages");
 
 	function handle_like(
 		i: number,
@@ -236,7 +235,7 @@
 				});
 			}
 		}
-	}
+	
 </script>
 
 {#if value !== null && value.length > 0}
@@ -303,7 +302,6 @@
 							{latex_delimiters}
 							{_components}
 							{generating}
-							{msg_format}
 							show_like={role === "user"
 								? likeable && like_user_message
 								: likeable}
