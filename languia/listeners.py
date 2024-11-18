@@ -49,7 +49,7 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
-    record_reaction
+    record_reaction,
 )
 
 from languia.config import (
@@ -74,7 +74,10 @@ from languia.config import logger
 
 from languia import config
 
-from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+    ChatMessage,
+)
+
 
 # Register listeners
 def register_listeners():
@@ -502,8 +505,20 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b = conversations[1]
         return [app_state, conv_a, conv_b, chatbot, textbox]
 
-    def enable_conclude(textbox):
-        # print(app_state.__dict__)
+    def sync_liked_msgs():
+        # FIXME:
+        # UPDATE reactions
+        # SET
+        #   response_message = 'new_message_value', -- replace with your desired response message
+        #   conversation_a = 'new_conversation_a', -- replace with your desired conversation A value
+        #   conversation_b = 'new_conversation_b'  -- replace with your desired conversation B value
+        # WHERE
+        #   conversation_pair_id = your_id -- replace with your actual ID
+        #   AND (rank = current_rank OR current_rank IS NULL); -- Optional: Only if rank matches the current rank, if specified
+        return
+
+    def update_liked_msgs_and_enable_conclude(conversation_a, conversation_b, textbox):
+        sync_liked_msgs(conversation_a, conversation_b)
         return {
             conclude_btn: gr.update(interactive=True),
             send_btn: gr.update(interactive=(textbox != "")),
@@ -559,7 +574,9 @@ setTimeout(() => {
         # scroll_to_output=True,
         # FIXME: return of bot_response_multi couldn't set conclude_btn and send_btn :'(
     ).then(
-        fn=enable_conclude, inputs=[textbox], outputs=[conclude_btn, send_btn]
+        fn=update_liked_msgs_and_enable_conclude,
+        inputs=[conv_a] + [conv_b] + [textbox],
+        outputs=[conclude_btn, send_btn],
     )
     # // Enable navigation prompt
     # window.onbeforeunload = function() {
@@ -610,16 +627,17 @@ voteArea.scrollIntoView({
 }""",
     )
 
-
-    @chatbot.like(inputs=[conv_a] + [conv_b] + [chatbot],api_name=False,show_progress="hidden")
+    @chatbot.like(
+        inputs=[conv_a] + [conv_b] + [chatbot], api_name=False, show_progress="hidden"
+    )
     def record_like(conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request):
         # print(event._data)
-        chatbot_index = event._data['index']
-        role = chatbot[chatbot_index]['metadata']['bot']
+        chatbot_index = event._data["index"]
+        role = chatbot[chatbot_index]["metadata"]["bot"]
 
-        if event._data['liked']:
+        if event._data["liked"]:
             reaction = "like"
-        elif event._data['liked'] == False:
+        elif event._data["liked"] == False:
             reaction = "dislike"
         else:
             reaction = "none"
@@ -632,9 +650,9 @@ voteArea.scrollIntoView({
 
         record_reaction(
             conversations=[conv_a, conv_b],
-            model_pos = role,
-            msg_index = msg_index,
-            response_content = event._data['value'],
+            model_pos=role,
+            msg_index=msg_index,
+            response_content=event._data["value"],
             reaction=reaction,
             request=request,
         )

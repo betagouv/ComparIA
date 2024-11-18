@@ -440,7 +440,8 @@ def record_reaction(
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,
         "session_hash": str(request.session_hash),
-        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),        # refers_to_conv_id (conv_a_id value or conv_b_id)
+        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        "refers_to_conv_id": current_conversation.conv_id,
         # Warning: IP is a PII
         "ip": str(get_ip(request)),
         # country

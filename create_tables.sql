@@ -89,6 +89,7 @@ CREATE TABLE reactions (
     conversation_pair_id VARCHAR NOT NULL,                     -- Unique identifier for the pair of conversations
     conv_a_id VARCHAR(500) NOT NULL,                                -- Conversation A ID
     conv_b_id VARCHAR(500) NOT NULL,                                -- Conversation B ID
+    refers_to_conv_id VARCHAR(500) NOT NULL,                                -- Conversation B ID
     session_hash VARCHAR(255),                                      -- Session hash (for tracking)
     visitor_uuid VARCHAR(255),                                      -- Visitor UUID (tracked user)
     ip VARCHAR(255),                                                -- IP Address (user's IP)
