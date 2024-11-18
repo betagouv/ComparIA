@@ -98,12 +98,10 @@ def bot_response(
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
             logger.debug(f"reported output tokens for api {endpoint['api_id']}:" + str(data["output_tokens"]))
-            # Sum of all previous interactions
-            # FIXME: some output cumulative completion_tokens count, and some only output this iteration's completion tokens count...
             if not state.output_tokens:
                 state.output_tokens = 0
 
-            state.output_tokens += data["output_tokens"]
+            state.output_tokens = data["output_tokens"]
 
         output = data.get("text")
         if output:
