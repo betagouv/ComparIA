@@ -599,11 +599,10 @@ def get_matomo_js(matomo_url, matomo_id):
 <script>
   var _paq = window._paq = window._paq || [];
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
   _paq.push(['setConsentGiven']);
-
+  _paq.push(['enableLinkTracking']);
   _paq.push(['HeatmapSessionRecording::enable']);
+  _paq.push(['trackPageView']);
   (function() {"""
     js += f"""
     var u="{matomo_url}/";
