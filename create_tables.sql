@@ -55,7 +55,7 @@ CREATE TABLE
         is_unedited_prompt BOOLEAN,
         conversation_pair_id VARCHAR NOT NULL,
         session_hash VARCHAR(255),
-        visitor_uuid VARCHAR(255),
+        visitor_id VARCHAR(255),
         ip VARCHAR(255),
         conv_comments_a TEXT,
         conv_comments_b TEXT
@@ -91,7 +91,7 @@ CREATE TABLE reactions (
     conv_b_id VARCHAR(500) NOT NULL,                                -- Conversation B ID
     refers_to_conv_id VARCHAR(500) NOT NULL,                                -- Conversation B ID
     session_hash VARCHAR(255),                                      -- Session hash (for tracking)
-    visitor_uuid VARCHAR(255),                                      -- Visitor UUID (tracked user)
+    visitor_id VARCHAR(255),                                      -- Visitor UUID (tracked user)
     ip VARCHAR(255),                                                -- IP Address (user's IP)
     country VARCHAR(500),                                           -- Country (optional, could be extracted from IP or provided)
     city VARCHAR(500),                                              -- City (optional, could be extracted from IP or provided)

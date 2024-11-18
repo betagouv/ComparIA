@@ -44,7 +44,7 @@ SELECT
     is_unedited_prompt,
     uuid AS conversation_pair_id,              -- Mapping old `uuid` to `conversation_pair_id`
     session_hash,
-    visitor_uuid,
+    visitor_uuid AS visitor_id,
     ip,
     comments_a AS conv_comments_a,        -- Renaming `comments_a` to `conv_comments_a`
     comments_b AS conv_comments_b,        -- Renaming `comments_b` to `conv_comments_b`
