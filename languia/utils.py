@@ -284,6 +284,148 @@ def save_vote_to_db(data):
             conn.close()
 
 
+
+def upsert_reaction_to_db(data, request):
+    from languia.config import db as db_config
+
+    logger = logging.getLogger("languia")
+
+    # Ensure database configuration exists
+    if not db_config:
+        logger.warn("Cannot log to db: no db configured")
+        return
+
+    # Establish database connection
+    conn = psycopg2.connect(**db_config)
+    cursor = conn.cursor()
+
+    try:
+        # Define SQL Insert statement
+        insert_statement = """
+        INSERT INTO reactions (
+            model_a_name, 
+            model_b_name, 
+            refers_to_model, 
+            msg_index, 
+            opening_msg, 
+            conversation_a, 
+            conversation_b, 
+            model_pos, 
+            conv_turns, 
+            template, 
+            conversation_pair_id, 
+            conv_a_id, 
+            conv_b_id, 
+            refers_to_conv_id, 
+            session_hash, 
+            visitor_id, 
+            ip, 
+            country, 
+            city, 
+            response_content, 
+            question_content, 
+            like, 
+            dislike, 
+            comment, 
+            useful, 
+            creative, 
+            clear_formatting, 
+            incorrect, 
+            superficial, 
+            instructions_not_followed, 
+            model_pair_name, 
+            msg_rank
+        )
+        VALUES (
+            %(model_a_name)s, 
+            %(model_b_name)s, 
+            %(refers_to_model)s, 
+            %(msg_index)s, 
+            %(opening_msg)s, 
+            %(conversation_a)s, 
+            %(conversation_b)s, 
+            %(model_pos)s, 
+            %(conv_turns)s, 
+            %(template)s, 
+            %(conversation_pair_id)s, 
+            %(conv_a_id)s, 
+            %(conv_b_id)s, 
+            %(refers_to_conv_id)s, 
+            %(session_hash)s, 
+            %(visitor_id)s, 
+            %(ip)s, 
+            %(country)s, 
+            %(city)s, 
+            %(response_content)s, 
+            %(question_content)s, 
+            %(like)s, 
+            %(dislike)s, 
+            %(comment)s, 
+            %(useful)s, 
+            %(creative)s, 
+            %(clear_formatting)s, 
+            %(incorrect)s, 
+            %(superficial)s, 
+            %(instructions_not_followed)s, 
+            %(model_pair_name)s, 
+            %(msg_rank)s
+        )
+        """
+
+        # Prepare data dictionary for insertion
+        data_to_insert = {
+            # "timestamp": datetime.datetime.now(),
+            "model_a_name": data["model_a_name"],
+            "model_b_name": data["model_b_name"],
+            "refers_to_model": data["refers_to_model"],
+            "msg_index": data["msg_index"],
+            "opening_msg": data["opening_msg"],
+            "conversation_a": json.dumps(data["conversation_a"]),
+            "conversation_b": json.dumps(data["conversation_b"]),
+            "model_pos": data["model_pos"],
+            "conv_turns": data["conv_turns"],
+            "template": json.dumps(data["template"]),
+            "conversation_pair_id": data["conversation_pair_id"],
+            "conv_a_id": data["conv_a_id"],
+            "conv_b_id": data["conv_b_id"],
+            "refers_to_conv_id": data["refers_to_conv_id"],
+            "session_hash": data["session_hash"],
+            "visitor_id": data["visitor_id"],
+            "ip": data["ip"],
+            "country": data.get("country", ""),  # If country is available in the data
+            "city": data.get("city", ""),  # If city is available in the data
+            "response_content": data["response_content"],
+            "question_content": data["question_content"],
+            "like": data["like"],
+            "dislike": data["dislike"],
+            "comment": data.get("comment", ""),
+            "useful": data.get("useful", None),
+            "creative": data.get("creative", None),
+            "clear_formatting": data.get("clear_formatting", None),
+            "incorrect": data.get("incorrect", None),
+            "superficial": data.get("superficial", None),
+            "instructions_not_followed": data.get("instructions_not_followed", None),
+            "model_pair_name": json.dumps(data["model_pair_name"]),
+            "msg_rank": data["msg_rank"]
+        }
+
+        # Execute the insert statement with the data
+        cursor.execute(insert_statement, data_to_insert)
+        conn.commit()
+
+    except Exception as e:
+        logger.error(f"Error saving reaction to db: {e}")
+        stacktrace = traceback.format_exc()
+        logger.error(f"Stacktrace: {stacktrace}")
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    logger.info("Reaction data successfully saved to DB.")
+    return data
+
 def messages_to_dict_list(messages):
     return [{"role": message.role, "content": message.content} for message in messages]
 
@@ -467,8 +609,8 @@ def record_reaction(
     reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
     with open(reaction_log_path, "a") as fout:
         fout.write(json.dumps(data) + "\n")
-    print(json.dumps(data))
-    # upsert_reaction_to_db(data=data)
+    # print(json.dumps(data))
+    upsert_reaction_to_db(data=data)
 
     return data
 
