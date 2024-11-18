@@ -531,6 +531,47 @@ def vote_last_response(
 
     return data
 
+def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
+
+
+    # FIXME:
+    # UPDATE reactions
+    # SET
+    #   response_message = 'new_message_value', -- replace with your desired response message
+    #   conversation_a = 'new_conversation_a', -- replace with your desired conversation A value
+    #   conversation_b = 'new_conversation_b'  -- replace with your desired conversation B value
+    # WHERE
+    #   conversation_pair_id = your_id -- replace with your actual ID
+    #   AND (rank = current_rank OR current_rank IS NULL); -- Optional: Only if rank matches the current rank, if specified
+
+    for data in state_reactions:
+        if data == None:
+            continue
+        chatbot_index = data["index"]
+        role = chatbot[chatbot_index]["metadata"]["bot"]
+
+        if data["liked"]:
+            reaction = "like"
+        elif data["liked"] == False:
+            reaction = "dislike"
+        else:
+            reaction = "none"
+
+        # Alternative:
+        # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
+        # role_index = chatbot_index % 3
+        # FIXME: don't forget to offset template messages if any
+        msg_index = (chatbot_index // 3) + 1
+
+        record_reaction(
+            conversations=[conv_a, conv_b],
+            model_pos=role,
+            msg_index=msg_index,
+            response_content=data["value"],
+            reaction=reaction,
+            request=request,
+        )
+
 def record_reaction(
     conversations,
     model_pos,
@@ -544,10 +585,11 @@ def record_reaction(
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
-
+    print("msg_index:"+str(msg_index))
+    print(current_conversation.messages)
     if current_conversation.messages[msg_index].content != response_content:
-        logger.warning("Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'")
-        logger.warning("Calculated index: {msg_index}")
+        logger.warning(f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'")
+        logger.warning(f"Calculated index: {msg_index}")
 
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
@@ -610,7 +652,7 @@ def record_reaction(
     with open(reaction_log_path, "a") as fout:
         fout.write(json.dumps(data) + "\n")
     # print(json.dumps(data))
-    upsert_reaction_to_db(data=data)
+    upsert_reaction_to_db(data=data, request=request)
 
     return data
 

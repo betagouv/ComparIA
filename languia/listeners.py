@@ -50,6 +50,7 @@ from languia.utils import (
     EmptyResponseError,
     pick_endpoint,
     record_reaction,
+    sync_reactions
 )
 
 from languia.config import (
@@ -505,20 +506,8 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b = conversations[1]
         return [app_state, conv_a, conv_b, chatbot, textbox]
 
-    def sync_liked_msgs():
-        # FIXME:
-        # UPDATE reactions
-        # SET
-        #   response_message = 'new_message_value', -- replace with your desired response message
-        #   conversation_a = 'new_conversation_a', -- replace with your desired conversation A value
-        #   conversation_b = 'new_conversation_b'  -- replace with your desired conversation B value
-        # WHERE
-        #   conversation_pair_id = your_id -- replace with your actual ID
-        #   AND (rank = current_rank OR current_rank IS NULL); -- Optional: Only if rank matches the current rank, if specified
-        return
-
-    def update_liked_msgs_and_enable_conclude(conversation_a, conversation_b, textbox):
-        sync_liked_msgs(conversation_a, conversation_b)
+    def update_liked_msgs_and_enable_conclude(conv_a, conv_b, chatbot, app_state, textbox, request: gr.Request):
+        sync_reactions(conv_a, conv_b, chatbot, app_state.value.reactions, request)
         return {
             conclude_btn: gr.update(interactive=True),
             send_btn: gr.update(interactive=(textbox != "")),
@@ -575,7 +564,7 @@ setTimeout(() => {
         # FIXME: return of bot_response_multi couldn't set conclude_btn and send_btn :'(
     ).then(
         fn=update_liked_msgs_and_enable_conclude,
-        inputs=[conv_a] + [conv_b] + [textbox],
+        inputs=[conv_a] + [conv_b] + [chatbot] + [app_state] + [textbox],
         outputs=[conclude_btn, send_btn],
     )
     # // Enable navigation prompt
@@ -586,7 +575,7 @@ setTimeout(() => {
     # window.onbeforeunload = null;
 
     def force_vote_or_reveal(app_state, request: gr.Request):
-        for reaction in app_state.reactions:
+        for reaction in app_state.value.reactions:
             if reaction:
                 if reaction.liked != "none":
                     break
@@ -675,35 +664,6 @@ voteArea.scrollIntoView({
 }""",
     )
 
-    def sync_reactions(state_reactions, request):
-        for data in state_reactions:
-            # if data == None:
-            #     continue
-            chatbot_index = data["index"]
-            role = chatbot[chatbot_index]["metadata"]["bot"]
-
-            if data["liked"]:
-                reaction = "like"
-            elif data["liked"] == False:
-                reaction = "dislike"
-            else:
-                reaction = "none"
-
-            # Alternative:
-            # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
-            # role_index = chatbot_index % 3
-            # FIXME: don't forget to offset template messages if any
-            msg_index = (chatbot_index // 3) + 1
-
-            record_reaction(
-                conversations=[conv_a, conv_b],
-                model_pos=role,
-                msg_index=msg_index,
-                response_content=data["value"],
-                reaction=reaction,
-                request=request,
-            )
-
     @chatbot.like(
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
         outputs=[app_state],
@@ -715,11 +675,12 @@ voteArea.scrollIntoView({
     ):
         # print(event._data)
 
-        while len(app_state.reactions) < event._data["index"]:
-            app_state.reactions.extend([None])
-        app_state.reactions[event._data.index] = event._data
+        while len(app_state.value.reactions) <= event._data["index"]:
+            app_state.value.reactions.extend([None])
+        app_state.value.reactions[event._data['index']] = event._data
 
-        sync_reactions(app_state.reactions, request=request)
+        sync_reactions(conv_a, conv_b, chatbot, app_state.value.reactions, request=request)
+        return app_state
 
     @which_model_radio.select(
         inputs=[which_model_radio],
