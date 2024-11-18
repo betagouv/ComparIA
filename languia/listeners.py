@@ -585,29 +585,77 @@ setTimeout(() => {
     # // Remove navigation prompt
     # window.onbeforeunload = null;
 
-    def show_vote_area(request: gr.Request):
-        logger.info(
-            "ecran_vote",
-            extra={"request": request},
+    def force_vote_or_reveal(app_state, request: gr.Request):
+        for reaction in app_state.reactions:
+            if reaction:
+                if reaction.liked != "none":
+                    break
+        else:
+            logger.info(
+                "ecran_vote",
+                extra={"request": request},
+            )
+            return {
+                send_area: gr.update(visible=False),
+                vote_area: gr.update(visible=True),
+                buttons_footer: gr.update(visible=True),
+            }
+
+        model_a = get_model_extra_info(conv_a.model_name, config.models_extra_info)
+        model_b = get_model_extra_info(conv_b.model_name, config.models_extra_info)
+        logger.debug("output_tokens: " + str(conv_a.output_tokens))
+        logger.debug("output_tokens: " + str(conv_b.output_tokens))
+        # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
+        model_a_tokens = (
+            conv_a.output_tokens
+            if conv_a.output_tokens and conv_a.output_tokens != 0
+            else count_output_tokens(conv_a.messages)
+        )
+
+        model_b_tokens = (
+            conv_b.output_tokens
+            if conv_b.output_tokens and conv_b.output_tokens != 0
+            else count_output_tokens(conv_b.messages)
+        )
+
+        # TODO:
+        # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
+        # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
+        model_a_impact = get_llm_impact(
+            model_a, conv_a.model_name, model_a_tokens, None
+        )
+        model_b_impact = get_llm_impact(
+            model_b, conv_b.model_name, model_b_tokens, None
+        )
+
+        reveal_html = build_reveal_html(
+            model_a=model_a,
+            model_b=model_b,
+            which_model_radio=None,
+            model_a_impact=model_a_impact,
+            model_b_impact=model_b_impact,
+            model_a_tokens=model_a_tokens,
+            model_b_tokens=model_b_tokens,
         )
         return {
-            # stepper_block: gr.update(
-            #     value=stepper_html(
-            #         "Votez pour découvrir leurs identités", 3, 4
-            #     )
-            # ),
-            # chat_area: gr.update(visible=False),
-            send_area: gr.update(visible=False),
-            vote_area: gr.update(visible=True),
-            buttons_footer: gr.update(visible=True),
+            reveal_screen: gr.update(visible=True),
+            results_area: gr.update(value=reveal_html),
+            buttons_footer: gr.update(visible=False),
         }
 
     gr.on(
         triggers=[conclude_btn.click],
-        inputs=[],
-        outputs=[send_area, vote_area, buttons_footer],
+        inputs=[app_state],
+        outputs=[
+            send_area,
+            vote_area,
+            buttons_footer,
+            reveal_screen,
+            results_area,
+            buttons_footer,
+        ],
         api_name=False,
-        fn=show_vote_area,
+        fn=force_vote_or_reveal,
         # scroll_to_output=True,
         show_progress="hidden",
     ).then(
