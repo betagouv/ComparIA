@@ -6,34 +6,37 @@
 	import ThumbUpDefault from "./ThumbUpDefault.svelte";
 
 	export let handle_action: (selected: string | null) => void;
-
+*
 	let selected: "like" | "dislike" | null = null;
-</script>
-
-<IconButton
-border={true}
+  </script>
+  
+  <IconButton
+	border={true}
 	Icon={selected === "dislike" ? ThumbDownActive : ThumbDownDefault}
 	label={selected === "dislike" ? "clicked dislike" : "dislike"}
 	highlight={selected === "dislike"}
 	on:click={() => {
+	  if (selected === "dislike") {
+		selected = null;  // Un-select if already selected
+	  } else {
 		selected = "dislike";
-		handle_action(selected);
+	  }
+	  handle_action(selected);
 	}}
-/>
-
-<IconButton
-border={true}
+  />
+  
+  <IconButton
+	border={true}
 	Icon={selected === "like" ? ThumbUpActive : ThumbUpDefault}
 	label={selected === "like" ? "clicked like" : "like"}
 	highlight={selected === "like"}
-	color={selected === "like"
-		? "var(--color-accent)"
-		: "var(--block-label-text-color)"}
 	on:click={() => {
+	  if (selected === "like") {
+		selected = null;  // Un-select if already selected
+	  } else {
 		selected = "like";
-		handle_action(selected);
+	  }
+	  handle_action(selected);
 	}}
-/>
-
-<style>
-	</style>
+  />
+  
