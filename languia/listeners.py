@@ -577,7 +577,7 @@ setTimeout(() => {
     def force_vote_or_reveal(app_state, request: gr.Request):
         for reaction in app_state.value.reactions:
             if reaction:
-                if reaction.liked != "none":
+                if reaction['liked'] != "none":
                     break
         else:
             logger.info(
