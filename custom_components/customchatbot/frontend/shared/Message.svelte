@@ -35,6 +35,8 @@
 	export let upload: Client["upload"];
 	export let target: HTMLElement | null;
 	export let root: string;
+	export let disabled = false;
+
 	export let theme_mode: "light" | "dark" | "system";
 	export let _components: Record<string, ComponentType<SvelteComponent>>;
 	export let i: number;
@@ -102,6 +104,7 @@
 		likeable: show_like,
 		show_retry,
 		show_undo,
+		disabled,
 		generating,
 		show_copy_button,
 		message: messages,

@@ -27,6 +27,7 @@
 	export let min_width: number | undefined = undefined;
 	export let label: string;
 	export let show_label = true;
+	export let interactive = true;
 	export let root: string;
 	export let _selectable = true;
 	export let likeable = false;
@@ -69,9 +70,9 @@
 
 	export let like_user_message = false;
 	export let loading_status: LoadingStatus | undefined = undefined;
-	export let height: number | string | undefined;
-	export let min_height: number | string | undefined;
-	export let max_height: number | string | undefined;
+	// export let height: number | string | undefined;
+	// export let min_height: number | string | undefined;
+	// export let max_height: number | string | undefined;
 	export let placeholder: string | null = null;
 	export let theme_mode: "system" | "light" | "dark";
 </script>
@@ -85,6 +86,7 @@ class:hidden={visible === false}
 		<ChatBot
 			selectable={_selectable}
 			{likeable}
+			disabled={!interactive}
 			{show_share_button}
 			{show_copy_all_button}
 			value={_value}

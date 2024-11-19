@@ -8,6 +8,7 @@
 	import { Retry, Undo } from "@gradio/icons";
 	import IconButton from "./IconButton.svelte";
 
+	export let disabled: boolean;
 	export let likeable: boolean;
 	export let show_retry: boolean;
 	export let show_undo: boolean;
@@ -67,7 +68,7 @@
 					Icon={Retry}
 					label="Retry"
 					on:click={() => handle_action("retry")}
-					disabled={generating}
+					disabled={generating || disabled}
 				/>
 			{/if}
 			{#if show_undo}
@@ -75,11 +76,14 @@
 					label="Undo"
 					Icon={Undo}
 					on:click={() => handle_action("undo")}
-					disabled={generating}
+					disabled={generating || disabled}
 				/>
 			{/if}
 			{#if likeable}
-				<LikeDislike disabled={generating} {handle_action} />
+				<LikeDislike
+					disabled={generating || disabled}
+					{handle_action}
+				/>
 			{/if}
 		</div>
 	{/if}

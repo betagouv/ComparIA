@@ -62,6 +62,7 @@
 	button[disabled] {
 		opacity: 0.5;
 		box-shadow: none;
+		background-color: #eee !important;
 	}
 
 	button[disabled]:hover {

@@ -178,6 +178,7 @@ class CustomChatbot(Component):
         show_share_button: bool | None = None,
         show_copy_button: bool = False,
         avatar_images: tuple[str | Path | None, str | Path | None] | None = None,
+        interactive: bool = True,
         sanitize_html: bool = True,
         render_markdown: bool = True,
         bubble_full_width: bool = True,
@@ -262,7 +263,9 @@ class CustomChatbot(Component):
         self.likeable = likeable
         self.layout = layout
         self.show_copy_all_button = show_copy_all_button
+        self.interactive = interactive
         super().__init__(
+            interactive=interactive,
             label=label,
             every=every,
             inputs=inputs,

@@ -32,40 +32,42 @@
 	import { ShareError } from "@gradio/utils";
 	import { Gradio } from "@gradio/utils";
 
+	
 	export let value: NormalisedMessage[] | null = [];
 	let old_value: NormalisedMessage[] | null = null;
-
+	
 	import CopyAll from "./CopyAll.svelte";
-
+	
 	export let _fetch: typeof fetch;
 	export let load_component: Gradio["load_component"];
-
+	
 	let _components: Record<string, ComponentType<SvelteComponent>> = {};
-
-	const is_browser = typeof window !== "undefined";
-
-	async function update_components(): Promise<void> {
-		_components = await load_components(
-			get_components_from_messages(value),
-			_components,
-			load_component,
-		);
-	}
-
-	$: value, update_components();
-
-	export let latex_delimiters: {
-		left: string;
-		right: string;
-		display: boolean;
-	}[];
-	export let pending_message = false;
-	export let generating = false;
-	export let selectable = false;
-	export let likeable = false;
-	export let show_share_button = false;
-	export let show_copy_all_button = false;
-	export let rtl = false;
+		
+		const is_browser = typeof window !== "undefined";
+		
+		async function update_components(): Promise<void> {
+			_components = await load_components(
+				get_components_from_messages(value),
+				_components,
+				load_component,
+				);
+			}
+			
+			$: value, update_components();
+			
+			export let latex_delimiters: {
+				left: string;
+				right: string;
+				display: boolean;
+			}[];
+			export let disabled = false;
+			export let pending_message = false;
+			export let generating = false;
+			export let selectable = false;
+			export let likeable = false;
+			export let show_share_button = false;
+			export let show_copy_all_button = false;
+			export let rtl = false;
 	export let show_copy_button = false;
 	export let sanitize_html = true;
 	export let render_markdown = true;
@@ -301,6 +303,7 @@
 							{value}
 							{latex_delimiters}
 							{_components}
+							{disabled}
 							generating={generating &&
 								is_one_of_last_two_bot_msgs([message], value)}
 							show_like={role === "user"
