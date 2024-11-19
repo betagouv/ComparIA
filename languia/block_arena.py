@@ -260,7 +260,7 @@ with gr.Blocks(
                 )
 
                 positive_a = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex checkboxes",
+                    elem_classes="thumb-up-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -271,11 +271,10 @@ with gr.Blocks(
                 )
 
                 negative_a = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex checkboxes",
+                    elem_classes="thumb-down-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
-                        # FIXME: say "incorrect"
-                        ("Incorrectes", "hallucinations"),
+                        ("Incorrectes", "incorrect"),
                         ("Superficielles", "superficial"),
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],
@@ -299,7 +298,7 @@ with gr.Blocks(
                 )
 
                 positive_b = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex checkboxes",
+                    elem_classes="thumb-up-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -310,11 +309,10 @@ with gr.Blocks(
                 )
 
                 negative_b = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex checkboxes",
+                    elem_classes="thumb-down-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
-                        # FIXME: say "incorrect"
-                        ("Incorrectes", "hallucinations"),
+                        ("Incorrectes", "incorrect"),
                         ("Superficielles", "superficial"),
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],

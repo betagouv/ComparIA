@@ -192,6 +192,10 @@ h6.text-blue {
   display: flex;
 }
 
+.flex-important {
+  display: flex !important;
+}
+
 .items-start {
   align-items: start;
 }
@@ -271,7 +275,7 @@ li.fr-nav__item {
 }
 
 .step-badge {
-
+  display: inline-block;
   border-radius: 3.75em;
   text-align: center;
   background-color: #ECECFE;
