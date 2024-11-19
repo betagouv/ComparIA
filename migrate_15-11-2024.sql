@@ -56,8 +56,16 @@ SELECT
     CASE WHEN details_b LIKE '%creative%' THEN TRUE ELSE FALSE END AS conv_creative_b,
     CASE WHEN details_a LIKE '%clear-formatting%' THEN TRUE ELSE FALSE END AS conv_clear_formatting_a,
     CASE WHEN details_b LIKE '%clear-formatting%' THEN TRUE ELSE FALSE END AS conv_clear_formatting_b,
-    CASE WHEN details_a LIKE '%hallucinations%' THEN TRUE ELSE FALSE END AS conv_incorrect_a,
-    CASE WHEN details_b LIKE '%hallucinations%' THEN TRUE ELSE FALSE END AS conv_incorrect_b,
+    CASE 
+        WHEN details_a LIKE '%hallucinations%' THEN TRUE
+        WHEN details_a LIKE '%incorrect%' THEN TRUE
+        ELSE FALSE 
+    END AS conv_incorrect_a,
+    CASE 
+        WHEN details_b LIKE '%hallucinations%' THEN TRUE
+        WHEN details_b LIKE '%incorrect%' THEN TRUE
+        ELSE FALSE 
+    END AS conv_incorrect_b,
     CASE WHEN details_a LIKE '%superficial%' THEN TRUE ELSE FALSE END AS conv_superficial_a,
     CASE WHEN details_b LIKE '%superficial%' THEN TRUE ELSE FALSE END AS conv_superficial_b,
     CASE WHEN details_a LIKE '%instructions-not-followed%' THEN TRUE ELSE FALSE END AS conv_instructions_not_followed_a,

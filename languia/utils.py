@@ -283,45 +283,31 @@ def save_vote_to_db(data):
         if conn:
             conn.close()
 
+import logging
+import json
+import psycopg2
+import traceback
+from languia.config import db as db_config
+
+logger = logging.getLogger("languia")
 
 def upsert_reaction_to_db(data, request):
-    from languia.config import db as db_config
-
-    logger = logging.getLogger("languia")
-
     # Ensure database configuration exists
     if not db_config:
-        logger.warn("Cannot log to db: no db configured")
+        logger.warning("Cannot log to db: no db configured")
         return
 
     # Establish database connection
-    conn = psycopg2.connect(**db_config)
-    cursor = conn.cursor()
+    conn = None
+    cursor = None
 
     try:
-        #         sql = """
-        # INSERT INTO reactions (conversation_pair_id, rank, response_message, conversation_a, conversation_b, reaction)
-        # VALUES (%s, %s, %s, %s, %s, %s)
-        # ON CONFLICT (conversation_pair_id, rank)
-        # DO UPDATE SET
-        #   response_message = EXCLUDED.response_message,
-        #   conversation_a = EXCLUDED.conversation_a,
-        #   conversation_b = EXCLUDED.conversation_b,
-        #   reaction = EXCLUDED.reaction;
-        # """
+        # Create connection to the database
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
 
-        # FIXME:
-        # UPDATE reactions
-        # SET
-        #   response_message = 'new_message_value', -- replace with your desired response message
-        #   conversation_a = 'new_conversation_a', -- replace with your desired conversation A value
-        #   conversation_b = 'new_conversation_b'  -- replace with your desired conversation B value
-        # WHERE
-        #   conversation_pair_id = your_id -- replace with your actual ID
-        #   AND (rank = current_rank OR current_rank IS NULL); -- Optional: Only if rank matches the current rank, if specified
-
-        # Define SQL Insert statement
-        insert_statement = """
+        # Define the SQL Insert/Upsert statement using ON CONFLICT to handle conflicts
+        sql = """
         INSERT INTO reactions (
             model_a_name, 
             model_b_name, 
@@ -354,7 +340,8 @@ def upsert_reaction_to_db(data, request):
             superficial, 
             instructions_not_followed, 
             model_pair_name, 
-            msg_rank
+            msg_rank,
+            chatbot_index
         )
         VALUES (
             %(model_a_name)s, 
@@ -388,13 +375,46 @@ def upsert_reaction_to_db(data, request):
             %(superficial)s, 
             %(instructions_not_followed)s, 
             %(model_pair_name)s, 
-            %(msg_rank)s
+            %(msg_rank)s,
+            %(chatbot_index)s,
         )
+        ON CONFLICT (refers_to_conv_id, msg_index) 
+        DO UPDATE SET
+            model_a_name = EXCLUDED.model_a_name,
+            model_b_name = EXCLUDED.model_b_name,
+            refers_to_model = EXCLUDED.refers_to_model,
+            opening_msg = EXCLUDED.opening_msg,
+            conversation_a = EXCLUDED.conversation_a,
+            conversation_b = EXCLUDED.conversation_b,
+            model_pos = EXCLUDED.model_pos,
+            conv_turns = EXCLUDED.conv_turns,
+            template = EXCLUDED.template,
+            conv_a_id = EXCLUDED.conv_a_id,
+            conv_b_id = EXCLUDED.conv_b_id,
+            conversation_pair_id = EXCLUDED.conversation_pair_id,
+            session_hash = EXCLUDED.session_hash,
+            visitor_id = EXCLUDED.visitor_id,
+            ip = EXCLUDED.ip,
+            country = EXCLUDED.country,
+            city = EXCLUDED.city,
+            response_content = EXCLUDED.response_content,
+            question_content = EXCLUDED.question_content,
+            like = EXCLUDED.like,
+            dislike = EXCLUDED.dislike,
+            comment = EXCLUDED.comment,
+            useful = EXCLUDED.useful,
+            creative = EXCLUDED.creative,
+            clear_formatting = EXCLUDED.clear_formatting,
+            incorrect = EXCLUDED.incorrect,
+            superficial = EXCLUDED.superficial,
+            instructions_not_followed = EXCLUDED.instructions_not_followed,
+            model_pair_name = EXCLUDED.model_pair_name
+            msg_rank = EXCLUDED.msg_rank
+            chatbot_index = EXCLUDED.chatbot_index
         """
 
         # Prepare data dictionary for insertion
         data_to_insert = {
-            # "timestamp": datetime.datetime.now(),
             "model_a_name": data["model_a_name"],
             "model_b_name": data["model_b_name"],
             "refers_to_model": data["refers_to_model"],
@@ -412,8 +432,8 @@ def upsert_reaction_to_db(data, request):
             "session_hash": data["session_hash"],
             "visitor_id": data["visitor_id"],
             "ip": data["ip"],
-            "country": data.get("country", ""),  # If country is available in the data
-            "city": data.get("city", ""),  # If city is available in the data
+            "country": data.get("country", ""),
+            "city": data.get("city", ""),
             "response_content": data["response_content"],
             "question_content": data["question_content"],
             "like": data["like"],
@@ -427,24 +447,27 @@ def upsert_reaction_to_db(data, request):
             "instructions_not_followed": data.get("instructions_not_followed", None),
             "model_pair_name": json.dumps(data["model_pair_name"]),
             "msg_rank": data["msg_rank"],
+            "chatbot_index": data["chatbot_index"]
         }
 
-        # Execute the insert statement with the data
-        cursor.execute(insert_statement, data_to_insert)
+        # Execute the upsert query
+        cursor.execute(sql, data_to_insert)
         conn.commit()
+        logger.info("Reaction data successfully saved to DB.")
 
     except Exception as e:
-        logger.error(f"Error saving reaction to db: {e}")
+        logger.error(f"Error saving reaction to DB: {e}")
         stacktrace = traceback.format_exc()
         logger.error(f"Stacktrace: {stacktrace}")
+
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
 
-    logger.info("Reaction data successfully saved to DB.")
     return data
+
 
 
 def messages_to_dict_list(messages):
@@ -581,6 +604,7 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
             conversations=[conv_a, conv_b],
             model_pos=role,
             msg_index=msg_index,
+            chatbot_index=chatbot_index,
             response_content=data["value"],
             reaction=reaction,
             request=request,
@@ -591,6 +615,7 @@ def record_reaction(
     conversations,
     model_pos,
     msg_index,
+    chatbot_index,
     response_content,
     reaction,
     request: gr.Request,
@@ -615,7 +640,8 @@ def record_reaction(
     conv_turns = count_turns((conversations[0].messages))
     t = datetime.datetime.now()
     refers_to_model = current_conversation.model_name
-    msg_rank = msg_index - 1
+    # rank begins at zero
+    msg_rank = msg_index // 2
     question_content = current_conversation.messages[msg_rank].content
 
     like = reaction == "like"
@@ -665,6 +691,7 @@ def record_reaction(
         # superficial
         # instructions_not_followed
         # Not asked:
+        "chatbot_index": chatbot_index,
         "msg_rank": msg_rank,
         "model_pair_name": model_pair_name,
     }

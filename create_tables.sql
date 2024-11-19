@@ -74,7 +74,7 @@ CREATE TABLE
     );
 
 CREATE TABLE reactions (
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id INT PRIMARY KEY NOT NULL SERIAL,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,         -- Timestamp of the vote
     model_a_name VARCHAR(500) NOT NULL,                             -- Model A name
     model_b_name VARCHAR(500) NOT NULL,                             -- Model B name
@@ -108,5 +108,6 @@ CREATE TABLE reactions (
     instructions_not_followed BOOLEAN,                              -- Did the conversation not follow instructions? (boolean)
     model_pair_name JSONB,
     msg_rank INT NOT NULL,                                                   -- Message rank (optional, could be an integer or rating)
-    -- CONSTRAINT fk_session_hash FOREIGN KEY (session_hash) REFERENCES sessions(session_hash) -- Example for foreign key relationship if necessary
+    chatbot_index INT NOT NULL,                                                   -- Message rank (optional, could be an integer or rating)
+    CONSTRAINT unique_conversation_pair UNIQUE (refers_to_conv_id, msg_index),
 );
