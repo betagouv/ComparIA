@@ -257,13 +257,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]  # Hard cut-off
         # TODO: what do?
 
-        if len(conversations[0].messages) == 0:
-            app_state_input.original_user_prompt = text
-            logger.debug(
-                "Saving original prompt: " + app_state_input.original_user_prompt,
-                extra={"request": request},
-            )
-
         for i in range(config.num_sides):
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a = conversations[0]
@@ -413,7 +406,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         SAMPLING_WEIGHTS,
                         SAMPLING_BOOST_MODELS,
                     )
-
+                    original_user_prompt = conv_a.messages[0]
                     conv_a = reset_conv_state(
                         conv_a,
                         model_name=model_left,
@@ -435,7 +428,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         app_state_input,
                         conv_a,
                         conv_b,
-                        app_state_input.original_user_prompt,
+                        original_user_prompt,
                         request,
                     )
                     # Reinit both generators

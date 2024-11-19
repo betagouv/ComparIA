@@ -36,11 +36,10 @@ class Conversation:
         self.endpoint = endpoint
 
 class AppState:
-    def __init__(self, awaiting_responses=False, model_left=None, model_right=None, original_user_prompt=None, category=None):
+    def __init__(self, awaiting_responses=False, model_left=None, model_right=None, category=None):
         self.awaiting_responses = awaiting_responses
         self.model_left = model_left
         self.model_right = model_right
-        self.original_user_prompt = original_user_prompt
         self.category = category
         self.reactions = []
 
