@@ -283,15 +283,9 @@ def save_vote_to_db(data):
         if conn:
             conn.close()
 
-import logging
-import json
-import psycopg2
-import traceback
-from languia.config import db as db_config
-
-logger = logging.getLogger("languia")
-
 def upsert_reaction_to_db(data, request):
+    logger = logging.getLogger("languia")
+    from languia.config import db as db_config
     # Ensure database configuration exists
     if not db_config:
         logger.warning("Cannot log to db: no db configured")
