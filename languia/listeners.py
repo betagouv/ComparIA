@@ -566,12 +566,12 @@ setTimeout(() => {
         for reaction in app_state_scoped.reactions:
             if reaction:
                 if reaction['liked'] != None:
-                    print("found meaningful reaction!")
-                    print(reaction)
+                    logger.info("meaningful_reaction")
+                    logger.debug(reaction)
                     break
         # If no break found
         else:
-            print("no meaningful reaction found, inflicting vote screen")
+            logger.debug("no meaningful reaction found, inflicting vote screen")
             logger.info(
                 "ecran_vote",
                 extra={"request": request},
@@ -579,7 +579,7 @@ setTimeout(() => {
             return {
                 chatbot: gr.update(interactive=False),
                 send_area: gr.update(visible=False),
-                vote_area: gr.update(visible=True),
+                vote_area: gr.update(elem_classes="fr-container min-h-screen fr-pt-4w next-screen",visible=True),
                 buttons_footer: gr.update(visible=True),
             }
 
@@ -590,7 +590,7 @@ setTimeout(() => {
         return {
             chatbot: gr.update(interactive=False),
             send_area: gr.update(visible=False),
-            reveal_screen: gr.update(visible=True),
+            reveal_screen: gr.update(elem_classes="min-h-screen fr-pt-4w  next-screen", visible=True),
             results_area: gr.update(value=reveal_html),
             # buttons_footer: gr.update(visible=False),
         }
@@ -619,11 +619,11 @@ setTimeout(() => {
         console.log("args:")
         console.log(args)
 setTimeout(() => {
-console.log("scrolling to #vote-area");
-const chatArea = document.querySelector('#chat-area');
+console.log("scrolling to .next-screen");
+const chatArea = document.getElementById('chat-area');
 chatArea.style.paddingBottom = `0px`;
-const voteArea = document.getElementById('vote-area');
-voteArea.scrollIntoView({
+const nextScreen = document.querySelector('.next-screen');
+nextScreen.scrollIntoView({
   behavior: 'smooth',
   block: 'start'
 });}, 500);
