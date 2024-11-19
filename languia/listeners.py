@@ -173,24 +173,24 @@ document.getElementById("fr-modal-welcome-close").blur();
 
     # Step 1.1
     @guided_cards.change(
-        inputs=[guided_cards],
+        inputs=[app_state, guided_cards],
         outputs=[app_state, send_btn, send_area, textbox, shuffle_link],
         api_name=False,
         show_progress="hidden",
     )
-    def set_guided_prompt(guided_cards, event: gr.EventData, request: gr.Request):
+    def set_guided_prompt(app_state_input, guided_cards, event: gr.EventData, request: gr.Request):
 
         # chosen_prompts_pool = guided_cards
         category = guided_cards
         prompt = gen_prompt(category)
-        app_state.category = category
+        app_state_input.category = category
 
         logger.info(
             f"categorie_{category}: {prompt}",
             extra={"request": request},
         )
         return {
-            app_state: app_state,
+            app_state: app_state_input,
             send_btn: gr.update(interactive=True),
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
@@ -232,7 +232,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
-        if app_state_input.value.awaiting_responses:
+        if app_state_input.awaiting_responses:
             raise (
                 gr.Error(
                     message="Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question.",
