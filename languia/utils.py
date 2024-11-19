@@ -916,14 +916,41 @@ def calculate_streaming_hours(impact_gwp_value):
 
 
 def build_reveal_html(
-    model_a,
-    model_b,
-    which_model_radio,
-    model_a_impact,
-    model_b_impact,
-    model_a_tokens,
-    model_b_tokens,
+    conv_a,
+    conv_b,
+    which_model_radio
 ):
+    from languia.config import models_extra_info
+    logger = logging.getLogger("languia")
+
+    model_a = get_model_extra_info(conv_a.model_name, models_extra_info)
+    model_b = get_model_extra_info(conv_b.model_name, models_extra_info)
+    logger.debug("output_tokens: " + str(conv_a.output_tokens))
+    logger.debug("output_tokens: " + str(conv_b.output_tokens))
+    
+    # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
+    model_a_tokens = (
+        conv_a.output_tokens
+        if conv_a.output_tokens and conv_a.output_tokens != 0
+        else count_output_tokens(conv_a.messages)
+    )
+
+    model_b_tokens = (
+        conv_b.output_tokens
+        if conv_b.output_tokens and conv_b.output_tokens != 0
+        else count_output_tokens(conv_b.messages)
+    )
+
+    # TODO:
+    # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
+    # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
+    model_a_impact = get_llm_impact(
+        model_a, conv_a.model_name, model_a_tokens, None
+    )
+    model_b_impact = get_llm_impact(
+        model_b, conv_b.model_name, model_b_tokens, None
+    )
+
     env = Environment(loader=FileSystemLoader("templates"))
 
     template = env.get_template("reveal.html")

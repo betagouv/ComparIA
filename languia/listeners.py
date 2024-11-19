@@ -574,11 +574,12 @@ setTimeout(() => {
     # // Remove navigation prompt
     # window.onbeforeunload = null;
 
-    def force_vote_or_reveal(app_state, request: gr.Request):
+    def force_vote_or_reveal(app_state, conv_a, conv_b, request: gr.Request):
         for reaction in app_state.value.reactions:
             if reaction:
                 if reaction['liked'] != "none":
                     break
+        # If no break found
         else:
             logger.info(
                 "ecran_vote",
@@ -590,41 +591,9 @@ setTimeout(() => {
                 buttons_footer: gr.update(visible=True),
             }
 
-        model_a = get_model_extra_info(conv_a.model_name, config.models_extra_info)
-        model_b = get_model_extra_info(conv_b.model_name, config.models_extra_info)
-        logger.debug("output_tokens: " + str(conv_a.output_tokens))
-        logger.debug("output_tokens: " + str(conv_b.output_tokens))
-        # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = (
-            conv_a.output_tokens
-            if conv_a.output_tokens and conv_a.output_tokens != 0
-            else count_output_tokens(conv_a.messages)
-        )
-
-        model_b_tokens = (
-            conv_b.output_tokens
-            if conv_b.output_tokens and conv_b.output_tokens != 0
-            else count_output_tokens(conv_b.messages)
-        )
-
-        # TODO:
-        # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
-        # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
-        model_a_impact = get_llm_impact(
-            model_a, conv_a.model_name, model_a_tokens, None
-        )
-        model_b_impact = get_llm_impact(
-            model_b, conv_b.model_name, model_b_tokens, None
-        )
-
         reveal_html = build_reveal_html(
-            model_a=model_a,
-            model_b=model_b,
+            conv_a, conv_b,
             which_model_radio=None,
-            model_a_impact=model_a_impact,
-            model_b_impact=model_b_impact,
-            model_a_tokens=model_a_tokens,
-            model_b_tokens=model_b_tokens,
         )
         return {
             reveal_screen: gr.update(visible=True),
@@ -634,7 +603,7 @@ setTimeout(() => {
 
     gr.on(
         triggers=[conclude_btn.click],
-        inputs=[app_state],
+        inputs=[app_state, conv_a, conv_b],
         outputs=[
             send_area,
             vote_area,
@@ -747,41 +716,11 @@ voteArea.scrollIntoView({
             request,
         )
 
-        model_a = get_model_extra_info(conv_a.model_name, config.models_extra_info)
-        model_b = get_model_extra_info(conv_b.model_name, config.models_extra_info)
-        logger.debug("output_tokens: " + str(conv_a.output_tokens))
-        logger.debug("output_tokens: " + str(conv_b.output_tokens))
-        # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-        model_a_tokens = (
-            conv_a.output_tokens
-            if conv_a.output_tokens and conv_a.output_tokens != 0
-            else count_output_tokens(conv_a.messages)
-        )
-
-        model_b_tokens = (
-            conv_b.output_tokens
-            if conv_b.output_tokens and conv_b.output_tokens != 0
-            else count_output_tokens(conv_b.messages)
-        )
-
-        # TODO:
-        # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
-        # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
-        model_a_impact = get_llm_impact(
-            model_a, conv_a.model_name, model_a_tokens, None
-        )
-        model_b_impact = get_llm_impact(
-            model_b, conv_b.model_name, model_b_tokens, None
-        )
 
         reveal_html = build_reveal_html(
-            model_a=model_a,
-            model_b=model_b,
+            conv_a=conv_a,
+            conv_b=conv_b,
             which_model_radio=which_model_radio_output,
-            model_a_impact=model_a_impact,
-            model_b_impact=model_b_impact,
-            model_a_tokens=model_a_tokens,
-            model_b_tokens=model_b_tokens,
         )
         return {
             positive_a: gr.update(interactive=False),
