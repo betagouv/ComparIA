@@ -570,7 +570,7 @@ prompts_table = {
     "administrative": [
         "Écris un court e-mail pour demander un devis à un [électricien] près de chez moi pour un problème de panne. Je dois obtenir une intervention dans la semaine.",
         "Rédige un courrier pour résilier le bail de mon appartement",
-        "Vous demandez un permis de séjour ? Travaillons ensemble pour rédiger une lettre de motivation convaincante qui met en valeur votre éligibilité et respecte toutes les directives officielles.",
+        "Je demande un permis de séjour. Travaillons ensemble pour rédiger une lettre de motivation convaincante qui met en valeur mon éligibilité et respecte toutes les directives officielles.",
         "Je prépare un dossier pour créer une [association]. Aide moi à structurer le document des statuts, à utiliser un langage approprié et à m’assurer que toutes les informations nécessaires sont incluses pour répondre aux normes administratives.",
         "Rédige une lettre de résiliation d'un contrat d'abonnement à un service [téléphonie, internet], en mentionnant les raisons de la résiliation et la date d'effet souhaitée.",
         "Rédige une lettre formelle pour demander à un ancien employeur un certificat de travail, en précisant les dates d'emploi et le poste occupé.",
