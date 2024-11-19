@@ -81,7 +81,7 @@ def register_listeners():
 
     # Step 0
 
-    def enter_arena(app_state_input, conv_a, conv_b, request: gr.Request):
+    def enter_arena(app_state_scoped, conv_a, conv_b, request: gr.Request):
 
         # TODO: to get rid of!
         def set_conv_state(state, model_name, endpoint):
@@ -100,8 +100,8 @@ def register_listeners():
             return state
 
         # you can't move this function out, that way app_state is dependent on each user state / not global state
-        def init_conversations(app_state_input, conversations, request: gr.Request):
-            app_state_input.awaiting_responses = False
+        def init_conversations(app_state_scoped, conversations, request: gr.Request):
+            app_state_scoped.awaiting_responses = False
             config.outages = refresh_outages(
                 config.outages, controller_url=config.controller_url
             )
@@ -140,8 +140,8 @@ def register_listeners():
             f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
-        conv_a, conv_b = init_conversations(app_state_input, [conv_a, conv_b], request)
-        return [app_state_input, conv_a, conv_b]
+        conv_a, conv_b = init_conversations(app_state_scoped, [conv_a, conv_b], request)
+        return [app_state_scoped, conv_a, conv_b]
 
     gr.on(
         triggers=[demo.load],
@@ -178,19 +178,19 @@ document.getElementById("fr-modal-welcome-close").blur();
         api_name=False,
         show_progress="hidden",
     )
-    def set_guided_prompt(app_state_input, guided_cards, event: gr.EventData, request: gr.Request):
+    def set_guided_prompt(app_state_scoped, guided_cards, event: gr.EventData, request: gr.Request):
 
         # chosen_prompts_pool = guided_cards
         category = guided_cards
         prompt = gen_prompt(category)
-        app_state_input.category = category
+        app_state_scoped.category = category
 
         logger.info(
             f"categorie_{category}: {prompt}",
             extra={"request": request},
         )
         return {
-            app_state: app_state_input,
+            app_state: app_state_scoped,
             send_btn: gr.update(interactive=True),
             send_area: gr.update(visible=True),
             textbox: gr.update(value=prompt),
@@ -211,16 +211,16 @@ document.getElementById("fr-modal-welcome-close").blur();
     @textbox.change(
         inputs=[app_state, textbox], outputs=send_btn, api_name=False, show_progress="hidden"
     )
-    def change_send_btn_state(app_state_input, textbox):
+    def change_send_btn_state(app_state_scoped, textbox):
         if textbox == "" or (
-            hasattr(app_state_input, "awaiting_responses") and app_state_input.awaiting_responses
+            hasattr(app_state_scoped, "awaiting_responses") and app_state_scoped.awaiting_responses
         ):
             return gr.update(interactive=False)
         else:
             return gr.update(interactive=True)
 
     def add_text(
-        app_state_input,
+        app_state_scoped,
         conv_a: gr.State,
         conv_b: gr.State,
         text: gr.Text,
@@ -232,7 +232,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
-        if app_state_input.awaiting_responses:
+        if app_state_scoped.awaiting_responses:
             raise (
                 gr.Error(
                     message="Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question.",
@@ -261,10 +261,10 @@ document.getElementById("fr-modal-welcome-close").blur();
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a = conversations[0]
         conv_b = conversations[1]
-        app_state_input.awaiting_responses = True
+        app_state_scoped.awaiting_responses = True
         chatbot = to_threeway_chatbot(conversations)
         return [
-            app_state_input,
+            app_state_scoped,
             # 2 conversations
             conv_a,
             conv_b,
@@ -291,7 +291,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         }
 
     def bot_response_multi(
-        app_state_input,
+        app_state_scoped,
         conv_a,
         conv_b,
         chatbot,
@@ -330,7 +330,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     conv_a = conversations[0]
                     conv_b = conversations[1]
                     chatbot = to_threeway_chatbot(conversations)
-                    yield [app_state_input, conv_a, conv_b, chatbot, gr.skip()]
+                    yield [app_state_scoped, conv_a, conv_b, chatbot, gr.skip()]
             # When context is too long, Albert API answers:
             # openai.BadRequestError: Error code: 400 - {'detail': 'Context length too large'}
             # When context is too long, HF API answers:
@@ -423,9 +423,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                         extra={request: request},
                     )
 
-                    app_state_input.awaiting_responses = False
-                    app_state_input, conv_a, conv_b, chatbot = add_text(
-                        app_state_input,
+                    app_state_scoped.awaiting_responses = False
+                    app_state_scoped, conv_a, conv_b, chatbot = add_text(
+                        app_state_scoped,
                         conv_a,
                         conv_b,
                         original_user_prompt,
@@ -446,7 +446,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
                 else:
-                    app_state_input.awaiting_responses = False
+                    app_state_scoped.awaiting_responses = False
                     logger.exception(
                         f"erreur_milieu_discussion: {conversations[i].model_name}, "
                         + str(e),
@@ -480,7 +480,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         # Got answer at this point
-        app_state_input.awaiting_responses = False
+        app_state_scoped.awaiting_responses = False
 
         logger.info(
             f"response_modele_a ({conv_a.model_name}): {str(conv_a.messages[-1].content)}",
@@ -493,7 +493,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         chatbot = to_threeway_chatbot(conversations)
         conv_a = conversations[0]
         conv_b = conversations[1]
-        return [app_state_input, conv_a, conv_b, chatbot, textbox]
+        return [app_state_scoped, conv_a, conv_b, chatbot, textbox]
 
     def enable_conclude(textbox, request: gr.Request):
         # sync_reactions(conv_a, conv_b, chatbot, app_state.reactions, request)
@@ -563,8 +563,8 @@ setTimeout(() => {
     # // Remove navigation prompt
     # window.onbeforeunload = null;
 
-    def force_vote_or_reveal(app_state_input, conv_a, conv_b, request: gr.Request):
-        for reaction in app_state_input.value.reactions:
+    def force_vote_or_reveal(app_state_scoped, conv_a, conv_b, request: gr.Request):
+        for reaction in app_state_scoped.value.reactions:
             if reaction:
                 if reaction['liked'] != None:
                     print("found meaningful reaction!")
@@ -638,16 +638,16 @@ voteArea.scrollIntoView({
         show_progress="hidden",
     )
     def record_like(
-        app_state_input, conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request
+        app_state_scoped, conv_a, conv_b, chatbot, event: gr.EventData, request: gr.Request
     ):
         # print(event._data)
 
-        while len(app_state_input.value.reactions) <= event._data["index"]:
-            app_state_input.value.reactions.extend([None])
-        app_state_input.value.reactions[event._data['index']] = event._data
+        while len(app_state_scoped.value.reactions) <= event._data["index"]:
+            app_state_scoped.value.reactions.extend([None])
+        app_state_scoped.value.reactions[event._data['index']] = event._data
 
-        sync_reactions(conv_a, conv_b, chatbot, app_state_input.value.reactions, request=request)
-        return app_state_input
+        sync_reactions(conv_a, conv_b, chatbot, app_state_scoped.value.reactions, request=request)
+        return app_state_scoped
 
     @which_model_radio.select(
         inputs=[which_model_radio],
@@ -681,7 +681,7 @@ voteArea.scrollIntoView({
         return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
-        app_state_input,
+        app_state_scoped,
         conv_a,
         conv_b,
         which_model_radio_output,
@@ -701,8 +701,8 @@ voteArea.scrollIntoView({
             "comments_a": str(comments_a_output),
             "comments_b": str(comments_b_output),
         }
-        if hasattr(app_state_input, "category"):
-            category = app_state_input.category
+        if hasattr(app_state_scoped, "category"):
+            category = app_state_scoped.category
         else:
             category = None
 
