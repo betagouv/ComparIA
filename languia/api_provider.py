@@ -61,13 +61,13 @@ def process_response_stream(response, model_name=None, request=None):
     data = dict()
     # data["text"] = ""
     buffer = ""
-    # buffer_output_tokens = 0
+    # output_tokens = 0
     chunks_log = []
 
     for chunk in response:
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-            # buffer_output_tokens = chunk.usage.completion_tokens
             data["output_tokens"] = chunk.usage.completion_tokens
+            # output_tokens = chunk.usage.completion_tokens
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
@@ -114,12 +114,10 @@ def process_response_stream(response, model_name=None, request=None):
             # if "\n" in buffer or "." in buffer:
 
             # Reset word count after yielding
-            # data["output_tokens"] = buffer_output_tokens
             buffer = ""
-            # buffer_output_tokens = 0
 
             yield data
-    # data["output_tokens"] = buffer_output_tokens
+    # data["output_tokens"] = output_tokens
         # if os.getenv("SENTRY_DSN"):
             # sentry_sdk.capture_message(response.__dict__)
             # sentry_sdk.capture_message(response.response.__dict__)
