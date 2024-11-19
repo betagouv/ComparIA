@@ -166,18 +166,12 @@ export function is_component_message(
 	return message.type === "component";
 }
 
-export function is_last_bot_message(
+export function is_one_of_last_two_bot_msgs(
 	messages: NormalisedMessage[],
 	all_messages: NormalisedMessage[]
 ): boolean {
-	const is_bot = messages[messages.length - 1].role === "assistant";
-	const last_index = messages[messages.length - 1].index;
-	// use JSON.stringify to handle both the number and tuple cases
-	// when msg_format is tuples, last_index is an array and when it is messages, it is a number
-	const is_last =
-		JSON.stringify(last_index) ===
-		JSON.stringify(all_messages[all_messages.length - 1].index);
-	return is_last && is_bot;
+	const lastMsgs = messages.slice(-2).map(msg => ({ ...msg, isLast: JSON.stringify(msg.index) === JSON.stringify(all_messages[all_messages.length - 1].index) || JSON.stringify(msg.index) === JSON.stringify(all_messages[all_messages.length - 2].index) }));
+	return lastMsgs.some(msg => msg.role === "assistant" && msg.isLast);
 }
 
 export function group_messages(

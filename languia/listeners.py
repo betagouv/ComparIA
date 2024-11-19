@@ -40,16 +40,12 @@ from languia.utils import (
     get_battle_pair,
     build_reveal_html,
     vote_last_response,
-    get_model_extra_info,
-    count_output_tokens,
-    get_llm_impact,
     refresh_outages,
     on_endpoint_error,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
-    record_reaction,
     sync_reactions
 )
 
@@ -310,9 +306,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
     ):
         conversations = [conv_a, conv_b]
-
+        pos = ["a", "b"]
         gen = [
-            bot_response(
+            bot_response(pos[i],
                 conversations[i],
                 request,
                 apply_rate_limit=True,
@@ -444,7 +440,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     )
                     # Reinit both generators
                     gen = [
-                        bot_response(
+                        bot_response(pos[i],
                             conversations[i],
                             request,
                             apply_rate_limit=True,
@@ -468,7 +464,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         sentry_sdk.capture_exception(e)
 
                     # Reinit faulty generator, e.g. to try another endpoint or just retry
-                    gen[i] = bot_response(
+                    gen[i] = bot_response(pos[i],
                         conversations[i],
                         request,
                         apply_rate_limit=True,
@@ -506,9 +502,10 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b = conversations[1]
         return [app_state, conv_a, conv_b, chatbot, textbox]
 
-    def update_liked_msgs_and_enable_conclude(conv_a, conv_b, chatbot, app_state, textbox, request: gr.Request):
-        sync_reactions(conv_a, conv_b, chatbot, app_state.value.reactions, request)
+    def enable_conclude(conv_a, conv_b, chatbot, app_state, textbox, request: gr.Request):
+        # sync_reactions(conv_a, conv_b, chatbot, app_state.reactions, request)
         return {
+
             conclude_btn: gr.update(interactive=True),
             send_btn: gr.update(interactive=(textbox != "")),
         }
@@ -561,9 +558,8 @@ setTimeout(() => {
         show_progress="hidden",
         # should do .success()
         # scroll_to_output=True,
-        # FIXME: return of bot_response_multi couldn't set conclude_btn and send_btn :'(
     ).then(
-        fn=update_liked_msgs_and_enable_conclude,
+        fn=enable_conclude,
         inputs=[conv_a] + [conv_b] + [chatbot] + [app_state] + [textbox],
         outputs=[conclude_btn, send_btn],
     )
@@ -574,13 +570,16 @@ setTimeout(() => {
     # // Remove navigation prompt
     # window.onbeforeunload = null;
 
-    def force_vote_or_reveal(app_state, conv_a, conv_b, request: gr.Request):
-        for reaction in app_state.value.reactions:
+    def force_vote_or_reveal(app_state_input, conv_a, conv_b, request: gr.Request):
+        for reaction in app_state_input.value.reactions:
             if reaction:
-                if reaction['liked'] != "none":
+                if reaction['liked'] != None:
+                    print("found meaningful reaction!")
+                    print(reaction)
                     break
         # If no break found
         else:
+            print("no meaningful reaction found, inflicting vote screen")
             logger.info(
                 "ecran_vote",
                 extra={"request": request},
@@ -596,9 +595,10 @@ setTimeout(() => {
             which_model_radio=None,
         )
         return {
+            send_area: gr.update(visible=False),
             reveal_screen: gr.update(visible=True),
             results_area: gr.update(value=reveal_html),
-            buttons_footer: gr.update(visible=False),
+            # buttons_footer: gr.update(visible=False),
         }
 
     gr.on(
@@ -616,10 +616,10 @@ setTimeout(() => {
         fn=force_vote_or_reveal,
         # scroll_to_output=True,
         show_progress="hidden",
-    ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
+    # ).then(
+    #     fn=(lambda: None),
+    #     inputs=None,
+    #     outputs=None,
         js="""(args) => {
 setTimeout(() => {
 console.log("scrolling to #vote-area");

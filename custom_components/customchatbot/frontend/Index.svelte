@@ -119,7 +119,6 @@ class:hidden={visible === false}
 			upload={(...args) => gradio.client.upload(...args)}
 			_fetch={(...args) => gradio.client.fetch(...args)}
 			load_component={gradio.load_component}
-			msg_format={type}
 			root={gradio.root}
 		/>
 </div>

@@ -2,7 +2,7 @@
 	import {
 		format_chat_for_sharing,
 		type UndoRetryData,
-		is_last_bot_message,
+		is_one_of_last_two_bot_msgs,
 		group_messages,
 		load_components,
 		get_components_from_messages,
@@ -301,14 +301,15 @@
 							{value}
 							{latex_delimiters}
 							{_components}
-							{generating}
+							generating={generating &&
+								is_one_of_last_two_bot_msgs([message], value)}
 							show_like={role === "user"
 								? likeable && like_user_message
 								: likeable}
 							show_retry={_retryable &&
-								is_last_bot_message([message], value)}
+								is_one_of_last_two_bot_msgs([message], value)}
 							show_undo={_undoable &&
-								is_last_bot_message([message], value)}
+								is_one_of_last_two_bot_msgs([message], value)}
 							show_copy_button={role === "user"
 								? false
 								: show_copy_button}

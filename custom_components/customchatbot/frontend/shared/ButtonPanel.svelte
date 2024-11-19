@@ -21,7 +21,7 @@
 	export let layout: "bubble" | "panel";
 
 	function is_all_text(
-		message: NormalisedMessage[] | NormalisedMessage
+		message: NormalisedMessage[] | NormalisedMessage,
 	): message is TextMessage[] | TextMessage {
 		return (
 			(Array.isArray(message) &&
@@ -45,20 +45,17 @@
 		is_component_message(message) &&
 		message.content.value?.url;
 </script>
+
 <div class="button-panel">
-{#if show}
-	<div
-		class="message-buttons-left {layout} message-buttons"
-	>
-	{#if show_copy}
-	<Copy value={message_text} />
-	{/if}
-</div>
-<div
-	class="message-buttons-right {layout} message-buttons"
->
-{#if show_download && !Array.isArray(message) && is_component_message(message)}
-<DownloadLink
+	{#if show}
+		<div class="message-buttons-left {layout} message-buttons">
+			{#if show_copy}
+				<Copy value={message_text} />
+			{/if}
+		</div>
+		<div class="message-buttons-right {layout} message-buttons">
+			{#if show_download && !Array.isArray(message) && is_component_message(message)}
+				<DownloadLink
 					href={message?.content?.value.url}
 					download={message.content.value.orig_name || "image"}
 				>
@@ -82,33 +79,33 @@
 				/>
 			{/if}
 			{#if likeable}
-				<LikeDislike {handle_action} />
+				<LikeDislike disabled={generating} {handle_action} />
 			{/if}
-	</div>
-{/if}
+		</div>
+	{/if}
 </div>
 
 <style>
 	/* .bubble :global(.icon-button-wrapper) {
 		margin: 0px calc(var(--spacing-xl) * 2);
 	} */
-.button-panel {
-	margin-top: 2em;
-	align-self: end;
-}
+	.button-panel {
+		margin-top: 2em;
+		align-self: end;
+	}
 
 	.message-buttons-left {
 		float: left;
 		display: flex;
 	}
-	
+
 	.message-buttons-right {
 		display: flex;
 		float: right;
 		gap: 0.5em;
 	}
 
-/* 
+	/* 
 	.panel {
 		display: flex;
 		align-self: flex-start;

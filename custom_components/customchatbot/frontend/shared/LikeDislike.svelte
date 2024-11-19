@@ -2,17 +2,21 @@
 	import IconButton from "./IconButton.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 	import ThumbDownDefault from "./ThumbDownDefault.svelte";
+	import ThumbDownDisabled from "./ThumbDownDisabled.svelte";
 	import ThumbUpActive from "./ThumbUpActive.svelte";
 	import ThumbUpDefault from "./ThumbUpDefault.svelte";
+	import ThumbUpDisabled from "./ThumbUpDisabled.svelte";
   
 	export let handle_action: (selected: string | null) => void;
+	export let disabled = false;
 
 	let selected: "like" | "dislike" | null = null;
   </script>
   
   <IconButton
+	disabled={disabled}
 	border={true}
-	Icon={selected === "dislike" ? ThumbDownActive : ThumbDownDefault}
+	Icon={disabled ? ThumbDownDisabled : selected === "dislike" ? ThumbDownActive : ThumbDownDefault}
 	label={selected === "dislike" ? "clicked dislike" : "dislike"}
 	highlight={selected === "dislike"}
 	on:click={() => {
@@ -27,8 +31,9 @@
   />
   
   <IconButton
+	disabled={disabled}
 	border={true}
-	Icon={selected === "like" ? ThumbUpActive : ThumbUpDefault}
+	Icon={disabled ? ThumbUpDisabled : selected === "like" ? ThumbUpActive : ThumbUpDefault}
 	label={selected === "like" ? "clicked like" : "like"}
 	highlight={selected === "like"}
 	on:click={() => {

@@ -561,7 +561,7 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
         # role_index = chatbot_index % 3
         # FIXME: don't forget to offset template messages if any
-        msg_index = (chatbot_index // 3) + 1
+        msg_index = (chatbot_index // 3) * 2 + 1
 
         record_reaction(
             conversations=[conv_a, conv_b],
@@ -581,6 +581,8 @@ def record_reaction(
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
+    if model_pos not in ["a","b"]:
+        raise(f"Weird model_pos: {model_pos}")
     current_conversation = conversations[0] if model_pos == "a" else conversations[1]
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
