@@ -512,7 +512,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
     def enable_conclude(textbox, request: gr.Request):
-        # sync_reactions(conv_a_scoped, conv_b_scoped, chatbot, app_state.reactions, request)
         return {
             conclude_btn: gr.update(interactive=True),
             send_btn: gr.update(interactive=(textbox != "")),

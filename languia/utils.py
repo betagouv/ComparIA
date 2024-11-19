@@ -167,7 +167,7 @@ class PostgresHandler(logging.Handler):
 
                 cursor.execute(insert_statement, values)
                 self.connection.commit()
-        except (psycopg2.Error) as e:
+        except psycopg2.Error as e:
             # Don't use logger on purpose to avoid endless loops
             print(f"Error logging to Postgres: {e}")
             stacktrace = traceback.format_exc()
@@ -284,7 +284,6 @@ def save_vote_to_db(data):
             conn.close()
 
 
-
 def upsert_reaction_to_db(data, request):
     from languia.config import db as db_config
 
@@ -300,6 +299,27 @@ def upsert_reaction_to_db(data, request):
     cursor = conn.cursor()
 
     try:
+        #         sql = """
+        # INSERT INTO reactions (conversation_pair_id, rank, response_message, conversation_a, conversation_b, reaction)
+        # VALUES (%s, %s, %s, %s, %s, %s)
+        # ON CONFLICT (conversation_pair_id, rank)
+        # DO UPDATE SET
+        #   response_message = EXCLUDED.response_message,
+        #   conversation_a = EXCLUDED.conversation_a,
+        #   conversation_b = EXCLUDED.conversation_b,
+        #   reaction = EXCLUDED.reaction;
+        # """
+
+        # FIXME:
+        # UPDATE reactions
+        # SET
+        #   response_message = 'new_message_value', -- replace with your desired response message
+        #   conversation_a = 'new_conversation_a', -- replace with your desired conversation A value
+        #   conversation_b = 'new_conversation_b'  -- replace with your desired conversation B value
+        # WHERE
+        #   conversation_pair_id = your_id -- replace with your actual ID
+        #   AND (rank = current_rank OR current_rank IS NULL); -- Optional: Only if rank matches the current rank, if specified
+
         # Define SQL Insert statement
         insert_statement = """
         INSERT INTO reactions (
@@ -406,7 +426,7 @@ def upsert_reaction_to_db(data, request):
             "superficial": data.get("superficial", None),
             "instructions_not_followed": data.get("instructions_not_followed", None),
             "model_pair_name": json.dumps(data["model_pair_name"]),
-            "msg_rank": data["msg_rank"]
+            "msg_rank": data["msg_rank"],
         }
 
         # Execute the insert statement with the data
@@ -425,6 +445,7 @@ def upsert_reaction_to_db(data, request):
 
     logger.info("Reaction data successfully saved to DB.")
     return data
+
 
 def messages_to_dict_list(messages):
     return [{"role": message.role, "content": message.content} for message in messages]
@@ -531,18 +552,8 @@ def vote_last_response(
 
     return data
 
+
 def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
-
-
-    # FIXME:
-    # UPDATE reactions
-    # SET
-    #   response_message = 'new_message_value', -- replace with your desired response message
-    #   conversation_a = 'new_conversation_a', -- replace with your desired conversation A value
-    #   conversation_b = 'new_conversation_b'  -- replace with your desired conversation B value
-    # WHERE
-    #   conversation_pair_id = your_id -- replace with your actual ID
-    #   AND (rank = current_rank OR current_rank IS NULL); -- Optional: Only if rank matches the current rank, if specified
 
     for data in state_reactions:
         if data == None:
@@ -561,7 +572,10 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
         # role_index = chatbot_index % 3
         # FIXME: don't forget to offset template messages if any
-        msg_index = (chatbot_index // 3) * 2 + 1
+        # TODO: save it as msg metadata instead?
+        bot_msg_rank = chatbot_index // 3
+        # skip rank * 2 past messages + 1 to get the bot message and not the user one
+        msg_index = bot_msg_rank * 2 + 1
 
         record_reaction(
             conversations=[conv_a, conv_b],
@@ -572,6 +586,7 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
             request=request,
         )
 
+
 def record_reaction(
     conversations,
     model_pos,
@@ -581,16 +596,18 @@ def record_reaction(
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
-    if model_pos not in ["a","b"]:
-        raise(f"Weird model_pos: {model_pos}")
+    if model_pos not in ["a", "b"]:
+        raise (f"Weird model_pos: {model_pos}")
     current_conversation = conversations[0] if model_pos == "a" else conversations[1]
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
-    print("msg_index:"+str(msg_index))
+    print("msg_index:" + str(msg_index))
     print(current_conversation.messages)
     if current_conversation.messages[msg_index].content != response_content:
-        logger.warning(f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'")
+        logger.warning(
+            f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'"
+        )
         logger.warning(f"Calculated index: {msg_index}")
 
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
@@ -601,15 +618,15 @@ def record_reaction(
     msg_rank = msg_index - 1
     question_content = current_conversation.messages[msg_rank].content
 
-    like = (reaction == "like")
-    dislike = (reaction == "dislike")
+    like = reaction == "like"
+    dislike = reaction == "dislike"
 
     data = {
         # id
         # "timestamp": t,
         "model_a_name": conversations[0].model_name,
         "model_b_name": conversations[1].model_name,
-        "refers_to_model": refers_to_model, # (model name)
+        "refers_to_model": refers_to_model,  # (model name)
         "msg_index": msg_index,
         "opening_msg": opening_prompt,
         "conversation_a": conversation_a_messages,
@@ -622,7 +639,9 @@ def record_reaction(
             if conversations[0].template_name == "zero_shot"
             else conversations[0].template
         ),
-        "conversation_pair_id": conversations[0].conv_id + "-" + conversations[1].conv_id,
+        "conversation_pair_id": conversations[0].conv_id
+        + "-"
+        + conversations[1].conv_id,
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,
         "session_hash": str(request.session_hash),
@@ -657,6 +676,7 @@ def record_reaction(
     upsert_reaction_to_db(data=data, request=request)
 
     return data
+
 
 with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
     welcome_modal_html = welcome_modal_file.read()
@@ -917,19 +937,16 @@ def calculate_streaming_hours(impact_gwp_value):
         return int(streaming_hours * 60 * 60), "s"
 
 
-def build_reveal_html(
-    conv_a,
-    conv_b,
-    which_model_radio
-):
+def build_reveal_html(conv_a, conv_b, which_model_radio):
     from languia.config import models_extra_info
+
     logger = logging.getLogger("languia")
 
     model_a = get_model_extra_info(conv_a.model_name, models_extra_info)
     model_b = get_model_extra_info(conv_b.model_name, models_extra_info)
     logger.debug("output_tokens: " + str(conv_a.output_tokens))
     logger.debug("output_tokens: " + str(conv_b.output_tokens))
-    
+
     # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
     model_a_tokens = (
         conv_a.output_tokens
@@ -946,12 +963,8 @@ def build_reveal_html(
     # TODO:
     # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
     # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
-    model_a_impact = get_llm_impact(
-        model_a, conv_a.model_name, model_a_tokens, None
-    )
-    model_b_impact = get_llm_impact(
-        model_b, conv_b.model_name, model_b_tokens, None
-    )
+    model_a_impact = get_llm_impact(model_a, conv_a.model_name, model_a_tokens, None)
+    model_b_impact = get_llm_impact(model_b, conv_b.model_name, model_b_tokens, None)
 
     env = Environment(loader=FileSystemLoader("templates"))
 
