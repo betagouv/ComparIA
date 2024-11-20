@@ -256,13 +256,12 @@ document.getElementById("fr-modal-welcome-close").blur();
             extra={"request": request},
         )
 
-        if len(str(text)) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
             logger.info(
                 f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
                 extra={"request": request},
             )
 
-        # Truncate the input text to prevent excessive length
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
         for i in range(config.num_sides):
             conversations[i].messages.append(ChatMessage(role="user", content=text))

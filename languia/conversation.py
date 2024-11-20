@@ -36,7 +36,7 @@ def update_last_message(messages, text, position, output_tokens=None):
     # We append a new assistant message if last one was from user
     if messages[-1].role == "user":
         messages.append(
-            gr.ChatMessage(
+            ChatMessage(
                 role="assistant",
                 content=text,
                 metadata={"output_tokens": output_tokens},
@@ -112,13 +112,8 @@ def bot_response(
                 extra={request: request},
             )
 
-    # html_code = "<br /><br /><em>En attente de la réponse…</em>"
 
-    # update_last_message(messages, html_code)
-    # yield (state)
     output_tokens = None
-    if not state.output_tokens:
-        state.output_tokens = 0
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
             logger.debug(
@@ -151,7 +146,7 @@ def bot_response(
             f"No answer from API {endpoint_name} for model {state.model_name}"
         )
 
-    state.output_tokens += output_tokens
+    state.output_tokens = getattr(state, 'output_tokens', 0) + output_tokens
     state.messages = update_last_message(
         messages=state.messages,
         text=output,
