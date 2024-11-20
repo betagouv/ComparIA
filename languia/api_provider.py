@@ -59,15 +59,12 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     data = dict()
-    # data["text"] = ""
     buffer = ""
-    # output_tokens = 0
     chunks_log = []
 
     for chunk in response:
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
-            # output_tokens = chunk.usage.completion_tokens
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
@@ -117,10 +114,6 @@ def process_response_stream(response, model_name=None, request=None):
             buffer = ""
 
             yield data
-    # data["output_tokens"] = output_tokens
-        # if os.getenv("SENTRY_DSN"):
-            # sentry_sdk.capture_message(response.__dict__)
-            # sentry_sdk.capture_message(response.response.__dict__)
     yield data
     # except Exception as e:
     #     logger.error("erreur_chunk: " + str(chunk))
