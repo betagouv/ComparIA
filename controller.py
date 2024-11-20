@@ -7,6 +7,12 @@ import logging
 from fastapi.templating import Jinja2Templates
 import traceback
 
+
+from languia.utils import (
+    # ContextTooLongError,
+    EmptyResponseError,
+)
+
 from languia.api_provider import get_api_provider_stream_iter
 
 from gradio import ChatMessage
@@ -139,8 +145,9 @@ def test_endpoint(api_id):
         else:
             reason = f"No content from api {api_id}"
             # logging.error(f"Test failed: {model_name}")
-            logging.error(reason)
-            test.update({"success": False, "message": reason})
+            # logging.error(reason)
+            # test.update({"success": False, "message": reason})
+            raise(EmptyResponseError(reason))
         tests.append(test)
         if len(tests) > 25:
             tests = tests[-25:]
