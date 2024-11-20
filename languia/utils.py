@@ -271,7 +271,7 @@ def upsert_reaction_to_db(data, request):
     try:
         conn = psycopg2.connect(**db_config)
         cursor = conn.cursor()
-        sql = """
+        query = sql.SQL("""
         INSERT INTO reactions (
             model_a_name, 
             model_b_name, 
@@ -340,7 +340,7 @@ def upsert_reaction_to_db(data, request):
             %(instructions_not_followed)s, 
             %(model_pair_name)s, 
             %(msg_rank)s,
-            %(chatbot_index)s,
+            %(chatbot_index)s
         )
         ON CONFLICT (refers_to_conv_id, msg_index) 
         DO UPDATE SET
@@ -372,17 +372,18 @@ def upsert_reaction_to_db(data, request):
             incorrect = EXCLUDED.incorrect,
             superficial = EXCLUDED.superficial,
             instructions_not_followed = EXCLUDED.instructions_not_followed,
-            model_pair_name = EXCLUDED.model_pair_name
-            msg_rank = EXCLUDED.msg_rank
-            chatbot_index = EXCLUDED.chatbot_index
-        """
+            model_pair_name = EXCLUDED.model_pair_name,
+            msg_rank = EXCLUDED.msg_rank,
+            chatbot_index = EXCLUDED.chatbot_index;
+        """)
 
-        cursor.execute(sql, data)
+        cursor.execute(query, data)
         conn.commit()
         logger.info("Reaction data successfully saved to DB.")
 
     except Exception as e:
         logger.error(f"Error saving reaction to DB: {e}")
+        logger.error(f"SQL: {query}")
         stacktrace = traceback.format_exc()
         logger.error(f"Stacktrace: {stacktrace}")
 
