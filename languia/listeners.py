@@ -419,7 +419,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         SAMPLING_WEIGHTS,
                         SAMPLING_BOOST_MODELS,
                     )
-                    original_user_prompt = conv_a_scoped.messages[0]
+                    original_user_prompt = conv_a_scoped.messages[0].text
                     conv_a_scoped = reset_conv_state(
                         conv_a_scoped,
                         model_name=model_left,
