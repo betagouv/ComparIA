@@ -141,3 +141,9 @@ CREATE TABLE reactions (
     -- Message rank (optional, could be an integer or rating)
     CONSTRAINT unique_conversation_pair UNIQUE (refers_to_conv_id, msg_index)
 );
+
+GRANT USAGE, SELECT ON SEQUENCE reactions_id_seq TO "languia-dev";
+
+-- Don't forget to add rights on sequences
+
+-- GRANT USAGE, SELECT ON SEQUENCE votes_id_seq TO "languia-dev";
