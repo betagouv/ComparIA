@@ -9,7 +9,7 @@ CREATE TABLE logs (
 );
 
 -- CREATE TABLE
---     votes (
+--     old_votes (
 --         tstamp TIMESTAMP NOT NULL,
 --         model_a_name VARCHAR(255) NOT NULL,
 --         model_b_name VARCHAR(255) NOT NULL,
