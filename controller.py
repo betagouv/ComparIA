@@ -33,6 +33,7 @@ tests: List = []
 scheduled_tasks = set()
 
 
+@app.get("/outages/{api_id}/create", status_code=201)
 @app.post("/outages/{api_id}/create", status_code=201)
 def disable_endpoint(api_id: str, test: dict = None):
     global outages
