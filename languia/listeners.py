@@ -428,7 +428,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     conv_b_scoped = reset_conv_state(
                         conv_b_scoped,
                         model_name=model_right,
-                        endpoint=pick_endpoint(model_left, config.outages),
+                        endpoint=pick_endpoint(model_right, config.outages),
                     )
 
                     logger.info(
