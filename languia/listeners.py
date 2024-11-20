@@ -633,10 +633,10 @@ setTimeout(() => {
         fn=force_vote_or_reveal,
         # scroll_to_output=True,
         show_progress="hidden",
-        # ).then(
-        #     fn=(lambda: None),
-        #     inputs=None,
-        #     outputs=None,
+        ).then(
+            fn=(lambda: None),
+            inputs=None,
+            outputs=None,
         js="""(args) => {
         console.log("args:")
         console.log(args)
