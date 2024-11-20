@@ -39,7 +39,7 @@ CREATE TABLE
 
 CREATE TABLE
     votes (
-      id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,         -- Timestamp of the vote
         model_a_name VARCHAR(500) NOT NULL,
         model_b_name VARCHAR(500) NOT NULL,
