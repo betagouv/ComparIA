@@ -21,6 +21,8 @@ from languia import config
 import logging
 
 logger = logging.getLogger("languia")
+
+
 def update_last_message(messages, text, position, output_tokens=None):
 
     metadata = {"bot": position}
@@ -62,14 +64,11 @@ def bot_response(
     #     if ret is not None and ret["is_limit_reached"]:
     #         error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
     #         logger.warn(f"rate limit reached. error_msg: {ret['reason']}")
-    #         # state.conv.update_last_message(error_msg)
-    #         # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-    #         raise RuntimeError(error_msg)
 
     model_api_endpoints = [
         endpoint
         for endpoint in config.api_endpoint_info
-        if endpoint["model_id"] == state.model_name
+        if (endpoint.get("model_id") or "") == state.model_name
     ]
 
     if model_api_endpoints == []:
@@ -102,7 +101,6 @@ def bot_response(
                 f"Error in get_api_provider_stream_iter. error: {e}",
                 extra={request: request},
             )
-
 
     output_tokens = None
     for i, data in enumerate(stream_iter):
@@ -138,8 +136,8 @@ def bot_response(
         )
     if output_tokens:
         if state.output_tokens is None:
-             state.output_tokens = output_tokens
-    
+            state.output_tokens = output_tokens
+
     state.messages = update_last_message(
         messages=state.messages,
         text=output,
