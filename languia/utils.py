@@ -271,7 +271,8 @@ def upsert_reaction_to_db(data, request):
     try:
         conn = psycopg2.connect(**db_config)
         cursor = conn.cursor()
-        query = sql.SQL("""
+        query = sql.SQL(
+            """
         INSERT INTO reactions (
             model_a_name, 
             model_b_name, 
@@ -375,7 +376,14 @@ def upsert_reaction_to_db(data, request):
             model_pair_name = EXCLUDED.model_pair_name,
             msg_rank = EXCLUDED.msg_rank,
             chatbot_index = EXCLUDED.chatbot_index;
-        """)
+        """
+        )
+        # TODO:
+        #     RETURNING
+        # (CASE
+        #     WHEN (pg_trigger_depth() = 0) THEN 'inserted'
+        #     ELSE 'updated'
+        # END) AS operation;
 
         cursor.execute(query, data)
         conn.commit()
@@ -396,7 +404,7 @@ def upsert_reaction_to_db(data, request):
     return data
 
 
-def delete_reaction_in_db(data, request):
+def delete_reaction_in_db(msg_index, refers_to_conv_id):
     logger = logging.getLogger("languia")
     from languia.config import db as db_config
 
@@ -407,6 +415,7 @@ def delete_reaction_in_db(data, request):
 
     conn = None
     cursor = None
+    data = {"msg_index": msg_index, "refers_to_conv_id": refers_to_conv_id}
 
     try:
         sql = """
@@ -417,10 +426,10 @@ WHERE refers_to_conv_id = %(refers_to_conv_id)s
         # Execute the delete query
         cursor.execute(sql, data)
         conn.commit()
-        logger.info("Reaction data successfully saved to DB.")
+        logger.info("Reaction data deleted from DB.")
 
     except Exception as e:
-        logger.error(f"Error saving reaction to DB: {e}")
+        logger.error(f"Error deleting reaction from DB: {e}")
         stacktrace = traceback.format_exc()
         logger.error(f"Stacktrace: {stacktrace}")
 
@@ -588,10 +597,18 @@ def record_reaction(
         raise gr.Error(f"Weird model_pos: {model_pos}")
     current_conversation = conversations[0] if model_pos == "a" else conversations[1]
 
+    # a reaction has been undone and none replaced it
+    if reaction == "none":
+        delete_reaction_in_db(
+            msg_index=msg_index, refers_to_conv_id=current_conversation.conv_id
+        )
+        log
+        return({"msg_index": msg_index, "refers_to_conv_id": current_conversation.conv_id})
+
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
-    print("msg_index:" + str(msg_index))
-    print(current_conversation.messages)
+    print("msg_index: " + str(msg_index))
+    # print(current_conversation.messages)
     if current_conversation.messages[msg_index].content != response_content:
         logger.warning(
             f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'"
@@ -657,7 +674,6 @@ def record_reaction(
         "model_pair_name": json.dumps(model_pair_name),
     }
 
-    
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
     with open(reaction_log_path, "a") as fout:
@@ -1074,8 +1090,10 @@ def get_model_list(_controller_url, api_endpoint_info):
     models = []
     # Add models from the API providers
     models.extend(
-        model_id for model_dict in api_endpoint_info
-        if (model_id := model_dict.get("model_id")) is not None and model_id not in models
+        model_id
+        for model_dict in api_endpoint_info
+        if (model_id := model_dict.get("model_id")) is not None
+        and model_id not in models
     )
     logger.debug(f"All models: {models}")
     return models
