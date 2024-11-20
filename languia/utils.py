@@ -43,36 +43,7 @@ class EmptyResponseError(RuntimeError):
 
     def __str__(self):
         msg = "Empty response"
-        # if self.response and hasattr(self.response, "response"):
-        #     msg += ": "
-        #     msg += str(self.response.response.__dict__)
         return msg
-
-
-# https://docs.python.org/3/howto/logging.html#arbitrary-object-messages
-# https://docs.python.org/3/howto/logging-cookbook.html#formatting-styles
-
-# class Log:
-#     def __init__(self, fmt, /, *args, **kwargs):
-#         self.fmt = fmt
-#         self.args = args
-#         self.kwargs = kwargs
-
-#     def __str__(self):
-#         return self.fmt.format(*self.args, **self.kwargs)
-
-# class ContextFilter(logging.Filter):
-#     def __init__(self, var):
-#         super().__init__()
-#         self.var = var
-
-#     def filter(self, record):
-#         record.var = self.var
-#         return True
-
-# logger = logging.getLogger(__name__)
-# context_filter = ContextFilter('example_value')
-# logger.addFilter(context_filter)
 
 
 class JSONFormatter(logging.Formatter):
@@ -245,6 +216,7 @@ def save_vote_to_db(data):
 
         """
         )
+        # TODO: refacto, values should equal data
         values = {
             "tstamp": (data["tstamp"]),
             "model_a_name": str(data["model_a_name"]),
@@ -283,24 +255,22 @@ def save_vote_to_db(data):
         if conn:
             conn.close()
 
+
 def upsert_reaction_to_db(data, request):
     logger = logging.getLogger("languia")
     from languia.config import db as db_config
+
     # Ensure database configuration exists
     if not db_config:
         logger.warning("Cannot log to db: no db configured")
         return
 
-    # Establish database connection
     conn = None
     cursor = None
 
     try:
-        # Create connection to the database
         conn = psycopg2.connect(**db_config)
         cursor = conn.cursor()
-
-        # Define the SQL Insert/Upsert statement using ON CONFLICT to handle conflicts
         sql = """
         INSERT INTO reactions (
             model_a_name, 
@@ -324,8 +294,8 @@ def upsert_reaction_to_db(data, request):
             city, 
             response_content, 
             question_content, 
-            like, 
-            dislike, 
+            liked, 
+            disliked, 
             comment, 
             useful, 
             creative, 
@@ -359,8 +329,8 @@ def upsert_reaction_to_db(data, request):
             %(city)s, 
             %(response_content)s, 
             %(question_content)s, 
-            %(like)s, 
-            %(dislike)s, 
+            %(liked)s, 
+            %(disliked)s, 
             %(comment)s, 
             %(useful)s, 
             %(creative)s, 
@@ -393,8 +363,8 @@ def upsert_reaction_to_db(data, request):
             city = EXCLUDED.city,
             response_content = EXCLUDED.response_content,
             question_content = EXCLUDED.question_content,
-            like = EXCLUDED.like,
-            dislike = EXCLUDED.dislike,
+            liked = EXCLUDED.liked,
+            disliked = EXCLUDED.disliked,
             comment = EXCLUDED.comment,
             useful = EXCLUDED.useful,
             creative = EXCLUDED.creative,
@@ -407,45 +377,7 @@ def upsert_reaction_to_db(data, request):
             chatbot_index = EXCLUDED.chatbot_index
         """
 
-        # Prepare data dictionary for insertion
-        data_to_insert = {
-            "model_a_name": data["model_a_name"],
-            "model_b_name": data["model_b_name"],
-            "refers_to_model": data["refers_to_model"],
-            "msg_index": data["msg_index"],
-            "opening_msg": data["opening_msg"],
-            "conversation_a": json.dumps(data["conversation_a"]),
-            "conversation_b": json.dumps(data["conversation_b"]),
-            "model_pos": data["model_pos"],
-            "conv_turns": data["conv_turns"],
-            "template": json.dumps(data["template"]),
-            "conversation_pair_id": data["conversation_pair_id"],
-            "conv_a_id": data["conv_a_id"],
-            "conv_b_id": data["conv_b_id"],
-            "refers_to_conv_id": data["refers_to_conv_id"],
-            "session_hash": data["session_hash"],
-            "visitor_id": data["visitor_id"],
-            "ip": data["ip"],
-            "country": data.get("country", ""),
-            "city": data.get("city", ""),
-            "response_content": data["response_content"],
-            "question_content": data["question_content"],
-            "like": data["like"],
-            "dislike": data["dislike"],
-            "comment": data.get("comment", ""),
-            "useful": data.get("useful", None),
-            "creative": data.get("creative", None),
-            "clear_formatting": data.get("clear_formatting", None),
-            "incorrect": data.get("incorrect", None),
-            "superficial": data.get("superficial", None),
-            "instructions_not_followed": data.get("instructions_not_followed", None),
-            "model_pair_name": json.dumps(data["model_pair_name"]),
-            "msg_rank": data["msg_rank"],
-            "chatbot_index": data["chatbot_index"]
-        }
-
-        # Execute the upsert query
-        cursor.execute(sql, data_to_insert)
+        cursor.execute(sql, data)
         conn.commit()
         logger.info("Reaction data successfully saved to DB.")
 
@@ -462,6 +394,42 @@ def upsert_reaction_to_db(data, request):
 
     return data
 
+
+def delete_reaction_in_db(data, request):
+    logger = logging.getLogger("languia")
+    from languia.config import db as db_config
+
+    # Ensure database configuration exists
+    if not db_config:
+        logger.warning("Cannot log to db: no db configured")
+        return
+
+    conn = None
+    cursor = None
+
+    try:
+        sql = """
+DELETE FROM reactions
+WHERE refers_to_conv_id = %(refers_to_conv_id)s
+  AND msg_index = %(msg_index)s
+"""
+        # Execute the delete query
+        cursor.execute(sql, data)
+        conn.commit()
+        logger.info("Reaction data successfully saved to DB.")
+
+    except Exception as e:
+        logger.error(f"Error saving reaction to DB: {e}")
+        stacktrace = traceback.format_exc()
+        logger.error(f"Stacktrace: {stacktrace}")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return data
 
 
 def messages_to_dict_list(messages):
@@ -579,9 +547,9 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         role = chatbot[chatbot_index]["metadata"]["bot"]
 
         if data["liked"]:
-            reaction = "like"
+            reaction = "liked"
         elif data["liked"] == False:
-            reaction = "dislike"
+            reaction = "disliked"
         else:
             reaction = "none"
 
@@ -638,8 +606,8 @@ def record_reaction(
     msg_rank = msg_index // 2
     question_content = current_conversation.messages[msg_rank].content
 
-    like = reaction == "like"
-    dislike = reaction == "dislike"
+    liked = reaction == "liked"
+    disliked = reaction == "disliked"
 
     data = {
         # id
@@ -649,12 +617,12 @@ def record_reaction(
         "refers_to_model": refers_to_model,  # (model name)
         "msg_index": msg_index,
         "opening_msg": opening_prompt,
-        "conversation_a": conversation_a_messages,
-        "conversation_b": conversation_b_messages,
+        "conversation_a": json.dumps(conversation_a_messages),
+        "conversation_b": json.dumps(conversation_b_messages),
         "model_pos": model_pos,
         # conversation can be longer if like is on older messages
         "conv_turns": conv_turns,
-        "template": (
+        "template": json.dumps(
             []
             if conversations[0].template_name == "zero_shot"
             else conversations[0].template
@@ -669,26 +637,26 @@ def record_reaction(
         "refers_to_conv_id": current_conversation.conv_id,
         # Warning: IP is a PII
         "ip": str(get_ip(request)),
-        # country
-        # city
+        "country": "",
+        "city": "",
+        "comment": None,
         "response_content": response_content,
         "question_content": question_content,
-        "like": like,
-        "dislike": dislike,
-        # like (bool)
-        # dislike (bool)
-        # comment
-        # useful
-        # creative
-        # clear_formatting
-        # incorrect
-        # superficial
-        # instructions_not_followed
+        "liked": liked,
+        "disliked": disliked,
+        "useful": None,
+        "creative": None,
+        "clear_formatting": None,
+        "incorrect": None,
+        "superficial": None,
+        "instructions_not_followed": None,
         # Not asked:
         "chatbot_index": chatbot_index,
         "msg_rank": msg_rank,
-        "model_pair_name": model_pair_name,
+        "model_pair_name": json.dumps(model_pair_name),
     }
+
+    
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
     reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
     with open(reaction_log_path, "a") as fout:
