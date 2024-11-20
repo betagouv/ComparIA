@@ -38,6 +38,7 @@ if any(
         "LANGUIA_DB_PORT",
     ]
 ):
+# and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
     db = {
         "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
         "user": os.getenv("LANGUIA_DB_USER", "languia"),

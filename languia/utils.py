@@ -104,40 +104,41 @@ class PostgresHandler(logging.Handler):
 
         try:
             self.connect()
-            with self.connection.cursor() as cursor:
+            if self.connection:
+                with self.connection.cursor() as cursor:
 
-                # del(record.__dict__["request"])
+                    # del(record.__dict__["request"])
 
-                insert_statement = sql.SQL(
+                    insert_statement = sql.SQL(
+                        """
+                        INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
+                        VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                     """
-                    INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
-                    VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
-                """
-                )
-                values = {
-                    "time": record.asctime,
-                    "level": record.levelname,
-                    "message": record.message,
-                }
-                if hasattr(record, "extra"):
-                    values["extra"] = json.dumps(record.__dict__.get("extra"))
-                else:
-                    values["extra"] = "{}"
-                if hasattr(record, "request"):
-                    query_params = dict(record.request.query_params)
-                    path_params = dict(record.request.path_params)
-                    # ip = get_ip(record.request)
-                    session_hash = record.request.session_hash
-                    values["query_params"] = json.dumps(query_params)
-                    values["path_params"] = json.dumps(path_params)
-                    values["session_hash"] = str(session_hash)
-                else:
-                    values["query_params"] = "{}"
-                    values["path_params"] = "{}"
-                    values["session_hash"] = ""
+                    )
+                    values = {
+                        "time": record.asctime,
+                        "level": record.levelname,
+                        "message": record.message,
+                    }
+                    if hasattr(record, "extra"):
+                        values["extra"] = json.dumps(record.__dict__.get("extra"))
+                    else:
+                        values["extra"] = "{}"
+                    if hasattr(record, "request"):
+                        query_params = dict(record.request.query_params)
+                        path_params = dict(record.request.path_params)
+                        # ip = get_ip(record.request)
+                        session_hash = record.request.session_hash
+                        values["query_params"] = json.dumps(query_params)
+                        values["path_params"] = json.dumps(path_params)
+                        values["session_hash"] = str(session_hash)
+                    else:
+                        values["query_params"] = "{}"
+                        values["path_params"] = "{}"
+                        values["session_hash"] = ""
 
-                cursor.execute(insert_statement, values)
-                self.connection.commit()
+                    cursor.execute(insert_statement, values)
+                    self.connection.commit()
         except psycopg2.Error as e:
             # Don't use logger on purpose to avoid endless loops
             print(f"Error logging to Postgres: {e}")
