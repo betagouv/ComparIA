@@ -21,31 +21,22 @@ from languia import config
 import logging
 
 logger = logging.getLogger("languia")
-
-
 def update_last_message(messages, text, position, output_tokens=None):
-    if len(messages) < 1:
-        return [
-            ChatMessage(
-                role="assistant",
-                content=text,
-                metadata={"bot": position, "output_tokens": output_tokens},
-            )
-        ]
 
-    # We append a new assistant message if last one was from user
-    if messages[-1].role == "user":
-        messages.append(
-            ChatMessage(
-                role="assistant",
-                content=text,
-                metadata={"output_tokens": output_tokens},
-            )
-        )
+    metadata = {"bot": position}
+    if output_tokens:
+        metadata["output_tokens"] = output_tokens
+
+    if not messages:
+        return [ChatMessage(role="assistant", content=text, metadata=metadata)]
+
+    last_message = messages[-1]
+    if last_message.role == "user":
+        messages.append(ChatMessage(role="assistant", content=text, metadata=metadata))
     else:
-        messages[-1].content = text
-        if output_tokens:
-            messages[-1].metadata["output_tokens"] = output_tokens
+        last_message.content = text
+        last_message.metadata.update(metadata)
+
     return messages
 
 
@@ -145,8 +136,10 @@ def bot_response(
         raise EmptyResponseError(
             f"No answer from API {endpoint_name} for model {state.model_name}"
         )
-
-    state.output_tokens = getattr(state, 'output_tokens', 0) + output_tokens
+    if output_tokens:
+        if state.output_tokens is None:
+             state.output_tokens = output_tokens
+    
     state.messages = update_last_message(
         messages=state.messages,
         text=output,
