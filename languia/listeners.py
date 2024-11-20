@@ -256,7 +256,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             extra={"request": request},
         )
 
-        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+        if len(str(text)) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
             logger.info(
                 f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
                 extra={"request": request},
