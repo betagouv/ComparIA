@@ -52,8 +52,6 @@ def bot_response(
     apply_rate_limit=True,
     use_recommended_config=True,
 ):
-    start_tstamp = time.time()
-    print("start:" + str(start_tstamp))
     # temperature = float(temperature)
     # top_p = float(top_p)
     # max_new_tokens = int(max_new_tokens)
@@ -89,6 +87,9 @@ def bot_response(
                     "max_new_tokens", int(max_new_tokens)
                 )
         try:
+            start_tstamp = time.time()
+            print("start: " + str(start_tstamp))
+
             stream_iter = get_api_provider_stream_iter(
                 state.messages,
                 endpoint,
@@ -123,6 +124,8 @@ def bot_response(
             )
             yield (state)
 
+    stop_tstamp = time.time()
+    print("stop: " + str(stop_tstamp))
     output = data.get("text")
     if not output or output == "":
         logger.error(
