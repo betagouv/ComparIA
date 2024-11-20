@@ -1072,14 +1072,11 @@ def get_model_list(_controller_url, api_endpoint_info):
     #     models = ret.json()["models"]
     # else:
     models = []
-
     # Add models from the API providers
     models.extend(
-        mdl_dict.get("model_id")
-        for mdl_dict in api_endpoint_info
-        if mdl_dict.get("model_id") not in models
+        model_id for model_dict in api_endpoint_info
+        if (model_id := model_dict.get("model_id")) is not None and model_id not in models
     )
-
     logger.debug(f"All models: {models}")
     return models
 
