@@ -49,7 +49,8 @@ def disable_endpoint(api_id: str, test: dict = None):
         "api_id": api_id,
         # "model_id": api_id,
     }
-    outage.update(test)
+    if test:
+        outage.update(test)
     outages[outage["api_id"]] = outage
 
     return outage
