@@ -210,6 +210,10 @@ site_head_js = (
 with open("./assets/arena.js", encoding="utf-8") as js_file:
     arena_js = js_file.read()
 
+    if os.getenv("GIT_COMMIT"):
+        git_commit = os.getenv("GIT_COMMIT")
+        arena_js = arena_js.replace("__GIT_COMMIT__", git_commit)
+
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
 with open("./assets/custom-arena.css", encoding="utf-8") as css_file:

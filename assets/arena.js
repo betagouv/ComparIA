@@ -1,6 +1,5 @@
 function() {
 
-
   function adjustFooter() {
     const footer = document.getElementById('send-area');
     const modeScreen = document.getElementById('mode-screen');
@@ -15,6 +14,8 @@ function() {
   window.addEventListener('resize', adjustFooter);
   window.addEventListener('click', adjustFooter);
   adjustFooter();
+
+  console.log("Git commit: __GIT_COMMIT__")
 
 }
 
