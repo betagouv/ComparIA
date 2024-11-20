@@ -585,7 +585,7 @@ def record_reaction(
 ):
     logger = logging.getLogger("languia")
     if model_pos not in ["a", "b"]:
-        raise (f"Weird model_pos: {model_pos}")
+        raise gr.Error(f"Weird model_pos: {model_pos}")
     current_conversation = conversations[0] if model_pos == "a" else conversations[1]
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
