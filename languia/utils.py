@@ -248,7 +248,7 @@ def save_vote_to_db(data):
     except Exception as e:
         logger.error(f"Error saving vote to db: {e}")
         stacktrace = traceback.format_exc()
-        print(f"Stacktrace: {stacktrace}", exc_info=True)
+        logger.error(f"Stacktrace: {stacktrace}", exc_info=True)
     finally:
         if cursor:
             cursor.close()
