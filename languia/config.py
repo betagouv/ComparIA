@@ -234,7 +234,7 @@ all_models_extra_info_toml = {
 }
 # TODO: refacto?
 models_extra_info = [
-    build_model_extra_info(model, all_models_extra_info_toml) for model in models
+    build_model_extra_info(model, all_models_extra_info_toml) for model in models if model is not None
 ]
 
 models_extra_info.sort(key=lambda x: x["simple_name"])
