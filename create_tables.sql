@@ -74,7 +74,7 @@ CREATE TABLE
     );
 
 CREATE TABLE reactions (
-    id INT PRIMARY KEY NOT NULL SERIAL,
+    id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,         -- Timestamp of the vote
     model_a_name VARCHAR(500) NOT NULL,                             -- Model A name
     model_b_name VARCHAR(500) NOT NULL,                             -- Model B name
@@ -97,7 +97,7 @@ CREATE TABLE reactions (
     city VARCHAR(500),                                              -- City (optional, could be extracted from IP or provided)
     response_content TEXT,                                          -- Content of the model's response (optional)
     question_content TEXT,                                          -- Content of the question (optional)
-    like BOOLEAN,                                                   -- Like button (optional)
+    "like" BOOLEAN,                                                   -- Like button (optional)
     dislike BOOLEAN,                                                -- Dislike button (optional)
     comment TEXT,                                                   -- Free text comment (optional)
     useful BOOLEAN,                                                 -- Is the conversation useful? (boolean)
@@ -109,5 +109,5 @@ CREATE TABLE reactions (
     model_pair_name JSONB,
     msg_rank INT NOT NULL,                                                   -- Message rank (optional, could be an integer or rating)
     chatbot_index INT NOT NULL,                                                   -- Message rank (optional, could be an integer or rating)
-    CONSTRAINT unique_conversation_pair UNIQUE (refers_to_conv_id, msg_index),
+    CONSTRAINT unique_conversation_pair UNIQUE (refers_to_conv_id, msg_index)
 );
