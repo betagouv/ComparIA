@@ -131,8 +131,6 @@ def openai_api_stream_iter(
 ):
     import openai
 
-    api_key = api_key
-
     client = openai.OpenAI(
         base_url=api_base,
         api_key=api_key,
@@ -141,7 +139,6 @@ def openai_api_stream_iter(
         # max_retries=
     )
 
-    #
     res = client.chat.completions.create(
         model=model_name,
         messages=messages,
