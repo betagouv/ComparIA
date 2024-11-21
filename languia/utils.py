@@ -270,8 +270,6 @@ def upsert_reaction_to_db(data, request):
     cursor = None
 
     try:
-        conn = psycopg2.connect(**db_config)
-        cursor = conn.cursor()
         query = sql.SQL(
             """
         INSERT INTO reactions (
@@ -379,6 +377,7 @@ def upsert_reaction_to_db(data, request):
             chatbot_index = EXCLUDED.chatbot_index;
         """
         )
+        
         # TODO:
         #     RETURNING
         # (CASE
@@ -386,6 +385,8 @@ def upsert_reaction_to_db(data, request):
         #     ELSE 'updated'
         # END) AS operation;
 
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
         cursor.execute(query, data)
         conn.commit()
         logger.info("Reaction data successfully saved to DB.")
