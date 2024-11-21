@@ -471,23 +471,26 @@ document.getElementById("fr-modal-welcome-close").blur();
                     if os.getenv("SENTRY_DSN"):
                         sentry_sdk.capture_exception(e)
 
-                    # Reinit faulty generator, e.g. to try another endpoint or just retry
-                    gen[i] = bot_response(
-                        pos[i],
-                        conversations[i],
-                        request,
-                        apply_rate_limit=True,
-                        use_recommended_config=True,
-                    )
+                    # # Reinit faulty generator, e.g. to try another endpoint or just retry
+                    # gen[i] = bot_response(
+                    #     pos[i],
+                    #     conversations[i],
+                    #     request,
+                    #     apply_rate_limit=True,
+                    #     use_recommended_config=True,
+                    # )
 
-                    # # Exponential backoff
-                    # sleeping = min(2 * attempt, 10)
-                    logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
+                    # # logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
-                    continue
+                    # continue
+                    
+                    # don't retry, break out of the attempts loop
+                    break
             else:
                 # If no exception, we break out of the attempts loop
                 break
+
+        # If no break
         else:
             logger.critical("maximum_attempts_reached")
             raise gr.Error(
