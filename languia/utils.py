@@ -417,15 +417,17 @@ def delete_reaction_in_db(msg_index, refers_to_conv_id):
     conn = None
     cursor = None
     data = {"msg_index": msg_index, "refers_to_conv_id": refers_to_conv_id}
-
     try:
-        sql = """
-DELETE FROM reactions
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
+        query = sql.SQL(
+            """DELETE FROM reactions
 WHERE refers_to_conv_id = %(refers_to_conv_id)s
   AND msg_index = %(msg_index)s
 """
+        )
         # Execute the delete query
-        cursor.execute(sql, data)
+        cursor.execute(query, data)
         conn.commit()
         logger.info("Reaction data deleted from DB.")
 
@@ -604,7 +606,10 @@ def record_reaction(
             msg_index=msg_index, refers_to_conv_id=current_conversation.conv_id
         )
         log
-        return({"msg_index": msg_index, "refers_to_conv_id": current_conversation.conv_id})
+        return {
+            "msg_index": msg_index,
+            "refers_to_conv_id": current_conversation.conv_id,
+        }
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
