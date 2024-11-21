@@ -16,37 +16,35 @@ EXPOSE 80
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 
-FROM base AS app
-
-ARG GIT_COMMIT
-ENV GIT_COMMIT=$GIT_COMMIT
-
-COPY . /app
-
 # Specific to Compar:IA: install required Gradio Custom Components
-# Comment the next line if you want an image with node
+# Comment the next line if you want a main image with node
 FROM base AS cc
 RUN apt update && apt install -y nodejs npm
-COPY --from=app /app/custom_components /app/custom_components
+COPY custom_components /app/custom_components
+
 # TODO: factorize this
 WORKDIR /app/custom_components/customradiocard
 RUN gradio cc install
 RUN gradio cc build --no-generate-docs --bump-version
+
 WORKDIR /app/custom_components/frinput
 RUN gradio cc install
 # # workaround
 # RUN npm install @gouvfr/dsfr
 RUN gradio cc build --no-generate-docs --bump-version
-# WORKDIR /app/custom_components/frslider
-# RUN gradio cc install
-# # workaround
-# RUN npm install @gouvfr/dsfr
-# RUN gradio cc build --no-generate-docs --bump-version
-# WORKDIR /app/custom_components/customslider
-# RUN gradio cc install
-# RUN npm install @gouvfr/dsfr
-# RUN gradio cc build --no-generate-docs --bump-version
 
-# Comment these 2 lines if you want an image with node
-FROM app
+WORKDIR /app/custom_components/customchatbot
+RUN gradio cc install
+RUN gradio cc build --no-generate-docs --bump-version
+
+# Comment this line if you want an image with node
+FROM base AS app
 COPY --from=cc /app/custom_components /app/custom_components
+
+ARG GIT_COMMIT
+ENV GIT_COMMIT=$GIT_COMMIT
+
+COPY controller.py main.py models-extra-info.toml /app/
+COPY templates /app/templates
+COPY assets /app/assets
+COPY languia /app/languia

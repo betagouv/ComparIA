@@ -1,11 +1,16 @@
 """
 The gradio utilities for chatting with a single model.
 """
+
 import gradio as gr
 
+import random
 from languia.api_provider import get_api_provider_stream_iter
 
 import time
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+    ChatMessage,
+)
 
 from languia.utils import (
     ContextTooLongError,
@@ -18,28 +23,35 @@ import logging
 logger = logging.getLogger("languia")
 
 
-def update_last_message(messages, text):
-    if len(messages) < 1:
-        return [gr.ChatMessage(role="assistant", content=text)]
-    # We append a new assistant message if last one was from user
-    if messages[-1].role == "user":
-        messages.append(gr.ChatMessage(role="assistant", content=text))
+def update_last_message(messages, text, position, output_tokens=None):
+
+    metadata = {"bot": position}
+    if output_tokens:
+        metadata["output_tokens"] = output_tokens
+
+    if not messages:
+        return [ChatMessage(role="assistant", content=text, metadata=metadata)]
+
+    last_message = messages[-1]
+    if last_message.role == "user":
+        messages.append(ChatMessage(role="assistant", content=text, metadata=metadata))
     else:
-        messages[-1].content = text
+        last_message.content = text
+        last_message.metadata.update(metadata)
+
     return messages
 
 
 def bot_response(
+    position,
     state,
     request: gr.Request,
     temperature=0.7,
-    top_p=1.0,
+    # top_p=1.0,
     max_new_tokens=2048,
     apply_rate_limit=True,
     use_recommended_config=True,
 ):
-    start_tstamp = time.time()
-    print("start:"+str(start_tstamp))
     # temperature = float(temperature)
     # top_p = float(top_p)
     # max_new_tokens = int(max_new_tokens)
@@ -50,77 +62,85 @@ def bot_response(
     #     if ret is not None and ret["is_limit_reached"]:
     #         error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
     #         logger.warn(f"rate limit reached. error_msg: {ret['reason']}")
-    #         # state.conv.update_last_message(error_msg)
-    #         # yield (state, state.to_gradio_chatbot()) + (no_change_btn,) * 5
-    #         raise RuntimeError(error_msg)
 
-    messages, model_name = state.messages, state.model_name
-    model_api_dict = (
-        config.api_endpoint_info[model_name]
-        if model_name in config.api_endpoint_info
-        else None
-    )
+    model_api_endpoints = [
+        endpoint
+        for endpoint in config.api_endpoint_info
+        if (endpoint.get("model_id") or "") == state.model_name
+    ]
 
-    if model_api_dict is None:
-        logger.critical("No model for model name: " + model_name)
+    if model_api_endpoints == []:
+        logger.critical("No endpoint for model name: " + str(state.model_name))
     else:
+        if state.endpoint is None:
+            state.endpoint = random.choice(model_api_endpoints)
+            endpoint_name = state.endpoint["api_base"].split("/")[2]
+            logger.info(f"picked_endpoint: {endpoint_name} for {state.model_name}")
+        endpoint = state.endpoint
+        endpoint_name = endpoint["api_base"].split("/")[2]
         if use_recommended_config:
-            recommended_config = model_api_dict.get("recommended_config", None)
+            recommended_config = endpoint.get("recommended_config", None)
             if recommended_config is not None:
                 temperature = recommended_config.get("temperature", float(temperature))
-                top_p = recommended_config.get("top_p", float(top_p))
+                # top_p = recommended_config.get("top_p", float(top_p))
                 max_new_tokens = recommended_config.get(
                     "max_new_tokens", int(max_new_tokens)
                 )
         try:
+            start_tstamp = time.time()
+            print("start: " + str(start_tstamp))
+
             stream_iter = get_api_provider_stream_iter(
-                messages,
-                model_api_dict,
+                state.messages,
+                endpoint,
                 temperature,
-                top_p,
                 max_new_tokens,
-                state,
                 request,
             )
-            # We could check if stream is already closed
         except Exception as e:
             logger.error(
                 f"Error in get_api_provider_stream_iter. error: {e}",
                 extra={request: request},
-                exc_info=True,
             )
 
-    html_code = "<br /><br /><em>En attente de la réponse…</em>"
-
-    # update_last_message(messages, html_code)
-    yield (state)
-
+    output_tokens = None
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
-            if not state.output_tokens:
-                state.output_tokens = 0
-
-            state.output_tokens += data["output_tokens"]
+            output_tokens = data["output_tokens"]
 
         output = data.get("text")
         if output:
             output.strip()
-            messages = update_last_message(messages, output + html_code)
+            state.messages = update_last_message(
+                messages=state.messages,
+                text=output,
+                position=position,
+                output_tokens=output_tokens,
+            )
             yield (state)
 
+    stop_tstamp = time.time()
+    print("stop: " + str(stop_tstamp))
     output = data.get("text")
     if not output or output == "":
         logger.error(
-            f"reponse_vide: {model_name}, data: " + str(data),
+            f"reponse_vide: {state.model_name}, data: " + str(data),
             exc_info=True,
             extra={request: request},
         )
         # logger.error(data)
-        raise EmptyResponseError(f"No answer from API for model {model_name}")
+        raise EmptyResponseError(
+            f"No answer from API {endpoint_name} for model {state.model_name}"
+        )
+    if output_tokens:
+        if state.output_tokens is None:
+            state.output_tokens = output_tokens
 
-    messages = update_last_message(messages, output)
+    state.messages = update_last_message(
+        messages=state.messages,
+        text=output,
+        position=position,
+        output_tokens=output_tokens,
+    )
 
-    finish_tstamp = time.time()
-    print("finish:"+str(finish_tstamp))
     yield (state)
-

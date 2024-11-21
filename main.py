@@ -14,7 +14,7 @@ import gradio as gr
 
 from languia import config
 
-from languia.utils import size_desc, license_desc, license_attrs, test_all_models
+from languia.utils import size_desc, license_desc, license_attrs
 
 app = FastAPI()
 
@@ -32,8 +32,8 @@ logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 auth = None
 
 # Clashes with hot reloading
-if not config.debug:
-    test_all_models(config.controller_url)
+# if not config.debug:
+#     test_all_endpoints(config.controller_url)
 
 demo = demo.queue(
     default_concurrency_limit=None,

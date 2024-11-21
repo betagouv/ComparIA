@@ -11,7 +11,7 @@ import gradio as gr
 
 from languia.utils import header_html, welcome_modal_html, footer_html
 
-# from custom_components.frbutton.backend.gradio_frbutton import FrButton
+from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
@@ -27,20 +27,21 @@ from languia import config
 # // Remove navigation prompt
 # window.onbeforeunload = null;
 class Conversation:
-    def __init__(self, messages=[], output_tokens=None, conv_id=None, template=None, model_name=None):
+    def __init__(self, messages=[], output_tokens=None, conv_id=None, template=None, model_name=None, endpoint=None):
         self.messages = messages
         self.output_tokens = output_tokens
         self.conv_id = conv_id
         self.template = template
         self.model_name = model_name
+        self.endpoint = endpoint
 
 class AppState:
-    def __init__(self, awaiting_responses=False, model_left=None, model_right=None, original_user_prompt=None, category=None):
+    def __init__(self, awaiting_responses=False, model_left=None, model_right=None, category=None):
         self.awaiting_responses = awaiting_responses
         self.model_left = model_left
         self.model_right = model_right
-        self.original_user_prompt = original_user_prompt
         self.category = category
+        self.reactions = []
 
     # def to_dict(self) -> dict:
     #     return self.__dict__.copy()
@@ -57,21 +58,6 @@ with gr.Blocks(
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
-
-
-        # def set_conv_state(state, model_name=""):
-        #     # self.messages = get_conversation_template(model_name)
-        #     state.messages = []
-        #     state.output_tokens = None
-
-        #     # TODO: get it from api if generated
-        #     state.conv_id = uuid.uuid4().hex
-
-        #     # TODO: add template info? and test it
-        #     state.template_name = "zero_shot"
-        #     state.template = []
-        #     state.model_name = model_name
-        #     return state
 
     app_state = gr.State(value=AppState())
 
@@ -148,7 +134,7 @@ with gr.Blocks(
         #         placeholder
         # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
         # TODO: test ChatInterface abstraction
-        chatbot = gr.Chatbot(
+        chatbot = CustomChatbot(
             # TODO:
             type="messages",
             elem_id="main-chatbot",
@@ -162,13 +148,12 @@ with gr.Blocks(
             # No difference
             # bubble_full_width=False,
             layout="panel",  # or "bubble"
-            likeable=False,
+            likeable=True,
             # UserWarning: show_label has no effect when container is False.
             show_label=False,
             container=False,
             elem_classes="chatbot",
-            # Should we show it?
-            show_copy_button=False,
+            show_copy_button=True,
             # autoscroll=True
         )
 
@@ -259,7 +244,7 @@ with gr.Blocks(
                 )
 
                 positive_a = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex checkboxes",
+                    elem_classes="thumb-up-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -270,11 +255,10 @@ with gr.Blocks(
                 )
 
                 negative_a = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex checkboxes",
+                    elem_classes="thumb-down-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
-                        # FIXME: say "incorrect"
-                        ("Incorrectes", "hallucinations"),
+                        ("Incorrectes", "incorrect"),
                         ("Superficielles", "superficial"),
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],
@@ -298,7 +282,7 @@ with gr.Blocks(
                 )
 
                 positive_b = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex checkboxes",
+                    elem_classes="thumb-up-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -309,11 +293,10 @@ with gr.Blocks(
                 )
 
                 negative_b = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex checkboxes",
+                    elem_classes="thumb-down-icon flex-important checkboxes",
                     show_label=False,
                     choices=[
-                        # FIXME: say "incorrect"
-                        ("Incorrectes", "hallucinations"),
+                        ("Incorrectes", "incorrect"),
                         ("Superficielles", "superficial"),
                         ("Instructions non respectées", "instructions-not-followed"),
                     ],

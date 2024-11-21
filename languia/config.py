@@ -38,6 +38,7 @@ if any(
         "LANGUIA_DB_PORT",
     ]
 ):
+# and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
     db = {
         "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
         "user": os.getenv("LANGUIA_DB_USER", "languia"),
@@ -210,6 +211,10 @@ site_head_js = (
 with open("./assets/arena.js", encoding="utf-8") as js_file:
     arena_js = js_file.read()
 
+    if os.getenv("GIT_COMMIT"):
+        git_commit = os.getenv("GIT_COMMIT")
+        arena_js = arena_js.replace("__GIT_COMMIT__", git_commit)
+
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
 with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
@@ -230,7 +235,7 @@ all_models_extra_info_toml = {
 }
 # TODO: refacto?
 models_extra_info = [
-    build_model_extra_info(model, all_models_extra_info_toml) for model in models
+    build_model_extra_info(model, all_models_extra_info_toml) for model in models if model is not None
 ]
 
 models_extra_info.sort(key=lambda x: x["simple_name"])
@@ -570,7 +575,7 @@ prompts_table = {
     "administrative": [
         "Écris un court e-mail pour demander un devis à un [électricien] près de chez moi pour un problème de panne. Je dois obtenir une intervention dans la semaine.",
         "Rédige un courrier pour résilier le bail de mon appartement",
-        "Vous demandez un permis de séjour ? Travaillons ensemble pour rédiger une lettre de motivation convaincante qui met en valeur votre éligibilité et respecte toutes les directives officielles.",
+        "Je demande un permis de séjour. Travaillons ensemble pour rédiger une lettre de motivation convaincante qui met en valeur mon éligibilité et respecte toutes les directives officielles.",
         "Je prépare un dossier pour créer une [association]. Aide moi à structurer le document des statuts, à utiliser un langage approprié et à m’assurer que toutes les informations nécessaires sont incluses pour répondre aux normes administratives.",
         "Rédige une lettre de résiliation d'un contrat d'abonnement à un service [téléphonie, internet], en mentionnant les raisons de la résiliation et la date d'effet souhaitée.",
         "Rédige une lettre formelle pour demander à un ancien employeur un certificat de travail, en précisant les dates d'emploi et le poste occupé.",
@@ -600,7 +605,7 @@ prompts_table = {
         "Ecris un tiot poème in ch'ti sus l'biauté d'la nature. Propose aussi une traduction en français de ta réponse.",
         "Pòtès escriure un pichon poèma en occitan sus lo passatge de las sasons? Propose une traduction en français après la réponse en occitan.",
         "Raconte ein tiot conte in picard avéc des personnages du village.",
-        """"Wann ich dir so schwätz, verstehsch mich? Réponds en alsacien.""",
+        """Wann ich dir so schwätz, verstehsch mich? Réponds en alsacien.""",
     ],
     # category conseils
     "coach": [
@@ -743,4 +748,4 @@ BATTLE_TARGETS = {
 SAMPLING_BOOST_MODELS = []
 
 # outage models won't be sampled.
-outage_models = []
+outages = []

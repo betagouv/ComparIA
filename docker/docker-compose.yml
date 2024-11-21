@@ -37,3 +37,5 @@ services:
       - POSTGRES_DB=${LANGUIA_DB_NAME}
       - POSTGRES_USER=${LANGUIA_DB_USER}
       - POSTGRES_PASSWORD=${LANGUIA_DB_PASSWORD}
+    # ports:
+    # - 5432:5432

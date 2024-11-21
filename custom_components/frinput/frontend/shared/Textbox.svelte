@@ -284,3 +284,18 @@
 		/>
 	{/if}
 </label>
+
+<style>
+
+/* textarea.fr-input {
+	min-height: 4rem !important;
+} */
+
+@media (min-width: 48em) {
+
+	textarea.fr-input {
+		min-height: 2.5rem !important;
+	}
+}
+
+	</style>

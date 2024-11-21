@@ -7,32 +7,31 @@ import logging
 
 import sentry_sdk
 
-from gradio import ChatMessage
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+    ChatMessage,
+)
 
-from languia.utils import ContextTooLongError, EmptyResponseError
+# from languia.utils import ContextTooLongError, EmptyResponseError
 
 
 def get_api_provider_stream_iter(
     messages,
     model_api_dict,
     temperature,
-    top_p,
     max_new_tokens,
-    state,
     request=None,
 ):
     messages_dict = []
     for message in messages:
-        if isinstance(message, ChatMessage):
+        try:
             messages_dict.append({"role": message.role, "content": message.content})
-        else:
+        except:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
     if model_api_dict["api_type"] == "openai":
         stream_iter = openai_api_stream_iter(
             model_name=model_api_dict["model_name"],
             messages=messages_dict,
             temperature=temperature,
-            top_p=top_p,
             max_new_tokens=max_new_tokens,
             api_base=model_api_dict["api_base"],
             api_key=model_api_dict["api_key"],
@@ -43,7 +42,7 @@ def get_api_provider_stream_iter(
             model_name=model_api_dict["model_name"],
             messages=messages_dict,
             temperature=temperature,
-            top_p=top_p,
+            # top_p=top_p,
             max_new_tokens=max_new_tokens,
             api_base=model_api_dict["api_base"],
             request=request,
@@ -54,7 +53,7 @@ def get_api_provider_stream_iter(
     return stream_iter
 
 
-def process_response_stream(response, model_name=None, request=None):
+def process_response_stream(response, model_name=None, api_base=None, request=None):
     """
     Processes the stream of responses from the OpenAI API.
     """
@@ -62,16 +61,28 @@ def process_response_stream(response, model_name=None, request=None):
     logger = logging.getLogger("languia")
 
     data = dict()
-    # data["text"] = ""
     buffer = ""
-    # buffer_output_tokens = 0
-    chunks_log = []
 
     for chunk in response:
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
-            # buffer_output_tokens = chunk.usage.completion_tokens
             data["output_tokens"] = chunk.usage.completion_tokens
+            logger.debug(
+                f"reported output tokens for api {api_base} and model {model_name}: "
+                + str(data["output_tokens"])
+            )
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
+            if hasattr(chunk.choices[0], "delta") and hasattr(
+                chunk.choices[0].delta, "content"
+            ):
+                content = chunk.choices[0].delta.content or ""
+            else:
+                content = ""
+
+            text += content
+            buffer += content
+
+            data["text"] = text
+
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
                     data["text"] = text
@@ -80,52 +91,22 @@ def process_response_stream(response, model_name=None, request=None):
                     # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
                     logger.warning("context_too_long: " + str(chunk))
-                    chunks_log.append(chunk)
 
                     if os.getenv("SENTRY_DSN"):
-                        sentry_sdk.capture_message(str(chunks_log))
+                        sentry_sdk.capture_message(f"context_too_long: {chunk}")
                     break
-            if hasattr(chunk.choices[0], "delta") and hasattr(
-                chunk.choices[0].delta, "content"
-            ):
-                content = chunk.choices[0].delta.content
-            else:
-                content = ""
-            if not content:
-                content = ""
-                logger.debug("no_content_in_chunk: " + str(chunk))
-                chunks_log.append(chunk)
-
-                # TODO: check if it's the first yield and keep all empty and not-first yields
-                # if os.getenv("SENTRY_DSN"):
-                #     sentry_sdk.capture_message(str(chunks_log))
-                continue
-
             # Special handling for certain models
-            if model_name == "meta/llama3-405b-instruct-maas":
-                content = content.replace("\\n", "\n").lstrip("assistant")
-            elif model_name == "google/gemini-1.5-pro-001":
-                content = content.replace("<br />", "")
+            # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
 
-            text += content
-            buffer += content
-
-            data["text"] = text
 
         if len(buffer.split()) >= 30:
             # if len(buffer.split()) >= 30 or len(text.split()) < 30:
             # if "\n" in buffer or "." in buffer:
 
             # Reset word count after yielding
-            # data["output_tokens"] = buffer_output_tokens
             buffer = ""
-            # buffer_output_tokens = 0
 
             yield data
-    # data["output_tokens"] = buffer_output_tokens
-        # if os.getenv("SENTRY_DSN"):
-            # sentry_sdk.capture_message(response.__dict__)
-            # sentry_sdk.capture_message(response.response.__dict__)
     yield data
     # except Exception as e:
     #     logger.error("erreur_chunk: " + str(chunk))
@@ -136,15 +117,12 @@ def openai_api_stream_iter(
     model_name,
     messages,
     temperature,
-    top_p,
     max_new_tokens,
     api_base=None,
     api_key=None,
     request=None,
 ):
     import openai
-
-    api_key = api_key
 
     client = openai.OpenAI(
         base_url=api_base,
@@ -154,7 +132,6 @@ def openai_api_stream_iter(
         # max_retries=
     )
 
-    #
     res = client.chat.completions.create(
         model=model_name,
         messages=messages,
@@ -165,11 +142,11 @@ def openai_api_stream_iter(
         # Not available like this
         # top_p=top_p,
     )
-    yield from process_response_stream(res, model_name=model_name, request=request)
+    yield from process_response_stream(res, model_name=model_name, api_base=api_base, request=request)
 
 
 def vertex_api_stream_iter(
-    api_base, model_name, messages, temperature, top_p, max_new_tokens, request=None
+    api_base, model_name, messages, temperature, max_new_tokens, request=None
 ):
     # import vertexai
     # from vertexai import generative_models

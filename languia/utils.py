@@ -32,37 +32,18 @@ LOGDIR = os.getenv("LOGDIR", "./data")
 class ContextTooLongError(ValueError):
     def __str__(self):
         return "Context too long."
+
     pass
 
+
 class EmptyResponseError(RuntimeError):
+    def __init__(self, response=None, *args: object) -> None:
+        super().__init__(*args)
+        self.response = response
+
     def __str__(self):
-        return "Empty response."
-
-
-# https://docs.python.org/3/howto/logging.html#arbitrary-object-messages
-# https://docs.python.org/3/howto/logging-cookbook.html#formatting-styles
-
-# class Log:
-#     def __init__(self, fmt, /, *args, **kwargs):
-#         self.fmt = fmt
-#         self.args = args
-#         self.kwargs = kwargs
-
-#     def __str__(self):
-#         return self.fmt.format(*self.args, **self.kwargs)
-
-# class ContextFilter(logging.Filter):
-#     def __init__(self, var):
-#         super().__init__()
-#         self.var = var
-
-#     def filter(self, record):
-#         record.var = self.var
-#         return True
-
-# logger = logging.getLogger(__name__)
-# context_filter = ContextFilter('example_value')
-# logger.addFilter(context_filter)
+        msg = "Empty response"
+        return msg
 
 
 class JSONFormatter(logging.Formatter):
@@ -107,7 +88,7 @@ class PostgresHandler(logging.Handler):
         if not self.connection or self.connection.closed:
             try:
                 self.connection = psycopg2.connect(**self.db_config)
-            except Exception as e:
+            except psycopg2.Error as e:
                 print(f"Error connecting to database: {e}")
                 stacktrace = traceback.format_exc()
                 print(f"Stacktrace: {stacktrace}")
@@ -123,41 +104,42 @@ class PostgresHandler(logging.Handler):
 
         try:
             self.connect()
-            with self.connection.cursor() as cursor:
+            if self.connection:
+                with self.connection.cursor() as cursor:
 
-                # del(record.__dict__["request"])
+                    # del(record.__dict__["request"])
 
-                insert_statement = sql.SQL(
+                    insert_statement = sql.SQL(
+                        """
+                        INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
+                        VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
                     """
-                    INSERT INTO logs (time, level, message, query_params, path_params, session_hash, extra)
-                    VALUES (%(time)s, %(level)s, %(message)s, %(query_params)s, %(path_params)s, %(session_hash)s, %(extra)s)
-                """
-                )
-                values = {
-                    "time": record.asctime,
-                    "level": record.levelname,
-                    "message": record.message,
-                }
-                if hasattr(record, "extra"):
-                    values["extra"] = json.dumps(record.__dict__.get("extra"))
-                else:
-                    values["extra"] = "{}"
-                if hasattr(record, "request"):
-                    query_params = dict(record.request.query_params)
-                    path_params = dict(record.request.path_params)
-                    # ip = get_ip(record.request)
-                    session_hash = record.request.session_hash
-                    values["query_params"] = json.dumps(query_params)
-                    values["path_params"] = json.dumps(path_params)
-                    values["session_hash"] = str(session_hash)
-                else:
-                    values["query_params"] = "{}"
-                    values["path_params"] = "{}"
-                    values["session_hash"] = ""
+                    )
+                    values = {
+                        "time": record.asctime,
+                        "level": record.levelname,
+                        "message": record.message,
+                    }
+                    if hasattr(record, "extra"):
+                        values["extra"] = json.dumps(record.__dict__.get("extra"))
+                    else:
+                        values["extra"] = "{}"
+                    if hasattr(record, "request"):
+                        query_params = dict(record.request.query_params)
+                        path_params = dict(record.request.path_params)
+                        # ip = get_ip(record.request)
+                        session_hash = record.request.session_hash
+                        values["query_params"] = json.dumps(query_params)
+                        values["path_params"] = json.dumps(path_params)
+                        values["session_hash"] = str(session_hash)
+                    else:
+                        values["query_params"] = "{}"
+                        values["path_params"] = "{}"
+                        values["session_hash"] = ""
 
-                cursor.execute(insert_statement, values)
-                self.connection.commit()
-        except (psycopg2.Error, Exception) as e:
+                    cursor.execute(insert_statement, values)
+                    self.connection.commit()
+        except psycopg2.Error as e:
             # Don't use logger on purpose to avoid endless loops
             print(f"Error logging to Postgres: {e}")
             stacktrace = traceback.format_exc()
@@ -235,6 +217,7 @@ def save_vote_to_db(data):
 
         """
         )
+        # TODO: refacto, values should equal data
         values = {
             "tstamp": (data["tstamp"]),
             "model_a_name": str(data["model_a_name"]),
@@ -266,12 +249,201 @@ def save_vote_to_db(data):
     except Exception as e:
         logger.error(f"Error saving vote to db: {e}")
         stacktrace = traceback.format_exc()
-        print(f"Stacktrace: {stacktrace}", exc_info=True)
+        logger.error(f"Stacktrace: {stacktrace}", exc_info=True)
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
+
+def upsert_reaction_to_db(data, request):
+    logger = logging.getLogger("languia")
+    from languia.config import db as db_config
+
+    # Ensure database configuration exists
+    if not db_config:
+        logger.warning("Cannot log to db: no db configured")
+        return
+
+    conn = None
+    cursor = None
+
+    try:
+        query = sql.SQL(
+            """
+        INSERT INTO reactions (
+            model_a_name, 
+            model_b_name, 
+            refers_to_model, 
+            msg_index, 
+            opening_msg, 
+            conversation_a, 
+            conversation_b, 
+            model_pos, 
+            conv_turns, 
+            template, 
+            conversation_pair_id, 
+            conv_a_id, 
+            conv_b_id, 
+            refers_to_conv_id, 
+            session_hash, 
+            visitor_id, 
+            ip, 
+            country, 
+            city, 
+            response_content, 
+            question_content, 
+            liked, 
+            disliked, 
+            comment, 
+            useful, 
+            creative, 
+            clear_formatting, 
+            incorrect, 
+            superficial, 
+            instructions_not_followed, 
+            model_pair_name, 
+            msg_rank,
+            chatbot_index
+        )
+        VALUES (
+            %(model_a_name)s, 
+            %(model_b_name)s, 
+            %(refers_to_model)s, 
+            %(msg_index)s, 
+            %(opening_msg)s, 
+            %(conversation_a)s, 
+            %(conversation_b)s, 
+            %(model_pos)s, 
+            %(conv_turns)s, 
+            %(template)s, 
+            %(conversation_pair_id)s, 
+            %(conv_a_id)s, 
+            %(conv_b_id)s, 
+            %(refers_to_conv_id)s, 
+            %(session_hash)s, 
+            %(visitor_id)s, 
+            %(ip)s, 
+            %(country)s, 
+            %(city)s, 
+            %(response_content)s, 
+            %(question_content)s, 
+            %(liked)s, 
+            %(disliked)s, 
+            %(comment)s, 
+            %(useful)s, 
+            %(creative)s, 
+            %(clear_formatting)s, 
+            %(incorrect)s, 
+            %(superficial)s, 
+            %(instructions_not_followed)s, 
+            %(model_pair_name)s, 
+            %(msg_rank)s,
+            %(chatbot_index)s
+        )
+        ON CONFLICT (refers_to_conv_id, msg_index) 
+        DO UPDATE SET
+            model_a_name = EXCLUDED.model_a_name,
+            model_b_name = EXCLUDED.model_b_name,
+            refers_to_model = EXCLUDED.refers_to_model,
+            opening_msg = EXCLUDED.opening_msg,
+            conversation_a = EXCLUDED.conversation_a,
+            conversation_b = EXCLUDED.conversation_b,
+            model_pos = EXCLUDED.model_pos,
+            conv_turns = EXCLUDED.conv_turns,
+            template = EXCLUDED.template,
+            conv_a_id = EXCLUDED.conv_a_id,
+            conv_b_id = EXCLUDED.conv_b_id,
+            conversation_pair_id = EXCLUDED.conversation_pair_id,
+            session_hash = EXCLUDED.session_hash,
+            visitor_id = EXCLUDED.visitor_id,
+            ip = EXCLUDED.ip,
+            country = EXCLUDED.country,
+            city = EXCLUDED.city,
+            response_content = EXCLUDED.response_content,
+            question_content = EXCLUDED.question_content,
+            liked = EXCLUDED.liked,
+            disliked = EXCLUDED.disliked,
+            comment = EXCLUDED.comment,
+            useful = EXCLUDED.useful,
+            creative = EXCLUDED.creative,
+            clear_formatting = EXCLUDED.clear_formatting,
+            incorrect = EXCLUDED.incorrect,
+            superficial = EXCLUDED.superficial,
+            instructions_not_followed = EXCLUDED.instructions_not_followed,
+            model_pair_name = EXCLUDED.model_pair_name,
+            msg_rank = EXCLUDED.msg_rank,
+            chatbot_index = EXCLUDED.chatbot_index;
+        """
+        )
+        
+        # TODO:
+        #     RETURNING
+        # (CASE
+        #     WHEN (pg_trigger_depth() = 0) THEN 'inserted'
+        #     ELSE 'updated'
+        # END) AS operation;
+
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute(query, data)
+        conn.commit()
+        logger.info("Reaction data successfully saved to DB.")
+
+    except Exception as e:
+        logger.error(f"Error saving reaction to DB: {e}")
+        logger.error(f"SQL: {query}")
+        stacktrace = traceback.format_exc()
+        logger.error(f"Stacktrace: {stacktrace}")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return data
+
+
+def delete_reaction_in_db(msg_index, refers_to_conv_id):
+    logger = logging.getLogger("languia")
+    from languia.config import db as db_config
+
+    # Ensure database configuration exists
+    if not db_config:
+        logger.warning("Cannot log to db: no db configured")
+        return
+
+    conn = None
+    cursor = None
+    data = {"msg_index": msg_index, "refers_to_conv_id": refers_to_conv_id}
+    try:
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
+        query = sql.SQL(
+            """DELETE FROM reactions
+WHERE refers_to_conv_id = %(refers_to_conv_id)s
+  AND msg_index = %(msg_index)s
+"""
+        )
+        # Execute the delete query
+        cursor.execute(query, data)
+        conn.commit()
+        logger.info("Reaction data deleted from DB.")
+
+    except Exception as e:
+        logger.error(f"Error deleting reaction from DB: {e}")
+        stacktrace = traceback.format_exc()
+        logger.error(f"Stacktrace: {stacktrace}")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return data
 
 
 def messages_to_dict_list(messages):
@@ -380,6 +552,144 @@ def vote_last_response(
     return data
 
 
+def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
+
+    for data in state_reactions:
+        if data == None:
+            continue
+        chatbot_index = data["index"]
+        role = chatbot[chatbot_index]["metadata"]["bot"]
+
+        if data["liked"]:
+            reaction = "liked"
+        elif data["liked"] == False:
+            reaction = "disliked"
+        else:
+            reaction = "none"
+
+        # Alternative:
+        # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
+        # role_index = chatbot_index % 3
+        # FIXME: don't forget to offset template messages if any
+        # TODO: save it as msg metadata instead?
+        bot_msg_rank = chatbot_index // 3
+        # skip rank * 2 past messages + 1 to get the bot message and not the user one
+        msg_index = bot_msg_rank * 2 + 1
+
+        record_reaction(
+            conversations=[conv_a, conv_b],
+            model_pos=role,
+            msg_index=msg_index,
+            chatbot_index=chatbot_index,
+            response_content=data["value"],
+            reaction=reaction,
+            request=request,
+        )
+
+
+def record_reaction(
+    conversations,
+    model_pos,
+    msg_index,
+    chatbot_index,
+    response_content,
+    reaction,
+    request: gr.Request,
+):
+    logger = logging.getLogger("languia")
+    if model_pos not in ["a", "b"]:
+        raise gr.Error(f"Weird model_pos: {model_pos}")
+    current_conversation = conversations[0] if model_pos == "a" else conversations[1]
+
+    # a reaction has been undone and none replaced it
+    if reaction == "none":
+        delete_reaction_in_db(
+            msg_index=msg_index, refers_to_conv_id=current_conversation.conv_id
+        )
+        return {
+            "msg_index": msg_index,
+            "refers_to_conv_id": current_conversation.conv_id,
+        }
+
+    conversation_a_messages = messages_to_dict_list(conversations[0].messages)
+    conversation_b_messages = messages_to_dict_list(conversations[1].messages)
+    print("msg_index: " + str(msg_index))
+    # print(current_conversation.messages)
+    if current_conversation.messages[msg_index].content != response_content:
+        logger.warning(
+            f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'"
+        )
+        logger.warning(f"Calculated index: {msg_index}")
+
+    model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
+    opening_prompt = conversations[0].messages[0].content
+    conv_turns = count_turns((conversations[0].messages))
+    t = datetime.datetime.now()
+    refers_to_model = current_conversation.model_name
+    # rank begins at zero
+    msg_rank = msg_index // 2
+    question_content = current_conversation.messages[msg_rank].content
+
+    liked = reaction == "liked"
+    disliked = reaction == "disliked"
+
+    data = {
+        # id
+        # "timestamp": t,
+        "model_a_name": conversations[0].model_name,
+        "model_b_name": conversations[1].model_name,
+        "refers_to_model": refers_to_model,  # (model name)
+        "msg_index": msg_index,
+        "opening_msg": opening_prompt,
+        "conversation_a": json.dumps(conversation_a_messages),
+        "conversation_b": json.dumps(conversation_b_messages),
+        "model_pos": model_pos,
+        # conversation can be longer if like is on older messages
+        "conv_turns": conv_turns,
+        "template": json.dumps(
+            []
+            if conversations[0].template_name == "zero_shot"
+            else conversations[0].template
+        ),
+        "conversation_pair_id": conversations[0].conv_id
+        + "-"
+        + conversations[1].conv_id,
+        "conv_a_id": conversations[0].conv_id,
+        "conv_b_id": conversations[1].conv_id,
+        "session_hash": str(request.session_hash),
+        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        "refers_to_conv_id": current_conversation.conv_id,
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        "country": "",
+        "city": "",
+        "comment": None,
+        "response_content": response_content,
+        "question_content": question_content,
+        "liked": liked,
+        "disliked": disliked,
+        "useful": None,
+        "creative": None,
+        "clear_formatting": None,
+        "incorrect": None,
+        "superficial": None,
+        "instructions_not_followed": None,
+        # Not asked:
+        "chatbot_index": chatbot_index,
+        "msg_rank": msg_rank,
+        "model_pair_name": json.dumps(model_pair_name),
+    }
+
+    reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
+    reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
+    with open(reaction_log_path, "a") as fout:
+        fout.write(json.dumps(data) + "\n")
+    # print(json.dumps(data))
+    upsert_reaction_to_db(data=data, request=request)
+
+    return data
+
+
 with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
     welcome_modal_html = welcome_modal_file.read()
 
@@ -393,8 +703,8 @@ with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
 
-def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_models):
-    if model in outage_models:
+def get_sample_weight(model, broken_endpoints, sampling_weights, sampling_boost_models):
+    if model in broken_endpoints:
         return 0
     # Give a 1 weight if model not in weights
     weight = sampling_weights.get(model, 1)
@@ -404,12 +714,66 @@ def get_sample_weight(model, outage_models, sampling_weights, sampling_boost_mod
     return weight
 
 
-# TODO: add to outage_models for next n min when detected an error
+def pick_endpoint(model_id, broken_endpoints):
+    from languia.config import api_endpoint_info
+    logger = logging.getLogger("languia")
+
+    for endpoint in api_endpoint_info:
+        api_id = endpoint.get("api_id")
+        if (
+            endpoint.get("model_id") == model_id
+            and api_id not in broken_endpoints
+        ):
+            logger.debug(f"got_endpoint: {api_id} for {model_id}")
+            return endpoint
+    return None
+
+
+def get_endpoint(endpoint_id):
+    from languia.config import api_endpoint_info
+
+    for endpoint in api_endpoint_info:
+        if endpoint.get("api_id") == endpoint_id:
+            return endpoint
+    return None
+
+
+def get_endpoints(model_id, broken_endpoints):
+
+    from languia.config import api_endpoint_info
+
+    endpoints = []
+    for endpoint in api_endpoint_info:
+        if (
+            endpoint.get("model_id") == model_id
+            and endpoint.get("api_id") not in broken_endpoints
+        ):
+            endpoints.append(endpoint)
+    return endpoints
+
+
+def get_unavailable_models(broken_endpoints, all_model_ids):
+    unavailable_models = []
+    logger = logging.getLogger("languia")
+    for model_id in all_model_ids:
+        if get_endpoints(model_id, broken_endpoints) == []:
+            unavailable_models.append(model_id)
+    logger.debug(f"unavailable_models: {unavailable_models}")
+    return unavailable_models
+
+
+# TODO: add to broken_endpoints for next n min when detected an error
 # TODO: simplify battle targets formula
 def get_battle_pair(
-    models, battle_targets, outage_models, sampling_weights, sampling_boost_models
+    all_models,
+    battle_targets,
+    broken_endpoints,
+    sampling_weights,
+    sampling_boost_models,
 ):
-    models = [model for model in models if model not in outage_models]
+
+    unavailable_models = get_unavailable_models(broken_endpoints, all_models)
+    models = [model for model in all_models if model not in unavailable_models]
     logger = logging.getLogger("languia")
     if len(models) == 0:
         logger.critical("Model list doesn't contain any model")
@@ -429,7 +793,7 @@ def get_battle_pair(
     # model_weights = []
     # for model in models:
     #     weight = get_sample_weight(
-    #         model, outage_models, sampling_weights, sampling_boost_models
+    #         model, broken_endpoints, sampling_weights, sampling_boost_models
     #     )
     #     model_weights.append(weight)
     # total_weight = np.sum(model_weights)
@@ -446,7 +810,7 @@ def get_battle_pair(
         if model == chosen_model:
             continue
         # weight = get_sample_weight(
-        #     model, outage_models, sampling_weights, sampling_boost_models
+        #     model, broken_endpoints, sampling_weights, sampling_boost_models
         # )
         # if (
         #     weight != 0
@@ -477,11 +841,10 @@ def get_matomo_js(matomo_url, matomo_id):
 <script>
   var _paq = window._paq = window._paq || [];
   /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['trackPageView']);
-  _paq.push(['enableLinkTracking']);
   _paq.push(['setConsentGiven']);
-
+  _paq.push(['enableLinkTracking']);
   _paq.push(['HeatmapSessionRecording::enable']);
+  _paq.push(['trackPageView']);
   (function() {"""
     js += f"""
     var u="{matomo_url}/";
@@ -591,15 +954,35 @@ def calculate_streaming_hours(impact_gwp_value):
         return int(streaming_hours * 60 * 60), "s"
 
 
-def build_reveal_html(
-    model_a,
-    model_b,
-    which_model_radio,
-    model_a_impact,
-    model_b_impact,
-    model_a_tokens,
-    model_b_tokens,
-):
+def build_reveal_html(conv_a, conv_b, which_model_radio):
+    from languia.config import models_extra_info
+
+    logger = logging.getLogger("languia")
+
+    model_a = get_model_extra_info(conv_a.model_name, models_extra_info)
+    model_b = get_model_extra_info(conv_b.model_name, models_extra_info)
+    logger.debug("output_tokens: " + str(conv_a.output_tokens))
+    logger.debug("output_tokens: " + str(conv_b.output_tokens))
+
+    # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
+    model_a_tokens = (
+        conv_a.output_tokens
+        if conv_a.output_tokens and conv_a.output_tokens != 0
+        else count_output_tokens(conv_a.messages)
+    )
+
+    model_b_tokens = (
+        conv_b.output_tokens
+        if conv_b.output_tokens and conv_b.output_tokens != 0
+        else count_output_tokens(conv_b.messages)
+    )
+
+    # TODO:
+    # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
+    # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
+    model_a_impact = get_llm_impact(model_a, conv_a.model_name, model_a_tokens, None)
+    model_b_impact = get_llm_impact(model_b, conv_b.model_name, model_b_tokens, None)
+
     env = Environment(loader=FileSystemLoader("templates"))
 
     template = env.get_template("reveal.html")
@@ -675,7 +1058,6 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
         "required_ram": 7,
         "friendly_size": "M",
         "distribution": "open-weights",
-        "dataset": "private",
         "conditions": "restricted",
         "description": "Un modèle open source disponible via Hugging Face.",
         "excerpt": "Un modèle open source",
@@ -697,8 +1079,7 @@ def get_model_extra_info(name: str, models_extra_info: list):
         "organisation": "Autre",
         "friendly_size": "M",
         "distribution": "open-weights",
-        "dataset": "private",
-        "conditions": "restricted",
+        "conditions": "copyleft",
         "description": "Un modèle open source disponible via Hugging Face.",
         "excerpt": "Un modèle open source",
         "icon_path": "huggingface.svg",
@@ -718,13 +1099,13 @@ def get_model_list(_controller_url, api_endpoint_info):
     #     models = ret.json()["models"]
     # else:
     models = []
-
     # Add models from the API providers
-    for mdl, mdl_dict in api_endpoint_info.items():
-        models.append(mdl)
-
-    models = list(set(models))
-
+    models.extend(
+        model_id
+        for model_dict in api_endpoint_info
+        if (model_id := model_dict.get("model_id")) is not None
+        and model_id not in models
+    )
     logger.debug(f"All models: {models}")
     return models
 
@@ -803,18 +1184,6 @@ def get_llm_impact(
     return impact
 
 
-# def get_categories(prompts_pool):
-
-#     prompts_pool_table = {"explain-simply": ["explanations","summaries"],"generate-new-ideas":["ideas", "stories"],"languages":["slang", "regional"]}
-
-#     if prompts_pool in prompts_pool_table:
-#         return prompts_pool_table[prompts_pool]
-#     else:
-#         # Use this name directly as it's the category name
-#         category = prompts_pool
-#         return [category]
-
-
 def gen_prompt(category):
     from languia.config import prompts_table
 
@@ -825,13 +1194,13 @@ def gen_prompt(category):
     return prompts[np.random.randint(len(prompts))]
 
 
-def refresh_outage_models(previous_outage_models, controller_url):
+def refresh_outages(previous_outages, controller_url):
     logger = logging.getLogger("languia")
     try:
         response = requests.get(controller_url + "/outages/", timeout=1)
     except Exception as e:
         logger.error("controller_inaccessible: " + str(e))
-        return previous_outage_models
+        return previous_outages
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -842,29 +1211,39 @@ def refresh_outage_models(previous_outage_models, controller_url):
         logger.warning(
             f"Failed to retrieve outage data. Status code: {response.status_code}"
         )
-        return previous_outage_models
+        return previous_outages
 
 
-def test_all_models(controller_url):
-    try:
-        requests.get(
-        url=f"{controller_url}/test_all_models",
-        timeout=2,
-        )
-    except Exception:
-        pass
+# def add_outage_model(controller_url, model_name, endpoint_name, reason):
+#     logger = logging.getLogger("languia")
 
-def test_model(controller_url, model_name):
+#     try:
+#         response = requests.post(
+#             params={
+#                 "reason": str(reason),
+#                 "model_name": model_name,
+#                 "endpoint": endpoint_name,
+#             },
+#             # params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
+#             url=f"{controller_url}/outages/",
+#             timeout=2,
+#         )
+#     except Exception:
+#         pass
+
+
+def test_endpoint(controller_url, api_id):
     return requests.get(
         # params={"model_name": model_name},
-        url=f"{controller_url}/outages/{model_name}",
+        url=f"{controller_url}/outages/{api_id}",
         timeout=2,
     )
 
-def on_endpoint_error(controller_url, model_name, reason):
+
+def on_endpoint_error(controller_url, api_id, reason):
     logger = logging.getLogger("languia")
     try:
-        return test_model(controller_url, model_name)
+        return test_endpoint(controller_url, api_id)
         # await test_model(controller_url, model_name)
         # return True
     except Exception as e:
@@ -873,7 +1252,7 @@ def on_endpoint_error(controller_url, model_name, reason):
         # pass
 
     # if response.status_code == 201:
-    # logger.info("modele_desactive: " + model_name)
+    #     logger.info(f"endpoint_desactive: {model_name} at {endpoint_name}")
     # else:
     #     logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
@@ -893,7 +1272,7 @@ def to_threeway_chatbot(conversations):
                         "role": "assistant",
                         "content": msg_a.content,
                         # TODO: add duration here?
-                        "metadata": {"name": "bot-a"},
+                        "metadata": {"bot": "a"},
                     }
                 )
             if msg_b:
@@ -901,7 +1280,7 @@ def to_threeway_chatbot(conversations):
                     {
                         "role": "assistant",
                         "content": msg_b.content,
-                        "metadata": {"name": "bot-b"},
+                        "metadata": {"bot": "b"},
                     }
                 )
     return threeway_chatbot
