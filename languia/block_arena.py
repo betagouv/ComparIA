@@ -198,7 +198,6 @@ with gr.Blocks(
     ) as vote_area:
         gr.HTML(elem_classes="text-center",
             value="""
-            <span class="step-badge">Étape 2/3</span>
             <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
             <p class="text-grey fr-text--sm">Votre préférence enrichit le jeu de données Compar:IA dont l’objectif est<br />d’affiner les futurs modèles d’IA sur le français</p>""",
         )
