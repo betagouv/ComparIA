@@ -17,6 +17,27 @@
 	{disabled}
 	border={true}
 	Icon={disabled
+		? ThumbUpDisabled
+		: selected === "like"
+			? ThumbUpActive
+			: ThumbUpDefault}
+	label={selected === "like" ? "j'apprécie (sélectionné)" : "j'apprécie"}
+	highlight={selected === "like"}
+	on:click={() => {
+		if (selected === "like") {
+			selected = null; // Unselect the "like"
+			handle_action("none"); // Notify that no action is selected
+		} else {
+			selected = "like"; // Select the "like"
+			handle_action("like"); // Notify that "like" was selected
+		}
+	}}
+/>
+
+<IconButton
+	{disabled}
+	border={true}
+	Icon={disabled
 		? ThumbDownDisabled
 		: selected === "dislike"
 			? ThumbDownActive
@@ -36,23 +57,3 @@
 	}}
 />
 
-<IconButton
-	{disabled}
-	border={true}
-	Icon={disabled
-		? ThumbUpDisabled
-		: selected === "like"
-			? ThumbUpActive
-			: ThumbUpDefault}
-	label={selected === "like" ? "j'apprécie (sélectionné)" : "j'apprécie"}
-	highlight={selected === "like"}
-	on:click={() => {
-		if (selected === "like") {
-			selected = null; // Unselect the "like"
-			handle_action("none"); // Notify that no action is selected
-		} else {
-			selected = "like"; // Select the "like"
-			handle_action("like"); // Notify that "like" was selected
-		}
-	}}
-/>
