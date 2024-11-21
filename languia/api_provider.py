@@ -62,7 +62,6 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
 
     data = dict()
     buffer = ""
-    chunks_log = []
 
     for chunk in response:
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):

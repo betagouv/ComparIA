@@ -606,7 +606,6 @@ def record_reaction(
         delete_reaction_in_db(
             msg_index=msg_index, refers_to_conv_id=current_conversation.conv_id
         )
-        log
         return {
             "msg_index": msg_index,
             "refers_to_conv_id": current_conversation.conv_id,
