@@ -31,14 +31,6 @@ body.dark {
   color: var(--body-text-color);
 }
 
-.dark .chatbot,
-.dark .message-row,
-.dark .user,
-.dark .user:hover,
-.dark .user:active {
-  background-color: var(--background-default-grey) !important;
-}
-
 .dark code {
   background-color: var(--neutral-100);
 }
