@@ -456,7 +456,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                         )
                         for i in range(config.num_sides)
                     ]
-                    pass
+                    continue
 
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
@@ -480,9 +480,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                         use_recommended_config=True,
                     )
 
-                    # Exponential backoff
-                    sleeping = min(2 * attempt, 10)
-                    logger.debug(f"Sleeping {sleeping}s...")
+                    # # Exponential backoff
+                    # sleeping = min(2 * attempt, 10)
+                    logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
                     continue
             else:
@@ -492,7 +492,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             logger.critical("maximum_attempts_reached")
             raise gr.Error(
                 duration=0,
-                message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, ou la conversation a été trop longue. Nous travaillons pour mieux gérer ces cas.",
+                message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, n'hésitez pas à relancer le comparateur. Nous travaillons pour mieux gérer ces cas.",
             )
 
         # Got answer at this point
