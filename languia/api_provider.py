@@ -7,7 +7,9 @@ import logging
 
 import sentry_sdk
 
-from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+    ChatMessage,
+)
 
 # from languia.utils import ContextTooLongError, EmptyResponseError
 
@@ -66,6 +68,18 @@ def process_response_stream(response, model_name=None, request=None):
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
+            if hasattr(chunk.choices[0], "delta") and hasattr(
+                chunk.choices[0].delta, "content"
+            ):
+                content = chunk.choices[0].delta.content
+            else:
+                content = ""
+
+            text += content
+            buffer += content
+
+            data["text"] = text
+
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
                     data["text"] = text
@@ -74,37 +88,13 @@ def process_response_stream(response, model_name=None, request=None):
                     # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
                     logger.warning("context_too_long: " + str(chunk))
-                    chunks_log.append(chunk)
 
                     if os.getenv("SENTRY_DSN"):
-                        sentry_sdk.capture_message(str(chunks_log))
+                        sentry_sdk.capture_message(f"context_too_long: {chunk}")
                     break
-            if hasattr(chunk.choices[0], "delta") and hasattr(
-                chunk.choices[0].delta, "content"
-            ):
-                content = chunk.choices[0].delta.content
-            else:
-                content = ""
-            if not content:
-                content = ""
-                logger.debug("no_content_in_chunk: " + str(chunk))
-                chunks_log.append(chunk)
-
-                # TODO: check if it's the first yield and keep all empty and not-first yields
-                # if os.getenv("SENTRY_DSN"):
-                #     sentry_sdk.capture_message(str(chunks_log))
-                continue
-
             # Special handling for certain models
-            if model_name == "meta/llama3-405b-instruct-maas":
-                content = content.replace("\\n", "\n").lstrip("assistant")
-            elif model_name == "google/gemini-1.5-pro-001":
-                content = content.replace("<br />", "")
+            # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
 
-            text += content
-            buffer += content
-
-            data["text"] = text
 
         if len(buffer.split()) >= 30:
             # if len(buffer.split()) >= 30 or len(text.split()) < 30:
