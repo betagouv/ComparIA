@@ -716,12 +716,15 @@ def get_sample_weight(model, broken_endpoints, sampling_weights, sampling_boost_
 
 def pick_endpoint(model_id, broken_endpoints):
     from languia.config import api_endpoint_info
+    logger = logging.getLogger("languia")
 
     for endpoint in api_endpoint_info:
+        api_id = endpoint.get("api_id")
         if (
             endpoint.get("model_id") == model_id
-            and endpoint.get("api_id") not in broken_endpoints
+            and api_id not in broken_endpoints
         ):
+            logger.debug(f"got_endpoint: {api_id} for {model_id}")
             return endpoint
     return None
 
@@ -749,11 +752,13 @@ def get_endpoints(model_id, broken_endpoints):
     return endpoints
 
 
-def get_unavailable_models(all_model_ids, broken_endpoints):
+def get_unavailable_models(broken_endpoints, all_model_ids):
     unavailable_models = []
+    logger = logging.getLogger("languia")
     for model_id in all_model_ids:
         if get_endpoints(model_id, broken_endpoints) == []:
             unavailable_models.append(model_id)
+    logger.debug(f"unavailable_models: {unavailable_models}")
     return unavailable_models
 
 
