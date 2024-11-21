@@ -44,4 +44,5 @@ COPY --from=cc /app/custom_components /app/custom_components
 ARG GIT_COMMIT
 ENV GIT_COMMIT=$GIT_COMMIT
 
-COPY assets controller.py languia/ main.py models-extra-info.toml templates /app/
+COPY assets controller.py main.py models-extra-info.toml templates /app/
+COPY languia /app/languia
