@@ -37,6 +37,16 @@ def get_api_provider_stream_iter(
             api_key=model_api_dict["api_key"],
             request=request,
         )
+    elif model_api_dict["api_type"] == "cohere":
+        stream_iter = cohere_api_stream_iter(
+            model_name=model_api_dict["model_name"],
+            messages=messages_dict,
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            api_base=model_api_dict["api_base"],
+            api_key=model_api_dict["api_key"],
+            request=request,
+        )
     elif model_api_dict["api_type"] == "vertex":
         stream_iter = vertex_api_stream_iter(
             model_name=model_api_dict["model_name"],
@@ -115,6 +125,37 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
 
 
 def openai_api_stream_iter(
+    model_name,
+    messages,
+    temperature,
+    max_new_tokens,
+    api_base=None,
+    api_key=None,
+    request=None,
+):
+    import openai
+
+    client = openai.OpenAI(
+        base_url=api_base,
+        api_key=api_key,
+        #         timeout=WORKER_API_TIMEOUT,
+        timeout=5,
+        # max_retries=
+    )
+
+    res = client.chat.completions.create(
+        model=model_name,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_new_tokens,
+        stream=True,
+        stream_options={"include_usage": True},
+        # Not available like this
+        # top_p=top_p,
+    )
+    yield from process_response_stream(res, model_name=model_name, api_base=api_base, request=request)
+
+def cohere_api_stream_iter(
     model_name,
     messages,
     temperature,
