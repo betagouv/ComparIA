@@ -338,7 +338,7 @@ with gr.Blocks(
                     <h4 class="text-center fr-mt-8w fr-mb-1v">Merci pour votre contribution</h4>
                     <p class="text-center text-grey fr-text--sm">Le jeu de données Compar:IA sera bientôt publié, continuez à l’alimenter en recommençant l’expérience !
     </p>
-                <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees">Discuter avec deux nouvelles IA</a><br />
+                <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees" target="_blank">Discuter avec deux nouvelles IA</a><br />
                 <a class="fr-mx-auto btn fr-btn--tertiary" href="../modeles" target="_blank">Découvrir la liste des IA</a>
             """,
             )
