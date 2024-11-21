@@ -53,7 +53,7 @@ def get_api_provider_stream_iter(
     return stream_iter
 
 
-def process_response_stream(response, model_name=None, request=None):
+def process_response_stream(response, model_name=None, api_base=None, request=None):
     """
     Processes the stream of responses from the OpenAI API.
     """
@@ -67,11 +67,15 @@ def process_response_stream(response, model_name=None, request=None):
     for chunk in response:
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
+            logger.debug(
+                f"reported output tokens for api {api_base} and model {model_name}: "
+                + str(data["output_tokens"])
+            )
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "delta") and hasattr(
                 chunk.choices[0].delta, "content"
             ):
-                content = chunk.choices[0].delta.content
+                content = chunk.choices[0].delta.content or ""
             else:
                 content = ""
 
@@ -139,7 +143,7 @@ def openai_api_stream_iter(
         # Not available like this
         # top_p=top_p,
     )
-    yield from process_response_stream(res, model_name=model_name, request=request)
+    yield from process_response_stream(res, model_name=model_name, api_base=api_base, request=request)
 
 
 def vertex_api_stream_iter(

@@ -106,11 +106,6 @@ def bot_response(
     output_tokens = None
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
-            logger.debug(
-                f"reported output tokens for api {endpoint['api_id']}:"
-                + str(data["output_tokens"])
-            )
-
             output_tokens = data["output_tokens"]
 
         output = data.get("text")
