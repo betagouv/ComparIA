@@ -409,8 +409,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                         config.outages, controller_url=config.controller_url
                     )
                     # Temporarily add the at-fault model
-                    config.outages.append(error_with_endpoint)
-                    # Simpler to repick 2 models
+                    if error_with_endpoint not in config.outages:
+                        config.outages.append(error_with_endpoint)
+                    logger.debug("refreshed outage models:" + str(config.outages))                    # Simpler to repick 2 models
                     # app_state.model_left, app_state.model_right = get_battle_pair(
                     model_left, model_right = get_battle_pair(
                         config.models,
