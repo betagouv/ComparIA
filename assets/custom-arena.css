@@ -328,7 +328,8 @@ li.fr-nav__item {
   border-style: solid;
 }
 
-.fr-btn--tertiary[target="_blank"]::after {
+.fr-btn--tertiary[target="_blank"]::after,
+.purple-btn[target="_blank"]::after {
   display: none !important;
 }
 
