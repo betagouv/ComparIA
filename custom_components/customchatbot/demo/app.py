@@ -8,6 +8,7 @@ with gr.Blocks() as demo:
     with gr.Row():
         CustomChatbot(
             value=example,
+            show_copy_button=True,
             label="Populated",
             likeable=True,
         ),  # populated component
