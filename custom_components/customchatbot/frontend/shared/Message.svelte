@@ -211,7 +211,7 @@
 			<ButtonPanel {...button_panel_props} />
 			{/if}
 		</button>
-		<!-- {#if message.showDislikePanel}
+		{#if message.showDislikePanel}
 
 		<DislikePanel 
 		show={showDislikePanel}
@@ -220,7 +220,7 @@
 		on:change={handle_action} 
 		{...dislike_panel_props}
 	   />
-	   		{/if} -->
+	   		{/if}
 	</div>
 {/each}
 
