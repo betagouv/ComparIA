@@ -111,8 +111,8 @@ export function normalise_messages(
 				content: redirect_src_url(message.content, root),
 				type: "text",
 				index: i,
-				showLikeMessage: false,
-				showDislikePanel: false,
+                showLikePanel: message.showLikePanel !== undefined ? message.showLikePanel : false,
+                showDislikePanel: message.showDislikePanel !== undefined ? message.showDislikePanel : false,
 
 			};
 		}

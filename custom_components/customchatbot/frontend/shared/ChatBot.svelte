@@ -193,13 +193,13 @@
 
 		// Set showLikeMessage to true for the liked message
 		if (selected === "like") {
-			value[i + j].showLikeMessage = true;
+			value[i + j].showLikePanel = true;
 			value[i + j].showDislikePanel = false;
 		} else if (selected === "dislike") {
-			value[i + j].showLikeMessage = false;
+			value[i + j].showLikePanel = false;
 			value[i + j].showDislikePanel = true;
 		} else if (selected === "none") {
-			value[i + j].showLikeMessage = false;
+			value[i + j].showLikePanel = false;
 			value[i + j].showDislikePanel = false;
 		}
 
@@ -308,7 +308,7 @@
 							handle_action={(selected) =>
 								handle_like(i, j, message, selected)}
 							scroll={is_browser ? scroll : () => {}}
-							showLikeMessage={message.showLikeMessage}
+							showLikeMessage={message.showLikePanel}
 							showDislikePanel={message.showDislikePanel}
 						/>
 					{/each}
