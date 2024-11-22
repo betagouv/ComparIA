@@ -11,7 +11,6 @@
 
 	import Pending from "./Pending.svelte";
 
-
 	export let value: NormalisedMessage[];
 	export let dislikeValue: (string | number)[] = [];
 
@@ -47,7 +46,7 @@
 	export let show_undo: boolean;
 	export let showLikeMessage: boolean = false;
 	export let showDislikePanel: boolean = false;
-	
+
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
 
@@ -113,19 +112,22 @@
 	};
 
 	type DislikePanelProps = {
-  show: boolean;
-  value: (string | number)[];
-  choices: [string, string | number][];
-  handle_action: (selected: string | null) => void;
-};
+		show: boolean;
+		value: (string | number)[];
+		choices: [string, string | number][];
+		handle_action: (selected: string | null) => void;
+	};
 
-  let dislike_panel_props: DislikePanelProps;
-  $: dislike_panel_props = {
-    show: showDislikePanel,
-    value: dislikeValue, // Assuming 'value' is the array that holds selected choices
-    choices: [["Rien", "rien"], ["Tout", "tout"]], // Example choices, adjust as necessary
-    handle_action: handle_action, // Pass down the handle_action function
-  };
+	let dislike_panel_props: DislikePanelProps;
+	$: dislike_panel_props = {
+		show: showDislikePanel,
+		value: dislikeValue, // Assuming 'value' is the array that holds selected choices
+		choices: [
+			["Rien", "rien"],
+			["Tout", "tout"],
+		], // Example choices, adjust as necessary
+		handle_action: handle_action, // Pass down the handle_action function
+	};
 </script>
 
 <!-- {#if role === "user"} -->
@@ -154,73 +156,72 @@
 			aria-label={role + "'s message: " + get_message_label_data(message)}
 		>
 			{#if message.type === "text"}
-			<div>
-				{#if message.role === "assistant"}
-					<div class="model-title">
-						{#if message.metadata?.bot === "a"}
-						<svg class="inline" width="26" height="32"
-							><circle
-								cx="13"
-								cy="13"
-								r="12"
-								fill="#A96AFE"
-								stroke="none"
-							></circle></svg
-						>
-						<h3 class="inline">Modèle A</h3>
-					{:else if message.metadata?.bot === "b"}
-						<svg class="inline" width="26" height="32"
-							><circle
-								cx="13"
-								cy="13"
-								r="12"
-								fill="#ff9575"
-								stroke="none"
-							></circle></svg
-						>
-						<h3 class="inline">Modèle B</h3>
+				<div>
+					{#if message.role === "assistant"}
+						<div class="model-title">
+							{#if message.metadata?.bot === "a"}
+								<svg class="inline" width="26" height="32"
+									><circle
+										cx="13"
+										cy="13"
+										r="12"
+										fill="#A96AFE"
+										stroke="none"
+									></circle></svg
+								>
+								<h3 class="inline">Modèle A</h3>
+							{:else if message.metadata?.bot === "b"}
+								<svg class="inline" width="26" height="32"
+									><circle
+										cx="13"
+										cy="13"
+										r="12"
+										fill="#ff9575"
+										stroke="none"
+									></circle></svg
+								>
+								<h3 class="inline">Modèle B</h3>
+							{/if}
+						</div>
+						<Markdown
+							message={message.content}
+							{latex_delimiters}
+							{sanitize_html}
+							{render_markdown}
+							{line_breaks}
+							on:load={scroll}
+							{root}
+						/>
+						{#if generating}
+							<Pending />
+							<!-- <br /><br /><em>En attente de la réponse…</em> -->
+						{/if}
+					{:else}
+						<Markdown
+							message={message.content}
+							{latex_delimiters}
+							{sanitize_html}
+							{render_markdown}
+							{line_breaks}
+							on:load={scroll}
+							{root}
+						/>
 					{/if}
-					</div>
-					<Markdown
-						message={message.content}
-						{latex_delimiters}
-						{sanitize_html}
-						{render_markdown}
-						{line_breaks}
-						on:load={scroll}
-						{root}
-					/>
-					{#if generating}
-						<Pending  />
-						<!-- <br /><br /><em>En attente de la réponse…</em> -->
-					{/if}
-				{:else}
-					<Markdown
-						message={message.content}
-						{latex_delimiters}
-						{sanitize_html}
-						{render_markdown}
-						{line_breaks}
-						on:load={scroll}
-						{root}
-					/>
-				{/if}
-			</div>
+				</div>
 			{/if}
-			{#if message.role === "assistant"}			
-			<ButtonPanel {...button_panel_props} />
+			{#if message.role === "assistant"}
+				<ButtonPanel {...button_panel_props} />
 			{/if}
 		</button>
 		{#if message.showDislikePanel}
-
-		<DislikePanel 
-		show={showDislikePanel}
-		value={dislikeValue}
-		on:input={handle_action} 
-		on:change={handle_action} 
-		{...dislike_panel_props}
-	   />
-	   		{/if}
+			<DislikePanel
+				show={showDislikePanel}
+				value={dislikeValue}
+				on:input={handle_action}
+				on:change={handle_action}
+				{...dislike_panel_props}
+			/>
+		{/if}
 	</div>
 {/each}
 
@@ -259,13 +260,12 @@
 		border-radius: 0.5rem;
 		background-color: white;
 		display: grid;
-		
 	}
 	@media (min-width: 48em) {
 		.message.bot button {
 			height: 100%;
 		}
-		}
+	}
 
 	/* .message-row :global(img) {
 		margin: var(--size-2);

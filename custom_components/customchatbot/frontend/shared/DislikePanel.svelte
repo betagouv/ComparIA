@@ -11,20 +11,22 @@
 		onMount,
 	} from "svelte";
 
-
 	const dispatch = createEventDispatcher<{
 		change: undefined;
 		select: SelectData;
 		input: undefined;
 	}>();
 
-	export let show: boolean;        // Define the 'show' prop as a boolean
+	export let show: boolean; // Define the 'show' prop as a boolean
 
 	export let handle_action: (selected: string | null) => void;
 
 	export let value: (string | number)[] = [];
 	export let old_value = value.slice();
-	export let choices: [string, string | number][] = [["Rien", "rien"], ["Tout", "tout"]]; // Example choices, adjust as necessary
+	export let choices: [string, string | number][] = [
+		["Rien", "rien"],
+		["Tout", "tout"],
+	]; // Example choices, adjust as necessary
 	// $: disabled = !interactive;
 
 	// let selected: "like" | "dislike" | null = null;
@@ -35,8 +37,8 @@
 		} else {
 			value = [...value, choice];
 		}
-		console.log("yo")
-		console.log(choice)
+		console.log("yo");
+		console.log(choice);
 
 		choice = "choice";
 		handle_action(choice);
@@ -51,8 +53,7 @@
 <div class="rounded-tile">
 	Qu'est-ce qui vous a déplu ?
 	{#each choices as [display_value, internal_value], i}
-		<label 
-		class:selected={value.includes(internal_value)}>
+		<label class:selected={value.includes(internal_value)}>
 			<input
 				on:change={() => toggle_choice(internal_value)}
 				on:input={(evt) =>
