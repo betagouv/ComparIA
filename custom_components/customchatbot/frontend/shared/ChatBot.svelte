@@ -159,17 +159,6 @@
 	});
 
 	// afterUpdate(() => {
-	// 	if (!div) return;
-	// 	div.querySelectorAll("img").forEach((n) => {
-	// 		n.addEventListener("click", (e) => {
-	// 			const target = e.target as HTMLImageElement;
-	// 			if (target) {
-	// 				image_preview_source = target.src;
-	// 				image_preview_source_alt = target.alt;
-	// 				is_image_preview_open = true;
-	// 			}
-	// 		});
-	// 	});
 	// });
 
 	$: {
