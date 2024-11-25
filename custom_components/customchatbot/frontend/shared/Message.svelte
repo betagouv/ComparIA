@@ -46,17 +46,21 @@
 	export let show_undo: boolean;
 	export let liked: boolean = false;
 	export let disliked: boolean = false;
+	export let prefs: string[] = [];
+	export let comment: string | undefined;
 
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
 
-	function handle_dislike_action(value: string[], message: NormalisedMessage): void {
+	function handle_dislike_action(
+		value: string[],
+		message: NormalisedMessage,
+	): void {
 		// dispatch("select", {
 		// 	index: message.index,
 		// 	value: message.content,
 		// });
 		handle_action("dislike", value);
-
 	}
 
 	function get_message_label_data(message: NormalisedMessage): string {
@@ -114,13 +118,12 @@
 	};
 
 	type DislikePanelProps = {
-		message: messages,
+		message: messages;
 		show: boolean;
 		value: (string | number)[];
 		choices: [string, string | number][];
 		handle_action: (selected: string | null) => void;
 	};
-
 </script>
 
 <!-- {#if role === "user"} -->
@@ -210,8 +213,9 @@
 			<DislikePanel
 				show={disliked}
 				value={dislikeValue}
-				handle_action={handle_action}
-				message={message}
+				{handle_action}
+				{message}
+				{prefs}
 			/>
 		{/if}
 	</div>

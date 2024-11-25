@@ -6,6 +6,7 @@
 	import type { Gradio, SelectData, LikeData } from "@gradio/utils";
 
 	import ChatBot from "./shared/ChatBot.svelte";
+	import ExtendedLikeData from "./shared/ChatBot.svelte";
 	import type { UndoRetryData } from "./shared/utils";
 	import { Block, BlockLabel } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
@@ -49,7 +50,7 @@
 		select: SelectData;
 		share: ShareData;
 		error: string;
-		like: LikeData;
+		like: ExtendedLikeData;
 		clear_status: LoadingStatus;
 		example_select: SelectData;
 		retry: UndoRetryData;

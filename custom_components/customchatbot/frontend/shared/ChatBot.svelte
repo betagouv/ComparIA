@@ -82,9 +82,18 @@
 	export let like_user_message = false;
 	export let root: string;
 
-	export const negative_prefs = ["incorrect", "superficial", "instructions-not-followed"];
+	export const negative_prefs = [
+		"incorrect",
+		"superficial",
+		"instructions-not-followed",
+	];
 
-	export const positive_prefs = ["useful", "complete", "creative", "clear-formatting"];
+	export const positive_prefs = [
+		"useful",
+		"complete",
+		"creative",
+		"clear-formatting",
+	];
 
 	let target: HTMLElement | null = null;
 
@@ -95,11 +104,17 @@
 	let div: HTMLDivElement;
 
 	let show_scroll_button = false;
-
+	export interface ExtendedLikeData {
+		index: number | [number, number];
+		value: any;
+		liked?: boolean;
+		prefs?: string[];
+		comment?: boolean;
+	}
 	const dispatch = createEventDispatcher<{
 		change: undefined;
 		select: SelectData;
-		like: LikeData;
+		like: ExtendedLikeData;
 		undo: UndoRetryData;
 		retry: UndoRetryData;
 		share: any;
@@ -187,25 +202,31 @@
 		if (selected === "like") {
 			value[i + j].liked = true;
 			value[i + j].disliked = false;
-			value[i + j].prefs = value[i + j].prefs.filter(item => !negative_prefs.includes(item));
-
+			if (value[i + j].prefs) {
+				value[i + j].prefs = value[i + j].prefs.filter(
+					(item) => !negative_prefs.includes(item),
+				);
+			}
 
 			dispatch("like", {
 				index: msg.index,
 				value: msg.content,
 				liked: true,
-				prefs: selected
+				prefs: value[i + j].prefs,
 			});
 		} else if (selected === "dislike") {
 			value[i + j].liked = false;
 			value[i + j].disliked = true;
-			value[i + j].prefs = value[i + j].prefs.filter(item => !positive_prefs.includes(item));
-
+			if (value[i + j].prefs) {
+				value[i + j].prefs = value[i + j].prefs.filter(
+					(item) => !positive_prefs.includes(item),
+				);
+			}
 			dispatch("like", {
 				index: msg.index,
 				value: msg.content,
 				liked: false,
-				prefs: selected
+				prefs: value[i + j].prefs,
 			});
 		} else if (selected === "none") {
 			value[i + j].liked = false;
@@ -215,12 +236,18 @@
 				index: msg.index,
 				value: msg.content,
 				liked: null,
-				prefs: []
+				prefs: [],
 			});
 		}
 
 		if (Array.isArray(selected)) {
 			value[i + j].prefs = selected;
+			dispatch("like", {
+				index: msg.index,
+				value: msg.content,
+				liked: msg.liked,
+				prefs: selected,
+			});
 		}
 	}
 </script>
