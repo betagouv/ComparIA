@@ -44,8 +44,8 @@
 	export let show_like: boolean;
 	export let show_retry: boolean;
 	export let show_undo: boolean;
-	export let showLikeMessage: boolean = false;
-	export let showDislikePanel: boolean = false;
+	export let liked: boolean = false;
+	export let disliked: boolean = false;
 
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
@@ -206,9 +206,9 @@
 				<ButtonPanel {...button_panel_props} />
 			{/if}
 		</button>
-		{#if message.showDislikePanel}
+		{#if message.disliked}
 			<DislikePanel
-				show={showDislikePanel}
+				show={disliked}
 				value={dislikeValue}
 				handle_action={handle_action}
 				message={message}

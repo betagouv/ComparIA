@@ -20,23 +20,28 @@ export interface Message {
 	metadata: Metadata;
 	content: string | FileData | ComponentData;
 	index: number | [number, number];
-	showLikePanel?: boolean;
-	showDislikePanel?: boolean;
+	liked?: boolean;
+	disliked?: boolean;
+	prefs?: string[];
+	comment: string
 }
 
 export interface TextMessage extends Message {
 	type: "text";
 	content: string;
-	showLikePanel: boolean;
-	showDislikePanel: boolean;
-	
+	liked: boolean;
+	disliked: boolean;
+	prefs?: string[];
+	comment: string	
 }
 
 export interface ComponentMessage extends Message {
 	type: "component";
 	content: ComponentData;
-	showLikePanel: boolean;
-	showDislikePanel: boolean;
+	liked: boolean;
+	disliked: boolean;
+	prefs?: string[];
+	comment: string
 }
 
 export interface ExampleMessage {

@@ -175,18 +175,25 @@
 		message: NormalisedMessage,
 		selected: string[] | string | null,
 	): void {
-        console.log(selected);
+		// console.log("i:"+i);
+		// console.log("j:"+j);
+		console.log(selected);
 		if (selected === "like") {
-			value[i + j].showLikePanel = true;
-			value[i + j].showDislikePanel = false;
+			value[i + j].liked = true;
+			value[i + j].disliked = false;
 		} else if (selected === "dislike") {
-			value[i + j].showLikePanel = false;
-			value[i + j].showDislikePanel = true;
+			value[i + j].liked = false;
+			value[i + j].disliked = true;
 		} else if (selected === "none") {
-			value[i + j].showLikePanel = false;
-			value[i + j].showDislikePanel = false;
+			value[i + j].liked = false;
+			value[i + j].disliked = false;
 		}
 
+		if (Array.isArray(selected)) {
+			console.log("yay");
+			// ['instructions-not-followed', 'superficial', 'incorrect']
+			value[i + j].prefs = selected;
+		}
 
 		if (!groupedMessages) return;
 
@@ -292,8 +299,8 @@
 							handle_action={(selected) =>
 								handle_like(i, j, message, selected)}
 							scroll={is_browser ? scroll : () => {}}
-							showLikeMessage={message.showLikePanel}
-							showDislikePanel={message.showDislikePanel}
+							liked={message.liked}
+							disliked={message.disliked}
 						/>
 					{/each}
 				</div>
