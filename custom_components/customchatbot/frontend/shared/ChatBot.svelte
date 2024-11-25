@@ -82,6 +82,10 @@
 	export let like_user_message = false;
 	export let root: string;
 
+	export const negative_prefs = ["incorrect", "superficial", "instructions-not-followed"];
+
+	export const positive_prefs = ["useful", "complete", "creative", "clear-formatting"];
+
 	let target: HTMLElement | null = null;
 
 	onMount(() => {
@@ -175,47 +179,48 @@
 		message: NormalisedMessage,
 		selected: string[] | string | null,
 	): void {
-		// console.log("i:"+i);
-		// console.log("j:"+j);
+		if (!groupedMessages) return;
+
+		const msg = groupedMessages[i][j];
+
 		console.log(selected);
 		if (selected === "like") {
 			value[i + j].liked = true;
 			value[i + j].disliked = false;
+			value[i + j].prefs = value[i + j].prefs.filter(item => !negative_prefs.includes(item));
+
+
+			dispatch("like", {
+				index: msg.index,
+				value: msg.content,
+				liked: true,
+				prefs: selected
+			});
 		} else if (selected === "dislike") {
 			value[i + j].liked = false;
 			value[i + j].disliked = true;
+			value[i + j].prefs = value[i + j].prefs.filter(item => !positive_prefs.includes(item));
+
+			dispatch("like", {
+				index: msg.index,
+				value: msg.content,
+				liked: false,
+				prefs: selected
+			});
 		} else if (selected === "none") {
 			value[i + j].liked = false;
 			value[i + j].disliked = false;
-		}
-
-		if (Array.isArray(selected)) {
-			console.log("yay");
-			// ['instructions-not-followed', 'superficial', 'incorrect']
-			value[i + j].prefs = selected;
-		}
-
-		if (!groupedMessages) return;
-
-		const msg = groupedMessages[i][j];
-		if (selected === "like") {
-			dispatch("like", {
-				index: msg.index,
-				value: msg.content,
-				liked: selected === "like",
-			});
-		} else if (selected === "dislike") {
-			dispatch("like", {
-				index: msg.index,
-				value: msg.content,
-				liked: !(selected === "dislike"),
-			});
-		} else if (selected === "none") {
+			value[i + j].prefs = [];
 			dispatch("like", {
 				index: msg.index,
 				value: msg.content,
 				liked: null,
+				prefs: []
 			});
+		}
+
+		if (Array.isArray(selected)) {
+			value[i + j].prefs = selected;
 		}
 	}
 </script>
