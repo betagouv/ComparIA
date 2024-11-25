@@ -50,11 +50,13 @@
 	export let handle_action: (selected: string | null) => void;
 	export let scroll: () => void;
 
-	function handle_select(i: number, message: NormalisedMessage): void {
-		dispatch("select", {
-			index: message.index,
-			value: message.content,
-		});
+	function handle_dislike_action(value: string[], message: NormalisedMessage): void {
+		// dispatch("select", {
+		// 	index: message.index,
+		// 	value: message.content,
+		// });
+		handle_action("dislike", value);
+
 	}
 
 	function get_message_label_data(message: NormalisedMessage): string {
@@ -112,22 +114,13 @@
 	};
 
 	type DislikePanelProps = {
+		message: messages,
 		show: boolean;
 		value: (string | number)[];
 		choices: [string, string | number][];
 		handle_action: (selected: string | null) => void;
 	};
 
-	let dislike_panel_props: DislikePanelProps;
-	$: dislike_panel_props = {
-		show: showDislikePanel,
-		value: dislikeValue, // Assuming 'value' is the array that holds selected choices
-		choices: [
-			["Rien", "rien"],
-			["Tout", "tout"],
-		], // Example choices, adjust as necessary
-		handle_action: handle_action, // Pass down the handle_action function
-	};
 </script>
 
 <!-- {#if role === "user"} -->
@@ -217,9 +210,8 @@
 			<DislikePanel
 				show={showDislikePanel}
 				value={dislikeValue}
-				on:input={handle_action}
-				on:change={handle_action}
-				{...dislike_panel_props}
+				handle_action={handle_action}
+				message={message}
 			/>
 		{/if}
 	</div>

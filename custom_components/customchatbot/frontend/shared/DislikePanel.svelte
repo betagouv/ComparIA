@@ -18,14 +18,15 @@
 	}>();
 
 	export let show: boolean; // Define the 'show' prop as a boolean
+	export let message: NormalisedMessage | NormalisedMessage[];
 
 	export let handle_action: (selected: string | null) => void;
 
 	export let value: (string | number)[] = [];
 	export let old_value = value.slice();
 	export let choices: [string, string | number][] = [
-		["Rien", "rien"],
-		["Tout", "tout"],
+		["Incorrect", "incorrect"],
+		["Superficiel", "superficial"], ["Instructions non suivies","instructions-not-followed"],
 	]; // Example choices, adjust as necessary
 	// $: disabled = !interactive;
 
@@ -37,16 +38,11 @@
 		} else {
 			value = [...value, choice];
 		}
-		console.log("yo");
-		console.log(choice);
-
-		choice = "choice";
-		handle_action(choice);
 	}
 
 	$: if (JSON.stringify(old_value) !== JSON.stringify(value)) {
 		old_value = value;
-		dispatch("change");
+		handle_action(value);
 	}
 </script>
 

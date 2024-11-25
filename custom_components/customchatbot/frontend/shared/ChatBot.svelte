@@ -173,24 +173,9 @@
 		i: number,
 		j: number,
 		message: NormalisedMessage,
-		selected: string | null,
+		selected: string[] | string | null,
 	): void {
-		if (selected === "undo" || selected === "retry") {
-			const val_ = value as NormalisedMessage[];
-			// iterate through messages until we find the last user message
-			// the index of this message is where the user needs to edit the chat history
-			let last_index = val_.length - 1;
-			while (val_[last_index].role === "assistant") {
-				last_index--;
-			}
-			dispatch(selected, {
-				index: val_[last_index].index,
-				value: val_[last_index].content,
-			});
-			return;
-		}
-
-		// Set showLikeMessage to true for the liked message
+        console.log(selected);
 		if (selected === "like") {
 			value[i + j].showLikePanel = true;
 			value[i + j].showDislikePanel = false;
@@ -201,6 +186,7 @@
 			value[i + j].showLikePanel = false;
 			value[i + j].showDislikePanel = false;
 		}
+
 
 		if (!groupedMessages) return;
 
