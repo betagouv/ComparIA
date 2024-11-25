@@ -617,7 +617,7 @@ def record_reaction(
     # print(current_conversation.messages)
     if current_conversation.messages[msg_index].content != response_content:
         logger.warning(
-            f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content}'"
+            f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content.strip()}'"
         )
         logger.warning(f"Calculated index: {msg_index}")
 
