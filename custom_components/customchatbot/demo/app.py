@@ -11,6 +11,7 @@ with gr.Blocks() as demo:
             show_copy_button=True,
             label="Populated",
             likeable=True,
+            type="messages"
         ),  # populated component
 
 

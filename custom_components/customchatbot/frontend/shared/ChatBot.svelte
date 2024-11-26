@@ -1,3 +1,12 @@
+<script context="module" lang="ts">
+export interface ExtendedLikeData {
+		index: number | [number, number];
+		value: any;
+		liked?: boolean;
+		prefs?: string[];
+		comment?: boolean;
+	}
+</script>
 <script lang="ts">
 	import {
 		format_chat_for_sharing,
@@ -32,42 +41,41 @@
 	import { ShareError } from "@gradio/utils";
 	import { Gradio } from "@gradio/utils";
 
-	
 	export let value: NormalisedMessage[] | null = [];
 	let old_value: NormalisedMessage[] | null = null;
-	
+
 	import CopyAll from "./CopyAll.svelte";
-	
+
 	export let _fetch: typeof fetch;
 	export let load_component: Gradio["load_component"];
-	
+
 	let _components: Record<string, ComponentType<SvelteComponent>> = {};
-		
-		const is_browser = typeof window !== "undefined";
-		
-		async function update_components(): Promise<void> {
-			_components = await load_components(
-				get_components_from_messages(value),
-				_components,
-				load_component,
-				);
-			}
-			
-			$: value, update_components();
-			
-			export let latex_delimiters: {
-				left: string;
-				right: string;
-				display: boolean;
-			}[];
-			export let disabled = false;
-			export let pending_message = false;
-			export let generating = false;
-			export let selectable = false;
-			export let likeable = false;
-			export let show_share_button = false;
-			export let show_copy_all_button = false;
-			export let rtl = false;
+
+	const is_browser = typeof window !== "undefined";
+
+	async function update_components(): Promise<void> {
+		_components = await load_components(
+			get_components_from_messages(value),
+			_components,
+			load_component,
+		);
+	}
+
+	$: value, update_components();
+
+	export let latex_delimiters: {
+		left: string;
+		right: string;
+		display: boolean;
+	}[];
+	export let disabled = false;
+	export let pending_message = false;
+	export let generating = false;
+	export let selectable = false;
+	export let likeable = false;
+	export let show_share_button = false;
+	export let show_copy_all_button = false;
+	export let rtl = false;
 	export let show_copy_button = false;
 	export let sanitize_html = true;
 	export let render_markdown = true;
@@ -83,6 +91,19 @@
 	export let like_user_message = false;
 	export let root: string;
 
+	export const negative_prefs = [
+		"incorrect",
+		"superficial",
+		"instructions-not-followed",
+	];
+
+	export const positive_prefs = [
+		"useful",
+		"complete",
+		"creative",
+		"clear-formatting",
+	];
+
 	let target: HTMLElement | null = null;
 
 	onMount(() => {
@@ -92,11 +113,11 @@
 	let div: HTMLDivElement;
 
 	let show_scroll_button = false;
-
+	
 	const dispatch = createEventDispatcher<{
 		change: undefined;
 		select: SelectData;
-		like: LikeData;
+		like: ExtendedLikeData;
 		undo: UndoRetryData;
 		retry: UndoRetryData;
 		share: any;
@@ -159,17 +180,6 @@
 	});
 
 	// afterUpdate(() => {
-	// 	if (!div) return;
-	// 	div.querySelectorAll("img").forEach((n) => {
-	// 		n.addEventListener("click", (e) => {
-	// 			const target = e.target as HTMLImageElement;
-	// 			if (target) {
-	// 				image_preview_source = target.src;
-	// 				image_preview_source_alt = target.alt;
-	// 				is_image_preview_open = true;
-	// 			}
-	// 		});
-	// 	});
 	// });
 
 	$: {
@@ -185,59 +195,71 @@
 		i: number,
 		j: number,
 		message: NormalisedMessage,
-		selected: string | null,
+		selected: string[] | string | null,
 	): void {
-		if (selected === "undo" || selected === "retry") {
-			const val_ = value as NormalisedMessage[];
-			// iterate through messages until we find the last user message
-			// the index of this message is where the user needs to edit the chat history
-			let last_index = val_.length - 1;
-			while (val_[last_index].role === "assistant") {
-				last_index--;
-			}
-			dispatch(selected, {
-				index: val_[last_index].index,
-				value: val_[last_index].content,
-			});
-			return;
-		}
+		if (!groupedMessages) return;
+		
+		var user_msg_offset = Math.floor(i / 2);
+		var chatbot_index = i + j + user_msg_offset;
 
-		// Set showLikeMessage to true for the liked message
+		const msg = groupedMessages[i][j];
+
+		// console.log(selected);
 		if (selected === "like") {
-			value[i + j].showLikeMessage = true;
-			value[i + j].showDislikePanel = false;
-		} else if (selected === "dislike") {
-			value[i + j].showLikeMessage = false;
-			value[i + j].showDislikePanel = true;
-		} else if (selected === "none") {
-			value[i + j].showLikeMessage = false;
-			value[i + j].showDislikePanel = false;
-		}
-
-			if (!groupedMessages) return;
-
-			const msg = groupedMessages[i][j];
-			if (selected === "like") {
-				dispatch("like", {
-					index: msg.index,
-					value: msg.content,
-					liked: selected === "like",
-				});
-			} else if (selected === "dislike") {
-				dispatch("like", {
-					index: msg.index,
-					value: msg.content,
-					liked: !(selected === "dislike"),
-				});
-			} else if (selected === "none") {
-				dispatch("like", {
-					index: msg.index,
-					value: msg.content,
-					liked: null,
-				});
+			value[chatbot_index].liked = true;
+			value[chatbot_index].disliked = false;
+			if (value[chatbot_index].prefs) {
+				value[chatbot_index].prefs = value[chatbot_index].prefs.filter(
+					(item) => !negative_prefs.includes(item),
+				);
 			}
+
+			dispatch("like", {
+				index: msg.index,
+				value: msg.content,
+				liked: true,
+				prefs: value[chatbot_index].prefs,
+			});
+		} else if (selected === "dislike") {
+			value[chatbot_index].liked = false;
+			value[chatbot_index].disliked = true;
+			if (value[chatbot_index].prefs) {
+				value[chatbot_index].prefs = value[chatbot_index].prefs.filter(
+					(item) => !positive_prefs.includes(item),
+				);
+			}
+			dispatch("like", {
+				index: msg.index,
+				value: msg.content,
+				liked: false,
+				prefs: value[chatbot_index].prefs,
+			});
+		} else if (selected === "none") {
+			value[chatbot_index].liked = false;
+			value[chatbot_index].disliked = false;
+			value[chatbot_index].prefs = [];
+			dispatch("like", {
+				index: msg.index,
+				value: msg.content,
+				liked: null,
+				prefs: [],
+			});
 		}
-	
+
+		if (Array.isArray(selected)) {
+			value[chatbot_index].prefs = selected;
+			// console.log("msg")
+			// console.log(msg)
+			// console.log("message")
+			// console.log(message)
+			dispatch("like", {
+				index: msg.index,
+				value: msg.content,
+				liked: msg.liked,
+				prefs: selected,
+			});
+		}
+	}
 </script>
 
 {#if value !== null && value.length > 0}
@@ -319,8 +341,10 @@
 							handle_action={(selected) =>
 								handle_like(i, j, message, selected)}
 							scroll={is_browser ? scroll : () => {}}
-							showLikeMessage={message.showLikeMessage}
-							showDislikePanel={message.showDislikePanel}
+							liked={message.liked}
+							disliked={message.disliked}
+							comment={message.comment}
+
 						/>
 					{/each}
 				</div>
@@ -380,13 +404,13 @@
 
 	.panel-wrap {
 		width: 100%;
-		overflow-y: auto;
+		/* overflow-y: auto; */
 		background-color: #fcfcfd;
 	}
 
 	.bubble-wrap {
 		width: 100%;
-		overflow-y: auto;
+		/* overflow-y: auto; */
 		height: 100%;
 		padding-top: var(--spacing-xxl);
 	}

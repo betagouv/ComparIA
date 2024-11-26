@@ -17,23 +17,32 @@ export interface ComponentData {
 
 export interface Message {
 	role: MessageRole;
+	type: string;
 	metadata: Metadata;
 	content: string | FileData | ComponentData;
 	index: number | [number, number];
+	liked?: boolean;
+	disliked?: boolean;
+	prefs?: string[];
+	comment?: string
 }
 
 export interface TextMessage extends Message {
 	type: "text";
 	content: string;
-	showLikeMessage: boolean;
-	showDislikePanel: boolean;
+	liked: boolean;
+	disliked: boolean;
+	prefs?: string[];
+	comment?: string	
 }
 
 export interface ComponentMessage extends Message {
 	type: "component";
 	content: ComponentData;
-	showLikeMessage: boolean;
-	showDislikePanel: boolean;
+	liked: boolean;
+	disliked: boolean;
+	prefs?: string[];
+	comment?: string
 }
 
 export interface ExampleMessage {

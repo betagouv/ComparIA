@@ -6,14 +6,14 @@
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
-	// import LikePanel from "./LikePanel.svelte";
+	import LikePanel from "./LikePanel.svelte";
 	import DislikePanel from "./DislikePanel.svelte";
 
 	import Pending from "./Pending.svelte";
 
-
 	export let value: NormalisedMessage[];
 	export let dislikeValue: (string | number)[] = [];
+	export let likeValue: (string | number)[] = [];
 
 	export let role = "user";
 	export let messages: NormalisedMessage[] = [];
@@ -45,18 +45,13 @@
 	export let show_like: boolean;
 	export let show_retry: boolean;
 	export let show_undo: boolean;
-	export let showLikeMessage: boolean = false;
-	export let showDislikePanel: boolean = false;
-	
-	export let handle_action: (selected: string | null) => void;
-	export let scroll: () => void;
+	export let liked: boolean = false;
+	export let disliked: boolean = false;
+	export let prefs: string[] = [];
+	export let comment: string | undefined;
 
-	function handle_select(i: number, message: NormalisedMessage): void {
-		dispatch("select", {
-			index: message.index,
-			value: message.content,
-		});
-	}
+	export let handle_action: (selected: string | null, value?: string[]) => void;
+	export let scroll: () => void;
 
 	function get_message_label_data(message: NormalisedMessage): string {
 		if (message.type === "text") {
@@ -85,6 +80,7 @@
 	}
 
 	type ButtonPanelProps = {
+		disabled: boolean;
 		show: boolean;
 		handle_action: (selected: string | null) => void;
 		likeable: boolean;
@@ -112,20 +108,13 @@
 		layout,
 	};
 
-	type DislikePanelProps = {
-  show: boolean;
-  value: (string | number)[];
-  choices: [string, string | number][];
-  handle_action: (selected: string | null) => void;
-};
-
-  let dislike_panel_props: DislikePanelProps;
-  $: dislike_panel_props = {
-    show: showDislikePanel,
-    value: dislikeValue, // Assuming 'value' is the array that holds selected choices
-    choices: [["Rien", "rien"], ["Tout", "tout"]], // Example choices, adjust as necessary
-    handle_action: handle_action, // Pass down the handle_action function
-  };
+	// type PrefsPanelProps = {
+	// 	message: typeof messages;
+	// 	show: boolean;
+	// 	value: (string | number)[];
+	// 	choices: [string, string | number][];
+	// 	handle_action: (selected: string | null) => void;
+	// };
 </script>
 
 <!-- {#if role === "user"} -->
@@ -144,83 +133,81 @@
 			class:selectable
 			style:cursor={selectable ? "default" : "default"}
 			style:text-align={rtl ? "right" : "left"}
-			on:select={() => handle_select(i, message)}
-			on:keydown={(e) => {
-				if (e.key === "Enter") {
-					handle_select(i, message);
-				}
-			}}
 			dir={rtl ? "rtl" : "ltr"}
 			aria-label={role + "'s message: " + get_message_label_data(message)}
 		>
 			{#if message.type === "text"}
-			<div>
-				{#if message.role === "assistant"}
-					<div class="model-title">
-						{#if message.metadata?.bot === "a"}
-						<svg class="inline" width="26" height="32"
-							><circle
-								cx="13"
-								cy="13"
-								r="12"
-								fill="#A96AFE"
-								stroke="none"
-							></circle></svg
-						>
-						<h3 class="inline">Modèle A</h3>
-					{:else if message.metadata?.bot === "b"}
-						<svg class="inline" width="26" height="32"
-							><circle
-								cx="13"
-								cy="13"
-								r="12"
-								fill="#ff9575"
-								stroke="none"
-							></circle></svg
-						>
-						<h3 class="inline">Modèle B</h3>
+				<div>
+					{#if message.role === "assistant"}
+						<div class="model-title">
+							{#if message.metadata?.bot === "a"}
+								<svg class="inline" width="26" height="32"
+									><circle
+										cx="13"
+										cy="13"
+										r="12"
+										fill="#A96AFE"
+										stroke="none"
+									></circle></svg
+								>
+								<h3 class="inline">Modèle A</h3>
+							{:else if message.metadata?.bot === "b"}
+								<svg class="inline" width="26" height="32"
+									><circle
+										cx="13"
+										cy="13"
+										r="12"
+										fill="#ff9575"
+										stroke="none"
+									></circle></svg
+								>
+								<h3 class="inline">Modèle B</h3>
+							{/if}
+						</div>
+						<Markdown
+							message={message.content}
+							{latex_delimiters}
+							{sanitize_html}
+							{render_markdown}
+							{line_breaks}
+							on:load={scroll}
+							{root}
+						/>
+						{#if generating}
+							<Pending />
+							<!-- <br /><br /><em>En attente de la réponse…</em> -->
+						{/if}
+					{:else}
+						<Markdown
+							message={message.content}
+							{latex_delimiters}
+							{sanitize_html}
+							{render_markdown}
+							{line_breaks}
+							on:load={scroll}
+							{root}
+						/>
 					{/if}
-					</div>
-					<Markdown
-						message={message.content}
-						{latex_delimiters}
-						{sanitize_html}
-						{render_markdown}
-						{line_breaks}
-						on:load={scroll}
-						{root}
-					/>
-					{#if generating}
-						<Pending  />
-						<!-- <br /><br /><em>En attente de la réponse…</em> -->
-					{/if}
-				{:else}
-					<Markdown
-						message={message.content}
-						{latex_delimiters}
-						{sanitize_html}
-						{render_markdown}
-						{line_breaks}
-						on:load={scroll}
-						{root}
-					/>
-				{/if}
-			</div>
+				</div>
 			{/if}
-			{#if message.role === "assistant"}			
-			<ButtonPanel {...button_panel_props} />
+			{#if message.role === "assistant"}
+				<ButtonPanel {...button_panel_props} />
 			{/if}
 		</button>
-		<!-- {#if message.showDislikePanel}
-
-		<DislikePanel 
-		show={showDislikePanel}
-		value={dislikeValue}
-		on:input={handle_action} 
-		on:change={handle_action} 
-		{...dislike_panel_props}
-	   />
-	   		{/if} -->
+		{#if message.disliked}
+			<DislikePanel
+				show={disliked}
+				value={dislikeValue}
+				{handle_action}
+			/>
+		{/if}
+		{#if message.liked}
+			<LikePanel
+				show={liked}
+				value={likeValue}
+				{handle_action}
+			/>
+		{/if}
 	</div>
 {/each}
 
@@ -259,13 +246,12 @@
 		border-radius: 0.5rem;
 		background-color: white;
 		display: grid;
-		
 	}
-	@media (min-width: 48em) {
+	/* @media (min-width: 48em) {
 		.message.bot button {
 			height: 100%;
 		}
-		}
+	} */
 
 	/* .message-row :global(img) {
 		margin: var(--size-2);

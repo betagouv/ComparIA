@@ -155,7 +155,7 @@ class CustomChatbot(Component):
         self,
         value: list[MessageDict | Message] | TupleFormat | Callable | None = None,
         *,
-        type: Literal["messages", "tuples"] | None = None,
+        type: Literal["messages", "tuples"] | None = "messages",
         label: str | None = None,
         every: Timer | float | None = None,
         inputs: Component | Sequence[Component] | set[Component] | None = None,
@@ -556,9 +556,7 @@ class CustomChatbot(Component):
         return [["Hello!", None]]
 
     def example_value(self) -> Any:
-        if self.type == "messages":
-            return [
+        return [
                 Message(role="user", content="Hello!").model_dump(),
                 Message(role="assistant", content="How can I help you?").model_dump(),
             ]
-        return [["user", "Hello!"], ["assistant", "Yo!"]]

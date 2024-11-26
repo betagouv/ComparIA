@@ -98,66 +98,51 @@ function convert_file_message_to_component_message(
 	} as ComponentData;
 }
 
-export function normalise_messages(
-	messages: Message[] | null,
+export function update_messages(
+	new_messages: Message[] | null,
+	old_messages: Message[] | null,
 	root: string
 ): NormalisedMessage[] | null {
-	if (messages === null) return messages;
-	return messages.map((message, i) => {
+	if (new_messages === null) return new_messages;
+	if (old_messages === null) {
+		// If there are no old messages, just return the new messages as is
+		return new_messages.map((message, i) => {
+		  return {
+			role: message.role,
+			metadata: message.metadata,
+			content: redirect_src_url(message.content, root),
+			type: "text",
+			index: i,
+			liked: message.liked !== undefined ? message.liked : false,
+			disliked: message.disliked !== undefined ? message.disliked : false,
+			// prefs: message.prefs !== undefined ? message.prefs : [],
+		  };
+		});
+	  }
+	
+	return new_messages.map((message, i) => {
+		const oldMessage = old_messages[i];
+
 		if (typeof message.content === "string") {
 			return {
+				...oldMessage, // spread the old message first
+				...message, // override with the new message
+		  
 				role: message.role,
 				metadata: message.metadata,
 				content: redirect_src_url(message.content, root),
 				type: "text",
 				index: i,
-				showLikeMessage: false,
-				showDislikePanel: false,
+
+				liked: message.liked !== undefined ? message.liked : oldMessage?.liked || false,
+				disliked: message.disliked !== undefined ? message.disliked : oldMessage?.disliked || false,
+				// prefs: message.prefs !== undefined ? message.prefs : oldMessage?.prefs || [],
+
 
 			};
 		}
 		return { type: "component", ...message } as ComponentMessage;
 	});
-}
-
-export function normalise_tuples(
-	messages: TupleFormat,
-	root: string
-): NormalisedMessage[] | null {
-	if (messages === null) return messages;
-	const msg = messages.flatMap((message_pair, i) => {
-		return message_pair.map((message, index) => {
-			if (message == null) return null;
-			const role = index == 0 ? "user" : "assistant";
-
-			if (typeof message === "string") {
-				return {
-					role: role,
-					type: "text",
-					content: redirect_src_url(message, root),
-					metadata: { title: null },
-					index: [i, index]
-				} as TextMessage;
-			}
-
-			if ("file" in message) {
-				return {
-					content: convert_file_message_to_component_message(message),
-					role: role,
-					type: "component",
-					index: [i, index]
-				} as ComponentMessage;
-			}
-
-			return {
-				role: role,
-				content: message,
-				type: "component",
-				index: [i, index]
-			} as ComponentMessage;
-		});
-	});
-	return msg.filter((message) => message != null) as NormalisedMessage[];
 }
 
 export function is_component_message(
