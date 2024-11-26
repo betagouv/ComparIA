@@ -2,6 +2,7 @@
 	import IconButton from "./IconButton.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 	import type { Gradio, SelectData } from "@gradio/utils";
+	import type { NormalisedMessage, TextMessage } from "../types";
 
 	import {
 		afterUpdate,
@@ -20,6 +21,7 @@
 
 	export let show: boolean; // Define the 'show' prop as a boolean
 	export let message: NormalisedMessage | NormalisedMessage[];
+	export let prefs: string[] = [];
 
 	export let handle_action: (selected: string | null) => void;
 
@@ -48,7 +50,7 @@
 	}
 </script>
 
-<div class="rounded-tile">
+<div class="dislike-panel">
 	<p class="thumb-down-icon">
 		<span>Qu'est-ce qui ne va pas ?<span></span></span>
 	</p>
@@ -83,7 +85,7 @@
 </div>
 
 <style>
-	.rounded-tile {
+	.dislike-panel {
 		padding: 10px 24px;
 		margin-top: 10px;
 		background-color: white;
