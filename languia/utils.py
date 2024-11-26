@@ -583,7 +583,7 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
             chatbot_index=chatbot_index,
             response_content=data["value"],
             reaction=reaction,
-            prefs=data.get("prefs"),
+            prefs=data.get("prefs", []),
             request=request,
         )
 
