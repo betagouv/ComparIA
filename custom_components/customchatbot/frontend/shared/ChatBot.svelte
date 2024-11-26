@@ -204,7 +204,7 @@ export interface ExtendedLikeData {
 
 		const msg = groupedMessages[i][j];
 
-		console.log(selected);
+		// console.log(selected);
 		if (selected === "like") {
 			value[chatbot_index].liked = true;
 			value[chatbot_index].disliked = false;

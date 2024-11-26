@@ -61,8 +61,8 @@
 	let _value: NormalisedMessage[] | null = [];
 
 	$: _value = update_messages(value as Message[], _value, root);
-	$: console.log("value:",value);
-	$: console.log("_value:",_value);
+	// $: console.log("value:",value);
+	// $: console.log("_value:",_value);
 
 	export let like_user_message = false;
 	export let loading_status: LoadingStatus | undefined = undefined;
