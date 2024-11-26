@@ -17,6 +17,7 @@ export interface ComponentData {
 
 export interface Message {
 	role: MessageRole;
+	type: string;
 	metadata: Metadata;
 	content: string | FileData | ComponentData;
 	index: number | [number, number];

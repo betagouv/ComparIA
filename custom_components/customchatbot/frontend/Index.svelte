@@ -14,7 +14,7 @@
 	import { StatusTracker } from "@gradio/statustracker";
 	import type { Message, TupleFormat, NormalisedMessage } from "./types";
 
-	import { normalise_tuples, normalise_messages } from "./shared/utils";
+	import { normalise_messages } from "./shared/utils";
 
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
@@ -60,10 +60,9 @@
 
 	let _value: NormalisedMessage[] | null = [];
 
-	$: _value =
-		type === "tuples"
-			? normalise_tuples(value as TupleFormat, root)
-			: normalise_messages(value as Message[], root);
+	$: _value = normalise_messages(value as Message[], root);
+	$: console.log("value:",value);
+	$: console.log("_value:",_value);
 
 	export let like_user_message = false;
 	export let loading_status: LoadingStatus | undefined = undefined;
