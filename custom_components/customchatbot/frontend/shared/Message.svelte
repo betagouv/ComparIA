@@ -52,17 +52,6 @@
 	export let handle_action: (selected: string | null, value?: string[]) => void;
 	export let scroll: () => void;
 
-	function handle_dislike_action(
-		value: string[],
-		message: NormalisedMessage,
-	): void {
-		// dispatch("select", {
-		// 	index: message.index,
-		// 	value: message.content,
-		// });
-		handle_action("dislike", value);
-	}
-
 	function get_message_label_data(message: NormalisedMessage): string {
 		if (message.type === "text") {
 			return message.content;
