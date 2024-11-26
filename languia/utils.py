@@ -583,6 +583,7 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
             chatbot_index=chatbot_index,
             response_content=data["value"],
             reaction=reaction,
+            prefs=data.get("prefs"),
             request=request,
         )
 
@@ -594,6 +595,7 @@ def record_reaction(
     chatbot_index,
     response_content,
     reaction,
+    prefs,
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
@@ -629,8 +631,7 @@ def record_reaction(
     msg_rank = msg_index // 2
     question_content = current_conversation.messages[msg_rank * 2].content
 
-    liked = reaction == "liked"
-    disliked = reaction == "disliked"
+    
 
     data = {
         # id
@@ -665,14 +666,14 @@ def record_reaction(
         "comment": None,
         "response_content": response_content,
         "question_content": question_content,
-        "liked": liked,
-        "disliked": disliked,
-        "useful": None,
-        "creative": None,
-        "clear_formatting": None,
-        "incorrect": None,
-        "superficial": None,
-        "instructions_not_followed": None,
+        "liked": reaction == "liked",
+        "disliked": reaction == "disliked",
+        "useful": "useful" in prefs,
+        "creative": "creative" in prefs,
+        "clear_formatting": "clear-formatting" in prefs,
+        "incorrect": "incorrect" in prefs,
+        "superficial": "superficial" in prefs,
+        "instructions_not_followed": "instructions_not_followed" in prefs,
         # Not asked:
         "chatbot_index": chatbot_index,
         "msg_rank": msg_rank,
