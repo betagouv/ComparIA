@@ -393,13 +393,13 @@
 
 	.panel-wrap {
 		width: 100%;
-		overflow-y: auto;
+		/* overflow-y: auto; */
 		background-color: #fcfcfd;
 	}
 
 	.bubble-wrap {
 		width: 100%;
-		overflow-y: auto;
+		/* overflow-y: auto; */
 		height: 100%;
 		padding-top: var(--spacing-xxl);
 	}
