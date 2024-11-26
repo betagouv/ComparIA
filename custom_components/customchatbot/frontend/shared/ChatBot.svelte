@@ -198,15 +198,18 @@ export interface ExtendedLikeData {
 		selected: string[] | string | null,
 	): void {
 		if (!groupedMessages) return;
+		
+		var user_msg_offset = Math.floor(i / 2);
+		var chatbot_index = i + j + user_msg_offset;
 
 		const msg = groupedMessages[i][j];
 
 		console.log(selected);
 		if (selected === "like") {
-			value[i + j].liked = true;
-			value[i + j].disliked = false;
-			if (value[i + j].prefs) {
-				value[i + j].prefs = value[i + j].prefs.filter(
+			value[chatbot_index].liked = true;
+			value[chatbot_index].disliked = false;
+			if (value[chatbot_index].prefs) {
+				value[chatbot_index].prefs = value[chatbot_index].prefs.filter(
 					(item) => !negative_prefs.includes(item),
 				);
 			}
@@ -215,13 +218,13 @@ export interface ExtendedLikeData {
 				index: msg.index,
 				value: msg.content,
 				liked: true,
-				prefs: value[i + j].prefs,
+				prefs: value[chatbot_index].prefs,
 			});
 		} else if (selected === "dislike") {
-			value[i + j].liked = false;
-			value[i + j].disliked = true;
-			if (value[i + j].prefs) {
-				value[i + j].prefs = value[i + j].prefs.filter(
+			value[chatbot_index].liked = false;
+			value[chatbot_index].disliked = true;
+			if (value[chatbot_index].prefs) {
+				value[chatbot_index].prefs = value[chatbot_index].prefs.filter(
 					(item) => !positive_prefs.includes(item),
 				);
 			}
@@ -229,12 +232,12 @@ export interface ExtendedLikeData {
 				index: msg.index,
 				value: msg.content,
 				liked: false,
-				prefs: value[i + j].prefs,
+				prefs: value[chatbot_index].prefs,
 			});
 		} else if (selected === "none") {
-			value[i + j].liked = false;
-			value[i + j].disliked = false;
-			value[i + j].prefs = [];
+			value[chatbot_index].liked = false;
+			value[chatbot_index].disliked = false;
+			value[chatbot_index].prefs = [];
 			dispatch("like", {
 				index: msg.index,
 				value: msg.content,
@@ -244,7 +247,11 @@ export interface ExtendedLikeData {
 		}
 
 		if (Array.isArray(selected)) {
-			value[i + j].prefs = selected;
+			value[chatbot_index].prefs = selected;
+			// console.log("msg")
+			// console.log(msg)
+			// console.log("message")
+			// console.log(message)
 			dispatch("like", {
 				index: msg.index,
 				value: msg.content,
