@@ -17,9 +17,10 @@ export interface ComponentData {
 
 export interface Message {
 	role: MessageRole;
-	type: string;
+	type: "text";
 	metadata: Metadata;
-	content: string | FileData | ComponentData;
+	content: string;
+	// content: string | FileData | ComponentData;
 	index: number | [number, number];
 	liked?: boolean;
 	disliked?: boolean;
@@ -36,14 +37,14 @@ export interface TextMessage extends Message {
 	comment: string	
 }
 
-export interface ComponentMessage extends Message {
-	type: "component";
-	content: ComponentData;
-	liked: boolean;
-	disliked: boolean;
-	prefs?: string[];
-	comment: string
-}
+// export interface ComponentMessage extends Message {
+// 	type: "component";
+// 	content: ComponentData;
+// 	liked: boolean;
+// 	disliked: boolean;
+// 	prefs?: string[];
+// 	comment: string
+// }
 
 export interface ExampleMessage {
 	icon?: FileData;
@@ -60,4 +61,5 @@ export type message_data =
 
 export type TupleFormat = [message_data, message_data][] | null;
 
-export type NormalisedMessage = TextMessage | ComponentMessage;
+export type NormalisedMessage = TextMessage;
+// export type NormalisedMessage = TextMessage | ComponentMessage;

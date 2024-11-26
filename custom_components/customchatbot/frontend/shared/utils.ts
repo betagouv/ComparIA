@@ -3,7 +3,7 @@ import type { ComponentType, SvelteComponent } from "svelte";
 import { uploadToHuggingFace } from "@gradio/utils";
 import type {
 	TupleFormat,
-	ComponentMessage,
+	// ComponentMessage,
 	ComponentData,
 	TextMessage,
 	NormalisedMessage,
@@ -102,7 +102,7 @@ export function update_messages(
 	new_messages: Message[] | null,
 	old_messages: Message[] | null,
 	root: string
-): NormalisedMessage[] | null {
+): Message[] | null {
 	if (new_messages === null) return new_messages;
 	if (old_messages === null) {
 		// If there are no old messages, just return the new messages as is
@@ -115,6 +115,7 @@ export function update_messages(
 			index: i,
 			liked: message.liked !== undefined ? message.liked : false,
 			disliked: message.disliked !== undefined ? message.disliked : false,
+			comment: message.comment !== undefined ? message.comment : ""
 			// prefs: message.prefs !== undefined ? message.prefs : [],
 		  };
 		});
@@ -141,15 +142,15 @@ export function update_messages(
 
 			};
 		}
-		return { type: "component", ...message } as ComponentMessage;
+		// return { type: "component", ...message } as ComponentMessage;
 	});
 }
 
-export function is_component_message(
-	message: NormalisedMessage
-): message is ComponentMessage {
-	return message.type === "component";
-}
+// export function is_component_message(
+// 	message: NormalisedMessage
+// ): message is ComponentMessage {
+// 	return message.type === "component";
+// }
 
 export function is_one_of_last_two_bot_msgs(
 	messages: NormalisedMessage[],
@@ -220,15 +221,15 @@ export async function load_components(
 	return _components;
 }
 
-export function get_components_from_messages(
-	messages: NormalisedMessage[] | null
-): string[] {
-	if (!messages) return [];
-	let components: Set<string> = new Set();
-	messages.forEach((message) => {
-		if (message.type === "component") {
-			components.add(message.content.component);
-		}
-	});
-	return Array.from(components);
-}
+// export function get_components_from_messages(
+// 	messages: NormalisedMessage[] | null
+// ): string[] {
+// 	if (!messages) return [];
+// 	let components: Set<string> = new Set();
+// 	messages.forEach((message) => {
+// 		if (message.type === "component") {
+// 			components.add(message.content.component);
+// 		}
+// 	});
+// 	return Array.from(components);
+// }

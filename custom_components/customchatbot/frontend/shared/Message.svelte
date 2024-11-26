@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { is_component_message } from "../shared/utils";
+	// import { is_component_message } from "../shared/utils";
 	import type { Client } from "@gradio/client";
 	import type { NormalisedMessage } from "../types";
 	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
@@ -55,19 +55,20 @@
 	function get_message_label_data(message: NormalisedMessage): string {
 		if (message.type === "text") {
 			return message.content;
-		} else if (
-			message.type === "component" &&
-			message.content.component === "file"
-		) {
-			if (Array.isArray(message.content.value)) {
-				return `file of extension type: ${message.content.value[0].orig_name?.split(".").pop()}`;
-			}
-			return (
-				`file of extension type: ${message.content.value?.orig_name?.split(".").pop()}` +
-				(message.content.value?.orig_name ?? "")
-			);
 		}
-		return `a component of type ${message.content.component ?? "unknown"}`;
+		// } else if (
+		// 	message.type === "component" &&
+		// 	message.content.component === "file"
+		// ) {
+		// 	if (Array.isArray(message.content.value)) {
+		// 		return `file of extension type: ${message.content.value[0].orig_name?.split(".").pop()}`;
+		// 	}
+		// 	return (
+		// 		`file of extension type: ${message.content.value?.orig_name?.split(".").pop()}` +
+		// 		(message.content.value?.orig_name ?? "")
+		// 	);
+		// }
+		// return `a component of type ${message.content.component ?? "unknown"}`;
 	}
 
 	function get_message_bot_position(message: NormalisedMessage): string {
