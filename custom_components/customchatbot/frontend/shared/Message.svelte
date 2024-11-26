@@ -6,13 +6,14 @@
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
-	// import LikePanel from "./LikePanel.svelte";
+	import LikePanel from "./LikePanel.svelte";
 	import DislikePanel from "./DislikePanel.svelte";
 
 	import Pending from "./Pending.svelte";
 
 	export let value: NormalisedMessage[];
 	export let dislikeValue: (string | number)[] = [];
+	export let likeValue: (string | number)[] = [];
 
 	export let role = "user";
 	export let messages: NormalisedMessage[] = [];
@@ -107,13 +108,13 @@
 		layout,
 	};
 
-	type DislikePanelProps = {
-		message: typeof messages;
-		show: boolean;
-		value: (string | number)[];
-		choices: [string, string | number][];
-		handle_action: (selected: string | null) => void;
-	};
+	// type PrefsPanelProps = {
+	// 	message: typeof messages;
+	// 	show: boolean;
+	// 	value: (string | number)[];
+	// 	choices: [string, string | number][];
+	// 	handle_action: (selected: string | null) => void;
+	// };
 </script>
 
 <!-- {#if role === "user"} -->
@@ -197,6 +198,15 @@
 			<DislikePanel
 				show={disliked}
 				value={dislikeValue}
+				{handle_action}
+				{message}
+				{prefs}
+			/>
+		{/if}
+		{#if message.liked}
+			<LikePanel
+				show={liked}
+				value={likeValue}
 				{handle_action}
 				{message}
 				{prefs}
