@@ -199,8 +199,6 @@
 				show={disliked}
 				value={dislikeValue}
 				{handle_action}
-				{message}
-				{prefs}
 			/>
 		{/if}
 		{#if message.liked}
@@ -208,8 +206,6 @@
 				show={liked}
 				value={likeValue}
 				{handle_action}
-				{message}
-				{prefs}
 			/>
 		{/if}
 	</div>

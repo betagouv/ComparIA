@@ -2,7 +2,7 @@
 	import IconButton from "./IconButton.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 	import type { Gradio, SelectData } from "@gradio/utils";
-	import type { NormalisedMessage, TextMessage } from "../types";
+	// import type { NormalisedMessage, TextMessage } from "../types";
 
 	import {
 		afterUpdate,
@@ -20,8 +20,8 @@
 	}>();
 
 	export let show: boolean; // Define the 'show' prop as a boolean
-	export let message: NormalisedMessage | NormalisedMessage[];
-	export let prefs: string[] = [];
+	// export let message: NormalisedMessage | NormalisedMessage[];
+	// export let prefs: string[] = [];
 
 	export let handle_action: (selected: string | null) => void;
 

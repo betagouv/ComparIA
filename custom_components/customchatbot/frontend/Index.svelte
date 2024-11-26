@@ -20,10 +20,10 @@
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let value: TupleFormat | Message[] = [];
-	export let scale: number | null = null;
-	export let min_width: number | undefined = undefined;
-	export let label: string;
-	export let show_label = true;
+	// export let scale: number | null = null;
+	// export let min_width: number | undefined = undefined;
+	// export let label: string;
+	// export let show_label = true;
 	export let interactive = true;
 	export let root: string;
 	export let _selectable = true;
