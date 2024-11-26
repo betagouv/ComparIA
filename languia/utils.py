@@ -628,7 +628,7 @@ def record_reaction(
     refers_to_model = current_conversation.model_name
     # rank begins at zero
     msg_rank = msg_index // 2
-    question_content = current_conversation.messages[msg_rank].content
+    question_content = current_conversation.messages[msg_rank * 2].content
 
     liked = reaction == "liked"
     disliked = reaction == "disliked"
