@@ -49,7 +49,7 @@
 	export let prefs: string[] = [];
 	export let comment: string | undefined;
 
-	export let handle_action: (selected: string | null) => void;
+	export let handle_action: (selected: string | null, value?: string[]) => void;
 	export let scroll: () => void;
 
 	function handle_dislike_action(
@@ -90,6 +90,7 @@
 	}
 
 	type ButtonPanelProps = {
+		disabled: boolean;
 		show: boolean;
 		handle_action: (selected: string | null) => void;
 		likeable: boolean;
@@ -118,7 +119,7 @@
 	};
 
 	type DislikePanelProps = {
-		message: messages;
+		message: typeof messages;
 		show: boolean;
 		value: (string | number)[];
 		choices: [string, string | number][];
@@ -142,12 +143,6 @@
 			class:selectable
 			style:cursor={selectable ? "default" : "default"}
 			style:text-align={rtl ? "right" : "left"}
-			on:select={() => handle_select(i, message)}
-			on:keydown={(e) => {
-				if (e.key === "Enter") {
-					handle_select(i, message);
-				}
-			}}
 			dir={rtl ? "rtl" : "ltr"}
 			aria-label={role + "'s message: " + get_message_label_data(message)}
 		>
@@ -257,11 +252,11 @@
 		background-color: white;
 		display: grid;
 	}
-	@media (min-width: 48em) {
+	/* @media (min-width: 48em) {
 		.message.bot button {
 			height: 100%;
 		}
-	}
+	} */
 
 	/* .message-row :global(img) {
 		margin: var(--size-2);
