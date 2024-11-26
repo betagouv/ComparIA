@@ -98,21 +98,44 @@ function convert_file_message_to_component_message(
 	} as ComponentData;
 }
 
-export function normalise_messages(
-	messages: Message[] | null,
+export function update_messages(
+	new_messages: Message[] | null,
+	old_messages: Message[] | null,
 	root: string
 ): NormalisedMessage[] | null {
-	if (messages === null) return messages;
-	return messages.map((message, i) => {
+	if (new_messages === null) return new_messages;
+	if (old_messages === null) {
+		// If there are no old messages, just return the new messages as is
+		return new_messages.map((message, i) => {
+		  return {
+			role: message.role,
+			metadata: message.metadata,
+			content: redirect_src_url(message.content, root),
+			type: "text",
+			index: i,
+			liked: message.liked !== undefined ? message.liked : false,
+			disliked: message.disliked !== undefined ? message.disliked : false,
+		  };
+		});
+	  }
+	
+	return new_messages.map((message, i) => {
+		const oldMessage = old_messages[i];
+
 		if (typeof message.content === "string") {
 			return {
+				...oldMessage, // spread the old message first
+				...message, // override with the new message
+		  
 				role: message.role,
 				metadata: message.metadata,
 				content: redirect_src_url(message.content, root),
 				type: "text",
 				index: i,
-                liked: message.liked !== undefined ? message.liked : false,
-                disliked: message.disliked !== undefined ? message.disliked : false,
+
+				liked: message.liked !== undefined ? message.liked : oldMessage?.liked || false, // Merge liked status
+				disliked: message.disliked !== undefined ? message.disliked : oldMessage?.disliked || false, // Merge liked status
+
 
 			};
 		}

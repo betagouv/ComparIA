@@ -14,7 +14,7 @@
 	import { StatusTracker } from "@gradio/statustracker";
 	import type { Message, TupleFormat, NormalisedMessage } from "./types";
 
-	import { normalise_messages } from "./shared/utils";
+	import { update_messages } from "./shared/utils";
 
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
@@ -60,7 +60,7 @@
 
 	let _value: NormalisedMessage[] | null = [];
 
-	$: _value = normalise_messages(value as Message[], root);
+	$: _value = update_messages(value as Message[], _value, root);
 	$: console.log("value:",value);
 	$: console.log("_value:",_value);
 
