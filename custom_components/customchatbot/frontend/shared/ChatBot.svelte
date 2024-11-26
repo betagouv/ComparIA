@@ -1,3 +1,12 @@
+<script context="module" lang="ts">
+export interface ExtendedLikeData {
+		index: number | [number, number];
+		value: any;
+		liked?: boolean;
+		prefs?: string[];
+		comment?: boolean;
+	}
+</script>
 <script lang="ts">
 	import {
 		format_chat_for_sharing,
@@ -104,13 +113,7 @@
 	let div: HTMLDivElement;
 
 	let show_scroll_button = false;
-	export interface ExtendedLikeData {
-		index: number | [number, number];
-		value: any;
-		liked?: boolean;
-		prefs?: string[];
-		comment?: boolean;
-	}
+	
 	const dispatch = createEventDispatcher<{
 		change: undefined;
 		select: SelectData;
@@ -333,6 +336,8 @@
 							scroll={is_browser ? scroll : () => {}}
 							liked={message.liked}
 							disliked={message.disliked}
+							comment={message.comment}
+
 						/>
 					{/each}
 				</div>
