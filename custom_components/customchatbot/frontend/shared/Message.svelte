@@ -351,6 +351,9 @@
 		background: none;
 	}
 
+	.bot {
+		margin-bottom: 1em;	
+	}
 	/* On mobile, reorganize the panels */
 
 	.bot.right {

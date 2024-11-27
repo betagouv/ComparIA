@@ -26,9 +26,12 @@ body.dark {
 
 .dark .chatbot p,
 .dark p,
-#free-mode p,
-#guided-area p {
-  color: var(--body-text-color);
+.dark #free-mode p,
+.dark #guided-area p, .dark .step-badge, .dark strong,  .dark li
+/* , .dark  .prose * */
+ {
+  color: #262626 !important;
+  --body-text-color: #262626 !important;
 }
 
 .dark .chatbot,

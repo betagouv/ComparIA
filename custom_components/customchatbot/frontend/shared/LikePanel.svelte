@@ -1,15 +1,13 @@
 <script lang="ts">
-	import IconButton from "./IconButton.svelte";
-	import ThumbDownActive from "./ThumbDownActive.svelte";
 	import type { Gradio, SelectData } from "@gradio/utils";
 	// import type { NormalisedMessage, TextMessage } from "../types";
 
 	import {
-		afterUpdate,
-		createEventDispatcher,
-		type SvelteComponent,
+		// afterUpdate,
 		type ComponentType,
-		tick,
+		createEventDispatcher,
+		// type SvelteComponent,
+		// tick,
 		onMount,
 	} from "svelte";
 
@@ -25,6 +23,10 @@
 
 	export let handle_action: (selected: string | null) => void;
 
+	// import { type ComponentType } from "svelte";
+	export let Icon: ComponentType;
+	export let text: string;
+	export let disabled: boolean = false;
 	export let value: (string | number)[] = [];
 	export let old_value = value.slice();
 	export let choices: [string, string | number][] = [
@@ -52,12 +54,14 @@
 </script>
 
 <div class="like-panel" class:hidden={show === false}>
-	<p class="thumb-up-icon">
-		<span>Qu'est-ce qui vous plaît ?<span></span></span>
+	<p class="thumb-icon inline-svg">
+		<svelte:component this={Icon} />
+		<span>{text}</span>
 	</p>
 	{#each choices as [display_value, internal_value], i}
-		<label class:selected={value.includes(internal_value)}>
+		<label class:disabled class:selected={value.includes(internal_value)}>
 			<input
+				{disabled}
 				on:change={() => toggle_choice(internal_value)}
 				on:input={(evt) =>
 					dispatch("select", {
@@ -84,14 +88,19 @@
 		</label>
 	{/each}
 </div>
+
 <style>
+	.inline-svg :global(svg) {
+		display: inline;
+	}
+
 	.like-panel {
-		padding: 10px 24px;
-		margin-top: 10px 0;
+		padding: 1em 1.5em 1em;
+		margin-bottom: 1em;
 		background-color: white;
 		border-color: #e5e5e5;
 		border-style: dashed;
-		border-width: 1px;
+		border-width: 1.5px;
 		border-radius: 0.25rem;
 	}
 	[type="checkbox"] {
@@ -111,6 +120,7 @@
 		font-weight: 500;
 		padding: 4px 10px;
 		margin-right: 10px;
+		line-height: 3em;
 	}
 
 	label.selected {
@@ -119,25 +129,21 @@
 		border: 1px #6a6af4 solid;
 	}
 
-	.thumb-up-icon span {
+	.thumb-icon {
 		font-weight: 700;
 		color: #3a3a3a;
-		vertical-align: top;
-	}
-	.thumb-up-icon {
-		margin-bottom: 10px;
+		margin-bottom: 5px !important;
 	}
 
-	.thumb-up-icon::before {
-		overflow: visible;
-		content: "";
-		padding-right: 24px;
-		height: 20px;
-		display: inline-block;
-		background-size: 20px;
-		/* background-size: url("./ThumbDownDefault.svelte"); */
-		background-image: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjIiIGhlaWdodD0iMjEiIHZpZXdCb3g9IjAgMCAyMiAyMSIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0xMS4zODQgMC42ODk0ODZMMTMuMTk4IDEuNTk2NDlDMTQuMjQ5OCAyLjEyMjIyIDE0Ljc5MzEgMy4zMDk5MiAxNC41MDMgNC40NDk0OUwxMy42IDcuOTk4NDlIMjBDMjEuMTA0NiA3Ljk5ODQ5IDIyIDguODkzOTIgMjIgOS45OTg0OVYxMi4xMDI1QzIyLjAwMDMgMTIuMzYzOCAyMS45NDkzIDEyLjYyMjcgMjEuODUgMTIuODY0NUwxOC43NTUgMjAuMzc5NUMxOC42MDA2IDIwLjc1NDIgMTguMjM1MyAyMC45OTg1IDE3LjgzIDIwLjk5ODVIMUMwLjQ0NzcxNSAyMC45OTg1IDAgMjAuNTUwOCAwIDE5Ljk5ODVWOS45OTg0OUMwIDkuNDQ2MiAwLjQ0NzcxNSA4Ljk5ODQ5IDEgOC45OTg0OUg0LjQ4MkM0LjgwNjg4IDguOTk4NTcgNS4xMTE1NSA4Ljg0MDgzIDUuMjk5IDguNTc1NDlMMTAuNzUyIDAuODQ4NDg2QzEwLjg5NDQgMC42NDY2MTkgMTEuMTYzIDAuNTc5MDYxIDExLjM4NCAwLjY4OTQ4NlpNMTEuNjQzIDMuMDU2NDlMNi45MzMgOS43Mjg0OUM2LjY4MyAxMC4wODI1IDYuMzYzIDEwLjM3MjUgNiAxMC41ODY1VjE4Ljk5ODVIMTcuMTZMMjAgMTIuMTAyNVY5Ljk5ODQ5SDEzLjZDMTIuOTgyNyA5Ljk5ODQgMTIuNDAwMSA5LjcxMzMgMTIuMDIxMyA5LjIyNTk3QzExLjY0MjQgOC43Mzg2NSAxMS41MDk4IDguMTAzNyAxMS42NjIgNy41MDU0OUwxMi41NjUgMy45NTc0OUMxMi42MjMyIDMuNzI5NDUgMTIuNTE0NSAzLjQ5MTY3IDEyLjMwNCAzLjM4NjQ5TDExLjY0MyAzLjA1NjQ5WiIgZmlsbD0iIzZBNkFGNCIvPgo8L3N2Zz4K");
-		background-repeat: no-repeat;
-		margin-right: 0.2em;
+	label.disabled.selected {
+		opacity: 0.5;
+		box-shadow: none;
+		background-color: #eee !important;
+		border: 1px solid #606367 !important;
+		color: #3a3a3a !important;
+	}
+
+	label.disabled:hover {
+		cursor: not-allowed;
 	}
 </style>

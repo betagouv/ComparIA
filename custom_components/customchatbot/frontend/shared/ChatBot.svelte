@@ -92,24 +92,27 @@
 	export let like_user_message = false;
 	export let root: string;
 
-	export const negative_prefs = [
-		"incorrect",
-		"superficial",
-		"instructions-not-followed",
-	];
-
-	export const positive_prefs = [
-		"useful",
-		"complete",
-		"creative",
-		"clear-formatting",
-	];
-
 	import LikePanel from "./LikePanel.svelte";
-	import DislikePanel from "./DislikePanel.svelte";
 
-	export let dislikeValue: (string | number)[] = [];
+	import ThumbUpActive from "./ThumbDownActive.svelte";
+	import ThumbDownActive from "./ThumbDownActive.svelte";
+
 	export let likeValue: (string | number)[] = [];
+	export const positive_choices: [string, string | number][] = [
+		["Utile", "useful"],
+		["Complet", "complete"],
+		["Créatif", "creative"],
+		["Mise en forme claire", "clear-formatting"],
+	];
+	export let dislikeValue: (string | number)[] = [];
+	export const negative_choices: [string, string | number][] = [
+		["Incorrect", "incorrect"],
+		["Superficiel", "superficial"],
+		["Instructions non suivies", "instructions-not-followed"],
+	];
+
+	export const positive_prefs = positive_choices.map((choice) => choice[1]);
+	export const negative_prefs = negative_choices.map((choice) => choice[1]);
 
 	let target: HTMLElement | null = null;
 
@@ -232,7 +235,7 @@
 			value[chatbot_index].disliked = true;
 			if (value[chatbot_index].prefs) {
 				value[chatbot_index].prefs = value[chatbot_index].prefs.filter(
-					(item) => !positive_prefs.includes(item),
+					(item) => !positive_choices[1].includes(item),
 				);
 			}
 			dispatch("like", {
@@ -356,15 +359,23 @@
 
 					{#each messages as message, j}
 						<div class="react-panels react-panel-{j}">
-							<DislikePanel
-								show={message.disliked}
-								value={dislikeValue}
+							<LikePanel
+								{disabled}
+								Icon={ThumbUpActive}
+								show={message.liked}
+								value={likeValue}
+								text="Qu'est-ce qui vous plaît ?"
+								choices={positive_choices}
 								handle_action={(selected) =>
 									handle_like(i, j, message, selected)}
 							/>
 							<LikePanel
-								show={message.liked}
-								value={likeValue}
+								{disabled}
+								Icon={ThumbDownActive}
+								show={message.disliked}
+								value={dislikeValue}
+								text="Qu'est-ce qui ne va pas ?"
+								choices={negative_choices}
 								handle_action={(selected) =>
 									handle_like(i, j, message, selected)}
 							/>

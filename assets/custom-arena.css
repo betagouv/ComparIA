@@ -28,7 +28,7 @@
   background-color: inherit;
 }
 
-label,
+/* label, */
 fieldset {
   /* background-color: var(--background-default-grey) !important; */
   border: none;
@@ -323,7 +323,7 @@ li.fr-nav__item {
 } */
 
 .fr-btn--tertiary {
-  color: var(--blue-france-main-525);
+  color: var(--blue-france-main-525) !important;
   border-color: var(--blue-france-main-525);
   border-width: 1px;
   border-style: solid;
@@ -336,13 +336,13 @@ li.fr-nav__item {
 
 .purple-btn[disabled] {
   background-color: #E5E5E5;
-  color: #929292;
+  color: #929292 !important;
 
 }
 
 .purple-btn {
   background-color: var(--blue-france-main-525);
-  color: #F5F5FE;
+  color: #F5F5FE !important;
 
   --hover: var(--blue-france-main-525-hover);
   --active: var(--blue-france-main-525-active);
@@ -350,7 +350,7 @@ li.fr-nav__item {
 
 .grey-btn {
   background-color: var(--grey-200-850);
-  color: #F5F5FE;
+  color: #F5F5FE !important;
   /* --background-action-high-grey-hover: 
   --background-action-high-grey-active:  */
   --hover: var(--grey-200-850-hover);

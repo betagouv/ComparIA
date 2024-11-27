@@ -65,7 +65,10 @@
 		box-shadow: none;
 		background-color: #eee !important;
 	}
+	button.border.highlight[disabled] {
+		border: 1px solid #606367 !important;
 
+	}
 	button[disabled]:hover {
 		cursor: not-allowed;
 	}
