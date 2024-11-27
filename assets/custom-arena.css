@@ -269,6 +269,7 @@ li.fr-nav__item {
 
 
 .fr-header {
+  background-color: white;
   filter: none;
   border-bottom: 1px solid var(--border-default-grey);
   /* filter: drop-shadow(var(--raised-shadow)); */

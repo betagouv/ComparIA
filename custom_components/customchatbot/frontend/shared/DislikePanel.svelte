@@ -87,7 +87,7 @@
 <style>
 	.dislike-panel {
 		padding: 10px 24px;
-		margin-top: 10px;
+		margin-top: 10px 0;
 		background-color: white;
 		border-color: #e5e5e5;
 		border-style: dashed;
