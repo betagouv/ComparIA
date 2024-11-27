@@ -50,39 +50,39 @@
 	}
 </script>
 
-<div class="dislike-panel">
-	<p class="thumb-down-icon">
-		<span>Qu'est-ce qui ne va pas ?<span></span></span>
-	</p>
-	{#each choices as [display_value, internal_value], i}
-		<label class:selected={value.includes(internal_value)}>
-			<input
-				on:change={() => toggle_choice(internal_value)}
-				on:input={(evt) =>
-					dispatch("select", {
-						index: i,
-						value: internal_value,
-						selected: evt.currentTarget.checked,
-					})}
-				on:keydown={(event) => {
-					if (event.key === "Enter") {
-						toggle_choice(internal_value);
+	<div class="dislike-panel" class:hidden={show === false}>
+		<p class="thumb-down-icon">
+			<span>Qu'est-ce qui ne va pas ?<span></span></span>
+		</p>
+		{#each choices as [display_value, internal_value], i}
+			<label class:selected={value.includes(internal_value)}>
+				<input
+					on:change={() => toggle_choice(internal_value)}
+					on:input={(evt) =>
 						dispatch("select", {
 							index: i,
 							value: internal_value,
-							selected: !value.includes(internal_value),
-						});
-					}
-				}}
-				checked={value.includes(internal_value)}
-				type="checkbox"
-				name={internal_value?.toString()}
-				title={internal_value?.toString()}
-			/>
-			<span class="ml-2">{display_value}</span>
-		</label>
-	{/each}
-</div>
+							selected: evt.currentTarget.checked,
+						})}
+					on:keydown={(event) => {
+						if (event.key === "Enter") {
+							toggle_choice(internal_value);
+							dispatch("select", {
+								index: i,
+								value: internal_value,
+								selected: !value.includes(internal_value),
+							});
+						}
+					}}
+					checked={value.includes(internal_value)}
+					type="checkbox"
+					name={internal_value?.toString()}
+					title={internal_value?.toString()}
+				/>
+				<span class="ml-2">{display_value}</span>
+			</label>
+		{/each}
+	</div>
 
 <style>
 	.dislike-panel {

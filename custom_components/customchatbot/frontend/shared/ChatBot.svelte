@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-export interface ExtendedLikeData {
+	export interface ExtendedLikeData {
 		index: number | [number, number];
 		value: any;
 		liked?: boolean;
@@ -7,6 +7,7 @@ export interface ExtendedLikeData {
 		comment?: boolean;
 	}
 </script>
+
 <script lang="ts">
 	import {
 		format_chat_for_sharing,
@@ -104,6 +105,12 @@ export interface ExtendedLikeData {
 		"clear-formatting",
 	];
 
+	import LikePanel from "./LikePanel.svelte";
+	import DislikePanel from "./DislikePanel.svelte";
+
+	export let dislikeValue: (string | number)[] = [];
+	export let likeValue: (string | number)[] = [];
+
 	let target: HTMLElement | null = null;
 
 	onMount(() => {
@@ -113,7 +120,7 @@ export interface ExtendedLikeData {
 	let div: HTMLDivElement;
 
 	let show_scroll_button = false;
-	
+
 	const dispatch = createEventDispatcher<{
 		change: undefined;
 		select: SelectData;
@@ -198,7 +205,7 @@ export interface ExtendedLikeData {
 		selected: string[] | string | null,
 	): void {
 		if (!groupedMessages) return;
-		
+
 		var user_msg_offset = Math.floor(i / 2);
 		var chatbot_index = i + j + user_msg_offset;
 
@@ -344,8 +351,24 @@ export interface ExtendedLikeData {
 							liked={message.liked}
 							disliked={message.disliked}
 							comment={message.comment}
-
 						/>
+					{/each}
+
+					{#each messages as message, j}
+						<div>
+							<DislikePanel
+								show={message.disliked}
+								value={dislikeValue}
+								handle_action={(selected) =>
+									handle_like(i, j, message, selected)}
+							/>
+							<LikePanel
+								show={message.liked}
+								value={likeValue}
+								handle_action={(selected) =>
+									handle_like(i, j, message, selected)}
+							/>
+						</div>
 					{/each}
 				</div>
 
@@ -356,7 +379,8 @@ export interface ExtendedLikeData {
 							Que pensez-vous des réponses ?
 						</h4>
 						<p class="text-grey fr-text--sm">
-							Prêtez attention au fond et à la forme puis évaluez chaque réponse
+							Prêtez attention au fond et à la forme puis évaluez
+							chaque réponse
 						</p>
 					</div>
 				{/if}
@@ -532,7 +556,7 @@ export interface ExtendedLikeData {
 		.bot-row {
 			padding: 2em;
 			grid-template-columns: 1fr 1fr;
-			grid-auto-rows: 1fr;
+			grid-auto-rows: 1fr auto;
 		}
 	}
 

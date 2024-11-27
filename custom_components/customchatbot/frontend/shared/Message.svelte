@@ -6,14 +6,10 @@
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
-	import LikePanel from "./LikePanel.svelte";
-	import DislikePanel from "./DislikePanel.svelte";
 
 	import Pending from "./Pending.svelte";
 
 	export let value: NormalisedMessage[];
-	export let dislikeValue: (string | number)[] = [];
-	export let likeValue: (string | number)[] = [];
 
 	export let role = "user";
 	export let messages: NormalisedMessage[] = [];
@@ -50,7 +46,10 @@
 	export let prefs: string[] = [];
 	export let comment: string | undefined;
 
-	export let handle_action: (selected: string | null, value?: string[]) => void;
+	export let handle_action: (
+		selected: string | null,
+		value?: string[],
+	) => void;
 	export let scroll: () => void;
 
 	function get_message_label_data(message: NormalisedMessage): string {
@@ -194,20 +193,6 @@
 				<ButtonPanel {...button_panel_props} />
 			{/if}
 		</button>
-		{#if message.disliked}
-			<DislikePanel
-				show={disliked}
-				value={dislikeValue}
-				{handle_action}
-			/>
-		{/if}
-		{#if message.liked}
-			<LikePanel
-				show={liked}
-				value={likeValue}
-				{handle_action}
-			/>
-		{/if}
 	</div>
 {/each}
 
