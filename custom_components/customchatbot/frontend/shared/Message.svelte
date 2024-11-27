@@ -231,6 +231,7 @@
 		border-radius: 0.5rem;
 		background-color: white;
 		display: grid;
+		height: 100%;
 	}
 	/* @media (min-width: 48em) {
 		.message.bot button {
@@ -350,39 +351,17 @@
 		background: none;
 	}
 
-	/* .panel .bot,
-	.panel .user {
-		border: none;
-		box-shadow: none;
-		background-color: var(--background-fill-secondary);
-	} */
+	/* On mobile, reorganize the panels */
 
-	/* .panel.user-row {
-		background-color: var(--color-accent-soft);
-	} */
-
-	/* .panel .user-row,
-	.panel .bot-row {
-		align-self: flex-start;
+	.bot.right {
+		order: 1;
 	}
 
-	.panel .user :global(*),
-	.panel .bot :global(*) {
-		text-align: left;
+	@media (min-width: 48em) {
+		.bot.right {
+			order: inherit !important;
+		}
 	}
-
-	.panel .user {
-		background-color: var(--color-accent-soft);
-	}
-
-	.panel .user-row {
-		background-color: var(--color-accent-soft);
-		align-self: flex-start;
-	}
-
-	.panel .message {
-		margin-bottom: var(--spacing-md);
-	} */
 
 	h1,
 	h2,

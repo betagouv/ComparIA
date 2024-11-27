@@ -355,7 +355,7 @@
 					{/each}
 
 					{#each messages as message, j}
-						<div>
+						<div class="react-panels react-panel-{j}">
 							<DislikePanel
 								show={message.disliked}
 								value={dislikeValue}
@@ -546,13 +546,36 @@
 	}
 	.bot-row {
 		display: grid;
-		gap: 2em;
+		column-gap: 2em;
 		grid-template-columns: 1fr;
 		/* align-self: flex-start; */
 
 		/* grid-template-columns: repeat(2, 1fr); */
 	}
+
+	/* On mobile, reorganize the panels */
+
+	/* .react-panels.react-panel-0 {
+		order: 1;
+	} */
+	.bot.right {
+		order: 1;
+	}
+
+	.react-panels:global(.react-panel-0) {
+		order: 0;
+	}
+	.react-panels:global(.react-panel-1) {
+		order: 2;
+	}
+
 	@media (min-width: 48em) {
+		.react-panels:global(.react-panel-0),
+		.react-panels:global(.react-panel-1),
+		.bot.right {
+			order: inherit !important;
+		}
+
 		.bot-row {
 			padding: 2em;
 			grid-template-columns: 1fr 1fr;
