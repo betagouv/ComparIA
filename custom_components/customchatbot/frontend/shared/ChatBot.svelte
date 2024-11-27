@@ -94,7 +94,7 @@
 
 	import LikePanel from "./LikePanel.svelte";
 
-	import ThumbUpActive from "./ThumbDownActive.svelte";
+	import ThumbUpActive from "./ThumbUpActive.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 
 	export let likeValue: (string | number)[] = [];
