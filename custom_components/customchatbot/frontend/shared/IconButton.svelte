@@ -57,7 +57,7 @@
 	}
 	button.border.highlight {
 			border: 1px solid #6A6AF4 !important;
-			background-color: #F5F5FE;
+			background-color: #F5F5FE !important;
 	}
 
 	button[disabled] {
