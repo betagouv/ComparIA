@@ -227,7 +227,7 @@
 		} else {
 			value[chatbot_index].commented = false;
 		}
-		commenting = undefined;
+		// commenting = undefined;
 		// comment = "";
 	}
 
@@ -249,7 +249,7 @@
 			if (value[chatbot_index].comment === undefined) {
 				value[chatbot_index].comment = "";
 				comment = "";
-				
+
 				value[chatbot_index].commented = true;
 			} else {
 				comment = value[chatbot_index].comment;
@@ -467,12 +467,22 @@
 	</div>
 {/if}
 
+<!-- Weird way to catch the comment if not validated but modal closed -->
 <dialog
 	aria-labelledby="modal-prefs"
 	role="dialog"
 	id="modal-prefs"
 	class="fr-modal"
+	on:blur={() => {
+		sendComment(commenting);
+	}}
+	on:keydown={(e) => {
+		if (e.key === "Escape") {
+			sendComment(commenting);
+		}
+	}}
 >
+	<!-- on:click={() =>{sendComment(commenting)}} -->
 	<div class="fr-container fr-container--fluid fr-container-md">
 		<div class="fr-grid-row fr-grid-row--center">
 			<div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
@@ -494,7 +504,9 @@
 							<textarea
 								placeholder="Vous pouvez ajouter des précisions sur cette réponse du modèle {commenting_model}"
 								class="fr-input"
+								rows="4"
 								bind:value={comment}
+								
 							></textarea>
 							<button
 								aria-controls="modal-prefs"
