@@ -97,15 +97,15 @@
 	import ThumbUpActive from "./ThumbUpActive.svelte";
 	import ThumbDownActive from "./ThumbDownActive.svelte";
 
-	export let likeValue: (string | number)[] = [];
-	export const positive_choices: [string, string | number][] = [
+	export let likeValue: string[] = [];
+	export const positive_choices: [string, string][] = [
 		["Utile", "useful"],
 		["Complet", "complete"],
 		["Créatif", "creative"],
 		["Mise en forme claire", "clear-formatting"],
 	];
-	export let dislikeValue: (string | number)[] = [];
-	export const negative_choices: [string, string | number][] = [
+	export let dislikeValue: string[] = [];
+	export const negative_choices: [string, string][] = [
 		["Incorrect", "incorrect"],
 		["Superficiel", "superficial"],
 		["Instructions non suivies", "instructions-not-followed"],

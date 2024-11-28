@@ -20,16 +20,17 @@
 	export let show: boolean; // Define the 'show' prop as a boolean
 	// export let message: NormalisedMessage | NormalisedMessage[];
 	// export let prefs: string[] = [];
-
-	export let handle_action: (selected: string | null) => void;
+	export let handle_action: (value: string | null | string[]) => void;
 
 	// import { type ComponentType } from "svelte";
 	export let Icon: ComponentType;
 	export let text: string;
+	// export let comment: string | undefined;
+	export let commented: boolean = false;
 	export let disabled: boolean = false;
-	export let value: (string | number)[] = [];
+	export let value: string[] = [];
 	export let old_value = value.slice();
-	export let choices: [string, string | number][] = [
+	export let choices: [string, string][] = [
 		["Utile", "useful"],
 		["Complet", "complete"],
 		["Créatif", "creative"],
@@ -39,7 +40,7 @@
 
 	// let selected: "like" | "dislike" | null = null;
 
-	function toggle_choice(choice: string | number): void {
+	function toggle_choice(choice: string): void {
 		if (value.includes(choice)) {
 			value = value.filter((v) => v !== choice);
 		} else {

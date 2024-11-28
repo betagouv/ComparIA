@@ -34,7 +34,7 @@
 	export let show_copy_all_button = false;
 	export let sanitize_html = true;
 	export let layout: "bubble" | "panel" = "bubble";
-	export let type: "tuples" | "messages" = "messages";
+	export const type: "tuples" | "messages" = "messages";
 	export let render_markdown = true;
 	export let line_breaks = true;
 	export let autoscroll = true;
@@ -78,8 +78,6 @@
 	id={elem_id}
 	class:hidden={visible === false}
 >
-	<!-- on:select={(e) => gradio.dispatch("select", e.detail)} -->
-
 	<ChatBot
 		selectable={_selectable}
 		{likeable}
