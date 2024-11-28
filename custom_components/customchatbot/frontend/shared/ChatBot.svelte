@@ -215,18 +215,12 @@
 		// console.log(value[chatbot_index].comment);
 		// console.log(comment);
 		const modal = document.getElementById("modal-prefs");
-		if (value[chatbot_index].comment != "") {
-			// handle_like(i, j, message, selected)
-
-			value[chatbot_index].commented = true;
-			dispatch("like", {
-				index: chatbot_index,
-				value: "",
-				comment: value[chatbot_index].comment,
-			});
-		} else {
-			value[chatbot_index].commented = false;
-		}
+		value[chatbot_index].commented = value[chatbot_index].comment != "";
+		dispatch("like", {
+			index: chatbot_index,
+			value: "",
+			comment: value[chatbot_index].comment,
+		});
 		// commenting = undefined;
 		// comment = "";
 	}
@@ -412,6 +406,7 @@
 								choices={positive_choices}
 								handle_action={(selected) =>
 									handle_like(i, j, message, selected)}
+								commented={message.commented}
 							/>
 							<LikePanel
 								{disabled}
@@ -506,7 +501,6 @@
 								class="fr-input"
 								rows="4"
 								bind:value={comment}
-								
 							></textarea>
 							<button
 								aria-controls="modal-prefs"
