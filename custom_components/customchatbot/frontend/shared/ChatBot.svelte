@@ -100,14 +100,14 @@
 	export let likeValue: string[] = [];
 	export const positive_choices: [string, string][] = [
 		["Utile", "useful"],
-		["Complet", "complete"],
-		["Créatif", "creative"],
+		["Complète", "complete"],
+		["Créative", "creative"],
 		["Mise en forme claire", "clear-formatting"],
 	];
 	export let dislikeValue: string[] = [];
 	export const negative_choices: [string, string][] = [
-		["Incorrect", "incorrect"],
-		["Superficiel", "superficial"],
+		["Incorrecte", "incorrect"],
+		["Superficielle", "superficial"],
 		["Instructions non suivies", "instructions-not-followed"],
 	];
 
@@ -402,7 +402,7 @@
 								Icon={ThumbUpActive}
 								show={message.liked}
 								value={likeValue}
-								text="Qu'est-ce qui vous plaît ?"
+								text="Qu'avez-vous apprécié dans la réponse ?"
 								choices={positive_choices}
 								handle_action={(selected) =>
 									handle_like(i, j, message, selected)}
@@ -413,7 +413,7 @@
 								Icon={ThumbDownActive}
 								show={message.disliked}
 								value={dislikeValue}
-								text="Qu'est-ce qui ne va pas ?"
+								text="Pourquoi la réponse ne convient-elle pas ?"
 								choices={negative_choices}
 								handle_action={(selected) =>
 									handle_like(i, j, message, selected)}
