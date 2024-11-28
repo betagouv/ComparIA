@@ -411,7 +411,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # Temporarily add the at-fault model
                     if error_with_endpoint not in config.outages:
                         config.outages.append(error_with_endpoint)
-                    logger.debug("refreshed outage models:" + str(config.outages))                    # Simpler to repick 2 models
+                    logger.debug(
+                        "refreshed outage models:" + str(config.outages)
+                    )  # Simpler to repick 2 models
                     # app_state.model_left, app_state.model_right = get_battle_pair(
                     model_left, model_right = get_battle_pair(
                         config.models,
@@ -483,7 +485,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # # logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
                     # continue
-                    
+
                     # don't retry, break out of the attempts loop
                     break
             else:
@@ -637,10 +639,10 @@ setTimeout(() => {
         fn=force_vote_or_reveal,
         # scroll_to_output=True,
         show_progress="hidden",
-        ).then(
-            fn=(lambda: None),
-            inputs=None,
-            outputs=None,
+    ).then(
+        fn=(lambda: None),
+        inputs=None,
+        outputs=None,
         js="""(args) => {
         console.log("args:")
         console.log(args)
@@ -670,11 +672,16 @@ nextScreen.scrollIntoView({
         event: gr.EventData,
         request: gr.Request,
     ):
-        # print(event._data)
-
-        while len(app_state_scoped.reactions) <= event._data["index"]:
-            app_state_scoped.reactions.extend([None])
-        app_state_scoped.reactions[event._data["index"]] = event._data
+        # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
+        # TODO: or just create another event type like "Event.react"
+        if "comment" in event._data:
+            app_state_scoped.reactions[event._data["index"]]["comment"] = event._data[
+                "comment"
+            ]
+        else:
+            while len(app_state_scoped.reactions) <= event._data["index"]:
+                app_state_scoped.reactions.extend([None])
+            app_state_scoped.reactions[event._data["index"]] = event._data
 
         sync_reactions(
             conv_a_scoped,

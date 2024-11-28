@@ -567,6 +567,10 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         else:
             reaction = "none"
 
+        # if "comment" in data:
+        #     print("comment:")
+        #     print(data["comment"])
+
         # Alternative:
         # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
         # role_index = chatbot_index % 3
@@ -584,6 +588,7 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
             response_content=data["value"],
             reaction=reaction,
             prefs=data.get("prefs", []),
+            comment=data.get("comment", ""),
             request=request,
         )
 
@@ -596,6 +601,7 @@ def record_reaction(
     response_content,
     reaction,
     prefs,
+    comment,
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
@@ -663,7 +669,7 @@ def record_reaction(
         "ip": str(get_ip(request)),
         "country": "",
         "city": "",
-        "comment": None,
+        "comment": comment,
         "response_content": response_content,
         "question_content": question_content,
         "liked": reaction == "liked",

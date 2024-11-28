@@ -54,6 +54,7 @@
 		old_value = value;
 		handle_action(value);
 	}
+
 </script>
 
 <div class="like-panel" class:hidden={show === false}>
@@ -95,7 +96,10 @@
 		class:selected={commented}
 		data-fr-opened="false"
 		aria-controls="modal-prefs"
-		on:click={() => handle_action("commenting")}>Autre…</button
+		on:click={() => {
+			commented = true;
+			handle_action("commenting");
+		}}>Autre…</button
 	>
 </div>
 

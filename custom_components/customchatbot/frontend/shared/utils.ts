@@ -113,6 +113,7 @@ export function update_messages(
 			content: redirect_src_url(message.content, root),
 			type: "text",
 			index: i,
+			comment: message.comment !== undefined ? message.comment : "",
 			liked: message.liked !== undefined ? message.liked : false,
 			disliked: message.disliked !== undefined ? message.disliked : false,
 			commented: message.commented !== undefined ? message.commented : false,
@@ -136,6 +137,7 @@ export function update_messages(
 
 				liked: message.liked !== undefined ? message.liked : oldMessage?.liked || false,
 				disliked: message.disliked !== undefined ? message.disliked : oldMessage?.disliked || false,
+				commented: message.commented !== undefined ? message.commented : oldMessage?.commented || false,
 				// prefs: message.prefs !== undefined ? message.prefs : oldMessage?.prefs || [],
 
 

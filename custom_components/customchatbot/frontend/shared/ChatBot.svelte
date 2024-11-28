@@ -204,6 +204,7 @@
 	$: groupedMessages = value && group_messages(value, "messages");
 
 	var comment: string = "";
+	var commenting_model: "A" | "B" | "" = "";
 	$: {
 		if (commenting != undefined) {
 			value[commenting].comment = comment;
@@ -211,12 +212,13 @@
 	}
 
 	function sendComment(chatbot_index) {
-		console.log(value[chatbot_index].comment);
-		console.log(comment);
+		// console.log(value[chatbot_index].comment);
+		// console.log(comment);
 		const modal = document.getElementById("modal-prefs");
 		if (value[chatbot_index].comment != "") {
 			// handle_like(i, j, message, selected)
 
+			value[chatbot_index].commented = true;
 			dispatch("like", {
 				index: chatbot_index,
 				value: "",
@@ -225,8 +227,8 @@
 		} else {
 			value[chatbot_index].commented = false;
 		}
-
-		modal.setAttribute("aria-hidden", "true");
+		commenting = undefined;
+		// comment = "";
 	}
 
 	function handle_like(
@@ -243,9 +245,17 @@
 		const msg = groupedMessages[i][j];
 
 		if (selected === "commenting") {
-			value[chatbot_index].commented = true;
-			// commenting = msg.index;
 			commenting = chatbot_index;
+			if (value[chatbot_index].comment === undefined) {
+				value[chatbot_index].comment = "";
+				comment = "";
+				
+				value[chatbot_index].commented = true;
+			} else {
+				comment = value[chatbot_index].comment;
+				value[chatbot_index].commented = true;
+			}
+			commenting_model = j === 0 ? "A" : "B";
 		}
 
 		// console.log(selected);
@@ -477,12 +487,12 @@
 						>
 					</div>
 					<div class="fr-modal__content">
-						<h4 id="modal-prefs" class="modal-title">
+						<p id="modal-prefs" class="modal-title">
 							Ajouter des commentaires
-						</h4>
+						</p>
 						<div>
 							<textarea
-								placeholder="Vous pouvez ajouter des précisions sur le modèle"
+								placeholder="Vous pouvez ajouter des précisions sur cette réponse du modèle {commenting_model}"
 								class="fr-input"
 								bind:value={comment}
 							></textarea>
@@ -699,7 +709,7 @@
 	}
 
 	.purple-btn {
-		text-align: right;
-		margin-top: 1em !important;
+		float: right;
+		margin: 2em 0 !important;
 	}
 </style>
