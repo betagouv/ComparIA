@@ -115,7 +115,7 @@ export function update_messages(
 			index: i,
 			liked: message.liked !== undefined ? message.liked : false,
 			disliked: message.disliked !== undefined ? message.disliked : false,
-			// prefs: message.prefs !== undefined ? message.prefs : [],
+			commented: message.commented !== undefined ? message.commented : false,
 		  };
 		});
 	  }

@@ -4,7 +4,7 @@
 		value: any;
 		liked?: boolean;
 		prefs?: string[];
-		comment?: boolean;
+		comment?: string;
 	}
 </script>
 
@@ -124,6 +124,8 @@
 
 	let show_scroll_button = false;
 
+	export let commenting: number | undefined = undefined;
+
 	const dispatch = createEventDispatcher<{
 		change: undefined;
 		select: SelectData;
@@ -201,6 +203,32 @@
 
 	$: groupedMessages = value && group_messages(value, "messages");
 
+	var comment: string = "";
+	$: {
+		if (commenting != undefined) {
+			value[commenting].comment = comment;
+		}
+	}
+
+	function sendComment(chatbot_index) {
+		console.log(value[chatbot_index].comment);
+		console.log(comment);
+		const modal = document.getElementById("modal-prefs");
+		if (value[chatbot_index].comment != "") {
+			// handle_like(i, j, message, selected)
+
+			dispatch("like", {
+				index: chatbot_index,
+				value: "",
+				comment: value[chatbot_index].comment,
+			});
+		} else {
+			value[chatbot_index].commented = false;
+		}
+
+		modal.setAttribute("aria-hidden", "true");
+	}
+
 	function handle_like(
 		i: number,
 		j: number,
@@ -213,6 +241,12 @@
 		var chatbot_index = i + j + user_msg_offset;
 
 		const msg = groupedMessages[i][j];
+
+		if (selected === "commenting") {
+			value[chatbot_index].commented = true;
+			// commenting = msg.index;
+			commenting = chatbot_index;
+		}
 
 		// console.log(selected);
 		if (selected === "like") {
@@ -378,6 +412,7 @@
 								choices={negative_choices}
 								handle_action={(selected) =>
 									handle_like(i, j, message, selected)}
+								commented={message.commented}
 							/>
 						</div>
 					{/each}
@@ -422,7 +457,55 @@
 	</div>
 {/if}
 
+<dialog
+	aria-labelledby="modal-prefs"
+	role="dialog"
+	id="modal-prefs"
+	class="fr-modal"
+>
+	<div class="fr-container fr-container--fluid fr-container-md">
+		<div class="fr-grid-row fr-grid-row--center">
+			<div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+				<div class="fr-modal__body">
+					<div class="fr-modal__header">
+						<button
+							class="fr-btn--close fr-btn"
+							title="Fermer la fenêtre modale"
+							aria-controls="modal-prefs"
+							on:click={() => sendComment(commenting)}
+							>Fermer</button
+						>
+					</div>
+					<div class="fr-modal__content">
+						<h4 id="modal-prefs" class="modal-title">
+							Ajouter des commentaires
+						</h4>
+						<div>
+							<textarea
+								placeholder="Vous pouvez ajouter des précisions sur le modèle"
+								class="fr-input"
+								bind:value={comment}
+							></textarea>
+							<button
+								aria-controls="modal-prefs"
+								class="btn purple-btn"
+								on:click={() => sendComment(commenting)}
+								>Envoyer</button
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</dialog>
+
 <style>
+	.modal-title {
+		font-weight: 700;
+		font-size: 1.1em;
+	}
+
 	.placeholder-content {
 		display: flex;
 		flex-direction: column;
@@ -613,5 +696,10 @@
 			var(--shadow-drop),
 			0 2px 2px rgba(0, 0, 0, 0.05);
 		transform: translateY(-2px);
+	}
+
+	.purple-btn {
+		text-align: right;
+		margin-top: 1em !important;
 	}
 </style>

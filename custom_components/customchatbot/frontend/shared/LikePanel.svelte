@@ -2,6 +2,8 @@
 	import type { Gradio, SelectData } from "@gradio/utils";
 	// import type { NormalisedMessage, TextMessage } from "../types";
 
+	import "@gouvfr/dsfr/dist/component/modal/modal.css";
+
 	import {
 		// afterUpdate,
 		type ComponentType,
@@ -88,6 +90,13 @@
 			<span class="ml-2">{display_value}</span>
 		</label>
 	{/each}
+	<button
+		{disabled}
+		class:selected={commented}
+		data-fr-opened="false"
+		aria-controls="modal-prefs"
+		on:click={() => handle_action("commenting")}>Autre…</button
+	>
 </div>
 
 <style>
@@ -111,23 +120,30 @@
 	label span {
 		margin-left: 0;
 	}
-
 	label {
-		/* font-size: 0.875em; */
-		border-radius: 1.5rem;
-		background: white;
-		color: #606367;
-		border: 1px #dadce0 solid;
-		font-weight: 500;
-		padding: 4px 10px;
-		margin-right: 10px;
 		line-height: 3em;
+		padding: 4px 10px;
+	}
+	label,
+	button {
+		/* font-size: 0.875em; */
+		border-radius: 1.5rem !important;
+		background: white;
+		color: #606367 !important;
+		border: 1px #dadce0 solid !important;
+		font-weight: 500;
+		margin-right: 10px;
+	}
+	button {
+		padding: 3px 10px;
 	}
 
-	label.selected {
-		background: #f5f5fe;
-		color: #6a6af4;
-		border: 1px #6a6af4 solid;
+	label.selected,
+	button:active,
+	button.selected {
+		background: #f5f5fe !important;
+		color: #6a6af4 !important;
+		border: 1px #6a6af4 solid !important;
 	}
 
 	.thumb-icon {
@@ -136,7 +152,8 @@
 		margin-bottom: 5px !important;
 	}
 
-	label.disabled.selected {
+	label.disabled.selected,
+	button[disabled].selected {
 		opacity: 0.5;
 		box-shadow: none;
 		background-color: #eee !important;
@@ -144,7 +161,8 @@
 		color: #3a3a3a !important;
 	}
 
-	label.disabled:hover {
+	label.disabled:hover,
+	button[disabled]:hover {
 		cursor: not-allowed;
 	}
 </style>
