@@ -29,12 +29,12 @@ RUN gradio cc build --no-generate-docs --bump-version
 
 WORKDIR /app/custom_components/frinput
 RUN gradio cc install
-# # workaround
-# RUN npm install @gouvfr/dsfr
 RUN gradio cc build --no-generate-docs --bump-version
 
 WORKDIR /app/custom_components/customchatbot
 RUN gradio cc install
+# workaround
+RUN npm install @gouvfr/dsfr
 RUN gradio cc build --no-generate-docs --bump-version
 
 # Comment this line if you want an image with node
