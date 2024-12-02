@@ -78,6 +78,14 @@
     .border-right {
         border-right: #E5E5E5 2px solid;
     }
+    aside a.disabled, aside a.disabled:active {
+        cursor: not-allowed;
+        color: #E5E5E5;
+        background-color: transparent;
+    }
+    aside a {
+       color: var(--text-active-blue-france);
+    }
 </style>
 {% endblock %}
 {% block content %}
