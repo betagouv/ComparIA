@@ -500,7 +500,7 @@ li.fr-nav__item {
 .rounded-tile.with-icon {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
   align-items: center;
 }
 
