@@ -192,35 +192,16 @@
 {% endfor %}
 
 <script type="text/javascript">
-    // Function to update the active filters display
-    function updateActiveFilters() {
-        const activeFiltersContainer = document.getElementById('active-filters');
-        activeFiltersContainer.innerHTML = ''; // Clear previous filters
-
+    function updateResetFiltersLink() {
         const paramFilters = document.querySelectorAll('input[name="param-filter"]:checked');
         const licenseFilters = document.querySelectorAll('input[name="license-filter"]:checked');
-
-        paramFilters.forEach(function (param) {
-            const paramButton = document.createElement('button');
-            paramButton.className = 'fr-btn fr-btn--secondary fr-mr-2v';
-            paramButton.innerHTML = `Params: ${param.value} <span class="fr-icon fr-icon--xs fr-icon--close-circle"></span>`;
-            paramButton.onclick = function () {
-                param.checked = false;
-                applyFilter();
-            };
-            activeFiltersContainer.appendChild(paramButton);
-        });
-
-        licenseFilters.forEach(function (license) {
-            const licenseButton = document.createElement('button');
-            licenseButton.className = 'fr-btn fr-btn--secondary fr-mr-2v';
-            licenseButton.innerHTML = `License: ${license.value} <span class="fr-icon fr-icon--xs fr-icon--close-circle"></span>`;
-            licenseButton.onclick = function () {
-                license.checked = false;
-                applyFilter();
-            };
-            activeFiltersContainer.appendChild(licenseButton);
-        });
+        var resetFiltersLink = document.getElementById('reset-filters-link');
+        const hasFilters = paramFilters.length > 0 || licenseFilters.length > 0;
+        resetFiltersLink.disabled = !hasFilters;
+        resetFiltersLink.classList.toggle('disabled', !hasFilters);
+        if (hasFilters) {
+            resetFiltersLink.onclick = reinitFilters;
+        }
     }
 
     // Function to apply the filters
@@ -266,27 +247,6 @@
         licenseFilters: []
     };
 
-    function updateResetFiltersLink() {
-        const paramFilters = document.querySelectorAll('input[name="param-filter"]:checked');
-        const licenseFilters = document.querySelectorAll('input[name="license-filter"]:checked');
-
-        const filters = {
-            paramFilters: Array.from(paramFilters).map(filter => filter.value),
-            licenseFilters: Array.from(licenseFilters).map(filter => filter.value)
-        };
-
-        var resetFiltersLink = document.getElementById('reset-filters-link');
-
-        if (filters.paramFilters.length === 0 && filters.licenseFilters.length === 0) {
-            resetFiltersLink.classList.add('disabled');
-            resetFiltersLink.onclick = function (event) {
-                event.preventDefault();
-            };
-        } else {
-            resetFiltersLink.classList.remove('disabled');
-            resetFiltersLink.onclick = reinitFilters;
-        }
-    }
 
     document.addEventListener('DOMContentLoaded', function () {
         var resetFiltersLink = document.getElementById('reset-filters-link');
