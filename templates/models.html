@@ -70,13 +70,36 @@
 </style>
 {% endblock %}
 {% block content %}
-
 <main id="content" role="main">
-
+    <!-- Filter Section -->
+    <div class="fr-container">
+        <div class="fr-grid-row">
+            <div class="fr-col-12">
+                <h5>Filter Models</h5>
+                <form id="model-filter-form">
+                    <label for="param-filter">Filter by Parameters:</label>
+                    <select id="param-filter">
+                        <option value="">All</option>
+                        <option value="9">9 billion</option>
+                        <option value="8">8 billion</option>
+                    </select>
+                    <label for="license-filter">Filter by License:</label>
+                    <select id="license-filter">
+                        <option value="">All</option>
+                        <option value="Gemma">Gemma</option>
+                        <option value="Llama">Llama</option>
+                    </select>
+                    <button type="submit">Apply Filter</button>
+                </form>
+            </div>
+        </div>
+    </div>
     <div class="fr-container">
         <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
             {% for model in models %}
-            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4">
+            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item"
+            data-parameters="{{ model['params'] }}" 
+            data-license="{{ model['license'] }}">
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
@@ -134,4 +157,30 @@
 {% include 'model-modal.html' %}
 {% endfor %}
 
+<script type="text/javascript">
+    document.getElementById('param-filter').addEventListener('change', applyFilter);
+    document.getElementById('license-filter').addEventListener('change', applyFilter);
+
+    // Apply filter function
+    function applyFilter() {
+
+        let paramValue = document.getElementById('param-filter').value;
+        let licenseValue = document.getElementById('license-filter').value;
+
+        let models = document.querySelectorAll('.model-item');
+        models.forEach(function (model) {
+            let modelParams = model.getAttribute('data-parameters');
+            let modelLicense = model.getAttribute('data-license');
+
+            let paramMatch = paramValue ? modelParams === paramValue : true;
+            let licenseMatch = licenseValue ? modelLicense === licenseValue : true;
+
+            if (paramMatch && licenseMatch) {
+                model.style.display = '';
+            } else {
+                model.style.display = 'none';
+            }
+        });
+    };
+</script>
 {% endblock %}
