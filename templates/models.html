@@ -4,6 +4,13 @@
 <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-system/icons-system.css">
 <link rel="stylesheet" href="assets/custom-site.css">
 <style>
+    legend {
+        color: var(--text-default-grey) !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem;
+
+    }
+
     .github-title {
         color: var(--text-default-grey) !important;
         font-weight: 400 !important;
@@ -67,30 +74,39 @@
     .text-grey-200 {
         color: var(--grey-200-850) !important;
     }
+
+    .border-right {
+        border-right: #E5E5E5 2px solid;
+    }
 </style>
 {% endblock %}
 {% block content %}
 <main id="content" role="main">
-    <!-- Filter Section -->
     <div class="fr-container fr-grid-row">
-        <aside class="fr-col-3 fr-pr-4w">
-            <h5>Filter Models</h5>
+        <aside class="fr-col-3 border-right fr-mt-md-12w">
+            <h5>Filtres</h5>
+            <!-- <p><a class="" onclick="reinitFilters()">Réinitialiser</a></p> -->
+            <p><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a></p>
+
             <form id="model-filter-form">
                 <fieldset class="fr-fieldset">
-                    <legend>Filter by Parameters</legend>
+                    <legend>Taille (paramètres)</legend>
                     <div class="fr-checkbox-group">
-                        {% set unique_sizes = models | map(attribute='friendly_size') | unique %}
-                        {% for size in unique_sizes %}
+                        {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
+                        {% for size in sizes %}
                         <div class="fr-checkbox">
                             <input type="checkbox" id="size-{{ size }}" name="param-filter" value="{{ size }}">
-                            <label for="size-{{ size }}">{{ size }}</label>
+                            <label for="size-{{ size }}">{{ size }}
+                                <span style="color: grey; font-size: 12px;">({{ models | selectattr('friendly_size',
+                                    '==', size) | list | length }})</span>
+                            </label>
                         </div>
                         {% endfor %}
                     </div>
                 </fieldset>
 
                 <fieldset class="fr-fieldset">
-                    <legend>Filter by License</legend>
+                    <legend>Licence d'utilisation</legend>
                     <div class="fr-checkbox-group">
                         {% set unique_licenses = models | map(attribute='license') | unique %}
                         {% for license in unique_licenses %}
@@ -103,7 +119,7 @@
                     </div>
                 </fieldset>
 
-                <button type="submit">Apply Filter</button>
+                <!-- <button type="submit">Apply Filter</button> -->
             </form>
 
             <!-- Applied Filters -->
@@ -112,7 +128,7 @@
             </div>
         </aside>
 
-        <section class="fr-col-9">
+        <section class="fr-col-9 fr-pl-4w">
             <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
                 {% for model in models %}
                 <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item"
@@ -227,15 +243,72 @@
             }
         });
 
-        updateActiveFilters(); // Update the applied filters display
+        updateActiveFilters();
     }
 
-    // Add event listeners for filter changes
-    document.querySelectorAll('input[name="param-filter"]').forEach(function (checkbox) {
-        checkbox.addEventListener('change', applyFilter);
-    });
-    document.querySelectorAll('input[name="license-filter"]').forEach(function (checkbox) {
-        checkbox.addEventListener('change', applyFilter);
+    function reinitFilters() {
+        const paramFilters = document.querySelectorAll('input[name="param-filter"]');
+        const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
+
+        paramFilters.forEach(function (param) {
+            param.checked = false;
+        });
+
+        licenseFilters.forEach(function (license) {
+            license.checked = false;
+        });
+
+        applyFilter();
+    }
+
+    var currentFilters = {
+        paramFilters: [],
+        licenseFilters: []
+    };
+
+    function updateResetFiltersLink() {
+        const paramFilters = document.querySelectorAll('input[name="param-filter"]:checked');
+        const licenseFilters = document.querySelectorAll('input[name="license-filter"]:checked');
+
+        const filters = {
+            paramFilters: Array.from(paramFilters).map(filter => filter.value),
+            licenseFilters: Array.from(licenseFilters).map(filter => filter.value)
+        };
+
+        var resetFiltersLink = document.getElementById('reset-filters-link');
+
+        if (filters.paramFilters.length === 0 && filters.licenseFilters.length === 0) {
+            resetFiltersLink.classList.add('disabled');
+            resetFiltersLink.onclick = function (event) {
+                event.preventDefault();
+            };
+        } else {
+            resetFiltersLink.classList.remove('disabled');
+            resetFiltersLink.onclick = reinitFilters;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var resetFiltersLink = document.getElementById('reset-filters-link');
+
+        // Call the function initially to set the state of the link
+        updateResetFiltersLink();
+
+        // Add event listeners for filter changes
+        document.querySelectorAll('input[name="param-filter"]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', updateResetFiltersLink);
+        });
+
+        document.querySelectorAll('input[name="license-filter"]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', updateResetFiltersLink);
+        });
+        // Add event listeners for filter changes
+        document.querySelectorAll('input[name="param-filter"]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', applyFilter);
+        });
+        document.querySelectorAll('input[name="license-filter"]').forEach(function (checkbox) {
+            checkbox.addEventListener('change', applyFilter);
+        });
     });
 </script>
 {% endblock %}
