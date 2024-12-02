@@ -184,7 +184,7 @@ with gr.Blocks(
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(size="lg",
-                value="Passer à l'étape suivante",
+                value="Passer à la révélation des modèles",
                 elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
                 visible=False,
                 interactive=False,
@@ -318,7 +318,7 @@ with gr.Blocks(
 
         supervote_send_btn = gr.Button(
             elem_classes="purple-btn fr-mx-auto fr-col-10 fr-col-md-4",
-            value="Passer à l'étape suivante",
+            value="Passer à la révélation des modèles",
             size="lg",
             interactive=False,
         )
