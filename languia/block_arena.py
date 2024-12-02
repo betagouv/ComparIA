@@ -199,7 +199,7 @@ with gr.Blocks(
         gr.HTML(elem_classes="text-center",
             value="""
             <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
-            <p class="text-grey fr-text--sm">Votre préférence enrichit le jeu de données compar:IA dont l’objectif est<br />d’affiner les futurs modèles d’IA sur le français</p>""",
+            <p class="text-grey fr-text--sm">Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.<br />Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français</p>""",
         )
 
         which_model_radio = CustomRadioCard(
