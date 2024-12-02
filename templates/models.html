@@ -80,15 +80,21 @@
                     <label for="param-filter">Filter by Parameters:</label>
                     <select id="param-filter">
                         <option value="">All</option>
-                        <option value="9">9 billion</option>
-                        <option value="8">8 billion</option>
+                        {% set unique_sizes = models | map(attribute='friendly_size') | unique %}
+                        {% for size in unique_sizes %}
+                            <option value="{{ size }}">{{ size }}</option>
+                        {% endfor %}
                     </select>
                     <label for="license-filter">Filter by License:</label>
                     <select id="license-filter">
                         <option value="">All</option>
-                        <option value="Gemma">Gemma</option>
-                        <option value="Llama">Llama</option>
+                        {% set unique_licenses = models | map(attribute='license') | unique %}
+                        {% for license in unique_licenses %}
+                            <option value="{{ license }}">{{ license }}</option>
+                        {% endfor %}
                     </select>
+
+
                     <button type="submit">Apply Filter</button>
                 </form>
 
@@ -102,7 +108,7 @@
     <div class="fr-container">
         <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
             {% for model in models %}
-            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-parameters="{{ model['params'] }}"
+            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
                 data-license="{{ model['license'] }}">
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
@@ -200,7 +206,7 @@
 
         let models = document.querySelectorAll('.model-item');
         models.forEach(function (model) {
-            let modelParams = model.getAttribute('data-parameters');
+            let modelParams = model.getAttribute('data-friendly-size');
             let modelLicense = model.getAttribute('data-license');
 
             let paramMatch = paramValue ? modelParams === paramValue : true;
