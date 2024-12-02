@@ -85,7 +85,6 @@
     <div class="fr-container fr-grid-row">
         <aside class="fr-col-3 border-right fr-mt-md-12w">
             <h5>Filtres</h5>
-            <!-- <p><a class="" onclick="reinitFilters()">Réinitialiser</a></p> -->
             <p><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a></p>
 
             <form id="model-filter-form">
@@ -192,83 +191,66 @@
 {% endfor %}
 
 <script type="text/javascript">
-    function updateResetFiltersLink() {
-        const paramFilters = document.querySelectorAll('input[name="param-filter"]:checked');
-        const licenseFilters = document.querySelectorAll('input[name="license-filter"]:checked');
-        var resetFiltersLink = document.getElementById('reset-filters-link');
-        const hasFilters = paramFilters.length > 0 || licenseFilters.length > 0;
-        resetFiltersLink.disabled = !hasFilters;
-        resetFiltersLink.classList.toggle('disabled', !hasFilters);
-        if (hasFilters) {
-            resetFiltersLink.onclick = reinitFilters;
-        }
-    }
-
-    // Function to apply the filters
-    function applyFilter() {
-        const paramFilters = Array.from(document.querySelectorAll('input[name="param-filter"]:checked')).map(input => input.value);
-        const licenseFilters = Array.from(document.querySelectorAll('input[name="license-filter"]:checked')).map(input => input.value);
-
-        let models = document.querySelectorAll('.model-item');
-        models.forEach(function (model) {
-            let modelParams = model.getAttribute('data-friendly-size');
-            let modelLicense = model.getAttribute('data-license');
-
-            let paramMatch = paramFilters.length > 0 ? paramFilters.includes(modelParams) : true;
-            let licenseMatch = licenseFilters.length > 0 ? licenseFilters.includes(modelLicense) : true;
-
-            if (paramMatch && licenseMatch) {
-                model.style.display = '';
-            } else {
-                model.style.display = 'none';
-            }
-        });
-
-        updateActiveFilters();
-    }
-
-    function reinitFilters() {
-        const paramFilters = document.querySelectorAll('input[name="param-filter"]');
-        const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
-
-        paramFilters.forEach(function (param) {
-            param.checked = false;
-        });
-
-        licenseFilters.forEach(function (license) {
-            license.checked = false;
-        });
-
-        applyFilter();
-    }
-
-    var currentFilters = {
-        paramFilters: [],
-        licenseFilters: []
-    };
-
 
     document.addEventListener('DOMContentLoaded', function () {
-        var resetFiltersLink = document.getElementById('reset-filters-link');
+        const resetFiltersLink = document.getElementById('reset-filters-link');
+        const paramFilters = document.querySelectorAll('input[name="param-filter"]');
+        const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
+        const modelItems = document.querySelectorAll('.model-item');
 
-        // Call the function initially to set the state of the link
-        updateResetFiltersLink();
+        // Utility function to get selected filter values
+        function getSelectedFilters(filters) {
+            return Array.from(filters).filter(input => input.checked).map(input => input.value);
+        }
 
-        // Add event listeners for filter changes
-        document.querySelectorAll('input[name="param-filter"]').forEach(function (checkbox) {
-            checkbox.addEventListener('change', updateResetFiltersLink);
-        });
+        // Update the reset filters link state
+        function updateResetFiltersLink() {
+            const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0;
+            resetFiltersLink.disabled = !hasFilters;
+            resetFiltersLink.classList.toggle('disabled', !hasFilters);
+        }
 
-        document.querySelectorAll('input[name="license-filter"]').forEach(function (checkbox) {
-            checkbox.addEventListener('change', updateResetFiltersLink);
-        });
-        // Add event listeners for filter changes
-        document.querySelectorAll('input[name="param-filter"]').forEach(function (checkbox) {
-            checkbox.addEventListener('change', applyFilter);
-        });
-        document.querySelectorAll('input[name="license-filter"]').forEach(function (checkbox) {
-            checkbox.addEventListener('change', applyFilter);
-        });
+        // Apply the filters to the model items
+        function applyFilter() {
+            const selectedParamFilters = getSelectedFilters(paramFilters);
+            const selectedLicenseFilters = getSelectedFilters(licenseFilters);
+
+            modelItems.forEach(model => {
+                const modelParams = model.getAttribute('data-friendly-size');
+                const modelLicense = model.getAttribute('data-license');
+
+                const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
+                const licenseMatch = selectedLicenseFilters.length === 0 || selectedLicenseFilters.includes(modelLicense);
+
+                model.style.display = paramMatch && licenseMatch ? '' : 'none';
+            });
+
+            updateResetFiltersLink();
+        }
+
+        // Reset all filters
+        function resetFilters() {
+            paramFilters.forEach(input => (input.checked = false));
+            licenseFilters.forEach(input => (input.checked = false));
+            applyFilter();
+        }
+
+        // Initialize event listeners
+        function initEventListeners() {
+            [...paramFilters, ...licenseFilters].forEach(input => {
+                input.addEventListener('change', applyFilter);
+            });
+
+            resetFiltersLink.addEventListener('click', resetFilters);
+        }
+
+        // Initialize the script
+        function init() {
+            updateResetFiltersLink();
+            initEventListeners();
+        }
+
+        init();
     });
 </script>
 {% endblock %}
