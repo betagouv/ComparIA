@@ -16,7 +16,7 @@ EXPOSE 80
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 
-# Specific to Compar:IA: install required Gradio Custom Components
+# Specific to compar:IA: install required Gradio Custom Components
 # Comment the next line if you want a main image with node
 FROM base AS cc
 RUN apt update && apt install -y nodejs npm

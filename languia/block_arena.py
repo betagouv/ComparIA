@@ -1,5 +1,5 @@
 """
-Compar:IA's main code
+compar:IA's main code
 Users chat with two anonymous models.
 """
 
@@ -48,7 +48,7 @@ class AppState:
 
 
 with gr.Blocks(
-    title="Compar:IA – Le comparateur d'IA conversationnelles",
+    title="compar:IA – Le comparateur d'IA conversationnelles",
     theme=DSFR(),
     css=config.css,
     head=config.arena_head_js,
@@ -199,7 +199,7 @@ with gr.Blocks(
         gr.HTML(elem_classes="text-center",
             value="""
             <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
-            <p class="text-grey fr-text--sm">Votre préférence enrichit le jeu de données Compar:IA dont l’objectif est<br />d’affiner les futurs modèles d’IA sur le français</p>""",
+            <p class="text-grey fr-text--sm">Votre préférence enrichit le jeu de données compar:IA dont l’objectif est<br />d’affiner les futurs modèles d’IA sur le français</p>""",
         )
 
         which_model_radio = CustomRadioCard(
@@ -336,7 +336,7 @@ with gr.Blocks(
                 elem_classes="fr-container text-center fr-mb-4w",
                 value="""
                     <h4 class="text-center fr-mt-8w fr-mb-1v">Merci pour votre contribution</h4>
-                    <p class="text-center text-grey fr-text--sm">Le jeu de données Compar:IA sera bientôt publié, continuez à l’alimenter en recommençant l’expérience !
+                    <p class="text-center text-grey fr-text--sm">Le jeu de données compar:IA sera bientôt publié, continuez à l’alimenter en recommençant l’expérience !
     </p>
                 <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees" target="_blank">Discuter avec deux nouvelles IA</a><br />
                 <a class="fr-mx-auto btn fr-btn--tertiary" href="../modeles" target="_blank">Découvrir la liste des IA</a>
