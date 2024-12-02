@@ -11,7 +11,7 @@
         (model_b,
         'model-b', model_b_impact, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b, streaming_b_unit)] %}
 
-        <div class="rounded-tile bg-white text-left fr-mb-1w fr-p-4w fr-pr-md-10w fr-mx-3v">
+        <div class="rounded-tile bg-white text-left fr-mb-1w fr-p-4w fr-mx-3v">
             {% if chosen_model == side %}
             <span class="your-choice fr-mb-2w fr-mb-md-0">Votre vote</span>
             {% endif %}
@@ -55,7 +55,7 @@
                 sur son
                 bilan.</p> -->
             <div class="energy-balance-1">
-                <div class="rounded-tile relative fr-px-1w fr-pl-md-4w fr-py-1w">
+                <div class="rounded-tile relative fr-px-1w fr-py-1w">
                     <span class="fr-tooltip fr-placement" id="params-{{side}}" role="tooltip" aria-hidden="true">Les
                         paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au
                         cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est
@@ -72,7 +72,7 @@
                 <div class="self-center justify-self-center">
                     <strong>×</strong>
                 </div>
-                <div class="rounded-tile relative fr-px-1w fr-pl-md-4w fr-py-1w">
+                <div class="rounded-tile relative fr-px-1w fr-py-1w">
                     <span class="fr-tooltip fr-placement" id="tokens-{{side}}" role="tooltip" aria-hidden="true">L’IA
                         analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre
                         lettres, cette unité de texte est appelée token ("jeton"). Plus un texte est long, plus le
@@ -81,7 +81,7 @@
                     <p><a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="tokens-{{side}}"></a></p>
                     <div class="">
                         <p class=""><strong><span class="fr-text--xxl">{{ tokens
-                                    }}</span><span class="fr-text-xs"> tokens</span></strong></p>
+                                    }}</span><span class="fr-text--xs"> tokens</span></strong></p>
                         <p class="fr-text--sm">taille du texte
                         </p>
                     </div>
@@ -90,7 +90,7 @@
                 <div class="self-center justify-self-center">
                     <strong>=</strong>
                 </div>
-                <div class="rounded-tile with-icon relative fr-pr-md-6w fr-px-1w fr-py-1w">
+                <div class="rounded-tile with-icon relative fr-px-1w fr-py-1w">
                     <span class="fr-tooltip fr-placement" id="energie-{{side}}" role="tooltip"
                         aria-hidden="true">Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée
                         par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est
@@ -99,7 +99,7 @@
                     <div class="">
                         <!-- flashlight -->
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                            class="fr-mx-auto">
+                            class="">
                             <path fill="#0063cb" d="M13 10h7l-9 13v-9H4l9-13v9Z" />
                         </svg>
                     </div>
@@ -115,7 +115,7 @@
             <h6 class="fr-mt-4w fr-mb-2w">Ce qui correspond à :</h6>
             <div class="energy-balance-2">
 
-                <div class="rounded-tile with-icon relative fr-pr-md-6w fr-px-1w fr-py-1w">
+                <div class="rounded-tile with-icon relative fr-px-1w fr-py-1w">
                     <span class="fr-tooltip fr-placement" id="co2-{{side}}" role="tooltip" aria-hidden="true">Le
                         CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie
                         utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la
@@ -141,14 +141,14 @@
                         </p>
                     </div>
                 </div>
-                <div class="rounded-tile with-icon relative fr-pr-md-6w fr-px-1w fr-py-1w">
+                <div class="rounded-tile with-icon relative fr-px-1w fr-py-1w">
 
                     <span class="fr-tooltip fr-placement" id="ampoule-{{side}}" role="tooltip" aria-hidden="true">Donnée
                         calculée sur la base de consommation d’une ampoule LED standard de 5W (E14)</span>
                     <a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="ampoule-{{side}}"></a>
                     <div class="">
                         <!-- lightbulb -->
-                        <svg class="fr-mx-auto" width="14" height="19" viewBox="0 0 14 19" fill="none"
+                        <svg class="" width="14" height="19" viewBox="0 0 14 19" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" clip-rule="evenodd"
                                 d="M6.16953 14H3.62036C3.37286 12.9391 2.2562 12.0716 1.79786 11.5C-0.384161 8.77374 -0.0927751 4.82569 2.46585 2.44933C5.02447 0.0729714 8.98325 0.0736052 11.5411 2.45078C14.099 4.82796 14.3891 8.7761 12.2062 11.5016C11.7479 12.0725 10.6329 12.94 10.3854 14H7.83619V9.83331H6.16953V14ZM10.3362 15.6666V16.5C10.3362 17.4205 9.59 18.1666 8.66953 18.1666H5.33619C4.41572 18.1666 3.66953 17.4205 3.66953 16.5V15.6666H10.3362Z"
@@ -161,7 +161,7 @@
                         <p class="fr-text--xs">ampoule LED</p>
                     </div>
                 </div>
-                <div class="rounded-tile with-icon relative fr-pr-md-6w fr-px-1w fr-py-1w">
+                <div class="rounded-tile with-icon relative fr-px-1w fr-py-1w">
                     <a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="videos-{{side}}"></a>
                     <span class="fr-tooltip fr-placement" id="videos-{{side}}" role="tooltip" aria-hidden="true">Donnée
                         calculée selon l’impact carbone d’une heure de vidéo en ligne en haute définition, sur
