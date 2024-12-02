@@ -479,23 +479,37 @@ li.fr-nav__item {
   font-size: 1.1rem;
 }
 
-#energy-balance p {
+.energy-balance-1 p,
+.energy-balance-2 p {
   margin-bottom: 0 !important;
   --text-spacing: 0 !important;
 }
 
-#energy-balance {
+.energy-balance-1 {
   display: grid;
-  margin-left: -1em;
-  margin-right: -1em;
+  grid-template-columns: 1fr 0.1fr 1fr 0.1fr 1fr;
+  grid-gap: 5px;
+}
+
+.energy-balance-2 {
+  display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 5px;
 }
 
-#energy-balance .fr-icon--question-line {
+.rounded-tile.with-icon {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.energy-balance-1 .fr-icon--question-line,
+.energy-balance-2 .fr-icon--question-line {
   display: inline;
   position: absolute;
   right: 0.5em;
+  top: 0.5em;
 }
 
 .your-choice {
@@ -512,8 +526,12 @@ li.fr-nav__item {
 
 @media (min-width: 48em) {
 
-  #energy-balance {
-    grid-template-columns: 1fr 1fr 1fr 0.1fr 1fr 1fr;
+  .energy-balance-1 {
+    grid-template-columns: 1fr 0.1fr 1fr 0.1fr 1fr;
+  }
+
+  .energy-balance-2 {
+    grid-template-columns: 1fr 1fr 1fr;
   }
 
   .your-choice {
