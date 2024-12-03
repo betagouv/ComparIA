@@ -122,18 +122,49 @@
     .w-full {
         width: 100%;
     }
+
+    @media (min-width: 48em) {
+
+        .fr-btn--close,
+        .filters-section-btn {
+            display: none;
+        }
+
+        #fr-modal-filters-section {
+            background-color: transparent;
+            /* height: 100%; */
+            margin: 0;
+            opacity: 1;
+            overflow: initial;
+            position: static;
+            visibility: inherit;
+            height: 100vh;
+            width: auto;
+        }
+
+        #fr-modal-filters-section .fr-modal__body {
+            width: 100%;
+            /* height: 100%; */
+            margin: 0;
+            overflow: initial;
+
+
+        }
+    }
 </style>
 {% endblock %}
 {% block content %}
 <main id="content" role="main">
     <div class="fr-container fr-grid-row">
-        <button class="fr-accordion__btn" aria-controls="fr-modal-filters-section" data-fr-opened="false">
+        <button class="fr-accordion__btn filters-section-btn" aria-controls="fr-modal-filters-section"
+            data-fr-opened="false">
             Afficher les filtres
             <span class="fr-badge fr-badge--sm filters-indicator" style="display: none;">1</span>
         </button>
 
-        <aside aria-labelledby="fr-modal-filters" role="dialog" id="fr-modal-filters-section" class="fr-modal">
-            <div class="fr-container-md fr-container--fluid">
+        <aside aria-labelledby="fr-modal-filters" role="dialog" id="fr-modal-filters-section"
+            class="fr-modal fr-col-md-3">
+            <div class="fr-container--fluid">
                 <div class="fr-modal__body fr-container">
                     <button class="fr-btn--close fr-btn fr-p-4w" title="Fermer la fenêtre modale"
                         aria-controls="fr-modal-filters-section">Fermer</button>
