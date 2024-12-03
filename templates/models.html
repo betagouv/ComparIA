@@ -123,6 +123,15 @@
         width: 100%;
     }
 
+    #fr-modal-filters-section {
+        background-color: white;
+    }
+
+    #fr-modal-filters-section .fr-container--fluid {
+        overflow: scroll;
+
+    }
+
     @media (min-width: 48em) {
 
         .fr-btn--close,
@@ -135,27 +144,23 @@
             /* height: 100%; */
             margin: 0;
             opacity: 1;
-            overflow: initial;
             position: static;
             visibility: inherit;
             height: 100vh;
             width: auto;
         }
 
-        #fr-modal-filters-section .fr-modal__body {
-            width: 100%;
-            /* height: 100%; */
-            margin: 0;
+        #fr-modal-filters-section .fr-container--fluid {
             overflow: initial;
 
-
         }
+
     }
 </style>
 {% endblock %}
 {% block content %}
 <main id="content" role="main">
-    <div class="fr-container fr-grid-row">
+    <div class="fr-container--fluid fr-mx-2w fr-grid-row">
         <button class="fr-accordion__btn filters-section-btn" aria-controls="fr-modal-filters-section"
             data-fr-opened="false">
             Afficher les filtres
@@ -165,7 +170,7 @@
         <aside aria-labelledby="fr-modal-filters" role="dialog" id="fr-modal-filters-section"
             class="fr-modal fr-col-md-3">
             <div class="fr-container--fluid">
-                <div class="fr-modal__body fr-container">
+                <div class="fr-container fr-pl-4w">
                     <button class="fr-btn--close fr-btn fr-p-4w" title="Fermer la fenêtre modale"
                         aria-controls="fr-modal-filters-section">Fermer</button>
                     <h5>Filtres</h5>
