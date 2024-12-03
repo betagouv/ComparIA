@@ -4,6 +4,13 @@
 <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-system/icons-system.css">
 <link rel="stylesheet" href="assets/custom-site.css">
 <style>
+    legend {
+        color: var(--text-default-grey) !important;
+        font-weight: 700 !important;
+        font-size: 1.1rem;
+
+    }
+
     .github-title {
         color: var(--text-default-grey) !important;
         font-weight: 400 !important;
@@ -67,16 +74,129 @@
     .text-grey-200 {
         color: var(--grey-200-850) !important;
     }
+
+    .border-right {
+        border-right: #E5E5E5 1px solid;
+    }
+
+    aside a.disabled,
+    aside a.disabled:active {
+        cursor: not-allowed;
+        color: #CECECE;
+        background-color: transparent;
+    }
+
+    aside a {
+        color: var(--text-active-blue-france);
+    }
+
+    .fr-checkbox-group input[type=checkbox]+label:before {
+        --border-action-high-blue-france: var(--blue-france-main-525);
+    }
+
+    .fr-checkbox-group input[type=checkbox]:checked+label:before {
+
+        --border-active-blue-france: var(--blue-france-main-525);
+        background-color: var(--blue-france-main-525);
+    }
+
+    .filter-number {
+        color: #666666;
+        font-size: 0.9em;
+        position: absolute;
+        right: 2em;
+    }
+
+    .fr-checkbox-group {
+
+        width: 100%;
+    }
+
+    .fr-checkbox {
+        margin: 0.6em 0;
+    }
+
+    .fr-checkbox strong {
+        font-weight: 600;
+    }
 </style>
 {% endblock %}
 {% block content %}
-
 <main id="content" role="main">
+    <div class="fr-container fr-grid-row">
+        <aside class="fr-col-3 border-right fr-mt-md-12w">
+            <h5>Filtres</h5>
+            <p><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a></p>
 
-    <div class="fr-container">
-        <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+            <form id="model-filter-form">
+                <fieldset class="fr-fieldset">
+                    <legend class="fr-mb-1w">Taille (paramètres)</legend>
+                    <div class="fr-checkbox-group fr-checkbox-group--sm">
+                        {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
+                        {% set sizes_desc = {
+                        'XS': "< à 7 milliards", 'S' : 'de 7 à 20 milliards' , 'M' : 'de 20 à 70 milliards' , 'L'
+                            : 'de 70 à 150 milliards' , 'XL' : '> 150 milliards' } %} {% for size in sizes %} <div
+                            class="fr-checkbox">
+                            <input type="checkbox" id="size-{{ size }}" name="param-filter" value="{{ size }}">
+                            <label for="size-{{ size }}"><strong>{{ size }}&nbsp;:&nbsp;</strong> {{sizes_desc[size]}}
+                                <span class="filter-number">{{ models | selectattr('friendly_size',
+                                    '==', size) | list | length }}</span>
+                            </label>
+                    </div>
+                    {% endfor %}
+    </div>
+    </fieldset>
+    <fieldset class="fr-fieldset">
+        <legend class="fr-mb-1w">Licence d'utilisation</legend>
+        <div class="fr-checkbox-group fr-checkbox-group--sm">
+            {% set proprietary_licenses = [] %}
+            {% set other_licenses = [] %}
+
             {% for model in models %}
-            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4">
+            {% if 'propriétaire' in model.license %}
+            {% if model.license not in proprietary_licenses %}
+            {% set _ = proprietary_licenses.append(model.license) %}
+            {% endif %}
+            {% else %}
+            {% if model.license not in other_licenses %}
+            {% set _ = other_licenses.append(model.license) %}
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+
+            {% for license in other_licenses %}
+            <div class="fr-checkbox">
+                <input type="checkbox" id="license-{{ license }}" name="license-filter" value="{{ license }}">
+                <label for="license-{{ license }}"><strong>{{ license }}</strong>
+                    <span class="filter-number">{{ models | selectattr('license', '==', license) | list | length
+                        }}</span>
+                </label>
+            </div>
+            {% endfor %}
+
+            {% if proprietary_licenses %}
+            <div class="fr-checkbox">
+                <input type="checkbox" id="license-proprietaire" name="license-filter" value="Propriétaire">
+                <label for="license-proprietaire"><strong>Propriétaire</strong>
+                    <span class="filter-number">{{ proprietary_licenses | length }}</span>
+                </label>
+            </div>
+            {% endif %}
+
+        </div>
+    </fieldset>
+
+
+
+    </form>
+    </aside>
+
+    <section class="fr-col-9 fr-pl-4w  fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+        <h4 id="models-count">{{ models | list | length }} modèles</h4>
+        <div class="fr-grid-row fr-grid-row--gutters">
+            {% for model in models %}
+            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
+                data-license="{{ model['license'] }}">
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
@@ -125,7 +245,7 @@
             </div>
 
             {% endfor %}
-        </div>
+    </section>
     </div>
 </main>
 {% set j2_context = 'fastapi' %}
@@ -134,4 +254,77 @@
 {% include 'model-modal.html' %}
 {% endfor %}
 
+<script type="text/javascript">
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const resetFiltersLink = document.getElementById('reset-filters-link');
+        const paramFilters = document.querySelectorAll('input[name="param-filter"]');
+        const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
+        const modelItems = document.querySelectorAll('.model-item');
+        const modelsCountElement = document.getElementById('models-count'); // Assuming this is the element to display the count
+
+        // Utility function to get selected filter values
+        function getSelectedFilters(filters) {
+            return Array.from(filters).filter(input => input.checked).map(input => input.value);
+        }
+
+        // Update the reset filters link state
+        function updateResetFiltersLink() {
+            const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0;
+            resetFiltersLink.disabled = !hasFilters;
+            resetFiltersLink.classList.toggle('disabled', !hasFilters);
+        }
+        function updateModelsCount() {
+            const visibleModels = Array.from(modelItems).filter(model => model.style.display !== 'none');
+            modelsCountElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
+        }
+
+        function applyFilter() {
+            const selectedParamFilters = getSelectedFilters(paramFilters);
+            const selectedLicenseFilters = getSelectedFilters(licenseFilters);
+
+            modelItems.forEach(model => {
+                const modelParams = model.getAttribute('data-friendly-size');
+                const modelLicense = model.getAttribute('data-license');
+
+                const isProprietaire = modelLicense.includes("propriétaire");
+                const licenseMatch = selectedLicenseFilters.length === 0 ||
+                    selectedLicenseFilters.includes(modelLicense) ||
+                    (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
+
+                const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
+
+                model.style.display = paramMatch && licenseMatch ? '' : 'none';
+            });
+
+            updateResetFiltersLink();
+            updateModelsCount();
+        }
+
+
+        // Reset all filters
+        function resetFilters() {
+            paramFilters.forEach(input => (input.checked = false));
+            licenseFilters.forEach(input => (input.checked = false));
+            applyFilter();
+        }
+
+        // Initialize event listeners
+        function initEventListeners() {
+            [...paramFilters, ...licenseFilters].forEach(input => {
+                input.addEventListener('change', applyFilter);
+            });
+
+            resetFiltersLink.addEventListener('click', resetFilters);
+        }
+
+        // Initialize the script
+        function init() {
+            updateResetFiltersLink();
+            initEventListeners();
+        }
+
+        init();
+    });
+</script>
 {% endblock %}
