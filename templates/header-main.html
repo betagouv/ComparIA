@@ -21,33 +21,42 @@
             <p class="fr-header__service-tagline">Le comparateur d’IA conversationnelles</p>
           </div>
 
+          <div class="fr-header__navbar">
+            <button class="fr-btn fr-btn--menu" data-fr-opened="false" aria-controls="fr-modal-1" aria-haspopup="menu"
+              title="Menu"> Menu</button>
+          </div>
         </div>
         <div class="fr-header__tools fr-col-12 fr-col-lg-4 fr-p-2w">
-          <a title="Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre" href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX"
-            target="_blank" rel="noopener external" class="fr-link fr-icon-pencil-line fr-link--icon-left">Nous aider à améliorer compar:IA</a>
+          <a title="Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre"
+            href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX" target="_blank" rel="noopener external"
+            class="fr-link fr-icon-pencil-line fr-link--icon-left">Nous aider à améliorer compar:IA</a>
         </div>
       </div>
     </div>
   </div>
-  <div class="fr-header__menu">
-  <!-- <div id="modal-header__menu" aria-labelledby="button-861" class="fr-header__menu fr-modal" data-fr-js-modal="true"
-    data-fr-js-header-modal="true"> -->
-    <div class="fr-container">
+
+  <div aria-labelledby="fr-modal-title-modal-1" role="dialog" id="fr-modal-1" class="fr-modal fr-header__menu">
+    <div class="fr-container fr-container--fluid fr-container-md">
+
+      <button class="fr-btn--close fr-btn" title="Fermer la fenêtre modale" aria-controls="fr-modal-1">Fermer</button>
       <nav role="navigation" aria-label="Menu principal" class="fr-nav" data-fr-js-navigation="true">
         <ul class="fr-nav__list">
-          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"] == "/" %}aria-current="true"{% endif %} href="/" target="_self"
-              aria-controls="modal-header__menu" class="fr-nav__link" data-fr-js-modal-button="true">Accueil</a></li>
-          <!-- <li class="fr-nav__item" data-fr-js-navigation-item="true"><a href="/arene/" target="_self"
-              aria-controls="modal-header__menu" class="fr-nav__link" data-fr-js-modal-button="true">Nouvelle
-              conversation</a></li> -->
-          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"] == "/modeles" %}aria-current="true"{% endif %} href="/modeles" target="_self"
-              aria-controls="modal-header__menu" class="fr-nav__link" data-fr-js-modal-button="true">Liste des
+          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/" %}aria-current="true"
+              {% endif %} href="/" target="_self" aria-controls="modal-header__menu" class="fr-nav__link"
+              data-fr-js-modal-button="true">Accueil</a></li>
+          
+          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/modeles"
+              %}aria-current="true" {% endif %} href="/modeles" target="_self" aria-controls="modal-header__menu"
+              class="fr-nav__link" data-fr-js-modal-button="true">Liste des
               modèles d'IA</a></li>
-          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"] == "/a-propos" %}aria-current="true"{% endif %} href="/a-propos"
-              target="_self" aria-controls="modal-header__menu" class="fr-nav__link" data-fr-js-modal-button="true">À
+          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/a-propos"
+              %}aria-current="true" {% endif %} href="/a-propos" target="_self" aria-controls="modal-header__menu"
+              class="fr-nav__link" data-fr-js-modal-button="true">À
               propos</a></li>
-          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"] == "/partenaires" %}aria-current="true"{% endif %} href="/partenaires"
-              target="_self" aria-controls="modal-header__menu" class="fr-nav__link" data-fr-js-modal-button="true">Partenaires</a></li>
+          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/partenaires"
+              %}aria-current="true" {% endif %} href="/partenaires" target="_self" aria-controls="modal-header__menu"
+              class="fr-nav__link" data-fr-js-modal-button="true">Partenaires</a>
+          </li>
         </ul>
       </nav>
     </div>
