@@ -78,14 +78,47 @@
     .border-right {
         border-right: #E5E5E5 2px solid;
     }
-    aside a.disabled, aside a.disabled:active {
+
+    aside a.disabled,
+    aside a.disabled:active {
         cursor: not-allowed;
-        color: #E5E5E5;
+        color: #CECECE;
         background-color: transparent;
     }
+
     aside a {
-       color: var(--text-active-blue-france);
+        color: var(--text-active-blue-france);
     }
+
+    .fr-checkbox-group input[type=checkbox]+label:before {
+        --border-action-high-blue-france: var(--blue-france-main-525);
+    }
+
+    .fr-checkbox-group input[type=checkbox]:checked+label:before {
+
+        --border-active-blue-france: var(--blue-france-main-525);
+        background-color: var(--blue-france-main-525);
+    }
+
+    .filter-number {
+        color: #666666;
+        font-size: 0.9em;
+        position: absolute;
+        right: 2em;
+    }
+
+    .fr-checkbox-group {
+
+        width: 100%;
+    }
+
+    .fr-checkbox {
+        margin: 0.6em 0;
+    }
+    .fr-checkbox strong {
+        font-weight: 600;
+    }
+
 </style>
 {% endblock %}
 {% block content %}
@@ -97,99 +130,102 @@
 
             <form id="model-filter-form">
                 <fieldset class="fr-fieldset">
-                    <legend>Taille (paramètres)</legend>
-                    <div class="fr-checkbox-group">
+                    <legend class="fr-mb-1w">Taille (paramètres)</legend>
+                    <div class="fr-checkbox-group fr-checkbox-group--sm">
                         {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
-                        {% for size in sizes %}
-                        <div class="fr-checkbox">
+                        {% set sizes_desc = {
+                        'XS': "< à 7 milliards", 'S' : 'de 7 à 20 milliards' , 'M' : 'de 20 à 70 milliards' , 'L'
+                            : 'de 70 à 150 milliards' , 'XL' : '> 150 milliards' } %} {% for size in sizes %} <div
+                            class="fr-checkbox">
                             <input type="checkbox" id="size-{{ size }}" name="param-filter" value="{{ size }}">
-                            <label for="size-{{ size }}">{{ size }}
-                                <span style="color: grey; font-size: 12px;">({{ models | selectattr('friendly_size',
-                                    '==', size) | list | length }})</span>
+                            <label for="size-{{ size }}"><strong>{{ size }}&nbsp;:&nbsp;</strong> {{sizes_desc[size]}}
+                                <span class="filter-number">{{ models | selectattr('friendly_size',
+                                    '==', size) | list | length }}</span>
                             </label>
-                        </div>
-                        {% endfor %}
                     </div>
-                </fieldset>
+                    {% endfor %}
+    </div>
+    </fieldset>
 
-                <fieldset class="fr-fieldset">
-                    <legend>Licence d'utilisation</legend>
-                    <div class="fr-checkbox-group">
-                        {% set unique_licenses = models | map(attribute='license') | unique %}
-                        {% for license in unique_licenses %}
-                        <div class="fr-checkbox">
-                            <input type="checkbox" id="license-{{ license }}" name="license-filter"
-                                value="{{ license }}">
-                            <label for="license-{{ license }}">{{ license }}</label>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </fieldset>
-
-                <!-- <button type="submit">Apply Filter</button> -->
-            </form>
-
-            <!-- Applied Filters -->
-            <div id="active-filters" class="fr-my-4w">
-                <!-- Dynamically added filters will appear here -->
+    <fieldset class="fr-fieldset">
+        <legend class="fr-mb-1w">Licence d'utilisation</legend>
+        <div class="fr-checkbox-group fr-checkbox-group--sm">
+            {% set unique_licenses = models | map(attribute='license') | unique %}
+            {% for license in unique_licenses %}
+            <div class="fr-checkbox">
+                <input type="checkbox" id="license-{{ license }}" name="license-filter" value="{{ license }}">
+                <label for="license-{{ license }}"><strong>{{ license }}</strong>
+                    <span class="filter-number">{{ models | selectattr('license',
+                        '==', license) | list | length }}</span>
+                </label>
             </div>
-        </aside>
+            {% endfor %}
+        </div>
+    </fieldset>
 
-        <section class="fr-col-9 fr-pl-4w">
-            <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
-                {% for model in models %}
-                <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item"
-                    data-friendly-size="{{ model['friendly_size'] }}" data-license="{{ model['license'] }}">
-                    <div class="fr-card fr-enlarge-link">
-                        <div class="fr-card__body">
-                            <div class="fr-card__content">
-                                <h6 class="fr-card__title"><a href="#" data-fr-opened="false"
-                                        aria-controls="fr-modal-{{ model['id'] }}"></a></h6>
-                                <h6 class="fr-mb-2w github-title"><img class="relative fr-mt-n2v"
-                                        src="assets/orgs/{{ model['icon_path'] }}" width="34" /> {{
-                                    model['organisation']
-                                    }}/<strong>{{
-                                        model["simple_name"] }}</strong>
-                                </h6>
-                                <p class="fr-mb-4w">
+    <!-- <button type="submit">Apply Filter</button> -->
+    </form>
 
-                                    {% if model['distribution'] ==
-                                    "open-weights"
-                                    %}
-                                    <span
-                                        class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                                        Open source
-                                    </span>
+    <!-- Applied Filters -->
+    <div id="active-filters" class="fr-my-4w">
+        <!-- Dynamically added filters will appear here -->
+    </div>
+    </aside>
+
+    <section class="fr-col-9 fr-pl-4w">
+        <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+            {% for model in models %}
+            <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
+                data-license="{{ model['license'] }}">
+                <div class="fr-card fr-enlarge-link">
+                    <div class="fr-card__body">
+                        <div class="fr-card__content">
+                            <h6 class="fr-card__title"><a href="#" data-fr-opened="false"
+                                    aria-controls="fr-modal-{{ model['id'] }}"></a></h6>
+                            <h6 class="fr-mb-2w github-title"><img class="relative fr-mt-n2v"
+                                    src="assets/orgs/{{ model['icon_path'] }}" width="34" /> {{
+                                model['organisation']
+                                }}/<strong>{{
+                                    model["simple_name"] }}</strong>
+                            </h6>
+                            <p class="fr-mb-4w">
+
+                                {% if model['distribution'] ==
+                                "open-weights"
+                                %}
+                                <span
+                                    class="fr-badge fr-badge--sm fr-badge--success fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                    Open source
+                                </span>
+                                {%
+                                else
+                                %}
+                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                    Propriétaire
+                                </span>
+                                {% endif %}
+                                <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                    {% if
+                                    model['distribution'] == "open-weights" %}{{ model['params']|round|int }} mds de
+                                    paramètres&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                        aria-describedby="params-{{ model['id'] }}"></a>
                                     {%
                                     else
-                                    %}
-                                    <span
-                                        class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                                        Propriétaire
-                                    </span>
+                                    %}Taille estimée ({{ model['friendly_size'] }})
                                     {% endif %}
-                                    <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                                        {% if
-                                        model['distribution'] == "open-weights" %}{{ model['params']|round|int }} mds de
-                                        paramètres&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line"
-                                            aria-describedby="params-{{ model['id'] }}"></a>
-                                        {%
-                                        else
-                                        %}Taille estimée ({{ model['friendly_size'] }})
-                                        {% endif %}
-                                    </span>
+                                </span>
 
-                                </p>
-                                <p class="fr-card__desc">{{ model['excerpt'] }}</p>
-                                <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
+                            </p>
+                            <p class="fr-card__desc">{{ model['excerpt'] }}</p>
+                            <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
                         class="fr-link--icon-right fr-link">    En savoir plus</a> -->
-                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {% endfor %}
-        </section>
+            {% endfor %}
+    </section>
     </div>
 </main>
 {% set j2_context = 'fastapi' %}
