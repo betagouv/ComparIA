@@ -76,7 +76,7 @@
     }
 
     .border-right {
-        border-right: #E5E5E5 2px solid;
+        border-right: #E5E5E5 1px solid;
     }
 
     aside a.disabled,
@@ -115,10 +115,10 @@
     .fr-checkbox {
         margin: 0.6em 0;
     }
+
     .fr-checkbox strong {
         font-weight: 600;
     }
-
 </style>
 {% endblock %}
 {% block content %}
@@ -162,18 +162,12 @@
             {% endfor %}
         </div>
     </fieldset>
-
-    <!-- <button type="submit">Apply Filter</button> -->
     </form>
-
-    <!-- Applied Filters -->
-    <div id="active-filters" class="fr-my-4w">
-        <!-- Dynamically added filters will appear here -->
-    </div>
     </aside>
 
-    <section class="fr-col-9 fr-pl-4w">
-        <div class="fr-grid-row fr-grid-row--gutters fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+    <section class="fr-col-9 fr-pl-4w  fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+        <h4><span id="models-count">{{ models | list | length }}</span> modèles</h4>
+        <div class="fr-grid-row fr-grid-row--gutters">
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
                 data-license="{{ model['license'] }}">
@@ -241,6 +235,7 @@
         const paramFilters = document.querySelectorAll('input[name="param-filter"]');
         const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
         const modelItems = document.querySelectorAll('.model-item');
+        const modelsCountElement = document.getElementById('models-count'); // Assuming this is the element to display the count
 
         // Utility function to get selected filter values
         function getSelectedFilters(filters) {
@@ -252,6 +247,10 @@
             const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0;
             resetFiltersLink.disabled = !hasFilters;
             resetFiltersLink.classList.toggle('disabled', !hasFilters);
+        }
+        function updateModelsCount() {
+            const visibleModels = Array.from(modelItems).filter(model => model.style.display !== 'none');
+            modelsCountElement.textContent = visibleModels.length;
         }
 
         // Apply the filters to the model items
@@ -270,6 +269,8 @@
             });
 
             updateResetFiltersLink();
+            updateModelsCount();
+
         }
 
         // Reset all filters
