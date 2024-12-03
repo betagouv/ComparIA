@@ -377,7 +377,7 @@ def upsert_reaction_to_db(data, request):
             chatbot_index = EXCLUDED.chatbot_index;
         """
         )
-        
+
         # TODO:
         #     RETURNING
         # (CASE
@@ -622,7 +622,10 @@ def record_reaction(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-    if current_conversation.messages[msg_index].content.strip().rstrip() != response_content:
+    if (
+        current_conversation.messages[msg_index].content.strip().rstrip()
+        != response_content
+    ):
         logger.warning(
             f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content.strip().rstrip()}'"
         )
@@ -636,8 +639,6 @@ def record_reaction(
     # rank begins at zero
     msg_rank = msg_index // 2
     question_content = current_conversation.messages[msg_rank * 2].content
-
-    
 
     data = {
         # id
@@ -722,14 +723,12 @@ def get_sample_weight(model, broken_endpoints, sampling_weights, sampling_boost_
 
 def pick_endpoint(model_id, broken_endpoints):
     from languia.config import api_endpoint_info
+
     logger = logging.getLogger("languia")
 
     for endpoint in api_endpoint_info:
         api_id = endpoint.get("api_id")
-        if (
-            endpoint.get("model_id") == model_id
-            and api_id not in broken_endpoints
-        ):
+        if endpoint.get("model_id") == model_id and api_id not in broken_endpoints:
             logger.debug(f"got_endpoint: {api_id} for {model_id}")
             return endpoint
     return None
@@ -1290,3 +1289,36 @@ def to_threeway_chatbot(conversations):
                     }
                 )
     return threeway_chatbot
+
+
+def determine_choice_badge(reactions):
+    your_choice_badge = None
+    reactions = [reaction for reaction in reactions if reaction]
+    # Case: Only one reaction exists
+    if len(reactions) == 1:
+
+        print("reaction")
+        print(reactions)
+        if reactions[0].get("liked") == True:
+            # Assign "a" if the reaction is for the first message
+            your_choice_badge = "model-a" if reactions[0].get("index") == 1 else "model-b"
+
+    # Case: Two reactions exist
+    elif len(reactions) == 2:
+        print("reactions")
+        print(reactions)
+
+        # Ensure one reaction is "liked" and the other is different
+        if (
+            reactions[0].get("liked") == True
+            and reactions[0].get("liked") != reactions[1].get("liked")
+        ) or (
+            reactions[1].get("liked") == True
+            and reactions[1].get("liked") != reactions[0].get("liked")
+        ):
+            # Assign "a" or "b" based on the liked reaction's index
+            your_choice_badge = (
+                "model-a" if reactions[0]["liked"] and reactions[0].get("index") == 1 else "model-b"
+            )
+
+    return your_choice_badge

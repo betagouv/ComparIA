@@ -47,6 +47,7 @@ from languia.utils import (
     EmptyResponseError,
     pick_endpoint,
     sync_reactions,
+    determine_choice_badge,
 )
 
 from languia.config import (
@@ -585,6 +586,7 @@ setTimeout(() => {
     def force_vote_or_reveal(
         app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
     ):
+
         for reaction in app_state_scoped.reactions:
             if reaction:
                 if reaction["liked"] != None:
@@ -608,10 +610,15 @@ setTimeout(() => {
                 buttons_footer: gr.update(visible=True),
             }
 
+        if len(conv_a_scoped.messages) == 2:
+            your_choice_badge = determine_choice_badge(app_state_scoped.reactions)
+        else:
+            your_choice_badge = None
+
         reveal_html = build_reveal_html(
             conv_a_scoped,
             conv_b_scoped,
-            which_model_radio=None,
+            which_model_radio=your_choice_badge,
         )
         return {
             chatbot: gr.update(interactive=False),
