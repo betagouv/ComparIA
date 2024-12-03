@@ -146,27 +146,53 @@
                     {% endfor %}
     </div>
     </fieldset>
-
     <fieldset class="fr-fieldset">
         <legend class="fr-mb-1w">Licence d'utilisation</legend>
         <div class="fr-checkbox-group fr-checkbox-group--sm">
-            {% set unique_licenses = models | map(attribute='license') | unique %}
-            {% for license in unique_licenses %}
+            {% set proprietary_licenses = [] %}
+            {% set other_licenses = [] %}
+
+            {% for model in models %}
+            {% if 'propriétaire' in model.license %}
+            {% if model.license not in proprietary_licenses %}
+            {% set _ = proprietary_licenses.append(model.license) %}
+            {% endif %}
+            {% else %}
+            {% if model.license not in other_licenses %}
+            {% set _ = other_licenses.append(model.license) %}
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+
+            {% for license in other_licenses %}
             <div class="fr-checkbox">
                 <input type="checkbox" id="license-{{ license }}" name="license-filter" value="{{ license }}">
                 <label for="license-{{ license }}"><strong>{{ license }}</strong>
-                    <span class="filter-number">{{ models | selectattr('license',
-                        '==', license) | list | length }}</span>
+                    <span class="filter-number">{{ models | selectattr('license', '==', license) | list | length
+                        }}</span>
                 </label>
             </div>
             {% endfor %}
+
+            {% if proprietary_licenses %}
+            <div class="fr-checkbox">
+                <input type="checkbox" id="license-proprietaire" name="license-filter" value="Propriétaire">
+                <label for="license-proprietaire"><strong>Propriétaire</strong>
+                    <span class="filter-number">{{ proprietary_licenses | length }}</span>
+                </label>
+            </div>
+            {% endif %}
+
         </div>
     </fieldset>
+
+
+
     </form>
     </aside>
 
     <section class="fr-col-9 fr-pl-4w  fr-my-7w fr-mt-md-12w fr-mb-md-10w">
-        <h4><span id="models-count">{{ models | list | length }}</span> modèles</h4>
+        <h4 id="models-count">{{ models | list | length }} modèles</h4>
         <div class="fr-grid-row fr-grid-row--gutters">
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
@@ -250,10 +276,9 @@
         }
         function updateModelsCount() {
             const visibleModels = Array.from(modelItems).filter(model => model.style.display !== 'none');
-            modelsCountElement.textContent = visibleModels.length;
+            modelsCountElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
         }
 
-        // Apply the filters to the model items
         function applyFilter() {
             const selectedParamFilters = getSelectedFilters(paramFilters);
             const selectedLicenseFilters = getSelectedFilters(licenseFilters);
@@ -262,16 +287,20 @@
                 const modelParams = model.getAttribute('data-friendly-size');
                 const modelLicense = model.getAttribute('data-license');
 
+                const isProprietaire = modelLicense.includes("propriétaire");
+                const licenseMatch = selectedLicenseFilters.length === 0 ||
+                    selectedLicenseFilters.includes(modelLicense) ||
+                    (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
+
                 const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
-                const licenseMatch = selectedLicenseFilters.length === 0 || selectedLicenseFilters.includes(modelLicense);
 
                 model.style.display = paramMatch && licenseMatch ? '' : 'none';
             });
 
             updateResetFiltersLink();
             updateModelsCount();
-
         }
+
 
         // Reset all filters
         function resetFilters() {
