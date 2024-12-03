@@ -118,12 +118,15 @@
     .fr-checkbox strong {
         font-weight: 600;
     }
+    .w-full {
+        width: 100%;
+    }
 </style>
 {% endblock %}
 {% block content %}
 <main id="content" role="main">
     <div class="fr-container fr-grid-row">
-        <aside class="fr-accordion fr-my-3 fr-col-md-3 border-right fr-mt-md-12w">
+        <aside class="fr-accordion w-full fr-my-3 fr-col-md-3 border-right fr-mt-md-12w">
             <button class="fr-accordion__btn" aria-expanded="false" aria-controls="filters-section">
                 Afficher les filtres
                 <span class="fr-badge fr-badge--sm filters-indicator" style="display: none;">1</span>
