@@ -118,80 +118,131 @@
     .fr-checkbox strong {
         font-weight: 600;
     }
+
+    .w-full {
+        width: 100%;
+    }
+
+    #fr-modal-filters-section {
+        background-color: white;
+    }
+
+    #fr-modal-filters-section .fr-container--fluid {
+        overflow: scroll;
+
+    }
+
+    @media (min-width: 48em) {
+
+        .fr-btn--close,
+        .filters-section-btn {
+            display: none;
+        }
+
+        #fr-modal-filters-section {
+            background-color: transparent;
+            /* height: 100%; */
+            margin: 0;
+            opacity: 1;
+            position: static;
+            visibility: inherit;
+            height: 100vh;
+            width: auto;
+        }
+
+        #fr-modal-filters-section .fr-container--fluid {
+            overflow: initial;
+
+        }
+
+    }
 </style>
 {% endblock %}
 {% block content %}
 <main id="content" role="main">
-    <div class="fr-container fr-grid-row">
-        <aside class="fr-col-3 border-right fr-mt-md-12w">
-            <h5>Filtres</h5>
-            <p><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a></p>
+    <div class="fr-container--fluid fr-mx-2w fr-grid-row">
+        <button class="fr-accordion__btn filters-section-btn" aria-controls="fr-modal-filters-section"
+            data-fr-opened="false">
+            Afficher les filtres
+            <span class="fr-badge fr-badge--sm filters-indicator" style="display: none;">1</span>
+        </button>
 
-            <form id="model-filter-form">
+        <aside aria-labelledby="fr-modal-filters" role="dialog" id="fr-modal-filters-section"
+            class="fr-modal fr-col-md-3">
+            <div class="fr-container--fluid">
+                <div class="fr-container fr-pl-4w">
+                    <button class="fr-btn--close fr-btn fr-p-4w" title="Fermer la fenêtre modale"
+                        aria-controls="fr-modal-filters-section">Fermer</button>
+                    <h5>Filtres</h5>
+                    <p><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a></p>
+
+                    <form id="model-filter-form">
+                        <fieldset class="fr-fieldset">
+                            <legend class="fr-mb-1w">Taille (paramètres)</legend>
+                            <div class="fr-checkbox-group fr-checkbox-group--sm">
+                                {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
+                                {% set sizes_desc = {
+                                'XS': "< à 7 milliards", 'S' : 'de 7 à 20 milliards' , 'M' : 'de 20 à 70 milliards'
+                                    , 'L' : 'de 70 à 150 milliards' , 'XL' : '> 150 milliards' } %} {% for size in sizes
+                                    %} <div class="fr-checkbox">
+                                    <input type="checkbox" id="size-{{ size }}" name="param-filter"
+                                        value="{{ size }}" />
+                                    <label for="size-{{ size }}"><strong>{{ size }}&nbsp;:&nbsp;</strong>
+                                        {{sizes_desc[size]}}
+                                        <span class="filter-number">{{ models | selectattr('friendly_size',
+                                            '==', size) | list | length }}</span>
+                                    </label>
+                            </div>
+                            {% endfor %}
+                </div>
+                </fieldset>
                 <fieldset class="fr-fieldset">
-                    <legend class="fr-mb-1w">Taille (paramètres)</legend>
+                    <legend class="fr-mb-1w">Licence d'utilisation</legend>
                     <div class="fr-checkbox-group fr-checkbox-group--sm">
-                        {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
-                        {% set sizes_desc = {
-                        'XS': "< à 7 milliards", 'S' : 'de 7 à 20 milliards' , 'M' : 'de 20 à 70 milliards' , 'L'
-                            : 'de 70 à 150 milliards' , 'XL' : '> 150 milliards' } %} {% for size in sizes %} <div
-                            class="fr-checkbox">
-                            <input type="checkbox" id="size-{{ size }}" name="param-filter" value="{{ size }}">
-                            <label for="size-{{ size }}"><strong>{{ size }}&nbsp;:&nbsp;</strong> {{sizes_desc[size]}}
-                                <span class="filter-number">{{ models | selectattr('friendly_size',
-                                    '==', size) | list | length }}</span>
+                        {% set proprietary_licenses = [] %}
+                        {% set other_licenses = [] %}
+
+                        {% for model in models %}
+                        {% if 'propriétaire' in model.license %}
+                        {% if model.license not in proprietary_licenses %}
+                        {% set _ = proprietary_licenses.append(model.license) %}
+                        {% endif %}
+                        {% else %}
+                        {% if model.license not in other_licenses %}
+                        {% set _ = other_licenses.append(model.license) %}
+                        {% endif %}
+                        {% endif %}
+                        {% endfor %}
+
+                        {% for license in other_licenses %}
+                        <div class="fr-checkbox">
+                            <input type="checkbox" id="license-{{ license }}" name="license-filter"
+                                value="{{ license }}" />
+                            <label for="license-{{ license }}"><strong>{{ license }}</strong>
+                                <span class="filter-number">{{ models | selectattr('license', '==', license) | list |
+                                    length
+                                    }}</span>
                             </label>
+                        </div>
+                        {% endfor %}
+
+                        {% if proprietary_licenses %}
+                        <div class="fr-checkbox">
+                            <input type="checkbox" id="license-proprietaire" name="license-filter" value="Propriétaire">
+                            <label for="license-proprietaire"><strong>Propriétaire</strong>
+                                <span class="filter-number">{{ proprietary_licenses | length }}</span>
+                            </label>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
+                </fieldset>
+                </form>
+            </div>
     </div>
-    </fieldset>
-    <fieldset class="fr-fieldset">
-        <legend class="fr-mb-1w">Licence d'utilisation</legend>
-        <div class="fr-checkbox-group fr-checkbox-group--sm">
-            {% set proprietary_licenses = [] %}
-            {% set other_licenses = [] %}
-
-            {% for model in models %}
-            {% if 'propriétaire' in model.license %}
-            {% if model.license not in proprietary_licenses %}
-            {% set _ = proprietary_licenses.append(model.license) %}
-            {% endif %}
-            {% else %}
-            {% if model.license not in other_licenses %}
-            {% set _ = other_licenses.append(model.license) %}
-            {% endif %}
-            {% endif %}
-            {% endfor %}
-
-            {% for license in other_licenses %}
-            <div class="fr-checkbox">
-                <input type="checkbox" id="license-{{ license }}" name="license-filter" value="{{ license }}">
-                <label for="license-{{ license }}"><strong>{{ license }}</strong>
-                    <span class="filter-number">{{ models | selectattr('license', '==', license) | list | length
-                        }}</span>
-                </label>
-            </div>
-            {% endfor %}
-
-            {% if proprietary_licenses %}
-            <div class="fr-checkbox">
-                <input type="checkbox" id="license-proprietaire" name="license-filter" value="Propriétaire">
-                <label for="license-proprietaire"><strong>Propriétaire</strong>
-                    <span class="filter-number">{{ proprietary_licenses | length }}</span>
-                </label>
-            </div>
-            {% endif %}
-
-        </div>
-    </fieldset>
-
-
-
-    </form>
     </aside>
 
-    <section class="fr-col-9 fr-pl-4w  fr-my-7w fr-mt-md-12w fr-mb-md-10w">
-        <h4 id="models-count">{{ models | list | length }} modèles</h4>
+    <section class="fr-col-md-9 fr-pl-md-4w  fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+        <h4 id="models-count" aria-live="polite">{{ models | list | length }} modèles</h4>
         <div class="fr-grid-row fr-grid-row--gutters">
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
@@ -277,6 +328,17 @@
             const visibleModels = Array.from(modelItems).filter(model => model.style.display !== 'none');
             modelsCountElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
         }
+        function updateActiveFiltersCount() {
+            const activeParamFilters = getSelectedFilters(paramFilters).length;
+            const activeLicenseFilters = getSelectedFilters(licenseFilters).length;
+            const totalActiveFilters = activeParamFilters + activeLicenseFilters;
+
+            const filtersIndicator = document.querySelector('.filters-indicator'); // Replace with the correct element selector
+            if (filtersIndicator) {
+                filtersIndicator.textContent = totalActiveFilters;
+                filtersIndicator.style.display = totalActiveFilters > 0 ? 'inline-block' : 'none';
+            }
+        }
 
         function applyFilter() {
             const selectedParamFilters = getSelectedFilters(paramFilters);
@@ -298,6 +360,7 @@
 
             updateResetFiltersLink();
             updateModelsCount();
+            updateActiveFiltersCount();
         }
 
 
