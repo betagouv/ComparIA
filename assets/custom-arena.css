@@ -261,6 +261,28 @@ li.fr-nav__item {
   margin-bottom: 0;
 }
 
+.fr-header__service-title {
+  color: #161616;
+}
+
+.fr-header__service-tagline {
+  color: #3A3A3A;
+}
+
+#header-html a[target=_blank]::after {
+  display: none;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (min-width: 48em) {
+  .md-visible {
+    display: block !important;
+  }
+}
+
 #header-html {
   overflow: visible !important;
   /* Required < 100 to be behind modal */
@@ -804,4 +826,11 @@ li.fr-nav__item {
   display: inline-block;
   mask-size: 100%;
   mask-repeat: no-repeat;
+}
+
+
+.fr-icon-pencil-line::before,
+.fr-icon-pencil-line::after {
+  -webkit-mask-image: url("../assets/dsfr/icons/design/pencil-line.svg");
+  mask-image: url("../assets/dsfr/icons/design/pencil-line.svg");
 }
