@@ -1,14 +1,66 @@
-.fr-icon--question-line {
-    -webkit-mask-image: url("dsfr/icons/system/question-line.svg");
-    mask-image: url("dsfr/icons/system/question-line.svg");
-    background-color: var(--text-active-grey);
-    color: var(--text-active-grey) !important;
-    display: inline-block;
-    mask-size: 100%;
-    mask-repeat: no-repeat;
+@media (min-width: 62em) {
+  #contenu {
+      margin-left: 8.33%;
+      margin-right: 8.33%;
   }
+}
 
-  .fr-badge .fr-icon--question-line {
-    position: relative;
-    top: 5px;
+@media (min-width: 78em) {
+  #contenu {
+      margin-left: 16.66%;
+      margin-right: 16.66%;
   }
+}
+.fr-header__service-title {
+  color: #161616;
+}
+.fr-header__service-tagline {
+  color:  #3A3A3A;
+}
+.fr-header__tools .fr-link[target=_blank]::after, #fr-modal-menu .fr-link[target=_blank]::after {
+  display: none;
+}
+
+
+.fr-icon--question-line {
+  -webkit-mask-image: url("dsfr/icons/system/question-line.svg");
+  mask-image: url("dsfr/icons/system/question-line.svg");
+  background-color: var(--text-active-grey);
+  color: var(--text-active-grey) !important;
+  display: inline-block;
+  mask-size: 100%;
+  mask-repeat: no-repeat;
+}
+
+.fr-badge .fr-icon--question-line {
+  position: relative;
+  top: 5px;
+}
+
+.fr-header__navbar {
+  align-items: center !important;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (min-width: 48em) {
+  .md-visible {
+    display: block;
+  }
+}
+
+
+.help-us-mobile {
+  display: block;
+  width: 100%;
+  border-bottom: 1px #DDDDDD solid;
+}
+
+@media (min-width: 48em) {
+
+  .md-hidden {
+    display: none;
+  }
+}

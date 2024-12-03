@@ -15,26 +15,9 @@
     <!-- Dans le fichier manifest.webmanifest aussi, modifier les chemins vers les images -->
     <title>compar:IA</title>
     {{ config.site_head_js | safe }}
-    <style>
-        @media (min-width: 62em) {
-            #contenu {
-                margin-left: 8.33%;
-                margin-right: 8.33%;
-            }
-        }
 
-        @media (min-width: 78em) {
-            #contenu {
-                margin-left: 16.66%;
-                margin-right: 16.66%;
-            }
-        }
+    <link rel="stylesheet" href="assets/custom-site.css">
 
-        .fr-header__tools .fr-link[target=_blank]::after {
-            display: none;
-        }
-
-    </style>
     <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-design/icons-design.css">
     {% block extra_styles %}
     {% endblock %}
