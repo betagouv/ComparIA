@@ -124,17 +124,20 @@
     }
 
     #fr-modal-filters-section {
-        background-color: white;
+        background-color: transparent;
+
     }
 
     #fr-modal-filters-section .fr-container--fluid {
+        background-color: white;
         overflow: scroll;
 
     }
 
     .fr-checkbox-group--sm input[type=checkbox] {
-    top: initial;
+        top: initial;
     }
+
     @media (min-width: 48em) {
 
         .fr-btn--close,
@@ -149,7 +152,7 @@
             opacity: 1;
             position: static;
             visibility: inherit;
-            height: 100vh;
+            /* height: 100vh; */
             width: auto;
         }
 
@@ -159,25 +162,38 @@
         }
 
     }
+
+    .fr-modal:after,
+    .fr-modal:before {
+        flex: 1 0 9rem;
+        height: 9rem;
+    }
+
+    #fr-modal-filters-section .fr-container {
+        display: flex;
+        flex-direction: column-reverse;
+        /* order: ; */
+    }
 </style>
 {% endblock %}
 {% block content %}
 <main id="content" role="main">
     <div class="fr-container--fluid fr-mx-2w fr-grid-row">
         <button class="fr-accordion__btn filters-section-btn" aria-controls="fr-modal-filters-section"
-            data-fr-opened="false">
-            Afficher les filtres
-            <span class="fr-badge fr-badge--sm filters-indicator" style="display: none;">1</span>
+            aria-expanded="false" data-fr-opened="false">
+            Afficher les filtres&nbsp;<span class="fr-badge fr-badge--sm filters-indicator" style="display: none;">1</span>
         </button>
 
         <aside aria-labelledby="fr-modal-filters" role="dialog" id="fr-modal-filters-section"
             class="fr-modal fr-col-md-3">
             <div class="fr-container--fluid">
                 <div class="fr-container fr-pl-4w">
-                    <button class="fr-btn--close fr-btn fr-p-4w" title="Fermer la fenêtre modale"
-                        aria-controls="fr-modal-filters-section">Fermer</button>
-                    <h5>Filtres</h5>
-                    <p><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a></p>
+                    <!-- <button class="fr-btn--close fr-btn fr-pt-2w" title="Fermer la fenêtre modale"
+                        aria-controls="fr-modal-filters-section">Fermer</button> -->
+                    <h5 class="md-visible hidden">Filtres</h5>
+                    <div class=""><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a><button
+                            class="right fr-btn purple-btn fr-mb-4w" title="Voir les résultats" id="results-count"
+                            aria-controls="fr-modal-filters-section">Voir les {{ models | list | length }} résultats</button></div>
 
                     <form id="model-filter-form">
                         <fieldset class="fr-fieldset">
@@ -274,7 +290,7 @@
                                 else
                                 %}
                                 <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                                    Propriétaire
+                                    Commerciale
                                 </span>
                                 {% endif %}
                                 <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v">
@@ -314,7 +330,8 @@
         const paramFilters = document.querySelectorAll('input[name="param-filter"]');
         const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
         const modelItems = document.querySelectorAll('.model-item');
-        const modelsCountElement = document.getElementById('models-count'); // Assuming this is the element to display the count
+        const modelsCountElement = document.getElementById('models-count');
+        const resultsCountElement = document.getElementById('results-count');
 
         // Utility function to get selected filter values
         function getSelectedFilters(filters) {
@@ -330,6 +347,9 @@
         function updateModelsCount() {
             const visibleModels = Array.from(modelItems).filter(model => model.style.display !== 'none');
             modelsCountElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
+            resultsCountElement.textContent = `Voir ${visibleModels.length === 0 ? 'zéro résultat' :
+                visibleModels.length === 1 ? 'le résultat' :
+                    `les ${visibleModels.length} résultats`}`;
         }
         function updateActiveFiltersCount() {
             const activeParamFilters = getSelectedFilters(paramFilters).length;

@@ -45,6 +45,19 @@
   display: none;
 }
 
+.right {
+  float: right;
+}
+
+.purple-btn {
+background-color: var(--blue-france-main-525);
+color: #F5F5FE !important;
+
+--hover: var(--blue-france-main-525-hover);
+--active: var(--blue-france-main-525-active);
+}
+
+
 @media (min-width: 48em) {
   .md-visible {
     display: block;
@@ -57,7 +70,9 @@
   width: 100%;
   border-bottom: 1px #DDDDDD solid;
 }
-
+.fr-header__navbar {
+  margin-right: 0;
+}
 @media (min-width: 48em) {
 
   .md-hidden {
