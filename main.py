@@ -25,7 +25,7 @@ templates = Jinja2Templates(directory="templates")
 
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
 gr.set_static_paths(paths=[config.assets_absolute_path])
-# broken... using path set up by fastapi instead 
+# broken... using path set up by fastapi instead
 logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
 
 # Set authorization credentials
@@ -72,6 +72,7 @@ async def models(request: Request):
     return templates.TemplateResponse(
         "models.html",
         {
+            "title": "Liste des modèles",
             "request": request,
             "config": config,
             "models": config.models_extra_info,
@@ -86,7 +87,7 @@ async def models(request: Request):
 async def about(request: Request):
     return templates.TemplateResponse(
         "about.html",
-        {"request": request, "config": config},
+        {"title": "À propos", "request": request, "config": config},
     )
 
 
@@ -94,7 +95,7 @@ async def about(request: Request):
 async def partners(request: Request):
     return templates.TemplateResponse(
         "partners.html",
-        {"request": request, "config": config},
+        {"title": "Partenaires", "request": request, "config": config},
     )
 
 
@@ -102,7 +103,7 @@ async def partners(request: Request):
 async def legal(request: Request):
     return templates.TemplateResponse(
         "legal.html",
-        {"request": request, "config": config},
+        {"title": "Mentions légales", "request": request, "config": config},
     )
 
 
@@ -110,7 +111,7 @@ async def legal(request: Request):
 async def policy(request: Request):
     return templates.TemplateResponse(
         "policy.html",
-        {"request": request, "config": config},
+        {"title": "Politique de confidentialité", "request": request, "config": config},
     )
 
 
@@ -118,7 +119,12 @@ async def policy(request: Request):
 async def tos(request: Request):
     return templates.TemplateResponse(
         "tos.html",
-        {"request": request, "config": config, "models": config.models_extra_info},
+        {
+            "title": "Modalités d’utilisation",
+            "request": request,
+            "config": config,
+            "models": config.models_extra_info,
+        },
     )
 
 
@@ -126,7 +132,7 @@ async def tos(request: Request):
 async def accessibility(request: Request):
     return templates.TemplateResponse(
         "accessibility.html",
-        {"request": request, "config": config},
+        {"title": "Déclaration d’accessibilité", "request": request, "config": config},
     )
 
 
@@ -138,7 +144,9 @@ async def http_exception_handler(request, exc):
 @app.exception_handler(StarletteHTTPException)
 async def not_found_handler(request, exc):
     return templates.TemplateResponse(
-        "404.html", {"request": request, "config": config}, status_code=404
+        "404.html",
+        {"title": "Page non trouvée", "request": request, "config": config},
+        status_code=404,
     )
 
 

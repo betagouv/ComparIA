@@ -48,7 +48,7 @@ class AppState:
 
 
 with gr.Blocks(
-    title="compar:IA – Le comparateur d'IA conversationnelles",
+    title="Discussion - compar:IA, le comparateur d'IA conversationnelles",
     theme=DSFR(),
     css=config.css,
     head=config.arena_head_js,
