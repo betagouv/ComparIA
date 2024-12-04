@@ -115,6 +115,7 @@
     .fr-checkbox strong {
         font-weight: 600;
     }
+
     .licenses-checkboxes strong {
         font-weight: 500;
     }
@@ -143,6 +144,7 @@
             border-right: #E5E5E5 1px solid !important;
 
         }
+
         .fr-btn--close,
         .filters-section-btn {
             display: none;
@@ -203,9 +205,11 @@
         color: white;
         height: 18px;
     }
+
     #show-filters-btn[data-fr-opened=false] {
         border-bottom: #E5E5E5 1px solid !important;
     }
+
     #show-filters-btn[data-fr-opened=true] {
         --idle: transparent;
         --hover: var(--background-open-blue-france-hover);
@@ -404,12 +408,19 @@
         function updateActiveFiltersCount() {
             const activeParamFilters = getSelectedFilters(paramFilters).length;
             const activeLicenseFilters = getSelectedFilters(licenseFilters).length;
-            const totalActiveFilters = activeParamFilters + activeLicenseFilters;
 
-            const filtersIndicator = document.querySelector('.filters-indicator'); // Replace with the correct element selector
+            const filtersIndicator = document.querySelector('.filters-indicator');
             if (filtersIndicator) {
-                filtersIndicator.textContent = totalActiveFilters;
-                filtersIndicator.style.display = totalActiveFilters > 0 ? 'inline-block' : 'none';
+                if (activeParamFilters > 0 && activeLicenseFilters > 0) {
+                    filtersIndicator.textContent = '2';
+                } else if (activeParamFilters > 0 || activeLicenseFilters > 0) {
+                    filtersIndicator.textContent = '1';
+                } else {
+                    filtersIndicator.textContent = '';
+                    filtersIndicator.style.display = 'none';
+                    return;
+                }
+                filtersIndicator.style.display = 'inline-block';
             }
         }
 
