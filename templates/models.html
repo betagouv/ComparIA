@@ -74,10 +74,6 @@
         color: var(--grey-200-850) !important;
     }
 
-    .border-right {
-        border-right: #E5E5E5 1px solid;
-    }
-
     aside a.disabled,
     aside a.disabled:active {
         cursor: not-allowed;
@@ -85,9 +81,9 @@
         background-color: transparent;
     }
 
-    aside a {
+    /* aside a {
         color: var(--text-active-blue-france);
-    }
+    } */
 
     .fr-checkbox-group input[type=checkbox]+label:before {
         --border-action-high-blue-france: var(--blue-france-main-525);
@@ -101,6 +97,7 @@
 
     .filter-number {
         color: #666666;
+        background-color: white;
         font-size: 0.9em;
         position: absolute;
         right: 2em;
@@ -119,24 +116,43 @@
         font-weight: 600;
     }
 
+    .licenses-checkboxes strong {
+        font-weight: 500;
+    }
+
     .w-full {
         width: 100%;
     }
 
     #fr-modal-filters-section {
-        background-color: white;
+        background-color: transparent;
+
     }
 
     #fr-modal-filters-section .fr-container--fluid {
+        background-color: white;
         overflow: scroll;
 
     }
 
+    .fr-checkbox-group--sm input[type=checkbox] {
+        top: initial;
+    }
+
     @media (min-width: 48em) {
+        aside .fr-container--fluid {
+            border-right: #E5E5E5 1px solid !important;
+
+        }
 
         .fr-btn--close,
         .filters-section-btn {
             display: none;
+        }
+
+
+        #fr-modal-filters-section .fr-container--fluid {
+            background-color: transparent;
         }
 
         #fr-modal-filters-section {
@@ -146,7 +162,7 @@
             opacity: 1;
             position: static;
             visibility: inherit;
-            height: 100vh;
+            /* height: 100vh; */
             width: auto;
         }
 
@@ -155,30 +171,98 @@
 
         }
 
+        #fr-modal-filters-section .fr-container {
+            display: block !important;
+        }
+
+        .fr-modal:after,
+        .fr-modal:before {
+            flex: 1 0 2em !important;
+            height: 2em !important;
+        }
+
+        #reset-filters-link {
+            display: inline-block;
+            margin-bottom: 0.5em;
+        }
+    }
+
+    .fr-modal:after,
+    .fr-modal:before {
+        flex: 1 0 9rem;
+        height: 9rem;
+    }
+
+    #fr-modal-filters-section .fr-container {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .filters-indicator {
+        background-color: #6A6AF4;
+        border-radius: 50%;
+        width: 18px;
+        color: white;
+        height: 18px;
+    }
+
+    #show-filters-btn[data-fr-opened=false] {
+        border-bottom: #E5E5E5 1px solid !important;
+    }
+
+    #show-filters-btn[data-fr-opened=true] {
+        --idle: transparent;
+        --hover: var(--background-open-blue-france-hover);
+        --active: var(--background-open-blue-france-active);
+        background-color: var(--background-open-blue-france);
+    }
+
+    #show-filters-btn[data-fr-opened=true]:after {
+        transform: rotate(-180deg);
+    }
+
+    #fr-modal-filters-section .fr-checkbox-group {
+
+        left: 0.5em;
+    }
+
+    .model-item.fading {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .model-item {
+        opacity: 1;
+        transition: opacity 0.15s ease;
+        /* Smooth fade and optional transform for motion */
     }
 </style>
 {% endblock %}
 {% block content %}
 <main id="content" role="main">
-    <div class="fr-container--fluid fr-mx-2w fr-grid-row">
-        <button class="fr-accordion__btn filters-section-btn" aria-controls="fr-modal-filters-section"
-            data-fr-opened="false">
-            Afficher les filtres
-            <span class="fr-badge fr-badge--sm filters-indicator" style="display: none;">1</span>
+    <div class="fr-container--fluid fr-grid-row">
+        <button id="show-filters-btn" class="fr-accordion__btn filters-section-btn"
+            aria-controls="fr-modal-filters-section" data-fr-opened="false">
+            Afficher les filtres&nbsp;<span class="fr-badge fr-badge--sm filters-indicator"
+                style="display: none;">1</span>
         </button>
 
         <aside aria-labelledby="fr-modal-filters" role="dialog" id="fr-modal-filters-section"
-            class="fr-modal fr-col-md-3">
+            class="fr-modal fr-col-md-3 fr-pl-md-2w">
             <div class="fr-container--fluid">
                 <div class="fr-container fr-pl-4w">
-                    <button class="fr-btn--close fr-btn fr-p-4w" title="Fermer la fenêtre modale"
-                        aria-controls="fr-modal-filters-section">Fermer</button>
-                    <h5>Filtres</h5>
-                    <p><a href="#" class="reset-filters" id="reset-filters-link">Réinitialiser</a></p>
+                    <!-- <button class="fr-btn--close fr-btn fr-pt-2w" title="Fermer la fenêtre modale"
+                        aria-controls="fr-modal-filters-section">Fermer</button> -->
+                    <h5 class="md-visible hidden fr-mb-md-1w">Filtres</h5>
+                    <div><a href="#" id="reset-filters-link">Réinitialiser</a><button
+                            class="right fr-btn purple-btn fr-mb-4w md-hidden" title="Voir les résultats"
+                            id="results-count" aria-controls="fr-modal-filters-section">Voir les {{ models | list |
+                            length }}
+                            résultats</button></div>
 
                     <form id="model-filter-form">
                         <fieldset class="fr-fieldset">
-                            <legend class="fr-mb-1w">Taille (paramètres)</legend>
+                            <legend class="fr-pt-2w fr-mb-1w">Taille (paramètres)</legend>
                             <div class="fr-checkbox-group fr-checkbox-group--sm">
                                 {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
                                 {% set sizes_desc = {
@@ -198,7 +282,7 @@
                 </fieldset>
                 <fieldset class="fr-fieldset">
                     <legend class="fr-mb-1w">Licence d'utilisation</legend>
-                    <div class="fr-checkbox-group fr-checkbox-group--sm">
+                    <div class="fr-checkbox-group fr-checkbox-group--sm licenses-checkboxes">
                         {% set proprietary_licenses = [] %}
                         {% set other_licenses = [] %}
 
@@ -229,7 +313,7 @@
                         {% if proprietary_licenses %}
                         <div class="fr-checkbox">
                             <input type="checkbox" id="license-proprietaire" name="license-filter" value="Propriétaire">
-                            <label for="license-proprietaire"><strong>Propriétaire</strong>
+                            <label for="license-proprietaire"><strong>Commerciale</strong>
                                 <span class="filter-number">{{ proprietary_licenses | length }}</span>
                             </label>
                         </div>
@@ -241,7 +325,7 @@
     </div>
     </aside>
 
-    <section class="fr-col-md-9 fr-pl-md-4w  fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+    <section class="fr-col-md-9 fr-pl-md-4w fr-px-md-4w fr-px-2w fr-my-2w fr-mt-md-4w fr-mb-md-10w">
         <h4 id="models-count" aria-live="polite">{{ models | list | length }} modèles</h4>
         <div class="fr-grid-row fr-grid-row--gutters">
             {% for model in models %}
@@ -311,7 +395,8 @@
         const paramFilters = document.querySelectorAll('input[name="param-filter"]');
         const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
         const modelItems = document.querySelectorAll('.model-item');
-        const modelsCountElement = document.getElementById('models-count'); // Assuming this is the element to display the count
+        const modelsCountElement = document.getElementById('models-count');
+        const resultsCountElement = document.getElementById('results-count');
 
         // Utility function to get selected filter values
         function getSelectedFilters(filters) {
@@ -325,18 +410,28 @@
             resetFiltersLink.classList.toggle('disabled', !hasFilters);
         }
         function updateModelsCount() {
-            const visibleModels = Array.from(modelItems).filter(model => model.style.display !== 'none');
+            const visibleModels = Array.from(modelItems).filter(model => !model.classList.contains('hidden'));
             modelsCountElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
+            resultsCountElement.textContent = `Voir ${visibleModels.length === 0 ? 'zéro résultat' :
+                visibleModels.length === 1 ? 'le résultat' :
+                    `les ${visibleModels.length} résultats`}`;
         }
         function updateActiveFiltersCount() {
             const activeParamFilters = getSelectedFilters(paramFilters).length;
             const activeLicenseFilters = getSelectedFilters(licenseFilters).length;
-            const totalActiveFilters = activeParamFilters + activeLicenseFilters;
 
-            const filtersIndicator = document.querySelector('.filters-indicator'); // Replace with the correct element selector
+            const filtersIndicator = document.querySelector('.filters-indicator');
             if (filtersIndicator) {
-                filtersIndicator.textContent = totalActiveFilters;
-                filtersIndicator.style.display = totalActiveFilters > 0 ? 'inline-block' : 'none';
+                if (activeParamFilters > 0 && activeLicenseFilters > 0) {
+                    filtersIndicator.textContent = '2';
+                } else if (activeParamFilters > 0 || activeLicenseFilters > 0) {
+                    filtersIndicator.textContent = '1';
+                } else {
+                    filtersIndicator.textContent = '';
+                    filtersIndicator.style.display = 'none';
+                    return;
+                }
+                filtersIndicator.style.display = 'inline-block';
             }
         }
 
@@ -344,22 +439,36 @@
             const selectedParamFilters = getSelectedFilters(paramFilters);
             const selectedLicenseFilters = getSelectedFilters(licenseFilters);
 
+            // Fade out all items
             modelItems.forEach(model => {
-                const modelParams = model.getAttribute('data-friendly-size');
-                const modelLicense = model.getAttribute('data-license');
+                model.classList.add('fading');
+                model.classList.remove('hidden'); // Ensure display is not none during fade-out
 
-                const isProprietaire = modelLicense.includes("propriétaire");
-                const licenseMatch = selectedLicenseFilters.length === 0 ||
-                    selectedLicenseFilters.includes(modelLicense) ||
-                    (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
-
-                const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
-
-                model.style.display = paramMatch && licenseMatch ? '' : 'none';
             });
 
+            setTimeout(() => {
+                modelItems.forEach(model => {
+                    const modelParams = model.getAttribute('data-friendly-size');
+                    const modelLicense = model.getAttribute('data-license');
+
+                    const isProprietaire = modelLicense.includes("propriétaire");
+                    const licenseMatch = selectedLicenseFilters.length === 0 ||
+                        selectedLicenseFilters.includes(modelLicense) ||
+                        (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
+
+                    const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
+
+                    if (paramMatch && licenseMatch) {
+                        model.classList.remove('fading', 'hidden');
+                    } else {
+                        model.classList.add('hidden');
+                    }
+                });
+                updateModelsCount();
+
+            }, 200);
+
             updateResetFiltersLink();
-            updateModelsCount();
             updateActiveFiltersCount();
         }
 
