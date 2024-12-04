@@ -74,10 +74,6 @@
         color: var(--grey-200-850) !important;
     }
 
-    .border-right {
-        border-right: #E5E5E5 1px solid;
-    }
-
     aside a.disabled,
     aside a.disabled:active {
         cursor: not-allowed;
@@ -101,6 +97,7 @@
 
     .filter-number {
         color: #666666;
+        background-color: white;
         font-size: 0.9em;
         position: absolute;
         right: 2em;
@@ -117,6 +114,9 @@
 
     .fr-checkbox strong {
         font-weight: 600;
+    }
+    .licenses-checkboxes strong {
+        font-weight: 500;
     }
 
     .w-full {
@@ -139,7 +139,10 @@
     }
 
     @media (min-width: 48em) {
+        aside .fr-container--fluid {
+            border-right: #E5E5E5 1px solid !important;
 
+        }
         .fr-btn--close,
         .filters-section-btn {
             display: none;
@@ -200,7 +203,9 @@
         color: white;
         height: 18px;
     }
-
+    #show-filters-btn[data-fr-opened=false] {
+        border-bottom: #E5E5E5 1px solid !important;
+    }
     #show-filters-btn[data-fr-opened=true] {
         --idle: transparent;
         --hover: var(--background-open-blue-france-hover);
@@ -262,7 +267,7 @@
                 </fieldset>
                 <fieldset class="fr-fieldset">
                     <legend class="fr-mb-1w">Licence d'utilisation</legend>
-                    <div class="fr-checkbox-group fr-checkbox-group--sm">
+                    <div class="fr-checkbox-group fr-checkbox-group--sm licenses-checkboxes">
                         {% set proprietary_licenses = [] %}
                         {% set other_licenses = [] %}
 
