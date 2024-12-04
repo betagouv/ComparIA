@@ -225,6 +225,17 @@
 
         left: 0.5em;
     }
+
+    .model-item.fading {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .model-item {
+        opacity: 1;
+        transition: opacity 0.15s ease;
+        /* Smooth fade and optional transform for motion */
+    }
 </style>
 {% endblock %}
 {% block content %}
@@ -399,7 +410,7 @@
             resetFiltersLink.classList.toggle('disabled', !hasFilters);
         }
         function updateModelsCount() {
-            const visibleModels = Array.from(modelItems).filter(model => model.style.display !== 'none');
+            const visibleModels = Array.from(modelItems).filter(model => !model.classList.contains('hidden'));
             modelsCountElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
             resultsCountElement.textContent = `Voir ${visibleModels.length === 0 ? 'zéro résultat' :
                 visibleModels.length === 1 ? 'le résultat' :
@@ -428,22 +439,36 @@
             const selectedParamFilters = getSelectedFilters(paramFilters);
             const selectedLicenseFilters = getSelectedFilters(licenseFilters);
 
+            // Fade out all items
             modelItems.forEach(model => {
-                const modelParams = model.getAttribute('data-friendly-size');
-                const modelLicense = model.getAttribute('data-license');
+                model.classList.add('fading');
+                model.classList.remove('hidden'); // Ensure display is not none during fade-out
 
-                const isProprietaire = modelLicense.includes("propriétaire");
-                const licenseMatch = selectedLicenseFilters.length === 0 ||
-                    selectedLicenseFilters.includes(modelLicense) ||
-                    (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
-
-                const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
-
-                model.style.display = paramMatch && licenseMatch ? '' : 'none';
             });
 
+            setTimeout(() => {
+                modelItems.forEach(model => {
+                    const modelParams = model.getAttribute('data-friendly-size');
+                    const modelLicense = model.getAttribute('data-license');
+
+                    const isProprietaire = modelLicense.includes("propriétaire");
+                    const licenseMatch = selectedLicenseFilters.length === 0 ||
+                        selectedLicenseFilters.includes(modelLicense) ||
+                        (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
+
+                    const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
+
+                    if (paramMatch && licenseMatch) {
+                        model.classList.remove('fading', 'hidden');
+                    } else {
+                        model.classList.add('hidden');
+                    }
+                });
+                updateModelsCount();
+
+            }, 200);
+
             updateResetFiltersLink();
-            updateModelsCount();
             updateActiveFiltersCount();
         }
 
