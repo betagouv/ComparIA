@@ -389,6 +389,10 @@
 {% endfor %}
 
 <script type="text/javascript">
+    // Fix modal half-scrolled bug
+    document.getElementById('show-filters-btn').addEventListener('click', function () {
+        window.scrollTo(0, 0);
+    });
 
     document.addEventListener('DOMContentLoaded', function () {
         const resetFiltersLink = document.getElementById('reset-filters-link');
