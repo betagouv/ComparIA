@@ -28,7 +28,7 @@
 	export let dispatch: any;
 	// export let i18n: I18nFormatter;
 	export let line_breaks: boolean;
-	export let upload: Client["upload"];
+	// export let upload: Client["upload"];
 	export let target: HTMLElement | null;
 	export let root: string;
 	export let disabled = false;
@@ -352,7 +352,7 @@
 	}
 
 	.bot {
-		margin-bottom: 1em;	
+		margin-bottom: 1em;
 	}
 	/* On mobile, reorganize the panels */
 

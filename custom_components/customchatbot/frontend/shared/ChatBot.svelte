@@ -86,7 +86,7 @@
 	// export let i18n: I18nFormatter;
 	export let layout: "bubble" | "panel" = "bubble";
 	export let placeholder: string | null = null;
-	export let upload: Client["upload"];
+	// export let upload: Client["upload"];
 	export let _retryable = false;
 	export let _undoable = false;
 	export let like_user_message = false;
@@ -364,7 +364,6 @@
 							{theme_mode}
 							{target}
 							{root}
-							{upload}
 							{selectable}
 							{sanitize_html}
 							{render_markdown}

@@ -112,7 +112,6 @@
 		{placeholder}
 		{_retryable}
 		{_undoable}
-		upload={(...args) => gradio.client.upload(...args)}
 		_fetch={(...args) => gradio.client.fetch(...args)}
 		load_component={gradio.load_component}
 		root={gradio.root}
