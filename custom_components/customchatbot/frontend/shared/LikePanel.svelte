@@ -51,9 +51,25 @@
 		old_value = value;
 		handle_action(value);
 	}
+	let hasBeenShown: boolean = false;
 
-	$: if (show) {
-		if (like_panel) like_panel.scrollIntoView({ behavior: "smooth" });
+	function checkVisibility() {
+		if (!show || hasBeenShown || !like_panel) return;
+		if (
+			!like_panel.classList.contains("hidden") &&
+			like_panel.getClientRects().length > 0
+		) {
+			like_panel.scrollIntoView({ behavior: "smooth" });
+			hasBeenShown = true;
+		} else {
+			requestAnimationFrame(checkVisibility);
+		}
+	}
+
+	$: if (show && !hasBeenShown && like_panel) {
+		checkVisibility();
+	} else if (!show) {
+		hasBeenShown = false;
 	}
 </script>
 
