@@ -54,7 +54,6 @@
 		old_value = value;
 		handle_action(value);
 	}
-
 </script>
 
 <div class="like-panel" class:hidden={show === false}>
@@ -63,7 +62,25 @@
 		<span>{text}</span>
 	</p>
 	{#each choices as [display_value, internal_value], i}
-		<label class:disabled class:selected={value.includes(internal_value)}>
+		<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+		<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+		<label
+			class:disabled
+			class:selected={value.includes(internal_value)}
+			aria-checked={value.includes(internal_value)}
+			aria-disabled={disabled ? "true" : "false"}
+			tabindex="0"
+			on:keydown={(event) => {
+				if (event.key === "Enter" || event.key === " ") {
+					toggle_choice(internal_value);
+					dispatch("select", {
+						index: i,
+						value: internal_value,
+						selected: !value.includes(internal_value),
+					});
+				}
+			}}
+		>
 			<input
 				{disabled}
 				on:change={() => toggle_choice(internal_value)}
@@ -73,22 +90,15 @@
 						value: internal_value,
 						selected: evt.currentTarget.checked,
 					})}
-				on:keydown={(event) => {
-					if (event.key === "Enter") {
-						toggle_choice(internal_value);
-						dispatch("select", {
-							index: i,
-							value: internal_value,
-							selected: !value.includes(internal_value),
-						});
-					}
-				}}
 				checked={value.includes(internal_value)}
 				type="checkbox"
 				name={internal_value?.toString()}
 				title={internal_value?.toString()}
+				aria-checked={value.includes(internal_value)}
 			/>
-			<span class="ml-2">{display_value}</span>
+			<span class="ml-2" title={internal_value?.toString()}
+				>{display_value}</span
+			>
 		</label>
 	{/each}
 	<button
@@ -137,12 +147,14 @@
 		border: 1px #dadce0 solid !important;
 		font-weight: 500;
 		margin-right: 10px;
+		cursor: pointer;
 	}
 	button {
 		padding: 3px 10px;
 	}
 
 	label.selected,
+	label:active,
 	button:active,
 	button.selected {
 		background: #f5f5fe !important;

@@ -4,6 +4,8 @@
 	viewBox="0 0 20 20"
 	fill="none"
 	xmlns="http://www.w3.org/2000/svg"
+	alt="je n'apprécie pas"
+	title="je n'apprécie pas"
 >
 	<path
 		fill-rule="evenodd"

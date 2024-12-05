@@ -463,9 +463,9 @@
 {/if}
 
 <!-- Weird way to catch the comment if not validated but modal closed -->
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <dialog
 	aria-labelledby="modal-prefs"
-	role="dialog"
 	id="modal-prefs"
 	class="fr-modal"
 	on:blur={() => {
