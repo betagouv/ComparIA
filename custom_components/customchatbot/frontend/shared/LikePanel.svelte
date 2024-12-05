@@ -19,6 +19,7 @@
 		input: undefined;
 	}>();
 
+	let element;
 	export let show: boolean;
 
 	export let handle_action: (value: string | null | string[]) => void;
@@ -50,9 +51,13 @@
 		old_value = value;
 		handle_action(value);
 	}
+
+	$: if (show) {
+		if (element) element.scrollIntoView({ behavior: "smooth" });
+	}
 </script>
 
-<div class="like-panel" class:hidden={show === false}>
+<div bind:this={element} class="like-panel" class:hidden={show === false}>
 	<p class="thumb-icon inline-svg">
 		<svelte:component this={Icon} />
 		<span>{text}</span>
