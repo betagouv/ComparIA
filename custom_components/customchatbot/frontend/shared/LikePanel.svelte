@@ -19,7 +19,7 @@
 		input: undefined;
 	}>();
 
-	let element;
+	let like_panel;
 	export let show: boolean;
 
 	export let handle_action: (value: string | null | string[]) => void;
@@ -53,11 +53,11 @@
 	}
 
 	$: if (show) {
-		if (element) element.scrollIntoView({ behavior: "smooth" });
+		if (like_panel) like_panel.scrollIntoView({ behavior: "smooth" });
 	}
 </script>
 
-<div bind:this={element} class="like-panel" class:hidden={show === false}>
+<div bind:this={like_panel} class="like-panel {show === false ? 'hidden' : ''}">
 	<p class="thumb-icon inline-svg">
 		<svelte:component this={Icon} />
 		<span>{text}</span>
