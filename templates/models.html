@@ -98,6 +98,10 @@
     .filter-number {
         color: #666666;
         background-color: white;
+        border-radius: 50%;
+        text-align: center;
+        min-width: 24px;
+        min-height: 24px;
         font-size: 0.9em;
         position: absolute;
         right: 2em;
@@ -130,9 +134,20 @@
     }
 
     #fr-modal-filters-section .fr-container--fluid {
-        background-color: white;
         overflow: scroll;
+    }
 
+    @media (prefers-color-scheme: light) {
+        #fr-modal-filters-section .fr-container--fluid {
+            background-color: white;
+        }
+    }
+
+    @media (prefers-color-scheme: dark) {
+        #fr-modal-filters-section .fr-container--fluid {
+            background-color: var(--background-default-grey);
+
+        }
     }
 
     .fr-checkbox-group--sm input[type=checkbox] {

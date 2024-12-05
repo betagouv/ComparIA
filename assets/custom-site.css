@@ -1,23 +1,29 @@
 @media (min-width: 62em) {
   #contenu {
-      margin-left: 8.33%;
-      margin-right: 8.33%;
+    margin-left: 8.33%;
+    margin-right: 8.33%;
   }
 }
 
 @media (min-width: 78em) {
   #contenu {
-      margin-left: 16.66%;
-      margin-right: 16.66%;
+    margin-left: 16.66%;
+    margin-right: 16.66%;
   }
 }
-.fr-header__service-title {
-  color: #161616;
+
+@media (prefers-color-scheme: light) {
+  .fr-header__service-title {
+    color: #161616;
+  }
+
+  .fr-header__service-tagline {
+    color: #3A3A3A;
+  }
 }
-.fr-header__service-tagline {
-  color:  #3A3A3A;
-}
-.fr-header__tools .fr-link[target=_blank]::after, #fr-modal-menu .fr-link[target=_blank]::after {
+
+.fr-header__tools .fr-link[target=_blank]::after,
+#fr-modal-menu .fr-link[target=_blank]::after {
   display: none;
 }
 
@@ -50,11 +56,11 @@
 }
 
 .purple-btn {
-background-color: var(--blue-france-main-525);
-color: #F5F5FE !important;
+  background-color: var(--blue-france-main-525);
+  color: #F5F5FE !important;
 
---hover: var(--blue-france-main-525-hover);
---active: var(--blue-france-main-525-active);
+  --hover: var(--blue-france-main-525-hover);
+  --active: var(--blue-france-main-525-active);
 }
 
 
@@ -70,9 +76,11 @@ color: #F5F5FE !important;
   width: 100%;
   border-bottom: 1px #DDDDDD solid;
 }
+
 .fr-header__navbar {
   margin-right: 0;
 }
+
 @media (min-width: 48em) {
 
   .md-hidden {
