@@ -59,7 +59,7 @@
 			!like_panel.classList.contains("hidden") &&
 			like_panel.getClientRects().length > 0
 		) {
-			like_panel.scrollIntoView({ behavior: "smooth" });
+			like_panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
 			hasBeenShown = true;
 		} else {
 			requestAnimationFrame(checkVisibility);
