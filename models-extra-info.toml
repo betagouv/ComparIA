@@ -162,23 +162,44 @@ params = 2
 conditions = "copyleft"
 description = "Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros."
 
-["GPT-3.5-Turbo-0613"]
-simple_name = "GPT-3.5-Turbo-0613"
+["gpt-3.5-turbo-0301"]
+url = "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo"
+simple_name = "GPT-3.5"
 organisation = "OpenAI"
 country = "États-Unis"
-icon_path = "openai.png"
+icon_path = "openai.svg"
 friendly_size = "L"
 distribution = "api-only"
+license = "propriétaire OpenAI"
 conditions = "restricted"
+description = "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel."
+excerpt = "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel."
 
-[GPT-4-Turbo-2024-04-09]
-simple_name = "GPT-4-Turbo-2024-04-09"
+["gpt-4o-mini-2024-07-18"]
+url = "https://platform.openai.com/docs/models/gp#gpt-4o-mini"
+simple_name = "GPT-4o mini"
 organisation = "OpenAI"
 country = "États-Unis"
-icon_path = "openai.png"
+icon_path = "openai.svg"
 friendly_size = "L"
 distribution = "api-only"
+license = "propriétaire OpenAI"
 conditions = "restricted"
+description = "Modèle lancé en juillet 2024 et remplaçant GPT-3.5, GPT-4o mini est une version plus petite de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT."
+excerpt = "Le plus petit des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en juillet 2024."
+
+[gpt-4o-2024-08-06]
+url = "https://platform.openai.com/docs/models/gpt#gpt-4o"
+simple_name = "GPT-4o"
+organisation = "OpenAI"
+country = "États-Unis"
+icon_path = "openai.svg"
+friendly_size = "XL"
+distribution = "api-only"
+license = "propriétaire OpenAI"
+conditions = "restricted"
+description = "Modèle lancé en août 2024 et successeur de GPT-4, GPT-4o est une version améliorée de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT."
+excerpt = "Le plus grand des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en août 2024."
 
 ["hermes-3-llama-3.1-405b"]
 url = "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B"

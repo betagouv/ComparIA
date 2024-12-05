@@ -47,6 +47,18 @@ def get_api_provider_stream_iter(
             api_base=model_api_dict["api_base"],
             request=request,
         )
+    elif model_api_dict["api_type"] == "azure":
+        stream_iter = azure_api_stream_iter(
+            model_name=model_api_dict["model_name"],
+            api_version=model_api_dict["api_version"],
+            messages=messages_dict,
+            temperature=temperature,
+            api_key=model_api_dict["api_key"],
+            # top_p=top_p,
+            max_new_tokens=max_new_tokens,
+            api_base=model_api_dict["api_base"],
+            request=request,
+        )
     else:
         raise NotImplementedError()
 
@@ -98,7 +110,6 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
             # Special handling for certain models
             # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
 
-
         if len(buffer.split()) >= 30:
             # if len(buffer.split()) >= 30 or len(text.split()) < 30:
             # if "\n" in buffer or "." in buffer:
@@ -142,7 +153,45 @@ def openai_api_stream_iter(
         # Not available like this
         # top_p=top_p,
     )
-    yield from process_response_stream(res, model_name=model_name, api_base=api_base, request=request)
+    yield from process_response_stream(
+        res, model_name=model_name, api_base=api_base, request=request
+    )
+
+
+def azure_api_stream_iter(
+    model_name,
+    messages,
+    temperature,
+    max_new_tokens,
+    api_version=None,
+    api_base=None,
+    api_key=None,
+    request=None,
+):
+    from openai import AzureOpenAI
+
+    client = AzureOpenAI(
+        azure_endpoint=api_base,
+        api_key=api_key,
+        api_version=api_version,
+        #         timeout=WORKER_API_TIMEOUT,
+        timeout=5,
+        # max_retries=
+    )
+
+    res = client.chat.completions.create(
+        model=model_name,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_new_tokens,
+        stream=True,
+        stream_options={"include_usage": True},
+        # Not available like this
+        # top_p=top_p,
+    )
+    yield from process_response_stream(
+        res, model_name=model_name, api_base=api_base, request=request
+    )
 
 
 def vertex_api_stream_iter(
