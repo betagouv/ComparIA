@@ -5,16 +5,17 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	export let display_value: string;
-	export let internal_value: string | number;
+	export let internal_value: string;
 	export let disabled = false;
 	export let selected: string | null = null;
 
-	const dispatch = createEventDispatcher<{ input: string | number }>();
+	const dispatch = createEventDispatcher<{ input: string }>();
 	let is_selected = false;
 
+	// This function will handle the update of the selected state
 	async function handle_input(
 		selected: string | null,
-		internal_value: string | number
+		internal_value: string,
 	): Promise<void> {
 		is_selected = selected === internal_value;
 		if (is_selected) {
@@ -23,14 +24,35 @@
 	}
 
 	$: handle_input(selected, internal_value);
+
+	// Handle label click or space/enter key press to toggle selection
+	function handleSelection() {
+		if (disabled || selected === internal_value) return;
+		selected = internal_value;
+		dispatch("input", internal_value);
+	}
+
+	// Handle keydown event (Space or Enter)
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.key === " " || event.key === "Enter") {
+			event.preventDefault(); // Prevent page scroll with spacebar
+			handleSelection(); // Trigger selection when space or enter is pressed
+		}
+	}
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 <label
 	class:disabled
 	class:selected={is_selected}
 	class="custom-card"
 	data-testid="{internal_value}-radio-label"
-	>
+	tabindex="0"
+	role="radio"
+	aria-checked={is_selected}
+	on:click={handleSelection}
+	on:keydown={handleKeyDown}
+>
 	<input
 		{disabled}
 		type="radio"
@@ -38,6 +60,7 @@
 		value={internal_value}
 		aria-checked={is_selected}
 		bind:group={selected}
+		aria-hidden="true"
 	/>
 	{@html display_value}
 </label>
@@ -45,72 +68,33 @@
 <style>
 	label {
 		padding: 1.5rem 1rem 1.5rem 1.5rem !important;
-		/* height: 150px !important; */
 		display: flex;
 		align-items: left;
 		transition: var(--button-transition);
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
-		outline: 1px solid #E5E5E5;
+		outline: 1px solid #e5e5e5;
 		border-radius: 0.5rem;
 		background-color: white;
 		color: var(--grey-200-850);
-		    /* color: var(--grey-50-1000); */
 		font-weight: var(--checkbox-label-text-weight);
 		font-size: 1rem;
 		line-height: var(--line-md);
 	}
 
-	/* label:hover {
-		background: var(--checkbox-label-background-fill-hover);
-	} */
-
-	label.selected, label:focus {
-		/* --blue-france-975-75: #f5f5fe; */
-
-		/* --blue-france-main-525: #6a6af4; */
-		outline: 2px solid var(--blue-france-main-525);
-		/* color: var(--blue-france-main-525); */
+	label.selected,
+	 label:active {
+		outline-offset: 0 !important;
+		outline: 2px solid var(--blue-france-main-525) !important;
 	}
 
 	label > * + * {
 		margin-left: var(--size-2);
 	}
 
-
 	input[type="radio"] {
-		display: none;
-		/* --ring-color: transparent;
-		position: relative;
-		box-shadow: var(--checkbox-shadow);
-		border: var(--checkbox-border-width) solid var(--checkbox-border-color);
-		border-radius: var(--radius-full);
-		background-color: var(--checkbox-background-color);
-		line-height: var(--line-sm); */
+		display: none; /* Hide the actual radio button */
 	}
-/* 
-	input:checked,
-	input:checked:hover {
-		outline-color: var(--checkbox-border-color-selected);
-		background-image: var(--radio-circle);
-		background-color: var(--checkbox-background-color-selected);
-	}
-
-	input:hover {
-		outline-color: var(--checkbox-border-color-hover);
-		background-color: var(--checkbox-background-color-hover);
-	}
-
-	input:focus {
-		outline-color: var(--checkbox-border-color-focus);
-		background-color: var(--checkbox-background-color-focus);
-	}
-
-	input:checked:focus {
-		outline-color: var(--checkbox-border-color-focus);
-		background-image: var(--radio-circle);
-		background-color: var(--checkbox-background-color-selected);
-	} */
 
 	input[disabled],
 	.disabled {
