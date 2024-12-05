@@ -5,17 +5,17 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	export let display_value: string;
-	export let internal_value: string | number;
+	export let internal_value: string;
 	export let disabled = false;
 	export let selected: string | null = null;
 
-	const dispatch = createEventDispatcher<{ input: string | number }>();
+	const dispatch = createEventDispatcher<{ input: string }>();
 	let is_selected = false;
 
 	// This function will handle the update of the selected state
 	async function handle_input(
 		selected: string | null,
-		internal_value: string | number,
+		internal_value: string,
 	): Promise<void> {
 		is_selected = selected === internal_value;
 		if (is_selected) {
@@ -41,6 +41,7 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 <label
 	class:disabled
 	class:selected={is_selected}
@@ -82,8 +83,9 @@
 	}
 
 	label.selected,
-	label:focus {
-		outline: 2px solid var(--blue-france-main-525);
+	 label:active {
+		outline-offset: 0 !important;
+		outline: 2px solid var(--blue-france-main-525) !important;
 	}
 
 	label > * + * {

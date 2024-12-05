@@ -20,6 +20,7 @@ from custom_components.frinput.backend.gradio_frinput import FrInput
 
 from languia import config
 
+
 # // Enable navigation prompt
 # window.onbeforeunload = function() {
 #     return true;
@@ -27,7 +28,15 @@ from languia import config
 # // Remove navigation prompt
 # window.onbeforeunload = null;
 class Conversation:
-    def __init__(self, messages=[], output_tokens=None, conv_id=None, template=None, model_name=None, endpoint=None):
+    def __init__(
+        self,
+        messages=[],
+        output_tokens=None,
+        conv_id=None,
+        template=None,
+        model_name=None,
+        endpoint=None,
+    ):
         self.messages = messages
         self.output_tokens = output_tokens
         self.conv_id = conv_id
@@ -35,8 +44,11 @@ class Conversation:
         self.model_name = model_name
         self.endpoint = endpoint
 
+
 class AppState:
-    def __init__(self, awaiting_responses=False, model_left=None, model_right=None, category=None):
+    def __init__(
+        self, awaiting_responses=False, model_left=None, model_right=None, category=None
+    ):
         self.awaiting_responses = awaiting_responses
         self.model_left = model_left
         self.model_right = model_right
@@ -85,35 +97,59 @@ with gr.Blocks(
             elem_classes="fr-col-12 fr-col-md-8 fr-mx-auto",
             choices=[
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/lightbulb.svg" /><p>Générer de nouvelles idées</p></div>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/lightbulb.svg" alt="Idées" />
+            <span id="ideas-description">Générer de nouvelles idées</span>
+        </div>""",
                     "ideas",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/chat-3.svg" /><p>Expliquer simplement un concept</p>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/chat-3.svg" alt="Explications" />
+            <span id="explanations-description">Expliquer simplement un concept</span>
+        </div>""",
                     "explanations",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/translate-2.svg" /><p>M’exprimer dans une autre langue</p></div>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/translate-2.svg" alt="Traduction" />
+            <span id="languages-description">M’exprimer dans une autre langue</span>
+        </div>""",
                     "languages",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/draft.svg" /><p>Rédiger un document administratif</p></div>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/draft.svg" alt="Administratif" />
+            <span id="administrative-description">Rédiger un document administratif</span>
+        </div>""",
                     "administrative",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/bowl.svg" /><p>Découvrir une nouvelle recette de cuisine</p></div>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/bowl.svg" alt="Recettes" />
+            <span id="recipes-description">Découvrir une nouvelle recette de cuisine</span>
+        </div>""",
                     "recipes",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/clipboard.svg" /><p>Obtenir des conseils sur l’alimentation et le sport</p></div>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/clipboard.svg" alt="Conseils" />
+            <span id="coach-description">Obtenir des conseils sur l’alimentation et le sport</span>
+        </div>""",
                     "coach",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/book-open-line.svg" /><p>Raconter une histoire</p></div>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/book-open-line.svg" alt="Histoires" />
+            <span id="stories-description">Raconter une histoire</span>
+        </div>""",
                     "stories",
                 ),
                 (
-                    """<div><img class="fr-mb-3w" src="../assets/extra-icons/music-2.svg" /><p>Proposer des idées de films, livres, musiques</p></div>""",
+                    """<div>
+            <img class="fr-mb-3w" src="../assets/extra-icons/music-2.svg" alt="Recommandations" />
+            <span id="recommendations-description">Proposer des idées de films, livres, musiques</span>
+        </div>""",
                     "recommendations",
                 ),
             ],
@@ -183,7 +219,8 @@ with gr.Blocks(
                 elem_classes="grow-0 purple-btn w-full",
             )
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            conclude_btn = gr.Button(size="lg",
+            conclude_btn = gr.Button(
+                size="lg",
                 value="Passer à la révélation des modèles",
                 elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
                 visible=False,
@@ -196,7 +233,8 @@ with gr.Blocks(
         elem_classes="fr-container min-h-screen fr-pt-4w",
         elem_id="vote-area",
     ) as vote_area:
-        gr.HTML(elem_classes="text-center",
+        gr.HTML(
+            elem_classes="text-center",
             value="""
             <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
             <p class="text-grey fr-text--sm">Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.<br />Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français</p>""",
