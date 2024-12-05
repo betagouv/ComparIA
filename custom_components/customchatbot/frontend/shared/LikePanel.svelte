@@ -19,17 +19,16 @@
 		input: undefined;
 	}>();
 
-	export let show: boolean; // Define the 'show' prop as a boolean
-	// export let message: NormalisedMessage | NormalisedMessage[];
-	// export let prefs: string[] = [];
+	export let show: boolean;
+
 	export let handle_action: (value: string | null | string[]) => void;
 
 	// import { type ComponentType } from "svelte";
 	export let Icon: ComponentType;
 	export let text: string;
-	// export let comment: string | undefined;
 	export let commented: boolean = false;
 	export let disabled: boolean = false;
+	export let model: string = "";
 	export let value: string[] = [];
 	export let old_value = value.slice();
 	export let choices: [string, string][] = [
@@ -37,10 +36,7 @@
 		["Complet", "complete"],
 		["Créatif", "creative"],
 		["Mise en forme claire", "clear-formatting"],
-	]; // Example choices, adjust as necessary
-	// $: disabled = !interactive;
-
-	// let selected: "like" | "dislike" | null = null;
+	];
 
 	function toggle_choice(choice: string): void {
 		if (value.includes(choice)) {
@@ -93,10 +89,12 @@
 				checked={value.includes(internal_value)}
 				type="checkbox"
 				name={internal_value?.toString()}
-				title={internal_value?.toString()}
+				title={`${display_value} pour le modèle ${model}`}
 				aria-checked={value.includes(internal_value)}
 			/>
-			<span class="ml-2" title={internal_value?.toString()}
+			<span
+				class="ml-2"
+				title={`${display_value} pour le modèle ${model}`}
 				>{display_value}</span
 			>
 		</label>
@@ -160,6 +158,11 @@
 		background: #f5f5fe !important;
 		color: #6a6af4 !important;
 		border: 1px #6a6af4 solid !important;
+	}
+
+	label:hover,
+	button:hover {
+		background-color: var(--hover);
 	}
 
 	.thumb-icon {

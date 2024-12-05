@@ -398,6 +398,7 @@
 					{#each messages as message, j}
 						<div class="react-panels react-panel-{j}">
 							<LikePanel
+								model={j === 0 ? "A" : "B"}
 								{disabled}
 								Icon={ThumbUpActive}
 								show={message.liked}
@@ -409,6 +410,7 @@
 								commented={message.commented}
 							/>
 							<LikePanel
+								model={j === 0 ? "A" : "B"}
 								{disabled}
 								Icon={ThumbDownActive}
 								show={message.disliked}
