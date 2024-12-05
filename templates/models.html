@@ -329,7 +329,8 @@
                         <div class="fr-checkbox">
                             <input type="checkbox" id="license-proprietaire" name="license-filter" value="Propriétaire">
                             <label for="license-proprietaire"><strong>Commerciale</strong>
-                                <span class="filter-number">{{ proprietary_licenses | length }}</span>
+                                <span class="filter-number">{{ models | selectattr("license", "in",
+                                    proprietary_licenses) | list | count }}</span>
                             </label>
                         </div>
                         {% endif %}
