@@ -52,14 +52,28 @@
 		handle_action(value);
 	}
 	let hasBeenShown: boolean = false;
+	function scrollIntoViewWithOffset(element: HTMLElement, offset: number) {
+		const rect = element.getBoundingClientRect();
+		const isVisible =
+			rect.top >= offset && rect.bottom <= window.innerHeight;
 
+		if (!isVisible) {
+			// Calculate the target scroll position, ensuring the element is visible above the footer.
+			const scrollTop = window.scrollY + rect.top - offset;
+			window.scrollTo({ top: scrollTop, behavior: "smooth" });
+		}
+	}
+
+	let footerHeight = 0; 
 	function checkVisibility() {
 		if (!show || hasBeenShown || !like_panel) return;
-		if (
-			!like_panel.classList.contains("hidden") &&
-			like_panel.getClientRects().length > 0
-		) {
-			like_panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+		const rect = like_panel.getBoundingClientRect();
+		const isVisible =
+			!like_panel.classList.contains("hidden") && rect.height > 0;
+
+		if (isVisible) {
+			scrollIntoViewWithOffset(like_panel, footerHeight);
 			hasBeenShown = true;
 		} else {
 			requestAnimationFrame(checkVisibility);
@@ -67,6 +81,10 @@
 	}
 
 	$: if (show && !hasBeenShown && like_panel) {
+		// Dynamically set footer height if necessary.
+		const footer = document.getElementById("send-area");
+		footerHeight = footer ? footer.offsetHeight : 0;
+
 		checkVisibility();
 	} else if (!show) {
 		hasBeenShown = false;
