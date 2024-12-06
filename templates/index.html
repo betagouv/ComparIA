@@ -87,280 +87,299 @@
     });
 </script>
 
-<main id="content" role="main" class="fr-mb-7w fr-mb-md-10w fr-mt-8w">
-    <div class="fr-grid-row fr-container fr-mb-4w">
-        <div class="fr-container fr-col-md-6 fr-grid-row">
-            <h1 class="text-blue">Ne vous fiez pas<br />aux réponses<br />d’une seule IA</h1>
-            <p>Discutez avec deux IA à l’aveugle<br />pour croiser leurs réponses</p>
-            <div class="fr-checkbox-group fr-checkbox-group--sm fr-mt-3w fr-mb-1w">
-                <input aria-describedby="checkbox-error-messages" id="accept_tos" type="checkbox">
-                <label class="fr-label fr-text--sm" for="accept_tos">
-                    J'accepte les&nbsp;<a href="/modalites" target="_blank">modalités d'utilisation</a>
-                    <p class="fr-message">Les données sont partagées à des fins de recherche</p>
-                </label>
-                <div class="fr-messages-group fr-hidden" id="checkbox-error-messages" aria-live="assertive">
-                    <p class="fr-message fr-message--error" id="checkbox-error-message-error">Vous devez accepter les
-                        modalités d'utilisation pour continuer
-                    </p>
+<main id="content" role="main" class="fr-mb-7w fr-mb-md-10w ">
+    <section class="fr-grid-row fr-container--fluid bg-blue fr-mb-4w fr-pt-8w">
+        <div class="fr-container-md fr-grid-row">
+            <div class="fr-container fr-col-md-6 fr-grid-row">
+                <h1 class="text-blue">Ne vous fiez pas<br />aux réponses<br />d’une seule IA</h1>
+                <p>Discutez avec deux IA à l’aveugle<br />pour croiser leurs réponses</p>
+                <div class="fr-checkbox-group fr-checkbox-group--sm fr-mt-3w fr-mb-1w">
+                    <input aria-describedby="checkbox-error-messages" id="accept_tos" type="checkbox">
+                    <label class="fr-label fr-text--sm" for="accept_tos">
+                        J'accepte les&nbsp;<a href="/modalites" target="_blank">modalités d'utilisation</a>
+                        <p class="fr-message">Les données sont partagées à des fins de recherche</p>
+                    </label>
+                    <div class="fr-messages-group fr-hidden" id="checkbox-error-messages" aria-live="assertive">
+                        <p class="fr-message fr-message--error" id="checkbox-error-message-error">Vous devez accepter
+                            les
+                            modalités d'utilisation pour continuer
+                        </p>
+                    </div>
                 </div>
+                <input type="submit" id="start_arena_btn"
+                    class="fr-btn fr-btn--lg bg-light-blue fr-col-md-8 fr-col-12 w-full fr-mb-md-0 fr-mb-4w"
+                    value="Commencer à discuter" />
             </div>
-            <input type="submit" id="start_arena_btn" class="fr-btn fr-btn--lg bg-light-blue fr-col-md-8 fr-col-12 fr-mb-md-0 fr-mb-4w"
-                value="Commencer à discuter" />
-            </fieldset>
-        </div>
-        <div class="fr-container fr-col-md-6 bg-blue fr-p-4w">
-            <h5 class="text-blue">Comment ça marche ?</h5>
-            <!-- <ol>
-                <li>
-                    <h6>Je discute avec deux IA anonymes</h6>
-                    <p>Échangez aussi longtemps que vous le souhaitez</p>
-                </li>
-                <li>
-                    <h6>Je donne mon avis</h6>
-                    <p>Vous contribuez ainsi à l'amélioration des modèles d’IA</p>
-                </li>
-                <li>
-                    <h6>Les modèles sont démasqués !</h6>
-                    </p>Apprenez en plus sur les modèles d’IA et leurs caractéristiques</p>
-                </li>
-            </ol> -->
-            <!-- <img src="assets/how.svg"
-                alt="1. Je discute avec deux IA anonymes : Échangez aussi longtemps que vous le souhaitez 2. Je donne mon avis : Vous contribuez ainsi à l'amélioration des modèles d’IA 3. Les modèles sont démasqués ! Apprenez en plus sur les modèles d’IA et leurs caractéristiques"
-                id="how" class="fr-responsive-img" /> -->
-            <svg class="fr-responsive-img" width="513" height="287" viewBox="0 0 513 287" fill="none" version="1.1"
-                id="comment-ca-marche" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-                <style>
-                    @media (prefers-color-scheme: dark) {
-                        text {
-                            fill: white;
+            <div class="fr-col-md-6 bg-blue fr-p-4w">
+                <h5 class="text-blue">Comment ça marche ?</h5>
+                <svg class="fr-responsive-img" width="513" height="287" viewBox="0 0 513 287" fill="none" version="1.1"
+                    id="comment-ca-marche" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
+                    role="group" aria-labelledby="svg-title svg-desc">
+                    <title id="svg-title">Comment ça marche</title>
+                    <desc id="svg-desc">
+                        1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez.
+                        2. Je donne mon avis : vous contribuez ainsi à l'amélioration des modèles d’IA.
+                        3. Les modèles sont démasqués : apprenez-en plus sur les modèles d’IA et leurs caractéristiques.
+                    </desc>
+                    <style>
+                        @media (prefers-color-scheme: dark) {
+                            text {
+                                fill: white;
+                            }
+
+                            #path7 {
+                                stroke: white;
+                            }
                         }
 
-                        #path7 {
-                            stroke: white;
+
+                        @font-face {
+                            font-family:
+                                Marianne;
+                            src:
+                                url("assets/dsfr/fonts/Marianne-Regular.woff2") format("woff2");
+                            font-weight:
+                                400;
+                            font-style:
+                                normal;
+                            font-display:
+                                swap;
                         }
-                    }
+                    </style>
+                    <path d="M21.56 28.96V6.52L15.76 9.8L13.08 5.96L21.72 0.959999H26.96V28.96H21.56Z" fill="#6A6AF4" />
+                    <path
+                        d="M270.32 122V117.12L279.92 107.68C282.08 105.48 283.44 103.96 283.44 101.68C283.44 99.36 281.84 98 279.64 98C276.96 98 275.32 99.64 273.84 102.12L269.44 99.44C271.8 95.6 275.28 93.2 280.16 93.2C285.04 93.2 288.96 96.32 288.96 101.12C288.96 104.96 286.44 107.92 283.68 110.6L276.92 117.12H289.68V122H270.32Z"
+                        fill="#6A6AF4" />
+                    <path
+                        d="M138.04 235C138.04 240.32 133.68 243.8 127.84 243.8C122.56 243.8 119.16 241.48 116.88 237.48L121.6 234.56C123.16 237.64 125.04 239 127.8 239C130.52 239 132.56 237.36 132.56 234.76C132.56 232.2 130.56 230.6 127.6 230.6H123V225.8H127.24C129.6 225.8 131.32 224.48 131.32 222.32C131.32 220.2 129.72 219 127.52 219C125.28 219 123.76 220.2 122.6 222.2L118.2 219.48C120.24 216.16 123.4 214.2 127.92 214.2C133.04 214.2 136.84 217.12 136.84 221.72C136.84 224.32 135.72 226.52 133.64 227.96C136.48 229.4 138.04 231.92 138.04 235Z"
+                        fill="#6A6AF4" />
+                    <path
+                        d="m 6,21.5 c 1.97844,129.342 213.429,38.6375 252,85 38.571,46.362 -185.2601,50.665 -152,117.5"
+                        stroke="#000000" id="path7" />
+                    <circle cx="5.5" cy="18.5" r="5.5" fill="#6a6af4" id="circle7" />
+                    <circle cx="258.5" cy="107.5" r="5.5" fill="#6a6af4" id="circle8" />
+                    <circle cx="105.5" cy="225.5" r="5.5" fill="#6a6af4" id="circle9" />
 
-                    .text-style-1 {
-                        font-family: 'Marianne';
-                        font-style: normal;
-                        font-weight: 700;
-                        font-size: 18px;
-                        line-height: 28px;
-                        color: #161616;
-                    }
+                    <text x="298.69144" y="102.10426" font-family="Marianne" font-size="18px" font-weight="700"
+                        fill="#161616" text-anchor="start" dominant-baseline="central"
+                        style="font-style:normal;line-height:28px" id="text1">Je donne mon
+                        avis</text>
+                    <text x="146.80658" y="222.71048" font-family="Marianne" font-size="18px" font-weight="700"
+                        fill="#161616" text-anchor="start" dominant-baseline="central"
+                        style="font-style:normal;line-height:28px" id="text2">Les modèles
+                        sont démasqués !</text>
+                    <text x="39.528667" y="9.3315382" font-family="Marianne" font-size="18px" font-weight="700"
+                        fill="#161616" text-anchor="start" dominant-baseline="central"
+                        style="font-style:normal;line-height:28px" id="text3">Je discute
+                        avec deux IA anonymes</text>
+                    <text x="299.24356" y="128" font-family="Marianne" font-size="14px" font-weight="400" fill="#666666"
+                        text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:24px"
+                        id="text4">
+                        <tspan>Vous
+                            contribuez ainsi à</tspan>
+                        <tspan id="tspan10" x="299.25146" y="154.04274"
+                            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
+                            l'amélioration des modèles d’IA</tspan>
+                    </text>
+                    <text x="146.46295" y="248.50197" font-family="Marianne" font-size="14px" font-weight="400"
+                        fill="#666666" text-anchor="start" dominant-baseline="central"
+                        style="font-style:normal;line-height:24px" id="text5">
+                        <tspan>Apprenez en
+                            plus sur les modèles</tspan>
+                        <tspan id="tspan11" x="146.52148" y="275.85373"
+                            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
+                            d’IA et leurs caractéristiques</tspan>
+                    </text>
+                    <text xml:space="preserve" style="font-size:14px;fill:#666666" x="299.25146" y="154.04274"
+                        id="text10">
+                    </text>
+                    <text x="39.899445" y="34.194839" font-family="Marianne" font-size="14px" font-weight="400"
+                        fill="#666666" text-anchor="start" dominant-baseline="central"
+                        style="font-style:normal;line-height:24px" id="text4-5">
+                        <tspan>Échangez
+                            aussi longtemps que</tspan>
 
-                    .text-style-2 {
-                        font-family: 'Marianne';
-                        font-style: normal;
-                        font-weight: 400;
-                        font-size: 14px;
-                        line-height: 24px;
-                        color: #666666;
-                    }
+                        <tspan id="tspan10-5" x="39.907349" y="60.237579"
+                            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
+                            vous le souhaitez</tspan>
+                    </text>
+                    <text xml:space="preserve" style="font-size:14px;fill:#666666" x="146.52148" y="275.85373"
+                        id="text11">
 
-                    @font-face {
-                        font-family:
-                            Marianne;
-                        src:
-                            url("assets/dsfr/fonts/Marianne-Regular.woff2") format("woff2");
-                        font-weight:
-                            400;
-                        font-style:
-                            normal;
-                        font-display:
-                            swap;
-                    }
-                </style>
-                <path d="M21.56 28.96V6.52L15.76 9.8L13.08 5.96L21.72 0.959999H26.96V28.96H21.56Z" fill="#6A6AF4" />
-                <path
-                    d="M270.32 122V117.12L279.92 107.68C282.08 105.48 283.44 103.96 283.44 101.68C283.44 99.36 281.84 98 279.64 98C276.96 98 275.32 99.64 273.84 102.12L269.44 99.44C271.8 95.6 275.28 93.2 280.16 93.2C285.04 93.2 288.96 96.32 288.96 101.12C288.96 104.96 286.44 107.92 283.68 110.6L276.92 117.12H289.68V122H270.32Z"
-                    fill="#6A6AF4" />
-                <path
-                    d="M138.04 235C138.04 240.32 133.68 243.8 127.84 243.8C122.56 243.8 119.16 241.48 116.88 237.48L121.6 234.56C123.16 237.64 125.04 239 127.8 239C130.52 239 132.56 237.36 132.56 234.76C132.56 232.2 130.56 230.6 127.6 230.6H123V225.8H127.24C129.6 225.8 131.32 224.48 131.32 222.32C131.32 220.2 129.72 219 127.52 219C125.28 219 123.76 220.2 122.6 222.2L118.2 219.48C120.24 216.16 123.4 214.2 127.92 214.2C133.04 214.2 136.84 217.12 136.84 221.72C136.84 224.32 135.72 226.52 133.64 227.96C136.48 229.4 138.04 231.92 138.04 235Z"
-                    fill="#6A6AF4" />
-                <path d="m 6,21.5 c 1.97844,129.342 213.429,38.6375 252,85 38.571,46.362 -185.2601,50.665 -152,117.5"
-                    stroke="#000000" id="path7" />
-                <circle cx="5.5" cy="18.5" r="5.5" fill="#6a6af4" id="circle7" />
-                <circle cx="258.5" cy="107.5" r="5.5" fill="#6a6af4" id="circle8" />
-                <circle cx="105.5" cy="225.5" r="5.5" fill="#6a6af4" id="circle9" />
-
-                <text x="298.69144" y="102.10426" font-family="Marianne" font-size="18px" font-weight="700"
-                    fill="#161616" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:28px" id="text1">Je donne mon
-                    avis</text>
-                <text x="146.80658" y="222.71048" font-family="Marianne" font-size="18px" font-weight="700"
-                    fill="#161616" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:28px" id="text2">Les modèles
-                    sont démasqués !</text>
-                <text x="39.528667" y="9.3315382" font-family="Marianne" font-size="18px" font-weight="700"
-                    fill="#161616" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:28px" id="text3">Je discute
-                    avec deux IA anonymes</text>
-                <text x="299.24356" y="128" font-family="Marianne" font-size="14px" font-weight="400" fill="#666666"
-                    text-anchor="start" dominant-baseline="central" style="font-style:normal;line-height:24px"
-                    id="text4">
-                    <tspan>Vous
-                        contribuez ainsi à</tspan>
-                    <tspan id="tspan10" x="299.25146" y="154.04274"
-                        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
-                        l'amélioration des modèles d’IA</tspan>
-                </text>
-                <text x="146.46295" y="248.50197" font-family="Marianne" font-size="14px" font-weight="400"
-                    fill="#666666" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:24px" id="text5">
-                    <tspan>Apprenez en
-                        plus sur les modèles</tspan>
-                    <tspan id="tspan11" x="146.52148" y="275.85373"
-                        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
-                        d’IA et leurs caractéristiques</tspan>
-                </text>
-                <text xml:space="preserve" style="font-size:14px;fill:#666666" x="299.25146" y="154.04274" id="text10">
-                </text>
-                <text x="39.899445" y="34.194839" font-family="Marianne" font-size="14px" font-weight="400"
-                    fill="#666666" text-anchor="start" dominant-baseline="central"
-                    style="font-style:normal;line-height:24px" id="text4-5">
-                    <tspan>Échangez
-                        aussi longtemps que</tspan>
-
-                    <tspan id="tspan10-5" x="39.907349" y="60.237579"
-                        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14px;font-family:Marianne;-inkscape-font-specification:Marianne">
-                        vous le souhaitez</tspan>
-                </text>
-                <text xml:space="preserve" style="font-size:14px;fill:#666666" x="146.52148" y="275.85373" id="text11">
-
-                </text>
-            </svg>
+                    </text>
+                </svg>
+            </div>
         </div>
-    </div>
-    <div class="fr-container-fluid bg-blue">
-        <div class="fr-container">
-            <h3 class="fr-pt-4w text-blue">Nos enjeux</h3>
-            <p>
-                Le comparateur compar:IA est un outil gratuit proposé par le service du numérique du ministère de la
-                Culture qui répond à trois enjeux majeurs&nbsp;:
+    </section>
+    <section class="fr-container">
+        <h2>A quoi sert compar:IA ?</h2>
+        <p>compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux</p>
+        <div class="fr-grid-row">
+            <div>
+                <h3>Comparer les réponses de différents modèles d’IA</h4>
+                    <p>Discutez et développez votre esprit critique en donnant votre préférence</p>
+            </div>
+            <div>
+                <h3>Tester au même endroit les dernières IA de l’écosystème</h3>
+                <p>
+                    Testez différents modèles open source et propriétaires, de petites et grandes tailles</p>
+            </div>
+            <div>
+                <h3>
+                    Mesurer l’empreinte écologique des questions posées aux IA
+                </h3>
+                <p>
+                    Découvrez l’impact environnemental de vos discussions avec chaque modèle</p>
+            </div>
+    </section>
+    <section>
+        <h2>Pourquoi votre vote est-il important ?</h2>
+        <p>Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs
+            modèles
+            d’IA sur le français</p>
+        <div>
+            <img src="path/to/image.svg" alt="Vos préférences">
+            <h3>Vos préférences</h3>
+            <p>Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères
+                donnés, tels que la pertinence ou l’utilité des réponses</p>
+            <h3>Les jeux de données compar:IA</h3>
+            <img src="path/to/image.svg" alt="Les jeux de données compar:IA">
+            <p>compar:IA compile dans des jeux de données tous les votes et tous les messages partagés avec
+                le
+                comparateur</p>
+                  <img src="path/to/image.svg" alt="Des modèles affinés sur le français">
+                <h3>Des modèles affinés sur le français</h3>
+            <p>A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour
+                entrainer
+                de
+                nouveaux modèles plus respectueux de la diversité linguistique et culturelle
             </p>
-            <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-md-3 flex"><span class="fr-icon-check-line"></span>
-                    <p><strong>Sensibiliser les citoyens</strong> à l’IA générative et ses enjeux</p>
-                </div>
-                <div class="fr-col-md-3 fr-col-offset-md-1 flex"><span class="fr-icon-check-line"></span>
-                    <p>Veiller au respect de la <strong>diversité des cultures francophones</strong> dans les modèles
-                        d’IA conversationnelle</p>
-                </div>
-                <div class="fr-col-md-3 fr-col-offset-md-1 flex"><span class="fr-icon-check-line"></span>
-                    <p><strong>Contribuer à la transparence</strong> des modèles d’IA générative</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="fr-container fr-mt-8w">
-        <h3 class="text-blue">Nos missions</h3>
-
+            <!-- <div class="fr-grid-row fr-grid-row--center fr-my-4w">
+            <a class="fr-btn fr-col-10 fr-col-md-3 bg-light-blue inline-block text-center" href="#">Accéder aux jeux de données</a>
+        </div> -->
+    </section>
+    <section>
+        <h2>Les usages spécifiques de compar:IA</h2>
         <div class="fr-grid-row fr-grid-row--gutters">
-            <!-- Tile 1 -->
-            <div class="fr-col-md-4">
-                <div class="fr-tile">
-                    <div class="fr-tile__body">
-                        <div class="fr-tile__content">
-                            <h4 class="fr-tile__title">
-                                Faciliter l’accès
-                            </h4>
-                            <p class="fr-tile__desc">Mise à disposition de plusieurs modèles d’IA
-                                conversationnels à
-                                travers une unique plateforme.</p>
+            <div class="fr-col-12 fr-col-md-4">
+                <h3>Exploiter les données</h3>
+                <p>Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données compar:IA
+                    pour améliorer les modèles</p>
+                <i class="fas fa-database" aria-hidden="true"></i>
+            </div>
+            <div class="fr-col-12 fr-col-md-4">
+                <h3>Explorer les modèles</h3>
+                <p>Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des
+                    modèles</p>
+                <i class="fas fa-search" aria-hidden="true"></i>
+            </div>
+            <div class="fr-col-12 fr-col-md-4">
+                <h3>Former et sensibiliser</h3>
+                <p>Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de
+                    votre public</p>
+                <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
+            </div>
+        </div>
+    </section>
+    <section>
+        <div class="fr-grid-row">
+            <div class="fr-container bg-blue fr-my-8w fr-col-12 fr-col-md-10">
+                <div class="fr-container fr-py-4w">
+                    <h3 class="text-blue">Qui sommes-nous ?</h3>
+                    <p>Le comparateur compar:IA est développé dans le cadre de la start-up d’Etat compar:IA
+                        (incubateurs de
+                        l’Atelier
+                        numérique et AllIAnce) intégrée au programme <a href="https://beta.gouv.fr"
+                            rel="noopener external" target="_blank">beta.gouv.fr</a> de la Direction
+                        interministérielle du numérique
+                        (DINUM)
+                        qui aide les administrations publiques à construire des services numériques utiles,
+                        simples
+                        et
+                        faciles à utiliser.</p>
+                    <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
+                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
+                            <img src="assets/orgs/minicult.svg" alt="Ministère de la Culture" width="137px"
+                                height="97px" />
                         </div>
-                    </div>
-                    <div class="fr-tile__header">
-                        <div class="fr-tile__pictogram">
-                            <img src="assets/extra-artwork/map-pin.svg" />
-                            <!-- <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
-                                <use href="assets/extra-artwork/ecosystem.svg"></use>
-                            </svg> -->
+                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
+                            <img src="assets/orgs/ateliernumerique.png" alt="Atelier numérique" width="105px"
+                                height="105px" />
+                        </div>
+                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
+                            <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" width="191px" height="65px" />
+                        </div>
+                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
+                            <img src="assets/orgs/dinum.png" alt="DINUM" width="278px" height="59px" />
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- Tile 2 -->
-            <div class="fr-col-md-4">
-                <div class="fr-tile">
-                    <div class="fr-tile__body">
-                        <div class="fr-tile__content">
-                            <h4 class="fr-tile__title">
-                                Collecter des données
-                            </h4>
-                            <p class="fr-tile__desc">Création de jeux de données de préférence à partir de
-                                tâches
-                                réelles, utiles pour l’alignement des modèles en français.</p>
-                        </div>
-                    </div>
-                    <div class="fr-tile__header">
-                        <div class="fr-tile__pictogram">
-                            <img src="assets/dsfr/artwork/pictograms/digital/data-visualization.svg" />
-                            <!-- <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
-                                <use href="assets/dsfr/artwork/pictograms/digital/data-visualization.svg"></use>
-                            </svg> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tile 3 -->
-            <div class="fr-col-md-4">
-                <div class="fr-tile">
-                    <div class="fr-tile__body">
-                        <div class="fr-tile__content">
-                            <h4 class="fr-tile__title">
-                                Partager
-                            </h4>
-                            <p class="fr-tile__desc">Diffusion sous licence ouverte des jeux de données générées
-                                pour en faire bénéficier l’écosystème IA.</p>
-                        </div>
-                    </div>
-                    <div class="fr-tile__header">
-                        <div class="fr-tile__pictogram">
-                            <img src="assets/extra-artwork/ecosystem.svg" />
-                            <!-- <svg aria-hidden="true" class="fr-artwork" viewBox="0 0 80 80" width="80px" height="80px">
-                                <use href="assets/extra-artwork/map-pin.svg"></use>
-                            </svg> -->
+            <div class="fr-container fr-mt-8w">
+                <div class="fr-container--fluid">
+                    <div class="fr-container">
+                        <h3 class="fr-pt-4w text-blue">Quelles sont nos missions ?</h3>
+                        <p>
+                            Le comparateur compar:IA est un outil gratuit proposé par le service du numérique du
+                            ministère de la
+                            Culture qui répond à trois enjeux majeurs&nbsp;:
+                        </p>
+                        <div class="fr-grid-row fr-grid-row--gutters">
+                            <!-- Column 1 -->
+                            <div class="fr-col-md-3 flex">
+                                <div class="flex">
+                                    <img src="assets/extra-artwork/map-pin.svg" alt="Map Pin Icon" class="fr-mb-2w" />
+                                    <p><strong>Faciliter l’accès</strong><br>Mise à disposition de plusieurs
+                                        modèles
+                                        d’IA
+                                        conversationnels à travers une unique plateforme.</p>
+                                </div>
+                            </div>
+                            <!-- Column 2 -->
+                            <div class="fr-col-md-3 fr-col-offset-md-1 flex">
+                                <div class="flex">
+                                    <img src="assets/dsfr/artwork/pictograms/digital/data-visualization.svg"
+                                        alt="Data Visualization Icon" class="fr-mb-2w" />
+                                    <p><strong>Collecter des données</strong><br>Création de jeux de données de
+                                        préférence à
+                                        partir de tâches réelles, utiles pour l’alignement des modèles en
+                                        français.
+                                    </p>
+                                </div>
+                            </div>
+                            <!-- Column 3 -->
+                            <div class="fr-col-md-3 fr-col-offset-md-1 flex">
+                                <div class="flex">
+                                    <img src="assets/extra-artwork/ecosystem.svg" alt="Ecosystem Icon"
+                                        class="fr-mb-2w" />
+                                    <p><strong>Partager</strong><br>Diffusion sous licence ouverte des jeux de
+                                        données
+                                        générées
+                                        pour en faire bénéficier l’écosystème IA.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="fr-grid-row fr-grid-row--center fr-my-4w">
-            <a class="fr-btn fr-col-10 fr-col-md-3 bg-light-blue inline-block text-center" href="/a-propos">En savoir
-                plus</a>
-        </div>
-    </div>
-    <div class="fr-grid-row">
-        <div class="fr-container bg-blue fr-my-8w fr-col-12 fr-col-md-10">
-            <div class="fr-container fr-py-4w">
-                <h3 class="text-blue">Qui sommes-nous ?</h3>
-                <p>Le comparateur compar:IA est développé dans le cadre de la start-up d’Etat compar:IA (incubateurs de
-                    l’Atelier
-                    numérique et AllIAnce) intégrée au programme <a href="https://beta.gouv.fr" rel="noopener external"
-                        target="_blank">beta.gouv.fr</a> de la Direction interministérielle du numérique
-                    (DINUM)
-                    qui aide les administrations publiques à construire des services numériques utiles, simples et
-                    faciles à utiliser.</p>
-                <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
-                    <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                        <img src="assets/orgs/minicult.svg" alt="Ministère de la Culture" width="137px" height="97px" />
-                    </div>
-                    <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                        <img src="assets/orgs/ateliernumerique.png" alt="Atelier numérique" width="105px"
-                            height="105px" />
-                    </div>
-                    <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                        <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" width="191px" height="65px" />
-                    </div>
-                    <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                        <img src="assets/orgs/dinum.png" alt="DINUM" width="278px" height="59px" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    </section>
+    <!-- Vos questions les plus courantes
+Usage
+Indicateurs écologiques
+Modèles
+Jeu de données
+Quelle est la différence entre poser une question à un modèle d’IA et à un moteur de recherche ?
+Si j’intègre un lien d’URL dans une requête, le modèle peut-il y accéder?
+Si je pose une question sur l’actualité la plus récente, le modèle peut-il répondre?
+Découvrir les autres questions -->
+<!-- Haut de page -->
+<!-- 
+Abonnez-vous à notre lettre d’information
+Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux modèles, publications de jeux de données et nouvelles fonctionnalités !
+Votre adresse électronique 
+S’abonner
+Vous êtes désormais abonné à l’infolettre compar:IA !
+En renseignant votre adresse électronique, vous acceptez de recevoir nos actualités par courriel. Vous pouvez vous désinscrire à tout moment à l’aide des liens de désinscription ou en nous contactant. -->
 </main>
 {% endblock %}
