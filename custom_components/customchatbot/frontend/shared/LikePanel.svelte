@@ -19,6 +19,7 @@
 		input: undefined;
 	}>();
 
+	let like_panel;
 	export let show: boolean;
 
 	export let handle_action: (value: string | null | string[]) => void;
@@ -50,9 +51,46 @@
 		old_value = value;
 		handle_action(value);
 	}
+
+	let hasBeenShown: boolean = false;
+	function scrollIntoViewWithOffset(element: HTMLElement, offset: number) {
+		const rect = element.getBoundingClientRect();
+		const isVisible = rect.bottom <= offset;
+
+		if (!isVisible) {
+			// this not enough because margins so let's just add some extra
+			// const scrollTop = window.scrollY + rect.height;
+			const scrollTop = window.scrollY + rect.height + offset;
+			window.scrollTo({ top: scrollTop, behavior: "smooth" });
+		}
+	}
+
+	const footer = document.getElementById("send-area");
+	const footerHeight = footer ? footer.offsetHeight : 0;
+
+	function checkVisibility() {
+		if (!show || hasBeenShown || !like_panel) return;
+
+		const rect = like_panel.getBoundingClientRect();
+		const appeared =
+			!like_panel.classList.contains("hidden") && rect.height > 0;
+
+		if (appeared) {
+			scrollIntoViewWithOffset(like_panel, footerHeight);
+			hasBeenShown = true;
+		} else {
+			requestAnimationFrame(checkVisibility);
+		}
+	}
+
+	$: if (show && !hasBeenShown && like_panel) {
+		checkVisibility();
+	} else if (!show) {
+		hasBeenShown = false;
+	}
 </script>
 
-<div class="like-panel" class:hidden={show === false}>
+<div bind:this={like_panel} class="like-panel {show === false ? 'hidden' : ''}">
 	<p class="thumb-icon inline-svg">
 		<svelte:component this={Icon} />
 		<span>{text}</span>

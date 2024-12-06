@@ -395,7 +395,7 @@
 					{/each}
 
 					{#each messages as message, j}
-						<div class="react-panels react-panel-{j}">
+						<div class="react-panels react-panel-{j} react-panel-rank-{i}">
 							<LikePanel
 								model={j === 0 ? "A" : "B"}
 								{disabled}
