@@ -51,28 +51,31 @@
 		old_value = value;
 		handle_action(value);
 	}
+
 	let hasBeenShown: boolean = false;
 	function scrollIntoViewWithOffset(element: HTMLElement, offset: number) {
 		const rect = element.getBoundingClientRect();
-		const isVisible =
-			rect.top >= offset && rect.bottom <= window.innerHeight;
+		const isVisible = rect.bottom <= offset;
 
 		if (!isVisible) {
-			// Calculate the target scroll position, ensuring the element is visible above the footer.
-			const scrollTop = window.scrollY + rect.top - offset;
+			// this not enough because margins so let's just add some extra
+			// const scrollTop = window.scrollY + rect.height;
+			const scrollTop = window.scrollY + rect.height + offset;
 			window.scrollTo({ top: scrollTop, behavior: "smooth" });
 		}
 	}
 
-	let footerHeight = 0; 
+	const footer = document.getElementById("send-area");
+	const footerHeight = footer ? footer.offsetHeight : 0;
+
 	function checkVisibility() {
 		if (!show || hasBeenShown || !like_panel) return;
 
 		const rect = like_panel.getBoundingClientRect();
-		const isVisible =
+		const appeared =
 			!like_panel.classList.contains("hidden") && rect.height > 0;
 
-		if (isVisible) {
+		if (appeared) {
 			scrollIntoViewWithOffset(like_panel, footerHeight);
 			hasBeenShown = true;
 		} else {
@@ -81,10 +84,6 @@
 	}
 
 	$: if (show && !hasBeenShown && like_panel) {
-		// Dynamically set footer height if necessary.
-		const footer = document.getElementById("send-area");
-		footerHeight = footer ? footer.offsetHeight : 0;
-
 		checkVisibility();
 	} else if (!show) {
 		hasBeenShown = false;
