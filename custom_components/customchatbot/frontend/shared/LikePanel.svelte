@@ -54,8 +54,12 @@
 
 	let hasBeenShown: boolean = false;
 	function scrollIntoViewWithOffset(element: HTMLElement, offset: number) {
+		// For offset 0 just consider a footer of 100px (really is 114px)
+		offset = Math.max(100, offset || 0);
 		const rect = element.getBoundingClientRect();
-		const isVisible = rect.bottom <= offset;
+		const viewportHeight = window.visualViewport?.height || window.innerHeight;
+
+		const isVisible = rect.bottom <= (viewportHeight - offset);
 
 		if (!isVisible) {
 			// this not enough because margins so let's just add some extra
