@@ -22,9 +22,10 @@
 
 
     .bg-blue {
+        /* background-color: var(--blue-france-975-75); */
         /* --background-contrast-info: var(--info-950-100); */
         /* background-color: var(--background-contrast-info); */
-        background-color: var(--blue-france-975-75);
+        background-color: #F3F5F9;
     }
 
     .bg-light-blue {
@@ -62,17 +63,46 @@
         border-radius: 1rem;
     }
 
+    @media (prefers-color-scheme: dark) {
+        .rounded-tile {
+            background-color: black;
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+        .rounded-tile {
+            background-color: white;
+        }
+    }
+
+    .rounded-tile .fr-responsive-img {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        min-height: 60%;
+    }
+
     .grid {
         display: grid;
         grid-template-columns: 1fr;
 
     }
 
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+
+    }
+
+
     @media (min-width: 62em) {
 
         .grid {
-            display: grid;
             grid-template-columns: 1fr 1fr 1fr;
+
+        }
+
+        .grid-2 {
+            grid-template-columns: 1fr 1fr;
 
         }
     }
@@ -234,59 +264,64 @@
             </div>
         </div>
     </section>
-    <section class="fr-container">
+    <section class="fr-container fr-mb-4w fr-mb-md-8w">
         <h3 class="text-center">À quoi sert compar:IA ?</h3>
         <p class="text-grey text-center">compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA
             générative et à ses enjeux</p>
         <div class="grid gap">
             <div class="rounded-tile">
-                <img src="assets/comparer.svg" class="fr-responsive-img" />
-                <h4>Comparer les réponses de différents modèles d’IA</h4>
-                <p class="text-grey">Discutez et développez votre esprit critique en donnant votre préférence</p>
+                <img src="assets/comparer.svg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue" />
+                <div class="fr-p-3w">
+                    <h6 class="fr-mb-1w">
+                        Comparer les réponses de différents modèles d’IA</h6>
+                    <p class="text-grey">Discutez et développez votre esprit critique en donnant votre préférence</p>
+                </div>
             </div>
             <div class="rounded-tile">
-
-                <img src="assets/mesurer.png" class="fr-responsive-img" />
+                <div class="fr-responsive-img bg-blue"><img class="fr-responsive-img" src="assets/mesurer.png" /></div>
                 <div class="fr-p-3w">
-                    <h5>Tester au même endroit les dernières IA de l’écosystème</h5>
+                    <h6 class="fr-mb-1w">
+                        Tester au même endroit les dernières IA de l’écosystème</h6>
                     <p class="text-grey fr-mb-0">
                         Testez différents modèles open source et propriétaires, de petites et grandes tailles</p>
                 </div>
             </div>
             <div class="rounded-tile">
-                <img src="assets/tester.svg" class="fr-responsive-img" />
-
-                <h4>
-                    Mesurer l’empreinte écologique des questions posées aux IA
-                </h4>
-                <p class="text-grey">
-                    Découvrez l’impact environnemental de vos discussions avec chaque modèle</p>
+                <img src="assets/tester.svg" class="fr-responsive-img fr-px-6w fr-py-2w bg-blue bg-blue" />
+                <div class="fr-p-3w">
+                    <h6 class="fr-mb-1w">
+                        Mesurer l’empreinte écologique des questions posées aux IA
+                    </h6>
+                    <p class="text-grey">
+                        Découvrez l’impact environnemental de vos discussions avec chaque modèle</p>
+                </div>
             </div>
     </section>
-    <section class="fr-container rounded-tile">
+    <section class="fr-container rounded-tile fr-pt-4w fr-pt-md-6w">
         <h4 class="text-center">Pourquoi votre vote est-il important ?</h4>
         <p class="text-center text-grey">Votre préférence enrichit les jeux de données compar:IA dont l’objectif est
             d’affiner les futurs
             modèles
             d’IA sur le français</p>
         <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-4 text-center"><img src="assets/prefs.svg" alt="Vos préférences">
-                <h5>Vos préférences</h5>
+            <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w"><img src="assets/prefs.svg" alt="Vos préférences"
+                    width="72" height="72">
+                <h6>Vos préférences</h6>
                 <p class="text-grey">Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon
                     des critères
                     donnés, tels que la pertinence ou l’utilité des réponses</p>
             </div>
-            <div class="fr-col-12 fr-col-md-4 text-center">
-                <img src="assets/datasets.svg" alt="Les jeux de données compar:IA">
-                <h5>Les jeux de données compar:IA</h5>
+            <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
+                <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72">
+                <h6>Les jeux de données compar:IA</h6>
                 <p class="text-grey">compar:IA compile dans des jeux de données tous les votes et tous les messages
                     partagés avec
                     le
                     comparateur</p>
             </div>
-            <div class="fr-col-12 fr-col-md-4 text-center">
-                <img src="assets/finetune.svg" alt="Des modèles affinés sur le français">
-                <h5>Des modèles affinés sur le français</h5>
+            <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
+                <img src="assets/finetune.svg" alt="Des modèles affinés sur le français" width="72" height="72">
+                <h6>Des modèles affinés sur le français</h6>
                 <p class="text-grey">A terme, les acteurs industriels et académiques peuvent exploiter les jeux de
                     données pour
                     entrainer
@@ -298,37 +333,42 @@
             <a class="fr-btn purple-btn fr-col-10 fr-col-md-3 inline-block text-center" href="#">Accéder aux jeux de données</a>
         </div> -->
     </section>
-    <section class="fr-container bg-blue">
-        <h3 class="text-center">Les usages spécifiques de compar:IA</h3>
-        <p class="text-grey text-center">L’outil s’adresse également aux experts IA et aux formateurs pour des usages
-            plus spécifiques</p>
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-4 rounded-tile">
-                <img src="assets/dsfr/icons/device/database-line.svg" aria-hidden="true" />
-                <h3>Exploiter les données</h3>
-                <p class="text-grey">Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données
-                    compar:IA
-                    pour améliorer les modèles</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-4 rounded-tile">
-                <img src="assets/dsfr/icons/system/search-line.svg" aria-hidden="true" />
-                <h3>Explorer les modèles</h3>
-                <p class="text-grey">Consultez au même endroit toutes les caractéristiques et conditions d’utilisation
-                    des
-                    modèles</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-4 rounded-tile">
-                <img src="assets/extra-icons/presentation.svg" aria-hidden="true" />
-                <h3>Former et sensibiliser</h3>
-                <p class="text-grey">Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA
-                    auprès de
-                    votre public</p>
+    <section class="fr-container--fluid bg-blue fr-my-4w fr-py-4w fr-my-md-6w fr-py-md-10w">
+        <div class="fr-container">
+            <h3 class="text-center">Les usages spécifiques de compar:IA</h3>
+            <p class="text-grey text-center">L’outil s’adresse également aux experts IA et aux formateurs pour des
+                usages
+                plus spécifiques</p>
+            <div class="grid gap">
+                <div class="rounded-tile fr-p-3w">
+                    <img src="assets/extra-icons/database-line.svg" aria-hidden="true" class="fr-mb-2w purple" />
+                    <h5 class="fr-mb-1w">Exploiter les données</h5>
+                    <p class="text-grey">Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données
+                        compar:IA
+                        pour améliorer les modèles</p>
+                </div>
+                <div class="rounded-tile fr-p-3w">
+                    <img src="assets/extra-icons/search-line.svg" aria-hidden="true" class="fr-mb-2w" width="30"
+                        height="30" />
+                    <h5 class="fr-mb-1w">Explorer les modèles</h5>
+                    <p class="text-grey">Consultez au même endroit toutes les caractéristiques et conditions
+                        d’utilisation
+                        des
+                        modèles</p>
+                </div>
+                <div class="rounded-tile fr-p-3w">
+                    <img src="assets/extra-icons/presentation.svg" aria-hidden="true" class="fr-mb-2w" />
+                    <h5 class="fr-mb-1w">Former et sensibiliser</h5>
+                    <p class="text-grey">Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA
+                        auprès de
+                        votre public</p>
+                </div>
             </div>
         </div>
     </section>
     <section>
-        <div class="fr-grid-row fr-container ">
-            <div class=" rounded-tile fr-my-8w fr-col-12 fr-col-md-6">
+        <div class=" grid-2 gap fr-container ">
+            <div class="rounded-tile  fr-my-8w">
                 <div class="fr-container fr-py-4w">
                     <h3>Qui sommes-nous ?</h3>
                     <p>Le comparateur compar:IA est développé dans le cadre de la start-up d’Etat compar:IA
@@ -342,53 +382,53 @@
                         simples
                         et
                         faciles à utiliser.</p>
-                    <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
-                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                            <img src="assets/orgs/minicult.svg" alt="Ministère de la Culture" width="137px"
-                                height="97px" />
+                    <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle fr-grid-row--gutters">
+                        <div class="fr-col-md-4 fr-col-12">
+                            <img class="fr-responsive-img" src="assets/orgs/minicult.svg" alt="Ministère de la Culture"
+                                width="137px" height="97px" />
                         </div>
-                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                            <img src="assets/orgs/ateliernumerique.png" alt="Atelier numérique" width="105px"
-                                height="105px" />
+                        <div class="fr-col-md-4 fr-col-12">
+                            <img class="fr-responsive-img" src="assets/orgs/ateliernumerique.png"
+                                alt="Atelier numérique" width="105px" height="105px" />
                         </div>
-                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                            <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" width="191px" height="65px" />
-                        </div>
-                        <div class="fr-col-lg-3 fr-col-md-6 fr-col-12">
-                            <img src="assets/orgs/dinum.png" alt="DINUM" width="278px" height="59px" />
+                        <div class="fr-col-md-4 fr-col-12">
+                            <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" class="fr-responsive-img"
+                                width="191px" height="65px" />
+                            <img src="assets/orgs/dinum.png" class="fr-responsive-img" alt="DINUM" width="278px"
+                                height="59px" />
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="fr-container rounded-tile fr-mt-8w fr-col-md-6">
-                <div class="fr-container--fluid">
-                    <div class="fr-container">
-                        <h3 class="fr-pt-4w">Quelles sont nos missions ?</h3>
-                        <p>
-                            Le comparateur compar:IA est un outil gratuit proposé par le service du numérique du
-                            ministère de la
-                            Culture qui répond à trois enjeux majeurs&nbsp;:
-                        </p>
-                        <div class="fr-grid-row fr-grid-row--gutters">
-                            <!-- Column 1 -->
-                            <img src="assets/extra-artwork/map-pin.svg" alt="Map Pin Icon" class="fr-mb-2w fr-col-1" />
-                            <p class="fr-col-11"><strong>Faciliter l’accès</strong><br>Mise à disposition de plusieurs
+            <div class="fr-container rounded-tile fr-mt-8w">
+                <div class="fr-container">
+                    <h3 class="fr-pt-4w">Quelles sont nos missions ?</h3>
+                    <div class="fr-grid-row fr-grid-row--top">
+                        <img src="assets/extra-icons/map-pin.svg" alt="Point sur la carte" aria-hidden="true"
+                            class="fr-col-1 fr-pr-1w" />
+                        <div class="fr-col-11 fr-pl-1w">
+                            <h6 class="fr-mb-0">Faciliter l’accès</h6>
+                            <p class="text-grey">Mise à disposition de plusieurs
                                 modèles
                                 d’IA
                                 conversationnels à travers une unique plateforme.</p>
-
-                            <!-- Column 2 -->
-                            <img src="assets/dsfr/artwork/pictograms/digital/data-visualization.svg"
-                                alt="Data Visualization Icon" class="fr-mb-2w fr-col-1" />
-                            <p class="fr-col-11"><strong>Collecter des données</strong><br>Création de jeux de données
+                        </div>
+                        <img src="assets/extra-icons/database-line.svg" alt="jeux de données"
+                            class="fr-col-1 fr-pr-1w" />
+                        <div class="fr-col-11 fr-pl-1w">
+                            <h6 class="fr-mb-0">Collecter des données</h6>
+                            <p class="text-grey">Création de jeux de données
                                 de
                                 préférence à
                                 partir de tâches réelles, utiles pour l’alignement des modèles en
                                 français.
                             </p>
-                            <img src="assets/extra-artwork/ecosystem.svg" alt="Ecosystem Icon"
-                                class="fr-mb-2w fr-col-1" />
-                            <p class="fr-col-11"><strong>Partager</strong><br>Diffusion sous licence ouverte des jeux de
+                        </div>
+                        <img src="assets/extra-icons/share.svg" alt="écosystème" aria-hidden="true"
+                            class="fr-col-1 fr-pr-1w" />
+                        <div class="fr-col-11 fr-pl-1w">
+                            <h6 class="fr-mb-0">Partager</h6>
+                            <p class="text-grey">Diffusion sous licence ouverte des jeux de
                                 données
                                 générées
                                 pour en faire bénéficier l’écosystème IA.</p>
