@@ -106,6 +106,14 @@
 
         }
     }
+
+    .align-center {
+        align-items: center;
+    }
+
+    .h-full {
+        height: 100%;
+    }
 </style>
 {% endblock %}
 
@@ -522,19 +530,19 @@
 
                 </div>
             </div>
-            <button class="fr-btn purple-btn text-center">Découvrir les autres
-                questions</button>
+            <div class="text-center fr-mt-4w fr-mb-8w"><button class="fr-btn purple-btn ">Découvrir les autres
+                    questions</button></div>
         </div>
     </section>
-    <div class="text-center p-2">
+    <div class="text-center p-2 fr-mt-4w">
         <a class="bg-blue fr-link fr-icon-arrow-up-fill fr-link--icon-left text-white fr-pt-2w fr-pb-1v fr-px-2w"
             href="#top"> Haut de page </a>
     </div>
     <section class="bg-blue fr-container--fluid">
         <div class="fr-grid-row fr-container">
-            <div class="fr-col-12 fr-col-md-6">
-                <h3 class="fr-icon-mail-line">Abonnez-vous à notre lettre d’information
-                </h3>
+            <div class="fr-col-12 fr-col-md-5 fr-pt-4w">
+                <h5><span class="fr-icon-mail-line"></span> Abonnez-vous à notre lettre d’information
+                </h5>
                 <p>Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux modèles,
                     publications de
                     jeux de données et nouvelles fonctionnalités !</p>
@@ -542,7 +550,7 @@
         <script src="https://public.message-business.com/Javascript/form/MB_Form_JsApp.js?v=BbCIlGYKQUdWEoV"></script>
         <script>var MB_Form_JsApp = new MB_Form_JsApp(); MB_Form_JsApp.ContainerId = "formContainer_BbCIlGYKQUdWEoV"; MB_Form_JsApp.AccountId = "65547"; MB_Form_JsApp.OperationId = "40"; MB_Form_JsApp.OperationType = "form"; MB_Form_JsApp.Init();</script> -->
             </div>
-            <div class="fr-col-12 fr-col-md-6">
+            <div class="fr-col-12 fr-col-md-5 fr-col-offset-md-2 fr-mb-4w fr-mb-md-0">
 
                 {% include 'form.html' %}</div>
         </div>
