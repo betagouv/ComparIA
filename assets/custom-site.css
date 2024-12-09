@@ -59,6 +59,8 @@
   background-color: var(--blue-france-main-525);
   color: #F5F5FE !important;
 
+  --blue-france-main-525-hover: #9898F8;
+  --blue-france-main-525-active: #AEAEF9;
   --hover: var(--blue-france-main-525-hover);
   --active: var(--blue-france-main-525-active);
 }
