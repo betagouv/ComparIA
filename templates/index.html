@@ -53,6 +53,14 @@
 
         /* color: var(--text-action-high-blue-france) !important; */
     }
+
+
+    .rounded-tile {
+        border-color: #E5E5E5;
+        border-width: 2px;
+        border-style: solid;
+        border-radius: 0.25rem;
+    }
 </style>
 {% endblock %}
 
@@ -212,80 +220,100 @@
         </div>
     </section>
     <section class="fr-container">
-        <h2>A quoi sert compar:IA ?</h2>
-        <p>compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux</p>
+        <h3 class="text-center">À quoi sert compar:IA ?</h3>
+        <p class="text-grey text-center">compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA
+            générative et à ses enjeux</p>
         <div class="fr-grid-row">
-            <div>
-                <h3>Comparer les réponses de différents modèles d’IA</h4>
-                    <p>Discutez et développez votre esprit critique en donnant votre préférence</p>
+            <div class="rounded-tile fr-col-12 fr-col-md-4">
+                <img src="assets/comparer.svg" class="fr-responsive-img" />
+                <h4>Comparer les réponses de différents modèles d’IA</h4>
+                <p class="text-grey">Discutez et développez votre esprit critique en donnant votre préférence</p>
             </div>
-            <div>
-                <h3>Tester au même endroit les dernières IA de l’écosystème</h3>
-                <p>
+            <div class="rounded-tile fr-col-12 fr-col-md-4">
+
+                <img src="assets/mesurer.png" class="fr-responsive-img" />
+                <h4>Tester au même endroit les dernières IA de l’écosystème</h4>
+                <p class="text-grey">
                     Testez différents modèles open source et propriétaires, de petites et grandes tailles</p>
             </div>
-            <div>
-                <h3>
+            <div class="rounded-tile fr-col-12 fr-col-md-4">
+                <img src="assets/tester.svg" class="fr-responsive-img" />
+
+                <h4>
                     Mesurer l’empreinte écologique des questions posées aux IA
-                </h3>
-                <p>
+                </h4>
+                <p class="text-grey">
                     Découvrez l’impact environnemental de vos discussions avec chaque modèle</p>
             </div>
     </section>
-    <section>
-        <h2>Pourquoi votre vote est-il important ?</h2>
-        <p>Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs
+    <section class="fr-container rounded-tile">
+        <h4 class="text-center">Pourquoi votre vote est-il important ?</h4>
+        <p class="text-center text-grey">Votre préférence enrichit les jeux de données compar:IA dont l’objectif est
+            d’affiner les futurs
             modèles
             d’IA sur le français</p>
-        <div>
-            <img src="path/to/image.svg" alt="Vos préférences">
-            <h3>Vos préférences</h3>
-            <p>Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères
-                donnés, tels que la pertinence ou l’utilité des réponses</p>
-            <h3>Les jeux de données compar:IA</h3>
-            <img src="path/to/image.svg" alt="Les jeux de données compar:IA">
-            <p>compar:IA compile dans des jeux de données tous les votes et tous les messages partagés avec
-                le
-                comparateur</p>
-            <img src="path/to/image.svg" alt="Des modèles affinés sur le français">
-            <h3>Des modèles affinés sur le français</h3>
-            <p>A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour
-                entrainer
-                de
-                nouveaux modèles plus respectueux de la diversité linguistique et culturelle
-            </p>
+        <div class="fr-grid-row fr-grid-row--gutters">
+            <div class="fr-col-12 fr-col-md-4 text-center"><img src="assets/prefs.svg" alt="Vos préférences">
+                <h5>Vos préférences</h5>
+                <p class="text-grey">Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon
+                    des critères
+                    donnés, tels que la pertinence ou l’utilité des réponses</p>
+            </div>
+            <div class="fr-col-12 fr-col-md-4 text-center">
+                <img src="assets/datasets.svg" alt="Les jeux de données compar:IA">
+                <h5>Les jeux de données compar:IA</h5>
+                <p class="text-grey">compar:IA compile dans des jeux de données tous les votes et tous les messages
+                    partagés avec
+                    le
+                    comparateur</p>
+            </div>
+            <div class="fr-col-12 fr-col-md-4 text-center">
+                <img src="assets/finetune.svg" alt="Des modèles affinés sur le français">
+                <h5>Des modèles affinés sur le français</h5>
+                <p class="text-grey">A terme, les acteurs industriels et académiques peuvent exploiter les jeux de
+                    données pour
+                    entrainer
+                    de
+                    nouveaux modèles plus respectueux de la diversité linguistique et culturelle
+                </p>
+            </div>
             <!-- <div class="fr-grid-row fr-grid-row--center fr-my-4w">
-            <a class="fr-btn fr-col-10 fr-col-md-3 bg-light-blue inline-block text-center" href="#">Accéder aux jeux de données</a>
+            <a class="fr-btn purple-btn fr-col-10 fr-col-md-3 inline-block text-center" href="#">Accéder aux jeux de données</a>
         </div> -->
     </section>
-    <section>
-        <h2>Les usages spécifiques de compar:IA</h2>
+    <section class="fr-container bg-blue">
+        <h3 class="text-center">Les usages spécifiques de compar:IA</h3>
+        <p class="text-grey text-center">L’outil s’adresse également aux experts IA et aux formateurs pour des usages
+            plus spécifiques</p>
         <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-4">
+            <div class="fr-col-12 fr-col-md-4 rounded-tile">
+                <img src="assets/dsfr/icons/device/database-line.svg" aria-hidden="true" />
                 <h3>Exploiter les données</h3>
-                <p>Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données compar:IA
+                <p class="text-grey">Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données
+                    compar:IA
                     pour améliorer les modèles</p>
-                <i class="fas fa-database" aria-hidden="true"></i>
             </div>
-            <div class="fr-col-12 fr-col-md-4">
+            <div class="fr-col-12 fr-col-md-4 rounded-tile">
+                <img src="assets/dsfr/icons/system/search-line.svg" aria-hidden="true" />
                 <h3>Explorer les modèles</h3>
-                <p>Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des
+                <p class="text-grey">Consultez au même endroit toutes les caractéristiques et conditions d’utilisation
+                    des
                     modèles</p>
-                <i class="fas fa-search" aria-hidden="true"></i>
             </div>
-            <div class="fr-col-12 fr-col-md-4">
+            <div class="fr-col-12 fr-col-md-4 rounded-tile">
+                <img src="assets/extra-icons/presentation.svg" aria-hidden="true" />
                 <h3>Former et sensibiliser</h3>
-                <p>Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de
+                <p class="text-grey">Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA
+                    auprès de
                     votre public</p>
-                <i class="fas fa-chalkboard-teacher" aria-hidden="true"></i>
             </div>
         </div>
     </section>
     <section>
         <div class="fr-grid-row">
-            <div class="fr-container bg-blue fr-my-8w fr-col-12 fr-col-md-10">
+            <div class="fr-container rounded-tile fr-my-8w fr-col-12 fr-col-md-6">
                 <div class="fr-container fr-py-4w">
-                    <h3 class="text-blue">Qui sommes-nous ?</h3>
+                    <h3>Qui sommes-nous ?</h3>
                     <p>Le comparateur compar:IA est développé dans le cadre de la start-up d’Etat compar:IA
                         (incubateurs de
                         l’Atelier
@@ -315,10 +343,10 @@
                     </div>
                 </div>
             </div>
-            <div class="fr-container fr-mt-8w">
+            <div class="fr-container rounded-tile fr-mt-8w fr-col-md-6">
                 <div class="fr-container--fluid">
                     <div class="fr-container">
-                        <h3 class="fr-pt-4w text-blue">Quelles sont nos missions ?</h3>
+                        <h3 class="fr-pt-4w">Quelles sont nos missions ?</h3>
                         <p>
                             Le comparateur compar:IA est un outil gratuit proposé par le service du numérique du
                             ministère de la
@@ -326,38 +354,27 @@
                         </p>
                         <div class="fr-grid-row fr-grid-row--gutters">
                             <!-- Column 1 -->
-                            <div class="fr-col-md-3 flex">
-                                <div class="flex">
-                                    <img src="assets/extra-artwork/map-pin.svg" alt="Map Pin Icon" class="fr-mb-2w" />
-                                    <p><strong>Faciliter l’accès</strong><br>Mise à disposition de plusieurs
-                                        modèles
-                                        d’IA
-                                        conversationnels à travers une unique plateforme.</p>
-                                </div>
-                            </div>
+                            <img src="assets/extra-artwork/map-pin.svg" alt="Map Pin Icon" class="fr-mb-2w fr-col-1" />
+                            <p class="fr-col-11"><strong>Faciliter l’accès</strong><br>Mise à disposition de plusieurs
+                                modèles
+                                d’IA
+                                conversationnels à travers une unique plateforme.</p>
+
                             <!-- Column 2 -->
-                            <div class="fr-col-md-3 fr-col-offset-md-1 flex">
-                                <div class="flex">
-                                    <img src="assets/dsfr/artwork/pictograms/digital/data-visualization.svg"
-                                        alt="Data Visualization Icon" class="fr-mb-2w" />
-                                    <p><strong>Collecter des données</strong><br>Création de jeux de données de
-                                        préférence à
-                                        partir de tâches réelles, utiles pour l’alignement des modèles en
-                                        français.
-                                    </p>
-                                </div>
-                            </div>
-                            <!-- Column 3 -->
-                            <div class="fr-col-md-3 fr-col-offset-md-1 flex">
-                                <div class="flex">
-                                    <img src="assets/extra-artwork/ecosystem.svg" alt="Ecosystem Icon"
-                                        class="fr-mb-2w" />
-                                    <p><strong>Partager</strong><br>Diffusion sous licence ouverte des jeux de
-                                        données
-                                        générées
-                                        pour en faire bénéficier l’écosystème IA.</p>
-                                </div>
-                            </div>
+                            <img src="assets/dsfr/artwork/pictograms/digital/data-visualization.svg"
+                                alt="Data Visualization Icon" class="fr-mb-2w fr-col-1" />
+                            <p class="fr-col-11"><strong>Collecter des données</strong><br>Création de jeux de données
+                                de
+                                préférence à
+                                partir de tâches réelles, utiles pour l’alignement des modèles en
+                                français.
+                            </p>
+                            <img src="assets/extra-artwork/ecosystem.svg" alt="Ecosystem Icon"
+                                class="fr-mb-2w fr-col-1" />
+                            <p class="fr-col-11"><strong>Partager</strong><br>Diffusion sous licence ouverte des jeux de
+                                données
+                                générées
+                                pour en faire bénéficier l’écosystème IA.</p>
                         </div>
                     </div>
                 </div>
@@ -371,33 +388,88 @@
                     <h2>Vos questions les plus courantes</h2>
                 </div>
                 <div class="fr-col-12 fr-col-md-8">
-                    <div class="fr-accordion">
-                        <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-1">Vos
-                            questions les plus courantes</button>
-                        <div class="fr-accordion__panel" id="accordion-1" aria-hidden="true">
-                            <div class="fr-carousel">
-                                <div class="fr-carousel__nav">
-                                    <button class="fr-carousel__prev" aria-label="Élément précédent">Précédent</button>
-                                    <button class="fr-carousel__next" aria-label="Élément suivant">Suivant</button>
-                                </div>
-                                <div class="fr-carousel__container">
-                                    <div class="fr-carousel__item">
-                                        <p>Usage</p>
-                                        <p>Indicateurs écologiques</p>
-                                        <p>Modèles</p>
+                    <h3>Vos
+                        questions les plus courantes</h3>
+                    <div class="fr-tabs">
+                        <ul class="fr-tabs__list" role="tablist" aria-label="Foire aux questions">
+                            <li role="presentation">
+                                <button id="tabpanel-usage" class="fr-tabs__tab" tabindex="0" role="tab"
+                                    aria-selected="true" aria-controls="tabpanel-usage-panel">Usage</button>
+                            </li>
+                            <li role="presentation">
+                                <button id="tabpanel-donnees" class="fr-tabs__tab" tabindex="-1" role="tab"
+                                    aria-selected="false" aria-controls="tabpanel-donnees-panel">Jeu de
+                                    données</button>
+                            </li>
+                            <li role="presentation">
+                                <button id="tabpanel-actualite" class="fr-tabs__tab" tabindex="-1" role="tab"
+                                    aria-selected="false" aria-controls="tabpanel-actualite-panel">Actualité</button>
+                            </li>
+                        </ul>
+                        <div id="tabpanel-usage-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
+                            aria-labelledby="tabpanel-usage" tabindex="0">
+                            <div class="fr-accordions-group">
+                                <section class="fr-accordion">
+                                    <h3 class="fr-accordion__title">
+                                        <button class="fr-accordion__btn" aria-expanded="false"
+                                            aria-controls="accordion-usage-1">Indicateurs écologiques</button>
+                                    </h3>
+                                    <div class="fr-collapse" id="accordion-usage-1">
+                                        <p>Contenu de la question 1</p>
                                     </div>
-                                    <div class="fr-carousel__item">
-                                        <p>Jeu de données</p>
-                                        <p>Quelle est la différence entre poser une question à un modèle d’IA et à un
-                                            moteur de recherche ?</p>
-                                        <p>Si j’intègre un lien d’URL dans une requête, le modèle peut-il y accéder?</p>
+                                </section>
+                                <section class="fr-accordion">
+                                    <h3 class="fr-accordion__title">
+                                        <button class="fr-accordion__btn" aria-expanded="false"
+                                            aria-controls="accordion-usage-2">Modèles</button>
+                                    </h3>
+                                    <div class="fr-collapse" id="accordion-usage-2">
+                                        <p>Contenu de la question 2</p>
                                     </div>
-                                    <div class="fr-carousel__item">
-                                        <p>Si je pose une question sur l’actualité la plus récente, le modèle peut-il
-                                            répondre?</p>
-                                        <p>Découvrir les autres questions</p>
+                                </section>
+                            </div>
+                        </div>
+                        <div id="tabpanel-donnees-panel" class="fr-tabs__panel" role="tabpanel"
+                            aria-labelledby="tabpanel-donnees" tabindex="0">
+                            <div class="fr-accordions-group">
+                                <section class="fr-accordion">
+                                    <h3 class="fr-accordion__title">
+                                        <button class="fr-accordion__btn" aria-expanded="false"
+                                            aria-controls="accordion-donnees-1">Quelle est la différence entre poser une
+                                            question à un modèle d’IA et à un moteur de recherche ?</button>
+                                    </h3>
+                                    <div class="fr-collapse" id="accordion-donnees-1">
+                                        <p>Contenu de la question 1</p>
                                     </div>
-                                </div>
+                                </section>
+                                <section class="fr-accordion">
+                                    <h3 class="fr-accordion__title">
+                                        <button class="fr-accordion__btn" aria-expanded="false"
+                                            aria-controls="accordion-donnees-2">Si j’intègre un lien d’URL dans une
+                                            requête, le modèle peut-il y accéder?</button>
+                                    </h3>
+                                    <div class="fr-collapse" id="accordion-donnees-2">
+                                        <p>Contenu de la question 2</p>
+                                    </div>
+                                </section>
+                            </div>
+                        </div>
+                        <div id="tabpanel-actualite-panel" class="fr-tabs__panel" role="tabpanel"
+                            aria-labelledby="tabpanel-actualite" tabindex="0">
+                            <div class="fr-accordions-group">
+                                <section class="fr-accordion">
+                                    <h3 class="fr-accordion__title">
+                                        <button class="fr-accordion__btn" aria-expanded="false"
+                                            aria-controls="accordion-actualite-1">Si je pose une question sur
+                                            l’actualité la plus récente, le modèle peut-il répondre?</button>
+                                    </h3>
+                                    <div class="fr-collapse" id="accordion-actualite-1">
+                                        <p>Contenu de la question 1</p>
+                                    </div>
+                                </section>
+                                <button class="fr-btn purple-btn text-center">Découvrir les autres
+                                    questions</button>
+
                             </div>
                         </div>
                     </div>
@@ -405,18 +477,24 @@
             </div>
         </div>
     </section>
-    <div class="text-center bg-blue p-2">
-        <a class="fr-link fr-icon-arrow-up-fill fr-link--icon-left text-white" href="#top"> Haut de page </a>
+    <div class="text-center p-2">
+        <a class="bg-blue fr-link fr-icon-arrow-up-fill fr-link--icon-left text-white fr-pt-2w fr-pb-1v fr-px-2w"
+            href="#top"> Haut de page </a>
     </div>
-    <section class="bg-blue fr-container">
-        <h3 class="fr-icon-mail-line">Abonnez-vous à notre lettre d’information
-        </h3>
-        <p>Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux modèles, publications de
-            jeux de données et nouvelles fonctionnalités !</p>
-        <!-- <div id="formContainer_BbCIlGYKQUdWEoV"></div>
+    <section class="bg-blue fr-container fr-grid-row">
+        <div class="fr-col-12 fr-col-md-6">
+            <h3 class="fr-icon-mail-line">Abonnez-vous à notre lettre d’information
+            </h3>
+            <p>Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux modèles,
+                publications de
+                jeux de données et nouvelles fonctionnalités !</p>
+            <!-- <div id="formContainer_BbCIlGYKQUdWEoV"></div>
         <script src="https://public.message-business.com/Javascript/form/MB_Form_JsApp.js?v=BbCIlGYKQUdWEoV"></script>
         <script>var MB_Form_JsApp = new MB_Form_JsApp(); MB_Form_JsApp.ContainerId = "formContainer_BbCIlGYKQUdWEoV"; MB_Form_JsApp.AccountId = "65547"; MB_Form_JsApp.OperationId = "40"; MB_Form_JsApp.OperationType = "form"; MB_Form_JsApp.Init();</script> -->
-        {% include 'form.html' %}
+        </div>
+        <div class="fr-col-12 fr-col-md-6">
+
+            {% include 'form.html' %}</div>
     </section>
     <!-- 
 Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux modèles, publications de jeux de données et nouvelles fonctionnalités !

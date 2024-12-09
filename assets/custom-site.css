@@ -55,6 +55,15 @@
   float: right;
 }
 
+.text-grey {
+  color: var(--grey-425-625) !important;
+
+}
+
+.text-grey-200 {
+  color: var(--grey-200-850) !important;
+}
+
 .purple-btn {
   background-color: var(--blue-france-main-525);
   color: #F5F5FE !important;
