@@ -28,6 +28,10 @@
         background-color: #F3F5F9;
     }
 
+    .bg-light-grey {
+        background-color: #FCFCFD;
+    }
+
     .bg-light-blue {
         /* --blue-france-main-525: #6A6AF4; */
         --blue-france-main-525-hover: #9898F8;
@@ -118,10 +122,12 @@
 
     .fr-icon-mail-line:after,
     .fr-icon-mail-line:before {
-        background-color: var(--blue-france-main-525); /* 6A6AF4 */
+        background-color: var(--blue-france-main-525);
+        /* 6A6AF4 */
         -webkit-mask-image: url(assets/dsfr/icons/business/mail-line.svg);
         mask-image: url(assets/dsfr/icons/business/mail-line.svg)
     }
+
     .fr-icon-arrow-up-line:after,
     .fr-icon-arrow-up-line:before {
         background-color: var(--text-action-high-blue-france);
@@ -318,52 +324,55 @@
                 </div>
             </div>
     </section>
-    <section class="fr-container rounded-tile fr-pt-4w fr-pt-md-6w">
-        <h4 class="text-center">Pourquoi votre vote est-il important ?</h4>
-        <p class="text-center text-grey">Votre préférence enrichit les jeux de données compar:IA dont l’objectif est
-            d’affiner les futurs
-            modèles
-            d’IA sur le français</p>
-        <div class="fr-grid-row fr-grid-row--gutters">
-            <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w"><img src="assets/prefs.svg" alt="Vos préférences"
-                    width="72" height="72">
-                <h6>Vos préférences</h6>
-                <p class="text-grey">Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon
-                    des critères
-                    donnés, tels que la pertinence ou l’utilité des réponses</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
-                <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72">
-                <h6>Les jeux de données compar:IA</h6>
-                <p class="text-grey">compar:IA compile dans des jeux de données tous les votes et tous les messages
-                    partagés avec
-                    le
-                    comparateur</p>
-            </div>
-            <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
-                <img src="assets/finetune.svg" alt="Des modèles affinés sur le français" width="72" height="72">
-                <h6>Des modèles affinés sur le français</h6>
-                <p class="text-grey">A terme, les acteurs industriels et académiques peuvent exploiter les jeux de
-                    données pour
-                    entrainer
-                    de
-                    nouveaux modèles plus respectueux de la diversité linguistique et culturelle
-                </p>
-            </div>
-            <!-- <div class="fr-grid-row fr-grid-row--center fr-my-4w">
+    <section class="bg-light-grey fr-container--fluid fr-py-4w fr-py-md-6w">
+        <div class="fr-container rounded-tile fr-pt-4w fr-pt-md-6w">
+            <h4 class="text-center">Pourquoi votre vote est-il important ?</h4>
+            <p class="text-center text-grey">Votre préférence enrichit les jeux de données compar:IA dont l’objectif est
+                d’affiner les futurs
+                modèles
+                d’IA sur le français</p>
+            <div class="fr-grid-row fr-grid-row--gutters">
+                <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w"><img src="assets/prefs.svg" alt="Vos préférences"
+                        width="72" height="72">
+                    <h6>Vos préférences</h6>
+                    <p class="text-grey">Après discussion avec les IA, vous indiquez votre préférence pour un modèle
+                        selon
+                        des critères
+                        donnés, tels que la pertinence ou l’utilité des réponses</p>
+                </div>
+                <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
+                    <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72">
+                    <h6>Les jeux de données compar:IA</h6>
+                    <p class="text-grey">compar:IA compile dans des jeux de données tous les votes et tous les messages
+                        partagés avec
+                        le
+                        comparateur</p>
+                </div>
+                <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
+                    <img src="assets/finetune.svg" alt="Des modèles affinés sur le français" width="72" height="72">
+                    <h6>Des modèles affinés sur le français</h6>
+                    <p class="text-grey">A terme, les acteurs industriels et académiques peuvent exploiter les jeux de
+                        données pour
+                        entrainer
+                        de
+                        nouveaux modèles plus respectueux de la diversité linguistique et culturelle
+                    </p>
+                </div>
+                <!-- <div class="fr-grid-row fr-grid-row--center fr-my-4w">
             <a class="fr-btn purple-btn fr-col-10 fr-col-md-3 inline-block text-center" href="#">Accéder aux jeux de données</a>
         </div> -->
+            </div>
     </section>
-    <section class="fr-container--fluid bg-blue fr-my-4w fr-py-4w fr-my-md-6w fr-py-md-10w">
+    <section class="fr-container--fluid bg-blue fr-mb-4w fr-py-4w fr-mb-md-6w fr-py-md-10w">
         <div class="fr-container">
-            <h3 class="text-center">Les usages spécifiques de compar:IA</h3>
-            <p class="text-grey text-center">L’outil s’adresse également aux experts IA et aux formateurs pour des
+            <h3 class="text-center fr-mb-1w">Les usages spécifiques de compar:IA</h3>
+            <p class="text-grey text-center fr-mb-4w">L’outil s’adresse également aux experts IA et aux formateurs pour des
                 usages
                 plus spécifiques</p>
             <div class="grid gap">
                 <div class="rounded-tile fr-p-3w">
                     <img src="assets/extra-icons/database-line.svg" aria-hidden="true" class="fr-mb-2w purple" />
-                    <h5 class="fr-mb-1w">Exploiter les données</h5>
+                    <h6 class="fr-mb-1w">Exploiter les données</h6>
                     <p class="text-grey">Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données
                         compar:IA
                         pour améliorer les modèles</p>
@@ -371,7 +380,7 @@
                 <div class="rounded-tile fr-p-3w">
                     <img src="assets/extra-icons/search-line.svg" aria-hidden="true" class="fr-mb-2w" width="30"
                         height="30" />
-                    <h5 class="fr-mb-1w">Explorer les modèles</h5>
+                    <h6 class="fr-mb-1w">Explorer les modèles</h6>
                     <p class="text-grey">Consultez au même endroit toutes les caractéristiques et conditions
                         d’utilisation
                         des
@@ -379,7 +388,7 @@
                 </div>
                 <div class="rounded-tile fr-p-3w">
                     <img src="assets/extra-icons/presentation.svg" aria-hidden="true" class="fr-mb-2w" />
-                    <h5 class="fr-mb-1w">Former et sensibiliser</h5>
+                    <h6 class="fr-mb-1w">Former et sensibiliser</h6>
                     <p class="text-grey">Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA
                         auprès de
                         votre public</p>
@@ -461,17 +470,16 @@
     </section>
     <section>
         <div class="fr-container">
-            <h2>Vos questions les plus courantes</h2>
+            <h2 class="text-center">Vos questions les plus courantes</h2>
             {% include 'faq-content.html' %}
             <div class="text-center fr-mt-4w fr-mb-8w"><a class="fr-btn purple-btn" href="/faq">Découvrir les autres
                     questions</a></div>
         </div>
     </section>
     <div class="text-center fr-mt-4w fr-pb-1w">
-    <span class="bg-blue fr-py-1w fr-px-3v">
-        <a class="fr-link fr-icon-arrow-up-line fr-link--icon-left fr-pb-1v"
-            href="#top"> Haut de page </a>
-    </span>
+        <span class="bg-blue fr-py-1w fr-px-3v">
+            <a class="fr-link fr-icon-arrow-up-line fr-link--icon-left fr-pb-1v" href="#top"> Haut de page </a>
+        </span>
     </div>
     <!-- <section class="bg-light-blue fr-container--fluid"> -->
     <section class="bg-blue fr-container--fluid">
