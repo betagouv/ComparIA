@@ -7,13 +7,6 @@ import logging
 
 import sentry_sdk
 
-from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
-    ChatMessage,
-)
-
-# from languia.utils import ContextTooLongError, EmptyResponseError
-
-
 def get_api_provider_stream_iter(
     messages,
     model_api_dict,
@@ -197,14 +190,6 @@ def azure_api_stream_iter(
 def vertex_api_stream_iter(
     api_base, model_name, messages, temperature, max_new_tokens, request=None
 ):
-    # import vertexai
-    # from vertexai import generative_models
-    # from vertexai.generative_models import (
-    #     GenerationConfig,
-    #     GenerativeModel,
-    #     Image,
-    # )
-    # GOOGLE_APPLICATION_CREDENTIALS
     logger = logging.getLogger("languia")
 
     if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
@@ -214,51 +199,13 @@ def vertex_api_stream_iter(
     import google.auth.transport.requests
     import openai
 
-    # Programmatically get an access token
-    # creds, project = google.auth.default()
-    creds, project = google.auth.default(
+    creds, _project = google.auth.default(
         scopes=["https://www.googleapis.com/auth/cloud-platform"]
     )
     auth_req = google.auth.transport.requests.Request()
     creds.refresh(auth_req)
-    # Note: the credential lives for 1 hour by default (https://cloud.google.com/docs/authentication/token-types#at-lifetime); after expiration, it must be refreshed.
 
-    # Pass the Vertex endpoint and authentication to the OpenAI SDK
-    # PROJECT = project
     client = openai.OpenAI(base_url=api_base, api_key=creds.token)
-
-    # print(client.models.list())
-    # project_id = os.environ.get("GCP_PROJECT_ID", None)
-    # location = os.environ.get("GCP_LOCATION", None)
-    # vertexai.init(project=project_id, location=location)
-
-    # gen_params = {
-    #     "model": model_name,
-    #     "prompt": messages,
-    #     "temperature": temperature,
-    #     "top_p": top_p,
-    #     "max_new_tokens": max_new_tokens,
-    # }
-    # logging.info(f"==== request ====\n{gen_params}")
-
-    # safety_settings = [
-    #     generative_models.SafetySetting(
-    #         category=generative_models.HarmCategory.HARM_CATEGORY_HARASSMENT,
-    #         threshold=generative_models.HarmBlockThreshold.BLOCK_NONE,
-    #     ),
-    #     generative_models.SafetySetting(
-    #         category=generative_models.HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    #         threshold=generative_models.HarmBlockThreshold.BLOCK_NONE,
-    #     ),
-    #     generative_models.SafetySetting(
-    #         category=generative_models.HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    #         threshold=generative_models.HarmBlockThreshold.BLOCK_NONE,
-    #     ),
-    #     generative_models.SafetySetting(
-    #         category=generative_models.HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    #         threshold=generative_models.HarmBlockThreshold.BLOCK_NONE,
-    #     ),
-    # ]
 
     res = client.chat.completions.create(
         model=model_name,
@@ -269,67 +216,3 @@ def vertex_api_stream_iter(
         stream_options={"include_usage": True},
     )
     yield from process_response_stream(res, model_name=model_name, request=request)
-
-    # generator = GenerativeModel(model_name).generate_content(
-    #     messages,
-    #     stream=True,
-    #     generation_config=GenerationConfig(
-    #         top_p=top_p, max_output_tokens=max_new_tokens, temperature=temperature
-    #     ),
-    #     safety_settings=safety_settings,
-    # )
-
-    # ret = ""
-    # for chunk in generator:
-    #     # NOTE(chris): This may be a vertex api error, below is HOTFIX: https://github.com/googleapis/python-aiplatform/issues/3129
-    #     ret += chunk.candidates[0].content.parts[0]._raw_part.text
-    #     # ret += chunk.text
-    #     data = {
-    #         "text": ret,
-    #         "error_code": 0,
-    #     }
-    #     yield data
-
-
-# Not used
-# def model_worker_stream_iter(
-#     conv,
-#     model_name,
-#     worker_addr,
-#     prompt,
-#     temperature,
-#     repetition_penalty,
-#     top_p,
-#     max_new_tokens,
-#     images,
-# ):
-#     # Make requests
-#     gen_params = {
-#         "model": model_name,
-#         "prompt": prompt,
-#         "temperature": temperature,
-#         "repetition_penalty": repetition_penalty,
-#         "top_p": top_p,
-#         "max_new_tokens": max_new_tokens,
-#         "stop": conv.stop_str,
-#         "stop_token_ids": conv.stop_token_ids,
-#         "echo": False,
-#     }
-
-#     logger.info(f"==== request ====\n{gen_params}")
-
-#     if len(images) > 0:
-#         gen_params["images"] = images
-
-#     # Stream output
-#     response = requests.post(
-#         worker_addr + "/worker_generate_stream",
-#         headers=config.headers,
-#         json=gen_params,
-#         stream=True,
-#         timeout=WORKER_API_TIMEOUT,
-#     )
-#     for chunk in response.iter_lines(decode_unicode=False, delimiter=b"\0"):
-#         if chunk:
-#             data = json.loads(chunk.decode())
-#             yield data
