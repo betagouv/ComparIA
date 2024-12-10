@@ -162,6 +162,7 @@
             content: "";
             background-image: url("assets/arrow-h.svg");
         }
+
         .arrow-2 {
             display: block;
             background-position: right 0px center;
@@ -210,7 +211,7 @@
 </script>
 
 <main id="content" role="main" class="">
-    <section class="fr-grid-row fr-container--fluid bg-blue fr-pb-4w fr-mb-md-10w fr-mb-4w fr-pb-md-10w fr-pt-8w">
+    <section class="fr-grid-row fr-container--fluid bg-blue fr-pb-4w fr-pb-md-10w fr-pt-8w">
         <div class="fr-container-md fr-grid-row">
             <div class="fr-container fr-col-md-5 fr-grid-row">
                 <h1>Ne vous fiez pas<br />aux réponses<br /><span class="text-purple">d’une seule IA</span></h1>
@@ -232,7 +233,7 @@
                     class="fr-btn fr-btn--lg bg-light-blue fr-col-md-8 fr-col-12 w-full fr-mb-4w"
                     value="Commencer à discuter" />
             </div>
-            <div class="fr-col-md-7 bg-blue fr-p-1w fr-p-md-4w">
+            <div class="fr-col-md-7 bg-blue fr-p-1w fr-p-md-6w">
                 <svg class="fr-responsive-img" width="513" height="287" viewBox="0 0 513 287" fill="none" version="1.1"
                     id="comment-ca-marche" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
                     role="group" aria-labelledby="svg-title svg-desc">
@@ -332,11 +333,12 @@
             </div>
         </div>
     </section>
-    <section class="fr-container fr-mb-4w fr-mb-md-8w">
-        <h3 class="text-center">À quoi sert compar:IA ?</h3>
-        <p class="text-grey text-center">compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA
+    <section class="fr-container--fluid fr-py-4w fr-py-md-8w">
+        <h3 class="text-center fr-mb-1w">À quoi sert compar:IA ?</h3>
+        <p class="text-grey text-center fr-mb-6w">compar:IA est un outil gratuit qui permet de sensibiliser les citoyens
+            à l’IA
             générative et à ses enjeux</p>
-        <div class="grid gap">
+        <div class="grid gap fr-container">
             <div class="rounded-tile">
                 <img src="assets/comparer.svg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue" />
                 <div class="fr-p-3w">
@@ -376,13 +378,15 @@
                 <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w"><img src="assets/prefs.svg" alt="Vos préférences"
                         width="72" height="72"><span class="arrow-1"></span>
                     <h6>Vos préférences</h6>
-                    <p class="text-grey"><br />Après discussion avec les IA, vous indiquez votre préférence pour un modèle
+                    <p class="text-grey"><br />Après discussion avec les IA, vous indiquez votre préférence pour un
+                        modèle
                         selon
                         des critères
                         donnés, tels que la pertinence ou l’utilité des réponses</p>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
-                    <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72"><span class="arrow-2"></span>
+                    <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72"><span
+                        class="arrow-2"></span>
                     <h6>Les jeux de données<br />compar:IA</h6>
                     <p class="text-grey">compar:IA compile dans des jeux de données tous les votes et tous les messages
                         partagés avec
@@ -404,7 +408,7 @@
         </div> -->
             </div>
     </section>
-    <section class="fr-container--fluid bg-blue fr-mb-4w fr-py-4w fr-mb-md-6w fr-py-md-10w">
+    <section class="fr-container--fluid bg-blue fr-py-8w fr-py-md-10w">
         <div class="fr-container fr-px-md-0">
             <h3 class="text-center fr-mb-1w">Les usages spécifiques de compar:IA</h3>
             <p class="text-grey text-center fr-mb-4w">L’outil s’adresse également aux experts IA et aux formateurs pour
@@ -438,10 +442,10 @@
             </div>
         </div>
     </section>
-    <section>
-        <div class="fr-px-md-0 grid-2 gap fr-container fr-mb-4w fr-mb-md-8w">
+    <section class="bg-light-grey fr-container--fluid ">
+        <div class="fr-px-md-0 grid-2 gap fr-container fr-py-4w fr-py-md-8w">
             <div class="rounded-tile">
-                <div class="fr-container fr-py-4w">
+                <div class="fr-container fr-py-4w fr-py-md-6w">
                     <h5>Qui sommes-nous ?</h5>
                     <p>Le comparateur compar:IA est développé dans le cadre de la start-up d’Etat compar:IA
                         (incubateurs de
@@ -473,9 +477,8 @@
                 </div>
             </div>
             <div class="fr-container rounded-tile">
-                <div class="fr-container fr-p-0 fr-px-md-2w">
-
-                    <h5 class="fr-pt-4w">Quelles sont nos missions ?</h5>
+                <div class="fr-container fr-py-4w fr-py-md-6w fr-px-md-2w">
+                    <h5>Quelles sont nos missions ?</h5>
                     <div class="fr-grid-row fr-grid-row--top">
                         <img src="assets/extra-icons/map-pin.svg" alt="Point sur la carte" aria-hidden="true"
                             class="fr-col-1 fr-pr-md-1w" />
@@ -513,7 +516,7 @@
     </section>
     <section>
         <div class="fr-container">
-            <h3 class="text-center">Vos questions les plus courantes</h3>
+            <h3 class="text-center fr-mt-md-8w fr-mt-4w fr-pb-2w">Vos questions les plus courantes</h3>
             {% include 'faq-content.html' %}
             <div class="text-center fr-mt-4w fr-mb-8w"><a class="fr-btn purple-btn" href="/faq">Découvrir les autres
                     questions</a></div>
