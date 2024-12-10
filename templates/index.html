@@ -108,7 +108,6 @@
     .grid-2 {
         display: grid;
         grid-template-columns: 1fr;
-        grid-auto-rows: 1fr
     }
 
 
@@ -120,6 +119,7 @@
         }
 
         .grid-2 {
+            grid-auto-rows: 1fr;
             grid-template-columns: 1fr 1fr;
 
         }
@@ -144,8 +144,36 @@
     .fr-icon-arrow-up-line:after,
     .fr-icon-arrow-up-line:before {
         background-color: var(--text-action-high-blue-france);
-        -webkit-mask-image: url(assets/dsfr/icons/system/arrow-up-line.svg);
-        mask-image: url(assets/dsfr/icons/system/arrow-up-line.svg)
+        -webkit-mask-image: url("assets/dsfr/icons/system/arrow-up-line.svg");
+        mask-image: url("assets/dsfr/icons/system/arrow-up-line.svg")
+    }
+
+
+    @media (min-width: 62em) {
+        .arrow-1 {
+            display: block;
+            background-position: right 0px center;
+            background-repeat: no-repeat;
+            position: relative;
+            height: 16px;
+            width: 100px;
+            left: 100%;
+            top: 20px;
+            content: "";
+            background-image: url("assets/arrow-h.svg");
+        }
+        .arrow-2 {
+            display: block;
+            background-position: right 0px center;
+            background-repeat: no-repeat;
+            position: relative;
+            height: 16px;
+            width: 100px;
+            left: 100%;
+            top: 20px;
+            content: "";
+            background-image: url("assets/arrow-h.svg");
+        }
     }
 </style>
 {% endblock %}
@@ -184,7 +212,7 @@
 <main id="content" role="main" class="">
     <section class="fr-grid-row fr-container--fluid bg-blue fr-pb-4w fr-mb-md-10w fr-mb-4w fr-pb-md-10w fr-pt-8w">
         <div class="fr-container-md fr-grid-row">
-            <div class="fr-container fr-col-md-6 fr-grid-row">
+            <div class="fr-container fr-col-md-5 fr-grid-row">
                 <h1>Ne vous fiez pas<br />aux réponses<br /><span class="text-purple">d’une seule IA</span></h1>
                 <p>Discutez avec deux IA à l’aveugle<br />pour croiser leurs réponses</p>
                 <div class="fr-checkbox-group fr-checkbox-group--sm fr-mt-3w fr-mb-1w">
@@ -204,7 +232,7 @@
                     class="fr-btn fr-btn--lg bg-light-blue fr-col-md-8 fr-col-12 w-full fr-mb-4w"
                     value="Commencer à discuter" />
             </div>
-            <div class="fr-col-md-6 bg-blue fr-p-4w">
+            <div class="fr-col-md-7 bg-blue fr-p-1w fr-p-md-4w">
                 <svg class="fr-responsive-img" width="513" height="287" viewBox="0 0 513 287" fill="none" version="1.1"
                     id="comment-ca-marche" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
                     role="group" aria-labelledby="svg-title svg-desc">
@@ -346,7 +374,7 @@
                 d’IA sur le français</p>
             <div class="fr-grid-row fr-grid-row--gutters">
                 <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w"><img src="assets/prefs.svg" alt="Vos préférences"
-                        width="72" height="72">
+                        width="72" height="72"><span class="arrow-1"></span>
                     <h6>Vos préférences</h6>
                     <p class="text-grey">Après discussion avec les IA, vous indiquez votre préférence pour un modèle
                         selon
@@ -354,8 +382,8 @@
                         donnés, tels que la pertinence ou l’utilité des réponses</p>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
-                    <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72">
-                    <h6>Les jeux de données compar:IA</h6>
+                    <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72"><span class="arrow-2"></span>
+                    <h6>Les jeux de données<br />compar:IA</h6>
                     <p class="text-grey">compar:IA compile dans des jeux de données tous les votes et tous les messages
                         partagés avec
                         le
@@ -363,7 +391,7 @@
                 </div>
                 <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
                     <img src="assets/finetune.svg" alt="Des modèles affinés sur le français" width="72" height="72">
-                    <h6>Des modèles affinés sur le français</h6>
+                    <h6 class="fr-mt-1w">Des modèles affinés<br />sur le français</h6>
                     <p class="text-grey">A terme, les acteurs industriels et académiques peuvent exploiter les jeux de
                         données pour
                         entrainer
@@ -445,11 +473,12 @@
                 </div>
             </div>
             <div class="fr-container rounded-tile">
-                <div class="fr-container">
+                <div class="fr-container fr-p-0 fr-px-md-2w">
+
                     <h3 class="fr-pt-4w">Quelles sont nos missions ?</h3>
                     <div class="fr-grid-row fr-grid-row--top">
                         <img src="assets/extra-icons/map-pin.svg" alt="Point sur la carte" aria-hidden="true"
-                            class="fr-col-1 fr-pr-1w" />
+                            class="fr-col-1 fr-pr-md-1w" />
                         <div class="fr-col-11 fr-pl-1w">
                             <h6 class="fr-mb-0">Faciliter l’accès</h6>
                             <p class="text-grey">Mise à disposition de plusieurs
@@ -458,7 +487,7 @@
                                 conversationnels à travers une unique plateforme.</p>
                         </div>
                         <img src="assets/extra-icons/database-line.svg" alt="jeux de données"
-                            class="fr-col-1 fr-pr-1w" />
+                            class="fr-col-1 fr-pr-md-1w" />
                         <div class="fr-col-11 fr-pl-1w">
                             <h6 class="fr-mb-0">Collecter des données</h6>
                             <p class="text-grey">Création de jeux de données
@@ -469,7 +498,7 @@
                             </p>
                         </div>
                         <img src="assets/extra-icons/share.svg" alt="écosystème" aria-hidden="true"
-                            class="fr-col-1 fr-pr-1w" />
+                            class="fr-col-1 fr-pr-md-1w" />
                         <div class="fr-col-11 fr-pl-1w">
                             <h6 class="fr-mb-0">Partager</h6>
                             <p class="text-grey">Diffusion sous licence ouverte des jeux de
