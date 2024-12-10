@@ -91,6 +91,14 @@ async def about(request: Request):
     )
 
 
+@app.get("/faq", response_class=HTMLResponse)
+async def faq(request: Request):
+    return templates.TemplateResponse(
+        "faq.html",
+        {"title": "Vos questions les plus courantes", "request": request, "config": config},
+    )
+
+
 @app.get("/partenaires", response_class=HTMLResponse)
 async def partners(request: Request):
     return templates.TemplateResponse(

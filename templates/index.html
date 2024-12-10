@@ -449,89 +449,9 @@
     <section>
         <div class="fr-container">
             <h2>Vos questions les plus courantes</h2>
-            <div class="fr-tabs">
-                <ul class="fr-tabs__list" role="tablist" aria-label="Foire aux questions">
-                    <li role="presentation">
-                        <button id="tabpanel-usage" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
-                            aria-controls="tabpanel-usage-panel">Usage</button>
-                    </li>
-                    <li role="presentation">
-                        <button id="tabpanel-donnees" class="fr-tabs__tab" tabindex="-1" role="tab"
-                            aria-selected="false" aria-controls="tabpanel-donnees-panel">Jeu de
-                            données</button>
-                    </li>
-                    <li role="presentation">
-                        <button id="tabpanel-actualite" class="fr-tabs__tab" tabindex="-1" role="tab"
-                            aria-selected="false" aria-controls="tabpanel-actualite-panel">Actualité</button>
-                    </li>
-                </ul>
-                <div id="tabpanel-usage-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
-                    aria-labelledby="tabpanel-usage" tabindex="0">
-                    <div class="fr-accordions-group">
-                        <section class="fr-accordion">
-                            <h3 class="fr-accordion__title">
-                                <button class="fr-accordion__btn" aria-expanded="false"
-                                    aria-controls="accordion-usage-1">Indicateurs écologiques</button>
-                            </h3>
-                            <div class="fr-collapse" id="accordion-usage-1">
-                                <p>Contenu de la question 1</p>
-                            </div>
-                        </section>
-                        <section class="fr-accordion">
-                            <h3 class="fr-accordion__title">
-                                <button class="fr-accordion__btn" aria-expanded="false"
-                                    aria-controls="accordion-usage-2">Modèles</button>
-                            </h3>
-                            <div class="fr-collapse" id="accordion-usage-2">
-                                <p>Contenu de la question 2</p>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-                <div id="tabpanel-donnees-panel" class="fr-tabs__panel" role="tabpanel"
-                    aria-labelledby="tabpanel-donnees" tabindex="0">
-                    <div class="fr-accordions-group">
-                        <section class="fr-accordion">
-                            <h3 class="fr-accordion__title">
-                                <button class="fr-accordion__btn" aria-expanded="false"
-                                    aria-controls="accordion-donnees-1">Quelle est la différence entre poser une
-                                    question à un modèle d’IA et à un moteur de recherche ?</button>
-                            </h3>
-                            <div class="fr-collapse" id="accordion-donnees-1">
-                                <p>Contenu de la question 1</p>
-                            </div>
-                        </section>
-                        <section class="fr-accordion">
-                            <h3 class="fr-accordion__title">
-                                <button class="fr-accordion__btn" aria-expanded="false"
-                                    aria-controls="accordion-donnees-2">Si j’intègre un lien d’URL dans une
-                                    requête, le modèle peut-il y accéder?</button>
-                            </h3>
-                            <div class="fr-collapse" id="accordion-donnees-2">
-                                <p>Contenu de la question 2</p>
-                            </div>
-                        </section>
-                    </div>
-                </div>
-                <div id="tabpanel-actualite-panel" class="fr-tabs__panel" role="tabpanel"
-                    aria-labelledby="tabpanel-actualite" tabindex="0">
-                    <div class="fr-accordions-group">
-                        <section class="fr-accordion">
-                            <h3 class="fr-accordion__title">
-                                <button class="fr-accordion__btn" aria-expanded="false"
-                                    aria-controls="accordion-actualite-1">Si je pose une question sur
-                                    l’actualité la plus récente, le modèle peut-il répondre?</button>
-                            </h3>
-                            <div class="fr-collapse" id="accordion-actualite-1">
-                                <p>Contenu de la question 1</p>
-                            </div>
-                        </section>
-                    </div>
-
-                </div>
-            </div>
-            <div class="text-center fr-mt-4w fr-mb-8w"><button class="fr-btn purple-btn ">Découvrir les autres
-                    questions</button></div>
+            {% include 'faq-content.html' %}
+            <div class="text-center fr-mt-4w fr-mb-8w"><a class="fr-btn purple-btn" href="/faq">Découvrir les autres
+                    questions</a></div>
         </div>
     </section>
     <div class="text-center p-2 fr-mt-4w">

@@ -103,3 +103,20 @@
 .gap {
   gap: 2em;
 }
+
+
+.fr-tabs__tab[aria-selected=true]:not(:disabled) {
+  --idle: transparent;
+
+  /* --blue-france-main-525-hover: #9898F8;
+  --blue-france-main-525-active: #AEAEF9; */
+  --hover: var(--blue-france-main-525-hover);
+  --active: var(--blue-france-main-525-active);
+  background-color: white;
+  background-image: linear-gradient(0deg, var(--blue-france-main-525), var(--blue-france-main-525)), linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey)), linear-gradient(0deg, var(--border-default-grey), var(--border-default-grey));
+  color: var(--blue-france-main-525);
+}
+.fr-accordion__btn {
+  color: #161616;
+
+}

@@ -1,0 +1,96 @@
+<div class="fr-tabs">
+    <ul class="fr-tabs__list" role="tablist" aria-label="Foire aux questions">
+        <!-- <li role="presentation">
+            <button id="tabpanel-usage" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
+                aria-controls="tabpanel-usage-panel">Usage</button>
+        </li> -->
+        <li role="presentation">
+            <button id="tabpanel-modeles" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
+                aria-controls="tabpanel-modeles-panel">Modèles</button>
+        </li>
+        <li role="presentation">
+            <button id="tabpanel-donnees" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
+                aria-controls="tabpanel-donnees-panel">Jeu de
+                données</button>
+        </li>
+        <!-- <li role="presentation">
+            <button id="tabpanel-actualite" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
+                aria-controls="tabpanel-actualite-panel">Actualité</button>
+        </li> -->
+    </ul>
+    <div id="tabpanel-modeles-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
+        aria-labelledby="tabpanel-modeles" tabindex="0">
+        <div class="fr-accordions-group">
+            
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-1">Comment choisissez-vous les modèles présents dans le comparateur ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-modeles-1">
+                    <p>Nous choisissons les modèles en fonction de leur popularité, de leur diversité et de la pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des modèles open source et de taille différentes.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-3">Comment parvenez-vous à rendre ce service gratuit ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-modeles-3">
+                    <p>L’inférence, c’est à dire le fait de pouvoir interroger les modèles, est rendue possible grâce à des dons des entreprises fournisseuses de cloud qui soutiennent le projet.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-4">“modèle quantisé”, quésaco ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-modeles-4">
+                    <p>Les modèles quantisés sont optimisés pour consommer moins de ressources en simplifiant certains calculs tout en visant la meilleure qualité de réponse.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-5">Y a-t-il un lien entre la “nationalité” du modèle et sa capacité à parler plusieurs langues?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-modeles-5">
+                    <p>La capacité du modèle à parler plusieurs langues dépend de son entraînement, pas de sa nationalité. Il n’y a pas de rapport entre la nationalité de l’entreprise ayant créé le modèle et la capacité du modèle à s’exprimer dans la langue en question.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-6">Peut-on connaître les données d’entraînement des modèles?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-modeles-6">
+                    <p>Rares sont les acteurs à être “transparents” sur les sources de données utilisées dans les corpus d’entraînement. Ces informations sont souvent confidentielles pour des raisons légales et commerciales.</p>
+                </div>
+            </section>
+            
+        </div>
+    </div>
+    <div id="tabpanel-donnees-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-donnees"
+        tabindex="0">
+        <div class="fr-accordions-group">
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-actualite-7">Les données de préférence ont-elles un effet immédiat pour améliorer les modèles?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-actualite-7">
+                    <p>Non, les données de préférence servent à améliorer les modèles lors d'entraînements futurs.</p>
+                </div>
+            </section>
+        </div>
+    </div>
+    <!-- <div id="tabpanel-actualite-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-actualite"
+        tabindex="0">
+        <div class="fr-accordions-group">
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-actualite-1">Si je
+                        pose une question sur
+                        l’actualité la plus récente, le modèle peut-il répondre?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-actualite-1">
+                    <p>Contenu de la question 1</p>
+                </div>
+            </section>
+        </div>
+    </div> -->
+</div>
