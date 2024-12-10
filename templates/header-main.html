@@ -59,6 +59,10 @@
               %}aria-current="true" {% endif %} href="/partenaires" target="_self" aria-controls="modal-header__menu"
               class="fr-nav__link" data-fr-js-modal-button="true">Partenaires</a>
           </li>
+          <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/faq"
+              %}aria-current="true" {% endif %} href="/faq" target="_self" aria-controls="modal-header__menu"
+              class="fr-nav__link" data-fr-js-modal-button="true">Foire aux questions</a>
+          </li>
         </ul>
       </nav>
     </div>

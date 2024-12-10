@@ -1,11 +1,11 @@
 <div class="fr-tabs">
     <ul class="fr-tabs__list" role="tablist" aria-label="Foire aux questions">
-        <!-- <li role="presentation">
+        <li role="presentation">
             <button id="tabpanel-usage" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
                 aria-controls="tabpanel-usage-panel">Usage</button>
-        </li> -->
+        </li>
         <li role="presentation">
-            <button id="tabpanel-modeles" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="true"
+            <button id="tabpanel-modeles" class="fr-tabs__tab" tabindex="0" role="tab" aria-selected="false"
                 aria-controls="tabpanel-modeles-panel">Modèles</button>
         </li>
         <li role="presentation">
@@ -13,56 +13,204 @@
                 aria-controls="tabpanel-donnees-panel">Jeu de
                 données</button>
         </li>
-        <!-- <li role="presentation">
-            <button id="tabpanel-actualite" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
-                aria-controls="tabpanel-actualite-panel">Actualité</button>
-        </li> -->
+        <li role="presentation">
+            <button id="tabpanel-ecologie" class="fr-tabs__tab" tabindex="-1" role="tab" aria-selected="false"
+                aria-controls="tabpanel-ecologie-panel">Indicateurs écologiques</button>
+        </li>
     </ul>
-    <div id="tabpanel-modeles-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
-        aria-labelledby="tabpanel-modeles" tabindex="0">
+    <div id="tabpanel-usage-panel" class="fr-tabs__panel fr-tabs__panel--selected" role="tabpanel"
+        aria-labelledby="tabpanel-usage" tabindex="0">
         <div class="fr-accordions-group">
-            
             <section class="fr-accordion">
                 <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-1">Comment choisissez-vous les modèles présents dans le comparateur ?</button>
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-usage-1">Les
+                        modèles peuvent-ils citer leurs sources ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-usage-1">
+                    <p>Les modèles de langage conversationnels actuels sont <strong>incapables de citer les
+                            sources</strong> qu'ils ont utilisées pour générer une réponse. Ils fonctionnent en
+                        prédisant le mot suivant le plus probable en fonction de la distribution statistique des données
+                        d'entraînement. Bien qu'ils puissent synthétiser des informations provenant de diverses sources,
+                        ils ne conservent pas la trace de l'origine de ces informations.</p>
+                    <p>
+                        Cependant, il existe des techniques comme la <strong>Génération Augmentée par Récupération
+                            (RAG)</strong> qui visent à pallier cette limitation. Le RAG permet aux modèles d'accéder à
+                        des bases de connaissances externes et de <strong>fournir des informations contextualisées en
+                            citant les sources</strong>. Cette approche est essentielle pour améliorer la transparence
+                        et la fiabilité des réponses générées par les modèles.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-usage-2">Si je pose
+                        une question sur l’actualité la plus récente, le modèle peut-il répondre ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-usage-2">
+                    <p>Vous avez posé la question suivante “explique moi la motion de censure à l'œuvre actuellement en
+                        France à l'Assemblée nationale et cite moi tes sources” et avez été déçu·e des réponses? C’est
+                        normal…</p>
+                    <p><strong>Les modèles d'IA conversationnels ne peuvent pas répondre aux questions sur l'actualité
+                            la plus
+                            récente.</strong> Ils sont entraînés sur des ensembles de données statiques et ne peuvent
+                        pas interagir
+                        avec le web ou ouvrir des liens. Ils n'ont pas la capacité de se mettre à jour en temps réel
+                        avec les événements qui se déroulent dans le monde. Par conséquent, si vous posez une question
+                        sur un événement d'actualité récent, le modèle s'appuiera sur des informations potentiellement
+                        obsolètes, risquant de générer des réponses inexactes.</p>
+                    <p>Les informations auxquelles le modèle a accès sont limitées à la date de son dernier
+                        entraînement.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-usage-3">Si
+                        j’intègre un lien d’URL dans une requête, le modèle peut-il y accéder ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-usage-3">
+                    <p>
+                        Si vous intégrez une URL dans une requête, le modèle conversationnel ne peut pas y accéder
+                        directement. Les modèles de langage traitent le texte de la requête mais n'ont pas la capacité
+                        d'interagir avec le web ou d'ouvrir des liens. Ils sont entraînés sur un ensemble de données
+                        textuelles fixes et leurs réponses reposent sur ces données d’entraînement. Lorsqu'une question
+                        est posées, les modèles utilisent cet entraînement pour générer une réponse mais ne peuvent pas
+                        accéder à de nouvelles informations en ligne.</p>
+
+                    <p>Par analogie, imaginez un étudiant passant un examen sans accès à internet. Il peut utiliser ses
+                        connaissances acquises pour répondre aux questions, mais ne peut pas consulter de sites web pour
+                        obtenir des informations supplémentaires.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-usage-4">Pourquoi
+                        certains modèles perdent-ils rapidement le fil de la conversation ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-usage-4">
+                    <p>Il arrive que les modèles perdent le fil d'une conversation en raison de leur <strong>fenêtre de
+                            contexte limitée</strong>. Cette « fenêtre » représente la quantité d'informations
+                        précédentes que le modèle peut retenir, agissant comme une mémoire à court terme. Plus la
+                        fenêtre est petite, plus le modèle est susceptible d'oublier des éléments clés de la
+                        conversation, conduisant à des réponses incohérentes. Les conversations longues ou complexes
+                        peuvent rapidement saturer la fenêtre de contexte, augmentant le risque d'incohérence. </p>
+
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-usage-5">Quelles
+                        sont les bonnes pratiques pour prompter ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-usage-5">
+                    <p>La formulation des questions, ou « prompts », influence la cohérence de la conversation. Pour
+                        obtenir les meilleurs résultats d'un modèle de langage, il est essentiel de maîtriser l'art du
+                        "prompting", c'est-à-dire la formulation des requêtes ou instructions.</p>
+                    <p>
+                        <strong>La clarté est primordiale</strong>: utilisez un langage simple et direct, en évitant les
+                        questions trop longues ou complexes. <strong>Soyez précis dans vos demandes</strong> : détaillez
+                        les spécifications attendues, les étapes à suivre et les critères de qualité souhaités.
+                        <strong>Contextualisez vos questions </strong> si nécessaire, fournissez des exemples pertinents
+                        pour guider le modèle. <strong>Encouragez le raisonnement </strong>: utilisez le
+                        "Chain-of-Thought Prompting" pour demander au modèle d'expliciter son raisonnement, ce qui rend
+                        les réponses plus robustes.
+                    </p>
+                    <p>
+                        Les modèles conversationnels sont sensibles aux variations de formulation: un langage simple,
+                        des questions courtes et une reformulation si nécessaire peuvent aider à guider le modèle vers
+                        des réponses pertinentes. Testez et affinez vos prompts pour trouver la formulation la plus
+                        efficace !</p>
+                </div>
+            </section>
+
+            <!-- - Poser une question à un modèle d’IA conversationnelle ≠ Faire une recherche sur Google
+
+    L'IA conversationnelle répond directement en formulant des phrases à partir d’un grand ensemble de données sur
+    lesquelles le modèle a été entraîné, tandis qu’un moteur de recherche propose des liens et des ressources pour que
+    l’internaute les explore lui-même. -->
+        </div>
+    </div>
+    <div id="tabpanel-modeles-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-modeles"
+        tabindex="0">
+        <div class="fr-accordions-group">
+
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-1">Comment
+                        choisissez-vous les modèles présents dans le comparateur ?</button>
                 </h3>
                 <div class="fr-collapse" id="accordion-modeles-1">
-                    <p>Nous choisissons les modèles en fonction de leur popularité, de leur diversité et de la pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des modèles open source et de taille différentes.</p>
+                    <p>Nous choisissons les modèles en fonction de leur popularité, de leur diversité et de la
+                        pertinence pour les utilisateurs. Nous veillons particulièrement à rendre accessibles des
+                        modèles open source et de taille différentes.</p>
                 </div>
             </section>
             <section class="fr-accordion">
                 <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-3">Comment parvenez-vous à rendre ce service gratuit ?</button>
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-3">Comment
+                        parvenez-vous à rendre ce service gratuit ?</button>
                 </h3>
                 <div class="fr-collapse" id="accordion-modeles-3">
-                    <p>L’inférence, c’est à dire le fait de pouvoir interroger les modèles, est rendue possible grâce à des dons des entreprises fournisseuses de cloud qui soutiennent le projet.</p>
+                    <p>L’inférence, c’est à dire le fait de pouvoir interroger les modèles, est rendue possible grâce à
+                        des dons des entreprises fournisseuses de cloud qui soutiennent le projet.</p>
                 </div>
             </section>
             <section class="fr-accordion">
                 <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-4">“modèle quantisé”, quésaco ?</button>
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-4">“modèle
+                        quantisé”, quésaco ?</button>
                 </h3>
                 <div class="fr-collapse" id="accordion-modeles-4">
-                    <p>Les modèles quantisés sont optimisés pour consommer moins de ressources en simplifiant certains calculs tout en visant la meilleure qualité de réponse.</p>
+                    <p>Les modèles quantisés sont optimisés pour consommer moins de ressources en simplifiant certains
+                        calculs tout en visant la meilleure qualité de réponse.</p>
+
+                    <!-- 
+    La quantisation est une technique d'optimisation qui consiste à réduire la précision des nombres utilisés pour
+    représenter les paramètres d'un modèle d'IA. Cela permet de **diminuer la taille du modèle** et **d'accélérer les
+    calculs**, ce qui est particulièrement avantageux pour l'inférence sur des appareils aux ressources limitées. -->
+
                 </div>
             </section>
             <section class="fr-accordion">
                 <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-5">Y a-t-il un lien entre la “nationalité” du modèle et sa capacité à parler plusieurs langues?</button>
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-5">Y a-t-il
+                        un lien entre la “nationalité” du modèle et sa capacité à parler plusieurs langues?</button>
                 </h3>
                 <div class="fr-collapse" id="accordion-modeles-5">
-                    <p>La capacité du modèle à parler plusieurs langues dépend de son entraînement, pas de sa nationalité. Il n’y a pas de rapport entre la nationalité de l’entreprise ayant créé le modèle et la capacité du modèle à s’exprimer dans la langue en question.</p>
+                    <!-- <p>La capacité du modèle à parler plusieurs langues dépend de son entraînement, pas de sa
+                        nationalité. Il n’y a pas de rapport entre la nationalité de l’entreprise ayant créé le modèle
+                        et la capacité du modèle à s’exprimer dans la langue en question.</p> -->
+                    <p><strong>La capacité d&#39;un modèle à parler plusieurs langues est liée à la diversité
+                            linguistique de ses
+                            données
+                            d&#39;entraînement et non au pays</strong>. Les <strong>LLM utilisent d&#39;énormes corpus
+                            dans de nombreuses langues</strong>,
+                        mais la
+                        répartition des langues dans les données d&#39;entraînement n&#39;est pas uniforme. Une
+                        surreprésentation de
+                        l&#39;anglais peut
+                        entraîner des limitations dans d&#39;autres langues. Ces limitations se traduisent par exemple
+                        par des
+                        <strong>anglicismes ou
+                            une incapacité à générer des contenus dans certaines langues classées &quot;en danger&quot;
+                            par l&#39;UNESCO</strong>.
+                    </p>
+                    <p>L<strong>&#39;exactitude et la richesse du vocabulaire d&#39;un modèle dépendent des données
+                            utilisées pour son
+                            apprentissage</strong>.</p>
+
                 </div>
             </section>
             <section class="fr-accordion">
                 <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-6">Peut-on connaître les données d’entraînement des modèles?</button>
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-modeles-6">Peut-on
+                        connaître les données d’entraînement des modèles ?</button>
                 </h3>
                 <div class="fr-collapse" id="accordion-modeles-6">
-                    <p>Rares sont les acteurs à être “transparents” sur les sources de données utilisées dans les corpus d’entraînement. Ces informations sont souvent confidentielles pour des raisons légales et commerciales.</p>
+                    <p>Rares sont les acteurs à être “transparents” sur les sources de données utilisées dans les corpus
+                        d’entraînement. Ces informations sont souvent confidentielles pour des raisons légales et
+                        commerciales.</p>
                 </div>
             </section>
-            
+
         </div>
     </div>
     <div id="tabpanel-donnees-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-donnees"
@@ -70,27 +218,113 @@
         <div class="fr-accordions-group">
             <section class="fr-accordion">
                 <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-actualite-7">Les données de préférence ont-elles un effet immédiat pour améliorer les modèles?</button>
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-donnees-1">Les
+                        données de préférence ont-elles un effet immédiat pour améliorer les modèles?</button>
                 </h3>
-                <div class="fr-collapse" id="accordion-actualite-7">
+                <div class="fr-collapse" id="accordion-donnees-1">
                     <p>Non, les données de préférence servent à améliorer les modèles lors d'entraînements futurs.</p>
+                </div>
+            </section>
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-donnees-2">Pourquoi
+                        les données de préférence collectées sur ComparIA ont-elles de la valeur?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-donnees-2">
+                    <p>La spécificité des données collectées sur la plateforme Compar:IA est qu’elles sont en français
+                        et qu’elles correspondent à des tâches réelles des utilisateurs. Ces données permettent ensuite
+                        d'ajuster les modèles pour mieux répondre aux attentes des utilisateurs.</p>
                 </div>
             </section>
         </div>
     </div>
-    <!-- <div id="tabpanel-actualite-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-actualite"
+    <div id="tabpanel-ecologie-panel" class="fr-tabs__panel" role="tabpanel" aria-labelledby="tabpanel-ecologie"
         tabindex="0">
         <div class="fr-accordions-group">
             <section class="fr-accordion">
                 <h3 class="fr-accordion__title">
-                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-actualite-1">Si je
-                        pose une question sur
-                        l’actualité la plus récente, le modèle peut-il répondre?</button>
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-ecologie-1">Comment
+                        les indicateurs écologiques sont-ils calculés ?</button>
                 </h3>
-                <div class="fr-collapse" id="accordion-actualite-1">
-                    <p>Contenu de la question 1</p>
+                <div class="fr-collapse" id="accordion-ecologie-1">
+                    <p>compar:IA utilise la méthodologie développée par <a target="_blank"
+                            href="https://ecologits.ai/latest/"><strong>Ecologits</strong> (GenAI Impact)</a> pour
+                        fournir un bilan énergétique qui
+                        permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une
+                        même requête. Cette
+                        transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus
+                        éco-responsables.</p>
+                    <p>
+
+                        Ecologits applique les principes de l'analyse du cycle de vie (ACV) conformément à la norme ISO
+                        14044 en se
+                        concentrant pour le moment sur l'impact de <strong>l'inférence</strong>, c'est-à-dire
+                        l'utilisation des modèles pour répondre aux
+                        requêtes.</p>
+                    <p>
+                        La consommation électrique du modèle est estimée en tenant compte de divers paramètres tels que
+                        la taille du modèle
+                        d'IA utilisé, la localisation des serveurs où sont déployés les modèles et le nombre de tokens
+                        de sortie. Le calcul
+                        de l’indicateur de potentiel de réchauffement climatique exprimé en équivalent CO2 est dérivé de
+                        la mesure de
+                        consommation électrique du modèle.
+                    </p>
+                    <p>
+
+                        Il est important de noter que les méthodologies d'évaluation de l'impact environnemental de l'IA
+                        sont encore en
+                        développement. <em>Ecologits</em> se concentre principalement sur la consommation énergétique et
+                        ne
+                        prend pas encore en
+                        compte tous les aspects du cycle de vie, comme la fabrication des composants électroniques ou le
+                        recyclage des
+                        déchets.</p>
+                </div>
+            </section>
+
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-ecologie-2">Les
+                        indicateurs écologiques tiennent-ils compte du mix énergétique des différents pays ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-ecologie-2">
+                    <p>
+                        La localisation des centres de données joue un rôle dans l'empreinte carbone de l'IA. Si un
+                        modèle est entraîné ou utilisé dans un pays fortement dépendant des énergies fossiles, son
+                        impact environnemental sera plus important que s'il est hébergé dans un pays utilisant
+                        majoritairement des énergies renouvelables.
+                    </p>
+                    <p>
+                        La méthode d'analyse de l'impact environnemental de l'IA développée par Ecologits, intègre des
+                        données sur le mix énergétique des différents pays où se situent les serveurs. Cela permet
+                        d'obtenir une estimation plus précise et nuancée de l'empreinte carbone réelle de l’inférence
+                        sur les différents modèles d’IA générative.
+                    </p>
+                </div>
+            </section>
+
+            <section class="fr-accordion">
+                <h3 class="fr-accordion__title">
+                    <button class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-ecologie-3">Les
+                        indicateurs d’impact écologique tiennent-ils compte des ressources utilisées pour entraîner les
+                        modèles ?</button>
+                </h3>
+                <div class="fr-collapse" id="accordion-ecologie-3">
+                    <p>
+                        Le calcul d’impact environnemental se focalise sur l'impact de <strong>l'inférence</strong>,
+                        c'est-à-dire l'utilisation des modèles pour répondre aux requêtes. L'entraînement des modèles a
+                        pourtant un impact écologique significatif.
+                    </p>
+                    <p>
+                        Il serait donc pertinent que les outils d'évaluation de l'empreinte carbone de l'IA, comme
+                        Ecologits, intègrent la phase d'entraînement dans leurs calculs. Des recherches complémentaires
+                        seraient nécessaires pour approfondir cette question.
+                    </p>
                 </div>
             </section>
         </div>
-    </div> -->
+    </div>
+
+
 </div>
