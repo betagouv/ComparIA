@@ -68,6 +68,9 @@ def bot_response(
     for endpoint in config.api_endpoint_info:
         if "model_id" not in endpoint:
             logger.warning(f"'model_id' is not defined in endpoint: {endpoint}.")
+        elif "endpoint_id" not in endpoint:
+            logger.warning(f"'endpoint_id' is not defined in endpoint: {endpoint}.")
+        
         else:
             if (endpoint.get("model_id")) == state.model_name:
                 model_api_endpoints.append(endpoint)
