@@ -415,51 +415,52 @@ document.getElementById("fr-modal-welcome-close").blur();
                     logger.debug(
                         "refreshed outage models:" + str(config.outages)
                     )  # Simpler to repick 2 models
-                    # app_state.model_left, app_state.model_right = get_battle_pair(
-                    model_left, model_right = get_battle_pair(
-                        config.models,
-                        BATTLE_TARGETS,
-                        config.outages,
-                        SAMPLING_WEIGHTS,
-                        SAMPLING_BOOST_MODELS,
-                    )
-                    original_user_prompt = conv_a_scoped.messages[0].content
-                    conv_a_scoped = reset_conv_state(
-                        conv_a_scoped,
-                        model_name=model_left,
-                        endpoint=pick_endpoint(model_left, config.outages),
-                    )
-                    conv_b_scoped = reset_conv_state(
-                        conv_b_scoped,
-                        model_name=model_right,
-                        endpoint=pick_endpoint(model_right, config.outages),
-                    )
+                    # model_left, model_right = get_battle_pair(
+                    #     config.models,
+                    #     BATTLE_TARGETS,
+                    #     config.outages,
+                    #     SAMPLING_WEIGHTS,
+                    #     SAMPLING_BOOST_MODELS,
+                    # )
+                    # original_user_prompt = conv_a_scoped.messages[0].content
+                    # conv_a_scoped = reset_conv_state(
+                    #     conv_a_scoped,
+                    #     model_name=model_left,
+                    #     endpoint=pick_endpoint(model_left, config.outages),
+                    # )
+                    # conv_b_scoped = reset_conv_state(
+                    #     conv_b_scoped,
+                    #     model_name=model_right,
+                    #     endpoint=pick_endpoint(model_right, config.outages),
+                    # )
 
-                    logger.info(
-                        f"selection_modeles: {model_left}, {model_right}",
-                        extra={request: request},
-                    )
+                    # logger.info(
+                    #     f"selection_modeles: {model_left}, {model_right}",
+                    #     extra={request: request},
+                    # )
 
                     app_state_scoped.awaiting_responses = False
-                    app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot = add_text(
-                        app_state_scoped,
-                        conv_a_scoped,
-                        conv_b_scoped,
-                        original_user_prompt,
-                        request,
-                    )
-                    # Reinit both generators
-                    gen = [
-                        bot_response(
-                            pos[i],
-                            conversations[i],
-                            request,
-                            apply_rate_limit=True,
-                            use_recommended_config=True,
-                        )
-                        for i in range(config.num_sides)
-                    ]
-                    continue
+                    # app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot = add_text(
+                    #     app_state_scoped,
+                    #     conv_a_scoped,
+                    #     conv_b_scoped,
+                    #     original_user_prompt,
+                    #     request,
+                    # )
+                    # # Reinit both generators
+                    # gen = [
+                    #     bot_response(
+                    #         pos[i],
+                    #         conversations[i],
+                    #         request,
+                    #         apply_rate_limit=True,
+                    #         use_recommended_config=True,
+                    #     )
+                    #     for i in range(config.num_sides)
+                    # ]
+                    # continue
+                    # break so we can test our retry code
+                    # break
 
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
@@ -487,20 +488,20 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                     # continue
 
-                    conversations[0] = conversations[0].messages[-1].metadata['error'] = "Erreur"
-                    conversations[1] = conversations[1].messages[-1].metadata['error'] = "Erreur"
-                    conv_a_scoped = conversations[0]
-                    conv_b_scoped = conversations[1]
-                    chatbot = to_threeway_chatbot(conversations)
-                    yield [
-                        app_state_scoped,
-                        conv_a_scoped,
-                        conv_b_scoped,
-                        chatbot,
-                        gr.skip(),
-                    ]
-                    # don't retry, break out of the attempts loop
-                    break
+                conversations[0] = conversations[0].messages[-1].metadata['error'] = "Erreur"
+                conversations[1] = conversations[1].messages[-1].metadata['error'] = "Erreur"
+                conv_a_scoped = conversations[0]
+                conv_b_scoped = conversations[1]
+                chatbot = to_threeway_chatbot(conversations)
+                yield [
+                    app_state_scoped,
+                    conv_a_scoped,
+                    conv_b_scoped,
+                    chatbot,
+                    gr.skip(),
+                ]
+                # don't retry, break out of the attempts loop
+                break
             else:
                 # If no exception, we break out of the attempts loop
                 break
@@ -508,10 +509,19 @@ document.getElementById("fr-modal-welcome-close").blur();
         # If no break
         else:
             logger.critical("maximum_attempts_reached")
-            raise gr.Error(
-                duration=0,
-                message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, n'hésitez pas à relancer le comparateur. Nous travaillons pour mieux gérer ces cas.",
-            )
+
+            conversations[0] = conversations[0].messages[-1].metadata['error'] = "Erreur"
+            conversations[1] = conversations[1].messages[-1].metadata['error'] = "Erreur"
+            
+            chatbot = to_threeway_chatbot(conversations)
+            conv_a_scoped = conversations[0]
+            conv_b_scoped = conversations[1]
+            return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
+
+            # raise gr.Error(
+            #     duration=0,
+            #     message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, n'hésitez pas à relancer le comparateur. Nous travaillons pour mieux gérer ces cas.",
+            # )
 
         # Got answer at this point
         app_state_scoped.awaiting_responses = False
