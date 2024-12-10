@@ -4,6 +4,7 @@ export type MessageRole = "system" | "user" | "assistant";
 
 export interface Metadata {
 	title: string | null;
+	error: string | null;
 	bot: string | null;
 }
 

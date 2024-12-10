@@ -188,6 +188,9 @@
 							<Pending />
 							<!-- <br /><br /><em>En attente de la réponse…</em> -->
 						{/if}
+						{#if message.metadata?.error}
+							ERREUR LORS DE LA GENERATION !
+						{/if}
 					{:else}
 						<Markdown
 							message={message.content}

@@ -487,6 +487,18 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                     # continue
 
+                    conversations[0] = conversations[0].messages[-1].metadata['error'] = "Erreur"
+                    conversations[1] = conversations[1].messages[-1].metadata['error'] = "Erreur"
+                    conv_a_scoped = conversations[0]
+                    conv_b_scoped = conversations[1]
+                    chatbot = to_threeway_chatbot(conversations)
+                    yield [
+                        app_state_scoped,
+                        conv_a_scoped,
+                        conv_b_scoped,
+                        chatbot,
+                        gr.skip(),
+                    ]
                     # don't retry, break out of the attempts loop
                     break
             else:

@@ -1278,7 +1278,7 @@ def to_threeway_chatbot(conversations):
                         "role": "assistant",
                         "content": msg_a.content,
                         # TODO: add duration here?
-                        "metadata": {"bot": "a"},
+                        "metadata": {**msg_a.metadata, "bot": "a"},
                     }
                 )
             if msg_b:
@@ -1286,7 +1286,7 @@ def to_threeway_chatbot(conversations):
                     {
                         "role": "assistant",
                         "content": msg_b.content,
-                        "metadata": {"bot": "b"},
+                        "metadata": {**msg_b.metadata, "bot": "b"},
                     }
                 )
     return threeway_chatbot
@@ -1302,7 +1302,9 @@ def determine_choice_badge(reactions):
         print(reactions)
         if reactions[0].get("liked") == True:
             # Assign "a" if the reaction is for the first message
-            your_choice_badge = "model-a" if reactions[0].get("index") == 1 else "model-b"
+            your_choice_badge = (
+                "model-a" if reactions[0].get("index") == 1 else "model-b"
+            )
 
     # Case: Two reactions exist
     elif len(reactions) == 2:
@@ -1319,7 +1321,9 @@ def determine_choice_badge(reactions):
         ):
             # Assign "a" or "b" based on the liked reaction's index
             your_choice_badge = (
-                "model-a" if reactions[0]["liked"] and reactions[0].get("index") == 1 else "model-b"
+                "model-a"
+                if reactions[0]["liked"] and reactions[0].get("index") == 1
+                else "model-b"
             )
 
     return your_choice_badge
