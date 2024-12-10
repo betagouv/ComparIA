@@ -63,11 +63,14 @@ def bot_response(
     #         error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
     #         logger.warn(f"rate limit reached. error_msg: {ret['reason']}")
 
-    model_api_endpoints = [
-        endpoint
-        for endpoint in config.api_endpoint_info
-        if (endpoint.get("model_id") or "") == state.model_name
-    ]
+    model_api_endpoints = []
+
+    for endpoint in config.api_endpoint_info:
+        if "model_id" not in endpoint:
+            logger.warning(f"'model_id' is not defined in endpoint: {endpoint}.")
+        else:
+            if (endpoint.get("model_id")) == state.model_name:
+                model_api_endpoints.append(endpoint)
 
     if model_api_endpoints == []:
         logger.critical("No endpoint for model name: " + str(state.model_name))
