@@ -140,7 +140,13 @@
 					{#if message.role === "assistant"}
 						<div class="model-title">
 							{#if message.metadata?.bot === "a"}
-								<svg class="inline" width="26" height="32"
+								<svg
+									class="inline"
+									width="26"
+									height="32"
+									name="disque violet (modèle A)"
+									role="img"
+									aria-label="disque violet (modèle A)"
 									><circle
 										cx="13"
 										cy="13"
@@ -151,7 +157,13 @@
 								>
 								<h3 class="inline">Modèle A</h3>
 							{:else if message.metadata?.bot === "b"}
-								<svg class="inline" width="26" height="32"
+								<svg
+									class="inline"
+									width="26"
+									height="32"
+									name="disque orange (modèle B)"
+									role="img"
+									aria-label="disque orange (modèle B)"
 									><circle
 										cx="13"
 										cy="13"
