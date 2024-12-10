@@ -21,25 +21,6 @@
     }
 
 
-    .bg-blue {
-        /* background-color: var(--blue-france-975-75); */
-        /* --background-contrast-info: var(--info-950-100); */
-        /* background-color: var(--background-contrast-info); */
-        background-color: #F3F5F9;
-    }
-
-    .bg-light-grey {
-        background-color: #FCFCFD;
-    }
-
-    .bg-light-blue {
-        /* --blue-france-main-525: #6A6AF4; */
-        --blue-france-main-525-hover: #9898F8;
-        --blue-france-main-525-active: #AEAEF9;
-        --hover: var(--blue-france-main-525-hover);
-        --active: var(--blue-france-main-525-active);
-        background-color: var(--blue-france-main-525);
-    }
 
     .flex {
         display: flex;
@@ -53,11 +34,8 @@
         text-align: center;
     }
 
-    .text-blue {
-        color: var(--text-action-high-blue-france);
-        /* --text-action-high-blue-france: var(--blue-france-sun-113-625); */
-
-        /* color: var(--text-action-high-blue-france) !important; */
+    .text-purple {
+        color: var(--blue-france-main-525);
     }
 
 
@@ -68,13 +46,48 @@
         border-radius: 1rem;
     }
 
+    .bg-blue {
+        /* background-color: var(--blue-france-975-75); */
+        /* --background-contrast-info: var(--info-950-100); */
+        /* background-color: var(--background-contrast-info); */
+        background-color: #F3F5F9;
+    }
+
+
+    .bg-light-blue {
+        /* --blue-france-main-525: #6A6AF4; */
+        --blue-france-main-525-hover: #9898F8;
+        --blue-france-main-525-active: #AEAEF9;
+        --hover: var(--blue-france-main-525-hover);
+        --active: var(--blue-france-main-525-active);
+        background-color: var(--blue-france-main-525);
+    }
+
     @media (prefers-color-scheme: dark) {
+
+        .bg-blue {
+            background-color: #1C1E22;
+        }
+
+        .bg-light-grey {
+            background-color: #0A0A0B;
+        }
+
         .rounded-tile {
             background-color: black;
+        }
+
+        .dark-invert {
+            filter: invert(1);
         }
     }
 
     @media (prefers-color-scheme: light) {
+
+        .bg-light-grey {
+            background-color: #FCFCFD;
+        }
+
         .rounded-tile {
             background-color: white;
         }
@@ -95,7 +108,7 @@
     .grid-2 {
         display: grid;
         grid-template-columns: 1fr;
-
+        grid-auto-rows: 1fr
     }
 
 
@@ -172,7 +185,7 @@
     <section class="fr-grid-row fr-container--fluid bg-blue fr-pb-4w fr-mb-md-10w fr-mb-4w fr-pb-md-10w fr-pt-8w">
         <div class="fr-container-md fr-grid-row">
             <div class="fr-container fr-col-md-6 fr-grid-row">
-                <h1 class="text-blue">Ne vous fiez pas<br />aux réponses<br />d’une seule IA</h1>
+                <h1>Ne vous fiez pas<br />aux réponses<br /><span class="text-purple">d’une seule IA</span></h1>
                 <p>Discutez avec deux IA à l’aveugle<br />pour croiser leurs réponses</p>
                 <div class="fr-checkbox-group fr-checkbox-group--sm fr-mt-3w fr-mb-1w">
                     <input aria-describedby="checkbox-error-messages" id="accept_tos" type="checkbox">
@@ -324,7 +337,7 @@
                 </div>
             </div>
     </section>
-    <section class="bg-light-grey fr-container--fluid fr-py-4w fr-py-md-6w">
+    <section class="bg-light-grey fr-container--fluid fr-py-4w fr-py-md-6w fr-px-2w fr-px-md-0">
         <div class="fr-container rounded-tile fr-pt-4w fr-pt-md-6w">
             <h4 class="text-center">Pourquoi votre vote est-il important ?</h4>
             <p class="text-center text-grey">Votre préférence enrichit les jeux de données compar:IA dont l’objectif est
@@ -364,9 +377,10 @@
             </div>
     </section>
     <section class="fr-container--fluid bg-blue fr-mb-4w fr-py-4w fr-mb-md-6w fr-py-md-10w">
-        <div class="fr-container">
+        <div class="fr-container fr-px-md-0">
             <h3 class="text-center fr-mb-1w">Les usages spécifiques de compar:IA</h3>
-            <p class="text-grey text-center fr-mb-4w">L’outil s’adresse également aux experts IA et aux formateurs pour des
+            <p class="text-grey text-center fr-mb-4w">L’outil s’adresse également aux experts IA et aux formateurs pour
+                des
                 usages
                 plus spécifiques</p>
             <div class="grid gap">
@@ -397,8 +411,8 @@
         </div>
     </section>
     <section>
-        <div class=" grid-2 gap fr-container ">
-            <div class="rounded-tile  fr-my-8w">
+        <div class="fr-px-md-0 grid-2 gap fr-container fr-mb-4w fr-mb-md-8w">
+            <div class="rounded-tile">
                 <div class="fr-container fr-py-4w">
                     <h3>Qui sommes-nous ?</h3>
                     <p>Le comparateur compar:IA est développé dans le cadre de la start-up d’Etat compar:IA
@@ -418,19 +432,19 @@
                                 title="Ministère de la Culture" width="137px" height="97px" />
                         </div>
                         <div class="fr-col-md-4 fr-col-6 text-center">
-                            <img class="" src="assets/orgs/ateliernumerique.png" alt="Atelier numérique"
+                            <img class="dark-invert lol" src="assets/orgs/ateliernumerique.png" alt="Atelier numérique"
                                 title="Atelier numérique" width="105px" height="105px" />
                         </div>
                         <div class="fr-col-md-4 fr-col-12">
                             <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" title="beta.gouv.fr"
-                                class="fr-responsive-img" width="191px" height="65px" />
-                            <img src="assets/orgs/dinum.png" class="fr-responsive-img" alt="DINUM" title="DINUM"
-                                width="278px" height="59px" />
+                                class="dark-invert fr-responsive-img" width="191px" height="65px" />
+                            <img src="assets/orgs/dinum.png" class="dark-invert fr-responsive-img" alt="DINUM"
+                                title="DINUM" width="278px" height="59px" />
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="fr-container rounded-tile fr-mt-8w">
+            <div class="fr-container rounded-tile">
                 <div class="fr-container">
                     <h3 class="fr-pt-4w">Quelles sont nos missions ?</h3>
                     <div class="fr-grid-row fr-grid-row--top">
@@ -470,7 +484,7 @@
     </section>
     <section>
         <div class="fr-container">
-            <h2 class="text-center">Vos questions les plus courantes</h2>
+            <h3 class="text-center">Vos questions les plus courantes</h3>
             {% include 'faq-content.html' %}
             <div class="text-center fr-mt-4w fr-mb-8w"><a class="fr-btn purple-btn" href="/faq">Découvrir les autres
                     questions</a></div>
@@ -483,8 +497,8 @@
     </div>
     <!-- <section class="bg-light-blue fr-container--fluid"> -->
     <section class="bg-blue fr-container--fluid">
-        <div class="fr-grid-row fr-container">
-            <div class="fr-col-12 fr-col-md-5 fr-pt-4w">
+        <div class="grid-2 gap fr-container">
+            <div class="fr-pt-4w">
                 <h5><span class="fr-icon-mail-line"></span> Abonnez-vous à notre lettre d’information
                 </h5>
                 <p>Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux modèles,
@@ -494,7 +508,7 @@
         <script src="https://public.message-business.com/Javascript/form/MB_Form_JsApp.js?v=BbCIlGYKQUdWEoV"></script>
         <script>var MB_Form_JsApp = new MB_Form_JsApp(); MB_Form_JsApp.ContainerId = "formContainer_BbCIlGYKQUdWEoV"; MB_Form_JsApp.AccountId = "65547"; MB_Form_JsApp.OperationId = "40"; MB_Form_JsApp.OperationType = "form"; MB_Form_JsApp.Init();</script> -->
             </div>
-            <div class="fr-col-12 fr-col-md-5 fr-col-offset-md-2 fr-mb-4w fr-mb-md-0">
+            <div class="fr-mb-4w fr-mb-md-0">
 
                 {% include 'form.html' %}</div>
         </div>
