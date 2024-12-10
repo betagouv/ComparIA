@@ -29,6 +29,7 @@
     }
 
     .bg-light-blue {
+        /* --blue-france-main-525: #6A6AF4; */
         --blue-france-main-525-hover: #9898F8;
         --blue-france-main-525-active: #AEAEF9;
         --hover: var(--blue-france-main-525-hover);
@@ -114,6 +115,19 @@
     .h-full {
         height: 100%;
     }
+
+    .fr-icon-mail-line:after,
+    .fr-icon-mail-line:before {
+        background-color: var(--blue-france-main-525); /* 6A6AF4 */
+        -webkit-mask-image: url(assets/dsfr/icons/business/mail-line.svg);
+        mask-image: url(assets/dsfr/icons/business/mail-line.svg)
+    }
+    .fr-icon-arrow-up-line:after,
+    .fr-icon-arrow-up-line:before {
+        background-color: var(--text-action-high-blue-france);
+        -webkit-mask-image: url(assets/dsfr/icons/system/arrow-up-line.svg);
+        mask-image: url(assets/dsfr/icons/system/arrow-up-line.svg)
+    }
 </style>
 {% endblock %}
 
@@ -172,7 +186,6 @@
                     value="Commencer à discuter" />
             </div>
             <div class="fr-col-md-6 bg-blue fr-p-4w">
-                <h5 class="text-blue">Comment ça marche ?</h5>
                 <svg class="fr-responsive-img" width="513" height="287" viewBox="0 0 513 287" fill="none" version="1.1"
                     id="comment-ca-marche" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
                     role="group" aria-labelledby="svg-title svg-desc">
@@ -391,19 +404,19 @@
                         et
                         faciles à utiliser.</p>
                     <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle fr-grid-row--gutters">
-                        <div class="fr-col-md-4 fr-col-12">
-                            <img class="fr-responsive-img" src="assets/orgs/minicult.svg" alt="Ministère de la Culture"
-                                width="137px" height="97px" />
+                        <div class="fr-col-md-4 fr-col-6">
+                            <img class="" src="assets/orgs/minicult.svg" alt="Ministère de la Culture"
+                                title="Ministère de la Culture" width="137px" height="97px" />
+                        </div>
+                        <div class="fr-col-md-4 fr-col-6 text-center">
+                            <img class="" src="assets/orgs/ateliernumerique.png" alt="Atelier numérique"
+                                title="Atelier numérique" width="105px" height="105px" />
                         </div>
                         <div class="fr-col-md-4 fr-col-12">
-                            <img class="fr-responsive-img" src="assets/orgs/ateliernumerique.png"
-                                alt="Atelier numérique" width="105px" height="105px" />
-                        </div>
-                        <div class="fr-col-md-4 fr-col-12">
-                            <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" class="fr-responsive-img"
-                                width="191px" height="65px" />
-                            <img src="assets/orgs/dinum.png" class="fr-responsive-img" alt="DINUM" width="278px"
-                                height="59px" />
+                            <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" title="beta.gouv.fr"
+                                class="fr-responsive-img" width="191px" height="65px" />
+                            <img src="assets/orgs/dinum.png" class="fr-responsive-img" alt="DINUM" title="DINUM"
+                                width="278px" height="59px" />
                         </div>
                     </div>
                 </div>
@@ -454,10 +467,13 @@
                     questions</a></div>
         </div>
     </section>
-    <div class="text-center p-2 fr-mt-4w">
-        <a class="bg-blue fr-link fr-icon-arrow-up-fill fr-link--icon-left text-white fr-pt-2w fr-pb-1v fr-px-2w"
+    <div class="text-center fr-mt-4w fr-pb-1w">
+    <span class="bg-blue fr-py-1w fr-px-3v">
+        <a class="fr-link fr-icon-arrow-up-line fr-link--icon-left fr-pb-1v"
             href="#top"> Haut de page </a>
+    </span>
     </div>
+    <!-- <section class="bg-light-blue fr-container--fluid"> -->
     <section class="bg-blue fr-container--fluid">
         <div class="fr-grid-row fr-container">
             <div class="fr-col-12 fr-col-md-5 fr-pt-4w">
