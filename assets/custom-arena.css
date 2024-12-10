@@ -9,6 +9,7 @@
 :root {
   --block-background-fill: transparent !important;
 
+  --block-padding: 0;
   --blue-france-main-525-hover: #9898F8;
   --blue-france-main-525-active: #AEAEF9;
 
