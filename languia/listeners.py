@@ -48,6 +48,7 @@ from languia.utils import (
     pick_endpoint,
     sync_reactions,
     determine_choice_badge,
+    reset_conv_state
 )
 
 from languia.config import (
@@ -252,84 +253,31 @@ document.getElementById("fr-modal-welcome-close").blur();
             print(conv_a_scoped)
             print("conv_b_scoped")
             print(conv_b_scoped)
-            text = conv_a_scoped.messages[event._data['index']].content
+            match event._data['index'] % 3:
+                case 0:
+                    text = conv_a_scoped.messages[event._data['index']].content
+                    conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                    conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+                case 1:
+                    text = conv_b_scoped.messages[event._data['index']-1].content
+                    conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                case 2:
+                    text = conv_a_scoped.messages[event._data['index']-1].content
+                    conv_b_scoped.messages = conv_b_scoped.messages[:-1]
 
-        # TODO: refacto! class method
-        def reset_conv_state(state, model_name="", endpoint=None):
-            # self.messages = get_conversation_template(model_name)
-            state.messages = []
-            state.output_tokens = None
+            app_state_scoped.awaiting_responses = False
 
-            # TODO: get it from api if generated
-            state.conv_id = uuid.uuid4().hex
-
-            # TODO: add template info? and test it
-            state.template_name = "zero_shot"
-            state.template = []
-            state.model_name = model_name
-            if endpoint:
-                state.endpoint = endpoint
-            else:
-                state.endpoint = pick_endpoint(
-                    model_id=model_name, broken_endpoints=config.outages
-                )
-            return state
-
-        # config.outages = refresh_outages(
-        #     config.outages, controller_url=config.controller_url
-        # )
-        # # Temporarily add the at-fault model
-        # if error_with_endpoint not in config.outages:
-        #     config.outages.append(error_with_endpoint)
-        # logger.debug(
-        #     "refreshed outage models:" + str(config.outages)
-        # )  # Simpler to repick 2 models
-        # model_left, model_right = get_battle_pair(
-        #     config.models,
-        #     BATTLE_TARGETS,
-        #     config.outages,
-        #     SAMPLING_WEIGHTS,
-        #     SAMPLING_BOOST_MODELS,
-        # )
-        # original_user_prompt = conv_a_scoped.messages[0].content
-        # conv_a_scoped = reset_conv_state(
-        #     conv_a_scoped,
-        #     model_name=model_left,
-        #     endpoint=pick_endpoint(model_left, config.outages),
-        # )
-        # conv_b_scoped = reset_conv_state(
-        #     conv_b_scoped,
-        #     model_name=model_right,
-        #     endpoint=pick_endpoint(model_right, config.outages),
-        # )
-
-        # logger.info(
-        #     f"selection_modeles: {model_left}, {model_right}",
-        #     extra={request: request},
-        # )
-
-        # app_state_scoped.awaiting_responses = False
-        # app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot = add_text(
-        #     app_state_scoped,
-        #     conv_a_scoped,
-        #     conv_b_scoped,
-        #     original_user_prompt,
-        #     request,
-        # )
-        # # Reinit both generators
-        # gen = [
-        #     bot_response(
-        #         pos[i],
-        #         conversations[i],
-        #         request,
-        #         apply_rate_limit=True,
-        #         use_recommended_config=True,
-        #     )
-        #     for i in range(config.num_sides)
-        # ]
-        # continue
-        # break so we can test our retry code
-        # break
+            # # Reinit both generators
+            # gen = [
+            #     bot_response(
+            #         pos[i],
+            #         conversations[i],
+            #         request,
+            #         apply_rate_limit=True,
+            #         use_recommended_config=True,
+            #     )
+            #     for i in range(config.num_sides)
+            # ]
 
         conversations = [conv_a_scoped, conv_b_scoped]
 
@@ -477,26 +425,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
                 if len(conversations[i].messages) < 3:
 
-                    # TODO: refacto! class method
-                    def reset_conv_state(state, model_name="", endpoint=None):
-                        # self.messages = get_conversation_template(model_name)
-                        state.messages = []
-                        state.output_tokens = None
-
-                        # TODO: get it from api if generated
-                        state.conv_id = uuid.uuid4().hex
-
-                        # TODO: add template info? and test it
-                        state.template_name = "zero_shot"
-                        state.template = []
-                        state.model_name = model_name
-                        if endpoint:
-                            state.endpoint = endpoint
-                        else:
-                            state.endpoint = pick_endpoint(
-                                model_id=model_name, broken_endpoints=config.outages
-                            )
-                        return state
 
                     config.outages = refresh_outages(
                         config.outages, controller_url=config.controller_url
@@ -504,33 +432,30 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # Temporarily add the at-fault model
                     if error_with_endpoint not in config.outages:
                         config.outages.append(error_with_endpoint)
+
                     logger.debug(
                         "refreshed outage models:" + str(config.outages)
                     )  # Simpler to repick 2 models
-                    # model_left, model_right = get_battle_pair(
-                    #     config.models,
-                    #     BATTLE_TARGETS,
-                    #     config.outages,
-                    #     SAMPLING_WEIGHTS,
-                    #     SAMPLING_BOOST_MODELS,
-                    # )
+                    model_left, model_right = get_battle_pair(
+                        config.models,
+                        BATTLE_TARGETS,
+                        config.outages,
+                        SAMPLING_WEIGHTS,
+                        SAMPLING_BOOST_MODELS,
+                    )
+
+                    conv_a_scoped = reset_conv_state(
+                            conv_a_scoped,
+                            model_name=model_left,
+                            endpoint=pick_endpoint(model_left, config.outages),
+                        )
+                    conv_b_scoped = reset_conv_state(
+                        conv_b_scoped,
+                        model_name=model_right,
+                        endpoint=pick_endpoint(model_right, config.outages),
+                    )
                     # original_user_prompt = conv_a_scoped.messages[0].content
-                    # conv_a_scoped = reset_conv_state(
-                    #     conv_a_scoped,
-                    #     model_name=model_left,
-                    #     endpoint=pick_endpoint(model_left, config.outages),
-                    # )
-                    # conv_b_scoped = reset_conv_state(
-                    #     conv_b_scoped,
-                    #     model_name=model_right,
-                    #     endpoint=pick_endpoint(model_right, config.outages),
-                    # )
-
-                    # logger.info(
-                    #     f"selection_modeles: {model_left}, {model_right}",
-                    #     extra={request: request},
-                    # )
-
+                   
                     app_state_scoped.awaiting_responses = False
                     # app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot = add_text(
                     #     app_state_scoped,

@@ -1327,3 +1327,27 @@ def determine_choice_badge(reactions):
             )
 
     return your_choice_badge
+
+
+        # TODO: refacto! class method
+def reset_conv_state(state, model_name="", endpoint=None):
+    # self.messages = get_conversation_template(model_name)
+    state.messages = []
+    state.output_tokens = None
+
+    import uuid
+    # TODO: get it from api if generated
+    state.conv_id = uuid.uuid4().hex
+
+    # TODO: add template info? and test it
+    state.template_name = "zero_shot"
+    state.template = []
+    state.model_name = model_name
+    if endpoint:
+        state.endpoint = endpoint
+    else:
+        import config
+        state.endpoint = pick_endpoint(
+            model_id=model_name, broken_endpoints=config.outages
+        )
+    return state
