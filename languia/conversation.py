@@ -110,22 +110,20 @@ def bot_response(
             )
 
     output_tokens = None
-    from languia.timeout import TimeoutIterator
-    with TimeoutIterator(stream_iter, 10) as timeout_iter:
-        for i, data in enumerate(timeout_iter):
-            if "output_tokens" in data:
-                output_tokens = data["output_tokens"]
+    for i, data in enumerate(stream_iter):
+        if "output_tokens" in data:
+            output_tokens = data["output_tokens"]
 
-            output = data.get("text")
-            if output:
-                output.strip()
-                state.messages = update_last_message(
-                    messages=state.messages,
-                    text=output,
-                    position=position,
-                    output_tokens=output_tokens,
-                )
-                yield (state)
+        output = data.get("text")
+        if output:
+            output.strip()
+            state.messages = update_last_message(
+                messages=state.messages,
+                text=output,
+                position=position,
+                output_tokens=output_tokens,
+            )
+            yield (state)
 
     stop_tstamp = time.time()
     print("stop: " + str(stop_tstamp))
