@@ -131,8 +131,8 @@ def openai_api_stream_iter(
     client = openai.OpenAI(
         base_url=api_base,
         api_key=api_key,
+        timeout=30,
         #         timeout=WORKER_API_TIMEOUT,
-        timeout=5,
         # max_retries=
     )
 
@@ -143,6 +143,7 @@ def openai_api_stream_iter(
         max_tokens=max_new_tokens,
         stream=True,
         stream_options={"include_usage": True},
+        timeout=30
         # Not available like this
         # top_p=top_p,
     )
