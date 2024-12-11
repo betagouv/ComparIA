@@ -277,11 +277,11 @@ with gr.Blocks(
 
                 gr.HTML(
                     value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <strong>Modèle A</strong></p>
-    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+    <p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
 
                 positive_a = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex-important checkboxes",
+                    elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -292,7 +292,7 @@ with gr.Blocks(
                 )
 
                 negative_a = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex-important checkboxes",
+                    elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
                     show_label=False,
                     choices=[
                         ("Incorrectes", "incorrect"),
@@ -315,11 +315,11 @@ with gr.Blocks(
 
                 gr.HTML(
                     value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> <strong>Modèle B</strong></p>
-    <p><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+    <p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
                 )
 
                 positive_b = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex-important checkboxes",
+                    elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
                     show_label=False,
                     choices=[
                         ("Utiles", "useful"),
@@ -330,7 +330,7 @@ with gr.Blocks(
                 )
 
                 negative_b = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex-important checkboxes",
+                    elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
                     show_label=False,
                     choices=[
                         ("Incorrectes", "incorrect"),
