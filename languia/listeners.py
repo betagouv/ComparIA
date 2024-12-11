@@ -430,8 +430,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                         config.outages, controller_url=config.controller_url
                     )
                     # Temporarily add the at-fault model
-                    if error_with_endpoint not in config.outages:
-                        config.outages.append(error_with_endpoint)
+                    # if error_with_endpoint not in config.outages:
+                    #     config.outages.append(error_with_endpoint)
 
                     logger.debug(
                         "refreshed outage models:" + str(config.outages)
