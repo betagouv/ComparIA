@@ -104,7 +104,6 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
             # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
 
         if len(buffer.split()) >= 30:
-            # if len(buffer.split()) >= 30 or len(text.split()) < 30:
             # if "\n" in buffer or "." in buffer:
 
             # Reset word count after yielding
@@ -112,10 +111,6 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
 
             yield data
     yield data
-    # except Exception as e:
-    #     logger.error("erreur_chunk: " + str(chunk))
-    #     raise e
-
 
 def openai_api_stream_iter(
     model_name,
@@ -131,7 +126,7 @@ def openai_api_stream_iter(
     client = openai.OpenAI(
         base_url=api_base,
         api_key=api_key,
-        #         timeout=WORKER_API_TIMEOUT,
+        # timeout=WORKER_API_TIMEOUT,
         timeout=10,
         # max_retries=
     )
