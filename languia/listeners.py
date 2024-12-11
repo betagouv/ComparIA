@@ -258,6 +258,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     text = conv_a_scoped.messages[event._data['index']].content
                     conv_a_scoped.messages = conv_a_scoped.messages[:-1]
                     conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+                # FIXME: trickier cases, need to reset and yield only one of the 2 convs
                 case 1:
                     text = conv_b_scoped.messages[event._data['index']-1].content
                     conv_a_scoped.messages = conv_a_scoped.messages[:-1]
@@ -305,6 +306,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
         for i in range(config.num_sides):
+            # conversations[i].messages.append(ChatMessage(role="user", content="Placeholder to test errors on turn 2"))
+            # conversations[i].messages.append(ChatMessage(role="assistant", content="Placeholder to test errors on turn 2"))
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
@@ -457,13 +460,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # original_user_prompt = conv_a_scoped.messages[0].content
                    
                     app_state_scoped.awaiting_responses = False
-                    # app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot = add_text(
-                    #     app_state_scoped,
-                    #     conv_a_scoped,
-                    #     conv_b_scoped,
-                    #     original_user_prompt,
-                    #     request,
-                    # )
+                    
                     # # Reinit both generators
                     # gen = [
                     #     bot_response(
@@ -507,8 +504,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                  
                 # conversations[0].messages[0].content = "Erreur"
                 # conversations[0].messages[0].content.metadata.error = "Erreur"
-                conversations[0].messages[0].metadata.error = str(e)
-                conversations[0].messages[0].error = str(e)
+                conversations[i].messages[-1].metadata.error = str(e)
+                conversations[i].messages[-1].error = str(e)
                 # print(conversations[0].messages[0])
                 # print(conversations[0].messages[0].__dict__)
                 # print(conversations[0].messages[0].metadata)
