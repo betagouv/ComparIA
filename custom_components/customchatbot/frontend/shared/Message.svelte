@@ -112,7 +112,6 @@
 	// 	messages.forEach((message) => console.log(message.metadata));
 	// 	messages.forEach((message) => console.log(message.error));
 	// }
-
 </script>
 
 <!-- {#if role === "user"} -->
@@ -136,18 +135,7 @@
 		>
 			{#if message.type === "text"}
 				<div>
-					{#if message.metadata?.error || message.error}
-						<div class="error">
-							{message.metadata?.error || message.error}
-							<IconButton
-								Icon={Retry}
-								label="Retry"
-								on:click={() => handle_action("retry")}
-								disabled={generating || disabled}
-							/>
-						</div>
-						<div class="message">{message.content}</div>
-					{:else if message.role === "assistant"}
+					{#if message.role === "assistant"}
 						<div class="model-title">
 							{#if message.metadata?.bot === "a"}
 								<svg
@@ -215,6 +203,27 @@
 			{/if}
 		</button>
 	</div>
+	{#if message.metadata?.error || message.error}
+		<div class="error rounded-tile">
+			<h3>
+				<span class="fr-icon-warning-fill" aria-hidden="true"></span> Oups,
+				erreur temporaire
+			</h3>
+			<p>
+				Une erreur temporaire est survenue.<br />
+				Vous pouvez tenter de réessayer de solliciter les modèles ou bien
+				conclure votre expérience en donnant votre avis sur les modèles.
+			</p>
+			<!-- TODO: remove or face possible XSS... -->
+			<!-- {message.metadata?.error || message.error} -->
+			<IconButton
+				Icon={Retry}
+				label="Retry"
+				on:click={() => handle_action("retry")}
+				disabled={generating || disabled}
+			/>
+		</div>
+	{/if}
 {/each}
 
 <style>
