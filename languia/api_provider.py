@@ -20,17 +20,7 @@ def get_api_provider_stream_iter(
             messages_dict.append({"role": message.role, "content": message.content})
         except:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
-    if model_api_dict["api_type"] == "openai":
-        stream_iter = openai_api_stream_iter(
-            model_name=model_api_dict["model_name"],
-            messages=messages_dict,
-            temperature=temperature,
-            max_new_tokens=max_new_tokens,
-            api_base=model_api_dict["api_base"],
-            api_key=model_api_dict["api_key"],
-            request=request,
-        )
-    elif model_api_dict["api_type"] == "vertex":
+    if model_api_dict["api_type"] == "vertex":
         stream_iter = vertex_api_stream_iter(
             model_name=model_api_dict["model_name"],
             messages=messages_dict,
@@ -52,8 +42,18 @@ def get_api_provider_stream_iter(
             api_base=model_api_dict["api_base"],
             request=request,
         )
+        # Default to openai compatible
     else:
-        raise NotImplementedError()
+    # if model_api_dict["api_type"] == "openai":
+        stream_iter = openai_api_stream_iter(
+            model_name=model_api_dict["model_name"],
+            messages=messages_dict,
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            api_base=model_api_dict["api_base"],
+            api_key=model_api_dict["api_key"],
+            request=request,
+        )
 
     return stream_iter
 
