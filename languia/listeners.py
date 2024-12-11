@@ -241,7 +241,18 @@ document.getElementById("fr-modal-welcome-close").blur();
     ):
         # FIXME: if retry, resend all errored messages (or only the one that triggered retry?)!
         print(event.__dict__)
-        
+        if event._data is not None:
+            print("event._data['index']:")
+            print(event._data['index'])
+            print("event._data.get('index')")
+            print(event._data.get('index'))
+            print("app_state_scoped")
+            print(app_state_scoped)
+            print("conv_a_scoped")
+            print(conv_a_scoped)
+            print("conv_b_scoped")
+            print(conv_b_scoped)
+            text = conv_a_scoped.messages[event._data['index']].content
 
         # TODO: refacto! class method
         def reset_conv_state(state, model_name="", endpoint=None):
