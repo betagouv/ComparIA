@@ -191,6 +191,9 @@
 						{#if message.metadata?.error}
 							ERREUR LORS DE LA GENERATION !
 						{/if}
+						{#if message.error}
+							ERREUR LORS DE LA GENERATION !
+						{/if}
 					{:else}
 						<Markdown
 							message={message.content}

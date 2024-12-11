@@ -36,6 +36,7 @@ from gradio.exceptions import Error
 class MetadataDict(TypedDict):
     title: Union[str, None]
     bot: Union[str, None]
+    error: Union[str, None]
 
 
 class FileDataDict(TypedDict):
@@ -78,6 +79,7 @@ class ChatbotDataTuples(GradioRootModel):
 class Metadata(GradioModel):
     title: Optional[str] = None
     bot: Optional[str] = None
+    error: Optional[str] = None
 
 
 class Message(GradioModel):
@@ -146,7 +148,8 @@ class CustomChatbot(Component):
         Events.select,
         Events.like,
         Events.retry,
-        # "error",
+        # Events.error,
+        "error",
         # Events.undo,
         # Events.example_select,
         Events.clear,

@@ -487,9 +487,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # # logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
                     # continue
-
-                conversations[0] = conversations[0].messages[-1].metadata['error'] = "Erreur"
-                conversations[1] = conversations[1].messages[-1].metadata['error'] = "Erreur"
+                    
+                conversations[0].messages[0].content = "Erreur"
+                # conversations[0].messages[0].content.metadata.error = "Erreur"
+                conversations[0].messages[0].metadata.error = "Erreur"
+                conversations[0].messages[0].error = "Erreur"
+                print(conversations[0].messages[0])
+                print(conversations[0].messages[0].get("error"))
+                print(conversations[0].messages[0].metadata)
+                print(conversations[0].messages[0].content)
                 conv_a_scoped = conversations[0]
                 conv_b_scoped = conversations[1]
                 chatbot = to_threeway_chatbot(conversations)
@@ -510,9 +516,11 @@ document.getElementById("fr-modal-welcome-close").blur();
         else:
             logger.critical("maximum_attempts_reached")
 
-            conversations[0] = conversations[0].messages[-1].metadata['error'] = "Erreur"
-            conversations[1] = conversations[1].messages[-1].metadata['error'] = "Erreur"
-            
+            # conversations[0].messages[-1].metadata = (conversations[0].messages[-1].metadata.model_dump().update({"error", "Erreur"})
+            # )
+            conversations[1].messages[-1].metadata.error = "Erreur"
+
+
             chatbot = to_threeway_chatbot(conversations)
             conv_a_scoped = conversations[0]
             conv_b_scoped = conversations[1]
