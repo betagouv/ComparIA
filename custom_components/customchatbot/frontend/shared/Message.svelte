@@ -6,6 +6,8 @@
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
+	import IconButton from "./IconButton.svelte";
+	import { Retry } from "@gradio/icons";
 
 	import Pending from "./Pending.svelte";
 
@@ -106,14 +108,11 @@
 		position: role === "user" ? "right" : "left",
 		layout,
 	};
+	// $: {
+	// 	messages.forEach((message) => console.log(message.metadata));
+	// 	messages.forEach((message) => console.log(message.error));
+	// }
 
-	// type PrefsPanelProps = {
-	// 	message: typeof messages;
-	// 	show: boolean;
-	// 	value: (string | number)[];
-	// 	choices: [string, string | number][];
-	// 	handle_action: (selected: string | null) => void;
-	// };
 </script>
 
 <!-- {#if role === "user"} -->
@@ -137,7 +136,18 @@
 		>
 			{#if message.type === "text"}
 				<div>
-					{#if message.role === "assistant"}
+					{#if message.metadata?.error || message.error}
+						<div class="error">
+							{message.metadata?.error || message.error}
+							<IconButton
+								Icon={Retry}
+								label="Retry"
+								on:click={() => handle_action("retry")}
+								disabled={generating || disabled}
+							/>
+						</div>
+						<!-- <div class="message">{message.content}</div> -->
+					{:else if message.role === "assistant"}
 						<div class="model-title">
 							{#if message.metadata?.bot === "a"}
 								<svg
@@ -186,13 +196,6 @@
 						/>
 						{#if generating}
 							<Pending />
-							<!-- <br /><br /><em>En attente de la réponse…</em> -->
-						{/if}
-						{#if message.metadata?.error}
-							ERREUR LORS DE LA GENERATION !
-						{/if}
-						{#if message.error}
-							ERREUR LORS DE LA GENERATION !
 						{/if}
 					{:else}
 						<Markdown

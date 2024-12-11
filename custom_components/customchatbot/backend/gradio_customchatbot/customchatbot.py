@@ -106,6 +106,7 @@ class ChatMessage:
     role: Literal["user", "assistant", "system"]
     content: str | FileData | Component | FileDataDict | tuple | list
     metadata: MetadataDict | Metadata = field(default_factory=Metadata)
+    error: str | None = None
 
 
 class ChatbotDataMessages(GradioRootModel):

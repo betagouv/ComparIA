@@ -27,6 +27,7 @@ export interface Message {
 	prefs?: string[];
 	comment: string
 	commented?: boolean	
+	error?: string	
 }
 
 export interface TextMessage extends Message {
@@ -37,6 +38,7 @@ export interface TextMessage extends Message {
 	prefs?: string[];
 	comment: string	
 	commented: boolean	
+	error?: string	
 }
 
 export interface ComponentMessage extends Message {
@@ -47,6 +49,7 @@ export interface ComponentMessage extends Message {
 	prefs?: string[];
 	comment: string
 	commented: boolean	
+	error?: string	
 }
 
 export interface ExampleMessage {

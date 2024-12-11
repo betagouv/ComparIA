@@ -225,6 +225,7 @@
 		// comment = "";
 	}
 
+	// TODO: rename or split this function
 	function handle_like(
 		i: number,
 		j: number,
@@ -237,7 +238,15 @@
 		var chatbot_index = i + j + user_msg_offset;
 
 		const msg = groupedMessages[i][j];
+		if (selected === "retry") {
+			console.log("RETRYING");
 
+			dispatch("retry", {
+				index: msg.index,
+				value: msg.content,
+				// error: msg.metadata?.error || msg.error
+			});
+		}
 		if (selected === "commenting") {
 			commenting = chatbot_index;
 			if (value[chatbot_index].comment === undefined) {

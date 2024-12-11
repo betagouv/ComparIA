@@ -493,7 +493,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 conversations[0].messages[0].metadata.error = "Erreur"
                 conversations[0].messages[0].error = "Erreur"
                 print(conversations[0].messages[0])
-                print(conversations[0].messages[0].get("error"))
+                print(conversations[0].messages[0].__dict__)
                 print(conversations[0].messages[0].metadata)
                 print(conversations[0].messages[0].content)
                 conv_a_scoped = conversations[0]
