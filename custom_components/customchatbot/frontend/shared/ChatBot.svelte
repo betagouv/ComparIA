@@ -243,7 +243,8 @@
 
 			dispatch("retry", {
 				index: msg.index,
-				value: msg.content,
+				value: msg.metadata?.error || msg.error || msg.content,
+				// value: msg.content,
 				// error: msg.metadata?.error || msg.error
 			});
 		}

@@ -146,7 +146,7 @@
 								disabled={generating || disabled}
 							/>
 						</div>
-						<!-- <div class="message">{message.content}</div> -->
+						<div class="message">{message.content}</div>
 					{:else if message.role === "assistant"}
 						<div class="model-title">
 							{#if message.metadata?.bot === "a"}

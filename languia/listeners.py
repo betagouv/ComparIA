@@ -237,7 +237,88 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b_scoped: gr.State,
         text: gr.Text,
         request: gr.Request,
+        event: gr.EventData
     ):
+        # FIXME: if retry, resend all errored messages (or only the one that triggered retry?)!
+        print(event.__dict__)
+        
+
+        # TODO: refacto! class method
+        def reset_conv_state(state, model_name="", endpoint=None):
+            # self.messages = get_conversation_template(model_name)
+            state.messages = []
+            state.output_tokens = None
+
+            # TODO: get it from api if generated
+            state.conv_id = uuid.uuid4().hex
+
+            # TODO: add template info? and test it
+            state.template_name = "zero_shot"
+            state.template = []
+            state.model_name = model_name
+            if endpoint:
+                state.endpoint = endpoint
+            else:
+                state.endpoint = pick_endpoint(
+                    model_id=model_name, broken_endpoints=config.outages
+                )
+            return state
+
+        # config.outages = refresh_outages(
+        #     config.outages, controller_url=config.controller_url
+        # )
+        # # Temporarily add the at-fault model
+        # if error_with_endpoint not in config.outages:
+        #     config.outages.append(error_with_endpoint)
+        # logger.debug(
+        #     "refreshed outage models:" + str(config.outages)
+        # )  # Simpler to repick 2 models
+        # model_left, model_right = get_battle_pair(
+        #     config.models,
+        #     BATTLE_TARGETS,
+        #     config.outages,
+        #     SAMPLING_WEIGHTS,
+        #     SAMPLING_BOOST_MODELS,
+        # )
+        # original_user_prompt = conv_a_scoped.messages[0].content
+        # conv_a_scoped = reset_conv_state(
+        #     conv_a_scoped,
+        #     model_name=model_left,
+        #     endpoint=pick_endpoint(model_left, config.outages),
+        # )
+        # conv_b_scoped = reset_conv_state(
+        #     conv_b_scoped,
+        #     model_name=model_right,
+        #     endpoint=pick_endpoint(model_right, config.outages),
+        # )
+
+        # logger.info(
+        #     f"selection_modeles: {model_left}, {model_right}",
+        #     extra={request: request},
+        # )
+
+        # app_state_scoped.awaiting_responses = False
+        # app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot = add_text(
+        #     app_state_scoped,
+        #     conv_a_scoped,
+        #     conv_b_scoped,
+        #     original_user_prompt,
+        #     request,
+        # )
+        # # Reinit both generators
+        # gen = [
+        #     bot_response(
+        #         pos[i],
+        #         conversations[i],
+        #         request,
+        #         apply_rate_limit=True,
+        #         use_recommended_config=True,
+        #     )
+        #     for i in range(config.num_sides)
+        # ]
+        # continue
+        # break so we can test our retry code
+        # break
 
         conversations = [conv_a_scoped, conv_b_scoped]
 
@@ -487,15 +568,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # # logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
                     # continue
-                    
-                conversations[0].messages[0].content = "Erreur"
+                 
+                # conversations[0].messages[0].content = "Erreur"
                 # conversations[0].messages[0].content.metadata.error = "Erreur"
-                conversations[0].messages[0].metadata.error = "Erreur"
-                conversations[0].messages[0].error = "Erreur"
-                print(conversations[0].messages[0])
-                print(conversations[0].messages[0].__dict__)
-                print(conversations[0].messages[0].metadata)
-                print(conversations[0].messages[0].content)
+                conversations[0].messages[0].metadata.error = str(e)
+                conversations[0].messages[0].error = str(e)
+                # print(conversations[0].messages[0])
+                # print(conversations[0].messages[0].__dict__)
+                # print(conversations[0].messages[0].metadata)
+                # print(conversations[0].messages[0].content)
                 conv_a_scoped = conversations[0]
                 conv_b_scoped = conversations[1]
                 chatbot = to_threeway_chatbot(conversations)
@@ -518,7 +599,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             # conversations[0].messages[-1].metadata = (conversations[0].messages[-1].metadata.model_dump().update({"error", "Erreur"})
             # )
-            conversations[1].messages[-1].metadata.error = "Erreur"
+            conversations[1].messages[-1].metadata.error = "maximum_attempts_reached"
+            conversations[1].messages[-1].error = "maximum_attempts_reached"
 
 
             chatbot = to_threeway_chatbot(conversations)
@@ -554,7 +636,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         }
 
     gr.on(
-        triggers=[textbox.submit, send_btn.click],
+        triggers=[textbox.submit, send_btn.click, chatbot.retry],
         fn=add_text,
         api_name=False,
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
