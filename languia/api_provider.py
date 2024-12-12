@@ -7,6 +7,8 @@ import logging
 
 import sentry_sdk
 
+from languia.config import GLOBAL_TIMEOUT
+
 def get_api_provider_stream_iter(
     messages,
     model_api_dict,
@@ -130,9 +132,8 @@ def openai_api_stream_iter(
 
     client = openai.OpenAI(
         base_url=api_base,
-        api_key=api_key,
-        #         timeout=WORKER_API_TIMEOUT,
-        timeout=5,
+        api_key=api_key,        timeout=GLOBAL_TIMEOUT,
+
         # max_retries=
     )
 
@@ -143,6 +144,7 @@ def openai_api_stream_iter(
         max_tokens=max_new_tokens,
         stream=True,
         stream_options={"include_usage": True},
+        timeout=GLOBAL_TIMEOUT,
         # Not available like this
         # top_p=top_p,
     )
@@ -167,8 +169,7 @@ def azure_api_stream_iter(
         azure_endpoint=api_base,
         api_key=api_key,
         api_version=api_version,
-        #         timeout=WORKER_API_TIMEOUT,
-        timeout=5,
+        timeout=GLOBAL_TIMEOUT,
         # max_retries=
     )
 
@@ -208,6 +209,7 @@ def vertex_api_stream_iter(
     client = openai.OpenAI(base_url=api_base, api_key=creds.token)
 
     res = client.chat.completions.create(
+        timeout=GLOBAL_TIMEOUT,
         model=model_name,
         messages=messages,
         temperature=temperature,

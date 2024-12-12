@@ -28,6 +28,9 @@ from logging.handlers import WatchedFileHandler
 
 from languia.utils import JSONFormatter, PostgresHandler
 
+from httpx import Timeout
+GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=3.0)
+
 if any(
     os.getenv(var)
     for var in [

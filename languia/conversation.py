@@ -42,6 +42,9 @@ def update_last_message(messages, text, position, output_tokens=None):
     return messages
 
 
+# import sys
+
+
 def bot_response(
     position,
     state,
@@ -110,6 +113,18 @@ def bot_response(
             )
 
     output_tokens = None
+
+    # start = time.time()
+
+    # def trace_function(frame, event, arg):
+    #     if time.time() - start > 10:
+    #         print("yo")
+    #         raise Exception('Timed out!') # Use whatever exception you consider appropriate.
+    #     return trace_function
+    
+    # sys.settrace(trace_function)
+
+    # try:
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
             output_tokens = data["output_tokens"]
@@ -124,6 +139,8 @@ def bot_response(
                 output_tokens=output_tokens,
             )
             yield (state)
+    # finally:
+    #     sys.settrace(None) # Remove the time constraint and continue normally.
 
     stop_tstamp = time.time()
     print("stop: " + str(stop_tstamp))
