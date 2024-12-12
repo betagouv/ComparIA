@@ -7,7 +7,6 @@
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
 	import IconButton from "./IconButton.svelte";
-	import { Retry } from "@gradio/icons";
 
 	import Pending from "./Pending.svelte";
 
@@ -108,10 +107,7 @@
 		position: role === "user" ? "right" : "left",
 		layout,
 	};
-	// $: {
-	// 	messages.forEach((message) => console.log(message.metadata));
-	// 	messages.forEach((message) => console.log(message.error));
-	// }
+
 </script>
 
 <!-- {#if role === "user"} -->
@@ -203,27 +199,6 @@
 			{/if}
 		</button>
 	</div>
-	{#if message.metadata?.error || message.error}
-		<div class="error rounded-tile">
-			<h3>
-				<span class="fr-icon-warning-fill" aria-hidden="true"></span> Oups,
-				erreur temporaire
-			</h3>
-			<p>
-				Une erreur temporaire est survenue.<br />
-				Vous pouvez tenter de réessayer de solliciter les modèles ou bien
-				conclure votre expérience en donnant votre avis sur les modèles.
-			</p>
-			<!-- TODO: remove or face possible XSS... -->
-			<!-- {message.metadata?.error || message.error} -->
-			<IconButton
-				Icon={Retry}
-				label="Retry"
-				on:click={() => handle_action("retry")}
-				disabled={generating || disabled}
-			/>
-		</div>
-	{/if}
 {/each}
 
 <style>

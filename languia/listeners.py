@@ -48,7 +48,7 @@ from languia.utils import (
     pick_endpoint,
     sync_reactions,
     determine_choice_badge,
-    reset_conv_state
+    reset_conv_state,
 )
 
 from languia.config import (
@@ -238,33 +238,37 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b_scoped: gr.State,
         text: gr.Text,
         request: gr.Request,
-        event: gr.EventData
+        event: gr.EventData,
     ):
         # FIXME: if retry, resend all errored messages (or only the one that triggered retry?)!
         print(event.__dict__)
         if event._data is not None:
             print("event._data['index']:")
-            print(event._data['index'])
+            print(event._data["index"])
             print("event._data.get('index')")
-            print(event._data.get('index'))
+            print(event._data.get("index"))
             print("app_state_scoped")
             print(app_state_scoped)
             print("conv_a_scoped")
             print(conv_a_scoped)
             print("conv_b_scoped")
             print(conv_b_scoped)
-            match event._data['index'] % 3:
-                case 0:
-                    text = conv_a_scoped.messages[event._data['index']].content
-                    conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-                    conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            # match event._data["index"] % 3:
+                # case 0:
+            # print(conv_a_scoped.messages)
+            text = conv_a_scoped.messages[-1].content
+                    # text = conv_a_scoped.messages[event._data["index"] // 3].content
+                    # text = conv_a_scoped.messages[event._data['index']].content
+            conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+            conv_b_scoped.messages = conv_b_scoped.messages[:-1]
                 # FIXME: trickier cases, need to reset and yield only one of the 2 convs
-                case 1:
-                    text = conv_b_scoped.messages[event._data['index']-1].content
-                    conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-                case 2:
-                    text = conv_a_scoped.messages[event._data['index']-1].content
-                    conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+                # case 1:
+                #     text = conv_b_scoped.messages[-1].content
+                #     # text = conv_b_scoped.messages[event._data["index"] // 3].content
+                #     conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                # case 2:
+                #     text = conv_a_scoped.messages[- 1].content
+                #     conv_b_scoped.messages = conv_b_scoped.messages[:-1]
 
             app_state_scoped.awaiting_responses = False
 
@@ -428,7 +432,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
                 if len(conversations[i].messages) < 3:
 
-
                     config.outages = refresh_outages(
                         config.outages, controller_url=config.controller_url
                     )
@@ -448,19 +451,19 @@ document.getElementById("fr-modal-welcome-close").blur();
                     )
 
                     conv_a_scoped = reset_conv_state(
-                            conv_a_scoped,
-                            model_name=model_left,
-                            endpoint=pick_endpoint(model_left, config.outages),
-                        )
+                        conv_a_scoped,
+                        model_name=model_left,
+                        endpoint=pick_endpoint(model_left, config.outages),
+                    )
                     conv_b_scoped = reset_conv_state(
                         conv_b_scoped,
                         model_name=model_right,
                         endpoint=pick_endpoint(model_right, config.outages),
                     )
                     # original_user_prompt = conv_a_scoped.messages[0].content
-                   
+
                     app_state_scoped.awaiting_responses = False
-                    
+
                     # # Reinit both generators
                     # gen = [
                     #     bot_response(
@@ -501,7 +504,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # # logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
                     # continue
-                 
+
                 # conversations[0].messages[0].content = "Erreur"
                 # conversations[0].messages[0].content.metadata.error = "Erreur"
                 conversations[i].messages[-1].metadata.error = str(e)
@@ -534,7 +537,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             # )
             conversations[1].messages[-1].metadata.error = "maximum_attempts_reached"
             conversations[1].messages[-1].error = "maximum_attempts_reached"
-
 
             chatbot = to_threeway_chatbot(conversations)
             conv_a_scoped = conversations[0]
