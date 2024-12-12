@@ -7,6 +7,7 @@ import logging
 
 import sentry_sdk
 
+
 def get_api_provider_stream_iter(
     messages,
     model_api_dict,
@@ -44,14 +45,21 @@ def get_api_provider_stream_iter(
         )
         # Default to openai compatible
     else:
-    # if model_api_dict["api_type"] == "openai":
-        stream_iter = openai_api_stream_iter(
-            model_name=model_api_dict["model_name"],
+        litellm_model_name = (
+            model_api_dict.get("api_type", "openai")
+            + "/"
+            + model_api_dict["model_name"]
+        )
+        stream_iter = litellm_stream_iter(
+            model_name=litellm_model_name,
+            # api_version=model_api_dict.get("api_version", None),
             messages=messages_dict,
             temperature=temperature,
-            max_new_tokens=max_new_tokens,
-            api_base=model_api_dict["api_base"],
             api_key=model_api_dict["api_key"],
+            # stream=model_api_dict.get("stream", True),
+            # top_p=top_p,
+            max_new_tokens=max_new_tokens,
+            api_base=model_api_dict.get("api_base"),
             request=request,
         )
 
@@ -112,26 +120,34 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
             yield data
     yield data
 
-def openai_api_stream_iter(
+def litellm_stream_iter(
     model_name,
     messages,
     temperature,
     max_new_tokens,
+    provider=None,
     api_base=None,
     api_key=None,
     request=None,
 ):
-    import openai
 
-    client = openai.OpenAI(
+    import litellm
+    # from languia.config import debug
+    # if debug:
+    #     litellm.set_verbose=True
+
+    if os.getenv("SENTRY_DSN"):
+        litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
+        litellm.failure_callback = [
+            "sentry"
+        ]  # [OPTIONAL] if you want litellm to capture -> send exception to sentry
+
+    res = litellm.completion(
         base_url=api_base,
         api_key=api_key,
         # timeout=WORKER_API_TIMEOUT,
         timeout=10,
         # max_retries=
-    )
-
-    res = client.chat.completions.create(
         model=model_name,
         messages=messages,
         temperature=temperature,
