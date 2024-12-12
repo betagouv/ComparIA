@@ -1273,25 +1273,23 @@ def to_threeway_chatbot(conversations):
             threeway_chatbot.append(msg_a)
         else:
             if msg_a:
-                new_metadata = msg_a.metadata
-                new_metadata.bot = "a"
+                msg_a.metadata['bot'] = "a"
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
                         "content": msg_a.content,
                         # TODO: add duration here?
-                        "metadata": new_metadata,
+                        "metadata": msg_a.metadata,
                     }
                 )
             if msg_b:
 
-                new_metadata = msg_b.metadata
-                new_metadata.bot = "b"
+                msg_b.metadata['bot'] = "b"
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
                         "content": msg_b.content,
-                        "metadata": new_metadata,
+                        "metadata": msg_b.metadata,
                     }
                 )
     return threeway_chatbot
