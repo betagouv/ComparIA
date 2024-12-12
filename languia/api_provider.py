@@ -7,6 +7,7 @@ import logging
 
 import sentry_sdk
 
+from config import GLOBAL_TIMEOUT
 
 def get_api_provider_stream_iter(
     messages,
@@ -142,11 +143,11 @@ def litellm_stream_iter(
             "sentry"
         ]  # [OPTIONAL] if you want litellm to capture -> send exception to sentry
 
+
     res = litellm.completion(
+        timeout=GLOBAL_TIMEOUT,
         base_url=api_base,
         api_key=api_key,
-        # timeout=WORKER_API_TIMEOUT,
-        timeout=10,
         # max_retries=
         model=model_name,
         messages=messages,
@@ -154,7 +155,7 @@ def litellm_stream_iter(
         max_tokens=max_new_tokens,
         stream=True,
         stream_options={"include_usage": True},
-        timeout=10,
+        # timeout=15,
         # Not available like this
         # top_p=top_p,
     )
@@ -179,8 +180,7 @@ def azure_api_stream_iter(
         azure_endpoint=api_base,
         api_key=api_key,
         api_version=api_version,
-        #         timeout=WORKER_API_TIMEOUT,
-        timeout=5,
+        timeout=GLOBAL_TIMEOUT,
         # max_retries=
     )
 
@@ -220,6 +220,7 @@ def vertex_api_stream_iter(
     client = openai.OpenAI(base_url=api_base, api_key=creds.token)
 
     res = client.chat.completions.create(
+        timeout=GLOBAL_TIMEOUT,
         model=model_name,
         messages=messages,
         temperature=temperature,
