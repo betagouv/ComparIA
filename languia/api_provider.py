@@ -7,7 +7,7 @@ import logging
 
 import sentry_sdk
 
-from config import GLOBAL_TIMEOUT
+from languia.config import GLOBAL_TIMEOUT
 
 def get_api_provider_stream_iter(
     messages,
