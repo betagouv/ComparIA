@@ -355,7 +355,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # except httpx.ReadTimeout:
             #     pass
             except (
-                Exception,
+                BaseException,
                 openai.APIError,
                 openai.BadRequestError,
                 EmptyResponseError,
