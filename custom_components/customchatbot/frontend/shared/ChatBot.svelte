@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+	import warningicon from "./shared/fr-warning-fill.svg"
+
 	export interface ExtendedLikeData {
 		index: number | [number, number];
 		value: any;
@@ -244,7 +246,10 @@
 
 		dispatch("retry", {
 			index: lastMessage.index,
-			value: lastMessage.metadata?.error || lastMessage.error || lastMessage.content,
+			value:
+				lastMessage.metadata?.error ||
+				lastMessage.error ||
+				lastMessage.content,
 			// value: msg.content,
 			// error: msg.metadata?.error || msg.error
 		});
@@ -500,9 +505,12 @@
 			</p>
 			<!-- error: {hasError} -->
 			<p class="text-center">
-			<button class="fr-btn purple-btn"
-				on:click={() => handle_retry_last()}
-				disabled={generating || disabled}>Réessayer</button></p>
+				<button
+					class="fr-btn purple-btn"
+					on:click={() => handle_retry_last()}
+					disabled={generating || disabled}>Réessayer</button
+				>
+			</p>
 		</div>
 	{/if}
 </div>
@@ -770,8 +778,17 @@
 		transform: translateY(-2px);
 	}
 
-	.purple-btn {
+	.fr-modal__content .purple-btn {
 		float: right;
 		margin: 2em 0 !important;
+	}
+
+	.fr-icon-warning-fill::before,
+	.fr-icon-warning-fill::after {
+		/* --warning-425-625 */
+		background-color: #b34000;
+		-webkit-mask-image: url("fr-warning-fill.svg");
+		mask-image: url("fr-warning-fill.svg");
+		mask-image: url($warningicon);
 	}
 </style>
