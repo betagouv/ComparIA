@@ -254,21 +254,21 @@ document.getElementById("fr-modal-welcome-close").blur();
             print("conv_b_scoped")
             print(conv_b_scoped)
             # match event._data["index"] % 3:
-                # case 0:
+            # case 0:
             # print(conv_a_scoped.messages)
             text = conv_a_scoped.messages[-1].content
-                    # text = conv_a_scoped.messages[event._data["index"] // 3].content
-                    # text = conv_a_scoped.messages[event._data['index']].content
+            # text = conv_a_scoped.messages[event._data["index"] // 3].content
+            # text = conv_a_scoped.messages[event._data['index']].content
             conv_a_scoped.messages = conv_a_scoped.messages[:-1]
             conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-                # FIXME: trickier cases, need to reset and yield only one of the 2 convs
-                # case 1:
-                #     text = conv_b_scoped.messages[-1].content
-                #     # text = conv_b_scoped.messages[event._data["index"] // 3].content
-                #     conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-                # case 2:
-                #     text = conv_a_scoped.messages[- 1].content
-                #     conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            # FIXME: trickier cases, need to reset and yield only one of the 2 convs
+            # case 1:
+            #     text = conv_b_scoped.messages[-1].content
+            #     # text = conv_b_scoped.messages[event._data["index"] // 3].content
+            #     conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+            # case 2:
+            #     text = conv_a_scoped.messages[- 1].content
+            #     conv_b_scoped.messages = conv_b_scoped.messages[:-1]
 
             app_state_scoped.awaiting_responses = False
 
@@ -317,6 +317,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b_scoped = conversations[1]
         app_state_scoped.awaiting_responses = True
         chatbot = to_threeway_chatbot(conversations)
+        text = gr.update(visible=True)
         return [
             app_state_scoped,
             # 2 conversations
@@ -324,6 +325,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_b_scoped,
             # 1 chatbot
             chatbot,
+            text
         ]
 
     def goto_chatbot(
@@ -450,6 +452,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                         SAMPLING_BOOST_MODELS,
                     )
 
+                    original_user_prompt = conv_a_scoped.messages[0].content
+
                     conv_a_scoped = reset_conv_state(
                         conv_a_scoped,
                         model_name=model_left,
@@ -460,7 +464,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                         model_name=model_right,
                         endpoint=pick_endpoint(model_right, config.outages),
                     )
-                    # original_user_prompt = conv_a_scoped.messages[0].content
+                    conv_a_scoped.messages.append(
+                        ChatMessage(role="user", content=original_user_prompt)
+                    )
+                    conv_b_scoped.messages.append(
+                        ChatMessage(role="user", content=original_user_prompt)
+                    )
 
                     app_state_scoped.awaiting_responses = False
 
@@ -551,31 +560,49 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Got answer at this point
         app_state_scoped.awaiting_responses = False
 
-        logger.info(
-            f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
-            extra={"request": request},
-        )
-        logger.info(
-            f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
-            extra={"request": request},
-        )
+        if not conv_a_scoped.messages[-1].role == "user":
+            logger.info(
+                f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
+                extra={"request": request},
+            )
+            logger.info(
+                f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
+                extra={"request": request},
+            )
         chatbot = to_threeway_chatbot(conversations)
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
+        # hide textbox when retrying ?
         return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
-    def enable_conclude(textbox, request: gr.Request):
-        return {
-            conclude_btn: gr.update(interactive=True),
-            send_btn: gr.update(interactive=(textbox != "")),
-        }
+    # don't enable conclude if only one user msg
+    def enable_conclude(app_state_scoped, textbox, conv_a_scoped, request: gr.Request):
+        if conv_a_scoped.messages[-1].role == "user":
+            if len(conv_a_scoped.messages) <= 1:
+                return {
+                    textbox: gr.update(visible=False),
+                    conclude_btn: gr.skip(),
+                    send_btn: gr.update(visible=False),
+                }
+            else:
+                return {
+                    textbox: gr.update(visible=False),
+                    conclude_btn: gr.update(interactive=True),
+                    send_btn: gr.update(visible=False),
+                }
+        else:
+            return {
+                textbox: gr.skip(),
+                conclude_btn: gr.update(interactive=True),
+                send_btn: gr.update(interactive=(textbox != "")),
+            }
 
     gr.on(
         triggers=[textbox.submit, send_btn.click, chatbot.retry],
         fn=add_text,
         api_name=False,
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
-        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         # scroll_to_output=True,
         show_progress="hidden",
     ).success(
@@ -620,8 +647,8 @@ setTimeout(() => {
         # scroll_to_output=True,
     ).then(
         fn=enable_conclude,
-        inputs=[textbox],
-        outputs=[conclude_btn, send_btn],
+        inputs=[app_state, textbox, conv_a],
+        outputs=[textbox, conclude_btn, send_btn],
     )
     # // Enable navigation prompt
     # window.onbeforeunload = function() {
