@@ -29,7 +29,8 @@ from logging.handlers import WatchedFileHandler
 from languia.logs import JSONFormatter, PostgresHandler
 
 from httpx import Timeout
-GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=3.0)
+
+GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
 if any(
     os.getenv(var)
@@ -41,7 +42,7 @@ if any(
         "LANGUIA_DB_PORT",
     ]
 ):
-# and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
+    # and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
     db = {
         "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
         "user": os.getenv("LANGUIA_DB_USER", "languia"),
@@ -100,7 +101,9 @@ else:
 if not debug:
     assets_absolute_path = "/app/assets"
 else:
-    assets_absolute_path = os.path.abspath(os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets"))
+    assets_absolute_path = os.path.abspath(
+        os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets")
+    )
     # print("assets_absolute_path: "+assets_absolute_path)
 if os.getenv("SENTRY_SAMPLE_RATE"):
     traces_sample_rate = float(os.getenv("SENTRY_SAMPLE_RATE"))
@@ -124,7 +127,7 @@ if os.getenv("SENTRY_DSN"):
         environment=sentry_env,
         traces_sample_rate=traces_sample_rate,
         profiles_sample_rate=profiles_sample_rate,
-        project_root=os.getcwd()
+        project_root=os.getcwd(),
     )
     logger.debug(
         "Sentry loaded with traces_sample_rate="
@@ -238,7 +241,9 @@ all_models_extra_info_toml = {
 }
 # TODO: refacto?
 models_extra_info = [
-    build_model_extra_info(model, all_models_extra_info_toml) for model in models if model is not None
+    build_model_extra_info(model, all_models_extra_info_toml)
+    for model in models
+    if model is not None
 ]
 
 models_extra_info.sort(key=lambda x: x["simple_name"])
@@ -328,7 +333,6 @@ prompts_table = {
         "Raconte moi une anecdote sur l’empire romain",
         "Explique le **concept de la décentralisation** dans le contexte des systèmes informatiques à une personne familière avec les réseaux sociaux.",
         "Tu es professeur de philosophie politique. Résume le **système politique de la France** pour quelqu'un qui connaît bien les systèmes politiques des États-Unis.",
-       
     ],
     "stories": [
         # histoires",
