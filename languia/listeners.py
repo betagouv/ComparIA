@@ -39,16 +39,16 @@ from languia.utils import (
     get_matomo_tracker_from_cookies,
     get_battle_pair,
     build_reveal_html,
-    vote_last_response,
     refresh_outages,
     on_endpoint_error,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
-    sync_reactions,
     determine_choice_badge,
 )
+
+from languia.logs import vote_last_response, sync_reactions
 
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
