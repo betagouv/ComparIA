@@ -134,6 +134,10 @@ def register_listeners():
                 f"selection_modeles: {model_left}, {model_right}",
                 extra={request: request},
             )
+
+            logger.info(
+                f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}", extra={request: request}
+            )
             return conv_a_scoped, conv_b_scoped
 
         # TODO: actually check for it
