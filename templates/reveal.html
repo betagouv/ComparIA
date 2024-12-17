@@ -64,7 +64,10 @@
 
                     <div class="">
                         <p class=""><strong><span class="fr-text--xxl">{{ model['params']|int
-                                    }}</span><span class="fr-text--xs"> milliards param.</span></strong></p>
+                                    }}</span><span class="fr-text--xs"> milliards param.{% if
+                                        model['distribution'] != "open-weights" %} (est.){%
+                                        endif
+                                        %}</span></strong></p>
                         <p class="fr-text--sm">taille du modèle
                         </p>
                     </div>
