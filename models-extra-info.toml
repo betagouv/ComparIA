@@ -121,7 +121,7 @@ conditions = "restricted"
 description = "Sorti en février 2024 et amélioré à plusieurs reprises depuis, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
 excerpt = "Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 
-[gemma-2-27b-it]
+["gemma-2-27b-it-q8"]
 url = "https://huggingface.co/google/gemma-2-27b-it"
 simple_name = "Gemma 2 27b"
 organisation = "Google"
@@ -133,7 +133,7 @@ conditions = "copyleft"
 license = "Gemma"
 params = 27
 excerpt = "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision."
-description = "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions."
+description = "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions. Le modèle sollicité ici est la version quantisée (q8)."
 
 [Gemma-2-9B-it]
 url = "https://huggingface.co/google/gemma-2-9b-it"

@@ -375,11 +375,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                     exc_info=True,
                 )
 
-                on_endpoint_error(
-                    config.controller_url,
-                    error_with_endpoint,
-                    reason=str(e),
-                )
+                # Report error to controller
+                # on_endpoint_error(
+                #     config.controller_url,
+                #     error_with_endpoint,
+                #     reason=str(e),
+                # )
 
                 # If it's the first message in conversation, re-roll
                 # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
@@ -410,8 +411,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                         config.outages, controller_url=config.controller_url
                     )
                     # Temporarily add the at-fault model
-                    if error_with_endpoint not in config.outages:
-                        config.outages.append(error_with_endpoint)
+                    # if error_with_endpoint not in config.outages:
+                    #     config.outages.append(error_with_endpoint)
                     logger.debug(
                         "refreshed outage models:" + str(config.outages)
                     )  # Simpler to repick 2 models
