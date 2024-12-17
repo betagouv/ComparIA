@@ -48,7 +48,7 @@ from languia.utils import (
 
 from languia.reveal import build_reveal_html, determine_choice_badge
 
-from languia.logs import vote_last_response, sync_reactions
+from languia.logs import vote_last_response, sync_reactions, record_conversations
 
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -136,7 +136,8 @@ def register_listeners():
             )
 
             logger.info(
-                f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}", extra={request: request}
+                f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}",
+                extra={request: request},
             )
             return conv_a_scoped, conv_b_scoped
 
@@ -508,6 +509,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # Got answer at this point
         app_state_scoped.awaiting_responses = False
+
+        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
         logger.info(
             f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",

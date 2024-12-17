@@ -1,4 +1,3 @@
-
 import gradio as gr
 
 
@@ -21,13 +20,22 @@ import datetime
 import traceback
 
 
-from languia.utils import get_chosen_model_name,messages_to_dict_list,is_unedited_prompt,count_turns,get_ip, get_matomo_tracker_from_cookies
+from languia.utils import (
+    get_chosen_model_name,
+    messages_to_dict_list,
+    is_unedited_prompt,
+    count_turns,
+    get_ip,
+    get_matomo_tracker_from_cookies,
+)
 
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 
 import psycopg2
 from psycopg2 import sql
+
+
 class JSONFormatter(logging.Formatter):
     def format(self, record):
 
@@ -375,6 +383,7 @@ WHERE refers_to_conv_id = %(refers_to_conv_id)s
 
     return data
 
+
 def vote_last_response(
     conversations,
     which_model_radio,
@@ -618,5 +627,153 @@ def record_reaction(
         fout.write(json.dumps(data) + "\n")
     # print(json.dumps(data))
     upsert_reaction_to_db(data=data, request=request)
+
+    return data
+
+
+def upsert_conv_to_db(data):
+
+    from languia.config import db as db_config
+
+    logger = logging.getLogger("languia")
+    if not db_config:
+        logger.warn("Cannot log to db: no db configured")
+        return
+
+    conn = None
+    cursor = None
+
+    try:
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
+        query = sql.SQL(
+            # TODO: tstamp should be earlier
+            """
+            INSERT INTO conversations (
+                model_a_name,
+                model_b_name,
+                conversation_a,
+                conversation_b,
+                conv_turns,
+                template,
+                conversation_pair_id,
+                conv_a_id,
+                conv_b_id,
+                session_hash,
+                visitor_id,
+                ip,
+                country,
+                city,
+                model_pair_name,
+                opening_msg,
+                selected_category,
+                is_unedited_prompt
+                                        )
+            VALUES (
+                %(model_a_name)s,
+                %(model_b_name)s,
+                %(conversation_a)s,
+                %(conversation_b)s,
+                %(conv_turns)s,
+                %(template)s,
+                %(conversation_pair_id)s,
+                %(conv_a_id)s,
+                %(conv_b_id)s,
+                %(session_hash)s,
+                %(visitor_id)s,
+                %(ip)s,
+                %(country)s,
+                %(city)s,
+                %(model_pair_name)s,
+                %(opening_msg)s,
+                %(selected_category)s,
+                %(is_unedited_prompt)s
+            )
+            ON CONFLICT (conversation_pair_id) 
+            DO UPDATE SET
+                conversation_a = EXCLUDED.conversation_a,
+                conversation_b = EXCLUDED.conversation_b,
+                conv_turns = EXCLUDED.conv_turns
+                """
+        )
+
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute(query, data)
+        conn.commit()
+        logger.info("Conversation data successfully saved to DB.")
+
+    except Exception as e:
+        logger.error(f"Error saving conversation to DB: {e}")
+        stacktrace = traceback.format_exc()
+        logger.error(f"Stacktrace: {stacktrace}")
+
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+    return data
+
+
+# TODO: save the beginning of conversation (i.e. when first user msg is sent) instead of time of first db insertion
+def record_conversations(
+    app_state_scoped,
+    conversations,
+    request: gr.Request,
+):
+    # logger = logging.getLogger("languia")
+
+    conversation_a_messages = messages_to_dict_list(conversations[0].messages)
+    conversation_b_messages = messages_to_dict_list(conversations[1].messages)
+
+    model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
+
+    opening_msg = conversations[0].messages[0].content
+    conv_turns = count_turns((conversations[0].messages))
+    t = datetime.datetime.now()
+
+    conv_pair_id = conversations[0].conv_id + "-" + conversations[1].conv_id
+
+    if hasattr(app_state_scoped, "category"):
+        category = app_state_scoped.category
+    else:
+        category = None
+
+    data = {
+        "selected_category": category,
+        "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
+        "model_a_name": conversations[0].model_name,
+        "model_b_name": conversations[1].model_name,
+        "opening_msg": opening_msg,
+        "conversation_a": json.dumps(conversation_a_messages),
+        "conversation_b": json.dumps(conversation_b_messages),
+        "conv_turns": conv_turns,
+        "template": json.dumps(
+            []
+            if conversations[0].template_name == "zero_shot"
+            else conversations[0].template
+        ),
+        "conversation_pair_id": conv_pair_id,
+        "conv_a_id": conversations[0].conv_id,
+        "conv_b_id": conversations[1].conv_id,
+        "session_hash": str(request.session_hash),
+        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        "country": "",
+        "city": "",
+        "model_pair_name": model_pair_name,
+    }
+
+    conv_log_filename = f"conv-{conv_pair_id}.json"
+    conv_log_path = os.path.join(LOGDIR, conv_log_filename)
+
+    # Always rewrite the file
+    with open(conv_log_path, "w") as fout:
+        fout.write(json.dumps(data) + "\n")
+    # print(json.dumps(data))
+    upsert_conv_to_db(data=data, request=request)
 
     return data
