@@ -14,7 +14,7 @@ import gradio as gr
 
 from languia import config
 
-from languia.utils import size_desc, license_desc, license_attrs
+from languia.reveal import size_desc, license_desc, license_attrs
 
 app = FastAPI()
 

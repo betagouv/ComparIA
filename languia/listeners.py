@@ -38,15 +38,15 @@ from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
     get_battle_pair,
-    build_reveal_html,
     refresh_outages,
     on_endpoint_error,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
-    determine_choice_badge,
 )
+
+from languia.reveal import build_reveal_html, determine_choice_badge
 
 from languia.logs import vote_last_response, sync_reactions
 
