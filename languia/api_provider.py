@@ -97,6 +97,8 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
                 elif chunk.choices[0].finish_reason == "length":
                     # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
+                    from languia.logs import session_issue
+                    session_issue(reason="context_too_long", session_hash=request.session_hash)
                     logger.warning("context_too_long: " + str(chunk))
 
                     if os.getenv("SENTRY_DSN"):
