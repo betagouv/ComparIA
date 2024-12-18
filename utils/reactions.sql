@@ -1,4 +1,3 @@
-
 CREATE TABLE reactions (
     id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,12 +66,10 @@ CREATE TABLE reactions (
     msg_rank INT NOT NULL,
     -- Message rank (optional, could be an integer or rating)
     chatbot_index INT NOT NULL,
-    -- Message rank (optional, could be an integer or rating)
+    question_id VARCHAR(500),
     CONSTRAINT unique_conversation_pair UNIQUE (refers_to_conv_id, msg_index)
 );
 
-GRANT USAGE, SELECT ON SEQUENCE reactions_id_seq TO "languia-dev";
-
--- Don't forget to add rights on sequences
-
--- GRANT USAGE, SELECT ON SEQUENCE votes_id_seq TO "languia-dev";
+GRANT USAGE,
+SELECT
+    ON SEQUENCE reactions_id_seq TO "languia-dev";

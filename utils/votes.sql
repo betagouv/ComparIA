@@ -60,3 +60,7 @@ CREATE TABLE votes (
     conv_instructions_not_followed_a BOOLEAN,
     conv_instructions_not_followed_b BOOLEAN,
 );
+
+
+-- Don't forget to add rights on sequences
+-- GRANT USAGE, SELECT ON SEQUENCE votes_id_seq TO "languia-dev";

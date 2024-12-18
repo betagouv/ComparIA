@@ -3,7 +3,7 @@ DROP MATERIALIZED VIEW matview_questions;
 
 CREATE MATERIALIZED VIEW matview_questions AS
 SELECT
-    ROW_NUMBER() OVER () AS id,
+    c.conversation_pair_id || '-' || (q.turn / 2) :: TEXT AS question_id,
     c.id AS conversation_id,
     c.timestamp AS timestamp,
     c.model_a_name AS model_a_name,
@@ -21,7 +21,6 @@ SELECT
     c.conv_turns AS conv_turns,
     c.template AS template,
     c.conversation_pair_id AS conversation_pair_id,
-    c.conversation_pair_id || '-' || (q.turn / 2) :: TEXT AS question_id,
     c.conv_a_id AS conv_a_id,
     c.conv_b_id AS conv_b_id,
     c.session_hash AS session_hash,

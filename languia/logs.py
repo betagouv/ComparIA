@@ -243,7 +243,8 @@ def upsert_reaction_to_db(data, request):
             instructions_not_followed, 
             model_pair_name, 
             msg_rank,
-            chatbot_index
+            chatbot_index,
+            question_id
         )
         VALUES (
             %(model_a_name)s, 
@@ -278,7 +279,8 @@ def upsert_reaction_to_db(data, request):
             %(instructions_not_followed)s, 
             %(model_pair_name)s, 
             %(msg_rank)s,
-            %(chatbot_index)s
+            %(chatbot_index)s,
+            %(question_id)s
         )
         ON CONFLICT (refers_to_conv_id, msg_index) 
         DO UPDATE SET
@@ -312,7 +314,8 @@ def upsert_reaction_to_db(data, request):
             instructions_not_followed = EXCLUDED.instructions_not_followed,
             model_pair_name = EXCLUDED.model_pair_name,
             msg_rank = EXCLUDED.msg_rank,
-            chatbot_index = EXCLUDED.chatbot_index;
+            chatbot_index = EXCLUDED.chatbot_index,
+            question_id = EXCLUDED.question_id;
         """
         )
 
@@ -573,7 +576,8 @@ def record_reaction(
     # rank begins at zero
     msg_rank = msg_index // 2
     question_content = current_conversation.messages[msg_rank * 2].content
-
+    conversation_pair_id = conversations[0].conv_id + "-" + conversations[1].conv_id
+    question_id = conversation_pair_id+"-"+msg_rank
     data = {
         # id
         # "timestamp": t,
@@ -592,9 +596,7 @@ def record_reaction(
             if conversations[0].template_name == "zero_shot"
             else conversations[0].template
         ),
-        "conversation_pair_id": conversations[0].conv_id
-        + "-"
-        + conversations[1].conv_id,
+        "conversation_pair_id": conversation_pair_id,
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,
         "session_hash": str(request.session_hash),
@@ -619,6 +621,7 @@ def record_reaction(
         "chatbot_index": chatbot_index,
         "msg_rank": msg_rank,
         "model_pair_name": json.dumps(model_pair_name),
+        "question_id": question_id,
     }
 
     reaction_log_filename = f"reaction-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
