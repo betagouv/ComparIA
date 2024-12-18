@@ -1,5 +1,7 @@
 -- This is a Materialized view: it needs to be refreshed manually!
-CREATE MATERIALIZED VIEW IF NOT EXISTS matview_questions AS
+DROP MATERIALIZED VIEW matview_questions;
+
+CREATE MATERIALIZED VIEW matview_questions AS
 SELECT
     ROW_NUMBER() OVER () AS id,
     c.id AS conversation_id,
