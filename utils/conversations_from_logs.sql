@@ -239,7 +239,6 @@ conversation_template AS (
     FROM
         conversation_data
 )
-
 UPDATE
     conversations
 SET
@@ -255,52 +254,32 @@ FROM
 WHERE
     conversations.session_hash = conversation_template.session_hash;
 
-INSERT INTO
-    conversations (ip, visitor_id)
-SELECT
-    CASE
-        WHEN message LIKE 'init_arene%' THEN SUBSTRING(
-            message
+UPDATE
+    conversations
+SET
+    ip = CASE
+        WHEN conversations.ip IS NULL
+        AND logs.message LIKE 'init_arene%' THEN SUBSTRING(
+            logs.message
             FROM
                 'IP: ([\d\.]+)'
         )
-        ELSE NULL
-    END AS ip,
-    CASE
-        WHEN message LIKE 'init_arene%' THEN SUBSTRING(
-            message
+        ELSE conversations.ip
+    END,
+    visitor_id = CASE
+        WHEN conversations.visitor_id IS NULL
+        AND logs.message LIKE 'init_arene%' THEN SUBSTRING(
+            logs.message
             FROM
                 'cookie: ([\w\d\.]+)'
         )
-        ELSE NULL
-    END AS visitor_id
+        ELSE conversations.visitor_id
+    END
 FROM
     logs
 WHERE
-    (
-        message LIKE 'init_arene%'
-        AND (
-            message LIKE 'IP: %'
-            OR message LIKE 'cookie: %'
-        )
-    )
-    AND NOT EXISTS (
-        SELECT
-            1
-        FROM
-            conversations c
-        WHERE
-            c.ip = SUBSTRING(
-                message
-                FROM
-                    'IP: ([\d\.]+)'
-            )
-            AND c.visitor_id = SUBSTRING(
-                message
-                FROM
-                    'cookie: ([\w\d\.]+)'
-            )
-    );
+    conversations.session_hash = logs.session_hash
+    AND logs.message LIKE 'init_arene%';
 
 -- UPDATE
 --     conversations
