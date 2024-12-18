@@ -1,10 +1,10 @@
 -- This is a Materialized view: it needs to be refreshed manually!
-DROP MATERIALIZED VIEW matview_questions;
+-- Drop the existing materialized view
+DROP MATERIALIZED VIEW IF EXISTS matview_questions;
 
 CREATE MATERIALIZED VIEW matview_questions AS
 SELECT
     c.conversation_pair_id || '-' || (q.turn / 2) :: TEXT AS question_id,
-    c.id AS conversation_id,
     c.timestamp AS timestamp,
     c.model_a_name AS model_a_name,
     c.model_b_name AS model_b_name,
@@ -29,7 +29,9 @@ SELECT
     c.country AS country,
     c.city AS city,
     (q.turn / 2) :: INT AS msg_rank,
-    c.model_pair_name AS model_pair_name
+    c.model_pair_name AS model_pair_name,
+    COALESCE(ra.id, NULL) AS response_a_reaction_id,
+    COALESCE(rb.id, NULL) AS response_b_reaction_id
 FROM
     conversations c -- Extract the questions from both conversations
     LEFT JOIN LATERAL (
@@ -49,7 +51,7 @@ FROM
             jsonb_array_elements(c.conversation_a) WITH ORDINALITY AS m(msg, turn)
         WHERE
             m.msg ->> 'role' = 'assistant' -- Filter for assistant responses
-    ) a ON (q.turn / 2) :: INT + 1 = a.turn -- Match response to the corresponding question
+    ) a ON (q.turn) :: INT + 1 = a.turn -- Extract the responses from conversation_b
     LEFT JOIN LATERAL (
         SELECT
             msg,
@@ -58,7 +60,11 @@ FROM
             jsonb_array_elements(c.conversation_b) WITH ORDINALITY AS m(msg, turn)
         WHERE
             m.msg ->> 'role' = 'assistant' -- Filter for assistant responses
-    ) b ON (q.turn / 2) :: INT + 1 = b.turn -- Match response to the corresponding question
+    ) b ON (q.turn) :: INT + 1 = b.turn -- Join with reactions to get reaction IDs for model A
+    LEFT JOIN reactions ra ON ra.question_id = c.conversation_pair_id || '-' || (q.turn / 2) :: TEXT
+    AND ra.model_pos = 'a' -- Join with reactions to get reaction IDs for model B
+    LEFT JOIN reactions rb ON rb.question_id = c.conversation_pair_id || '-' || (q.turn / 2) :: TEXT
+    AND rb.model_pos = 'b'
 WHERE
     NOT c.archived;
 
