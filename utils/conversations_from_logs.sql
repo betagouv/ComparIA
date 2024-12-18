@@ -184,10 +184,8 @@ WITH conversation_data AS (
     FROM
         conversations
     WHERE
-        (
-            conv_a_id IS NULL
-            OR conv_a_id = ''
-        )
+        conv_a_id IS NULL
+        OR conv_a_id = ''
 ),
 conversation_template AS (
     SELECT
@@ -195,7 +193,8 @@ conversation_template AS (
         conv_a_id,
         conv_b_id,
         CONCAT(conv_a_id, '-', conv_b_id) AS conversation_pair_id,
-        CONCAT(model_a_name, ',', model_b_name) AS model_pair_name,
+        model_a_name,
+        model_b_name,
         conv_turns,
         opening_msg
     FROM
@@ -206,7 +205,47 @@ UPDATE
 SET
     conv_a_id = conversation_template.conv_a_id,
     conv_b_id = conversation_template.conv_b_id,
-    conversation_pair_id = conversation_template.conversation_pair_id,
+    conversation_pair_id = conversation_template.conversation_pair_id
+FROM
+    conversation_template
+WHERE
+    conversations.session_hash = conversation_template.session_hash;
+
+WITH conversation_data AS (
+    SELECT
+        session_hash,
+        -- REPLACE(uuid_generate_v4() :: text, '-', '') AS conv_a_id,
+        -- REPLACE(uuid_generate_v4() :: text, '-', '') AS conv_b_id,
+        json_array_length(conversation_a :: json) / 2 AS conv_turns,
+        (conversation_a :: json -> 0 ->> 'content') AS opening_msg,
+        model_a_name,
+        model_b_name
+    FROM
+        conversations -- WHERE
+        --     (
+        --         conv_a_id IS NULL
+        --         OR conv_a_id = ''
+        --     )
+),
+conversation_template AS (
+    SELECT
+        session_hash,
+        -- conv_a_id,
+        -- conv_b_id,
+        -- CONCAT(conv_a_id, '-', conv_b_id) AS conversation_pair_id,
+        CONCAT(model_a_name, ',', model_b_name) AS model_pair_name,
+        conv_turns,
+        opening_msg
+    FROM
+        conversation_data
+)
+
+UPDATE
+    conversations
+SET
+    -- conv_a_id = conversation_template.conv_a_id,
+    -- conv_b_id = conversation_template.conv_b_id,
+    -- conversation_pair_id = conversation_template.conversation_pair_id,
     model_pair_name = conversation_template.model_pair_name,
     conv_turns = conversation_template.conv_turns,
     opening_msg = conversation_template.opening_msg,
