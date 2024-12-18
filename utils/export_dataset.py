@@ -110,6 +110,7 @@ def fetch_and_transform_data(table_name, query=None):
             df["ip"] = df["ip"].apply(ip_to_number)
             df = df.dropna(subset=["ip"])
             df["ip"] = df["ip"].astype(int)
+            df = df.drop(subset=["ip_id"])
 
         return df
     except Exception as e:
@@ -129,9 +130,9 @@ def export_data(df, table_name):
     logger.info(f"Exporting data for table: {table_name}")
     try:
         # Export full dataset
-        # df.to_csv(f"{table_name}.tsv", sep="\t", index=False)
-        # df.to_json(f"{table_name}.json", orient="records", indent=2)
-        # df.to_json(f"{table_name}.jsonl", orient="records", lines=True)
+        df.to_csv(f"{table_name}.tsv", sep="\t", index=False)
+        df.to_json(f"{table_name}.json", orient="records", indent=2)
+        df.to_json(f"{table_name}.jsonl", orient="records", lines=True)
 
         # Export sample of 1000 rows
         sample_df = df.sample(n=min(len(df), 1000), random_state=42)
@@ -150,7 +151,9 @@ def main():
     queries = {
         "votes": VOTES_QUERY,
         "reactions": None,  # Default fetch all
-        "conversations": CONV_QUERY,
+        # "conversations": CONV_QUERY,
+        "questions": None
+
     }
 
     for table, query in queries.items():
