@@ -37,6 +37,10 @@ def get_ip(request: gr.Request):
         ip = request.headers["x-forwarded-for"]
     else:
         ip = request.client.host
+    # Sometimes multiple IPs are returned as a comma-separated string
+    if ',' in ip:
+        ip = ip.split(",")[0].strip()
+    
     return ip
 
 
