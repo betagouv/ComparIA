@@ -96,21 +96,36 @@ def hash_md5(value):
 # Generic fetch function
 def fetch_and_transform_data(table_name, query=None):
     """
-    Fetch data from a database table and optionally apply transformations.
+    Fetch data from a database table and apply transformations.
+    Prioritize visitor_id and fallback to ip_map if no visitor_id.
     """
     query = query or f"SELECT * FROM {table_name}"
     try:
         logger.info(f"Fetching data from table: {table_name}")
         df = pd.read_sql_query(query, conn)
+
+        # Handling visitor_id transformation
         if "visitor_id" in df.columns:
             logger.info("Hashing visitor_id with MD5...")
-            df["visitor_id"] = df["visitor_id"].apply(hash_md5)
+            df["visitor_id"] = df["visitor_id"].apply(
+                lambda x: hash_md5(x) if pd.notnull(x) else None
+            )
+
+        # If there are missing visitor_ids, replace them with the MD5 of the ip_map id
+        if "visitor_id" in df.columns:
+            logger.info("Replacing missing visitor_id with hashed IP map ID...")
+            df["visitor_id"] = df.apply(
+                lambda row: (
+                    hash_md5(f"ip-{ip_to_number(row['ip'])}")
+                    if pd.isnull(row["visitor_id"]) and pd.notnull(row["ip"])
+                    else row["visitor_id"]
+                ),
+                axis=1,
+            )
+            
+        # If there's an IP column, drop it
         if "ip" in df.columns:
-            logger.info("Replacing IPs...")
-            df["ip"] = df["ip"].apply(ip_to_number)
-            df = df.dropna(subset=["ip"])
-            df["ip"] = df["ip"].astype(int)
-            df = df.drop(subset=["ip_id"])
+            df = df.drop(subset=["ip_id", "ip"])
 
         return df
     except Exception as e:
@@ -152,8 +167,7 @@ def main():
         "votes": VOTES_QUERY,
         "reactions": None,  # Default fetch all
         # "conversations": CONV_QUERY,
-        "questions": None
-
+        "questions": None,
     }
 
     for table, query in queries.items():
