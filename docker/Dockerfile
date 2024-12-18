@@ -45,6 +45,8 @@ ARG GIT_COMMIT
 ENV GIT_COMMIT=$GIT_COMMIT
 
 COPY controller.py main.py models-extra-info.toml /app/
+# Useful for export scripts
+COPY utils /app/utils
 COPY templates /app/templates
 COPY assets /app/assets
 COPY languia /app/languia
