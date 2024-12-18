@@ -29,8 +29,7 @@ SELECT
     c.country AS country,
     c.city AS city,
     (q.turn / 2) :: INT AS msg_rank,
-    c.model_pair_name AS model_pair_name,
-    NULL AS chatbot_index -- Placeholder for chatbot index
+    c.model_pair_name AS model_pair_name
 FROM
     conversations c -- Extract the questions from both conversations
     LEFT JOIN LATERAL (
