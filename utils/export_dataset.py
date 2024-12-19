@@ -2,6 +2,7 @@ import psycopg2
 import pandas as pd
 import logging
 from languia.config import db as db_config
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -27,9 +28,10 @@ except Exception as e:
 # Query templates
 CONV_QUERY = "SELECT * FROM conversations WHERE archived = FALSE"
 
+QUESTIONS_QUERY = "SELECT refresh_matview_questions(); SELECT * FROM matview_questions;"
 # Needs additional priv.
 # QUESTIONS_QUERY = "REFRESH MATERIALIZED VIEW matview_questions; SELECT * FROM matview_questions;"
-QUESTIONS_QUERY = "SELECT * FROM matview_questions;"
+# QUESTIONS_QUERY = "SELECT * FROM matview_questions;"
 
 VOTES_QUERY = """
 SELECT
@@ -144,19 +146,24 @@ def export_data(df, table_name):
     if df.empty:
         logger.warning(f"No data to export for table: {table_name}")
         return
+    export_dir = "datasets"
+    if not os.path.exists(export_dir):
+        os.mkdir(export_dir)
+        logger.info(f"Created export directory: {export_dir}")
+    
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
         # Export full dataset
-        df.to_csv(f"{table_name}.tsv", sep="\t", index=False)
-        # df.to_json(f"{table_name}.json", orient="records", indent=2)
-        df.to_json(f"{table_name}.jsonl", orient="records", lines=True)
+        df.to_csv(f"{export_dir}/{table_name}.tsv", sep="\t", index=False)
+        # df.to_json(f"{export_dir}/{table_name}.json", orient="records", indent=2)
+        df.to_json(f"{export_dir}/{table_name}.jsonl", orient="records", lines=True)
 
         # Export sample of 1000 rows
         sample_df = df.sample(n=min(len(df), 1000), random_state=42)
-        sample_df.to_csv(f"{table_name}_samples.tsv", sep="\t", index=False)
-        # sample_df.to_json(f"{table_name}_samples.json", orient="records", indent=2)
-        sample_df.to_json(f"{table_name}_samples.jsonl", orient="records", lines=True)
+        sample_df.to_csv(f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False)
+        # sample_df.to_json(f"{export_dir}/{table_name}_samples.json", orient="records", indent=2)
+        sample_df.to_json(f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True)
 
         logger.info(f"Export completed for table: {table_name}")
     except Exception as e:
@@ -186,3 +193,4 @@ if __name__ == "__main__":
     finally:
         conn.close()
         logger.info("Database connection closed.")
+
