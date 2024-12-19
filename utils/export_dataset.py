@@ -27,6 +27,10 @@ except Exception as e:
 # Query templates
 CONV_QUERY = "SELECT * FROM conversations WHERE archived = FALSE"
 
+# Needs additional priv.
+# QUESTIONS_QUERY = "REFRESH MATERIALIZED VIEW matview_questions; SELECT * FROM matview_questions;"
+QUESTIONS_QUERY = "SELECT * FROM matview_questions;"
+
 VOTES_QUERY = """
 SELECT
     tstamp AS timestamp,
@@ -122,10 +126,12 @@ def fetch_and_transform_data(table_name, query=None):
                 ),
                 axis=1,
             )
-            
+
         # If there's an IP column, drop it
         if "ip" in df.columns:
-            df = df.drop(subset=["ip_id", "ip"])
+            df = df.drop(columns=["ip"])
+        if "ip_id" in df.columns:
+            df = df.drop(columns=["ip_id"])
 
         return df
     except Exception as e:
@@ -135,9 +141,6 @@ def fetch_and_transform_data(table_name, query=None):
 
 # Export function
 def export_data(df, table_name):
-    """
-    Export data to TSV, JSON, and JSONL formats.
-    """
     if df.empty:
         logger.warning(f"No data to export for table: {table_name}")
         return
@@ -146,13 +149,13 @@ def export_data(df, table_name):
     try:
         # Export full dataset
         df.to_csv(f"{table_name}.tsv", sep="\t", index=False)
-        df.to_json(f"{table_name}.json", orient="records", indent=2)
+        # df.to_json(f"{table_name}.json", orient="records", indent=2)
         df.to_json(f"{table_name}.jsonl", orient="records", lines=True)
 
         # Export sample of 1000 rows
         sample_df = df.sample(n=min(len(df), 1000), random_state=42)
         sample_df.to_csv(f"{table_name}_samples.tsv", sep="\t", index=False)
-        sample_df.to_json(f"{table_name}_samples.json", orient="records", indent=2)
+        # sample_df.to_json(f"{table_name}_samples.json", orient="records", indent=2)
         sample_df.to_json(f"{table_name}_samples.jsonl", orient="records", lines=True)
 
         logger.info(f"Export completed for table: {table_name}")
@@ -167,7 +170,7 @@ def main():
         "votes": VOTES_QUERY,
         "reactions": None,  # Default fetch all
         # "conversations": CONV_QUERY,
-        "questions": None,
+        "questions": QUESTIONS_QUERY,
     }
 
     for table, query in queries.items():
