@@ -149,40 +149,77 @@ def save_vote_to_db(data):
     cursor = conn.cursor()
     try:
         insert_statement = sql.SQL(
-            """
-            INSERT INTO votes (tstamp, model_a_name, model_b_name, model_pair_name, chosen_model_name, both_equal, opening_prompt, conversation_a, conversation_b, turns, selected_category, is_unedited_prompt, template, uuid, ip, session_hash, visitor_uuid, comments_a, extra, comments_b, details_a_positive, details_a_negative, details_b_positive, details_b_negative)
-            VALUES (%(tstamp)s, %(model_a_name)s, %(model_b_name)s, %(model_pair_name)s, %(chosen_model_name)s, %(both_equal)s, %(opening_prompt)s, %(conversation_a)s, %(conversation_b)s, %(turns)s, %(selected_category)s, %(is_unedited_prompt)s, %(template)s, %(uuid)s, %(ip)s, %(session_hash)s, %(visitor_uuid)s, %(comments_a)s, %(extra)s, %(comments_b)s, %(details_a_positive)s, %(details_a_negative)s, %(details_b_positive)s, %(details_b_negative)s)
-
         """
+        INSERT INTO votes (
+            timestamp, 
+            model_a_name, 
+            model_b_name, 
+            model_pair_name, 
+            chosen_model_name, 
+            both_equal, 
+            opening_msg, 
+            conversation_a, 
+            conversation_b, 
+            conv_turns, 
+            selected_category, 
+            is_unedited_prompt, 
+            template, 
+            conversation_pair_id, 
+            ip, 
+            session_hash, 
+            visitor_id, 
+            conv_useful_a, 
+            conv_creative_a, 
+            conv_clear_formatting_a, 
+            conv_incorrect_a, 
+            conv_superficial_a, 
+            conv_instructions_not_followed_a, 
+            conv_useful_b, 
+            conv_creative_b, 
+            conv_clear_formatting_b, 
+            conv_incorrect_b, 
+            conv_superficial_b, 
+            conv_instructions_not_followed_b, 
+            comments_a, 
+            comments_b
         )
-        # TODO: refacto, values should equal data
-        values = {
-            "tstamp": (data["tstamp"]),
-            "model_a_name": str(data["model_a_name"]),
-            "model_b_name": str(data["model_b_name"]),
-            "model_pair_name": json.dumps(sorted(data["model_pair_name"])),
-            "chosen_model_name": (data["chosen_model_name"]),
-            "both_equal": (data["both_equal"]),
-            "opening_prompt": str(data["opening_prompt"]),
-            "conversation_a": json.dumps(data["conversation_a"]),
-            "conversation_b": json.dumps(data["conversation_b"]),
-            "turns": int(data["turns"]),
-            "selected_category": (data["selected_category"]),
-            "is_unedited_prompt": data["is_unedited_prompt"],
-            "template": json.dumps(data["template"]),
-            "uuid": str(data["uuid"]),
-            "ip": str(data["ip"]),
-            "session_hash": str(data["session_hash"]),
-            "visitor_uuid": (data["visitor_uuid"]),
-            "details_a_positive": (data["details_a_positive"]),
-            "details_a_negative": (data["details_a_negative"]),
-            "details_b_positive": (data["details_b_positive"]),
-            "details_b_negative": (data["details_b_negative"]),
-            "comments_a": (data["comments_a"]),
-            "comments_b": (data["comments_b"]),
-            "extra": json.dumps(data["extra"]),
-        }
-        cursor.execute(insert_statement, values)
+        VALUES (
+            %(timestamp)s, 
+            %(model_a_name)s, 
+            %(model_b_name)s, 
+            %(model_pair_name)s, 
+            %(chosen_model_name)s, 
+            %(both_equal)s, 
+            %(opening_msg)s, 
+            %(conversation_a)s, 
+            %(conversation_b)s, 
+            %(conv_turns)s, 
+            %(selected_category)s, 
+            %(is_unedited_prompt)s, 
+            %(template)s, 
+            %(conversation_pair_id)s, 
+            %(ip)s, 
+            %(session_hash)s, 
+            %(visitor_id)s, 
+            %(conv_useful_a)s, 
+            %(conv_creative_a)s, 
+            %(conv_clear_formatting_a)s, 
+            %(conv_incorrect_a)s, 
+            %(conv_superficial_a)s, 
+            %(conv_instructions_not_followed_a)s, 
+            %(conv_useful_b)s, 
+            %(conv_creative_b)s, 
+            %(conv_clear_formatting_b)s, 
+            %(conv_incorrect_b)s, 
+            %(conv_superficial_b)s, 
+            %(conv_instructions_not_followed_b)s, 
+            %(comments_a)s, 
+            %(comments_b)s
+        )
+    """
+    )
+        
+        cursor.execute(insert_statement, data)
         conn.commit()
     except Exception as e:
         logger.error(f"Error saving vote to db: {e}")
@@ -194,6 +231,114 @@ def save_vote_to_db(data):
         if conn:
             conn.close()
 
+
+def vote_last_response(
+    conversations,
+    which_model_radio,
+    category,
+    details: list,
+    request: gr.Request,
+):
+    logger = logging.getLogger("languia")
+
+    chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
+    # intensity = get_intensity(which_model_radio)
+    both_equal = chosen_model_name is None
+    conversation_a_messages = messages_to_dict_list(conversations[0].messages)
+    conversation_b_messages = messages_to_dict_list(conversations[1].messages)
+
+    # >>> import geoip2.database
+    # >>>
+    # >>> # This creates a Reader object. You should use the same object
+    # >>> # across multiple requests as creation of it is expensive.
+    # >>> with geoip2.database.Reader('/path/to/GeoLite2-City.mmdb') as reader:
+    # >>>
+    # >>>     # Replace "city" with the method corresponding to the database
+    # >>>     # that you are using, e.g., "country".
+    # >>>     response = reader.city('203.0.113.0')
+    # >>>
+    # >>>     response.country.iso_code
+    # 'US'
+    # >>>     response.country.name
+    # 'United States'
+    # >>>     response.country.names['zh-CN']
+
+    t = datetime.datetime.now()
+    model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
+    opening_msg = conversations[0].messages[0].content
+    data = {
+        "timestamp": str(t),
+        "model_a_name": conversations[0].model_name,
+        "model_b_name": conversations[1].model_name,
+        # sorted
+        "model_pair_name": model_pair_name,
+        "chosen_model_name": chosen_model_name,
+        "both_equal": both_equal,
+        "opening_msg": opening_msg,
+        "conversation_a": conversation_a_messages,
+        "conversation_b": conversation_b_messages,
+        "conv_turns": count_turns((conversations[0].messages)),
+        "selected_category": category,
+        "is_unedited_prompt": (is_unedited_prompt(opening_prompt, category)),
+        "template": (
+            []
+            if conversations[0].template_name == "zero_shot"
+            else conversations[0].template
+        ),
+        "conversation_pair_id": conversations[0].conv_id + "-" + conversations[1].conv_id,
+        # Warning: IP is a PII
+        "ip": str(get_ip(request)),
+        "session_hash": str(request.session_hash),
+        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        "conv_useful_a": "useful" in details["prefs_a"],
+        "conv_creative_a": "creative" in details["prefs_a"],
+        "conv_clear_formatting_a": "clear-formatting" in details["prefs_a"],
+        "conv_incorrect_a": "incorrect" in details["prefs_a"],
+        "conv_superficial_a": "superficial" in details["prefs_a"],
+        "conv_instructions_not_followed_a": "instructions-not-followed" in details["prefs_a"],
+        "conv_useful_b": "useful" in details["prefs_b"],
+        "conv_creative_b": "creative" in details["prefs_b"],
+        "conv_clear_formatting_b": "clear-formatting" in details["prefs_b"],
+        "conv_incorrect_b": "incorrect" in details["prefs_b"],
+        "conv_superficial_b": "superficial" in details["prefs_b"],
+        "conv_instructions_not_followed_b": "instructions-not-followed" in details["prefs_b"],
+        "conv_comments_a": details["conv_comments_a"],
+        "conv_comments_b": details["comments_b"],
+        # For redundance
+        # "extra": {
+        #     "cookies": dict(request.cookies),
+        #     "query_params": dict(request.query_params),
+        #     "path_params": dict(request.path_params),
+        # },
+    }
+    vote_string = chosen_model_name or "both_equal"
+    vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
+    vote_log_path = os.path.join(LOGDIR, vote_log_filename)
+    with open(vote_log_path, "a") as fout:
+        logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
+        logger.info(
+            f'preferences_a: {','.join(details["prefs_a"])}',
+            extra={"request": request},
+        )
+        logger.info(
+            f'preferences_b: {','.join(details["prefs_b"])}',
+            extra={"request": request},
+        )
+        if details["comments_a"] != "":
+            logger.info(
+                f"commentaires_a: {details.get('comments_a', '')}",
+                extra={"request": request},
+            )
+        if details["comments_b"] != "":
+            logger.info(
+                f"commentaires_b: {details.get('comments_b', '')}",
+                extra={"request": request},
+            )
+        fout.write(json.dumps(data) + "\n")
+
+    save_vote_to_db(data=data)
+
+    return data
 
 def upsert_reaction_to_db(data, request):
     logger = logging.getLogger("languia")
@@ -387,107 +532,6 @@ WHERE refers_to_conv_id = %(refers_to_conv_id)s
     return data
 
 
-def vote_last_response(
-    conversations,
-    which_model_radio,
-    category,
-    details: list,
-    request: gr.Request,
-):
-    logger = logging.getLogger("languia")
-
-    chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
-    # intensity = get_intensity(which_model_radio)
-    both_equal = chosen_model_name is None
-    conversation_a_messages = messages_to_dict_list(conversations[0].messages)
-    conversation_b_messages = messages_to_dict_list(conversations[1].messages)
-
-    # >>> import geoip2.database
-    # >>>
-    # >>> # This creates a Reader object. You should use the same object
-    # >>> # across multiple requests as creation of it is expensive.
-    # >>> with geoip2.database.Reader('/path/to/GeoLite2-City.mmdb') as reader:
-    # >>>
-    # >>>     # Replace "city" with the method corresponding to the database
-    # >>>     # that you are using, e.g., "country".
-    # >>>     response = reader.city('203.0.113.0')
-    # >>>
-    # >>>     response.country.iso_code
-    # 'US'
-    # >>>     response.country.name
-    # 'United States'
-    # >>>     response.country.names['zh-CN']
-
-    t = datetime.datetime.now()
-    model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
-    opening_prompt = conversations[0].messages[0].content
-    data = {
-        "tstamp": str(t),
-        "model_a_name": conversations[0].model_name,
-        "model_b_name": conversations[1].model_name,
-        # sorted
-        "model_pair_name": model_pair_name,
-        "chosen_model_name": chosen_model_name,
-        "both_equal": both_equal,
-        # "intensity": None,
-        "opening_prompt": opening_prompt,
-        "conversation_a": conversation_a_messages,
-        "conversation_b": conversation_b_messages,
-        "turns": count_turns((conversations[0].messages)),
-        "selected_category": category,
-        "is_unedited_prompt": (is_unedited_prompt(opening_prompt, category)),
-        "template": (
-            []
-            if conversations[0].template_name == "zero_shot"
-            else conversations[0].template
-        ),
-        "uuid": conversations[0].conv_id + "-" + conversations[1].conv_id,
-        # Warning: IP is a PII
-        "ip": str(get_ip(request)),
-        "session_hash": str(request.session_hash),
-        "visitor_uuid": (get_matomo_tracker_from_cookies(request.cookies)),
-        "details_a_positive": (details["positive_a"]),
-        "details_a_negative": (details["negative_a"]),
-        "details_b_positive": (details["positive_b"]),
-        "details_b_negative": (details["negative_b"]),
-        "comments_a": details["comments_a"],
-        "comments_b": details["comments_b"],
-        # For redundance
-        "extra": {
-            "cookies": dict(request.cookies),
-            "query_params": dict(request.query_params),
-            "path_params": dict(request.path_params),
-        },
-    }
-    vote_string = chosen_model_name or "both_equal"
-    vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
-    vote_log_path = os.path.join(LOGDIR, vote_log_filename)
-    with open(vote_log_path, "a") as fout:
-        logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
-        logger.info(
-            f'preferences_a: {details["positive_a"]},{details["negative_a"]}',
-            extra={"request": request},
-        )
-        logger.info(
-            f'preferences_b: {details["positive_b"]},{details["negative_b"]}',
-            extra={"request": request},
-        )
-        if details["comments_a"] != "":
-            logger.info(
-                f"commentaires_a: {details.get('comments_a', '')}",
-                extra={"request": request},
-            )
-        if details["comments_b"] != "":
-            logger.info(
-                f"commentaires_b: {details.get('comments_b', '')}",
-                extra={"request": request},
-            )
-        fout.write(json.dumps(data) + "\n")
-
-    save_vote_to_db(data=data)
-
-    return data
-
 
 def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
 
@@ -577,7 +621,7 @@ def record_reaction(
     msg_rank = msg_index // 2
     question_content = current_conversation.messages[msg_rank * 2].content
     conversation_pair_id = conversations[0].conv_id + "-" + conversations[1].conv_id
-    question_id = conversation_pair_id+"-"+msg_rank
+    question_id = conversation_pair_id + "-" + msg_rank
     data = {
         # id
         # "timestamp": t,
