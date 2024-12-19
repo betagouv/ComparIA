@@ -74,3 +74,14 @@ SELECT
     ON TABLE matview_questions TO "languia-ro-stg";
 
 GRANT ALL PRIVILEGES ON TABLE matview_questions TO "languia-stg";
+
+CREATE OR REPLACE FUNCTION refresh_matview_questions()
+RETURNS void AS $$
+BEGIN
+    REFRESH MATERIALIZED VIEW matview_questions;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+Then, grant execution rights to the user:
+
+GRANT EXECUTE ON FUNCTION refresh_matview_questions() TO "languia-stg";
