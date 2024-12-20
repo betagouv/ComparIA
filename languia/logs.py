@@ -279,7 +279,7 @@ def vote_last_response(
         "conversation_b": conversation_b_messages,
         "conv_turns": count_turns((conversations[0].messages)),
         "selected_category": category,
-        "is_unedited_prompt": (is_unedited_prompt(opening_prompt, category)),
+        "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
         "template": (
             []
             if conversations[0].template_name == "zero_shot"
@@ -608,7 +608,7 @@ def record_reaction(
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
-    opening_prompt = conversations[0].messages[0].content
+    opening_msg = conversations[0].messages[0].content
     conv_turns = count_turns((conversations[0].messages))
     t = datetime.datetime.now()
     refers_to_model = current_conversation.model_name
@@ -616,7 +616,7 @@ def record_reaction(
     msg_rank = msg_index // 2
     question_content = current_conversation.messages[msg_rank * 2].content
     conversation_pair_id = conversations[0].conv_id + "-" + conversations[1].conv_id
-    question_id = conversation_pair_id + "-" + msg_rank
+    question_id = conversation_pair_id + "-" + str(msg_rank)
     data = {
         # id
         # "timestamp": t,
@@ -624,7 +624,7 @@ def record_reaction(
         "model_b_name": conversations[1].model_name,
         "refers_to_model": refers_to_model,  # (model name)
         "msg_index": msg_index,
-        "opening_msg": opening_prompt,
+        "opening_msg": opening_msg,
         "conversation_a": json.dumps(conversation_a_messages),
         "conversation_b": json.dumps(conversation_b_messages),
         "model_pos": model_pos,
@@ -731,7 +731,7 @@ def upsert_conv_to_db(data):
                 %(selected_category)s,
                 %(is_unedited_prompt)s
             )
-            ON CONFLICT (conversation_pair_id) 
+            ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
                 conversation_a = EXCLUDED.conversation_a,
                 conversation_b = EXCLUDED.conversation_b,
@@ -743,7 +743,7 @@ def upsert_conv_to_db(data):
         cursor = conn.cursor()
         cursor.execute(query, data)
         conn.commit()
-        logger.info("Conversation data successfully saved to DB.")
+        logger.debug("Conversation data successfully saved to DB.")
 
     except Exception as e:
         logger.error(f"Error saving conversation to DB: {e}")

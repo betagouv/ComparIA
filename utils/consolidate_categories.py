@@ -16,10 +16,10 @@ def extract_selected_category(msg):
         return match.group(1)
     return None
 
-# Function to find category from prompts_table based on opening_prompt
-def find_category_from_prompt(opening_prompt):
+# Function to find category from prompts_table based on opening_msg
+def find_category_from_prompt(opening_msg):
     for category, prompts in prompts_table.items():
-        if opening_prompt in prompts:
+        if opening_msg in prompts:
             return category
     return None
 
@@ -48,7 +48,7 @@ def update_selected_category(conn):
     with conn.cursor() as cur:
         # Fetch records where selected_category is NULL
         query = """
-        SELECT tstamp, uuid, opening_prompt, is_unedited_prompt, selected_category, session_hash
+        SELECT tstamp, uuid, opening_msg, is_unedited_prompt, selected_category, session_hash
         FROM votes
         WHERE selected_category IS NULL AND is_unedited_prompt = FALSE
         ORDER BY tstamp DESC;
@@ -58,12 +58,12 @@ def update_selected_category(conn):
 
         # Iterate through records
         for record in records:
-            tstamp, uuid, opening_prompt, is_unedited_prompt, selected_category, session_hash = record
+            tstamp, uuid, opening_msg, is_unedited_prompt, selected_category, session_hash = record
             
             # print(f"Looking for session_hash '{session_hash}' in logs...")
             
             # Find the selected_category in the logs database using session_hash
-            # new_category = find_category_from_prompt(opening_prompt)
+            # new_category = find_category_from_prompt(opening_msg)
             new_category = find_selected_category_in_logs(conn, session_hash)
             
             if new_category:

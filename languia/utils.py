@@ -75,12 +75,12 @@ def count_turns(messages):
     return len(messages) // 2
 
 
-def is_unedited_prompt(opening_prompt, category):
+def is_unedited_prompt(opening_msg, category):
     if not category:
         return False
     from languia.config import prompts_table
 
-    return opening_prompt in prompts_table[category]
+    return opening_msg in prompts_table[category]
 
 
 def messages_to_dict_list(messages):
