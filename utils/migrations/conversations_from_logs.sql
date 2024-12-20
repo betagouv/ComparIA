@@ -209,8 +209,11 @@ SET
 FROM
     conversation_template
 WHERE
-    conversations.session_hash = conversation_template.session_hash;
+    conversations.session_hash = conversation_template.session_hash
+    AND (conversations.conv_a_id IS NULL
+        OR conversations.conv_a_id = '');
 
+-- Add missing fields part. 2
 WITH conversation_data AS (
     SELECT
         session_hash,
