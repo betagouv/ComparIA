@@ -33,20 +33,19 @@ QUESTIONS_QUERY = "SELECT refresh_matview_questions(); SELECT * FROM matview_que
 # Needs additional priv.
 # QUESTIONS_QUERY = "REFRESH MATERIALIZED VIEW matview_questions; SELECT * FROM matview_questions;"
 
-# TODO: just select some fields from questions table instead
-#  c.conversation_pair_id || '-' || (q.turn / 2) :: TEXT AS question_id,
-#     c.timestamp AS timestamp,
-#     q.msg ->> 'content' AS question_content,
-#     c.conv_turns AS conv_turns,
-#     c.template AS template,
-#     c.conversation_pair_id AS conversation_pair_id,
-#     c.session_hash AS session_hash,
-#     c.visitor_id AS visitor_id,
-#     c.ip AS ip,
-#     c.country AS country,
-#     c.city AS city,
-#     (q.turn / 2) :: INT AS msg_rank,
-QUESTIONS_ONLY_QUERY = "SELECT refresh_matview_questions_only(); SELECT * FROM matview_questions_only;"
+QUESTIONS_ONLY_QUERY = """SELECT q.question_id,
+        q.timestamp,
+        q.question_content,
+        q.conv_turns,
+        q.template,
+        q.conversation_pair_id,
+        q.session_hash,
+        q.visitor_id,
+        q.ip,
+        q.country,
+        q.city,
+        q.msg_rank
+   FROM matview_questions q;"""
 
 VOTES_QUERY = """
 SELECT
@@ -165,7 +164,6 @@ def export_data(df, table_name):
     if not os.path.exists(export_dir):
         os.mkdir(export_dir)
         logger.info(f"Created export directory: {export_dir}")
-    
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
@@ -176,9 +174,13 @@ def export_data(df, table_name):
 
         # Export sample of 1000 rows
         sample_df = df.sample(n=min(len(df), 1000), random_state=42)
-        sample_df.to_csv(f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False)
+        sample_df.to_csv(
+            f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False
+        )
         # sample_df.to_json(f"{export_dir}/{table_name}_samples.json", orient="records", indent=2)
-        sample_df.to_json(f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True)
+        sample_df.to_json(
+            f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True
+        )
 
         logger.info(f"Export completed for table: {table_name}")
     except Exception as e:
@@ -209,4 +211,3 @@ if __name__ == "__main__":
     finally:
         conn.close()
         logger.info("Database connection closed.")
-
