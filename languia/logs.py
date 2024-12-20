@@ -306,7 +306,7 @@ def vote_last_response(
         "conv_superficial_b": "superficial" in details["prefs_b"],
         "conv_instructions_not_followed_b": "instructions-not-followed"
         in details["prefs_b"],
-        "conv_comments_a": details["conv_comments_a"],
+        "conv_comments_a": details["comments_a"],
         "conv_comments_b": details["comments_b"],
         # For redundance
         # "extra": {
