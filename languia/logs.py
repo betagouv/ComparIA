@@ -180,8 +180,8 @@ def save_vote_to_db(data):
             conv_incorrect_b, 
             conv_superficial_b, 
             conv_instructions_not_followed_b, 
-            comments_a, 
-            comments_b
+            conv_comments_a, 
+            conv_comments_b
         )
         VALUES (
             %(timestamp)s, 
@@ -213,8 +213,8 @@ def save_vote_to_db(data):
             %(conv_incorrect_b)s, 
             %(conv_superficial_b)s, 
             %(conv_instructions_not_followed_b)s, 
-            %(comments_a)s, 
-            %(comments_b)s
+            %(conv_comments_a)s, 
+            %(conv_comments_b)s
         )
     """
         )
@@ -242,26 +242,9 @@ def vote_last_response(
     logger = logging.getLogger("languia")
 
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
-    # intensity = get_intensity(which_model_radio)
     both_equal = chosen_model_name is None
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
-
-    # >>> import geoip2.database
-    # >>>
-    # >>> # This creates a Reader object. You should use the same object
-    # >>> # across multiple requests as creation of it is expensive.
-    # >>> with geoip2.database.Reader('/path/to/GeoLite2-City.mmdb') as reader:
-    # >>>
-    # >>>     # Replace "city" with the method corresponding to the database
-    # >>>     # that you are using, e.g., "country".
-    # >>>     response = reader.city('203.0.113.0')
-    # >>>
-    # >>>     response.country.iso_code
-    # 'US'
-    # >>>     response.country.name
-    # 'United States'
-    # >>>     response.country.names['zh-CN']
 
     t = datetime.datetime.now()
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
@@ -275,15 +258,15 @@ def vote_last_response(
         "chosen_model_name": chosen_model_name,
         "both_equal": both_equal,
         "opening_msg": opening_msg,
-        "conversation_a": conversation_a_messages,
-        "conversation_b": conversation_b_messages,
+        "conversation_a": json.dumps(conversation_a_messages),
+        "conversation_b": json.dumps(conversation_b_messages),
         "conv_turns": count_turns((conversations[0].messages)),
         "selected_category": category,
         "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
         "template": (
             []
             if conversations[0].template_name == "zero_shot"
-            else conversations[0].template
+            else json.dumps(conversations[0].template)
         ),
         "conversation_pair_id": conversations[0].conv_id
         + "-"
@@ -633,7 +616,7 @@ def record_reaction(
         "template": json.dumps(
             []
             if conversations[0].template_name == "zero_shot"
-            else conversations[0].template
+            else json.dumps(conversations[0].template)
         ),
         "conversation_pair_id": conversation_pair_id,
         "conv_a_id": conversations[0].conv_id,
@@ -795,7 +778,7 @@ def record_conversations(
         "template": json.dumps(
             []
             if conversations[0].template_name == "zero_shot"
-            else conversations[0].template
+            else json.dumps(conversations[0].template)
         ),
         "conversation_pair_id": conv_pair_id,
         "conv_a_id": conversations[0].conv_id,
