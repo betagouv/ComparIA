@@ -254,7 +254,7 @@ def vote_last_response(
         "model_a_name": conversations[0].model_name,
         "model_b_name": conversations[1].model_name,
         # sorted
-        "model_pair_name": model_pair_name,
+        "model_pair_name": json.dumps(model_pair_name),
         "chosen_model_name": chosen_model_name,
         "both_equal": both_equal,
         "opening_msg": opening_msg,
