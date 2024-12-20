@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-import gradio as gr
+from gradio import Request
 
 import logging
 
@@ -27,7 +27,7 @@ class EmptyResponseError(RuntimeError):
         return msg
 
 
-def get_ip(request: gr.Request):
+def get_ip(request: Request):
     # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
     if "cloud-protector-client-ip" in request.headers:
         ip = request.headers["cloud-protector-client-ip"]
