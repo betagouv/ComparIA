@@ -47,7 +47,8 @@ CREATE TABLE votes (
     visitor_id VARCHAR(255),
     ip VARCHAR(255),
     conv_comments_a TEXT,
-    conv_comments_b TEXT conv_useful_a BOOLEAN,
+    conv_comments_b TEXT,
+    conv_useful_a BOOLEAN,
     conv_useful_b BOOLEAN,
     conv_creative_a BOOLEAN,
     conv_creative_b BOOLEAN,
@@ -58,9 +59,21 @@ CREATE TABLE votes (
     conv_superficial_a BOOLEAN,
     conv_superficial_b BOOLEAN,
     conv_instructions_not_followed_a BOOLEAN,
-    conv_instructions_not_followed_b BOOLEAN,
+    conv_instructions_not_followed_b BOOLEAN
 );
 
 
 -- Don't forget to add rights on sequences
--- GRANT USAGE, SELECT ON SEQUENCE votes_id_seq TO "languia-dev";
+GRANT USAGE, SELECT ON SEQUENCE votes_id_seq TO "languia-dev";
+
+GRANT USAGE,
+SELECT
+    ON SEQUENCE votes_id_seq TO "languia-stg";
+
+GRANT USAGE,
+SELECT
+    ON SEQUENCE votes_id_seq TO "languia-ro-stg";
+
+GRANT SELECT ON TABLE votes TO "languia-ro-stg";
+
+GRANT ALL PRIVILEGES ON TABLE votes TO "languia-stg";

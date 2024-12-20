@@ -13,7 +13,7 @@ INSERT INTO
         is_unedited_prompt,
         conversation_pair_id,
         session_hash,
-        visitor_uuid,
+        visitor_id,
         ip,
         conv_comments_a,
         conv_comments_b,
@@ -108,4 +108,4 @@ SELECT
         ELSE FALSE
     END AS conv_instructions_not_followed_b
 FROM
-    votes;
+    old_votes;
