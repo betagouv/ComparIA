@@ -756,8 +756,8 @@ nextScreen.scrollIntoView({
         request: gr.Request,
     ):
         details = {
-            "prefs_a": [positive_a_output] + [negative_a_output],
-            "prefs_b": [positive_b_output] + [negative_b_output],
+            "prefs_a": [*positive_a_output, *negative_a_output],
+            "prefs_b": [*positive_b_output, *negative_b_output],
             "comments_a": str(comments_a_output),
             "comments_b": str(comments_b_output),
         }
