@@ -816,6 +816,6 @@ def record_conversations(
     with open(conv_log_path, "w") as fout:
         fout.write(json.dumps(data) + "\n")
     # print(json.dumps(data))
-    upsert_conv_to_db(data=data, request=request)
+    upsert_conv_to_db(data=data)
 
     return data
