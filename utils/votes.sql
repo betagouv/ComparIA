@@ -32,7 +32,7 @@ CREATE TABLE votes (
     -- Timestamp of the vote
     model_a_name VARCHAR(500) NOT NULL,
     model_b_name VARCHAR(500) NOT NULL,
-    -- model_pair_name JSONB NOT NULL,
+    model_pair_name TEXT ARRAY[2],
     chosen_model_name VARCHAR(500),
     opening_msg text NOT NULL,
     -- both_equal BOOLEAN NOT NULL,

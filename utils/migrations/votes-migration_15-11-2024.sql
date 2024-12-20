@@ -29,7 +29,8 @@ INSERT INTO
         conv_superficial_a,
         conv_superficial_b,
         conv_instructions_not_followed_a,
-        conv_instructions_not_followed_b
+        conv_instructions_not_followed_b,
+        model_pair_name
     )
 SELECT
     tstamp AS timestamp,
@@ -106,6 +107,9 @@ SELECT
     CASE
         WHEN details_b_negative LIKE '%instructions-not-followed%' THEN TRUE
         ELSE FALSE
-    END AS conv_instructions_not_followed_b
+    END AS conv_instructions_not_followed_b,
+    ARRAY [
+    jsonb_object_keys(model_pair_name)::TEXT
+] AS model_pair_name
 FROM
     old_votes;
