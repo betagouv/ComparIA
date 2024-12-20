@@ -32,6 +32,20 @@ QUESTIONS_QUERY = "SELECT refresh_matview_questions(); SELECT * FROM matview_que
 # QUESTIONS_QUERY = "SELECT * FROM matview_questions;"
 # Needs additional priv.
 # QUESTIONS_QUERY = "REFRESH MATERIALIZED VIEW matview_questions; SELECT * FROM matview_questions;"
+
+# TODO: just select some fields from questions table instead
+#  c.conversation_pair_id || '-' || (q.turn / 2) :: TEXT AS question_id,
+#     c.timestamp AS timestamp,
+#     q.msg ->> 'content' AS question_content,
+#     c.conv_turns AS conv_turns,
+#     c.template AS template,
+#     c.conversation_pair_id AS conversation_pair_id,
+#     c.session_hash AS session_hash,
+#     c.visitor_id AS visitor_id,
+#     c.ip AS ip,
+#     c.country AS country,
+#     c.city AS city,
+#     (q.turn / 2) :: INT AS msg_rank,
 QUESTIONS_ONLY_QUERY = "SELECT refresh_matview_questions_only(); SELECT * FROM matview_questions_only;"
 
 VOTES_QUERY = """
