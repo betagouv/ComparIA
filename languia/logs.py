@@ -603,15 +603,6 @@ def record_reaction(
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
-    if (
-        current_conversation.messages[msg_index].content.strip().rstrip()
-        != response_content
-    ):
-        logger.warning(
-            f"Incoherent content for liked message: '{response_content}' and '{current_conversation.messages[msg_index].content.strip().rstrip()}'"
-        )
-        logger.warning(f"Calculated index: {msg_index}")
-
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
     opening_prompt = conversations[0].messages[0].content
     conv_turns = count_turns((conversations[0].messages))
