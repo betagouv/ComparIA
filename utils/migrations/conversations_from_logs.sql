@@ -270,7 +270,8 @@ FROM
     logs
 WHERE
     conversations.session_hash = logs.session_hash
-    AND logs.message LIKE 'init_arene%';
+    AND logs.message LIKE 'init_arene%'
+    AND (conversations.ip = '' or conversations.ip=NULL);
 
 UPDATE
     conversations
