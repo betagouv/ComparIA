@@ -149,7 +149,7 @@ def save_vote_to_db(data):
     cursor = conn.cursor()
     try:
         insert_statement = sql.SQL(
-        """
+            """
         INSERT INTO votes (
             timestamp, 
             model_a_name, 
@@ -217,8 +217,8 @@ def save_vote_to_db(data):
             %(comments_b)s
         )
     """
-    )
-        
+        )
+
         cursor.execute(insert_statement, data)
         conn.commit()
     except Exception as e:
@@ -285,7 +285,9 @@ def vote_last_response(
             if conversations[0].template_name == "zero_shot"
             else conversations[0].template
         ),
-        "conversation_pair_id": conversations[0].conv_id + "-" + conversations[1].conv_id,
+        "conversation_pair_id": conversations[0].conv_id
+        + "-"
+        + conversations[1].conv_id,
         # Warning: IP is a PII
         "ip": str(get_ip(request)),
         "session_hash": str(request.session_hash),
@@ -295,13 +297,15 @@ def vote_last_response(
         "conv_clear_formatting_a": "clear-formatting" in details["prefs_a"],
         "conv_incorrect_a": "incorrect" in details["prefs_a"],
         "conv_superficial_a": "superficial" in details["prefs_a"],
-        "conv_instructions_not_followed_a": "instructions-not-followed" in details["prefs_a"],
+        "conv_instructions_not_followed_a": "instructions-not-followed"
+        in details["prefs_a"],
         "conv_useful_b": "useful" in details["prefs_b"],
         "conv_creative_b": "creative" in details["prefs_b"],
         "conv_clear_formatting_b": "clear-formatting" in details["prefs_b"],
         "conv_incorrect_b": "incorrect" in details["prefs_b"],
         "conv_superficial_b": "superficial" in details["prefs_b"],
-        "conv_instructions_not_followed_b": "instructions-not-followed" in details["prefs_b"],
+        "conv_instructions_not_followed_b": "instructions-not-followed"
+        in details["prefs_b"],
         "conv_comments_a": details["conv_comments_a"],
         "conv_comments_b": details["comments_b"],
         # For redundance
@@ -317,11 +321,11 @@ def vote_last_response(
     with open(vote_log_path, "a") as fout:
         logger.info(f"vote: {vote_string}", extra={"request": request, "data": data})
         logger.info(
-            f'preferences_a: {','.join(details["prefs_a"])}',
+            f'preferences_a: {details["prefs_a"]}',
             extra={"request": request},
         )
         logger.info(
-            f'preferences_b: {','.join(details["prefs_b"])}',
+            f'preferences_b: {details["prefs_b"]}',
             extra={"request": request},
         )
         if details["comments_a"] != "":
@@ -339,6 +343,7 @@ def vote_last_response(
     save_vote_to_db(data=data)
 
     return data
+
 
 def upsert_reaction_to_db(data, request):
     logger = logging.getLogger("languia")
@@ -530,7 +535,6 @@ WHERE refers_to_conv_id = %(refers_to_conv_id)s
             conn.close()
 
     return data
-
 
 
 def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
