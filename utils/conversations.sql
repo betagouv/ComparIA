@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS conversations (
     opening_msg TEXT,
     selected_category VARCHAR(255),
     is_unedited_prompt BOOLEAN,
-    archived BOOLEAN DEFAULT FALSE
+    archived BOOLEAN DEFAULT FALSE,
+    -- TODO: add 'interrupted' bool field?
 );
 
 GRANT USAGE,

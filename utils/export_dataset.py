@@ -29,9 +29,10 @@ except Exception as e:
 CONV_QUERY = "SELECT * FROM conversations WHERE archived = FALSE"
 
 QUESTIONS_QUERY = "SELECT refresh_matview_questions(); SELECT * FROM matview_questions;"
+# QUESTIONS_QUERY = "SELECT * FROM matview_questions;"
 # Needs additional priv.
 # QUESTIONS_QUERY = "REFRESH MATERIALIZED VIEW matview_questions; SELECT * FROM matview_questions;"
-# QUESTIONS_QUERY = "SELECT * FROM matview_questions;"
+QUESTIONS_ONLY_QUERY = "SELECT refresh_matview_questions_only(); SELECT * FROM matview_questions_only;"
 
 VOTES_QUERY = """
 SELECT
@@ -178,6 +179,7 @@ def main():
         "reactions": None,  # Default fetch all
         # "conversations": CONV_QUERY,
         "questions": QUESTIONS_QUERY,
+        "questions_only": QUESTIONS_ONLY_QUERY,
     }
 
     for table, query in queries.items():

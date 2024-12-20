@@ -82,6 +82,4 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-Then, grant execution rights to the user:
-
 GRANT EXECUTE ON FUNCTION refresh_matview_questions() TO "languia-stg";

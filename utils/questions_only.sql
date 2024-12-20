@@ -16,7 +16,7 @@ SELECT
     c.country AS country,
     c.city AS city,
     (q.turn / 2) :: INT AS msg_rank,
-    c.model_pair_name AS model_pair_name,
+    c.model_pair_name AS model_pair_name
 FROM
     conversations c -- Extract the questions from both conversations
     LEFT JOIN LATERAL (
@@ -27,7 +27,7 @@ FROM
             jsonb_array_elements(c.conversation_a) WITH ORDINALITY AS m(msg, turn)
         WHERE
             m.msg ->> 'role' = 'user' -- Filter for user questions
-    ) q ON true -- Extract the responses from conversation_a
+    ) q ON true;
 
 -- Grant permissions
 GRANT
@@ -42,7 +42,5 @@ BEGIN
     REFRESH MATERIALIZED VIEW matview_questions_only;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
-
-Then, grant execution rights to the user:
 
 GRANT EXECUTE ON FUNCTION refresh_matview_questions_only() TO "languia-stg";
