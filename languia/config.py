@@ -39,7 +39,7 @@ if any(
         "LANGUIA_DB_USER",
         "LANGUIA_DB_PASSWORD",
         "LANGUIA_DB_HOST",
-        "LANGUIA_DB_PORT",
+        "LANGUIA_DB_PORT"
     ]
 ):
     # and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
@@ -49,6 +49,7 @@ if any(
         "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
         "host": os.getenv("LANGUIA_DB_HOST", "languia-db"),
         "port": os.getenv("LANGUIA_DB_PORT", 5432),
+        "sslmode": os.getenv("LANGUIA_DB_SSL_MODE", 'prefer')
     }
 else:
     db = None
