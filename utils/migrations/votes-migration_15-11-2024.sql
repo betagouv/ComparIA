@@ -108,8 +108,6 @@ SELECT
         WHEN details_b_negative LIKE '%instructions-not-followed%' THEN TRUE
         ELSE FALSE
     END AS conv_instructions_not_followed_b,
-    ARRAY [
-    jsonb_object_keys(model_pair_name)::TEXT
-] AS model_pair_name
+    model_pair_name
 FROM
     old_votes;
