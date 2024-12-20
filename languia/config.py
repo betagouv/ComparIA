@@ -49,7 +49,8 @@ if any(
         "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
         "host": os.getenv("LANGUIA_DB_HOST", "languia-db"),
         "port": os.getenv("LANGUIA_DB_PORT", 5432),
-        "sslmode": os.getenv("LANGUIA_DB_SSL_MODE", 'prefer')
+        "sslmode": os.getenv("LANGUIA_DB_SSL_MODE", 'prefer'),
+        "connect_timeout": 3
     }
 else:
     db = None
