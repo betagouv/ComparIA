@@ -7,6 +7,8 @@ import logging
 
 import sentry_sdk
 
+from gradio import Error
+
 from languia.config import GLOBAL_TIMEOUT
 
 def get_api_provider_stream_iter(
@@ -22,17 +24,7 @@ def get_api_provider_stream_iter(
             messages_dict.append({"role": message.role, "content": message.content})
         except:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
-    if model_api_dict["api_type"] == "openai":
-        stream_iter = openai_api_stream_iter(
-            model_name=model_api_dict["model_name"],
-            messages=messages_dict,
-            temperature=temperature,
-            max_new_tokens=max_new_tokens,
-            api_base=model_api_dict["api_base"],
-            api_key=model_api_dict["api_key"],
-            request=request,
-        )
-    elif model_api_dict["api_type"] == "vertex":
+    if model_api_dict["api_type"] == "vertex":
         stream_iter = vertex_api_stream_iter(
             model_name=model_api_dict["model_name"],
             messages=messages_dict,
@@ -54,8 +46,25 @@ def get_api_provider_stream_iter(
             api_base=model_api_dict["api_base"],
             request=request,
         )
+        # Default to openai compatible
     else:
-        raise NotImplementedError()
+        litellm_model_name = (
+            model_api_dict.get("api_type", "openai")
+            + "/"
+            + model_api_dict["model_name"]
+        )
+        stream_iter = litellm_stream_iter(
+            model_name=litellm_model_name,
+            # api_version=model_api_dict.get("api_version", None),
+            messages=messages_dict,
+            temperature=temperature,
+            api_key=model_api_dict["api_key"],
+            # stream=model_api_dict.get("stream", True),
+            # top_p=top_p,
+            max_new_tokens=max_new_tokens,
+            api_base=model_api_dict.get("api_base"),
+            request=request,
+        )
 
     return stream_iter
 
@@ -69,8 +78,17 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
 
     data = dict()
     buffer = ""
+    import random
+
+    def barrel_roll():
+        if random.random() < 1/200:
+            raise Error("*BANG!*")
+        else:
+            return "No explosion"
+
 
     for chunk in response:
+        print(barrel_roll())
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
@@ -106,7 +124,6 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
             # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
 
         if len(buffer.split()) >= 30:
-            # if len(buffer.split()) >= 30 or len(text.split()) < 30:
             # if "\n" in buffer or "." in buffer:
 
             # Reset word count after yielding
@@ -114,37 +131,42 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
 
             yield data
     yield data
-    # except Exception as e:
-    #     logger.error("erreur_chunk: " + str(chunk))
-    #     raise e
 
-
-def openai_api_stream_iter(
+def litellm_stream_iter(
     model_name,
     messages,
     temperature,
     max_new_tokens,
+    provider=None,
     api_base=None,
     api_key=None,
     request=None,
 ):
-    import openai
 
-    client = openai.OpenAI(
+    import litellm
+    # from languia.config import debug
+    # if debug:
+    #     litellm.set_verbose=True
+
+    if os.getenv("SENTRY_DSN"):
+        litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
+        litellm.failure_callback = [
+            "sentry"
+        ]  # [OPTIONAL] if you want litellm to capture -> send exception to sentry
+
+
+    res = litellm.completion(
+        timeout=GLOBAL_TIMEOUT,
         base_url=api_base,
-        api_key=api_key,        timeout=GLOBAL_TIMEOUT,
-
+        api_key=api_key,
         # max_retries=
-    )
-
-    res = client.chat.completions.create(
         model=model_name,
         messages=messages,
         temperature=temperature,
         max_tokens=max_new_tokens,
         stream=True,
         stream_options={"include_usage": True},
-        timeout=GLOBAL_TIMEOUT,
+        # timeout=15,
         # Not available like this
         # top_p=top_p,
     )
