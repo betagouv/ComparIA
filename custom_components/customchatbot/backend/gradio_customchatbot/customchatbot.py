@@ -37,7 +37,6 @@ class MetadataDict(TypedDict):
     title: Union[str, None]
     bot: Union[str, None]
 
-
 class FileDataDict(TypedDict):
     path: str  # server filepath
     url: NotRequired[Optional[str]]  # normalised server url
@@ -52,6 +51,7 @@ class MessageDict(TypedDict):
     content: str | FileDataDict | tuple | Component
     role: Literal["user", "assistant", "system"]
     metadata: NotRequired[MetadataDict]
+    error: NotRequired[bool]
 
 
 class FileMessage(GradioModel):
@@ -82,6 +82,7 @@ class Metadata(GradioModel):
 
 class Message(GradioModel):
     role: str
+    error: bool = False
     metadata: Metadata = Field(default_factory=Metadata)
     content: Union[str, FileMessage, ComponentMessage]
 
@@ -103,6 +104,7 @@ class ExampleMessage(TypedDict):
 class ChatMessage:
     role: Literal["user", "assistant", "system"]
     content: str | FileData | Component | FileDataDict | tuple | list
+    error: bool = False
     metadata: MetadataDict | Metadata = field(default_factory=Metadata)
 
 
@@ -145,7 +147,9 @@ class CustomChatbot(Component):
         Events.change,
         Events.select,
         Events.like,
-        # Events.retry,
+        Events.retry,
+        # Events.error,
+        # "error",
         # Events.undo,
         # Events.example_select,
         Events.clear,
@@ -507,6 +511,7 @@ class CustomChatbot(Component):
                 role=message.role,
                 content=message.content,  # type: ignore
                 metadata=message.metadata,  # type: ignore
+                error=message.error,  # type: ignore
             )
         elif isinstance(message, Message):
             return message
