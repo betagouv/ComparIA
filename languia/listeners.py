@@ -44,6 +44,9 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
+    sync_reactions,
+    determine_choice_badge,
+    reset_conv_state,
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -242,7 +245,27 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_b_scoped: gr.State,
         text: gr.Text,
         request: gr.Request,
+        event: gr.EventData,
     ):
+        # FIXME: if retry, resend all errored messages (or only the one that triggered retry?)!
+        if event._data is not None:
+            text = conv_a_scoped.messages[-1].content
+            conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+            conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            app_state_scoped.awaiting_responses = False
+
+
+            # # Reinit both generators
+            # gen = [
+            #     bot_response(
+            #         pos[i],
+            #         conversations[i],
+            #         request,
+            #         apply_rate_limit=True,
+            #         use_recommended_config=True,
+            #     )
+            #     for i in range(config.num_sides)
+            # ]
 
         conversations = [conv_a_scoped, conv_b_scoped]
 
@@ -270,6 +293,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
         for i in range(config.num_sides):
+            # conversations[i].messages.append(ChatMessage(role="user", content="Placeholder to test errors on turn 2"))
+            # conversations[i].messages.append(ChatMessage(role="assistant", content="Placeholder to test errors on turn 2"))
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
@@ -279,6 +304,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
         chatbot = to_threeway_chatbot(conversations)
+        text = gr.update(visible=True)
         return [
             app_state_scoped,
             # 2 conversations
@@ -286,6 +312,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_b_scoped,
             # 1 chatbot
             chatbot,
+            text
         ]
 
     def goto_chatbot(
@@ -364,7 +391,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # except httpx.ReadTimeout:
             #     pass
             except (
-                Exception,
+                BaseException,
                 openai.APIError,
                 openai.BadRequestError,
                 EmptyResponseError,
@@ -399,37 +426,16 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
                 if len(conversations[i].messages) < 3:
 
-                    # TODO: refacto! class method
-                    def reset_conv_state(state, model_name="", endpoint=None):
-                        # self.messages = get_conversation_template(model_name)
-                        state.messages = []
-                        state.output_tokens = None
-
-                        # TODO: get it from api if generated
-                        state.conv_id = uuid.uuid4().hex
-
-                        # TODO: add template info? and test it
-                        state.template_name = "zero_shot"
-                        state.template = []
-                        state.model_name = model_name
-                        if endpoint:
-                            state.endpoint = endpoint
-                        else:
-                            state.endpoint = pick_endpoint(
-                                model_id=model_name, broken_endpoints=config.outages
-                            )
-                        return state
-
                     config.outages = refresh_outages(
                         config.outages, controller_url=config.controller_url
                     )
                     # Temporarily add the at-fault model
                     # if error_with_endpoint not in config.outages:
                     #     config.outages.append(error_with_endpoint)
+
                     logger.debug(
                         "refreshed outage models:" + str(config.outages)
                     )  # Simpler to repick 2 models
-                    # app_state.model_left, app_state.model_right = get_battle_pair(
                     model_left, model_right = get_battle_pair(
                         config.models,
                         BATTLE_TARGETS,
@@ -437,7 +443,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                         SAMPLING_WEIGHTS,
                         SAMPLING_BOOST_MODELS,
                     )
+
                     original_user_prompt = conv_a_scoped.messages[0].content
+
                     conv_a_scoped = reset_conv_state(
                         conv_a_scoped,
                         model_name=model_left,
@@ -448,32 +456,29 @@ document.getElementById("fr-modal-welcome-close").blur();
                         model_name=model_right,
                         endpoint=pick_endpoint(model_right, config.outages),
                     )
-
-                    logger.info(
-                        f"selection_modeles: {model_left}, {model_right}",
-                        extra={request: request},
+                    conv_a_scoped.messages.append(
+                        ChatMessage(role="user", content=original_user_prompt)
+                    )
+                    conv_b_scoped.messages.append(
+                        ChatMessage(role="user", content=original_user_prompt)
                     )
 
                     app_state_scoped.awaiting_responses = False
-                    app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot = add_text(
-                        app_state_scoped,
-                        conv_a_scoped,
-                        conv_b_scoped,
-                        original_user_prompt,
-                        request,
-                    )
-                    # Reinit both generators
-                    gen = [
-                        bot_response(
-                            pos[i],
-                            conversations[i],
-                            request,
-                            apply_rate_limit=True,
-                            use_recommended_config=True,
-                        )
-                        for i in range(config.num_sides)
-                    ]
-                    continue
+
+                    # # Reinit both generators
+                    # gen = [
+                    #     bot_response(
+                    #         pos[i],
+                    #         conversations[i],
+                    #         request,
+                    #         apply_rate_limit=True,
+                    #         use_recommended_config=True,
+                    #     )
+                    #     for i in range(config.num_sides)
+                    # ]
+                    # continue
+                    # break so we can test our retry code
+                    # break
 
                 # Case where conversation was already going on, endpoint error or context error
                 # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
@@ -498,9 +503,39 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # # logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
                     # continue
+                
+                # TODO: don't put error in metadata:
+                # conversations[i].messages[-1].metadata['error'] = str(e)
+                conversations[i].messages[-1].error = True
 
-                    # don't retry, break out of the attempts loop
-                    break
+                conversations[1].messages[-1].error = True
+                conversations[0].messages[-1].error = True
+                # conversations[i].messages[-1].error = str(e)
+
+                gen = [
+                            bot_response(
+                                pos[i],
+                                conversations[i],
+                                request,
+                                apply_rate_limit=True,
+                                use_recommended_config=True,
+                            )
+                            for i in range(config.num_sides)
+                        ]
+                
+                conv_a_scoped = conversations[0]
+                conv_b_scoped = conversations[1]
+                chatbot = to_threeway_chatbot(conversations)
+                chatbot[-1].error = True
+                yield [
+                    app_state_scoped,
+                    conv_a_scoped,
+                    conv_b_scoped,
+                    chatbot,
+                    gr.skip(),
+                ]
+                # don't retry, break out of the attempts loop
+                break
             else:
                 # If no exception, we break out of the attempts loop
                 break
@@ -508,41 +543,73 @@ document.getElementById("fr-modal-welcome-close").blur();
         # If no break
         else:
             logger.critical("maximum_attempts_reached")
-            raise gr.Error(
-                duration=0,
-                message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, n'hésitez pas à relancer le comparateur. Nous travaillons pour mieux gérer ces cas.",
-            )
+
+            conversations[1].messages[-1].error = True
+            conversations[0].messages[-1].error = True
+            chatbot = to_threeway_chatbot(conversations)
+            chatbot[-1].error = True
+            conv_a_scoped = conversations[0]
+            conv_b_scoped = conversations[1]
+            return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
+
+            # raise gr.Error(
+            #     duration=0,
+            #     message="Malheureusement, un des deux modèles a cassé ! Peut-être est-ce une erreur temporaire, n'hésitez pas à relancer le comparateur. Nous travaillons pour mieux gérer ces cas.",
+            # )
 
         # Got answer at this point
         app_state_scoped.awaiting_responses = False
 
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
-        logger.info(
-            f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
-            extra={"request": request},
-        )
-        logger.info(
-            f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
-            extra={"request": request},
-        )
+        if not conv_a_scoped.messages[-1].role == "user":
+            logger.info(
+                f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
+                extra={"request": request},
+            )
+            logger.info(
+                f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
+                extra={"request": request},
+            )
         chatbot = to_threeway_chatbot(conversations)
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
+        # print("conversations:")
+        # print(conversations[0].messages)
+        # print(conversations[1].messages)
+        # hide textbox when retrying ?
         return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
-    def enable_conclude(textbox, request: gr.Request):
-        return {
-            conclude_btn: gr.update(interactive=True),
-            send_btn: gr.update(interactive=(textbox != "")),
-        }
+    # don't enable conclude if only one user msg
+    def enable_conclude(
+        app_state_scoped, textbox_scoped, conv_a_scoped, request: gr.Request
+    ):
+        if conv_a_scoped.messages[-1].role == "user":
+            if len(conv_a_scoped.messages) <= 1:
+                return {
+                    textbox: gr.update(visible=False),
+                    conclude_btn: gr.skip(),
+                    send_btn: gr.update(visible=False),
+                }
+            else:
+                return {
+                    textbox: gr.update(visible=False),
+                    conclude_btn: gr.update(interactive=True),
+                    send_btn: gr.update(visible=False),
+                }
+        else:
+            return {
+                textbox: gr.skip(),
+                conclude_btn: gr.update(interactive=True),
+                send_btn: gr.update(interactive=(textbox_scoped != "")),
+            }
 
     gr.on(
-        triggers=[textbox.submit, send_btn.click],
+        triggers=[textbox.submit, send_btn.click, chatbot.retry],
         fn=add_text,
         api_name=False,
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
-        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         # scroll_to_output=True,
         show_progress="hidden",
     ).success(
@@ -583,12 +650,12 @@ setTimeout(() => {
         outputs=[app_state, conv_a, conv_b, chatbot, textbox],
         api_name=False,
         show_progress="hidden",
-        # should do .success()
         # scroll_to_output=True,
+        # TODO: refacto possible with .success() and more explicit error state
     ).then(
         fn=enable_conclude,
-        inputs=[textbox],
-        outputs=[conclude_btn, send_btn],
+        inputs=[app_state, textbox, conv_a],
+        outputs=[textbox, conclude_btn, send_btn],
     )
     # // Enable navigation prompt
     # window.onbeforeunload = function() {

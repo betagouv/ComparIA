@@ -38,9 +38,9 @@ def get_ip(request: Request):
     else:
         ip = request.client.host
     # Sometimes multiple IPs are returned as a comma-separated string
-    if ',' in ip:
+    if "," in ip:
         ip = ip.split(",")[0].strip()
-    
+
     return ip
 
 
@@ -454,20 +454,25 @@ def to_threeway_chatbot(conversations):
             threeway_chatbot.append(msg_a)
         else:
             if msg_a:
+                msg_a.metadata["bot"] = "a"
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
                         "content": msg_a.content,
+                        "error": msg_a.error,
                         # TODO: add duration here?
-                        "metadata": {"bot": "a"},
+                        "metadata": msg_a.metadata,
                     }
                 )
             if msg_b:
+
+                msg_b.metadata["bot"] = "b"
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
                         "content": msg_b.content,
-                        "metadata": {"bot": "b"},
+                        "error": msg_a.error,
+                        "metadata": msg_b.metadata,
                     }
                 )
     return threeway_chatbot
