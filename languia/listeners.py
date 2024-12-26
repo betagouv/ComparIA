@@ -485,11 +485,9 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                     # continue
 
-                # TODO: don't put error in metadata:
-                # conversations[i].messages[-1].metadata['error'] = str(e)
-                conversations[i].messages[-1].error = True
+                # conversations[i].messages[-1].error = True
 
-                conversations[1].messages[-1].error = True
+                # conversations[1].messages[-1].error = True
                 conversations[0].messages[-1].error = True
                 # conversations[i].messages[-1].error = str(e)
 
@@ -507,7 +505,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 conv_a_scoped = conversations[0]
                 conv_b_scoped = conversations[1]
                 chatbot = to_threeway_chatbot(conversations)
-                chatbot[-1].error = True
+                # chatbot[-1].error = True
                 yield [
                     app_state_scoped,
                     conv_a_scoped,
@@ -525,10 +523,10 @@ document.getElementById("fr-modal-welcome-close").blur();
         else:
             logger.critical("maximum_attempts_reached")
 
-            conversations[1].messages[-1].error = True
+            # conversations[1].messages[-1].error = True
             conversations[0].messages[-1].error = True
             chatbot = to_threeway_chatbot(conversations)
-            chatbot[-1].error = True
+            # chatbot[-1].error = True
             conv_a_scoped = conversations[0]
             conv_b_scoped = conversations[1]
             return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
