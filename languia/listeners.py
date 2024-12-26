@@ -487,8 +487,10 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                 # conversations[i].messages[-1].error = True
 
-                # conversations[1].messages[-1].error = True
+                # FIXME: ugly, only one of them needed, ideally a prop of chatbot
                 conversations[0].messages[-1].error = True
+                
+                conversations[1].messages[-1].error = True
                 # conversations[i].messages[-1].error = str(e)
 
                 gen = [
@@ -523,8 +525,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         else:
             logger.critical("maximum_attempts_reached")
 
-            # conversations[1].messages[-1].error = True
+            # FIXME: better error handling
             conversations[0].messages[-1].error = True
+            conversations[1].messages[-1].error = True
             chatbot = to_threeway_chatbot(conversations)
             # chatbot[-1].error = True
             conv_a_scoped = conversations[0]
