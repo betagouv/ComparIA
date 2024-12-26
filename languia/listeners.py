@@ -44,9 +44,6 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
-    sync_reactions,
-    determine_choice_badge,
-    reset_conv_state,
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -254,7 +251,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_b_scoped.messages = conv_b_scoped.messages[:-1]
             app_state_scoped.awaiting_responses = False
 
-
             # # Reinit both generators
             # gen = [
             #     bot_response(
@@ -312,7 +308,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_b_scoped,
             # 1 chatbot
             chatbot,
-            text
+            text,
         ]
 
     def goto_chatbot(
@@ -503,7 +499,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # # logger.warning(f"Retrying because of error in the middle of the convo. Attempt {attempt}.")
 
                     # continue
-                
+
                 # TODO: don't put error in metadata:
                 # conversations[i].messages[-1].metadata['error'] = str(e)
                 conversations[i].messages[-1].error = True
@@ -513,16 +509,16 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # conversations[i].messages[-1].error = str(e)
 
                 gen = [
-                            bot_response(
-                                pos[i],
-                                conversations[i],
-                                request,
-                                apply_rate_limit=True,
-                                use_recommended_config=True,
-                            )
-                            for i in range(config.num_sides)
-                        ]
-                
+                    bot_response(
+                        pos[i],
+                        conversations[i],
+                        request,
+                        apply_rate_limit=True,
+                        use_recommended_config=True,
+                    )
+                    for i in range(config.num_sides)
+                ]
+
                 conv_a_scoped = conversations[0]
                 conv_b_scoped = conversations[1]
                 chatbot = to_threeway_chatbot(conversations)
