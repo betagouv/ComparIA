@@ -386,7 +386,7 @@ def refresh_outages(previous_outages, controller_url):
     try:
         response = requests.get(controller_url + "/outages/", timeout=1)
     except Exception as e:
-        logger.error("controller_inaccessible: " + str(e))
+        logger.warning("controller_inaccessible: " + str(e))
         return previous_outages
     # Check if the request was successful
     if response.status_code == 200:
