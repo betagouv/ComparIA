@@ -372,7 +372,11 @@ document.getElementById("fr-modal-welcome-close").blur();
                 error_with_endpoint = conversations[i].endpoint.get("api_id")
                 error_with_model = conversations[i].model_name
                 if os.getenv("SENTRY_DSN"):
-                    sentry_sdk.capture_exception(e)
+
+                    with sentry_sdk.configure_scope() as scope:
+                        # Set the fingerprint based on the message content
+                        scope.fingerprint = [e]
+                        sentry_sdk.capture_exception(e, scope)
 
                 logger.exception(
                     f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
@@ -481,8 +485,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                         extra={request: request},
                         exc_info=True,
                     )
-                    if os.getenv("SENTRY_DSN"):
-                        sentry_sdk.capture_exception(e)
 
                     # # Reinit faulty generator, e.g. to try another endpoint or just retry
                     # gen[i] = bot_response(
