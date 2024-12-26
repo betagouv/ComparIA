@@ -63,14 +63,14 @@
 					<IconButton Icon={DownloadIcon} />
 				</DownloadLink>
 			{/if}
-			{#if show_retry}
+			<!-- {#if show_retry}
 				<IconButton
 					Icon={Retry}
 					label="Retry"
 					on:click={() => handle_action("retry")}
 					disabled={generating || disabled}
 				/>
-			{/if}
+			{/if} -->
 			{#if show_undo}
 				<IconButton
 					label="Undo"
