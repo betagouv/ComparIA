@@ -14,7 +14,7 @@
     "./package.json": "./package.json"
   },
   "dependencies": {
-    "@gouvfr/dsfr": "^1.12.1",
+    "@gouvfr/dsfr": "^1.13.0",
     "@gradio/atoms": "0.7.6",
     "@gradio/icons": "0.6.0",
     "@gradio/statustracker": "0.7.1",
