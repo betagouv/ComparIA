@@ -61,6 +61,7 @@ from languia.config import (
 
 from languia.conversation import (
     bot_response,
+    set_conv_state
 )
 
 
@@ -85,22 +86,6 @@ def register_listeners():
     def enter_arena(
         app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
     ):
-
-        # TODO: to get rid of!
-        def set_conv_state(state, model_name, endpoint):
-            # self.messages = get_conversation_template(model_name)
-            state.messages = []
-            state.output_tokens = None
-
-            # TODO: get it from api if generated
-            state.conv_id = uuid.uuid4().hex
-
-            # TODO: add template info? and test it
-            state.template_name = "zero_shot"
-            state.template = []
-            state.model_name = model_name
-            state.endpoint = endpoint
-            return state
 
         # /!\ careful about user state / shared state if moving this function
         def init_conversations(
@@ -442,12 +427,12 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                     original_user_prompt = conv_a_scoped.messages[0].content
 
-                    conv_a_scoped = reset_conv_state(
+                    conv_a_scoped = set_conv_state(
                         conv_a_scoped,
                         model_name=model_left,
                         endpoint=pick_endpoint(model_left, config.outages),
                     )
-                    conv_b_scoped = reset_conv_state(
+                    conv_b_scoped = set_conv_state(
                         conv_b_scoped,
                         model_name=model_right,
                         endpoint=pick_endpoint(model_right, config.outages),
