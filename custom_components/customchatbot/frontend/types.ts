@@ -24,8 +24,9 @@ export interface Message {
 	liked?: boolean;
 	disliked?: boolean;
 	prefs?: string[];
-	comment: string
-	commented?: boolean	
+	comment: string;
+	commented?: boolean;
+	error?: boolean;
 }
 
 export interface TextMessage extends Message {
@@ -34,8 +35,9 @@ export interface TextMessage extends Message {
 	liked: boolean;
 	disliked: boolean;
 	prefs?: string[];
-	comment: string	
-	commented: boolean	
+	comment: string;
+	commented: boolean;
+	error?: boolean
 }
 
 export interface ComponentMessage extends Message {
@@ -44,8 +46,9 @@ export interface ComponentMessage extends Message {
 	liked: boolean;
 	disliked: boolean;
 	prefs?: string[];
-	comment: string
-	commented: boolean	
+	comment: string;
+	commented: boolean;
+	error?: boolean;
 }
 
 export interface ExampleMessage {

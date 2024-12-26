@@ -107,13 +107,6 @@
 		layout,
 	};
 
-	// type PrefsPanelProps = {
-	// 	message: typeof messages;
-	// 	show: boolean;
-	// 	value: (string | number)[];
-	// 	choices: [string, string | number][];
-	// 	handle_action: (selected: string | null) => void;
-	// };
 </script>
 
 <!-- {#if role === "user"} -->
@@ -186,7 +179,6 @@
 						/>
 						{#if generating}
 							<Pending />
-							<!-- <br /><br /><em>En attente de la réponse…</em> -->
 						{/if}
 					{:else}
 						<Markdown

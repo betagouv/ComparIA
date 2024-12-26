@@ -1,4 +1,6 @@
 <script context="module" lang="ts">
+	// import warningicon from "./shared/fr-warning-fill.svg";
+
 	export interface ExtendedLikeData {
 		index: number | [number, number];
 		value: any;
@@ -41,6 +43,7 @@
 	import Pending from "./Pending.svelte";
 	import { ShareError } from "@gradio/utils";
 	import { Gradio } from "@gradio/utils";
+	// import { Retry } from "@gradio/icons";
 
 	export let value: NormalisedMessage[] | null = [];
 	let old_value: NormalisedMessage[] | null = null;
@@ -191,8 +194,17 @@
 		};
 	});
 
-	// afterUpdate(() => {
-	// });
+	export let hasError: boolean = false;
+
+	$: {
+		hasError = groupedMessages.some((messages) =>
+			messages.some((message) => message?.error),
+		);
+		console.log("hasError:");
+		console.log(hasError);
+		console.log("messages:");
+		console.log(groupedMessages);
+	}
 
 	$: {
 		if (!dequal(value, old_value)) {
@@ -224,8 +236,27 @@
 		// commenting = undefined;
 		// comment = "";
 	}
+	function handle_retry_last(): void {
+		// svelte custom_components/customchatbot/frontend/shared/ChatBot.svelte (237-238)
+		const lastGroup = groupedMessages[groupedMessages.length - 1];
+		const lastMessage =
+			lastGroup && lastGroup.length > 0
+				? lastGroup[lastGroup.length - 1]
+				: null;
+		console.log("RETRYING");
 
-	function handle_like(
+		dispatch("retry", {
+			index: lastMessage.index,
+			value: lastMessage.error,
+			// lastMessage.metadata?.error ||
+			//  ||
+			// lastMessage.content,
+			// value: msg.content,
+			// error: msg.metadata?.error || msg.error
+		});
+	}
+	// TODO: rename or split this function
+	function handle_action(
 		i: number,
 		j: number,
 		message: NormalisedMessage,
@@ -237,7 +268,17 @@
 		var chatbot_index = i + j + user_msg_offset;
 
 		const msg = groupedMessages[i][j];
+		if (selected === "retry") {
+			console.log("RETRYING");
 
+			dispatch("retry", {
+				index: msg.index,
+				value: msg.error
+				// value: msg.error || msg.content,
+				// value: msg.content,
+				// error: msg.metadata?.error || msg.error
+			});
+		}
 		if (selected === "commenting") {
 			commenting = chatbot_index;
 			if (value[chatbot_index].comment === undefined) {
@@ -386,7 +427,7 @@
 								? false
 								: show_copy_button}
 							handle_action={(selected) =>
-								handle_like(i, j, message, selected)}
+								handle_action(i, j, message, selected)}
 							scroll={is_browser ? scroll : () => {}}
 							liked={message.liked}
 							disliked={message.disliked}
@@ -395,7 +436,9 @@
 					{/each}
 
 					{#each messages as message, j}
-						<div class="react-panels react-panel-{j} react-panel-rank-{i}">
+						<div
+							class="react-panels react-panel-{j} react-panel-rank-{i}"
+						>
 							<LikePanel
 								model={j === 0 ? "A" : "B"}
 								{disabled}
@@ -405,7 +448,7 @@
 								text="Qu'avez-vous apprécié dans la réponse ?"
 								choices={positive_choices}
 								handle_action={(selected) =>
-									handle_like(i, j, message, selected)}
+									handle_action(i, j, message, selected)}
 								commented={message.commented}
 							/>
 							<LikePanel
@@ -417,7 +460,7 @@
 								text="Pourquoi la réponse ne convient-elle pas ?"
 								choices={negative_choices}
 								handle_action={(selected) =>
-									handle_like(i, j, message, selected)}
+									handle_action(i, j, message, selected)}
 								commented={message.commented}
 							/>
 						</div>
@@ -448,6 +491,28 @@
 					<Markdown message={placeholder} {latex_delimiters} {root} />
 				</div>
 			{/if}
+		</div>
+	{/if}
+
+	{#if hasError}
+		<div class="fr-pt-4w error rounded-tile fr-container">
+			<h3>
+				<span class="fr-icon-warning-fill" aria-hidden="true"></span> Oups,
+				erreur temporaire
+			</h3>
+			<p>
+				Une erreur temporaire est survenue.<br />
+				Vous pouvez tenter de réessayer de solliciter les modèles ou bien
+				conclure votre expérience en donnant votre avis sur les modèles.
+			</p>
+			<!-- error: {hasError} -->
+			<p class="text-center">
+				<button
+					class="fr-btn purple-btn"
+					on:click={() => handle_retry_last()}
+					disabled={generating || disabled}>Réessayer</button
+				>
+			</p>
 		</div>
 	{/if}
 </div>
@@ -715,8 +780,17 @@
 		transform: translateY(-2px);
 	}
 
-	.purple-btn {
+	.fr-modal__content .purple-btn {
 		float: right;
 		margin: 2em 0 !important;
+	}
+
+	.fr-icon-warning-fill::before,
+	.fr-icon-warning-fill::after {
+		/* --warning-425-625 */
+		color: #b34000;
+		background-color: #b34000;
+		/* -webkit-mask-image: url("fr-warning-fill.svg");
+		mask-image: url("fr-warning-fill.svg"); */
 	}
 </style>

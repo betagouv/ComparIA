@@ -117,6 +117,7 @@ export function update_messages(
 			liked: message.liked !== undefined ? message.liked : false,
 			disliked: message.disliked !== undefined ? message.disliked : false,
 			commented: message.commented !== undefined ? message.commented : false,
+			error: message.error !== undefined ? message.error : false
 		  };
 		});
 	  }
@@ -170,10 +171,6 @@ export function group_messages(
 	let currentRole: MessageRole | null = null;
 
 	for (const message of messages) {
-		if (msg_format === "tuples") {
-			currentRole = null;
-		}
-
 		if (!(message.role === "assistant" || message.role === "user")) {
 			continue;
 		}
