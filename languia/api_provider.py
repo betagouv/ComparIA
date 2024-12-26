@@ -6,8 +6,10 @@ import os
 import logging
 
 import sentry_sdk
-from languia.config import GLOBAL_TIMEOUT
 
+from gradio import Error
+
+from languia.config import GLOBAL_TIMEOUT
 
 def get_api_provider_stream_iter(
     messages,
@@ -76,8 +78,17 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
 
     data = dict()
     buffer = ""
+    import random
+
+    def barrel_roll():
+        if random.random() < 1/200:
+            raise Error("*BANG!*")
+        else:
+            return "No explosion"
+
 
     for chunk in response:
+        print(barrel_roll())
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
@@ -121,7 +132,6 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
             yield data
     yield data
 
-
 def litellm_stream_iter(
     model_name,
     messages,
@@ -134,7 +144,6 @@ def litellm_stream_iter(
 ):
 
     import litellm
-
     # from languia.config import debug
     # if debug:
     #     litellm.set_verbose=True
@@ -144,6 +153,7 @@ def litellm_stream_iter(
         litellm.failure_callback = [
             "sentry"
         ]  # [OPTIONAL] if you want litellm to capture -> send exception to sentry
+
 
     res = litellm.completion(
         timeout=GLOBAL_TIMEOUT,
