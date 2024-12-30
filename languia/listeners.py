@@ -146,6 +146,7 @@ def register_listeners():
         outputs=[app_state, conv_a, conv_b],
         api_name=False,
         show_progress="hidden",
+        concurrency_limit=None
     ).then(
         fn=(lambda: None),
         inputs=None,
