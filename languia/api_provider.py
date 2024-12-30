@@ -80,15 +80,15 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
     buffer = ""
     import random
 
-    def barrel_roll():
-        if random.random() < 1/200:
-            raise Error("*BANG!*")
-        else:
-            return "No explosion"
+    # def barrel_roll():
+    #     if random.random() < 1/200:
+    #         raise Error("*BANG!*")
+    #     else:
+    #         return "No explosion"
 
 
     for chunk in response:
-        print(barrel_roll())
+        # print(barrel_roll())
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
