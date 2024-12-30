@@ -22,7 +22,7 @@
 </div>
 <div align="center">
   <sub>
-    <i>Cliquez sur l'image ci-dessus pour consulter le document PDF complet (s'ouvre dans un nouvel onglet)</i>
+    <i>Cliquez sur l'image ci-dessus pour consulter le site (s'ouvre dans un nouvel onglet)</i>
   </sub>
 </div>
 
