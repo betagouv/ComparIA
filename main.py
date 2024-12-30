@@ -34,18 +34,16 @@ auth = None
 # Clashes with hot reloading
 # if not config.debug:
 #     test_all_endpoints(config.controller_url)
-demo.queue = False
-demo.config["queue"] = False
 
-# demo = demo.queue(
-#     max_size=None,
-#     default_concurrency_limit=None,
-#     # default_concurrency_limit=40,
-#     # status_update_rate="auto",
-#     api_open=False,
-# )
-# # Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
-# demo.run_startup_events()
+demo = demo.queue(
+    max_size=None,
+    default_concurrency_limit=None,
+    # default_concurrency_limit=40,
+    # status_update_rate="auto",
+    api_open=False,
+)
+# Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
+demo.run_startup_events()
 
 
 app = gr.mount_gradio_app(
