@@ -529,7 +529,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_a_scoped = conversations[0]
             conv_b_scoped = conversations[1]
             chatbot = to_threeway_chatbot(conversations)
-            chatbot[-1].error = True
+            # chatbot[-1].error = True
             yield [
                 app_state_scoped,
                 conv_a_scoped,
