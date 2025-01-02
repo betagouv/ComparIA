@@ -495,7 +495,7 @@
 	{/if}
 
 	{#if hasError}
-		<div class="fr-pt-4w error rounded-tile fr-container">
+		<div class="fr-py-4w fr-mb-4w error rounded-tile fr-container">
 			<h3>
 				<span class="fr-icon-warning-fill" aria-hidden="true"></span> Oups,
 				erreur temporaire
