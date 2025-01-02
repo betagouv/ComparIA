@@ -3,7 +3,6 @@ import type { FileData } from "@gradio/client";
 export type MessageRole = "system" | "user" | "assistant";
 
 export interface Metadata {
-	title: string | null;
 	bot: string | null;
 }
 
