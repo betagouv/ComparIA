@@ -495,7 +495,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # hide textbox when retrying ?
             print("chatbot:")
             print(chatbot)
-            return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
+            yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
     # don't enable conclude if only one user msg
     def enable_conclude(
