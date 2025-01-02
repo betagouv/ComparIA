@@ -230,13 +230,23 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         event: gr.EventData,
     ):
-        # FIXME: if retry, resend all errored messages (or only the one that triggered retry?)!
+        # if retry, resend last user errored message
         if event._data is not None:
-            text = conv_a_scoped.messages[-1].content
-            conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-            conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            logger.info("Received event+retry with:")
+            last_message_a = conv_a_scoped.messages[-1]
+            last_message_b = conv_b_scoped.messages[-1]
+            logger.info("conv_a:"+ str(conv_a_scoped.messages))
+            logger.info("conv_b:"+ str(conv_b_scoped.messages))
             app_state_scoped.awaiting_responses = False
-
+            if last_message_a.role == "user" and last_message_b.role == "user":
+                text = last_message_a.content
+                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            else:
+                raise gr.Error(
+                    message="Il n'est pas possible de réessayer, veuillez recharger la page.",
+                    duration=10,
+                )
             # # Reinit both generators
             # gen = [
             #     bot_response(
@@ -380,6 +390,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         ) as e:
             error_with_endpoint = conversations[i].endpoint.get("api_id")
             error_with_model = conversations[i].model_name
+
             if os.getenv("SENTRY_DSN"):
 
                 with sentry_sdk.configure_scope() as scope:
@@ -397,12 +408,26 @@ document.getElementById("fr-modal-welcome-close").blur();
                 exc_info=True,
             )
 
+
+                # TODO: don't put error in metadata:
+                # conversations[i].messages[-1].metadata['error'] = str(e)
+            conversations[i].messages[-1].error = True
+
+            # FIXME: better error handling
+            conversations[0].messages[-1].error = True
+
+
+            logger.debug("conversations[i].messages[-1]")
+            logger.debug(conversations[i].messages[-1])
+            # conversations[i].messages[-1].error = str(e)
+
             # Report error to controller
             # on_endpoint_error(
             #     config.controller_url,
             #     error_with_endpoint,
             #     reason=str(e),
             # )
+            original_user_prompt = conv_a_scoped.messages[0].content
 
             # If it's the first message in conversation, re-roll
             # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
@@ -411,9 +436,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 config.outages = refresh_outages(
                     config.outages, controller_url=config.controller_url
                 )
-                # Temporarily add the at-fault model
-                # if error_with_endpoint not in config.outages:
-                #     config.outages.append(error_with_endpoint)
 
                 logger.debug(
                     "refreshed outage models:" + str(config.outages)
@@ -426,7 +448,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                     SAMPLING_BOOST_MODELS,
                 )
 
-                original_user_prompt = conv_a_scoped.messages[0].content
 
                 conv_a_scoped = set_conv_state(
                     conv_a_scoped,
@@ -445,7 +466,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     ChatMessage(role="user", content=original_user_prompt)
                 )
 
-                app_state_scoped.awaiting_responses = False
+            app_state_scoped.awaiting_responses = False
 
                 # # Reinit both generators
                 # gen = [
@@ -464,14 +485,12 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             # Case where conversation was already going on, endpoint error or context error
             # TODO: differentiate if it's just an endpoint error, in which case it can be repicked
-            else:
-                app_state_scoped.awaiting_responses = False
-                logger.exception(
-                    f"erreur_milieu_discussion: {conversations[i].model_name}, "
-                    + str(e),
-                    extra={request: request},
-                    exc_info=True,
-                )
+                # logger.exception(
+                #     f"erreur_milieu_discussion: {conversations[i].model_name}, "
+                #     + str(e),
+                #     extra={request: request},
+                #     exc_info=True,
+                # )
 
                 # # Reinit faulty generator, e.g. to try another endpoint or just retry
                 # gen[i] = bot_response(
@@ -486,20 +505,15 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                 #             # conversations[1].messages[-1].error = True
             # conversations[0].messages[-1].error = True
-                chatbot = to_threeway_chatbot(conversations)
-                chatbot[-1].error = True
-                conv_a_scoped = conversations[0]
-                conv_b_scoped = conversations[1]
-                return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
+                # chatbot = to_threeway_chatbot(conversations)
+                # chatbot[-1].error = True
+                # conv_a_scoped = conversations[0]
+                # conv_b_scoped = conversations[1]
+                # app_state_scoped.awaiting_responses = False
+
+                # return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
 
-                # TODO: don't put error in metadata:
-                # conversations[i].messages[-1].metadata['error'] = str(e)
-            conversations[i].messages[-1].error = True
-
-            # FIXME: better error handling
-            conversations[0].messages[-1].error = True
-            # conversations[i].messages[-1].error = str(e)
 
             # gen = [
             #     bot_response(
