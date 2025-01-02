@@ -465,34 +465,37 @@ document.getElementById("fr-modal-welcome-close").blur();
                 conv_b_scoped.messages.append(
                     ChatMessage(role="user", content=original_user_prompt, error=True)
                 )
+        finally:
 
-        # Got answer at this point
-        app_state_scoped.awaiting_responses = False
+            # Got answer at this point
+            app_state_scoped.awaiting_responses = False
 
-        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+            record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
-        if not conv_a_scoped.messages[-1].role == "user":
-            logger.info(
-                f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
-                extra={"request": request},
-            )
-            logger.info(
-                f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
-                extra={"request": request},
-            )
-        print("conv_a_scoped.messages")
-        print(conv_a_scoped.messages)
-        print("conv_b_scoped.messages")
-        print(conv_b_scoped.messages)
-        
-        chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-        # conv_a_scoped = conversations[0]
-        # conv_b_scoped = conversations[1]
-        # print("conversations:")
-        # print(conversations[0].messages)
-        # print(conversations[1].messages)
-        # hide textbox when retrying ?
-        return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
+            if not conv_a_scoped.messages[-1].role == "user":
+                logger.info(
+                    f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
+                    extra={"request": request},
+                )
+                logger.info(
+                    f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
+                    extra={"request": request},
+                )
+            print("conv_a_scoped.messages")
+            print(conv_a_scoped.messages)
+            print("conv_b_scoped.messages")
+            print(conv_b_scoped.messages)
+
+            chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+            # conv_a_scoped = conversations[0]
+            # conv_b_scoped = conversations[1]
+            # print("conversations:")
+            # print(conversations[0].messages)
+            # print(conversations[1].messages)
+            # hide textbox when retrying ?
+            print("chatbot:")
+            print(chatbot)
+            return [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
     # don't enable conclude if only one user msg
     def enable_conclude(
