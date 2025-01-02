@@ -215,7 +215,7 @@ def azure_api_stream_iter(
 
 # os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ""
 
-# model = "claude-3-sonnet@20240229"
+# model = "claude-3-5-sonnet-v2@20241022"
 
 # vertex_ai_project = "your-vertex-project" # can also set this as os.environ["VERTEXAI_PROJECT"]
 # vertex_ai_location = "your-vertex-location" # can also set this as os.environ["VERTEXAI_LOCATION"]
