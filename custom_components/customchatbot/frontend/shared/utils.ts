@@ -103,6 +103,8 @@ export function update_messages(
 	old_messages: Message[] | null,
 	root: string
 ): NormalisedMessage[] | null {
+	// console.log("new_messages", new_messages);
+	// console.log("old_messages", old_messages);
 	if (new_messages === null) return new_messages;
 	if (old_messages === null) {
 		// If there are no old messages, just return the new messages as is
@@ -135,7 +137,7 @@ export function update_messages(
 				content: redirect_src_url(message.content, root),
 				type: "text",
 				index: i,
-
+				error: message.error !== undefined ? message.error : oldMessage?.error || false,
 				liked: message.liked !== undefined ? message.liked : oldMessage?.liked || false,
 				disliked: message.disliked !== undefined ? message.disliked : oldMessage?.disliked || false,
 				commented: message.commented !== undefined ? message.commented : oldMessage?.commented || false,
