@@ -210,6 +210,25 @@ def azure_api_stream_iter(
     )
 
 
+# from litellm import completion
+# import os
+
+# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ""
+
+# model = "claude-3-sonnet@20240229"
+
+# vertex_ai_project = "your-vertex-project" # can also set this as os.environ["VERTEXAI_PROJECT"]
+# vertex_ai_location = "your-vertex-location" # can also set this as os.environ["VERTEXAI_LOCATION"]
+
+# response = completion(
+#     model="vertex_ai/" + model,
+#     messages=[{"role": "user", "content": "hi"}],
+#     temperature=0.7,
+#     vertex_ai_project=vertex_ai_project,
+#     vertex_ai_location=vertex_ai_location,
+# )
+# print("\nModel Response", response)
+
 def vertex_api_stream_iter(
     api_base, model_name, messages, temperature, max_new_tokens, request=None
 ):
