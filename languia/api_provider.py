@@ -10,6 +10,7 @@ import sentry_sdk
 from gradio import Error
 
 from languia.config import GLOBAL_TIMEOUT
+import litellm
 
 def get_api_provider_stream_iter(
     messages,
@@ -24,17 +25,8 @@ def get_api_provider_stream_iter(
             messages_dict.append({"role": message.role, "content": message.content})
         except:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
-    if model_api_dict["api_type"] == "vertex":
-        stream_iter = vertex_api_stream_iter(
-            model_name=model_api_dict["model_name"],
-            messages=messages_dict,
-            temperature=temperature,
-            # top_p=top_p,
-            max_new_tokens=max_new_tokens,
-            api_base=model_api_dict["api_base"],
-            request=request,
-        )
-    elif model_api_dict["api_type"] == "azure":
+
+    if model_api_dict["api_type"] == "azure":
         stream_iter = azure_api_stream_iter(
             model_name=model_api_dict["model_name"],
             api_version=model_api_dict["api_version"],
@@ -58,7 +50,7 @@ def get_api_provider_stream_iter(
             # api_version=model_api_dict.get("api_version", None),
             messages=messages_dict,
             temperature=temperature,
-            api_key=model_api_dict["api_key"],
+            api_key=model_api_dict.get("api_key", ""),
             # stream=model_api_dict.get("stream", True),
             # top_p=top_p,
             max_new_tokens=max_new_tokens,
@@ -143,7 +135,6 @@ def litellm_stream_iter(
     request=None,
 ):
 
-    import litellm
     # from languia.config import debug
     # if debug:
     #     litellm.set_verbose=True
@@ -247,14 +238,19 @@ def vertex_api_stream_iter(
     auth_req = google.auth.transport.requests.Request()
     creds.refresh(auth_req)
 
-    client = openai.OpenAI(base_url=api_base, api_key=creds.token)
+    litellm.vertex_ai_location = "europe-west1"
+    litellm.vertex_ai_project = "languia-430909"
 
-    res = client.chat.completions.create(
+    res = litellm.completion(
         timeout=GLOBAL_TIMEOUT,
-        model=model_name,
+        model="vertex_ai/" + model_name,
         messages=messages,
         temperature=temperature,
         max_tokens=max_new_tokens,
+        vertex_ai_project=litellm.vertex_ai_project,
+        vertex_ai_location=litellm.vertex_ai_project,
+        base_url=api_base,
+        api_key=creds.token,
         stream=True,
         stream_options={"include_usage": True},
     )
