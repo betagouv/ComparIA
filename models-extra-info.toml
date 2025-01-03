@@ -111,7 +111,7 @@ conditions = "free"
 excerpt = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
-["gemini-1.5-pro-001"]
+["gemini-1.5-pro-002"]
 url = "https://ai.google.dev/gemini-api"
 active_params = 220
 total_params = 440
@@ -123,8 +123,8 @@ friendly_size = "XL"
 distribution = "api-only"
 license = "propriétaire Gemini"
 conditions = "restricted"
-description = "Sorti en février 2024 et amélioré à plusieurs reprises depuis, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
-excerpt = "Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
+description = "Sorti en février 2024 et amélioré en septembre 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
+excerpt = "Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 
 ["gemma-2-27b-it-q8"]
 url = "https://huggingface.co/google/gemma-2-27b-it"
