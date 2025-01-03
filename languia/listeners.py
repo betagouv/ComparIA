@@ -229,11 +229,9 @@ document.getElementById("fr-modal-welcome-close").blur();
     ):
         # if retry, resend last user errored message
         if event._data is not None:
-            logger.info("Received event+retry with:")
             last_message_a = conv_a_scoped.messages[-1]
             last_message_b = conv_b_scoped.messages[-1]
-            logger.info("conv_a:" + str(conv_a_scoped.messages))
-            logger.info("conv_b:" + str(conv_b_scoped.messages))
+            
             app_state_scoped.awaiting_responses = False
             if last_message_a.role == "user" and last_message_b.role == "user":
                 text = last_message_a.content
@@ -477,20 +475,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                     f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
                     extra={"request": request},
                 )
-            print("conv_a_scoped.messages")
-            print(conv_a_scoped.messages)
-            print("conv_b_scoped.messages")
-            print(conv_b_scoped.messages)
 
             chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-            # conv_a_scoped = conversations[0]
-            # conv_b_scoped = conversations[1]
-            # print("conversations:")
-            # print(conversations[0].messages)
-            # print(conversations[1].messages)
-            # hide textbox when retrying ?
-            print("chatbot:")
-            print(chatbot)
+            
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
     # don't enable conclude if only one user msg
