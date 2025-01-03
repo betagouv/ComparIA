@@ -476,3 +476,23 @@ def to_threeway_chatbot(conversations):
                     }
                 )
     return threeway_chatbot
+
+from time import time
+from sys import settrace
+
+class Timeout:
+    def __init__(self, timeout):
+        self.timeout = timeout
+        self.start_time = None
+
+    def __enter__(self):
+        self.start_time = time()
+        settrace(self.trace_function)
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        settrace(None)
+
+    def trace_function(self, frame, event, arg):
+        if time() - self.start_time > self.timeout:
+            raise TimeoutError("Execution timed out!")
+        return self.trace_function

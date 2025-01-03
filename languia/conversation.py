@@ -12,13 +12,12 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from languia.utils import (
-    ContextTooLongError,
-    EmptyResponseError,
-)
+from languia.utils import ContextTooLongError, EmptyResponseError, Timeout
 from languia import config
 
 import logging
+
+from uuid import uuid4
 
 logger = logging.getLogger("languia")
 
@@ -73,59 +72,46 @@ def bot_response(
             logger.warning(f"'model_id' is not defined in endpoint: {endpoint}.")
         elif "api_id" not in endpoint:
             logger.warning(f"'api_id' is not defined in endpoint: {endpoint}.")
-        
+
         else:
             if (endpoint.get("model_id")) == state.model_name:
                 model_api_endpoints.append(endpoint)
 
     if model_api_endpoints == []:
         logger.critical("No endpoint for model name: " + str(state.model_name))
-    else:
-        if state.endpoint is None:
-            state.endpoint = random.choice(model_api_endpoints)
-            endpoint_name = state.endpoint["api_id"]
-            logger.info(f"picked_endpoint: {endpoint_name} for {state.model_name}")
-        endpoint = state.endpoint
-        endpoint_name = endpoint["api_id"]
-        if use_recommended_config:
-            recommended_config = endpoint.get("recommended_config", None)
-            if recommended_config is not None:
-                temperature = recommended_config.get("temperature", float(temperature))
-                # top_p = recommended_config.get("top_p", float(top_p))
-                max_new_tokens = recommended_config.get(
-                    "max_new_tokens", int(max_new_tokens)
-                )
-        try:
-            start_tstamp = time.time()
-            print("start: " + str(start_tstamp))
+        raise Exception("No endpoint for model name: " + str(state.model_name))
 
-            stream_iter = get_api_provider_stream_iter(
-                state.messages,
-                endpoint,
-                temperature,
-                max_new_tokens,
-                request,
+    if state.endpoint is None:
+        state.endpoint = random.choice(model_api_endpoints)
+        endpoint_name = state.endpoint["api_id"]
+        logger.info(f"picked_endpoint: {endpoint_name} for {state.model_name}")
+
+    endpoint = state.endpoint
+    endpoint_name = endpoint["api_id"]
+    if use_recommended_config:
+        recommended_config = endpoint.get("recommended_config", None)
+        if recommended_config is not None:
+            temperature = recommended_config.get("temperature", float(temperature))
+            # top_p = recommended_config.get("top_p", float(top_p))
+            max_new_tokens = recommended_config.get(
+                "max_new_tokens", int(max_new_tokens)
             )
-        except Exception as e:
-            logger.error(
-                f"Error in get_api_provider_stream_iter. error: {e}",
-                extra={request: request},
-            )
+
+    start_tstamp = time.time()
+    print("start: " + str(start_tstamp))
+
+    stream_iter = get_api_provider_stream_iter(
+        state.messages,
+        endpoint,
+        temperature,
+        max_new_tokens,
+        request,
+    )
 
     output_tokens = None
 
-    start = time.time()
-    import sys
-
-    def trace_function(frame, event, arg):
-        if time.time() - start_tstamp > 10:
-            raise Exception('Timed out!') # Use whatever exception you consider appropriate.
-        return trace_function
-    
-
     for i, data in enumerate(stream_iter):
-        sys.settrace(trace_function)
-        try:
+        with Timeout(10):
             if "output_tokens" in data:
                 output_tokens = data["output_tokens"]
 
@@ -139,11 +125,10 @@ def bot_response(
                     output_tokens=output_tokens,
                 )
                 yield (state)
-        finally:
-            sys.settrace(None) # Remove the time constraint and continue normally.
 
     stop_tstamp = time.time()
     print("stop: " + str(stop_tstamp))
+
     output = data.get("text")
     if not output or output == "":
         logger.error(
@@ -168,14 +153,14 @@ def bot_response(
 
     yield (state)
 
-import uuid
+
 def set_conv_state(state, model_name, endpoint):
     # self.messages = get_conversation_template(model_name)
     state.messages = []
     state.output_tokens = None
 
     # TODO: get it from api if generated
-    state.conv_id = uuid.uuid4().hex
+    state.conv_id = uuid4().hex
 
     # TODO: add template info? and test it
     state.template_name = "zero_shot"
