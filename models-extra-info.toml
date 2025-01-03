@@ -59,7 +59,9 @@ active_params = 100
 params = 300
 distribution = "api-only"
 conditions = "restricted"
-description = "Meilleur modèle de la famille Claude, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel. La version v2 est sortie en décembre 2024."
+description = "Meilleur modèle de la famille Claude, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel. La version v2 est sortie en octobre 2024."
+license = "propriétaire Anthropic"
+url = "https://www.anthropic.com/news/3-5-models-and-computer-use"
 
 [command-r-plus]
 simple_name = "Command R+"
@@ -442,7 +444,7 @@ distribution = "open-weights"
 conditions = "restricted"
 license = "Apache 2.0"
 
-[qwen2.5-coder-32b-instruct]
+["qwen2.5-coder-32b-instruct"]
 simple_name = "Qwen2.5-Coder-32B"
 organisation = "Alibaba"
 country = "Chine"
@@ -450,9 +452,10 @@ icon_path = "qwen.jpg"
 params = 32
 friendly_size = "M"
 distribution = "open-weights"
-conditions = "restricted"
 license = "Apache 2.0"
+conditions = "free"
 description = "Modèle de la famille CodeQwen et produit par l'entreprise chinoise Alibaba, ce modèle est spécialisé dans la génération de code et l'usage de son modèle en tant qu'agent."
+url = "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct"
 
 [Qwen2-57B-A14B-Instruct]
 simple_name = "Qwen2-57B-A14B-Instruct"
