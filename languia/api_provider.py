@@ -33,15 +33,14 @@ def get_api_provider_stream_iter(
     )
     stream_iter = litellm_stream_iter(
         model_name=litellm_model_name,
-        # api_version=model_api_dict.get("api_version", None),
         messages=messages_dict,
         temperature=temperature,
         api_key=model_api_dict.get("api_key", "F4K3-4P1-K3Y"),
+        api_base=model_api_dict.get("api_base", None),
+        api_version=model_api_dict.get("api_version", None),
         # stream=model_api_dict.get("stream", True),
         # top_p=top_p,
         max_new_tokens=max_new_tokens,
-        api_base=model_api_dict.get("api_base", None),
-        api_version=model_api_dict.get("api_version", None),
         request=request,
     )
 
@@ -124,8 +123,10 @@ def litellm_stream_iter(
     ):
 
     from languia.config import debug
-    if debug:
-        litellm.set_verbose=True
+
+    # Too verbose:
+    # if debug:
+    #     litellm.set_verbose=True
 
     if os.getenv("SENTRY_DSN"):
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
@@ -145,7 +146,6 @@ def litellm_stream_iter(
         max_tokens=max_new_tokens,
         stream=True,
         stream_options={"include_usage": True},
-        # timeout=15,
         # Not available like this
         # top_p=top_p,
         
