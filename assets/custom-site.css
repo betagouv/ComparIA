@@ -123,3 +123,13 @@
 
 }
 }
+
+.text-center {
+  text-align: center;
+}
+
+.temp-banner {
+  background-color: #6A6AF4;
+  color: white;
+  line-height: 2.5em;
+}
