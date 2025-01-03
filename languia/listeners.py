@@ -59,10 +59,7 @@ from languia.config import (
 
 # from fastchat.model.model_adapter import get_conversation_template
 
-from languia.conversation import (
-    bot_response,
-    set_conv_state
-)
+from languia.conversation import bot_response, set_conv_state
 
 
 import gradio as gr
@@ -235,8 +232,8 @@ document.getElementById("fr-modal-welcome-close").blur();
             logger.info("Received event+retry with:")
             last_message_a = conv_a_scoped.messages[-1]
             last_message_b = conv_b_scoped.messages[-1]
-            logger.info("conv_a:"+ str(conv_a_scoped.messages))
-            logger.info("conv_b:"+ str(conv_b_scoped.messages))
+            logger.info("conv_a:" + str(conv_a_scoped.messages))
+            logger.info("conv_b:" + str(conv_b_scoped.messages))
             app_state_scoped.awaiting_responses = False
             if last_message_a.role == "user" and last_message_b.role == "user":
                 text = last_message_a.content
@@ -338,19 +335,19 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         try:
             gen_a = bot_response(
-                    "a",
-                    conv_a_scoped,
-                    request,
-                    apply_rate_limit=True,
-                    use_recommended_config=True,
-                )
+                "a",
+                conv_a_scoped,
+                request,
+                apply_rate_limit=True,
+                use_recommended_config=True,
+            )
             gen_b = bot_response(
-                    "b",
-                    conv_b_scoped,
-                    request,
-                    apply_rate_limit=True,
-                    use_recommended_config=True,
-                )
+                "b",
+                conv_b_scoped,
+                request,
+                apply_rate_limit=True,
+                use_recommended_config=True,
+            )
             while True:
                 try:
                     i = 0
@@ -415,12 +412,10 @@ document.getElementById("fr-modal-welcome-close").blur();
                 conv_a_scoped.messages = conv_a_scoped.messages[:-1]
             if conv_b_scoped.messages[-1].role == "assistant":
                 conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-                
+
             conv_a_scoped.messages[-1].error = True
             conv_b_scoped.messages[-1].error = True
 
-
-    
             # Report error to controller
             # on_endpoint_error(
             #     config.controller_url,
@@ -432,7 +427,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
             if len(conv_a_scoped.messages) == 1:
                 original_user_prompt = conv_a_scoped.messages[0].content
-                
+
                 config.outages = refresh_outages(
                     config.outages, controller_url=config.controller_url
                 )
@@ -447,7 +442,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                     SAMPLING_WEIGHTS,
                     SAMPLING_BOOST_MODELS,
                 )
-
 
                 conv_a_scoped = set_conv_state(
                     conv_a_scoped,
@@ -470,7 +464,9 @@ document.getElementById("fr-modal-welcome-close").blur();
             # Got answer at this point
             app_state_scoped.awaiting_responses = False
 
-            record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+            record_conversations(
+                app_state_scoped, [conv_a_scoped, conv_b_scoped], request
+            )
 
             if not conv_a_scoped.messages[-1].role == "user":
                 logger.info(
@@ -502,16 +498,17 @@ document.getElementById("fr-modal-welcome-close").blur();
         app_state_scoped, textbox_scoped, conv_a_scoped, request: gr.Request
     ):
         if len(conv_a_scoped.messages) == 0:
-            return { textbox: gr.update(visible=True),
-                    conclude_btn: gr.skip(),
-                    send_btn: gr.skip()
+            return {
+                textbox: gr.update(visible=True),
+                conclude_btn: gr.skip(),
+                send_btn: gr.skip(),
             }
         if len(conv_a_scoped.messages) == 1:
             return {
-                    textbox: gr.update(visible=False),
-                    conclude_btn: gr.skip(),
-                    send_btn: gr.update(visible=False),
-                }
+                textbox: gr.update(visible=False),
+                conclude_btn: gr.skip(),
+                send_btn: gr.update(visible=False),
+            }
         if conv_a_scoped.messages[-1].role == "user":
             return {
                 textbox: gr.update(visible=False),
@@ -519,11 +516,10 @@ document.getElementById("fr-modal-welcome-close").blur();
                 send_btn: gr.update(visible=False),
             }
         return {
-                textbox: gr.update(visible=True),
-                conclude_btn: gr.update(interactive=True),
-                send_btn: gr.update(visible=True),
-            }
-
+            textbox: gr.update(visible=True),
+            conclude_btn: gr.update(interactive=True),
+            send_btn: gr.update(visible=True),
+        }
 
     gr.on(
         triggers=[textbox.submit, send_btn.click, chatbot.retry],
@@ -577,13 +573,19 @@ setTimeout(() => {
         fn=enable_conclude,
         inputs=[app_state, textbox, conv_a],
         outputs=[textbox, conclude_btn, send_btn],
+        js="""(args) => {
+setTimeout(() => {
+  console.log("scrolling to bot responses");
+  var botRows = document.querySelectorAll('.bot-row');
+    var lastBotRow = botRows.item(botRows.length - 1);
+    lastBotRow.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+, 500);
+}""",
     )
-    # // Enable navigation prompt
-    # window.onbeforeunload = function() {
-    #     return true;
-    # };
-    # // Remove navigation prompt
-    # window.onbeforeunload = null;
 
     def force_vote_or_reveal(
         app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
