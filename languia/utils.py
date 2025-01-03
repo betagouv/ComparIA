@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-import gradio as gr
+from gradio import Request
 
 import logging
 
@@ -27,7 +27,7 @@ class EmptyResponseError(RuntimeError):
         return msg
 
 
-def get_ip(request: gr.Request):
+def get_ip(request: Request):
     # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
     if "cloud-protector-client-ip" in request.headers:
         ip = request.headers["cloud-protector-client-ip"]
@@ -38,9 +38,9 @@ def get_ip(request: gr.Request):
     else:
         ip = request.client.host
     # Sometimes multiple IPs are returned as a comma-separated string
-    if ',' in ip:
+    if "," in ip:
         ip = ip.split(",")[0].strip()
-    
+
     return ip
 
 
@@ -386,7 +386,7 @@ def refresh_outages(previous_outages, controller_url):
     try:
         response = requests.get(controller_url + "/outages/", timeout=1)
     except Exception as e:
-        logger.error("controller_inaccessible: " + str(e))
+        logger.warning("controller_inaccessible: " + str(e))
         return previous_outages
     # Check if the request was successful
     if response.status_code == 200:
@@ -454,20 +454,25 @@ def to_threeway_chatbot(conversations):
             threeway_chatbot.append(msg_a)
         else:
             if msg_a:
+                msg_a.metadata["bot"] = "a"
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
                         "content": msg_a.content,
+                        "error": msg_a.error,
                         # TODO: add duration here?
-                        "metadata": {"bot": "a"},
+                        "metadata": msg_a.metadata,
                     }
                 )
             if msg_b:
+
+                msg_b.metadata["bot"] = "b"
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
                         "content": msg_b.content,
-                        "metadata": {"bot": "b"},
+                        "error": msg_a.error,
+                        "metadata": msg_b.metadata,
                     }
                 )
     return threeway_chatbot

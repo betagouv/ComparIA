@@ -3,7 +3,6 @@ import type { FileData } from "@gradio/client";
 export type MessageRole = "system" | "user" | "assistant";
 
 export interface Metadata {
-	title: string | null;
 	bot: string | null;
 }
 
@@ -24,8 +23,9 @@ export interface Message {
 	liked?: boolean;
 	disliked?: boolean;
 	prefs?: string[];
-	comment: string
-	commented?: boolean	
+	comment: string;
+	commented?: boolean;
+	error?: boolean;
 }
 
 export interface TextMessage extends Message {
@@ -34,8 +34,9 @@ export interface TextMessage extends Message {
 	liked: boolean;
 	disliked: boolean;
 	prefs?: string[];
-	comment: string	
-	commented: boolean	
+	comment: string;
+	commented: boolean;
+	error?: boolean
 }
 
 export interface ComponentMessage extends Message {
@@ -44,8 +45,9 @@ export interface ComponentMessage extends Message {
 	liked: boolean;
 	disliked: boolean;
 	prefs?: string[];
-	comment: string
-	commented: boolean	
+	comment: string;
+	commented: boolean;
+	error?: boolean;
 }
 
 export interface ExampleMessage {
