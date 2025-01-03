@@ -128,8 +128,9 @@
   text-align: center;
 }
 
-.temp-banner {
-  background-color: #6A6AF4;
-  color: white;
+a.temp-banner, a.temp-banner:hover a.temp-banner:active {
+  display: block;
+  background-color: #6A6AF4 !important;
+  color: white !important;
   line-height: 2.5em;
 }
