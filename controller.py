@@ -13,7 +13,7 @@ from languia.utils import (
     EmptyResponseError,
 )
 
-from languia.api_provider import get_api_provider_stream_iter
+from languia.litellm import litellm_stream_iter
 
 from gradio import ChatMessage
 
@@ -100,11 +100,20 @@ def test_endpoint(api_id):
     try:
         endpoint = get_endpoint(api_id)
 
-        stream_iter = get_api_provider_stream_iter(
-            [ChatMessage(role="user", content="ONLY say 'this is a test'.")],
-            endpoint,
-            temperature,
-            max_new_tokens,
+        model_name = endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
+
+        # stream=model_api_dict.get("stream", True),
+        # top_p=top_p,
+
+        stream_iter = litellm_stream_iter(
+            model_name=model_name,
+            messages=[{"role": "user", "content": "ONLY say 'this is a test'."}],
+            api_key=endpoint.get("api_key", "F4K3-4P1-K3Y"),
+            api_base=endpoint.get("api_base", None),
+            api_version=endpoint.get("api_version", None),
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            max_new_tokens=max_new_tokens,
         )
 
         # Verify the response
@@ -148,7 +157,7 @@ def test_endpoint(api_id):
             # logging.error(f"Test failed: {model_name}")
             # logging.error(reason)
             # test.update({"success": False, "message": reason})
-            raise(EmptyResponseError(reason))
+            raise (EmptyResponseError(reason))
         tests.append(test)
         if len(tests) > 25:
             tests = tests[-25:]

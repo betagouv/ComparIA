@@ -496,3 +496,9 @@ class Timeout:
         if time() - self.start_time > self.timeout:
             raise TimeoutError("Execution timed out!")
         return self.trace_function
+
+def messages_to_dict(messages):
+    try:
+        return [{"role": message.role, "content": message.content} for message in messages]
+    except:
+        raise TypeError(f"Expected ChatMessage object, got {type(messages)}")

@@ -5,7 +5,7 @@ The gradio utilities for chatting with a single model.
 import gradio as gr
 
 import random
-from languia.api_provider import get_api_provider_stream_iter
+from languia.litellm import litellm_stream_iter
 
 import time
 from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
@@ -99,32 +99,49 @@ def bot_response(
 
     start_tstamp = time.time()
     print("start: " + str(start_tstamp))
+    
+    messages_dict = []
 
-    stream_iter = get_api_provider_stream_iter(
-        state.messages,
-        endpoint,
-        temperature,
-        max_new_tokens,
-        request,
+    for message in state.messages:
+        try:
+            messages_dict.append({"role": message.role, "content": message.content})
+        except:
+            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
+
+    litellm_model_name = (
+        endpoint.get("api_type", "openai")
+        + "/"
+        + endpoint["model_name"]
+    )
+    stream_iter = litellm_stream_iter(
+        model_name=litellm_model_name,
+        messages=messages_dict,
+        temperature=temperature,
+        api_key=endpoint.get("api_key", "F4K3-4P1-K3Y"),
+        api_base=endpoint.get("api_base", None),
+        api_version=endpoint.get("api_version", None),
+        # stream=model_api_dict.get("stream", True),
+        # top_p=top_p,
+        max_new_tokens=max_new_tokens,
+        request=request,
     )
 
     output_tokens = None
 
     for i, data in enumerate(stream_iter):
-        with Timeout(10):
-            if "output_tokens" in data:
-                output_tokens = data["output_tokens"]
+        if "output_tokens" in data:
+            output_tokens = data["output_tokens"]
 
-            output = data.get("text")
-            if output:
-                output.strip()
-                state.messages = update_last_message(
-                    messages=state.messages,
-                    text=output,
-                    position=position,
-                    output_tokens=output_tokens,
-                )
-                yield (state)
+        output = data.get("text")
+        if output:
+            output.strip()
+            state.messages = update_last_message(
+                messages=state.messages,
+                text=output,
+                position=position,
+                output_tokens=output_tokens,
+            )
+            yield (state)
 
     stop_tstamp = time.time()
     print("stop: " + str(stop_tstamp))
