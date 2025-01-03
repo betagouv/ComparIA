@@ -26,37 +26,24 @@ def get_api_provider_stream_iter(
         except:
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
 
-    if model_api_dict["api_type"] == "azure":
-        stream_iter = azure_api_stream_iter(
-            model_name=model_api_dict["model_name"],
-            api_version=model_api_dict["api_version"],
-            messages=messages_dict,
-            temperature=temperature,
-            api_key=model_api_dict["api_key"],
-            # top_p=top_p,
-            max_new_tokens=max_new_tokens,
-            api_base=model_api_dict["api_base"],
-            request=request,
-        )
-        # Default to openai compatible
-    else:
-        litellm_model_name = (
-            model_api_dict.get("api_type", "openai")
-            + "/"
-            + model_api_dict["model_name"]
-        )
-        stream_iter = litellm_stream_iter(
-            model_name=litellm_model_name,
-            # api_version=model_api_dict.get("api_version", None),
-            messages=messages_dict,
-            temperature=temperature,
-            api_key=model_api_dict.get("api_key", ""),
-            # stream=model_api_dict.get("stream", True),
-            # top_p=top_p,
-            max_new_tokens=max_new_tokens,
-            api_base=model_api_dict.get("api_base"),
-            request=request,
-        )
+    litellm_model_name = (
+        model_api_dict.get("api_type", "openai")
+        + "/"
+        + model_api_dict["model_name"]
+    )
+    stream_iter = litellm_stream_iter(
+        model_name=litellm_model_name,
+        # api_version=model_api_dict.get("api_version", None),
+        messages=messages_dict,
+        temperature=temperature,
+        api_key=model_api_dict.get("api_key", "F4K3-4P1-K3Y"),
+        # stream=model_api_dict.get("stream", True),
+        # top_p=top_p,
+        max_new_tokens=max_new_tokens,
+        api_base=model_api_dict.get("api_base", None),
+        api_version=model_api_dict.get("api_version", None),
+        request=request,
+    )
 
     return stream_iter
 
@@ -124,20 +111,21 @@ def process_response_stream(response, model_name=None, api_base=None, request=No
             yield data
     yield data
 
+    
 def litellm_stream_iter(
     model_name,
     messages,
     temperature,
     max_new_tokens,
-    provider=None,
     api_base=None,
     api_key=None,
     request=None,
-):
+    api_version=None,
+    ):
 
-    # from languia.config import debug
-    # if debug:
-    #     litellm.set_verbose=True
+    from languia.config import debug
+    if debug:
+        litellm.set_verbose=True
 
     if os.getenv("SENTRY_DSN"):
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
@@ -146,7 +134,7 @@ def litellm_stream_iter(
         ]  # [OPTIONAL] if you want litellm to capture -> send exception to sentry
 
 
-    res = litellm.completion(
+    res = litellm.completion(api_version=api_version,
         timeout=GLOBAL_TIMEOUT,
         base_url=api_base,
         api_key=api_key,
@@ -160,65 +148,13 @@ def litellm_stream_iter(
         # timeout=15,
         # Not available like this
         # top_p=top_p,
+        
     )
+    # print(res.dict())
     yield from process_response_stream(
         res, model_name=model_name, api_base=api_base, request=request
     )
 
-
-def azure_api_stream_iter(
-    model_name,
-    messages,
-    temperature,
-    max_new_tokens,
-    api_version=None,
-    api_base=None,
-    api_key=None,
-    request=None,
-):
-    from openai import AzureOpenAI
-
-    client = AzureOpenAI(
-        azure_endpoint=api_base,
-        api_key=api_key,
-        api_version=api_version,
-        timeout=GLOBAL_TIMEOUT,
-        # max_retries=
-    )
-
-    res = client.chat.completions.create(
-        model=model_name,
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_new_tokens,
-        stream=True,
-        stream_options={"include_usage": True},
-        # Not available like this
-        # top_p=top_p,
-    )
-    yield from process_response_stream(
-        res, model_name=model_name, api_base=api_base, request=request
-    )
-
-
-# from litellm import completion
-# import os
-
-# os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = ""
-
-# model = "claude-3-5-sonnet-v2@20241022"
-
-# vertex_ai_project = "your-vertex-project" # can also set this as os.environ["VERTEXAI_PROJECT"]
-# vertex_ai_location = "your-vertex-location" # can also set this as os.environ["VERTEXAI_LOCATION"]
-
-# response = completion(
-#     model="vertex_ai/" + model,
-#     messages=[{"role": "user", "content": "hi"}],
-#     temperature=0.7,
-#     vertex_ai_project=vertex_ai_project,
-#     vertex_ai_location=vertex_ai_location,
-# )
-# print("\nModel Response", response)
 
 def vertex_api_stream_iter(
     api_base, model_name, messages, temperature, max_new_tokens, request=None
@@ -232,20 +168,6 @@ def vertex_api_stream_iter(
             vertex_credentials_json = json.dumps(vertex_credentials)
     else:
         logger.warn("No Google creds detected!")
-
-    # import google.auth
-    # import google.auth.transport.requests
-    # import openai
-
-    # creds, _project = google.auth.default(
-    #     scopes=["https://www.googleapis.com/auth/cloud-platform"]
-    # )
-    # auth_req = google.auth.transport.requests.Request()
-    # creds.refresh(auth_req)
-
-    # litellm.vertex_location = "us-east5"
-    # litellm.vertex_ai_location = "europe-west1"
-    # litellm.vertex_project = "languia-430909"
 
     res = litellm.completion(
         timeout=GLOBAL_TIMEOUT,

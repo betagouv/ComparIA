@@ -110,6 +110,7 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
     logger.debug("output_tokens: " + str(conv_b.output_tokens))
 
     # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
+    # TODO: use tokenizer from litellm: https://docs.litellm.ai/docs/completion/token_usage#3-token_counter
     model_a_tokens = (
         conv_a.output_tokens
         if conv_a.output_tokens and conv_a.output_tokens != 0
