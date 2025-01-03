@@ -39,7 +39,7 @@ if any(
         "LANGUIA_DB_USER",
         "LANGUIA_DB_PASSWORD",
         "LANGUIA_DB_HOST",
-        "LANGUIA_DB_PORT"
+        "LANGUIA_DB_PORT",
     ]
 ):
     # and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
@@ -140,29 +140,22 @@ if os.getenv("SENTRY_DSN"):
         + str(git_commit)
     )
 
+
 # TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
-# if os.getenv("SENTRY_FRONT_DSN"):
-#     sentry_js = f"""
-#     <script src="{ os.getenv('SENTRY_FRONT_DSN') }" crossorigin="anonymous"></script>
-#     """
-# sentry_js += """
-# <script>
-# Sentry.onLoad(function() {
-#     Sentry.init({
-#     // Performance Monitoring
+if os.getenv("SENTRY_FRONT_DSN"):
+#     sentry_head_js = f"""
+# <script
+#   src="https://browser.sentry-cdn.com/8.47.0/bundle.tracing.replay.min.js"
+#   integrity="sha384-VaqNrma84jlgEWxBCMOnatKAHLSjaKGmo8Biuj3NQEg1MrmeukY8s6pnaTgRVjKM"
+#   crossorigin="anonymous"
+# ></script>
 # """
-# sentry_js += f"""
-#   tracesSampleRate: {traces_sample_rate},
-#   // Session Replay
-#   replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
-#   replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
-#   """
-# sentry_js += """
-#     });
-# });
-# </script>"""
-# else:
-sentry_js = ""
+    sentry_head_js = f"""
+ <script type="text/javascript" 
+   src="../assets/bundle.tracing.replay.min.js"
+ ></script>"""
+else:
+    sentry_head_js = ""
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
@@ -180,7 +173,7 @@ else:
 
 # we can also load js normally (no in <head>)
 arena_head_js = (
-    sentry_js
+    sentry_head_js
     # note: dsfr.module.js not that needed: only dsfr modal seems to require it
     + """
 <script type="module" src="../assets/dsfr/dsfr.module.js"></script>
@@ -221,7 +214,10 @@ with open("./assets/arena.js", encoding="utf-8") as js_file:
 
     if os.getenv("GIT_COMMIT"):
         git_commit = os.getenv("GIT_COMMIT")
-        arena_js = arena_js.replace("__GIT_COMMIT__", git_commit)
+    if os.getenv("SENTRY_FRONT_DSN"):
+        arena_js = arena_js.replace("__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN"))
+    if os.getenv("SENTRY_ENV"):
+        arena_js = arena_js.replace("__SENTRY_ENV__", os.getenv("SENTRY_ENV"))
 
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
@@ -259,65 +255,65 @@ else:
 
 enable_moderation = False
 use_remote_storage = False
- 
+
 guided_cards_choices = [
-                (
-                    """<div>
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/lightbulb.svg" alt="Idées" />
             <span id="ideas-description">Générer de nouvelles idées</span>
         </div>""",
-                    "ideas",
-                ),
-                (
-                    """<div>
+        "ideas",
+    ),
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/chat-3.svg" alt="Explications" />
             <span id="explanations-description">Expliquer simplement un concept</span>
         </div>""",
-                    "explanations",
-                ),
-                (
-                    """<div>
+        "explanations",
+    ),
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/translate-2.svg" alt="Traduction" />
             <span id="languages-description">M’exprimer dans une autre langue</span>
         </div>""",
-                    "languages",
-                ),
-                (
-                    """<div>
+        "languages",
+    ),
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/draft.svg" alt="Administratif" />
             <span id="administrative-description">Rédiger un document administratif</span>
         </div>""",
-                    "administrative",
-                ),
-                (
-                    """<div>
+        "administrative",
+    ),
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/bowl.svg" alt="Recettes" />
             <span id="recipes-description">Découvrir une nouvelle recette de cuisine</span>
         </div>""",
-                    "recipes",
-                ),
-                (
-                    """<div>
+        "recipes",
+    ),
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/clipboard.svg" alt="Conseils" />
             <span id="coach-description">Obtenir des conseils sur l’alimentation et le sport</span>
         </div>""",
-                    "coach",
-                ),
-                (
-                    """<div>
+        "coach",
+    ),
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/book-open-line.svg" alt="Histoires" />
             <span id="stories-description">Raconter une histoire</span>
         </div>""",
-                    "stories",
-                ),
-                (
-                    """<div>
+        "stories",
+    ),
+    (
+        """<div>
             <img class="fr-mb-3w" src="../assets/extra-icons/music-2.svg" alt="Recommandations" />
             <span id="recommendations-description">Proposer des idées de films, livres, musiques</span>
         </div>""",
-                    "recommendations",
-                ),
-            ]
+        "recommendations",
+    ),
+]
 
 # Shuffle only at each reload of app to get some randomness
 random.shuffle(guided_cards_choices)
