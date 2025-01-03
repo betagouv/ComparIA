@@ -1,5 +1,7 @@
 import logging
-from languia.utils import get_model_extra_info, count_output_tokens, get_chosen_model
+from languia.utils import get_model_extra_info, get_chosen_model, messages_to_dict
+
+from litellm import token_counter
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -106,22 +108,21 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
 
     model_a = get_model_extra_info(conv_a.model_name, models_extra_info)
     model_b = get_model_extra_info(conv_b.model_name, models_extra_info)
-    logger.debug("output_tokens: " + str(conv_a.output_tokens))
-    logger.debug("output_tokens: " + str(conv_b.output_tokens))
 
-    # TODO: Improve fake token counter: 4 letters by token: https://genai.stackexchange.com/questions/34/how-long-is-a-token
-    # TODO: use tokenizer from litellm: https://docs.litellm.ai/docs/completion/token_usage#3-token_counter
-    model_a_tokens = (
-        conv_a.output_tokens
-        if conv_a.output_tokens and conv_a.output_tokens != 0
-        else count_output_tokens(conv_a.messages)
-    )
+    if conv_a.output_tokens and conv_a.output_tokens != 0:
+        model_a_tokens = conv_a.output_tokens
+        logger.debug("output_tokens (model a): " + str(model_a_tokens))
+    else:
+        model_a_tokens = token_counter(messages=messages_to_dict(conv_a.messages), model=conv_a.model_name)
+        logger.debug("output_tokens (model a) (litellm tokenizer): " + str(model_a_tokens))
+        
+    if conv_b.output_tokens and conv_b.output_tokens != 0:
+        model_b_tokens = conv_b.output_tokens
+        logger.debug("output_tokens (model b): " + str(model_b_tokens))
+    else:
+        model_b_tokens = token_counter(messages=messages_to_dict(conv_b.messages), model=conv_b.model_name)
+        logger.debug("output_tokens (model b) (litellm tokenizer): " + str(model_b_tokens))
 
-    model_b_tokens = (
-        conv_b.output_tokens
-        if conv_b.output_tokens and conv_b.output_tokens != 0
-        else count_output_tokens(conv_b.messages)
-    )
     # TODO:
     # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
     # request_latency_b = conv_b.conv.finish_tstamp - conv_b.conv.start_tstamp
@@ -207,46 +208,46 @@ def get_llm_impact(
     """Compute or fallback to estimated impact for an LLM."""
     logger = logging.getLogger("languia")
     # TODO: add request latency
-    # FIXME: most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
+    # TODO: add range
     # model_active_parameter_count: ValueOrRange,
     # model_total_parameter_count: ValueOrRange,
-    impact = llm_impacts("huggingface_hub", model_name, token_count, request_latency)
-    if impact is None:
 
-        logger.debug("impact is None for " + model_name + ", deducing from params")
-        if "active_params" in model_extra_info and "total_params" in model_extra_info:
+    # most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
+    # impact = llm_impacts("huggingface_hub", model_name, token_count, request_latency)
+    if "active_params" in model_extra_info and "total_params" in model_extra_info:
+        # TODO: add request latency
+        # FIXME: multiply by 1_000_000?
+        model_active_parameter_count = int(model_extra_info["active_params"])
+        model_total_parameter_count = int(model_extra_info["total_params"])
+    else:
+        if "params" in model_extra_info:
             # TODO: add request latency
-            # FIXME: multiply by 1_000_000?
-            model_active_parameter_count = int(model_extra_info["active_params"])
-            model_total_parameter_count = int(model_extra_info["total_params"])
+            model_active_parameter_count = int(model_extra_info["params"])
+            model_total_parameter_count = int(model_extra_info["params"])
         else:
-            if "params" in model_extra_info:
-                # TODO: add request latency
-                model_active_parameter_count = int(model_extra_info["params"])
-                model_total_parameter_count = int(model_extra_info["params"])
-            else:
-                logger.error(
-                    "impact is None for "
-                    + model_name
-                    + ", and no params, closed model did not match ecologits list?"
-                )
-                return None
+            logger.error(
+                "Couldn' calculate impact for"
+                + model_name
+                + ", missing params"
+            )
+            return None
 
-        # TODO: move to config.py
-        electricity_mix_zone = "WOR"
-        electricity_mix = electricity_mixes.find_electricity_mix(
-            zone=electricity_mix_zone
-        )
-        if_electricity_mix_adpe = electricity_mix.adpe
-        if_electricity_mix_pe = electricity_mix.pe
-        if_electricity_mix_gwp = electricity_mix.gwp
+    # TODO: move to config.py
+    electricity_mix_zone = "WOR"
+    electricity_mix = electricity_mixes.find_electricity_mix(
+        zone=electricity_mix_zone
+    )
+    if_electricity_mix_adpe = electricity_mix.adpe
+    if_electricity_mix_pe = electricity_mix.pe
+    if_electricity_mix_gwp = electricity_mix.gwp
 
-        impact = compute_llm_impacts(
-            model_active_parameter_count=model_active_parameter_count,
-            model_total_parameter_count=model_total_parameter_count,
-            output_token_count=token_count,
-            if_electricity_mix_adpe=if_electricity_mix_adpe,
-            if_electricity_mix_pe=if_electricity_mix_pe,
-            if_electricity_mix_gwp=if_electricity_mix_gwp,
-        )
+    impact = compute_llm_impacts(
+        model_active_parameter_count=model_active_parameter_count,
+        model_total_parameter_count=model_total_parameter_count,
+        output_token_count=token_count,
+        if_electricity_mix_adpe=if_electricity_mix_adpe,
+        if_electricity_mix_pe=if_electricity_mix_pe,
+        if_electricity_mix_gwp=if_electricity_mix_gwp,
+        request_latency=request_latency
+    )
     return impact
