@@ -12,7 +12,7 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from languia.utils import ContextTooLongError, EmptyResponseError, Timeout
+from languia.utils import ContextTooLongError, EmptyResponseError
 from languia import config
 
 import logging

@@ -61,9 +61,12 @@ def litellm_stream_iter(
     buffer = ""
 
     # def barrel_roll():
-    # import random
-    #     if random.random() < 1/200:
-    #         raise Error("*BANG!*")
+    #     import random
+    #     import time
+    #     if random.random() < 1/50:
+    #         print("Sleeping 15s...")
+    #         time.sleep(15)
+    #         # raise Error("*BANG!*")
     #     else:
     #         return "No explosion"
 
