@@ -214,6 +214,7 @@ with open("./assets/arena.js", encoding="utf-8") as js_file:
 
     if os.getenv("GIT_COMMIT"):
         git_commit = os.getenv("GIT_COMMIT")
+        arena_js = arena_js.replace("__GIT_COMMIT__", os.getenv("GIT_COMMIT"))
     if os.getenv("SENTRY_FRONT_DSN"):
         arena_js = arena_js.replace("__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN"))
     if os.getenv("SENTRY_ENV"):
