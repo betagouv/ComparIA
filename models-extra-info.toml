@@ -49,14 +49,15 @@ description = "Aya 23 8B de Cohere est un petit modèle de la famille Command R 
 # distribution = "api-only"
 # conditions = "restricted"
 
-["Claude 3.5 Sonnet"]
-simple_name = "Claude 3.5 Sonnet"
+[claude-3-5-sonnet-v2]
+simple_name = "Claude 3.5 Sonnet v2"
 organisation = "Anthropic"
 country = "États-Unis"
 icon_path = "anthropic.png"
-friendly_size = "L"
+friendly_size = "XL"
 distribution = "api-only"
 conditions = "restricted"
+description = "Meilleur modèle de la famille Claude, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel. La version v2 est sortie en décembre 2024."
 
 [command-r-plus]
 simple_name = "Command R+"
