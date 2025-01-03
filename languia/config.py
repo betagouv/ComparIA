@@ -152,7 +152,7 @@ if os.getenv("SENTRY_FRONT_DSN"):
 # """
     sentry_head_js = f"""
  <script type="text/javascript" 
-   src="assets/bundle.tracing.replay.min.js"
+   src="../assets/bundle.tracing.replay.min.js"
  ></script>"""
 else:
     sentry_head_js = ""
