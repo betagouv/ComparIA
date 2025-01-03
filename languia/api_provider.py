@@ -225,21 +225,27 @@ def vertex_api_stream_iter(
 ):
     logger = logging.getLogger("languia")
 
-    if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+    if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+        import json
+        with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), 'r') as file:
+            vertex_credentials = json.load(file)
+            vertex_credentials_json = json.dumps(vertex_credentials)
+    else:
         logger.warn("No Google creds detected!")
 
-    import google.auth
-    import google.auth.transport.requests
-    import openai
+    # import google.auth
+    # import google.auth.transport.requests
+    # import openai
 
-    creds, _project = google.auth.default(
-        scopes=["https://www.googleapis.com/auth/cloud-platform"]
-    )
-    auth_req = google.auth.transport.requests.Request()
-    creds.refresh(auth_req)
+    # creds, _project = google.auth.default(
+    #     scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    # )
+    # auth_req = google.auth.transport.requests.Request()
+    # creds.refresh(auth_req)
 
-    litellm.vertex_ai_location = "europe-west1"
-    litellm.vertex_ai_project = "languia-430909"
+    # litellm.vertex_location = "us-east5"
+    # litellm.vertex_ai_location = "europe-west1"
+    # litellm.vertex_project = "languia-430909"
 
     res = litellm.completion(
         timeout=GLOBAL_TIMEOUT,
@@ -247,10 +253,11 @@ def vertex_api_stream_iter(
         messages=messages,
         temperature=temperature,
         max_tokens=max_new_tokens,
-        vertex_ai_project=litellm.vertex_ai_project,
-        vertex_ai_location=litellm.vertex_ai_project,
-        base_url=api_base,
-        api_key=creds.token,
+        # vertex_ai_project=litellm.vertex_project,
+        # vertex_ai_location=litellm.vertex_location,
+        # base_url=api_base,
+        # api_key=creds.token,
+        vertex_credentials=vertex_credentials_json,
         stream=True,
         stream_options={"include_usage": True},
     )
