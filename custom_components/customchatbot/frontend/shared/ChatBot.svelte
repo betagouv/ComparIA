@@ -200,10 +200,10 @@
 		hasError = groupedMessages.some((messages) =>
 			messages.some((message) => message?.error),
 		);
-		console.log("hasError:");
-		console.log(hasError);
-		console.log("messages:");
-		console.log(groupedMessages);
+		// console.log("hasError:");
+		// console.log(hasError);
+		// console.log("messages:");
+		// console.log(groupedMessages);
 	}
 
 	$: {
@@ -212,7 +212,6 @@
 			dispatch("change");
 		}
 	}
-
 	$: groupedMessages = value && group_messages(value, "messages");
 
 	var comment: string = "";
@@ -502,8 +501,8 @@
 			</h3>
 			<p>
 				Une erreur temporaire est survenue.<br />
-				Vous pouvez tenter de réessayer de solliciter les modèles ou bien
-				conclure votre expérience en donnant votre avis sur les modèles.
+				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou bien
+				conclure votre expérience en donnant votre avis sur les modèles{/if}.
 			</p>
 			<!-- error: {hasError} -->
 			<p class="text-center">
