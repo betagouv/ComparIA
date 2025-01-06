@@ -27,6 +27,10 @@
         padding: 1em;
     }
 
+    .rounded-tile.bg-blue {
+        background-color: #F3F5F9 !important;
+    }
+
     .gap {
         gap: 1em;
     }
@@ -92,8 +96,20 @@
         grid-template-columns: 1fr;
 
     }
+
     .grid .rounded-tile {
-    padding: 1.5em;
+        padding: 1.5em;
+    }
+
+    .grid-4 {
+        display: grid;
+        gap: 1.5em;
+        grid-template-columns: 1fr 1fr;
+
+    }
+
+    .grid-4 .rounded-tile {
+        padding: 1.5em;
     }
 
     .grid-2 {
@@ -106,6 +122,11 @@
 
         .grid {
             grid-template-columns: 1fr 1fr 1fr;
+
+        }
+
+        .grid-4 {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
 
         }
 
@@ -153,8 +174,11 @@
         color: var(--text-mention-grey);
     }
 
-    h5 {
-        color: var(--text-action-high-blue-france) !important;
+    h6 {
+        font-size: 1.1em;
+        color: #3A3A3A;
+        margin-bottom: 0.5em;
+
     }
 
     p {
@@ -173,10 +197,39 @@
         margin: auto;
 
     }
+
+    .fr-badge--purple {
+        background-color: #6A6AF4;
+        color: #fff;
+
+    }
+
+    .fr-badge--corail {
+        color: #fff;
+        background-color: #FF9575;
+    }
+
+    .w-min {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2em;
+    }
+
+    .w-min .rounded-tile {
+        width: min-content;
+    }
+
+    .bg-grey {
+        background-color: #FCFCFD;
+    }
+
+    .spaced {
+        line-height: 2.4em;
+    }
 </style>
 {% endblock %}
 {% block content %}
-<section class="fr-container--fluid fr-pb-4w fr-pb-md-10w fr-pt-8w">
+<section class="fr-container--fluid bg-grey fr-pb-4w fr-pb-md-6w fr-pt-8w">
     <div class="fr-container-md grid-2">
         <div class="fr-container">
             <h1>
@@ -202,7 +255,7 @@
                 BNF François Mitterand, 75013 Paris
             </p>
 
-            <button class="purple-btn fr-btn cta"><a
+            <button class="purple-btn fr-btn cta fr-mb-4w"><a
                     href="https://comparia.getgrist.com/forms/7afnxbB3HtKKC5ThnEy4Fb/15" class="text-center">S’inscrire
                     à l’évènement
                 </a></button>
@@ -290,7 +343,7 @@
                             fill="#7F7F7F" />
                     </svg>
                     09h30 à 10h15</span>
-                <span class="fr-badge">CONFÉRENCE</span>
+                <span class="fr-badge fr-badge--sm fr-badge--purple ">CONFÉRENCE</span>
                 <h6>Ouverture de la journée</h6>
                 <p class="text-grey fr-text--sm">Mot d'accueil de la BnF et présentation de la journée par l'équipe
                     produit
@@ -307,7 +360,7 @@
                     </svg>
                     10h15 à 11h
                 </span>
-                <span class="fr-badge">CONFÉRENCE</span>
+                <span class="fr-badge fr-badge--sm  fr-badge--purple ">CONFÉRENCE</span>
                 <h6>Jeux de données et alignement des modèles</h6>
                 <p class="text-grey fr-text--sm">Exploitation des jeux de données au service de la performance des
                     modèles
@@ -323,7 +376,7 @@
                     </svg>
                     Toute la journée
                 </span>
-                <span class="fr-badge">STAND & EN LIGNE</span>
+                <span class="fr-badge fr-badge--sm fr-badge--corail">STAND & EN LIGNE</span>
                 <h6>Comparathon - objectif de votes</h6>
                 <p class="text-grey fr-text--sm">Participez à une expérience en ligne spécialement conçue pour ce jour
                     et
@@ -339,7 +392,7 @@
                     </svg>
                     11h à 11h30
                 </span>
-                <span class="fr-badge">Atelier</span>
+                <span class="fr-badge fr-badge--sm fr-badge--yellow-tournesol">Atelier</span>
                 <h6>Atelier #1 : La bataille de l’IA</h6>
                 <p class="text-grey fr-text--sm">Atelier animé par Latitudes reposant sur un jeu de cartes collaboratif
                     pour
@@ -355,7 +408,7 @@
                     </svg>
                     11h30 à 12h15
                 </span>
-                <span class="fr-badge">CONFÉRENCE</span>
+                <span class="fr-badge fr-badge--sm fr-badge--purple ">CONFÉRENCE</span>
                 <h6>Les biais dans l’IA</h6>
                 <p class="text-grey fr-text--sm">Identifier et réduire les biais culturels des modèles d’IA générative :
                     parole aux équipes du consortium Communs démocratiques (Make.org, Sciences-Po Medialab, CNRS).</p>
@@ -370,7 +423,7 @@
                     </svg>
                     14h à 14h45
                 </span>
-                <span class="fr-badge">CONFÉRENCE</span>
+                <span class="fr-badge fr-badge--sm fr-badge--purple ">CONFÉRENCE</span>
                 <h6>Évaluation de l’impact environnemental des IA</h6>
                 <p class="text-grey fr-text--sm">Encourager des usages responsables : parole à Samuel Rincé, porteur de
                     l’initiative Ecologits chez GenAI</p>
@@ -385,7 +438,7 @@
                     </svg>
                     15h15 à 16h
                 </span>
-                <span class="fr-badge">CONFÉRENCE</span>
+                <span class="fr-badge fr-badge--sm fr-badge--purple ">CONFÉRENCE</span>
                 <h6>Education et formation à l’IA</h6>
                 <p class="text-grey fr-text--sm">Eduquer, sensibiliser et former à l’IA générative : parole aux équipes
                     de
@@ -401,7 +454,7 @@
                     </svg>
                     16h30 à 17h
                 </span>
-                <span class="fr-badge">CONFÉRENCE</span>
+                <span class="fr-badge fr-badge--sm fr-badge--purple ">CONFÉRENCE</span>
                 <h6>Clôture de la journée</h6>
                 <p class="text-grey fr-text--sm">Bilan de la journée. Discours de clôture, intervenant à confirmer</p>
             </div>
@@ -416,82 +469,87 @@
     </div>
 </section>
 <section>
-    Les intervenant·es
-
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="rounded-tile">
+    <h3 class="text-center fr-mt-6w">
+        Les intervenant·es
+    </h3>
+    <div class="fr-container">
+        <div class="w-min">
+            <div class="rounded-tile bg-blue">
                 <img src="assets/bnf/anastasia-stasenko.jpg" width="226" height="226">
-                <div class="fr-p-3w">
+                <div class="fr-pt-3w">
                     <h6 class="fr-mb-1w">Anastasia Stasenko</h6>
                     <p class="text-grey">Cofondatrice de Pleias</p>
+                    <img src="assets/bnf/pleias.png">
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="rounded-tile">
+            <div class="rounded-tile bg-blue">
                 <img src="assets/bnf/samuel-rince.jpg" width="226" height="226">
-                <div class="fr-p-3w">
+                <div class="fr-pt-3w">
                     <h6 class="fr-mb-1w">Samuel Rincé</h6>
                     <p class="text-grey">Président et cofondateur de GenAI Impact</p>
+                    <img src="assets/bnf/genaiimpact.png">
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="rounded-tile">
+            <div class="rounded-tile bg-blue">
                 <img src="assets/bnf/mathilde-bras.jpg" width="226" height="226">
-                <div class="fr-p-3w">
+                <div class="fr-pt-3w">
                     <h6 class="fr-mb-1w">Mathilde Bras</h6>
                     <p class="text-grey">Co-Responsable de l'Atelier numérique / Product Ops</p>
+                    <img src="assets/bnf/ateliernumerique.png">
                 </div>
             </div>
-        </div>
-        <div class="col-md-4">
-            <div class="rounded-tile">
+            <div class="rounded-tile bg-blue">
                 <img src="assets/bnf/lucie-termignon.jpg" width="226" height="226">
-                <div class="fr-p-3w">
+                <div class="fr-pt-3w">
                     <h6 class="fr-mb-1w">Lucie Termignon</h6>
                     <p class="text-grey">Cheffe de produit compar:IA</p>
+                    <img src="assets/bnf/comparia.png">
                 </div>
             </div>
         </div>
     </div>
 
 
-    <a class="fr-btn purple-btn" href="https://comparia.getgrist.com/forms/7afnxbB3HtKKC5ThnEy4Fb/15">S'inscrire à
-        l'évènement</a>
+    <div class="text-center">
+        <a href="https://comparia.getgrist.com/forms/7afnxbB3HtKKC5ThnEy4Fb/15"
+            class=" fr-mt-8w fr-mb-10w fr-px-8w fr-btn fr-btn--lg purple-btn" role="button">
+            S'inscrire à l'évènement
+        </a>
+    </div>
 
 </section>
-<section class="grid-2">
-    <div>
-        <h3>Infos pratiques</h3>
-        <h4><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M12 23.7279L5.63604 17.364C2.12132 13.8492 2.12132 8.15076 5.63604 4.63604C9.15076 1.12132 14.8492 1.12132 18.364 4.63604C21.8787 8.15076 21.8787 13.8492 18.364 17.364L12 23.7279ZM16.9497 15.9497C19.6834 13.2161 19.6834 8.78392 16.9497 6.05025C14.2161 3.31658 9.78392 3.31658 7.05025 6.05025C4.31658 8.78392 4.31658 13.2161 7.05025 15.9497L12 20.8995L16.9497 15.9497ZM12 13C10.8954 13 10 12.1046 10 11C10 9.89543 10.8954 9 12 9C13.1046 9 14 9.89543 14 11C14 12.1046 13.1046 13 12 13Z"
-                    fill="#6A6AF4" />
-            </svg>
+<section class="bg-blue">
+    <h4 class="text-center fr-pt-6w">Infos pratiques</h4>
+    <div class="grid-2 fr-mx-6w fr-ml-md-12w fr-pb-6w">
+        <div class=" fr-container fr-ml-md-12w">
+            <h6><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M12 23.7279L5.63604 17.364C2.12132 13.8492 2.12132 8.15076 5.63604 4.63604C9.15076 1.12132 14.8492 1.12132 18.364 4.63604C21.8787 8.15076 21.8787 13.8492 18.364 17.364L12 23.7279ZM16.9497 15.9497C19.6834 13.2161 19.6834 8.78392 16.9497 6.05025C14.2161 3.31658 9.78392 3.31658 7.05025 6.05025C4.31658 8.78392 4.31658 13.2161 7.05025 15.9497L12 20.8995L16.9497 15.9497ZM12 13C10.8954 13 10 12.1046 10 11C10 9.89543 10.8954 9 12 9C13.1046 9 14 9.89543 14 11C14 12.1046 13.1046 13 12 13Z"
+                        fill="#6A6AF4" />
+                </svg>
 
-            Adresse
-        </h4>
-        <p>Accueil public BNF François Mitterand, <br />Quai François Mauriac, 75013 Paris </p>
-        <h4>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                    d="M17.2 20L19 21.5V22H5V21.5L6.8 20H5C3.89543 20 3 19.1046 3 18V7C3 4.79086 4.79086 3 7 3H17C19.2091 3 21 4.79086 21 7V18C21 19.1046 20.1046 20 19 20H17.2ZM13 5V11H19V7C19 5.89543 18.1046 5 17 5H13ZM11 5H7C5.89543 5 5 5.89543 5 7V11H11V5ZM19 13H5V18H19V13ZM7.5 17C6.67157 17 6 16.3284 6 15.5C6 14.6716 6.67157 14 7.5 14C8.32843 14 9 14.6716 9 15.5C9 16.3284 8.32843 17 7.5 17ZM16.5 17C15.6716 17 15 16.3284 15 15.5C15 14.6716 15.6716 14 16.5 14C17.3284 14 18 14.6716 18 15.5C18 16.3284 17.3284 17 16.5 17Z"
-                    fill="#6A6AF4" />
-            </svg>
-            Modes de transport
-        </h4>
-        <p>
-            Métro ligne 6 - Quai de la Gare<br />
-            Métro ligne 14 - Bibliothèque François Mitterand<br />
-            RER C - Bibliothèque François Mitterand</p>
+                Adresse
+            </h6>
+            <p class="spaced">Accueil public BNF François Mitterand, <br />Quai François Mauriac, 75013 Paris </p>
+            <h6>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M17.2 20L19 21.5V22H5V21.5L6.8 20H5C3.89543 20 3 19.1046 3 18V7C3 4.79086 4.79086 3 7 3H17C19.2091 3 21 4.79086 21 7V18C21 19.1046 20.1046 20 19 20H17.2ZM13 5V11H19V7C19 5.89543 18.1046 5 17 5H13ZM11 5H7C5.89543 5 5 5.89543 5 7V11H11V5ZM19 13H5V18H19V13ZM7.5 17C6.67157 17 6 16.3284 6 15.5C6 14.6716 6.67157 14 7.5 14C8.32843 14 9 14.6716 9 15.5C9 16.3284 8.32843 17 7.5 17ZM16.5 17C15.6716 17 15 16.3284 15 15.5C15 14.6716 15.6716 14 16.5 14C17.3284 14 18 14.6716 18 15.5C18 16.3284 17.3284 17 16.5 17Z"
+                        fill="#6A6AF4" />
+                </svg>
+                Modes de transport
+            </h6>
+            <p class="spaced">
+                Métro ligne 6 - Quai de la Gare<br />
+                Métro ligne 14 - Bibliothèque François Mitterand<br />
+                RER C - Bibliothèque François Mitterand</p>
+        </div>
+
+        <div>
+            <iframe width="100%" height="500" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                src="https://cartes.app/?style=france&allez=Biblioth%C3%A8que+Nationale+de+France+-+Fran%C3%A7ois+Mitterrand%7Cw56132291%7C2.3758%7C48.8336#13.7/48.83388/2.36321"></iframe>
+        </div>
     </div>
 
-    <div>
-        <iframe width="100%" height="500" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
-            src="https://cartes.app/?style=france&allez=Biblioth%C3%A8que+Nationale+de+France+-+Fran%C3%A7ois+Mitterrand%7Cw56132291%7C2.3758%7C48.8336#13.7/48.83388/2.36321"></iframe>
-    </div>
-    </div>
 </section>
 {% endblock %}
