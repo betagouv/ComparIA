@@ -113,7 +113,6 @@ def test_endpoint(api_id):
             api_version=endpoint.get("api_version", None),
             temperature=temperature,
             max_new_tokens=max_new_tokens,
-            max_new_tokens=max_new_tokens,
         )
 
         # Verify the response
