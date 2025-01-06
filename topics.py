@@ -1,8 +1,11 @@
 import json
-from litellm import completion
+from openai import OpenAI
+
+# from litellm import completion
 from pydantic import BaseModel
 from enum import Enum
 import os
+
 
 # Define the categories as Enum
 class TXT360Category(str, Enum):
@@ -16,14 +19,19 @@ class TXT360Category(str, Enum):
     food_drink_cooking = "Food & Drink & Cooking"
     health_wellness_medicine = "Health & Wellness & Medicine"
     law_justice = "Law & Justice"
-    natural_science_formal_science_technology = "Natural Science & Formal Science & Technology"
-    personal_development_human_resources_career = "Personal Development & Human Resources & Career"
+    natural_science_formal_science_technology = (
+        "Natural Science & Formal Science & Technology"
+    )
+    personal_development_human_resources_career = (
+        "Personal Development & Human Resources & Career"
+    )
     politics_government = "Politics & Government"
     religion_spirituality = "Religion & Spirituality"
     shopping_commodity = "Shopping & Commodity"
     society_social_issues_human_rights = "Society & Social Issues & Human Rights"
     sports = "Sports"
     other = "Other"
+
 
 # Define the response model
 class SumUp(BaseModel):
@@ -33,62 +41,81 @@ class SumUp(BaseModel):
     txt360_categories: list[TXT360Category]
     languages: list[str]
 
+
+client = OpenAI(
+    base_url="https://albert.api.etalab.gouv.fr/v1/",
+    api_key=os.getenv("ALBERT_API_KEY", ""),
+)
+
+
 # Read the JSONL input file
-input_file = '/home/hadrien/git/languia-data/comparia-questions/questions_samples.jsonl'  # Replace with your actual JSON file path
-output_file = 'results.jsonl'
+input_file = "/home/hadrien/git/languia-data/comparia-questions/questions_samples.jsonl"  # Replace with your actual JSON file path
+output_file = "results.jsonl"
 
 # Open the input JSONL file
-with open(input_file, 'r') as file:
+with open(input_file, "r") as file:
     lines = file.readlines()
 
 # Prepare the output JSONL
-with open(output_file, 'w') as output:
+with open(output_file, "w") as output:
     for line in lines:
         try:
             # Parse each line as a JSON object
             record = json.loads(line)
-            conv_a = record.get('conv_a')
-            conv_b = record.get('conv_b')
-            conversation_pair_id = record.get('conversation_pair_id')
+            question_content = record.get("conv_a")
+            response_a_content = record.get("response_a_content")
+            response_b_content = record.get("response_b_content")
+            conversation_pair_id = record.get("conversation_pair_id")
 
-            if not conv_a or not conversation_pair_id:
-                print(f"Skipping record without 'conv_a' or 'conversation_pair_id': {record}")
+            if not conversation_pair_id:
+                print(f"Skipping record without 'conversation_pair_id'")
                 continue
 
             # Formulate the query
             query_content = f"""
-            Based on the conversations A and B, provide some keywords.
-            
-            ================================
-            BEGINNING OF CONV A:
-
-            {conv_a}
-
-            ================================
-            END OF CONV A
-
-            ================================
-            BEGINNING OF CONV B:
-
-            {conv_b}
-
-
-            ================================
-            END OF CONV B
+            Based on the following exchange between a user and 2 bots, provide some keywords in the requested format.
             """
 
+            # ================================
+            # BEGINNING OF CONV A:
+
+            # {conv_a}
+
+            # ================================
+            # END OF CONV A
+
+            # ================================
+            # BEGINNING OF CONV B:
+
+            # {conv_b}
+
+            # ================================
+            # END OF CONV B
+
             # Make the litellm API call
-            response = completion(temperature=0.7,
+            response = client.chat.completions.create(
                 messages=[
                     {
-                        'role': 'user',
-                        'content': query_content,
-                    }
+                        "role": "system",
+                        "content": query_content,
+                    },
+                    {
+                        "role": "user",
+                        "content": question_content,
+                    },
+                    {
+                        "role": "user",
+                        "content": response_a_content,
+                    },
+                    {
+                        "role": "user",
+                        "content": response_b_content,
+                    },
                 ],
-                api_key=os.getenv("ALBERT_API_KEY", ""),
-                api_base="https://albert.api.etalab.gouv.fr/v1/",
-                model='meta-llama/Meta-Llama-3.1-70B-Instruct',
-                format=SumUp.model_json_schema(),
+                temperature=0.7,
+                model="openai/meta-llama/Meta-Llama-3.1-70B-Instruct",
+                extra_body={"guided_json": SumUp.model_json_schema()},
+                # format=SumUp.model_json_schema()
             )
 
             # Parse the response into the SumUp model
@@ -102,8 +129,9 @@ with open(output_file, 'w') as output:
                 "txt360_categories": sum_up.txt360_categories,
                 "languages": sum_up.languages,
             }
-            output.write(json.dumps(result) + '\n')
+            output.write(json.dumps(result) + "\n")
             print(f"Processed conversation_pair_id: {conversation_pair_id}")
-
+            input("Press any key for next conv...")
         except Exception as e:
             print(f"Failed to process record: {e}")
+            input("Press any key for next conv...")
