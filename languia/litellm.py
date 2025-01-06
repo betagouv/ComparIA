@@ -47,6 +47,9 @@ def litellm_stream_iter(
             "sentry"
         ]  # [OPTIONAL] if you want litellm to capture -> send exception to sentry
 
+    if os.getenv("VERTEXAI_LOCATION"):
+        litellm.vertex_location = os.getenv("VERTEXAI_LOCATION")
+        
     res = litellm.completion(
         api_version=api_version,
         timeout=GLOBAL_TIMEOUT,
@@ -60,6 +63,7 @@ def litellm_stream_iter(
         stream=True,
         stream_options={"include_usage": True},
         vertex_credentials=vertex_credentials_json,
+        vertex_ai_location=litellm.vertex_location
         # Not available like this
         # top_p=top_p,
     )
