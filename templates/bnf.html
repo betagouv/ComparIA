@@ -1,0 +1,391 @@
+{% extends "base.html" %}
+{% block extra_styles %}
+<style>
+    .temp-banner {
+        display: none !important;
+    }
+
+
+    .flex {
+        display: flex;
+    }
+
+    .inline-block {
+        display: inline-block;
+    }
+
+    .text-purple {
+        color: var(--blue-france-main-525);
+    }
+
+
+    .rounded-tile {
+        border-color: #E5E5E5;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 1rem;
+    }
+
+    .bg-blue {
+        /* background-color: var(--blue-france-975-75); */
+        /* --background-contrast-info: var(--info-950-100); */
+        /* background-color: var(--background-contrast-info); */
+        background-color: #F3F5F9;
+    }
+
+
+    .bg-light-blue {
+        /* --blue-france-main-525: #6A6AF4; */
+        --blue-france-main-525-hover: #9898F8;
+        --blue-france-main-525-active: #AEAEF9;
+        --hover: var(--blue-france-main-525-hover);
+        --active: var(--blue-france-main-525-active);
+        background-color: var(--blue-france-main-525);
+    }
+
+    @media (prefers-color-scheme: dark) {
+
+        .bg-blue {
+            background-color: #1C1E22;
+        }
+
+        .bg-light-grey {
+            background-color: #0A0A0B;
+        }
+
+        .rounded-tile {
+            background-color: black;
+        }
+
+        .dark-invert {
+            filter: invert(1);
+        }
+    }
+
+    @media (prefers-color-scheme: light) {
+
+        .bg-light-grey {
+            background-color: #FCFCFD;
+        }
+
+        .rounded-tile {
+            background-color: white;
+        }
+
+        #formItem-mbtext-email.fr-input {
+            background-color: white;
+        }
+    }
+
+    .rounded-tile .fr-responsive-img {
+        border-top-left-radius: 1rem;
+        border-top-right-radius: 1rem;
+        min-height: 60%;
+    }
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr;
+
+    }
+
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+
+    @media (min-width: 62em) {
+
+        .grid {
+            grid-template-columns: 1fr 1fr 1fr;
+
+        }
+
+        .grid-2 {
+            grid-auto-rows: 1fr;
+            grid-template-columns: 1fr 1fr;
+
+        }
+    }
+
+    .align-center {
+        align-items: center;
+    }
+
+    .h-full {
+        height: 100%;
+    }
+
+    .cadre p,
+    .cadre {
+        font-size: 9px !important;
+
+    }
+
+    .cadre {
+        border-style: solid;
+        border-color: var(--border-default-grey) !important;
+        border-width: 0.5px;
+        padding: 1em;
+    }
+
+    .cadre .texte::before {
+        content: "Réponse modèle B";
+        text-transform: uppercase;
+        color: var(--text-label-green-tilleul-verveine);
+        padding: 2px 4px;
+        background-color: var(--background-contrast-green-tilleul-verveine);
+        --idle: transparent;
+        --hover: var(--background-contrast-green-tilleul-verveine-hover);
+        --active: var(--background-contrast-green-tilleul-verveine-active);
+        font-weight: 700;
+    }
+
+    legend {
+        color: var(--text-mention-grey);
+    }
+
+    h5 {
+        color: var(--text-action-high-blue-france) !important;
+    }
+
+    p {
+        text-align: justify;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<section class="fr-container--fluid fr-pb-4w fr-pb-md-10w fr-pt-8w">
+    <div class="fr-container-md grid-2">
+        <div class="fr-container">
+            <h1>
+                Journée compar:IA
+            </h1>
+            <p>Venez découvrir les enjeux clés de l'IA générative à cet évènement gratuit ouvert à toutes et tous !
+            </p>
+            <h6><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M9 1V3H15V1H17V3H21C21.5523 3 22 3.44772 22 4V20C22 20.5523 21.5523 21 21 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H7V1H9ZM20 11H4V19H20V11ZM7 5H4V9H20V5H17V7H15V5H9V7H7V5Z"
+                        fill="#6A6AF4" />
+                </svg>
+                Vendredi 7 février 2025 de 9h30 à 17h30
+            </h6>
+            <h6> <svg width="18" height="22" viewBox="0 0 18 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M9 21.7279L2.63604 15.364C-0.87868 11.8492 -0.87868 6.15076 2.63604 2.63604C6.15076 -0.87868 11.8492 -0.87868 15.364 2.63604C18.8787 6.15076 18.8787 11.8492 15.364 15.364L9 21.7279ZM13.9497 13.9497C16.6834 11.2161 16.6834 6.78392 13.9497 4.05025C11.2161 1.31658 6.78392 1.31658 4.05025 4.05025C1.31658 6.78392 1.31658 11.2161 4.05025 13.9497L9 18.8995L13.9497 13.9497ZM9 11C7.8954 11 7 10.1046 7 9C7 7.89543 7.8954 7 9 7C10.1046 7 11 7.89543 11 9C11 10.1046 10.1046 11 9 11Z"
+                        fill="#6A6AF4" />
+                </svg>
+                BNF François Mitterand, 75013 Paris
+            </h6> <a class="purple-btn fr-btn"
+                href="https://comparia.getgrist.com/forms/7afnxbB3HtKKC5ThnEy4Fb/15">S’inscrire à l’évènement
+            </a>
+        </div>
+        <div class="fr-container">
+            <div class="grid-2 gap">
+                <div class="rounded-tile">
+                    <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M2.20833 10.0208C2.20833 10.3473 2.68855 10.915 3.80257 11.472C5.2438 12.1926 7.2883 12.625 9.5 12.625C11.7117 12.625 13.7561 12.1926 15.1974 11.472C16.3115 10.915 16.7917 10.3473 16.7917 10.0208V7.75906C15.0729 8.82104 12.4451 9.5 9.5 9.5C6.55493 9.5 3.92704 8.82104 2.20833 7.75906V10.0208ZM16.7917 12.9674C15.0729 14.0294 12.4451 14.7083 9.5 14.7083C6.55493 14.7083 3.92704 14.0294 2.20833 12.9674V15.2292C2.20833 15.5556 2.68855 16.1233 3.80257 16.6803C5.2438 17.4009 7.2883 17.8333 9.5 17.8333C11.7117 17.8333 13.7561 17.4009 15.1974 16.6803C16.3115 16.1233 16.7917 15.5556 16.7917 15.2292V12.9674ZM0.125 15.2292V4.8125C0.125 2.22367 4.32233 0.125 9.5 0.125C14.6777 0.125 18.875 2.22367 18.875 4.8125V15.2292C18.875 17.818 14.6777 19.9167 9.5 19.9167C4.32233 19.9167 0.125 17.818 0.125 15.2292ZM9.5 7.41667C11.7117 7.41667 13.7561 6.98429 15.1974 6.26368C16.3115 5.70667 16.7917 5.13898 16.7917 4.8125C16.7917 4.48602 16.3115 3.91833 15.1974 3.36132C13.7561 2.64071 11.7117 2.20833 9.5 2.20833C7.2883 2.20833 5.2438 2.64071 3.80257 3.36132C2.68855 3.91833 2.20833 4.48602 2.20833 4.8125C2.20833 5.13898 2.68855 5.70667 3.80257 6.26368C5.2438 6.98429 7.2883 7.41667 9.5 7.41667Z"
+                            fill="#6A6AF4" />
+                    </svg>
+
+                    </svg>Jeux de données francophones et alignement
+                </div>
+                <div class="rounded-tile">
+
+                    <svg width="19" height="21" viewBox="0 0 19 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M5.33333 2.16671C5.33333 3.3173 4.40059 4.25004 3.25 4.25004C2.09941 4.25004 1.16667 3.3173 1.16667 2.16671C1.16667 1.01611 2.09941 0.083374 3.25 0.083374C4.40059 0.083374 5.33333 1.01611 5.33333 2.16671ZM2.20833 14.6667V20.9167H0.125V8.41671C0.125 6.69082 1.52411 5.29171 3.25 5.29171C4.10478 5.29171 4.87941 5.63489 5.44359 6.19101L7.91698 8.52681L10.3261 6.11763L11.7993 7.59078L7.95844 11.4316L6.375 9.93619V20.9167H4.29167V14.6667H2.20833ZM3.25 7.37504C2.67471 7.37504 2.20833 7.84142 2.20833 8.41671V12.5834H4.29167V8.41671C4.29167 7.84142 3.82529 7.37504 3.25 7.37504ZM16.7917 3.20837H7.41667V1.12504H17.8333C18.4086 1.12504 18.875 1.59142 18.875 2.16671V13.625C18.875 14.2004 18.4086 14.6667 17.8333 14.6667H14.2665L17.2076 20.9167H14.9051L11.964 14.6667H7.41667V12.5834H16.7917V3.20837Z"
+                            fill="#6A6AF4" />
+                    </svg>
+
+                    Enjeux d’éducation et de sensibilisation à l’IA
+                </div>
+                <div class="rounded-tile">
+                    <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" clip-rule="evenodd"
+                            d="M16.781 15.3094L21.2424 19.7698L19.7685 21.2438L15.3081 16.7823C13.6484 18.1128 11.5841 18.8364 9.45703 18.8334C4.28203 18.8334 0.0820312 14.6334 0.0820312 9.45837C0.0820312 4.28337 4.28203 0.083374 9.45703 0.083374C14.632 0.083374 18.832 4.28337 18.832 9.45837C18.8351 11.5855 18.1114 13.6498 16.781 15.3094ZM14.6914 14.5365C16.0134 13.177 16.7517 11.3547 16.7487 9.45837C16.7487 5.42921 13.4852 2.16671 9.45703 2.16671C5.42786 2.16671 2.16536 5.42921 2.16536 9.45837C2.16536 13.4865 5.42786 16.75 9.45703 16.75C11.3533 16.753 13.1757 16.0147 14.5352 14.6927L14.6914 14.5365Z"
+                            fill="#6A6AF4" />
+                    </svg>
+
+                    Identification des biais culturels et linguistiques
+                </div>
+                <div class="rounded-tile">
+                    <svg width="19" height="20" viewBox="0 0 19 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M18.871 0.125V2.20833C18.871 12.2369 13.2747 16.7917 6.37109 16.7917L2.45726 16.7916C2.28833 17.7417 2.20443 18.7781 2.20443 19.9167H0.121094C0.121094 18.4972 0.241625 17.208 0.481261 16.0294C0.241146 14.6814 0.121094 12.8517 0.121094 10.5417C0.121094 4.7887 4.78479 0.125 10.5377 0.125C12.621 0.125 14.7044 1.16667 18.871 0.125ZM10.5377 2.20833C5.93539 2.20833 2.20443 5.93929 2.20443 10.5417C2.20443 10.9192 2.20776 11.2824 2.21436 11.6311C3.52102 9.57125 5.4346 7.9425 7.9376 6.51225L8.97125 8.32104C5.9974 10.0204 4.02473 11.9516 3.01197 14.7081L6.37109 14.7083C12.6369 14.7083 16.6535 10.5697 16.7845 2.61215C15.3553 2.75118 14.0274 2.6625 12.3892 2.41676C11.1901 2.2369 10.9552 2.20833 10.5377 2.20833Z"
+                            fill="#6A6AF4" />
+
+                    </svg>
+
+                    Impact environnemental des IA génératives
+                </div>
+            </div>
+        </div>
+</section>
+<section class="bg-blue">
+    <div class="fr-container">
+    <div>
+<h2>        Le programme</h2>
+<p>
+        Ce programme est encore en cours de finalisation, d’autres ateliers seront ajoutés dans les prochaines
+        semaines.</p>
+        <p class="fr-text--sm text-center">
+        <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10.5" cy="10.5" r="10.5" fill="#6A6AF4" />
+        </svg>
+
+        Conférence - grand auditorium
+        <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10.5" cy="10.5" r="10.5" fill="#EFCB3A" />
+        </svg>
+
+        Atelier - salle aquarium
+
+        <svg width="21" height="21" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="10.5" cy="10.5" r="10.5" fill="#FF9575" />
+        </svg>
+
+        Comparathon - stand et en ligne
+        </p>
+    </div>
+
+    <div class="rounded-tile">
+            
+            <span class="text-grey fr-text--sm"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M10.0013 18.3333C5.39893 18.3333 1.66797 14.6023 1.66797 9.99996C1.66797 5.39758 5.39893 1.66663 10.0013 1.66663C14.6036 1.66663 18.3346 5.39758 18.3346 9.99996C18.3346 14.6023 14.6036 18.3333 10.0013 18.3333ZM10.0013 16.6666C13.6832 16.6666 16.668 13.6819 16.668 9.99996C16.668 6.31806 13.6832 3.33329 10.0013 3.33329C6.3194 3.33329 3.33464 6.31806 3.33464 9.99996C3.33464 13.6819 6.3194 16.6666 10.0013 16.6666ZM10.8346 9.99996H14.168V11.6666H9.16797V5.83329H10.8346V9.99996Z"
+                        fill="#7F7F7F" />
+                </svg>
+                09h30 à 10h15</span>
+                <span class="fr-badge">CONFÉRENCE</span>
+            <h6>Ouverture de la journée</h6>
+            <p class="text-grey fr-text--sm">Mot d'accueil de la BnF et présentation de la journée par l'équipe produit compar:IA</p>
+        </div>
+    </div>
+    10h15 à 11h
+    CONFÉRENCE
+    Jeux de données et alignement des modèles
+    Exploitation des jeux de données au service de la performance des modèles sur les usages francophones.
+    Parole aux équipes de PLEIAS.
+
+    Toute la journée
+    STAND & EN LIGNE
+    Comparathon - objectif de votes
+    Participez à une expérience en ligne spécialement conçue pour ce jour et aidez-vous à atteindre l’objectif
+    de votes sur compar:IA !
+
+
+    11h à 11h30
+    Atelier
+    Atelier #1 : La bataille de l’IA
+    Atelier animé par Latitudes reposant sur un jeu de cartes collaboratif pour découvrir les enjeux sociaux et
+    environnementaux des IA
+
+
+    11h30 à 12h15
+    CONFÉRENCE
+    Les biais dans l’IA
+    Identifier et réduire les biais culturels des modèles d’IA générative: parole aux équipes du consortium
+    Communs démocratiques (Make.org, Sciences-Po Medialab, CNRS).
+
+
+    14h à 14h45
+    CONFÉRENCE
+    Évaluation de l’impact environnemental des IA
+    Encourager des usages responsables: parole à Samuel Rincé, porteur de l’initiative Ecologits chez GenAI
+
+    15h15 à 16h
+    CONFÉRENCE
+    Education et formation à l’IA
+    Eduquer, sensibiliser et former à l’IA générative: parole aux équipes de PIX.
+
+
+    16h30 à 17h
+    CONFÉRENCE
+    Clôture de la journée
+    Bilan de la journée
+    Discours de clôture, intervenant à confirmer
+
+
+    <a href="https://comparia.getgrist.com/forms/7afnxbB3HtKKC5ThnEy4Fb/15" class="fr-btn purple-btn" role="button">
+        S'inscrire à l'évènement
+    </a></div>
+</section>
+
+    Les intervenant·es
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="rounded-tile">
+                <img src="assets/anastasia-stasenko.jpg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue"
+                    data-fr-js-ratio="true">
+                <div class="fr-p-3w">
+                    <h6 class="fr-mb-1w">Anastasia Stasenko</h6>
+                    <p class="text-grey">Cofondatrice de Pleias</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="rounded-tile">
+                <img src="assets/samuel-rince.jpg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue"
+                    data-fr-js-ratio="true">
+                <div class="fr-p-3w">
+                    <h6 class="fr-mb-1w">Samuel Rincé</h6>
+                    <p class="text-grey">Président et cofondateur de GenAI Impact</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="rounded-tile">
+                <img src="assets/mathilde-bras.jpg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue"
+                    data-fr-js-ratio="true">
+                <div class="fr-p-3w">
+                    <h6 class="fr-mb-1w">Mathilde Bras</h6>
+                    <p class="text-grey">Co-Responsable de l'Atelier numérique / Product Ops</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="rounded-tile">
+                <img src="assets/lucie-termignon.jpg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue"
+                    data-fr-js-ratio="true">
+                <div class="fr-p-3w">
+                    <h6 class="fr-mb-1w">Lucie Termignon</h6>
+                    <p class="text-grey">Cheffe de produit compar:IA</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <a class="fr-btn" href="https://comparia.getgrist.com/forms/7afnxbB3HtKKC5ThnEy4Fb/15">S'inscrire à
+        l'évènement</a>
+
+
+    <h3>Infos pratiques</h3>
+    <h4 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+            d="M12 23.7279L5.63604 17.364C2.12132 13.8492 2.12132 8.15076 5.63604 4.63604C9.15076 1.12132 14.8492 1.12132 18.364 4.63604C21.8787 8.15076 21.8787 13.8492 18.364 17.364L12 23.7279ZM16.9497 15.9497C19.6834 13.2161 19.6834 8.78392 16.9497 6.05025C14.2161 3.31658 9.78392 3.31658 7.05025 6.05025C4.31658 8.78392 4.31658 13.2161 7.05025 15.9497L12 20.8995L16.9497 15.9497ZM12 13C10.8954 13 10 12.1046 10 11C10 9.89543 10.8954 9 12 9C13.1046 9 14 9.89543 14 11C14 12.1046 13.1046 13 12 13Z"
+            fill="#6A6AF4" />
+        </svg>
+
+        Adresse
+    </h4 Accueil public BNF François Mitterand, Quai François Mauriac, 75013 Paris <h4>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+            d="M17.2 20L19 21.5V22H5V21.5L6.8 20H5C3.89543 20 3 19.1046 3 18V7C3 4.79086 4.79086 3 7 3H17C19.2091 3 21 4.79086 21 7V18C21 19.1046 20.1046 20 19 20H17.2ZM13 5V11H19V7C19 5.89543 18.1046 5 17 5H13ZM11 5H7C5.89543 5 5 5.89543 5 7V11H11V5ZM19 13H5V18H19V13ZM7.5 17C6.67157 17 6 16.3284 6 15.5C6 14.6716 6.67157 14 7.5 14C8.32843 14 9 14.6716 9 15.5C9 16.3284 8.32843 17 7.5 17ZM16.5 17C15.6716 17 15 16.3284 15 15.5C15 14.6716 15.6716 14 16.5 14C17.3284 14 18 14.6716 18 15.5C18 16.3284 17.3284 17 16.5 17Z"
+            fill="#6A6AF4" />
+    </svg>
+    Modes de transport</h4>
+    Métro ligne 6 - Quai de la Gare
+    Métro ligne 14 - Bibliothèque François Mitterand
+    RER C - Bibliothèque François Mitterand
+
+
+    <iframe width="100%" height="500" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+        src="https://cartes.app/?style=france&allez=Biblioth%C3%A8que+Nationale+de+France+-+Fran%C3%A7ois+Mitterrand%7Cw56132291%7C2.3758%7C48.8336#13.7/48.83388/2.36321"></iframe>
+    <!-- src="https://cartes.app/?style=france&allez=Biblioth%C3%A8que+Nationale+de+France+-+Fran%C3%A7ois+Mitterrand%7Cw56132291%7C2.3758%7C48.8336#14.7/48.83318/2.3701-->
+    </div>
+    {% endblock %}
