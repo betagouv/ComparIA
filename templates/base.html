@@ -22,7 +22,7 @@
     {% endblock %}
     <meta name="google-site-verification" content="1xrdIzQy45wIoAeeNvpRb9l8s_k5DjzMtrvbOzx6wMQ" />
 
-    <meta property="og:title" content="compar:IA, le comparateur d'IA conversationnelles">
+    <meta property="og:title" content="{{ title|default("") }}{% if title %} - {% endif %}compar:IA, le comparateur d'IA conversationnelles">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fr_FR">
     <meta property="og:description"
