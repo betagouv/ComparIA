@@ -126,6 +126,20 @@ conditions = "restricted"
 description = "Sorti en février 2024 et amélioré en septembre 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
 excerpt = "Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 
+["gemini-2.0-flash-exp"]
+url = "https://ai.google.dev/gemini-api"
+params = 40
+simple_name = "Gemini 2.0 Flash"
+organisation = "Google"
+country = "États-Unis"
+icon_path = "google.png"
+friendly_size = "M"
+distribution = "api-only"
+license = "propriétaire Gemini"
+conditions = "restricted"
+description = "Sorti en décembre 2024 en version expérimentale, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
+excerpt = "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés."
+
 ["gemma-2-27b-it-q8"]
 url = "https://huggingface.co/google/gemma-2-27b-it"
 simple_name = "Gemma 2 27b"
