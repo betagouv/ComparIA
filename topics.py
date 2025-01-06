@@ -48,6 +48,7 @@ with open(output_file, 'w') as output:
             # Parse each line as a JSON object
             record = json.loads(line)
             conv_a = record.get('conv_a')
+            conv_b = record.get('conv_b')
             conversation_pair_id = record.get('conversation_pair_id')
 
             if not conv_a or not conversation_pair_id:
@@ -55,7 +56,26 @@ with open(output_file, 'w') as output:
                 continue
 
             # Formulate the query
-            query_content = f"Based on the conversation: {conv_a}, provide some keywords."
+            query_content = f"""
+            Based on the conversations A and B, provide some keywords.
+            
+            ================================
+            BEGINNING OF CONV A:
+
+            {conv_a}
+
+            ================================
+            END OF CONV A
+
+            ================================
+            BEGINNING OF CONV B:
+
+            {conv_b}
+
+
+            ================================
+            END OF CONV B
+            """
 
             # Make the litellm API call
             response = completion(temperature=0.7,
@@ -66,7 +86,7 @@ with open(output_file, 'w') as output:
                     }
                 ],
                 api_key=os.getenv("ALBERT_API_KEY", ""),
-                api_base="https://albert.api.etalab.gouv.fr/v1/"
+                api_base="https://albert.api.etalab.gouv.fr/v1/",
                 model='meta-llama/Meta-Llama-3.1-70B-Instruct',
                 format=SumUp.model_json_schema(),
             )
