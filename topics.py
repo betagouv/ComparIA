@@ -1,11 +1,9 @@
 import json
 from openai import OpenAI
-
-# from litellm import completion
 from pydantic import BaseModel
 from enum import Enum
 import os
-import time
+from collections import defaultdict
 
 
 # Define the categories as Enum
@@ -48,9 +46,8 @@ client = OpenAI(
     api_key=os.getenv("ALBERT_API_KEY", ""),
 )
 
-
-# Read the JSONL input file
-input_file = "/home/hadrien/git/languia-data/comparia-questions/questions_samples.jsonl"  # Replace with your actual JSON file path
+# File paths
+input_file = "/home/hadrien/git/languia-data/comparia-questions/questions_samples.jsonl"
 output_file = "results.jsonl"
 
 # Load already processed conversation_pair_ids
@@ -67,79 +64,62 @@ except FileNotFoundError:
     # If the output file doesn't exist yet, start fresh
     pass
 
-# Open the input JSONL file
+# Read all records from the input file and organize them by conversation_pair_id
+records_by_id = defaultdict(list)
 with open(input_file, "r") as file:
-    lines = file.readlines()
+    for line in file:
+        try:
+            record = json.loads(line)
+            conversation_pair_id = record.get("conversation_pair_id")
+            if conversation_pair_id:
+                records_by_id[conversation_pair_id].append(record)
+        except json.JSONDecodeError:
+            print("Skipping invalid JSON line")
 
 # Prepare the output JSONL
-with open(output_file, "w") as output:
-    for line in lines:
+with open(output_file, "a") as output:
+    for conversation_pair_id, records in records_by_id.items():
         try:
-            # Parse each line as a JSON object
-            record = json.loads(line)
-
-            conversation_pair_id = record.get("conversation_pair_id")
-
             # Skip if already processed
             if conversation_pair_id in processed_ids:
-                print(f"Skipping already processed conversation_pair_id: {conversation_pair_id}")
+                print(
+                    f"Skipping already processed conversation_pair_id: {conversation_pair_id}"
+                )
                 continue
 
-            question_content = record.get("question_content")
-            response_a_content = record.get("response_a_content")
-            response_b_content = record.get("response_b_content")
+            # Select the record with the highest msg_rank
+            record_to_process = max(records, key=lambda r: r.get("msg_rank", 0))
 
-            if not conversation_pair_id or not response_a_content or not response_b_content or not question_content:
-                print(f"Skipping record, missing fields")
-                continue
+            # question_content = record_to_process.get("question_content")
+            # response_a_content = record_to_process.get("response_a_content")
+            # response_b_content = record_to_process.get("response_b_content")
+            conversation_a = json.dumps(record_to_process.get("conversation_a"))
+            conversation_b = json.dumps(record_to_process.get("conversation_b"))
 
             # Formulate the query
             query_content = f"""
-            Based on the following exchange between a user and 2 bots, provide some keywords in the requested format.
+            Based on the following two conversations between a user and 2 different bots, provide some keywords in the requested format.
             """
+            # query_content = f"""
+            # Based on the following two between a user and 2 bots, provide some keywords in the requested format.
+            # """
 
-            # ================================
-            # BEGINNING OF CONV A:
-
-            # {conv_a}
-
-            # ================================
-            # END OF CONV A
-
-            # ================================
-            # BEGINNING OF CONV B:
-
-            # {conv_b}
-
-            # ================================
-            # END OF CONV B
-
-            # Make the litellm API call
+            # Make the OpenAI API call
             response = client.chat.completions.create(
                 messages=[
-                    {
-                        "role": "system",
-                        "content": query_content,
-                    },
-                    {
-                        "role": "user",
-                        "content": question_content,
-                    },
-                    {
-                        "role": "user",
-                        "content": response_a_content,
-                    },
-                    {
-                        "role": "user",
-                        "content": response_b_content,
-                    },
+                    {"role": "system", "content": query_content},
+                    {"role": "user", "content": conversation_a},
+                    {"role": "user", "content": conversation_b},
+                    # {"role": "user", "content": question_content},
+                    # {"role": "user", "content": response_a_content},
+                    # {"role": "user", "content": response_b_content},
                 ],
                 temperature=0.7,
                 model="meta-llama/Meta-Llama-3.1-70B-Instruct",
                 extra_body={"guided_json": SumUp.model_json_schema()},
-                # format=SumUp.model_json_schema()
             )
             print(response.__dict__)
+
             # Parse the response into the SumUp model
             sum_up = SumUp.model_validate_json(response.choices[0].message.content)
 
@@ -154,9 +134,7 @@ with open(output_file, "w") as output:
             output.write(json.dumps(result) + "\n")
             processed_ids.add(conversation_pair_id)  # Mark as processed
             print(f"Processed conversation_pair_id: {conversation_pair_id}")
-            print(f"Result: {json.dumps(result)}")
-            time.sleep(5)
-            # input("Press any key for next conv...")
         except Exception as e:
-            print(f"Failed to process record: {e}")
-            input("Press any key for next conv...")
+            print(
+                f"Failed to process record for conversation_pair_id {conversation_pair_id}: {e}"
+            )
