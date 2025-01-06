@@ -97,7 +97,11 @@ async def about(request: Request):
 async def faq(request: Request):
     return templates.TemplateResponse(
         "faq.html",
-        {"title": "Vos questions les plus courantes", "request": request, "config": config},
+        {
+            "title": "Vos questions les plus courantes",
+            "request": request,
+            "config": config,
+        },
     )
 
 
@@ -143,6 +147,14 @@ async def accessibility(request: Request):
     return templates.TemplateResponse(
         "accessibility.html",
         {"title": "Déclaration d’accessibilité", "request": request, "config": config},
+    )
+
+
+@app.get("/bnf", response_class=HTMLResponse)
+async def bnf(request: Request):
+    return templates.TemplateResponse(
+        "bnf.html",
+        {"title": "Journée compar:IA", "request": request, "config": config},
     )
 
 
