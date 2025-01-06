@@ -1,6 +1,13 @@
 {% extends "base.html" %}
 {% block extra_styles %}
 <style>
+
+@media (prefers-color-scheme: dark)
+{
+    * {
+  color: white !important;
+    }
+}
     .temp-banner {
         display: none !important;
     }
@@ -55,20 +62,30 @@
     @media (prefers-color-scheme: dark) {
 
         .bg-blue {
-            background-color: #1C1E22;
+            background-color: #1C1E22 !important;
         }
 
-        .bg-light-grey {
-            background-color: #0A0A0B;
+        .bg-grey {
+            background-color: #0A0A0B !important;
         }
 
         .rounded-tile {
-            background-color: black;
+            background-color: black !important;
+        }
+
+        .rounded-tile.bg-blue {
+            background-color: #1C1E22 !important;
         }
 
         .dark-invert {
             filter: invert(1);
         }
+
+
+.text-grey {
+  color: var(--grey-200-850) !important;
+}
+
     }
 
     @media (prefers-color-scheme: light) {
@@ -118,7 +135,15 @@
     }
 
 
+    .cta {
+        width: 100%;
+    }
+
     @media (min-width: 62em) {
+
+        .cta {
+        width: 80%;
+    }
 
         .grid {
             grid-template-columns: 1fr 1fr 1fr;
@@ -187,10 +212,6 @@
 
     strong {
         font-weight: 500;
-    }
-
-    .cta {
-        width: 80%;
     }
 
     .cta a {
