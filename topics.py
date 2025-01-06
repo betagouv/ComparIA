@@ -62,13 +62,13 @@ with open(output_file, "w") as output:
         try:
             # Parse each line as a JSON object
             record = json.loads(line)
-            question_content = record.get("conv_a")
+            question_content = record.get("question_content")
             response_a_content = record.get("response_a_content")
             response_b_content = record.get("response_b_content")
             conversation_pair_id = record.get("conversation_pair_id")
 
-            if not conversation_pair_id:
-                print(f"Skipping record without 'conversation_pair_id'")
+            if not conversation_pair_id or not response_a_content or not response_b_content or not question_content:
+                print(f"Skipping record, missing fields")
                 continue
 
             # Formulate the query
@@ -113,13 +113,13 @@ with open(output_file, "w") as output:
                     },
                 ],
                 temperature=0.7,
-                model="openai/meta-llama/Meta-Llama-3.1-70B-Instruct",
+                model="meta-llama/Meta-Llama-3.1-70B-Instruct",
                 extra_body={"guided_json": SumUp.model_json_schema()},
                 # format=SumUp.model_json_schema()
             )
-
+            print(response.__dict__)
             # Parse the response into the SumUp model
-            sum_up = SumUp.model_validate_json(response.message.content)
+            sum_up = SumUp.model_validate_json(response.choices[0].message.content)
 
             # Write the result to the output JSONL
             result = {
@@ -131,6 +131,7 @@ with open(output_file, "w") as output:
             }
             output.write(json.dumps(result) + "\n")
             print(f"Processed conversation_pair_id: {conversation_pair_id}")
+            print(f"Result: {json.dumps(result)}")
             input("Press any key for next conv...")
         except Exception as e:
             print(f"Failed to process record: {e}")
