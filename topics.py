@@ -132,7 +132,7 @@ with open(output_file, "w") as output:
             output.write(json.dumps(result) + "\n")
             print(f"Processed conversation_pair_id: {conversation_pair_id}")
             print(f"Result: {json.dumps(result)}")
-            input("Press any key for next conv...")
+            # input("Press any key for next conv...")
         except Exception as e:
             print(f"Failed to process record: {e}")
             input("Press any key for next conv...")
