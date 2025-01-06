@@ -5,6 +5,7 @@ from openai import OpenAI
 from pydantic import BaseModel
 from enum import Enum
 import os
+import time
 
 
 # Define the categories as Enum
@@ -52,6 +53,20 @@ client = OpenAI(
 input_file = "/home/hadrien/git/languia-data/comparia-questions/questions_samples.jsonl"  # Replace with your actual JSON file path
 output_file = "results.jsonl"
 
+# Load already processed conversation_pair_ids
+processed_ids = set()
+try:
+    with open(output_file, "r") as output:
+        for line in output:
+            try:
+                record = json.loads(line)
+                processed_ids.add(record["conversation_pair_id"])
+            except KeyError:
+                pass
+except FileNotFoundError:
+    # If the output file doesn't exist yet, start fresh
+    pass
+
 # Open the input JSONL file
 with open(input_file, "r") as file:
     lines = file.readlines()
@@ -62,10 +77,17 @@ with open(output_file, "w") as output:
         try:
             # Parse each line as a JSON object
             record = json.loads(line)
+
+            conversation_pair_id = record.get("conversation_pair_id")
+
+            # Skip if already processed
+            if conversation_pair_id in processed_ids:
+                print(f"Skipping already processed conversation_pair_id: {conversation_pair_id}")
+                continue
+
             question_content = record.get("question_content")
             response_a_content = record.get("response_a_content")
             response_b_content = record.get("response_b_content")
-            conversation_pair_id = record.get("conversation_pair_id")
 
             if not conversation_pair_id or not response_a_content or not response_b_content or not question_content:
                 print(f"Skipping record, missing fields")
@@ -130,8 +152,10 @@ with open(output_file, "w") as output:
                 "languages": sum_up.languages,
             }
             output.write(json.dumps(result) + "\n")
+            processed_ids.add(conversation_pair_id)  # Mark as processed
             print(f"Processed conversation_pair_id: {conversation_pair_id}")
             print(f"Result: {json.dumps(result)}")
+            time.sleep(5)
             # input("Press any key for next conv...")
         except Exception as e:
             print(f"Failed to process record: {e}")
