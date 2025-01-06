@@ -14,6 +14,15 @@ import litellm
 
 from languia.utils import Timeout
 
+if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+    import json
+    with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), 'r') as file:
+        vertex_credentials = json.load(file)
+        vertex_credentials_json = json.dumps(vertex_credentials)
+else:
+    logger = logging.getLogger("languia")
+    logger.warn("No Google creds detected!")
+
 
 def litellm_stream_iter(
     model_name,
@@ -50,6 +59,7 @@ def litellm_stream_iter(
         max_tokens=max_new_tokens,
         stream=True,
         stream_options={"include_usage": True},
+        vertex_credentials=vertex_credentials_json,
         # Not available like this
         # top_p=top_p,
     )
