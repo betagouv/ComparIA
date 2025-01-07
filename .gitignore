@@ -47,3 +47,4 @@ model-info-file.json
 register-api-endpoint-file*.json
 docker/.env
 .env
+languia-*.json
