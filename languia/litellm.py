@@ -14,14 +14,16 @@ import litellm
 
 from languia.utils import Timeout
 
+import json
+
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-    import json
     with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), 'r') as file:
         vertex_credentials = json.load(file)
         vertex_credentials_json = json.dumps(vertex_credentials)
 else:
     logger = logging.getLogger("languia")
     logger.warn("No Google creds detected!")
+    vertex_credentials_json = None
 
 
 def litellm_stream_iter(
@@ -33,6 +35,7 @@ def litellm_stream_iter(
     api_key=None,
     request=None,
     api_version=None,
+    vertex_ai_location = None
 ):
 
     from languia.config import debug
@@ -45,10 +48,12 @@ def litellm_stream_iter(
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
         litellm.failure_callback = [
             "sentry"
-        ]  # [OPTIONAL] if you want litellm to capture -> send exception to sentry
+        ]
 
-    if os.getenv("VERTEXAI_LOCATION"):
+    if not vertex_ai_location and os.getenv("VERTEXAI_LOCATION"):
         litellm.vertex_location = os.getenv("VERTEXAI_LOCATION")
+    else:
+        litellm.vertex_location = vertex_ai_location
         
     res = litellm.completion(
         api_version=api_version,
@@ -63,7 +68,8 @@ def litellm_stream_iter(
         stream=True,
         stream_options={"include_usage": True},
         vertex_credentials=vertex_credentials_json,
-        vertex_ai_location=litellm.vertex_location
+        vertex_ai_location=litellm.vertex_location,
+        vertex_location=litellm.vertex_location
         # Not available like this
         # top_p=top_p,
     )

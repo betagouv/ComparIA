@@ -124,6 +124,7 @@ def bot_response(
         # top_p=top_p,
         max_new_tokens=max_new_tokens,
         request=request,
+        vertex_ai_location=endpoint.get("vertex_ai_location", None),
     )
 
     output_tokens = None
