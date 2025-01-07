@@ -66,7 +66,6 @@ def litellm_stream_iter(
         stream_options={"include_usage": True},
         vertex_credentials=vertex_credentials_json,
         vertex_ai_location=litellm.vertex_location,
-        # vertex_location=litellm.vertex_location
         # Not available like this
         # top_p=top_p,
     )
