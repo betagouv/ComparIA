@@ -54,6 +54,7 @@ def litellm_stream_iter(
     res = litellm.completion(
         api_version=api_version,
         timeout=GLOBAL_TIMEOUT,
+        stream_timeout=30,
         base_url=api_base,
         api_key=api_key,
         # max_retries=
