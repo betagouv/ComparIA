@@ -154,7 +154,7 @@ async def accessibility(request: Request):
 async def bnf(request: Request):
     return templates.TemplateResponse(
         "bnf.html",
-        {"title": "Journée compar:IA", "request": request, "config": config},
+        {"title": "Evénement 7 février", "request": request, "config": config},
     )
 
 
