@@ -180,24 +180,40 @@ arena_head_js = (
 <script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
-    #     + """
-    # <script type="text/javascript">
-    #     function handleRetryOrRedirect(event) {
-    #         // Prevent the default action of the link
-    #         event.preventDefault();
-    #         // Look for the retry button
-    #         var retryButton = document.getElementById('retry-modal-btn');
-    #         if (retryButton) {
-    #         // If the retry button exists, simulate a click on it
-    #         retryButton.click();
-    #         } else {
-    #         // If the retry button does not exist, redirect to the main page
-    #         window.location.href = event.target.href || event.target.closest('a').href;
-    #         }
-    #     }
-    # </script>
-    # """
+        + """
+    <script type="text/javascript">
+        
+  if (typeof Sentry !== "undefined") {
+    Sentry.onLoad(function () {
+      Sentry.init({
+        integrations: [
+          // If you use a bundle with tracing enabled, add the BrowserTracing integration
+          Sentry.browserTracingIntegration(),
+          // If you use a bundle with session replay enabled, add the Replay integration
+          Sentry.replayIntegration(),
+        ],
+
+        replaysSessionSampleRate: 0.1,
+        replaysOnErrorSampleRate: 1.0,
+        dsn: "__SENTRY_FRONT_DSN__",
+        environment: "__SENTRY_ENV__",
+
+        tracesSampleRate: 0.2
+      });
+    });
+    Sentry.onLoad(function () {
+      // Your code to execute when Sentry is loaded
+    });
+  } else {
+    console.log("Not loading front-end Sentry.");
+  }
+    </script>
+    """
 )
+if os.getenv("SENTRY_FRONT_DSN"):
+    arena_head_js = arena_head_js.replace("__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN"))
+if os.getenv("SENTRY_ENV"):
+    arena_head_js = arena_head_js.replace("__SENTRY_ENV__", os.getenv("SENTRY_ENV"))
 
 site_head_js = (
     # sentry_js
@@ -215,10 +231,6 @@ with open("./assets/arena.js", encoding="utf-8") as js_file:
     if os.getenv("GIT_COMMIT"):
         git_commit = os.getenv("GIT_COMMIT")
         arena_js = arena_js.replace("__GIT_COMMIT__", os.getenv("GIT_COMMIT"))
-    if os.getenv("SENTRY_FRONT_DSN"):
-        arena_js = arena_js.replace("__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN"))
-    if os.getenv("SENTRY_ENV"):
-        arena_js = arena_js.replace("__SENTRY_ENV__", os.getenv("SENTRY_ENV"))
 
 with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
     css_dsfr = css_file.read()
