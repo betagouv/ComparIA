@@ -114,7 +114,7 @@ with open(output_file, "a") as output:
                     # {"role": "user", "content": response_a_content},
                     # {"role": "user", "content": response_b_content},
                 ],
-                temperature=0.7,
+                temperature=0.3,
                 model="meta-llama/Meta-Llama-3.1-70B-Instruct",
                 extra_body={"guided_json": SumUp.model_json_schema()},
             )
@@ -138,3 +138,4 @@ with open(output_file, "a") as output:
             print(
                 f"Failed to process record for conversation_pair_id {conversation_pair_id}: {e}"
             )
+            continue
