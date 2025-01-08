@@ -173,47 +173,48 @@ else:
 
 # we can also load js normally (no in <head>)
 arena_head_js = (
-    sentry_head_js
+    # sentry_head_js
     # note: dsfr.module.js not that needed: only dsfr modal seems to require it
-    + """
+    # + 
+    """
 <script type="module" src="../assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
-        + """
-    <script type="text/javascript">
+#         + """
+#     <script type="text/javascript">
         
-  if (typeof Sentry !== "undefined") {
-    Sentry.onLoad(function () {
-      Sentry.init({
-        integrations: [
-          // If you use a bundle with tracing enabled, add the BrowserTracing integration
-          Sentry.browserTracingIntegration(),
-          // If you use a bundle with session replay enabled, add the Replay integration
-          Sentry.replayIntegration(),
-        ],
+#   if (typeof Sentry !== "undefined") {
+#     Sentry.onLoad(function () {
+#       Sentry.init({
+#         integrations: [
+#           // If you use a bundle with tracing enabled, add the BrowserTracing integration
+#           Sentry.browserTracingIntegration(),
+#           // If you use a bundle with session replay enabled, add the Replay integration
+#           Sentry.replayIntegration(),
+#         ],
 
-        replaysSessionSampleRate: 0.1,
-        replaysOnErrorSampleRate: 1.0,
-        dsn: "__SENTRY_FRONT_DSN__",
-        environment: "__SENTRY_ENV__",
+#         replaysSessionSampleRate: 0.1,
+#         replaysOnErrorSampleRate: 1.0,
+#         dsn: "__SENTRY_FRONT_DSN__",
+#         environment: "__SENTRY_ENV__",
 
-        tracesSampleRate: 0.2
-      });
-    });
-    Sentry.onLoad(function () {
-      // Your code to execute when Sentry is loaded
-    });
-  } else {
-    console.log("Not loading front-end Sentry.");
-  }
-    </script>
-    """
+#         tracesSampleRate: 0.2
+#       });
+#     });
+#     Sentry.onLoad(function () {
+#       // Your code to execute when Sentry is loaded
+#     });
+#   } else {
+#     console.log("Not loading front-end Sentry.");
+#   }
+#     </script>
+#     """
 )
-if os.getenv("SENTRY_FRONT_DSN"):
-    arena_head_js = arena_head_js.replace("__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN"))
-if os.getenv("SENTRY_ENV"):
-    arena_head_js = arena_head_js.replace("__SENTRY_ENV__", os.getenv("SENTRY_ENV"))
+# if os.getenv("SENTRY_FRONT_DSN"):
+#     arena_head_js = arena_head_js.replace("__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN"))
+# if os.getenv("SENTRY_ENV"):
+#     arena_head_js = arena_head_js.replace("__SENTRY_ENV__", os.getenv("SENTRY_ENV"))
 
 site_head_js = (
     # sentry_js
