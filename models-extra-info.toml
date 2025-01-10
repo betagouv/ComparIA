@@ -101,6 +101,20 @@ conditions = "free"
 excerpt = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
+["deepseek-v3-chat"]
+url = "https://huggingface.co/deepseek-ai/DeepSeek-V3"
+simple_name = "DeepSeek v3"
+organisation = "DeepSeek"
+total_params = 671
+active_params = 37
+icon_path = "deepseek.webp"
+friendly_size = "XL"
+distribution = "open-weights"
+license = "MIT"
+conditions = "free"
+excerpt = "Modèle phare de la société chinoise DeepSeek, DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+description = "Modèle phare de la société chinoise DeepSeek, et comparable aux meilleurs modèles propriétaires à sa sortie, DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+
 ["gemini-1.5-pro-002"]
 url = "https://ai.google.dev/gemini-api"
 active_params = 220
