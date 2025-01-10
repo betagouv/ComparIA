@@ -40,6 +40,7 @@ license_attrs = {
     "Llama 3.1": {"warning_commercial": True},
     "CC-BY-NC-4.0": {"prohibit_commercial": True},
     "Mistral AI Non-Production": {"prohibit_commercial": True},
+    "Mistral AI Research": {"prohibit_commercial": True},
 }
 
 
