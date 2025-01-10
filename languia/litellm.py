@@ -51,6 +51,13 @@ def litellm_stream_iter(
     else:
         litellm.vertex_location = vertex_ai_location
 
+
+# TODO: openrouter specific params
+# completion = client.chat.completions.create(
+#   extra_headers={
+#     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+#     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+#   },
     res = litellm.completion(
         api_version=api_version,
         timeout=GLOBAL_TIMEOUT,
@@ -69,6 +76,10 @@ def litellm_stream_iter(
         # Not available like this
         # top_p=top_p,
     )
+
+# TODO: openrouter specific params
+            # transforms = [""],
+            # route= ""
 
     text = ""
     logger = logging.getLogger("languia")
