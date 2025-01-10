@@ -429,6 +429,19 @@ conditions = "free"
 description = "Petit modèle de la famille Phi, remplaçant Phi-3-mini, ce modèle supporte un grand contexte de 128 000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
 excerpt = "Performant pour des tâches de génération de code et de résumé, ce modèle gère un grand contexte de 128k tokens."
 
+["phi-4"]
+url = "https://huggingface.co/microsoft/Phi-4"
+simple_name = "Phi-4"
+organisation = "Microsoft"
+params = 14.7
+icon_path = "microsoft.png"
+friendly_size = "S"
+distribution = "open-weights"
+license = "MIT"
+conditions = "free"
+description = "Modèle de décembre 2024 de la famille Phi, remplaçant Phi-3.5, ce petit modèle a été entrainé sur une dizaine de milliards de tokens, soit un gros corpus synthétique et filtré issu du web."
+excerpt = "Modèle de décembre 2024 de la famille Phi, remplaçant Phi-3.5, ce petit modèle a été entrainé sur une dizaine de milliards de tokens, soit un gros corpus synthétique et filtré issu du web."
+
 [Phi-3-small-8k-Instruct]
 license = "MIT"
 simple_name = "Phi-3-small-8k-Instruct"
