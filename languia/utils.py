@@ -297,8 +297,8 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
         "friendly_size": "M",
         "distribution": "open-weights",
         "conditions": "restricted",
-        "description": "Un modèle open source disponible via Hugging Face.",
-        "excerpt": "Un modèle open source",
+        "description": "Un modèle open weights disponible via Hugging Face.",
+        "excerpt": "Un modèle open weights",
         "icon_path": "huggingface.svg",
         "license": "Autre",
     }
@@ -318,8 +318,8 @@ def get_model_extra_info(name: str, models_extra_info: list):
         "friendly_size": "M",
         "distribution": "open-weights",
         "conditions": "copyleft",
-        "description": "Un modèle open source disponible via Hugging Face.",
-        "excerpt": "Un modèle open source",
+        "description": "Un modèle open weights disponible via Hugging Face.",
+        "excerpt": "Un modèle open weights",
         "icon_path": "huggingface.svg",
         "license": "Autre",
     }
