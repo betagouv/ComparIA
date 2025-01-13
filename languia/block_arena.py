@@ -92,6 +92,10 @@ with gr.Blocks(
             value="""<h4>Comment puis-je vous aider aujourd'hui ?</h4>""",
         )
 
+        model_dropdown = gr.Dropdown(elem_classes="fr-container",choices=
+            ["random", "big-models", "small-models"] + (config.models), label="Quelle pool de modèles ?",interactive=True
+            # info="Will add more animals later!"
+        )
         guided_cards = CustomRadioCard(
             show_label=False,
             elem_classes="fr-col-12 fr-col-md-8 fr-mx-auto",
@@ -103,6 +107,7 @@ with gr.Blocks(
             visible=False,
             value="Générer un autre message",
         )
+        
 
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False

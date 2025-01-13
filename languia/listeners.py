@@ -26,6 +26,7 @@ from languia.block_arena import (
     textbox,
     vote_area,
     which_model_radio,
+    model_dropdown
 )
 import traceback
 import os
@@ -74,6 +75,7 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
+from numpy import random
 
 # Register listeners
 def register_listeners():
@@ -204,6 +206,36 @@ document.getElementById("fr-modal-welcome-close").blur();
         )
         return prompt
 
+    @model_dropdown.select(inputs=[app_state, conv_a, conv_b, model_dropdown], outputs=[app_state, conv_a, conv_b])
+    def pick_model(app_state_scoped, conv_a_scoped, conv_b_scoped, model_dropdown_scoped):
+        small_models = [model for model in config.models_extra_info if model["friendly_size"] in ["XS", "S"]]
+        big_models = [model for model in config.models_extra_info if model["friendly_size"] in ["M", "L", "XL"]]
+
+        if model_dropdown_scoped == "random":
+            pass
+        elif model_dropdown_scoped == "big-models":
+            first_model = big_models[random.randint(len(big_models))]
+            print("first_model:")
+            print(first_model)
+            big_models.remove(first_model)
+            conv_a_scoped.model_name = first_model["id"]
+            conv_b_scoped.model_name = big_models[random.randint(len(big_models))]["id"]
+        elif model_dropdown_scoped == "small-models":
+            first_model = small_models[random.randint(len(small_models))]
+            small_models.remove(first_model)
+            conv_a_scoped.model_name = first_model["id"]
+            conv_b_scoped.model_name = small_models[random.randint(len(small_models))]["id"]
+        else:
+            if not model_dropdown_scoped in config.models:
+                raise
+            else:
+                print("choosing model by name")
+                conv_a_scoped.model_name == model_dropdown_scoped
+            print(model_dropdown_scoped)
+        print("picked model a: "+ conv_a_scoped.model_name)
+        print("picked model b: "+ conv_b_scoped.model_name)
+        return [app_state_scoped, conv_a_scoped, conv_b_scoped]
+    
     @textbox.change(
         inputs=[app_state, textbox],
         outputs=send_btn,
