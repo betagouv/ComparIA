@@ -3,8 +3,12 @@
 <svg version="1.1" id="layer" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 652 652" style="enable-background:new 0 0 652 652;" xml:space="preserve">
 <style type="text/css">
+
+	 :root { --color: #253186; }
+    @media (prefers-color-scheme: dark) { :root { --color: #FFFFFF; } }
+ 
 	.st0{fill:#ED1844;}
-	.st1{fill:#253186;}
+	.st1{fill:var(--color);}
 </style>
 <g>
 	<path class="st0" d="M316.9,308.6h34.5V164.8h-34.5V308.6z M452.6,164.8l-0.2,31.7h96.3v-31.7H452.6z M547.7,308.6l0.9-31.7h-96.8
