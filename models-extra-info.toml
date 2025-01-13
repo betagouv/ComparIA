@@ -36,6 +36,17 @@ params = 8
 license = "CC-BY-NC-4.0"
 description = "Aya 23 8B de Cohere est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
 
+[aya-expanse-8b]
+simple_name = "Aya Expanse 8B"
+organisation = "Cohere"
+icon_path = "cohere.png"
+friendly_size = "S"
+distribution = "open-weights"
+conditions = "copyleft"
+params = 8
+license = "CC-BY-NC-4.0"
+description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
+
 # ["Claude 3 Opus"]
 # simple_name = "Claude 3 Opus"
 # organisation = "Anthropic"
