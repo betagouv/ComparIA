@@ -53,47 +53,100 @@
 	{scale}
 	{min_width}
 >
-	{#if multiselect}
-		<Multiselect
-			bind:value
-			bind:value_is_output
-			{choices}
-			{max_choices}
-			{root}
-			{label}
-			{info}
-			{show_label}
-			{allow_custom_value}
-			{filterable}
-			{container}
-			i18n={gradio.i18n}
-			on:change={() => gradio.dispatch("change")}
-			on:input={() => gradio.dispatch("input")}
-			on:select={(e) => gradio.dispatch("select", e.detail)}
-			on:blur={() => gradio.dispatch("blur")}
-			on:focus={() => gradio.dispatch("focus")}
-			on:key_up={() => gradio.dispatch("key_up")}
-			disabled={!interactive}
-		/>
-	{:else}
-		<Dropdown
-			bind:value
-			bind:value_is_output
-			{choices}
-			{label}
-			{root}
-			{info}
-			{show_label}
-			{filterable}
-			{allow_custom_value}
-			{container}
-			on:change={() => gradio.dispatch("change")}
-			on:input={() => gradio.dispatch("input")}
-			on:select={(e) => gradio.dispatch("select", e.detail)}
-			on:blur={() => gradio.dispatch("blur")}
-			on:focus={() => gradio.dispatch("focus")}
-			on:key_up={(e) => gradio.dispatch("key_up", e.detail)}
-			disabled={!interactive}
-		/>
-	{/if}
+	<button data-fr-opened="false" aria-controls="modal-mode-selection">
+		<!-- <button
+		data-fr-opened="false"
+		aria-controls="modal-mode-selection"
+		on:click={() => {
+			commented = true;
+			handle_action("commenting");
+		}}> -->
+		Le mode en cours</button
+	>
 </Block>
+
+<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<!-- <dialog
+	aria-labelledby="modal-mode-selection"
+	id="modal-mode-selection"
+	class="fr-modal"
+	on:blur={() => {
+		sendComment(commenting);
+	}}
+	on:keydown={(e) => {
+		if (e.key === "Escape") {
+			sendComment(commenting);
+		}
+	}}
+> -->
+<dialog
+	aria-labelledby="modal-mode-selection"
+	id="modal-mode-selection"
+	class="fr-modal"
+>
+	<div class="fr-container fr-container--fluid fr-container-md">
+		<div class="fr-grid-row fr-grid-row--center">
+			<div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+				<div class="fr-modal__body">
+					<div class="fr-modal__header">
+						<button
+							class="fr-btn--close fr-btn"
+							title="Fermer la fenêtre modale"
+							aria-controls="modal-mode-selection">Fermer</button
+						>
+						<!-- <button
+							class="fr-btn--close fr-btn"
+							title="Fermer la fenêtre modale"
+							aria-controls="modal-mode-selection"
+							on:click={() => sendComment(commenting)}
+							>Fermer</button
+						> -->
+					</div>
+					<div class="fr-modal__content">
+						<h3 id="modal-mode-selection" class="modal-title">
+							Quels modèles voulez-vous comparer ?
+						</h3>
+						<p>
+							Sélectionnez le mode de comparaison qui vous
+							convient
+						</p>
+						<div>
+							<Dropdown
+								bind:value
+								bind:value_is_output
+								{choices}
+								{label}
+								{root}
+								{info}
+								{show_label}
+								{filterable}
+								{allow_custom_value}
+								{container}
+								on:change={() => gradio.dispatch("change")}
+								on:input={() => gradio.dispatch("input")}
+								on:select={(e) =>
+									gradio.dispatch("select", e.detail)}
+								on:blur={() => gradio.dispatch("blur")}
+								on:focus={() => gradio.dispatch("focus")}
+								on:key_up={(e) =>
+									gradio.dispatch("key_up", e.detail)}
+								disabled={!interactive}
+							/>
+							<button
+								aria-controls="modal-mode-selection"
+								class="btn purple-btn">Envoyer</button
+							>
+
+							<!-- <button
+								aria-controls="modal-mode-selection"
+								class="btn purple-btn"
+								on:click={() => sendComment(commenting)}
+								>Envoyer</button
+							> -->
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</dialog>
