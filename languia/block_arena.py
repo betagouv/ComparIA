@@ -12,6 +12,9 @@ import gradio as gr
 from languia.utils import header_html, welcome_modal_html, footer_html
 
 from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
+from custom_components.customdropdown.backend.gradio_customdropdown import (
+    CustomDropdown,
+)
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
@@ -92,9 +95,11 @@ with gr.Blocks(
             value="""<h4>Comment puis-je vous aider aujourd'hui ?</h4>""",
         )
 
-        model_dropdown = gr.Dropdown(elem_classes="fr-container",choices=
-            ["random", "big-models", "small-models"] + (config.models), label="Quelle pool de modèles ?",interactive=True
-            # info="Will add more animals later!"
+        model_dropdown = CustomDropdown(
+            elem_classes="fr-container",
+            choices=["random", "big-vs-small", "small-models", "custom"],
+            label="Quelle pool de modèles ?",
+            interactive=True,
         )
         guided_cards = CustomRadioCard(
             show_label=False,
@@ -107,7 +112,6 @@ with gr.Blocks(
             visible=False,
             value="Générer un autre message",
         )
-        
 
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
