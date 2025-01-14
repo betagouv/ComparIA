@@ -20,38 +20,10 @@
 	export let value: Item | Item[] | undefined = multiselect ? [] : undefined;
 	export let value_is_output = false;
 
-	export let choices = [
-		{
-			value: "random",
-			label: "Aléatoire",
-			description: "Deux modèles choisis au hasard parmi toute la liste",
-		},
-		{
-			value: "eco",
-			label: "Économe",
-			description:
-				"Minimisez votre impact environnemental avec deux petits modèles",
-		},
-		{
-			value: "small_vs_large",
-			label: "Petit contre grand",
-			description:
-				"Comparez les performances d’un petit modèle contre un grand",
-		},
-		{
-			value: "manual",
-			label: "Sélection manuelle",
-			description:
-				"Sélectionnez vous-même jusqu’à deux modèles à comparer",
-		},
-	];
-	export let show_label: boolean;
-	export let filterable: boolean;
 	export let container = true;
 	export let scale: number | null = null;
 	export let min_width: number | undefined = undefined;
 	export let allow_custom_value = false;
-	export let root: string;
 	export let gradio: Gradio<{
 		change: never;
 		input: never;
@@ -134,7 +106,6 @@
 							<Dropdown
 								bind:value
 								bind:value_is_output
-								{choices}
 								{allow_custom_value}
 								on:change={() => gradio.dispatch("change")}
 								on:input={() => gradio.dispatch("input")}
