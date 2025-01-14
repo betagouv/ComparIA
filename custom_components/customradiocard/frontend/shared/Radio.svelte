@@ -27,7 +27,9 @@
 
 	// Handle label click or space/enter key press to toggle selection
 	function handleSelection() {
-		if (disabled || selected === internal_value) return;
+		// If we don't want to reshuffle
+		// if (disabled || selected === internal_value) return;
+		if (disabled) return;
 		selected = internal_value;
 		dispatch("input", internal_value);
 	}
@@ -83,7 +85,7 @@
 	}
 
 	label.selected,
-	 label:active {
+	label:active {
 		outline-offset: 0 !important;
 		outline: 2px solid var(--blue-france-main-525) !important;
 	}
