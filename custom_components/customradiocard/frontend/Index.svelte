@@ -5,8 +5,6 @@
 
 <script lang="ts">
 	import type { Gradio, SelectData } from "@gradio/utils";
-	import { afterUpdate } from "svelte";
-	import { Block, BlockTitle } from "@gradio/atoms";
 	import { StatusTracker } from "@gradio/statustracker";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import BaseRadio from "./shared/Radio.svelte";
@@ -78,10 +76,10 @@
 		margin: 0.75rem; /* adds a 20px margin around the grid */
 	}
 	@media (min-width: 48em) {
-	.grid {
-		grid-template-columns: repeat(var(--columns), 1fr);
+		.grid {
+			grid-template-columns: repeat(var(--columns), 1fr);
+		}
 	}
-}
 	/* .wrap {
 		display: flex;
 		flex-wrap: wrap;
