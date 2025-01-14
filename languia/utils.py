@@ -371,6 +371,15 @@ def count_output_tokens(messages) -> int:
     return int(total_messages / 4)
 
 
+def shuffle_prompt(guided_cards, request):
+    prompt = gen_prompt(guided_cards)
+    logger.info(
+        f"shuffle: {prompt}",
+        extra={"request": request},
+    )
+    return prompt
+
+
 def gen_prompt(category):
     from languia.config import prompts_table
 

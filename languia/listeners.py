@@ -19,10 +19,12 @@ from languia.block_arena import (
     results_area,
     reveal_screen,
     send_area,
+    first_send_btn,
     send_btn,
     # shuffle_link,
     supervote_area,
     supervote_send_btn,
+    first_textbox,
     textbox,
     vote_area,
     which_model_radio,
@@ -171,7 +173,7 @@ document.getElementById("fr-modal-welcome-close").blur();
     # Step 1.1
     @guided_cards.change(
         inputs=[app_state, guided_cards],
-        outputs=[app_state, send_btn, send_area, textbox],
+        outputs=[app_state, first_send_btn, first_textbox],
         api_name=False,
         show_progress="hidden",
     )
@@ -190,22 +192,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         )
         return {
             app_state: app_state_scoped,
-            send_btn: gr.update(interactive=True),
-            send_area: gr.update(visible=True),
-            textbox: gr.update(value=prompt),
-            # shuffle_link: gr.update(visible=True),
+            first_send_btn: gr.update(interactive=True),
+            first_textbox: gr.update(value=prompt),
         }
-
-    # @shuffle_link.click(
-    #     inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
-    # )
-    def shuffle_prompt(guided_cards, request: gr.Request):
-        prompt = gen_prompt(guided_cards)
-        logger.info(
-            f"shuffle: {prompt}",
-            extra={"request": request},
-        )
-        return prompt
 
     @model_dropdown.select(
         inputs=[app_state, conv_a, conv_b, model_dropdown],
@@ -275,6 +264,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         event: gr.EventData,
     ):
+
         # if retry, resend last user errored message
         if event._data is not None:
             last_message_a = conv_a_scoped.messages[-1]
@@ -557,7 +547,63 @@ document.getElementById("fr-modal-welcome-close").blur();
         }
 
     gr.on(
-        triggers=[textbox.submit, send_btn.click, chatbot.retry],
+        triggers=[
+            first_textbox.submit,
+            first_send_btn.click,
+        ],
+        fn=add_text,
+        api_name=False,
+        inputs=[app_state] + [conv_a] + [conv_b] + [first_textbox],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
+        # scroll_to_output=True,
+        show_progress="hidden",
+    ).success(
+        fn=goto_chatbot,
+        inputs=[],
+        outputs=(
+            [textbox]
+            + [mode_screen]
+            + [chat_area]
+            + [send_btn]
+            # + [shuffle_link]
+            + [conclude_btn]
+        ),
+        show_progress="hidden",
+        # scroll_to_output=True
+    ).then(
+        # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
+        fn=bot_response_multi,
+        # inputs=conversations + [temperature, top_p, max_output_tokens],
+        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
+        outputs=[app_state, conv_a, conv_b, chatbot, textbox],
+        api_name=False,
+        show_progress="hidden",
+        # scroll_to_output=True,
+        # TODO: refacto possible with .success() and more explicit error state
+    ).then(
+        fn=enable_conclude,
+        inputs=[app_state, textbox, conv_a],
+        outputs=[textbox, conclude_btn, send_btn],
+        js="""(args) => {
+setTimeout(() => {
+  console.log("scrolling to bot responses");
+  var botRows = document.querySelectorAll('.bot-row');
+    var lastBotRow = botRows.item(botRows.length - 1);
+    lastBotRow.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+, 500);
+}""",
+    )
+
+    gr.on(
+        triggers=[
+            textbox.submit,
+            send_btn.click,
+            chatbot.retry,
+        ],
         fn=add_text,
         api_name=False,
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],

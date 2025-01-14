@@ -95,7 +95,7 @@ with gr.Blocks(
             value="""<h4>Comment puis-je vous aider aujourd'hui ?</h4>""",
         )
 
-        textbox = FrInput(
+        first_textbox = FrInput(
             elem_id="main-textbox",
             show_label=False,
             lines=1,
@@ -116,7 +116,7 @@ with gr.Blocks(
                 interactive=True,
             )
 
-            send_btn = gr.Button(
+            first_send_btn = gr.Button(
                 interactive=False,
                 # scale=1,
                 value="Envoyer",
@@ -125,10 +125,14 @@ with gr.Blocks(
                 elem_classes="grow-0 purple-btn fr-container",
             )
 
+        prompts_suggestions = gr.HTML(
+            elem_classes="text-grey-200 fr-mt-4w fr-container",
+            value="""<h6>Suggestions de prompts</h6>""",
+        )
         # FIXME: make a click on already selected be a shuffle
         guided_cards = CustomRadioCard(
             show_label=False,
-            elem_classes="fr-col-12 fr-col-md-8 fr-mx-auto",
+            elem_classes="fr-container",
             choices=config.guided_cards_choices,
         )
         # shuffle_link = gr.Button(
@@ -170,9 +174,33 @@ with gr.Blocks(
             # autoscroll=True
         )
 
-    with gr.Column(
-        elem_id="send-area", visible=True, elem_classes="fr-pt-1w"
-    ) as send_area:
+    with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w") as send_area:
+
+        with gr.Row(
+            elem_classes="flex-md-row flex-col items-start",
+            visible=False,
+        ) as send_row:
+            textbox = FrInput(
+                elem_id="main-textbox",
+                show_label=False,
+                lines=1,
+                placeholder="Continuer à discuter avec les deux modèles d'IA",
+                max_lines=7,
+                elem_classes="w-full",
+                # elem_classes="inline-block fr-col-12 fr-col-md-10",
+                container=True,
+                autofocus=True,
+                # autoscroll=True
+            )
+            send_btn = gr.Button(
+                interactive=False,
+                # scale=1,
+                value="Envoyer",
+                # icon="assets/dsfr/icons/system/arrow-up-line.svg",
+                elem_id="send-btn",
+                elem_classes="grow-0 purple-btn w-full",
+            )
+
         with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
             conclude_btn = gr.Button(
                 size="lg",
