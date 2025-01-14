@@ -2,19 +2,6 @@ function positive_mod(n: number, m: number): number {
 	return ((n % m) + m) % m;
 }
 
-export function handle_filter(
-	choices: [string, string | number][],
-	input_text: string
-): number[] {
-	return choices.reduce((filtered_indices, o, index) => {
-		if (
-			input_text ? o[0].toLowerCase().includes(input_text.toLowerCase()) : true
-		) {
-			filtered_indices.push(index);
-		}
-		return filtered_indices;
-	}, [] as number[]);
-}
 
 export function handle_change(
 	dispatch: any,
@@ -47,7 +34,7 @@ export function handle_shared_keys(
 				const increment = e.key === "ArrowUp" ? -1 : 1;
 				active_index =
 					filtered_indices[
-						positive_mod(index_in_filtered + increment, filtered_indices.length)
+					positive_mod(index_in_filtered + increment, filtered_indices.length)
 					];
 			}
 		}
