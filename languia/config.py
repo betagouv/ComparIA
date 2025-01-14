@@ -49,8 +49,8 @@ if any(
         "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
         "host": os.getenv("LANGUIA_DB_HOST", "languia-db"),
         "port": os.getenv("LANGUIA_DB_PORT", 5432),
-        "sslmode": os.getenv("LANGUIA_DB_SSL_MODE", 'prefer'),
-        "connect_timeout": 3
+        "sslmode": os.getenv("LANGUIA_DB_SSL_MODE", "prefer"),
+        "connect_timeout": 3,
     }
 else:
     db = None
@@ -143,13 +143,13 @@ if os.getenv("SENTRY_DSN"):
 
 # TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
 if os.getenv("SENTRY_FRONT_DSN"):
-#     sentry_head_js = f"""
-# <script
-#   src="https://browser.sentry-cdn.com/8.47.0/bundle.tracing.replay.min.js"
-#   integrity="sha384-VaqNrma84jlgEWxBCMOnatKAHLSjaKGmo8Biuj3NQEg1MrmeukY8s6pnaTgRVjKM"
-#   crossorigin="anonymous"
-# ></script>
-# """
+    #     sentry_head_js = f"""
+    # <script
+    #   src="https://browser.sentry-cdn.com/8.47.0/bundle.tracing.replay.min.js"
+    #   integrity="sha384-VaqNrma84jlgEWxBCMOnatKAHLSjaKGmo8Biuj3NQEg1MrmeukY8s6pnaTgRVjKM"
+    #   crossorigin="anonymous"
+    # ></script>
+    # """
     sentry_head_js = f"""
  <script type="text/javascript" 
    src="../assets/bundle.tracing.replay.min.js"
@@ -175,41 +175,38 @@ else:
 arena_head_js = (
     # sentry_head_js
     # note: dsfr.module.js not that needed: only dsfr modal seems to require it
-    # + 
+    # +
     """
 <script type="module" src="../assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
-#         + """
-#     <script type="text/javascript">
-        
-#   if (typeof Sentry !== "undefined") {
-#     Sentry.onLoad(function () {
-#       Sentry.init({
-#         integrations: [
-#           // If you use a bundle with tracing enabled, add the BrowserTracing integration
-#           Sentry.browserTracingIntegration(),
-#           // If you use a bundle with session replay enabled, add the Replay integration
-#           Sentry.replayIntegration(),
-#         ],
-
-#         replaysSessionSampleRate: 0.1,
-#         replaysOnErrorSampleRate: 1.0,
-#         dsn: "__SENTRY_FRONT_DSN__",
-#         environment: "__SENTRY_ENV__",
-
-#         tracesSampleRate: 0.2
-#       });
-#     });
-#     Sentry.onLoad(function () {
-#       // Your code to execute when Sentry is loaded
-#     });
-#   } else {
-#     console.log("Not loading front-end Sentry.");
-#   }
-#     </script>
-#     """
+    #         + """
+    #     <script type="text/javascript">
+    #   if (typeof Sentry !== "undefined") {
+    #     Sentry.onLoad(function () {
+    #       Sentry.init({
+    #         integrations: [
+    #           // If you use a bundle with tracing enabled, add the BrowserTracing integration
+    #           Sentry.browserTracingIntegration(),
+    #           // If you use a bundle with session replay enabled, add the Replay integration
+    #           Sentry.replayIntegration(),
+    #         ],
+    #         replaysSessionSampleRate: 0.1,
+    #         replaysOnErrorSampleRate: 1.0,
+    #         dsn: "__SENTRY_FRONT_DSN__",
+    #         environment: "__SENTRY_ENV__",
+    #         tracesSampleRate: 0.2
+    #       });
+    #     });
+    #     Sentry.onLoad(function () {
+    #       // Your code to execute when Sentry is loaded
+    #     });
+    #   } else {
+    #     console.log("Not loading front-end Sentry.");
+    #   }
+    #     </script>
+    #     """
 )
 # if os.getenv("SENTRY_FRONT_DSN"):
 #     arena_head_js = arena_head_js.replace("__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN"))
@@ -329,8 +326,9 @@ guided_cards_choices = [
     ),
 ]
 
-# Shuffle only at each reload of app to get some randomness
+# Shuffle only at each reload of app to get some randomness, and keep the first four
 random.shuffle(guided_cards_choices)
+guided_cards_choices = guided_cards_choices[0:4]
 
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
     os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 24000)
