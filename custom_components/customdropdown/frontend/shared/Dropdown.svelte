@@ -4,11 +4,12 @@
 	import { handle_change } from "./utils";
 
 	type Item = string | number;
+	// export let root: string;
 
 	export let value: Item | Item[] | undefined = undefined;
 	let old_value: typeof value = undefined;
 	export let value_is_output = false;
-	let choices = [
+	export let choices = [
 		{
 			value: "random",
 			label: "Aléatoire",
