@@ -18,7 +18,42 @@
 	export let visible = true;
 	export let multiselect = false;
 	export let value: Item | Item[] | undefined = multiselect ? [] : undefined;
-	export let value_is_output = false;
+
+	import Glass from "./shared/glass.svelte";
+	import Leaf from "./shared/leaf.svelte";
+	import Ruler from "./shared/ruler.svelte";
+	import Dice from "./shared/dice.svelte";
+
+	// Hardcoded options
+	export const choices = [
+		{
+			value: "random",
+			label: "Aléatoire",
+			icon: Dice, // Replace with your icon class or SVG
+			description: "Deux modèles choisis au hasard parmi toute la liste",
+		},
+		{
+			value: "small-models",
+			label: "Économe",
+			icon: Leaf, // Replace with your icon class or SVG
+			description:
+				"Minimisez votre impact environnemental avec deux petits modèles",
+		},
+		{
+			value: "big-vs-small",
+			label: "Petit contre grand",
+			icon: Ruler, // Replace with your icon class or SVG
+			description:
+				"Comparez les performances d’un petit modèle contre un grand",
+		},
+		// {
+		// 	value: "custom",
+		// 	label: "Sélection manuelle",
+		// 	icon: Glass, // Replace with your icon class or SVG
+		// 	description:
+		// 		"Sélectionnez vous-même jusqu’à deux modèles à comparer",
+		// },
+	];
 
 	export let container = true;
 	export let scale: number | null = null;
@@ -34,6 +69,9 @@
 		clear_status: LoadingStatus;
 	}>;
 	export let interactive: boolean;
+	$: console.log(value);
+	var choice;
+	$: choice = choices.find((item) => item.value === value);
 </script>
 
 <Block
@@ -53,7 +91,10 @@
 			commented = true;
 			handle_action("commenting");
 		}}> -->
-		{{ value }}</button
+		<svelte:component this={choice.icon} />
+
+		<strong>{choice.label}</strong>
+		<p>{choice.description}</p></button
 	>
 </Block>
 
@@ -104,6 +145,7 @@
 						</p>
 						<div>
 							<Dropdown
+								{choices}
 								bind:value
 								on:change={() => gradio.dispatch("change")}
 								on:input={() => gradio.dispatch("input")}
