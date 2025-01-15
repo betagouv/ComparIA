@@ -7,8 +7,6 @@ import logging
 
 import requests
 
-from slugify import slugify
-
 
 class ContextTooLongError(ValueError):
     def __str__(self):
@@ -259,7 +257,7 @@ def get_matomo_js(matomo_url, matomo_id):
 
 def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
     # Maybe put orgs countries in an array here
-    std_name = slugify(name.lower())
+    std_name = (name.lower())
     logger = logging.getLogger("languia")
     if std_name in all_models_extra_info_toml:
         model = all_models_extra_info_toml[std_name]
@@ -305,7 +303,7 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
 
 
 def get_model_extra_info(name: str, models_extra_info: list):
-    std_name = slugify(name.lower())
+    std_name = name.lower()
     for model in models_extra_info:
         if model["id"] == std_name:
             return model

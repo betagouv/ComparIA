@@ -12,7 +12,6 @@ gradio_modal
 openai
 sentry_sdk
 google-auth
-python-slugify
 pandas
 psycopg2-binary
 tiktoken
