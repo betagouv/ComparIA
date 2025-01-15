@@ -23,7 +23,7 @@
 	export let container = true;
 	export let scale: number | null = null;
 	export let min_width: number | undefined = undefined;
-	export let allow_custom_value = false;
+	// export let allow_custom_value = false;
 	export let gradio: Gradio<{
 		change: never;
 		input: never;
@@ -53,7 +53,7 @@
 			commented = true;
 			handle_action("commenting");
 		}}> -->
-		Le mode en cours</button
+		{{ value }}</button
 	>
 </Block>
 
@@ -105,8 +105,6 @@
 						<div>
 							<Dropdown
 								bind:value
-								bind:value_is_output
-								{allow_custom_value}
 								on:change={() => gradio.dispatch("change")}
 								on:input={() => gradio.dispatch("input")}
 								on:select={(e) =>
