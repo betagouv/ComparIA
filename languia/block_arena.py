@@ -174,41 +174,41 @@ with gr.Blocks(
             # autoscroll=True
         )
 
-    with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w") as send_area:
+        with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w") as send_area:
 
-        with gr.Row(
-            elem_classes="flex-md-row flex-col items-start",
-            visible=False,
-        ) as send_row:
-            textbox = FrInput(
-                elem_id="main-textbox",
-                show_label=False,
-                lines=1,
-                placeholder="Continuer à discuter avec les deux modèles d'IA",
-                max_lines=7,
-                elem_classes="w-full",
-                # elem_classes="inline-block fr-col-12 fr-col-md-10",
-                container=True,
-                autofocus=True,
-                # autoscroll=True
-            )
-            send_btn = gr.Button(
-                interactive=False,
-                # scale=1,
-                value="Envoyer",
-                # icon="assets/dsfr/icons/system/arrow-up-line.svg",
-                elem_id="send-btn",
-                elem_classes="grow-0 purple-btn w-full",
-            )
+            with gr.Row(
+                elem_classes="flex-md-row flex-col items-start",
+                visible=True,
+            ) as send_row:
+                textbox = FrInput(
+                    elem_id="main-textbox",
+                    show_label=False,
+                    lines=1,
+                    placeholder="Continuer à discuter avec les deux modèles d'IA",
+                    max_lines=7,
+                    elem_classes="w-full",
+                    # elem_classes="inline-block fr-col-12 fr-col-md-10",
+                    container=True,
+                    autofocus=True,
+                    # autoscroll=True
+                )
+                send_btn = gr.Button(
+                    interactive=False,
+                    # scale=1,
+                    value="Envoyer",
+                    # icon="assets/dsfr/icons/system/arrow-up-line.svg",
+                    elem_id="send-btn",
+                    elem_classes="grow-0 purple-btn w-full",
+                )
 
-        with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            conclude_btn = gr.Button(
-                size="lg",
-                value="Passer à la révélation des modèles",
-                elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
-                visible=False,
-                interactive=False,
-            )
+            with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
+                conclude_btn = gr.Button(
+                    size="lg",
+                    value="Passer à la révélation des modèles",
+                    elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
+                    visible=False,
+                    interactive=False,
+                )
 
     with gr.Column(
         # h-screen

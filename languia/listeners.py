@@ -243,7 +243,13 @@ document.getElementById("fr-modal-welcome-close").blur();
 
     @textbox.change(
         inputs=[app_state, textbox],
-        outputs=send_btn,
+        outputs=[send_btn],
+        api_name=False,
+        show_progress="hidden",
+    )
+    @first_textbox.change(
+        inputs=[app_state, first_textbox],
+        outputs=[first_send_btn],
         api_name=False,
         show_progress="hidden",
     )
