@@ -14,6 +14,12 @@
 	export var choices;
 	// Handle option selection
 	function handle_option_selected(index: number): void {
+		console.log("previous selected_index");
+		console.log(selected_index);
+		console.log(typeof selected_index);
+		console.log("index");
+		console.log(index);
+		console.log(typeof index);
 		selected_index = index;
 		value = choices[index].value;
 		dispatch("select", {
@@ -66,7 +72,7 @@
 
 	label {
 		border-radius: 0.5em;
-		border: 0.5px solid #E5E5E5;
+		border: 0.5px solid #e5e5e5;
 		display: flex;
 		flex-direction: row;
 	}
