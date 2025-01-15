@@ -24,54 +24,73 @@
 	}
 </script>
 
-<div class="wrap">
-	<div class="wrap-inner">
-		{#each choices as { value, label, description, icon }, index}
-			<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
-			<!-- svelte-ignore a11y-click-events-have-key-events -->
-			<label
-				class:selected={selected_index === index}
-				class:disabled
-				data-testid={`radio-label-${value}`}
-				tabindex="0"
-				role="radio"
-				aria-checked={selected_index === index ? "true" : "false"}
-				on:click={() => handle_option_selected(index)}
-			>
-				<input
-					type="radio"
-					name="radio-options"
-					{value}
-					bind:group={selected_index}
-					data-index={index}
-					aria-checked={selected_index === index}
-					{disabled}
-				/>
+<div>
+	{#each choices as { value, label, _alt_label, icon, description }, index}
+		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
+		<!-- svelte-ignore a11y-click-events-have-key-events -->
+		<label
+			class:selected={selected_index === index}
+			class:disabled
+			data-testid={`radio-label-${value}`}
+			tabindex="0"
+			role="radio"
+			aria-checked={selected_index === index ? "true" : "false"}
+			on:click={() => handle_option_selected(index)}
+		>
+			<input
+				type="radio"
+				name="radio-options"
+				{value}
+				bind:group={selected_index}
+				data-index={index}
+				aria-checked={selected_index === index}
+				{disabled}
+			/>
+			<div class="icon">
 				<svelte:component this={icon} />
-				<div><strong>{label}</strong>
-				<p>{description}</p></div>
-			</label>
-		{/each}
-	</div>
+			</div>
+			<div>
+				<strong>{label}</strong>
+				<p>{description}</p>
+			</div>
+		</label>
+	{/each}
 </div>
 
 <style>
-	label.selected, 
+	label.selected,
 	label:active {
-		outline: 2px solid var(--blue-france-main-525); 
-		outline-offset: 0 !important;
-
+		border: 2px solid #6a6af4;
+		/* border: 2px solid var(--blue-france-main-525); */
 	}
-	input {
-		list-style: none;
+
+	label {
+		border-radius: 0.5em;
+		border: 0.5px solid #E5E5E5;
+		display: flex;
+		flex-direction: row;
+	}
+
+	input[type="radio"] {
+		position: fixed;
+		opacity: 0;
+		pointer-events: none;
 	}
 	p {
 		color: #666666;
 		font-size: 0.875em;
 	}
-	
+
+	label div {
+		flex-grow: 1;
+	}
+
 	strong {
 		font-size: 0.875em;
-		color: #3A3A3A
+		color: #3a3a3a;
+	}
+
+	.icon {
+		flex-grow: 0;
 	}
 </style>

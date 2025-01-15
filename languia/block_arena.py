@@ -108,9 +108,9 @@ with gr.Blocks(
             # autoscroll=True
         )
         # textbox = gr.Textbox(
-        with gr.Row(elem_classes="fr-container"):
+        with gr.Row(elem_classes="fr-container fr-mb-4w"):
             model_dropdown = CustomDropdown(
-                # elem_classes="fr-container",
+                # FIXME: ignored, hardcoded in custom component
                 choices=["random", "big-vs-small", "small-models", "custom"],
                 label="Quelle pool de modèles ?",
                 interactive=True,
@@ -126,7 +126,7 @@ with gr.Blocks(
             )
 
         prompts_suggestions = gr.HTML(
-            elem_classes="text-grey-200 fr-mt-4w fr-container",
+            elem_classes="text-grey-200 fr-container",
             value="""<h6>Suggestions de prompts</h6>""",
         )
         # FIXME: make a click on already selected be a shuffle

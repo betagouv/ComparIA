@@ -1,6 +1,5 @@
 <script context="module" lang="ts">
 	export { default as BaseDropdown } from "./shared/Dropdown.svelte";
-	export { default as BaseExample } from "./Example.svelte";
 </script>
 
 <script lang="ts">
@@ -12,7 +11,6 @@
 
 	type Item = string | number;
 
-	export let info: string | undefined = undefined;
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
@@ -29,12 +27,15 @@
 		{
 			value: "random",
 			label: "Aléatoire",
+			alt_label: "Modèles aléatoires",
 			icon: Dice, // Replace with your icon class or SVG
 			description: "Deux modèles choisis au hasard parmi toute la liste",
 		},
 		{
 			value: "small-models",
 			label: "Économe",
+			alt_label: "Modèles économes",
+
 			icon: Leaf, // Replace with your icon class or SVG
 			description:
 				"Minimisez votre impact environnemental avec deux petits modèles",
@@ -42,6 +43,7 @@
 		{
 			value: "big-vs-small",
 			label: "Petit contre grand",
+			alt_label: "Petit contre grand modèle",
 			icon: Ruler, // Replace with your icon class or SVG
 			description:
 				"Comparez les performances d’un petit modèle contre un grand",
@@ -49,6 +51,7 @@
 		// {
 		// 	value: "custom",
 		// 	label: "Sélection manuelle",
+		// 	alt_label: "Sélection manuelle",
 		// 	icon: Glass, // Replace with your icon class or SVG
 		// 	description:
 		// 		"Sélectionnez vous-même jusqu’à deux modèles à comparer",
@@ -83,7 +86,11 @@
 	{scale}
 	{min_width}
 >
-	<button data-fr-opened="false" aria-controls="modal-mode-selection">
+	<button
+		class="mode-selection-btn"
+		data-fr-opened="false"
+		aria-controls="modal-mode-selection"
+	>
 		<!-- <button
 		data-fr-opened="false"
 		aria-controls="modal-mode-selection"
@@ -91,10 +98,20 @@
 			commented = true;
 			handle_action("commenting");
 		}}> -->
-		<svelte:component this={choice.icon} />
+		<svg
+			width="18"
+			height="18"
+			viewBox="0 0 18 18"
+			fill="none"
+			xmlns="http://www.w3.org/2000/svg"
+		>
+			<path
+				d="M4.14161 14.0003C4.4848 13.0293 5.41083 12.3337 6.49935 12.3337C7.58785 12.3337 8.51393 13.0293 8.8571 14.0003H17.3327V15.667H8.8571C8.51393 16.638 7.58785 17.3337 6.49935 17.3337C5.41083 17.3337 4.4848 16.638 4.14161 15.667H0.666016V14.0003H4.14161ZM9.1416 8.16699C9.48477 7.196 10.4108 6.50033 11.4993 6.50033C12.5878 6.50033 13.5139 7.196 13.8571 8.16699H17.3327V9.83366H13.8571C13.5139 10.8047 12.5878 11.5003 11.4993 11.5003C10.4108 11.5003 9.48477 10.8047 9.1416 9.83366H0.666016V8.16699H9.1416ZM4.14161 2.33366C4.4848 1.36267 5.41083 0.666992 6.49935 0.666992C7.58785 0.666992 8.51393 1.36267 8.8571 2.33366H17.3327V4.00033H8.8571C8.51393 4.97132 7.58785 5.66699 6.49935 5.66699C5.41083 5.66699 4.4848 4.97132 4.14161 4.00033H0.666016V2.33366H4.14161Z"
+				fill="#6A6AF4"
+			/>
+		</svg>
 
-		<strong>{choice.label}</strong>
-		<p>{choice.description}</p></button
+		<strong>{choice.alt_label}</strong></button
 	>
 </Block>
 
@@ -175,3 +192,18 @@
 		</div>
 	</div>
 </dialog>
+
+<style>
+	.mode-selection-btn {
+		display: flex;
+		border-radius: 0.5em;
+		border: 0.5px solid #e5e5e5;
+		flex-direction: row;
+	}
+	.mode-selection-btn svg {
+		flex-grow: 0;
+	}
+	.mode-selection-btn strong {
+		flex-grow: 1;
+	}
+</style>
