@@ -79,6 +79,8 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
 
 from numpy import random
 
+from random import shuffle
+
 
 # Register listeners
 def register_listeners():
@@ -215,24 +217,27 @@ document.getElementById("fr-modal-welcome-close").blur();
         ]
 
         if model_dropdown_scoped == "random":
+            # TODO: init here instead of on arena load
             pass
-        elif model_dropdown_scoped == "big-models":
+        elif model_dropdown_scoped == "big-vs-small":
             first_model = big_models[random.randint(len(big_models))]
-            print("first_model:")
-            print(first_model)
-            big_models.remove(first_model)
-            conv_a_scoped.model_name = first_model["id"]
-            conv_b_scoped.model_name = big_models[random.randint(len(big_models))]["id"]
+            second_model = small_models[random.randint(len(small_models))]
+
+            shuffled_models = shuffle(list(first_model + second_model))
+            conv_a_scoped.model_name = shuffled_models[0]["id"]
+            conv_b_scoped.model_name = shuffled_models[1]["id"]
         elif model_dropdown_scoped == "small-models":
             first_model = small_models[random.randint(len(small_models))]
             small_models.remove(first_model)
+            second_model = small_models[random.randint(len(small_models))]
+
             conv_a_scoped.model_name = first_model["id"]
-            conv_b_scoped.model_name = small_models[random.randint(len(small_models))][
-                "id"
-            ]
+            conv_b_scoped.model_name = second_model["id"]
         else:
+            # Custom mode
+            # TODO: refacto
             if not model_dropdown_scoped in config.models:
-                raise
+                raise Exception("Model choice not among possibilities")
             else:
                 print("choosing model by name")
                 conv_a_scoped.model_name == model_dropdown_scoped
