@@ -79,7 +79,6 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
 
 from numpy import random
 
-from random import shuffle
 
 
 # Register listeners
@@ -223,9 +222,14 @@ document.getElementById("fr-modal-welcome-close").blur();
             first_model = big_models[random.randint(len(big_models))]
             second_model = small_models[random.randint(len(small_models))]
 
-            shuffled_models = shuffle(list(first_model + second_model))
-            conv_a_scoped.model_name = shuffled_models[0]["id"]
-            conv_b_scoped.model_name = shuffled_models[1]["id"]
+            swap = random.randint(2)
+            if swap == 0:
+                conv_a_scoped.model_name = first_model["id"]
+                conv_b_scoped.model_name = second_model["id"]
+            else:
+                conv_a_scoped.model_name = second_model["id"]
+                conv_b_scoped.model_name = first_model["id"]
+            
         elif model_dropdown_scoped == "small-models":
             first_model = small_models[random.randint(len(small_models))]
             small_models.remove(first_model)
