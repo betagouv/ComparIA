@@ -12,14 +12,9 @@
 		select: SelectData;
 	}>();
 	export var choices;
+
 	// Handle option selection
 	function handle_option_selected(index: number): void {
-		console.log("previous selected_index");
-		console.log(selected_index);
-		console.log(typeof selected_index);
-		console.log("index");
-		console.log(index);
-		console.log(typeof index);
 		selected_index = index;
 		value = choices[index].value;
 		dispatch("select", {
@@ -27,6 +22,16 @@
 			value: choices[selected_index].value,
 			selected: true,
 		});
+	}
+
+	$: {
+		if (
+			selected_index !== null &&
+			choices &&
+			choices.length > selected_index
+		) {
+			value = choices[selected_index].value;
+		}
 	}
 </script>
 
@@ -47,7 +52,6 @@
 				type="radio"
 				name="radio-options"
 				{value}
-				bind:group={selected_index}
 				data-index={index}
 				aria-checked={selected_index === index}
 				{disabled}
