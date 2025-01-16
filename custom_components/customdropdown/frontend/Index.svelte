@@ -138,17 +138,10 @@
 			<div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
-						<button
-							class="fr-btn--close fr-btn"
-							title="Fermer la fenêtre modale"
-							aria-controls="modal-mode-selection">Fermer</button
-						>
 						<!-- <button
 							class="fr-btn--close fr-btn"
 							title="Fermer la fenêtre modale"
-							aria-controls="modal-mode-selection"
-							on:click={() => sendComment(commenting)}
-							>Fermer</button
+							aria-controls="modal-mode-selection">Fermer</button
 						> -->
 					</div>
 					<div class="fr-modal__content">
@@ -173,11 +166,17 @@
 									gradio.dispatch("key_up", e.detail)}
 								disabled={!interactive}
 							/>
-							<button
-								aria-controls="modal-mode-selection"
-								class="btn purple-btn">Envoyer</button
-							>
-
+							<div class="fr-mt-2w">
+								<button
+									aria-controls="modal-mode-selection"
+									class="btn">Annuler</button
+								>
+								<button
+									aria-controls="modal-mode-selection"
+									class="btn purple-btn float-right"
+									>Envoyer</button
+								>
+							</div>
 							<!-- <button
 								aria-controls="modal-mode-selection"
 								class="btn purple-btn"
@@ -205,6 +204,7 @@
 		min-width: 260px;
 		text-align: left;
 		font-size: 0.875em;
+		color: #3a3a3a !important;
 	}
 	.mode-selection-btn svg {
 		flex-grow: 0;
@@ -212,5 +212,12 @@
 	.mode-selection-btn span {
 		margin-left: 0.5em;
 		flex-grow: 1;
+	}
+
+	.float-right {
+		float: right;
+	}
+	.fr-modal__content {
+		margin-bottom: 1em !important;
 	}
 </style>
