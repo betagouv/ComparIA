@@ -138,16 +138,16 @@
 			<div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
-						<!-- <button
+						<button
 							class="fr-btn--close fr-btn"
 							title="Fermer la fenêtre modale"
 							aria-controls="modal-mode-selection">Fermer</button
-						> -->
+						>
 					</div>
 					<div class="fr-modal__content">
-						<h3 id="modal-mode-selection" class="modal-title">
+						<h6 id="modal-mode-selection" class="modal-title">
 							Quels modèles voulez-vous comparer ?
-						</h3>
+						</h6>
 						<p>
 							Sélectionnez le mode de comparaison qui vous
 							convient
@@ -203,6 +203,7 @@
 		padding: 0.5em;
 		min-width: 260px;
 		text-align: left;
+		font-weight: 600;
 		font-size: 0.875em;
 		color: #3a3a3a !important;
 	}
@@ -217,7 +218,20 @@
 	.float-right {
 		float: right;
 	}
+
 	.fr-modal__content {
 		margin-bottom: 1em !important;
+	}
+
+	.fr-btn--close {
+		color: #6a6af4 !important;
+	}
+
+	.fr-btn--close::after {
+	background-color: #6a6af4 !important;
+	}
+
+	h6 {
+		font-size: 1.125em;
 	}
 </style>

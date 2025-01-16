@@ -70,23 +70,22 @@
 <style>
 	label.selected,
 	label:active {
-		border: 2px solid #6a6af4;
+		outline: 2px solid #6a6af4;
 		/* border: 2px solid var(--blue-france-main-525); */
 	}
 
 	label {
 		border-radius: 0.5em;
-		border: 0.5px solid #e5e5e5;
+		outline: 0.5px solid #e5e5e5;
 		display: grid;
-		padding-top: 0.5em;
-		padding-bottom: 1em;
+		padding: 0.5em 1em 1em 0.25em;
 		align-items: center;
 		grid-template-columns: auto 1fr;
 		margin: 0.75em 0;
 	}
 
 	label .icon {
-		padding: 0 0.5em 0 0.75em;
+		padding: 0 0.5em 0 0.5em;
 	}
 
 	input[type="radio"] {

@@ -221,10 +221,35 @@ h6.text-blue {
   grid-template-columns: 1fr;
 }
 
+.mobile-block {
+  display: block !important;
+}
+.mobile-flex {
+  display: flex !important;
+}
+
+
 @media (min-width: 48em) {
   .grid-cols-md-2 {
     grid-template-columns: 1fr 1fr;
   }
+
+  .mobile-block {
+    display: flex  !important;
+  }
+
+  .mobile-flex {
+    display: block !important;
+  }
+
+  #guided-cards span {
+    font-size: 0.875em !important;
+  }
+}
+
+#guided-cards span {
+  font-weight: 600;
+  font-size: 0.75em;
 }
 
 /* General */

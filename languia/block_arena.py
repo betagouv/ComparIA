@@ -108,10 +108,11 @@ with gr.Blocks(
             # autoscroll=True
         )
         # textbox = gr.Textbox(
-        with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w"):
+        with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w mobile-block"):
             model_dropdown = CustomDropdown(
                 # FIXME: ignored, hardcoded in custom component
                 choices=["random", "big-vs-small", "small-models", "custom"],
+                # FIXME: ignored, hardcoded in custom component
                 label="Quelle pool de modèles ?",
                 interactive=True,
             )
@@ -132,8 +133,10 @@ with gr.Blocks(
         # FIXME: make a click on already selected be a shuffle
         guided_cards = CustomRadioCard(
             show_label=False,
+            elem_id="guided-cards",
             elem_classes="fr-container",
             choices=config.guided_cards_choices,
+            min_columns=1
         )
         # shuffle_link = gr.Button(
         #     scale=0,
@@ -145,7 +148,8 @@ with gr.Blocks(
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
-
+        
+        gr.HTML()
         # {likeable}
         # placeholder
         #         placeholder
