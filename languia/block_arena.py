@@ -108,7 +108,7 @@ with gr.Blocks(
             # autoscroll=True
         )
         # textbox = gr.Textbox(
-        with gr.Row(elem_classes="fr-container fr-mb-4w"):
+        with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w"):
             model_dropdown = CustomDropdown(
                 # FIXME: ignored, hardcoded in custom component
                 choices=["random", "big-vs-small", "small-models", "custom"],

@@ -3,20 +3,19 @@
 		beforeUpdate,
 		afterUpdate,
 		createEventDispatcher,
-		tick
+		tick,
 	} from "svelte";
 	import { BlockTitle } from "@gradio/atoms";
 	import { Copy, Check } from "@gradio/icons";
 	import { fade } from "svelte/transition";
 	import type { SelectData } from "@gradio/utils";
 
-	
-	import '@gouvfr/dsfr/dist/scheme/scheme.css';
-    import '@gouvfr/dsfr/dist/core/core.css';
-    import '@gouvfr/dsfr/dist/component/form/form.css';
-    import '@gouvfr/dsfr/dist/component/link/link.css';
-    import '@gouvfr/dsfr/dist/component/button/button.css';
-    import '@gouvfr/dsfr/dist/component/input/input.css';
+	import "@gouvfr/dsfr/dist/scheme/scheme.css";
+	import "@gouvfr/dsfr/dist/core/core.css";
+	import "@gouvfr/dsfr/dist/component/form/form.css";
+	import "@gouvfr/dsfr/dist/component/link/link.css";
+	import "@gouvfr/dsfr/dist/component/button/button.css";
+	import "@gouvfr/dsfr/dist/component/input/input.css";
 
 	export let value = "";
 	export let value_is_output = false;
@@ -59,7 +58,8 @@
 	}>();
 
 	beforeUpdate(() => {
-		can_scroll = el && el.offsetHeight + el.scrollTop > el.scrollHeight - 100;
+		can_scroll =
+			el && el.offsetHeight + el.scrollTop > el.scrollHeight - 100;
 	});
 
 	const scroll = (): void => {
@@ -107,7 +107,7 @@
 		const text = target.value;
 		const index: [number, number] = [
 			target.selectionStart as number,
-			target.selectionEnd as number
+			target.selectionEnd as number,
 		];
 		dispatch("select", { value: text.substring(...index), index: index });
 	}
@@ -137,14 +137,15 @@
 		previous_scroll_top = current_scroll_top;
 
 		const max_scroll_top = target.scrollHeight - target.clientHeight;
-		const user_has_scrolled_to_bottom = current_scroll_top >= max_scroll_top;
+		const user_has_scrolled_to_bottom =
+			current_scroll_top >= max_scroll_top;
 		if (user_has_scrolled_to_bottom) {
 			user_has_scrolled_up = false;
 		}
 	}
 
 	async function resize(
-		event: Event | { target: HTMLTextAreaElement | HTMLInputElement }
+		event: Event | { target: HTMLTextAreaElement | HTMLInputElement },
 	): Promise<void> {
 		await tick();
 		if (lines === max_lines) return;
@@ -174,7 +175,7 @@
 
 	function text_area_resize(
 		_el: HTMLTextAreaElement,
-		_value: string
+		_value: string,
 	): any | undefined {
 		if (lines === max_lines) return;
 		_el.style.overflowY = "scroll";
@@ -184,13 +185,14 @@
 		resize({ target: _el });
 
 		return {
-			destroy: () => _el.removeEventListener("input", resize)
+			destroy: () => _el.removeEventListener("input", resize),
 		};
 	}
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<label id={elem_id} class="container fr-label {elem_classes.join(' ')}">{#if show_label}{label}{/if}
+<label id={elem_id} class="container fr-label {elem_classes.join(' ')}"
+	>{#if show_label}{label}{/if}
 
 	{#if lines === 1 && max_lines === 1}
 		{#if type === "text"}
@@ -286,16 +288,16 @@
 </label>
 
 <style>
-
-/* textarea.fr-input {
-	min-height: 4rem !important;
-} */
-
-@media (min-width: 48em) {
-
 	textarea.fr-input {
-		min-height: 2.5rem !important;
+		background-color: white !important;
+		border-radius: 0.5em 0.5em 0 0;
+		/* min-height: 4rem !important; */
+		box-shadow: inset 0 -2px 0 0 #6a6af4 !important;
 	}
-}
 
-	</style>
+	@media (min-width: 48em) {
+		textarea.fr-input {
+			min-height: 2.5rem !important;
+		}
+	}
+</style>

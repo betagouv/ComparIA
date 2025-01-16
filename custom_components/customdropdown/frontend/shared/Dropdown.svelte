@@ -77,8 +77,16 @@
 	label {
 		border-radius: 0.5em;
 		border: 0.5px solid #e5e5e5;
-		display: flex;
-		flex-direction: row;
+		display: grid;
+		padding-top: 0.5em;
+		padding-bottom: 1em;
+		align-items: center;
+		grid-template-columns: auto 1fr;
+		margin: 0.75em 0;
+	}
+
+	label .icon {
+		padding: 0 0.5em 0 0.75em;
 	}
 
 	input[type="radio"] {
@@ -87,20 +95,11 @@
 		pointer-events: none;
 	}
 	p {
-		color: #666666;
-		font-size: 0.875em;
+		color: #666666 !important;
+		font-size: 0.875em !important;
 	}
-
-	label div {
-		flex-grow: 1;
-	}
-
 	strong {
 		font-size: 0.875em;
 		color: #3a3a3a;
-	}
-
-	.icon {
-		flex-grow: 0;
 	}
 </style>

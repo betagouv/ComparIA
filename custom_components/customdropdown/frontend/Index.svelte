@@ -110,8 +110,7 @@
 				fill="#6A6AF4"
 			/>
 		</svg>
-
-		<strong>{choice.alt_label}</strong></button
+		<span> {choice.alt_label}</span></button
 	>
 </Block>
 
@@ -195,15 +194,23 @@
 
 <style>
 	.mode-selection-btn {
+		--hover-tint: transparent;
+		--active-tint: transparent;
+		--focus-tint: transparent;
 		display: flex;
 		border-radius: 0.5em;
-		border: 0.5px solid #e5e5e5;
+		border: 1px solid #e5e5e5 !important;
 		flex-direction: row;
+		padding: 0.5em;
+		min-width: 260px;
+		text-align: left;
+		font-size: 0.875em;
 	}
 	.mode-selection-btn svg {
 		flex-grow: 0;
 	}
-	.mode-selection-btn strong {
+	.mode-selection-btn span {
+		margin-left: 0.5em;
 		flex-grow: 1;
 	}
 </style>
