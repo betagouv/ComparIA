@@ -233,7 +233,11 @@ document.getElementById("fr-modal-welcome-close").blur();
         elif model_dropdown_scoped == "small-models":
             first_model = small_models[random.randint(len(small_models))]
             small_models.remove(first_model)
-            second_model = small_models[random.randint(len(small_models))]
+            if small_models == []:
+                # If there was just one small model :o
+                second_model = first_model
+            else:
+                second_model = small_models[random.randint(len(small_models))]
 
             conv_a_scoped.model_name = first_model["id"]
             conv_b_scoped.model_name = second_model["id"]
