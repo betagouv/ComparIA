@@ -333,8 +333,6 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
         for i in range(config.num_sides):
-            # conversations[i].messages.append(ChatMessage(role="user", content="Placeholder to test errors on turn 2"))
-            # conversations[i].messages.append(ChatMessage(role="assistant", content="Placeholder to test errors on turn 2"))
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
