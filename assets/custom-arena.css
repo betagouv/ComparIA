@@ -1,3 +1,27 @@
+/* TODO: "what model do you prefer" buttons css */
+
+/* 
+.which-model label.custom-card div {
+  height: 100%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
+}
+
+
+.which-model label.custom-card  {
+  padding: 0 !important;
+}
+
+.which-model label.custom-card span {
+  height: 100%;
+  border-left: 1px red solid;
+  display: block;
+} 
+  */
+
+
 /* BUGFIXES */
 
 /* Hide all warning messages from Gradio to hide the "Warning: this connection might break on mobile" */
