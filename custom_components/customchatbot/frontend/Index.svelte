@@ -17,6 +17,27 @@
 	import { update_messages } from "./shared/utils";
 
 	export let elem_id = "";
+	export let current_mode: string = "random";
+
+	// #     if mode_choice == "random":
+	// #         return """Mode Aléatoire:
+	// #                   Deux modèles choisis au hasard parmi toute la liste."""
+	// #     elif mode_choice == "big-vs-small":
+	// #         return """Mode Petit contre Grand:
+	// #                   Un petit et un grand modèle choisis au hasard."""
+	// #     elif mode_choice == "small-models":
+	// #         return """Mode Économe:
+	// #                   Deux petits modèles choisis au hasard."""
+	// #     elif mode_choice == "custom":
+	// #         return """
+	// #     <div class="">
+	// #         <span class="show-mode-title">Mode Sélection</span>
+	// #         <span class="show-mode-desc">Les modèles restent anonymes pour éviter tout biais</span>
+	// #     </div>
+	// #     <div class="mode-description" id="mode-description">
+	// #         {description}
+	// #     </div>
+
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let value: TupleFormat | Message[] = [];

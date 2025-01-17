@@ -136,7 +136,7 @@ with gr.Blocks(
             elem_id="guided-cards",
             elem_classes="fr-container",
             choices=config.guided_cards_choices,
-            min_columns=1
+            min_columns=1,
         )
         # shuffle_link = gr.Button(
         #     scale=0,
@@ -148,41 +148,9 @@ with gr.Blocks(
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
-#         def get_mode_description(mode_choice):
-#     # Switch-case like structure using if-elif
-#     if mode_choice == "random":
-#         return """Mode Aléatoire:
-#                   Deux modèles choisis au hasard parmi toute la liste."""
-#     elif mode_choice == "big-vs-small":
-#         return """Mode Petit contre Grand:
-#                   Un petit et un grand modèle choisis au hasard."""
-#     elif mode_choice == "small-models":
-#         return """Mode Économe:
-#                   Deux petits modèles choisis au hasard."""
-#     elif mode_choice == "custom":
-#         return """Mode Personnalisé:
-#                   Choisissez vos propres modèles."""
-#     else:
-#         return "Choisissez un mode valide."
 
-# # Example usage
-# mode_choice = "random"  # This will be dynamically set, depending on user selection
-# description = get_mode_description(mode_choice)
-
-# # Updating the Gradio HTML component dynamically
-# show_mode.update(value=f"""
-#     <div class="">
-#         <span class="show-mode-title">Mode Sélection</span>
-#         <span class="show-mode-desc">Les modèles restent anonymes pour éviter tout biais</span>
-#     </div>
-#     <div class="mode-description" id="mode-description">
-#         {description}
-#     </div>
-# """)
-
-        
         chatbot = CustomChatbot(
-            # TODO:
+            current_mode="random",
             type="messages",
             elem_id="main-chatbot",
             # min_width=
