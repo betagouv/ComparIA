@@ -17,7 +17,8 @@
 .which-model label.custom-card span {
   height: 100%;
   border-left: 1px red solid;
-  display: block;
+  display: flex;
+  align-items: center;
 } 
   */
 
