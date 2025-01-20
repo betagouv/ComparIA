@@ -1,5 +1,5 @@
 # fschat==0.2.36
-gradio==5.11.0
+gradio==5.9.1
 fastapi==0.115.6
 huggingface-hub==0.26.5
 ecologits==0.5.2
