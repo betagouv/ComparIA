@@ -114,30 +114,30 @@
 	export let autoscroll = true;
 
 	export let interactive: boolean;
-	var choice;
+	var choice: Choice = choices[0];
 
 	// Handle mode selection
 	function handle_option_selected(index: number): void {
+		console.log("handle_option_selected");
 		if (index !== null && choices && choices.length > index) {
 			// value = choices[selected_index].value;
 			// value.mode = choices[selected_index].value;
 
 			mode = choices[index].value;
-			value["mode"] = mode;
+			if (mode != value["mode"]) {
+				value["mode"] = mode;
+				gradio.dispatch("select", {
+					mode: mode,
+					custom_models_selection: custom_models_selection,
+					prompt_value: prompt_value,
+				});
+				choice = choices.find((item) => item.value === mode);
+			}
 		}
-		console.log("handle_option_selected");
-		console.log(index);
-
-		gradio.dispatch("select", {
-			mode: mode,
-			custom_models_selection: custom_models_selection,
-			prompt_value: prompt_value,
-		});
 	}
 
-	// Handle choice + prompt update from backend
+	// Handle choice var + prompt update from backend
 	$: {
-		choice = choices.find((item) => item.value === mode);
 		console.log("mode");
 		console.log(mode);
 		console.log("prompt_value");
@@ -149,7 +149,9 @@
 		if (value_is_output) {
 			prompt_value = value["prompt_value"];
 		} else {
-			value["prompt_value"] = prompt_value;
+			if (value["prompt_value"] != prompt_value) {
+				value["prompt_value"] = prompt_value;
+			}
 		}
 	}
 </script>
