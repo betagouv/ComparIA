@@ -1,7 +1,14 @@
 // function positive_mod(n: number, m: number): number {
 // 	return ((n % m) + m) % m;
 // }
+type Item = string | number;
 
+
+export interface ModeAndPromptData {
+	prompt_value: string;
+		mode: "random" | "custom" | "big-vs-small" | "small-models";
+		custom_models_selection: Item[];	
+}
 
 // export function handle_change(
 // 	dispatch: any,

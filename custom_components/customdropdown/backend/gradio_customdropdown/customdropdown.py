@@ -37,6 +37,7 @@ class CustomDropdown(FormComponent):
         Events.change,
         Events.input,
         Events.select,
+        Events.submit,
         Events.focus,
         Events.blur,
         Events.key_up,
@@ -56,7 +57,6 @@ class CustomDropdown(FormComponent):
         | None = DEFAULT_VALUE,
         type: Literal["value", "index"] = "value",
         multiselect: bool | None = None,
-        allow_custom_value: bool = False,
         max_choices: int | None = None,
         filterable: bool = True,
         label: str | None = None,
@@ -73,6 +73,7 @@ class CustomDropdown(FormComponent):
         elem_classes: list[str] | str | None = None,
         render: bool = True,
         key: int | str | None = None,
+        models: list[dict] | None,
     ):
         """
         Parameters:
@@ -126,13 +127,8 @@ class CustomDropdown(FormComponent):
             warnings.warn(
                 "The `max_choices` parameter is ignored when `multiselect` is False."
             )
-        if not filterable and allow_custom_value:
-            filterable = True
-            warnings.warn(
-                "The `filterable` parameter cannot be set to False when `allow_custom_value` is True. Setting `filterable` to True."
-            )
+
         self.max_choices = max_choices
-        self.allow_custom_value = allow_custom_value
         self.filterable = filterable
         super().__init__(
             label=label,
@@ -178,69 +174,54 @@ class CustomDropdown(FormComponent):
             return self.choices[0][1] if self.choices else None
 
     def preprocess(
-        self, payload: str | int | float | list[str | int | float] | None
-    ) -> str | int | float | list[str | int | float] | list[int | None] | None:
-        """
-        Parameters:
-            payload: the value of the selected dropdown choice(s)
-        Returns:
-            Passes the value of the selected dropdown choice as a `str | int | float` or its index as an `int` into the function, depending on `type`. Or, if `multiselect` is True, passes the values of the selected dropdown choices as a list of correspoding values/indices instead.
-        """
-        if payload is None:
-            return None
+        self, payload: dict | list[str | int | float | dict] | None
+    ) -> dict | None:
+        # if payload is None:
+        #     return None
 
-        choice_values = [value for _, value in self.choices]
-        if not self.allow_custom_value:
-            if isinstance(payload, list):
-                for value in payload:
-                    if value not in choice_values:
-                        raise Error(
-                            f"Value: {value!r} (type: {type(value)}) is not in the list of choices: {choice_values}"
-                        )
-            elif payload not in choice_values:
-                raise Error(
-                    f"Value: {payload} is not in the list of choices: {choice_values}"
-                )
-
-        if self.type == "value":
+        print(f"preprocess payload: {str(payload)}")
+        value = dict()
+        try:
+            value['prompt_value'] = payload['prompt_value']
+            value['mode'] = payload['mode']
+            value['custom_models_selection'] = payload['custom_models_selection']
+            return value
+            # return payload["prompt_value"]
+        # if self.type == "value":
+        #     return payload
+        # elif self.type == "index":
+        #     if isinstance(payload, list):
+        #         return [
+        #             choice_values.index(choice) if choice in choice_values else None
+        #             for choice in payload
+        #         ]
+        #     else:
+        #         return (
+        #             choice_values.index(payload) if payload in choice_values else None
+        #         )
+        except:
+            # raise ValueError(
+            #     f"Unknown payload: {payload}."
+            # )
             return payload
-        elif self.type == "index":
-            if isinstance(payload, list):
-                return [
-                    choice_values.index(choice) if choice in choice_values else None
-                    for choice in payload
-                ]
-            else:
-                return (
-                    choice_values.index(payload) if payload in choice_values else None
-                )
-        else:
-            raise ValueError(
-                f"Unknown type: {self.type}. Please choose from: 'value', 'index'."
-            )
-
-    def _warn_if_invalid_choice(self, value):
-        if self.allow_custom_value or value in [value for _, value in self.choices]:
-            return
-        warnings.warn(
-            f"The value passed into gr.Dropdown() is not in the list of choices. Please update the list of choices to include: {value} or set allow_custom_value=True."
-        )
 
     def postprocess(
-        self, value: str | int | float | list[str | int | float] | None
+        self, value: dict | None
     ) -> str | int | float | list[str | int | float] | None:
-        """
-        Parameters:
-            value: Expects a `str | int | float` corresponding to the value of the dropdown entry to be selected. Or, if `multiselect` is True, expects a `list` of values corresponding to the selected dropdown entries.
-        Returns:
-            Returns the values of the selected dropdown entry or entries.
-        """
+        print(f"postprocess value: {str(value)}")
         if value is None:
             return None
-        if self.multiselect:
-            if not isinstance(value, list):
-                value = [value]
-            [self._warn_if_invalid_choice(_y) for _y in value]
-        else:
-            self._warn_if_invalid_choice(value)
-        return value
+        # FIXME: delete
+        elif isinstance(value, str):
+            # return value
+            return {
+            "prompt_value": value, 
+            "mode": value, 
+            }
+        elif isinstance(value, dict):
+        # else:
+            return value
+            # return {"prompt_value": value.prompt_value,
+            # "mode": value.mode,
+            # "custom_models_selection": value.custom_models_selection
+            # }

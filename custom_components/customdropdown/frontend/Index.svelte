@@ -6,23 +6,64 @@
 	import type { Gradio, KeyUpData, SelectData } from "@gradio/utils";
 	import Dropdown from "./shared/Dropdown.svelte";
 	import { Block } from "@gradio/atoms";
-	import { StatusTracker } from "@gradio/statustracker";
 	import type { LoadingStatus } from "@gradio/statustracker";
+	import TextBox from "./shared/Textbox.svelte";
+
+	import { ModeAndPromptData } from "./shared/utils.ts";
 
 	type Item = string | number;
-
+	export let models: [] = [];
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
-	export let multiselect = false;
-	export let value: Item | Item[] | undefined = multiselect ? [] : undefined;
+	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
+		"random";
+	export let prompt_value: string = ""; // Initialize as an empty string by default
+	export let custom_models_selection: Item[] = []; // Default to an empty list
+
+	// Prompt value
+	// export let value: string = ""
+	// Combine all into one value object based on mode and other properties
+	export let value: {
+		prompt_value: string;
+		mode: "random" | "custom" | "big-vs-small" | "small-models";
+		custom_models_selection: Item[];
+	} = {
+		prompt_value: "",
+		mode: "random",
+		custom_models_selection: [],
+	};
+
+	// // Combine all into one value object based on mode and other properties
+	$: {
+		// Reassign to ensure the latest values are always used
+		value = {
+			prompt_value: prompt_value,
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+		};
+		console.log("value");
+		console.log(value);
+		console.log("prompt_value");
+		console.log(prompt_value);
+		console.log("mode");
+		console.log(mode);
+		// prompt_value = value.prompt_value;
+	}
+
+	// Add reactive statements to update props when value changes
+	// $: prompt_value = value["prompt_value"];
+	// $: mode = value.mode;
+	// $: custom_models_selection = value["custom_models_selection"];
+
+	// export let value: Item | Item[] | undefined = multiselect ? [] : undefined;
 
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
 	import Dice from "./shared/dice.svelte";
+	import { SvelteComponent } from "svelte";
 
-	// Hardcoded options
 	export const choices = [
 		{
 			value: "random",
@@ -62,21 +103,57 @@
 	export let scale: number | null = null;
 	export let min_width: number | undefined = undefined;
 	// export let allow_custom_value = false;
+	// FIXME: types for events
 	export let gradio: Gradio<{
-		change: never;
+		change: typeof value;
 		input: never;
-		select: SelectData;
+		submit: ModeAndPromptData;
+		// submit: never;
+		select: ModeAndPromptData;
+		// select: SelectData;
 		blur: never;
 		focus: never;
 		key_up: KeyUpData;
 		clear_status: LoadingStatus;
 	}>;
+
+	export let label = "Textbox";
+	export let lines: number;
+	export let show_custom_models_selection: boolean = false;
+	export let placeholder = "";
+	export let show_label: boolean;
+	export let max_lines: number;
+	export let type: "text" | "password" | "email" = "text";
+	// export let scale: number | null = null;
+	// export let min_width: number | undefined = undefined;
+	export let show_copy_button = false;
+	// export let value_is_output = false;
+	export let rtl = false;
+	export let text_align: "left" | "right" | undefined = undefined;
+	export let autofocus = false;
+	export let autoscroll = true;
+
 	export let interactive: boolean;
-	$: console.log(value);
 	var choice;
-	$: choice = choices.find((item) => item.value === value);
+	// FIXME: maybe do a apply(oldValue, newValue) here?
+	$: {
+		console.log("choices");
+		console.log(choices);
+		console.log("value");
+		console.log(value);
+		console.log("prompt_value");
+		console.log(prompt_value);
+		console.log("mode");
+		console.log(mode);
+		choice = choices.find((item) => item.value === mode);
+	}
+	// $: choice = choices.find((item) => item.value["mode"] === mode);
+	// $: choice = choices.find((item) => item.mode === mode);
 </script>
 
+<h4 class="text-center text-grey-200 fr-mt-4w fr-mb-2w">
+	Comment puis-je vous aider aujourd'hui ?
+</h4>
 <Block
 	{visible}
 	{elem_id}
@@ -86,18 +163,49 @@
 	{scale}
 	{min_width}
 >
+	<!-- FIXME: Make input send prompt_value -->
+	<!-- FIXME: Change gradio.dispatch"change" value type -->
+	<!-- value=bind:prompt_value -->
+	<TextBox
+		bind:value={prompt_value}
+		{elem_id}
+		{elem_classes}
+		{visible}
+		{label}
+		{show_label}
+		{lines}
+		{type}
+		{rtl}
+		{text_align}
+		max_lines={!max_lines ? lines + 1 : max_lines}
+		{placeholder}
+		{show_copy_button}
+		{autofocus}
+		{autoscroll}
+		on:submit={() =>
+			gradio.dispatch("submit", {
+				prompt_value: prompt_value,
+				mode: mode,
+				custom_models_selection: custom_models_selection,
+			})}
+	/>
+
+	<!-- on:change={() =>
+	gradio.dispatch("change", {
+		prompt_value: prompt_value,
+		mode: mode,
+		custom_models_selection: custom_models_selection,
+	})}
+on:input={() => gradio.dispatch("input")}
+		on:blur={() => gradio.dispatch("blur")}
+		on:focus={() => gradio.dispatch("focus")}
+		disabled={!interactive} -->
+
 	<button
 		class="mode-selection-btn"
 		data-fr-opened="false"
 		aria-controls="modal-mode-selection"
 	>
-		<!-- <button
-		data-fr-opened="false"
-		aria-controls="modal-mode-selection"
-		on:click={() => {
-			commented = true;
-			handle_action("commenting");
-		}}> -->
 		<svg
 			width="18"
 			height="18"
@@ -112,6 +220,16 @@
 		</svg>
 		<span> {choice.alt_label}</span></button
 	>
+	<input
+		type="submit"
+		class="purple-btn btn"
+		on:submit={() =>
+			gradio.dispatch("submit", {
+				prompt_value: prompt_value,
+				mode: mode,
+				custom_models_selection: custom_models_selection,
+			})}
+	/>
 </Block>
 
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
@@ -145,45 +263,87 @@
 						>
 					</div>
 					<div class="fr-modal__content">
-						<h6 id="modal-mode-selection" class="modal-title">
-							Quels modèles voulez-vous comparer ?
-						</h6>
-						<p>
-							Sélectionnez le mode de comparaison qui vous
-							convient
-						</p>
-						<div>
-							<Dropdown
-								{choices}
-								bind:value
-								on:change={() => gradio.dispatch("change")}
-								on:input={() => gradio.dispatch("input")}
-								on:select={(e) =>
-									gradio.dispatch("select", e.detail)}
-								on:blur={() => gradio.dispatch("blur")}
-								on:focus={() => gradio.dispatch("focus")}
-								on:key_up={(e) =>
-									gradio.dispatch("key_up", e.detail)}
-								disabled={!interactive}
-							/>
-							<div class="fr-mt-2w">
-								<button
-									aria-controls="modal-mode-selection"
-									class="btn">Annuler</button
-								>
-								<button
-									aria-controls="modal-mode-selection"
-									class="btn purple-btn float-right"
-									>Envoyer</button
-								>
-							</div>
-							<!-- <button
+						{#if show_custom_models_selection == false}
+							<h6 id="modal-mode-selection" class="modal-title">
+								Quels modèles voulez-vous comparer ?
+							</h6>
+							<p>
+								Sélectionnez le mode de comparaison qui vous
+								convient
+							</p>
+							<div>
+								<Dropdown
+									{choices}
+									bind:mode
+									on:select={(e) => {
+										console.log("on:select e");
+										console.log(e);
+				// 						gradio.dispatch("select", {
+				// "prompt_value": prompt_value,
+				// "mode": mode,
+				// "custom_models_selection": custom_models_selection,});
+										gradio.dispatch("select", e.detail);
+									}}
+									disabled={!interactive}
+								/>
+								<!-- <Dropdown
+									{choices}
+									bind:mode
+									on:input={() => gradio.dispatch("input")}
+									on:select={(e) =>
+										gradio.dispatch("select", e.detail)}
+									on:blur={() => gradio.dispatch("blur")}
+									on:focus={() => gradio.dispatch("focus")}
+									on:key_up={(e) =>
+										gradio.dispatch("key_up", e.detail)}
+									disabled={!interactive}
+								/> -->
+								<div class="fr-mt-2w">
+									<button
+										aria-controls="modal-mode-selection"
+										class="btn">Annuler</button
+									>
+									<button
+										aria-controls="modal-mode-selection"
+										class="btn purple-btn float-right"
+										>Envoyer</button
+									>
+								</div>
+								<!-- <button
 								aria-controls="modal-mode-selection"
 								class="btn purple-btn"
 								on:click={() => sendComment(commenting)}
 								>Envoyer</button
 							> -->
-						</div>
+							</div>
+						{:else}
+							<h6 id="modal-mode-selection" class="modal-title">
+								Quels modèles voulez-vous comparer ?
+							</h6>
+							<p>Sélectionnez les modèles à comparer (2 max.)</p>
+							<div>
+								<!-- <ModelsSelection
+									{models}
+									bind:custom_models_selection
+								/> -->
+								<div class="fr-mt-2w">
+									<button
+										aria-controls="modal-mode-selection"
+										class="btn">Annuler</button
+									>
+									<button
+										aria-controls="modal-mode-selection"
+										class="btn purple-btn float-right"
+										>Envoyer</button
+									>
+								</div>
+								<!-- <button
+							aria-controls="modal-mode-selection"
+							class="btn purple-btn"
+							on:click={() => sendComment(commenting)}
+							>Envoyer</button
+						> -->
+							</div>{/if}
 					</div>
 				</div>
 			</div>
@@ -228,7 +388,7 @@
 	}
 
 	.fr-btn--close::after {
-	background-color: #6a6af4 !important;
+		background-color: #6a6af4 !important;
 	}
 
 	h6 {

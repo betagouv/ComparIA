@@ -21,7 +21,17 @@
   align-items: center;
 } 
   */
-
+/* 
+  #first-textbox {
+    order: 1;
+  }
+  
+  @media (min-width: 48em) {
+  
+    #first-textbox {
+      order: inherit;
+    }
+  } */
 
 /* BUGFIXES */
 

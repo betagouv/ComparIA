@@ -22,7 +22,7 @@
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let value: string | null = null;
-	export let choices: [string, string | number][] = [];
+	export let choices: string[] = [];
 	// export let show_label = true;
 	// export let container = false;
 	// export let scale: number | null = null;

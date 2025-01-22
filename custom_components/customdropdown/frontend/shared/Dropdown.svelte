@@ -1,27 +1,60 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import type { SelectData } from "@gradio/utils";
+	import type { ModeAndPromptData } from "./utils.ts";
 
 	type Item = string | number;
 
-	export let value: Item | Item[] | undefined = undefined;
+	// TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
+	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
+		"random";
+	export let prompt_value: string = ""; // Initialize as an empty string by default
+	export let custom_models_selection: Item[] = []; // Default to an empty list
+	export let models: Item[] = [];
+	// Combine all into one value object based on mode and other properties
+	// export let value: {
+	// 	prompt_value: string;
+	// 	mode: "random" | "custom" | "big-vs-small" | "small-models";
+	// 	custom_models_selection: Item[];
+	// } = {
+	// 	prompt_value: "",
+	// 	mode: "random",
+	// 	custom_models_selection: [],
+	// };
 	export let disabled = false;
 
 	let selected_index: number | null = null;
 	const dispatch = createEventDispatcher<{
-		select: SelectData;
+		select: ModeAndPromptData;
 	}>();
 	export var choices;
 
 	// Handle option selection
 	function handle_option_selected(index: number): void {
 		selected_index = index;
-		value = choices[index].value;
+		mode = choices[index].value;
+		console.log("handle_option_selected");
+		console.log(index);
+		// if (mode == "custom") {
+		// 	// var custom_models_selection = mode[1]
+		// 	dispatch("select", {
+		// 		index: selected_index,
+		// 		value: [mode, custom_models_selection],
+
+		// 		selected: true,
+		// 	}
+		// );
+		// }
+		// else {
 		dispatch("select", {
-			index: selected_index,
-			value: choices[selected_index].value,
-			selected: true,
+			// index: selected_index,
+			// value: {
+				mode: choices[selected_index].value,
+				prompt_value: prompt_value,
+				custom_models_selection: custom_models_selection 
+			// },
+			// selected: true,
 		});
+		// }
 	}
 
 	$: {
@@ -30,19 +63,21 @@
 			choices &&
 			choices.length > selected_index
 		) {
-			value = choices[selected_index].value;
+			// value = choices[selected_index].value;
+			// value.mode = choices[selected_index].value;
+			mode = choices[selected_index].value;
 		}
 	}
 </script>
 
 <div>
-	{#each choices as { value, label, _alt_label, icon, description }, index}
+	{#each choices as { mode, label, alt_label, icon, description }, index}
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
 			class:selected={selected_index === index}
 			class:disabled
-			data-testid={`radio-label-${value}`}
+			data-testid={`radio-label-${mode}`}
 			tabindex="0"
 			role="radio"
 			aria-checked={selected_index === index ? "true" : "false"}
@@ -51,7 +86,7 @@
 			<input
 				type="radio"
 				name="radio-options"
-				{value}
+				value={mode}
 				data-index={index}
 				aria-checked={selected_index === index}
 				{disabled}

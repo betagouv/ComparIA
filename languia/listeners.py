@@ -2,6 +2,7 @@ from languia.block_arena import (
     app_state,
     buttons_footer,
     chat_area,
+    CustomDropdown,
     chatbot,
     comments_a,
     comments_b,
@@ -19,12 +20,11 @@ from languia.block_arena import (
     results_area,
     reveal_screen,
     send_area,
-    first_send_btn,
     send_btn,
     # shuffle_link,
     supervote_area,
     supervote_send_btn,
-    first_textbox,
+    # first_textbox,
     textbox,
     vote_area,
     which_model_radio,
@@ -173,13 +173,13 @@ document.getElementById("fr-modal-welcome-close").blur();
 
     # Step 1.1
     @guided_cards.change(
-        inputs=[app_state, guided_cards],
-        outputs=[app_state, first_send_btn, first_textbox],
+        inputs=[app_state, guided_cards, model_dropdown],
+        outputs=[app_state, model_dropdown],
         api_name=False,
         show_progress="hidden",
     )
     def set_guided_prompt(
-        app_state_scoped, guided_cards, event: gr.EventData, request: gr.Request
+        app_state_scoped, guided_cards, model_dropdown_scoped, event: gr.EventData, request: gr.Request
     ):
 
         # chosen_prompts_pool = guided_cards
@@ -191,10 +191,14 @@ document.getElementById("fr-modal-welcome-close").blur();
             f"categorie_{category}: {prompt}",
             extra={"request": request},
         )
+        new_value = prompt
+
+        model_dropdown_scoped["prompt_value"] = new_value
+        
         return {
             app_state: app_state_scoped,
-            first_send_btn: gr.update(interactive=True),
-            first_textbox: gr.update(value=prompt),
+            # first_send_btn: gr.update(interactive=True),
+            model_dropdown: model_dropdown_scoped,
         }
 
     @model_dropdown.select(
@@ -214,11 +218,12 @@ document.getElementById("fr-modal-welcome-close").blur();
             for model in config.models_extra_info
             if model["friendly_size"] in ["M", "L", "XL"]
         ]
-
-        if model_dropdown_scoped == "random":
+        
+        mode = model_dropdown_scoped['mode']
+        if mode == "random":
             # TODO: init here instead of on arena load
             pass
-        elif model_dropdown_scoped == "big-vs-small":
+        elif mode == "big-vs-small":
             first_model = big_models[random.randint(len(big_models))]
             second_model = small_models[random.randint(len(small_models))]
 
@@ -230,7 +235,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 conv_a_scoped.model_name = second_model["id"]
                 conv_b_scoped.model_name = first_model["id"]
             
-        elif model_dropdown_scoped == "small-models":
+        elif mode == "small-models":
             first_model = small_models[random.randint(len(small_models))]
             small_models.remove(first_model)
             if small_models == []:
@@ -241,15 +246,18 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             conv_a_scoped.model_name = first_model["id"]
             conv_b_scoped.model_name = second_model["id"]
-        else:
             # Custom mode
-            # TODO: refacto
-            if not model_dropdown_scoped in config.models:
-                raise Exception("Model choice not among possibilities")
-            else:
-                print("choosing model by name")
-                conv_a_scoped.model_name == model_dropdown_scoped
-            print(model_dropdown_scoped)
+        # elif len(mode) == 2 and mode[0] == "custom":
+        #     custom_models_selection = mode[1]
+        #     #  FIXME: input sanitization
+        #     # if any(mode[1], not in models):
+        #     #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+        #     # FIXME: more test and randomize
+        #     print("choosing first two models of selected: (:")
+        #     conv_a_scoped.model_name == custom_models_selection[0]
+        #     conv_b_scoped.model_name == custom_models_selection[1]
+        else:
+            raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
         print("picked model a: " + conv_a_scoped.model_name)
         print("picked model b: " + conv_b_scoped.model_name)
         return [app_state_scoped, conv_a_scoped, conv_b_scoped]
@@ -257,12 +265,6 @@ document.getElementById("fr-modal-welcome-close").blur();
     @textbox.change(
         inputs=[app_state, textbox],
         outputs=[send_btn],
-        api_name=False,
-        show_progress="hidden",
-    )
-    @first_textbox.change(
-        inputs=[app_state, first_textbox],
-        outputs=[first_send_btn],
         api_name=False,
         show_progress="hidden",
     )
@@ -275,6 +277,90 @@ document.getElementById("fr-modal-welcome-close").blur();
         else:
             return gr.update(interactive=True)
 
+    def add_first_text(
+        app_state_scoped,
+        conv_a_scoped: gr.State,
+        conv_b_scoped: gr.State,
+        model_dropdown: CustomDropdown,
+        request: gr.Request,
+        event: gr.EventData,
+    ):
+        
+        # if retry, resend last user errored message
+        if event._data is not None:
+            last_message_a = conv_a_scoped.messages[-1]
+            last_message_b = conv_b_scoped.messages[-1]
+
+            app_state_scoped.awaiting_responses = False
+            if last_message_a.role == "user" and last_message_b.role == "user":
+                text = last_message_a.content
+                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            else:
+                raise gr.Error(
+                    message="Il n'est pas possible de réessayer, veuillez recharger la page.",
+                    duration=10,
+                )
+            # # Reinit both generators
+            # gen = [
+            #     bot_response(
+            #         pos[i],
+            #         conversations[i],
+            #         request,
+            #         apply_rate_limit=True,
+            #         use_recommended_config=True,
+            #     )
+            #     for i in range(config.num_sides)
+            # ]
+
+        conversations = [conv_a_scoped, conv_b_scoped]
+
+        text = model_dropdown["prompt_value"]
+        # text = model_dropdown
+        # Check if "Enter" pressed and no text or still awaiting response and return early
+        if text == "":
+            raise (gr.Error("Veuillez entrer votre texte.", duration=10))
+        if app_state_scoped.awaiting_responses:
+            raise (
+                gr.Error(
+                    message="Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question.",
+                    duration=10,
+                )
+            )
+
+        logger.info(
+            f"msg_user: {text}",
+            extra={"request": request},
+        )
+
+        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+            logger.info(
+                f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
+                extra={"request": request},
+            )
+
+        text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
+        for i in range(config.num_sides):
+            conversations[i].messages.append(ChatMessage(role="user", content=text))
+        conv_a_scoped = conversations[0]
+        conv_b_scoped = conversations[1]
+        app_state_scoped.awaiting_responses = True
+
+        # record for questions only dataset and stats on ppl abandoning before generation completion
+        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+
+        chatbot = to_threeway_chatbot(conversations)
+        text = gr.update(visible=True)
+        return [
+            app_state_scoped,
+            # 2 conversations
+            conv_a_scoped,
+            conv_b_scoped,
+            # 1 chatbot
+            chatbot,
+            text,
+        ]
+
     def add_text(
         app_state_scoped,
         conv_a_scoped: gr.State,
@@ -283,7 +369,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         event: gr.EventData,
     ):
-
+        
         # if retry, resend last user errored message
         if event._data is not None:
             last_message_a = conv_a_scoped.messages[-1]
@@ -565,12 +651,11 @@ document.getElementById("fr-modal-welcome-close").blur();
 
     gr.on(
         triggers=[
-            first_textbox.submit,
-            first_send_btn.click,
+            model_dropdown.submit,
         ],
-        fn=add_text,
+        fn=add_first_text,
         api_name=False,
-        inputs=[app_state] + [conv_a] + [conv_b] + [first_textbox],
+        inputs=[app_state] + [conv_a] + [conv_b] + [model_dropdown],
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         # scroll_to_output=True,
         show_progress="hidden",
@@ -627,19 +712,6 @@ setTimeout(() => {
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         # scroll_to_output=True,
         show_progress="hidden",
-    ).success(
-        fn=goto_chatbot,
-        inputs=[],
-        outputs=(
-            [textbox]
-            + [mode_screen]
-            + [chat_area]
-            + [send_btn]
-            # + [shuffle_link]
-            + [conclude_btn]
-        ),
-        show_progress="hidden",
-        # scroll_to_output=True
     ).then(
         fn=(lambda: None),
         inputs=None,
@@ -667,22 +739,6 @@ setTimeout(() => {
         show_progress="hidden",
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
-    ).then(
-        fn=enable_conclude,
-        inputs=[app_state, textbox, conv_a],
-        outputs=[textbox, conclude_btn, send_btn],
-        js="""(args) => {
-setTimeout(() => {
-  console.log("scrolling to bot responses");
-  var botRows = document.querySelectorAll('.bot-row');
-    var lastBotRow = botRows.item(botRows.length - 1);
-    lastBotRow.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-, 500);
-}""",
     )
 
     def force_vote_or_reveal(

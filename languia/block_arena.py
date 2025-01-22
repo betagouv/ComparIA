@@ -89,42 +89,24 @@ with gr.Blocks(
 
     with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w") as mode_screen:
 
-        title = gr.HTML(
-            # Sur Figma: fr-mt-8w
-            elem_classes="text-center text-grey-200 fr-mt-4w fr-mb-2w",
-            value="""<h4>Comment puis-je vous aider aujourd'hui ?</h4>""",
-        )
-
-        first_textbox = FrInput(
-            elem_id="main-textbox",
-            show_label=False,
-            lines=1,
-            placeholder="Ecrivez votre premier message aux modèles ici",
-            max_lines=7,
-            elem_classes="fr-container",
-            # elem_classes="inline-block fr-col-12 fr-col-md-10",
-            container=True,
-            autofocus=True,
-            # autoscroll=True
-        )
+        # with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w mobile-block"):
         # textbox = gr.Textbox(
-        with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w mobile-block"):
-            model_dropdown = CustomDropdown(
-                # FIXME: ignored, hardcoded in custom component
-                choices=["random", "big-vs-small", "small-models", "custom"],
-                # FIXME: ignored, hardcoded in custom component
-                label="Quelle pool de modèles ?",
-                interactive=True,
-            )
+        model_dropdown = CustomDropdown(
+            models=config.models_extra_info,
+            # FIXME: ignored, hardcoded in custom component
+            choices=["random", "big-vs-small", "small-models", "custom"],
+            # FIXME: ignored, hardcoded in custom component
+            interactive=True,
+        )
 
-            first_send_btn = gr.Button(
-                interactive=False,
-                # scale=1,
-                value="Envoyer",
-                # icon="assets/dsfr/icons/system/arrow-up-line.svg",
-                elem_id="send-btn",
-                elem_classes="grow-0 purple-btn fr-container",
-            )
+        # first_send_btn = gr.Button(
+        #     interactive=False,
+        #     # scale=1,
+        #     value="Envoyer",
+        #     # icon="assets/dsfr/icons/system/arrow-up-line.svg",
+        #     elem_id="send-btn",
+        #     elem_classes="grow-0 purple-btn fr-container",
+        # )
 
         prompts_suggestions = gr.HTML(
             elem_classes="text-grey-200 fr-container",
