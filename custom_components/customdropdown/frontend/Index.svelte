@@ -33,38 +33,19 @@
 		mode: "random",
 		custom_models_selection: [],
 	};
-
-	// // Combine all into one value object based on mode and other properties
-	$: {
-		// Reassign to ensure the latest values are always used
-		value = {
-			prompt_value: prompt_value,
-			mode: mode,
-			custom_models_selection: custom_models_selection,
-		};
-		console.log("value");
-		console.log(value);
-		console.log("prompt_value");
-		console.log(prompt_value);
-		console.log("mode");
-		console.log(mode);
-		// prompt_value = value.prompt_value;
-	}
-
-	// Add reactive statements to update props when value changes
-	// $: prompt_value = value["prompt_value"];
-	// $: mode = value.mode;
-	// $: custom_models_selection = value["custom_models_selection"];
-
-	// export let value: Item | Item[] | undefined = multiselect ? [] : undefined;
-
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
 	import Dice from "./shared/dice.svelte";
 	import { SvelteComponent } from "svelte";
-
-	export const choices = [
+	type Choice = {
+		value: "random" | "custom" | "big-vs-small" | "small-models";
+		label: string;
+		alt_label: string;
+		icon: any;
+		description: string;
+	};
+	export const choices: Choice[] = [
 		{
 			value: "random",
 			label: "Aléatoire",
@@ -105,7 +86,7 @@
 	// export let allow_custom_value = false;
 	// FIXME: types for events
 	export let gradio: Gradio<{
-		change: typeof value;
+		change: ModeAndPromptData;
 		input: never;
 		submit: ModeAndPromptData;
 		// submit: never;
@@ -116,7 +97,7 @@
 		key_up: KeyUpData;
 		clear_status: LoadingStatus;
 	}>;
-
+	export let value_is_output = false;
 	export let label = "Textbox";
 	export let lines: number;
 	export let show_custom_models_selection: boolean = false;
@@ -127,7 +108,6 @@
 	// export let scale: number | null = null;
 	// export let min_width: number | undefined = undefined;
 	export let show_copy_button = false;
-	// export let value_is_output = false;
 	export let rtl = false;
 	export let text_align: "left" | "right" | undefined = undefined;
 	export let autofocus = false;
@@ -135,20 +115,43 @@
 
 	export let interactive: boolean;
 	var choice;
-	// FIXME: maybe do a apply(oldValue, newValue) here?
+
+	// Handle mode selection
+	function handle_option_selected(index: number): void {
+		if (index !== null && choices && choices.length > index) {
+			// value = choices[selected_index].value;
+			// value.mode = choices[selected_index].value;
+
+			mode = choices[index].value;
+			value["mode"] = mode;
+		}
+		console.log("handle_option_selected");
+		console.log(index);
+
+		gradio.dispatch("select", {
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+			prompt_value: prompt_value,
+		});
+	}
+
+	// Handle choice + prompt update from backend
 	$: {
-		console.log("choices");
-		console.log(choices);
-		console.log("value");
-		console.log(value);
-		console.log("prompt_value");
-		console.log(prompt_value);
+		choice = choices.find((item) => item.value === mode);
 		console.log("mode");
 		console.log(mode);
-		choice = choices.find((item) => item.value === mode);
+		console.log("prompt_value");
+		console.log(prompt_value);
+		console.log("value");
+		console.log(value);
+		console.log("value_is_output");
+		console.log(value_is_output);
+		if (value_is_output) {
+			prompt_value = value["prompt_value"];
+		} else {
+			value["prompt_value"] = prompt_value;
+		}
 	}
-	// $: choice = choices.find((item) => item.value["mode"] === mode);
-	// $: choice = choices.find((item) => item.mode === mode);
 </script>
 
 <h4 class="text-center text-grey-200 fr-mt-4w fr-mb-2w">
@@ -163,11 +166,9 @@
 	{scale}
 	{min_width}
 >
-	<!-- FIXME: Make input send prompt_value -->
-	<!-- FIXME: Change gradio.dispatch"change" value type -->
-	<!-- value=bind:prompt_value -->
 	<TextBox
 		bind:value={prompt_value}
+		bind:value_is_output
 		{elem_id}
 		{elem_classes}
 		{visible}
@@ -182,6 +183,12 @@
 		{show_copy_button}
 		{autofocus}
 		{autoscroll}
+		on:change={() =>
+			gradio.dispatch("change", {
+				prompt_value: prompt_value,
+				mode: mode,
+				custom_models_selection: custom_models_selection,
+			})}
 		on:submit={() =>
 			gradio.dispatch("submit", {
 				prompt_value: prompt_value,
@@ -273,17 +280,11 @@ on:input={() => gradio.dispatch("input")}
 							</p>
 							<div>
 								<Dropdown
+									{handle_option_selected}
 									{choices}
 									bind:mode
-									on:select={(e) => {
-										console.log("on:select e");
-										console.log(e);
-				// 						gradio.dispatch("select", {
-				// "prompt_value": prompt_value,
-				// "mode": mode,
-				// "custom_models_selection": custom_models_selection,});
-										gradio.dispatch("select", e.detail);
-									}}
+									on:select={(e) =>
+										gradio.dispatch("select", e.detail)}
 									disabled={!interactive}
 								/>
 								<!-- <Dropdown

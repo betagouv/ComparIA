@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
 	import type { ModeAndPromptData } from "./utils.ts";
-
 	type Item = string | number;
-
+	export let handle_option_selected;
 	// TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
-	export let prompt_value: string = ""; // Initialize as an empty string by default
+	// export let prompt_value: string = ""; // Initialize as an empty string by default
 	export let custom_models_selection: Item[] = []; // Default to an empty list
 	export let models: Item[] = [];
 	// Combine all into one value object based on mode and other properties
@@ -25,49 +24,21 @@
 	let selected_index: number | null = null;
 	const dispatch = createEventDispatcher<{
 		select: ModeAndPromptData;
+		change: never;
 	}>();
 	export var choices;
 
-	// Handle option selection
-	function handle_option_selected(index: number): void {
-		selected_index = index;
-		mode = choices[index].value;
-		console.log("handle_option_selected");
-		console.log(index);
-		// if (mode == "custom") {
-		// 	// var custom_models_selection = mode[1]
-		// 	dispatch("select", {
-		// 		index: selected_index,
-		// 		value: [mode, custom_models_selection],
-
-		// 		selected: true,
-		// 	}
-		// );
-		// }
-		// else {
-		dispatch("select", {
-			// index: selected_index,
-			// value: {
-				mode: choices[selected_index].value,
-				prompt_value: prompt_value,
-				custom_models_selection: custom_models_selection 
-			// },
-			// selected: true,
-		});
-		// }
-	}
-
-	$: {
-		if (
-			selected_index !== null &&
-			choices &&
-			choices.length > selected_index
-		) {
-			// value = choices[selected_index].value;
-			// value.mode = choices[selected_index].value;
-			mode = choices[selected_index].value;
-		}
-	}
+	// $: {
+	// 	if (
+	// 		selected_index !== null &&
+	// 		choices &&
+	// 		choices.length > selected_index
+	// 	) {
+	// 		// value = choices[selected_index].value;
+	// 		// value.mode = choices[selected_index].value;
+	// 		mode = choices[selected_index].value;
+	// 	}
+	// }
 </script>
 
 <div>

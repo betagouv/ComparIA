@@ -18,6 +18,7 @@
 	// import "@gouvfr/dsfr/dist/component/input/input.css";
 
 	export let value = "";
+	export let value_is_output = false;
 	export let lines = 1;
 	export let placeholder = "Type here...";
 	export let label: string;
@@ -68,10 +69,10 @@
 	};
 
 	function handle_input(): void {
-		// dispatch("change", value);
-		// if (!value_is_output) {
-		dispatch("input");
-		// }
+		dispatch("change", value);
+		if (!value_is_output) {
+			dispatch("input");
+		}
 	}
 	afterUpdate(() => {
 		if (autofocus) {
@@ -80,7 +81,7 @@
 		if (can_scroll && autoscroll) {
 			scroll();
 		}
-		// value_is_output = false;
+		value_is_output = false;
 	});
 	$: value, handle_input();
 
@@ -190,80 +191,27 @@
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<label id={elem_id} class="container fr-label {elem_classes.join(' ')}"
-	>{#if show_label}{label}{/if}
-
+<label id={elem_id} class="container fr-label {elem_classes.join(' ')}">
 	{#if lines === 1 && max_lines === 1}
-		{#if type === "text"}
-			<input
-				data-testid="textbox"
-				type="text"
-				id={elem_id}
-				class:hidden={visible === false}
-				class="scroll-hide fr-input"
-				dir={rtl ? "rtl" : "ltr"}
-				bind:value
-				bind:this={el}
-				{placeholder}
-				{disabled}
-				{autofocus}
-				on:keypress={handle_keypress}
-				on:blur
-				on:select={handle_select}
-				on:focus
-				style={text_align ? "text-align: " + text_align : ""}
-			/>
-		{:else if type === "password"}
-			<input
-				data-testid="password"
-				type="password"
-				class:hidden={visible === false}
-				class="scroll-hide"
-				bind:value
-				bind:this={el}
-				{placeholder}
-				{disabled}
-				{autofocus}
-				on:keypress={handle_keypress}
-				on:blur
-				on:select={handle_select}
-				on:focus
-				autocomplete=""
-			/>
-		{:else if type === "email"}
-			<input
-				data-testid="textbox"
-				type="email"
-				class:hidden={visible === false}
-				class="scroll-hide"
-				bind:value
-				bind:this={el}
-				{placeholder}
-				{disabled}
-				{autofocus}
-				on:keypress={handle_keypress}
-				on:blur
-				on:select={handle_select}
-				on:focus
-				autocomplete="email"
-			/>
-		{/if}
+		<input
+			data-testid="textbox"
+			type="text"
+			id={elem_id}
+			class:hidden={visible === false}
+			class="scroll-hide fr-input"
+			dir={rtl ? "rtl" : "ltr"}
+			bind:value
+			bind:this={el}
+			{placeholder}
+			{disabled}
+			{autofocus}
+			on:keypress={handle_keypress}
+			on:blur
+			on:select={handle_select}
+			on:focus
+			style={text_align ? "text-align: " + text_align : ""}
+		/>
 	{:else}
-		{#if show_label && show_copy_button}
-			{#if copied}
-				<button
-					in:fade={{ duration: 300 }}
-					aria-label="Copied"
-					aria-roledescription="Text copied"><Check /></button
-				>
-			{:else}
-				<button
-					on:click={handle_copy}
-					aria-label="Copy"
-					aria-roledescription="Copy text"><Copy /></button
-				>
-			{/if}
-		{/if}
 		<textarea
 			data-testid="textbox"
 			use:text_area_resize={value}
