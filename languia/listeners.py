@@ -148,6 +148,7 @@ def register_listeners():
         fn=(lambda: None),
         inputs=None,
         outputs=None,
+        show_progress="hidden",
         js="""(args) => {
 setTimeout(() => {
 
@@ -546,6 +547,8 @@ setTimeout(() => {
   }
 }, 500);
 }""",
+        show_progress="hidden",
+
     ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
@@ -654,6 +657,8 @@ nextScreen.scrollIntoView({
   block: 'start'
 });}, 500);
 }""",
+        show_progress="hidden",
+
     )
 
     @chatbot.like(
@@ -822,6 +827,7 @@ revealScreen.scrollIntoView({
   block: 'start'
 });}, 500);
 }""",
+show_progress="hidden",
     )
 
     # gr.on(
