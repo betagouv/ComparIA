@@ -42,16 +42,16 @@
 </script>
 
 <div>
-	{#each choices as { mode, label, alt_label, icon, description }, index}
+	{#each choices as { value, label, alt_label, icon, description }, index}
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
-			class:selected={selected_index === index}
+			class:selected={value === mode}
 			class:disabled
 			data-testid={`radio-label-${mode}`}
 			tabindex="0"
 			role="radio"
-			aria-checked={selected_index === index ? "true" : "false"}
+			aria-checked={value === mode ? "true" : "false"}
 			on:click={() => handle_option_selected(index)}
 		>
 			<input
@@ -59,7 +59,7 @@
 				name="radio-options"
 				value={mode}
 				data-index={index}
-				aria-checked={selected_index === index}
+				aria-checked={value === mode}
 				{disabled}
 			/>
 			<div class="icon">
