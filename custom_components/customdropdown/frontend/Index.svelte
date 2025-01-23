@@ -185,9 +185,6 @@
 	}
 </script>
 
-<h4 class="text-center text-grey-200 fr-mt-4w fr-mb-2w">
-	Comment puis-je vous aider aujourd'hui ?
-</h4>
 <Block
 	{visible}
 	{elem_id}
@@ -197,38 +194,43 @@
 	{scale}
 	{min_width}
 >
-	<TextBox
-		bind:value={prompt_value}
-		bind:value_is_output
-		{elem_id}
-		{elem_classes}
-		{visible}
-		{label}
-		{show_label}
-		{lines}
-		{type}
-		{rtl}
-		{text_align}
-		max_lines={!max_lines ? lines + 1 : max_lines}
-		{placeholder}
-		{show_copy_button}
-		{autofocus}
-		{autoscroll}
-		on:change={() =>
-			gradio.dispatch("change", {
-				prompt_value: prompt_value,
-				mode: mode,
-				custom_models_selection: custom_models_selection,
-			})}
-		on:submit={() =>
-			gradio.dispatch("submit", {
-				prompt_value: prompt_value,
-				mode: mode,
-				custom_models_selection: custom_models_selection,
-			})}
-	/>
-
-	<!-- on:change={() =>
+	<h4 class="text-center text-grey-200 fr-mt-4w fr-mb-2w">
+		Comment puis-je vous aider aujourd'hui ?
+	</h4>
+	<div class="grid">
+		<div class="first-textbox">
+			<TextBox
+				bind:value={prompt_value}
+				bind:value_is_output
+				{elem_id}
+				{elem_classes}
+				{visible}
+				{label}
+				{show_label}
+				{lines}
+				{type}
+				{rtl}
+				{text_align}
+				max_lines={!max_lines ? lines + 1 : max_lines}
+				{placeholder}
+				{show_copy_button}
+				{autofocus}
+				{autoscroll}
+				on:change={() =>
+					gradio.dispatch("change", {
+						prompt_value: prompt_value,
+						mode: mode,
+						custom_models_selection: custom_models_selection,
+					})}
+				on:submit={() =>
+					gradio.dispatch("submit", {
+						prompt_value: prompt_value,
+						mode: mode,
+						custom_models_selection: custom_models_selection,
+					})}
+			/>
+		</div>
+		<!-- on:change={() =>
 	gradio.dispatch("change", {
 		prompt_value: prompt_value,
 		mode: mode,
@@ -239,38 +241,38 @@ on:input={() => gradio.dispatch("input")}
 		on:focus={() => gradio.dispatch("focus")}
 		disabled={!interactive} -->
 
-	<button
-		class="mode-selection-btn"
-		data-fr-opened="false"
-		aria-controls="modal-mode-selection"
-	>
-		<svg
-			width="18"
-			height="18"
-			viewBox="0 0 18 18"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
+		<button
+			class="mode-selection-btn"
+			data-fr-opened="false"
+			aria-controls="modal-mode-selection"
 		>
-			<path
-				d="M4.14161 14.0003C4.4848 13.0293 5.41083 12.3337 6.49935 12.3337C7.58785 12.3337 8.51393 13.0293 8.8571 14.0003H17.3327V15.667H8.8571C8.51393 16.638 7.58785 17.3337 6.49935 17.3337C5.41083 17.3337 4.4848 16.638 4.14161 15.667H0.666016V14.0003H4.14161ZM9.1416 8.16699C9.48477 7.196 10.4108 6.50033 11.4993 6.50033C12.5878 6.50033 13.5139 7.196 13.8571 8.16699H17.3327V9.83366H13.8571C13.5139 10.8047 12.5878 11.5003 11.4993 11.5003C10.4108 11.5003 9.48477 10.8047 9.1416 9.83366H0.666016V8.16699H9.1416ZM4.14161 2.33366C4.4848 1.36267 5.41083 0.666992 6.49935 0.666992C7.58785 0.666992 8.51393 1.36267 8.8571 2.33366H17.3327V4.00033H8.8571C8.51393 4.97132 7.58785 5.66699 6.49935 5.66699C5.41083 5.66699 4.4848 4.97132 4.14161 4.00033H0.666016V2.33366H4.14161Z"
-				fill="#6A6AF4"
-			/>
-		</svg>
-		<span> {choice.alt_label}</span></button
-	>
-	<input
-		type="submit"
-		class="purple-btn btn"
-		on:click={() =>
-			gradio.dispatch("submit", {
-				prompt_value: prompt_value,
-				mode: mode,
-				custom_models_selection: custom_models_selection,
-			})}
-		value="Envoyer"
-	/>
+			<svg
+				width="18"
+				height="18"
+				viewBox="0 0 18 18"
+				fill="none"
+				xmlns="http://www.w3.org/2000/svg"
+			>
+				<path
+					d="M4.14161 14.0003C4.4848 13.0293 5.41083 12.3337 6.49935 12.3337C7.58785 12.3337 8.51393 13.0293 8.8571 14.0003H17.3327V15.667H8.8571C8.51393 16.638 7.58785 17.3337 6.49935 17.3337C5.41083 17.3337 4.4848 16.638 4.14161 15.667H0.666016V14.0003H4.14161ZM9.1416 8.16699C9.48477 7.196 10.4108 6.50033 11.4993 6.50033C12.5878 6.50033 13.5139 7.196 13.8571 8.16699H17.3327V9.83366H13.8571C13.5139 10.8047 12.5878 11.5003 11.4993 11.5003C10.4108 11.5003 9.48477 10.8047 9.1416 9.83366H0.666016V8.16699H9.1416ZM4.14161 2.33366C4.4848 1.36267 5.41083 0.666992 6.49935 0.666992C7.58785 0.666992 8.51393 1.36267 8.8571 2.33366H17.3327V4.00033H8.8571C8.51393 4.97132 7.58785 5.66699 6.49935 5.66699C5.41083 5.66699 4.4848 4.97132 4.14161 4.00033H0.666016V2.33366H4.14161Z"
+					fill="#6A6AF4"
+				/>
+			</svg>
+			<span> {choice.alt_label}</span></button
+		>
+		<input
+			type="submit"
+			class="submit-btn purple-btn btn float-right"
+			on:click={() =>
+				gradio.dispatch("submit", {
+					prompt_value: prompt_value,
+					mode: mode,
+					custom_models_selection: custom_models_selection,
+				})}
+			value="Envoyer"
+		/>
+	</div>
 </Block>
-
 <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 <!-- <dialog
 	aria-labelledby="modal-mode-selection"
@@ -458,5 +460,24 @@ on:input={() => gradio.dispatch("input")}
 
 	h6 {
 		font-size: 1.125em;
+	}
+
+	.grid {
+		display: grid;
+		/* grid-template-columns: 1fr 1fr auto; */
+	}
+	.first-textbox {
+		order: 1;
+	}
+	.mode-selection-btn {
+		order: 0;
+	}
+	.submit-btn {
+		order: 2;
+	}
+	@media (min-width: 48em) {
+		.first-textbox, .mode-selection-btn {
+			order: initial;
+		}
 	}
 </style>

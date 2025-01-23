@@ -24,8 +24,10 @@ export interface Model {
 	// description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
 
 	id: string;
+	friendly_size: "XS" | "S" | "M" | "L" | "XL" | "XXL";
 	simple_name: string;
 	organisation: string;
+	distribution: "open-weights" | "api-only";
 	icon_path: string;
 }
 

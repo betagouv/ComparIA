@@ -191,7 +191,7 @@
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<label id={elem_id} class="container fr-label {elem_classes.join(' ')}">
+<label class="container fr-label {elem_classes.join(' ')}">
 	{#if lines === 1 && max_lines === 1}
 		<input
 			data-testid="textbox"
