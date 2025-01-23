@@ -6,8 +6,27 @@ type Item = string | number;
 
 export interface ModeAndPromptData {
 	prompt_value: string;
-		mode: "random" | "custom" | "big-vs-small" | "small-models";
-		custom_models_selection: Item[];	
+	mode: "random" | "custom" | "big-vs-small" | "small-models";
+	custom_models_selection: Item[];
+}
+
+export interface Model {
+
+	// [aya-expanse-8b]
+	// simple_name = "Aya Expanse 8B"
+	// organisation = "Cohere"
+	// icon_path = "cohere.png"
+	// friendly_size = "S"
+	// distribution = "open-weights"
+	// conditions = "copyleft"
+	// params = 8
+	// license = "CC-BY-NC-4.0"
+	// description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
+
+	id: string;
+	simple_name: string;
+	organisation: string;
+	icon_path: string;
 }
 
 // export function handle_change(

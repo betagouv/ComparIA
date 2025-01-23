@@ -249,15 +249,15 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_a_scoped.model_name = first_model["id"]
             conv_b_scoped.model_name = second_model["id"]
             # Custom mode
-        # elif len(mode) == 2 and mode[0] == "custom":
-        #     custom_models_selection = mode[1]
-        #     #  FIXME: input sanitization
-        #     # if any(mode[1], not in models):
-        #     #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
-        #     # FIXME: more test and randomize
-        #     print("choosing first two models of selected: (:")
-        #     conv_a_scoped.model_name == custom_models_selection[0]
-        #     conv_b_scoped.model_name == custom_models_selection[1]
+        elif len(mode) == 2 and mode[0] == "custom":
+            custom_models_selection = mode[1]
+            #  FIXME: input sanitization
+            # if any(mode[1], not in models):
+            #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+            # FIXME: more test and randomize
+            print("choosing first two models of selected: (:")
+            conv_a_scoped.model_name == custom_models_selection[0]
+            conv_b_scoped.model_name == custom_models_selection[1]
         else:
             raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
         print("picked model a: " + conv_a_scoped.model_name)

@@ -5,21 +5,22 @@
 <script lang="ts">
 	import type { Gradio, KeyUpData, SelectData } from "@gradio/utils";
 	import Dropdown from "./shared/Dropdown.svelte";
+	import ModelsSelection from "./shared/ModelsSelection.svelte";
 	import { Block } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import TextBox from "./shared/Textbox.svelte";
 
-	import { ModeAndPromptData } from "./shared/utils.ts";
+	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 
 	type Item = string | number;
-	export let models: [] = [];
+	export let models: Model[] = [];
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
-	export let custom_models_selection: Item[] = []; // Default to an empty list
+	export let custom_models_selection: string[] = []; // Default to an empty list
 
 	// Prompt value
 	// export let value: string = ""
@@ -70,14 +71,14 @@
 			description:
 				"Comparez les performances d’un petit modèle contre un grand",
 		},
-		// {
-		// 	value: "custom",
-		// 	label: "Sélection manuelle",
-		// 	alt_label: "Sélection manuelle",
-		// 	icon: Glass, // Replace with your icon class or SVG
-		// 	description:
-		// 		"Sélectionnez vous-même jusqu’à deux modèles à comparer",
-		// },
+		{
+			value: "custom",
+			label: "Sélection manuelle",
+			alt_label: "Sélection manuelle",
+			icon: Glass, // Replace with your icon class or SVG
+			description:
+				"Sélectionnez vous-même jusqu’à deux modèles à comparer",
+		},
 	];
 
 	export let container = true;
@@ -306,11 +307,20 @@ on:input={() => gradio.dispatch("input")}
 										aria-controls="modal-mode-selection"
 										class="btn">Annuler</button
 									>
-									<button
-										aria-controls="modal-mode-selection"
-										class="btn purple-btn float-right"
-										>Envoyer</button
-									>
+									{#if mode == "custom"}
+										<button
+											class="btn purple-btn float-right"
+											on:click={() =>
+												(show_custom_models_selection = true)}
+											>Suivant</button
+										>
+									{:else}
+										<button
+											aria-controls="modal-mode-selection"
+											class="btn purple-btn float-right"
+											>Envoyer</button
+										>
+									{/if}
 								</div>
 								<!-- <button
 								aria-controls="modal-mode-selection"
@@ -325,10 +335,10 @@ on:input={() => gradio.dispatch("input")}
 							</h6>
 							<p>Sélectionnez les modèles à comparer (2 max.)</p>
 							<div>
-								<!-- <ModelsSelection
+								<ModelsSelection
 									{models}
 									bind:custom_models_selection
-								/> -->
+								/>
 								<div class="fr-mt-2w">
 									<button
 										aria-controls="modal-mode-selection"
