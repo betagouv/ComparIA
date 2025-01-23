@@ -6,7 +6,7 @@
 	// export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 	// 	"random";
 	// export let prompt_value: string = ""; // Initialize as an empty string by default
-	export let custom_models_selection: string[] = []; // Default to an empty list
+	export let custom_models_selection: Set<string> = new Set(); // Default to an empty list
 	export let models: Model[] = [];
 	// Combine all into one value object based on mode and other properties
 	// export let value: {
@@ -25,12 +25,7 @@
 		select: ModeAndPromptData;
 		change: never;
 	}>();
-
-
-	function handle_model_selection(id) {
-		// Toggle if already added or to add/delete
-		return custom_models_selection;
-	}
+	export let toggle_model_selection: (id: string) => void;
 	// export var choices;
 
 	// $: {
@@ -51,27 +46,30 @@
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
-			class:selected={id in custom_models_selection}
+			class:selected={custom_models_selection.has(id)}
 			class:disabled
 			data-testid={`radio-label-${id}`}
 			tabindex="0"
 			role="radio"
-			aria-checked={id in custom_models_selection ? "true" : "false"}
-			on:click={() => handle_model_selection(id)}
+			aria-checked={custom_models_selection.has(id) ? "true" : "false"}
+			on:click={() => toggle_model_selection(id)}
 		>
 			<input
 				type="radio"
 				name="radio-options"
 				value={id}
 				data-index={index}
-				aria-checked={id in custom_models_selection }
+				aria-checked={custom_models_selection.has(id)}
 				{disabled}
 			/>
-			<div class="icon">
-				<img src="../assets/orgs/{icon_path}" alt={organisation}>
-			</div>
 			<div>
-				<span>{organisation} / <strong>{simple_name}</strong></span>
+				<span class="icon">
+					<img
+						src="../assets/orgs/{icon_path}"
+						alt={organisation}
+						width="34"
+					/>
+				</span>&nbsp;<strong>{organisation}</strong>/{simple_name}
 			</div>
 		</label>
 	{/each}

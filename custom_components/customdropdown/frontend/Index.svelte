@@ -20,7 +20,7 @@
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
-	export let custom_models_selection: string[] = []; // Default to an empty list
+	export let custom_models_selection: Set<string> = new Set(); // Default to an empty list
 
 	// Prompt value
 	// export let value: string = ""
@@ -137,6 +137,18 @@
 		}
 	}
 
+	function toggle_model_selection(id) {
+		// Toggle if already added or to add/delete
+		if (!custom_models_selection.has(id)) {
+			custom_models_selection.add(id);
+		} else {
+			custom_models_selection.delete(id);
+		}
+		gradio.dispatch("select", {
+					mode: mode,
+					custom_models_selection: custom_models_selection,
+					prompt_value: prompt_value,
+				});	}
 	// Handle choice var + prompt update from backend
 	$: {
 		console.log("mode");
@@ -338,6 +350,7 @@ on:input={() => gradio.dispatch("input")}
 								<ModelsSelection
 									{models}
 									bind:custom_models_selection
+									{toggle_model_selection}
 								/>
 								<div class="fr-mt-2w">
 									<button

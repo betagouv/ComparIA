@@ -114,20 +114,8 @@ class CustomDropdown(FormComponent):
         self.multiselect = multiselect
 
         if value == DEFAULT_VALUE:
-            if multiselect:
-                value = []
-            elif self.choices:
-                value = self.choices[0][1]
-            else:
-                value = None
-        if multiselect and isinstance(value, str):
-            value = [value]
-
-        if not multiselect and max_choices is not None:
-            warnings.warn(
-                "The `max_choices` parameter is ignored when `multiselect` is False."
-            )
-
+            value = {"prompt_value": "random", "mode":"random", "custom_models_selection":[]}
+        self.models = models
         self.max_choices = max_choices
         self.filterable = filterable
         super().__init__(

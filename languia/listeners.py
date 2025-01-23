@@ -249,8 +249,8 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_a_scoped.model_name = first_model["id"]
             conv_b_scoped.model_name = second_model["id"]
             # Custom mode
-        elif len(mode) == 2 and mode[0] == "custom":
-            custom_models_selection = mode[1]
+        elif mode == "custom":
+            custom_models_selection = model_dropdown_scoped['custom_models_selection']
             #  FIXME: input sanitization
             # if any(mode[1], not in models):
             #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")

@@ -7,7 +7,7 @@ type Item = string | number;
 export interface ModeAndPromptData {
 	prompt_value: string;
 	mode: "random" | "custom" | "big-vs-small" | "small-models";
-	custom_models_selection: Item[];
+	custom_models_selection: Set<string>;
 }
 
 export interface Model {
