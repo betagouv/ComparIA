@@ -141,15 +141,6 @@ if os.getenv("SENTRY_DSN"):
     )
 
 
-# TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
-if os.getenv("SENTRY_FRONT_DSN"):
-    sentry_head_js = f"""
- <script type="text/javascript" 
-   src="../assets/bundle.tracing.replay.min.js"
- ></script>"""
-else:
-    sentry_head_js = ""
-
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
     register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
@@ -159,6 +150,15 @@ else:
 enable_moderation = False
 use_remote_storage = False
 
+# TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
+if os.getenv("SENTRY_FRONT_DSN"):
+    sentry_head_js = f"""
+ <script type="text/javascript" 
+   src="../assets/bundle.tracing.replay.min.js"
+ ></script>"""
+else:
+    sentry_head_js = ""
+
 if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
     matomo_js = get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
 else:
@@ -166,12 +166,13 @@ else:
 
 # we can also load js normally (no in <head>)
 arena_head_js = (
+        sentry_head_js
++
     """
 <script type="module" src="../assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
 """
     + matomo_js
-    + sentry_head_js
 )
 
 site_head_js = (
