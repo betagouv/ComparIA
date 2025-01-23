@@ -20,7 +20,7 @@
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
-	export let custom_models_selection: Set<string> = new Set(); // Default to an empty list
+	export let custom_models_selection: string[] = []; // Default to an empty list
 
 	// Prompt value
 	// export let value: string = ""
@@ -28,7 +28,7 @@
 	export let value: {
 		prompt_value: string;
 		mode: "random" | "custom" | "big-vs-small" | "small-models";
-		custom_models_selection: Item[];
+		custom_models_selection: string[];
 	} = {
 		prompt_value: "",
 		mode: "random",
@@ -138,15 +138,20 @@
 	}
 
 	function toggle_model_selection(id) {
-		console.log("id")
-		console.log(id)
-		console.log("custom_models_selection")
-		console.log(custom_models_selection)
+		console.log("id");
+		console.log(id);
+		console.log("custom_models_selection");
+		console.log(custom_models_selection);
 		// Toggle if already added or to add/delete
-		if (!custom_models_selection.has(id) && custom_models_selection.size < 2) {
-			custom_models_selection.add(id);
+		if (!custom_models_selection.includes(id)) {
+			if (custom_models_selection.length < 2) {
+				console.log("adding " + id);
+				custom_models_selection.push(id);
+			}
 		} else {
-			custom_models_selection.delete(id);
+			console.log("removing " + id);
+			var index = custom_models_selection.indexOf(id);
+			custom_models_selection.splice(index, 1);
 		}
 		gradio.dispatch("select", {
 			mode: mode,
@@ -156,14 +161,14 @@
 	}
 	// Handle prompt value update from backend
 	$: {
-	// 	console.log("mode");
-	// 	console.log(mode);
-	// 	console.log("prompt_value");
-	// 	console.log(prompt_value);
-	// 	console.log("value");
-	// 	console.log(value);
-	// 	console.log("value_is_output");
-	// 	console.log(value_is_output);
+		// 	console.log("mode");
+		// 	console.log(mode);
+		// 	console.log("prompt_value");
+		// 	console.log(prompt_value);
+		// 	console.log("value");
+		// 	console.log(value);
+		// 	console.log("value_is_output");
+		// 	console.log(value_is_output);
 		if (value_is_output) {
 			prompt_value = value["prompt_value"];
 		} else {
@@ -351,7 +356,7 @@ on:input={() => gradio.dispatch("input")}
 								Quels modèles voulez-vous comparer ?
 							</h6>
 							<h6 class="float-right">
-								{custom_models_selection.size}/2 modèles
+								{custom_models_selection.length}/2 modèles
 							</h6>
 							<p>
 								Si vous n’en choisissez qu’un, le second sera

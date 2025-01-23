@@ -6,7 +6,7 @@
 	// export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 	// 	"random";
 	// export let prompt_value: string = ""; // Initialize as an empty string by default
-	export let custom_models_selection: Set<string> = new Set(); // Default to an empty list
+	export let custom_models_selection: string[] = []; // Default to an empty list
 	export let models: Model[] = [];
 	// Combine all into one value object based on mode and other properties
 	// export let value: {
@@ -46,21 +46,28 @@
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
-			class:selected={custom_models_selection.has(id)}
+			class:selected={custom_models_selection.includes(id)}
 			class:disabled
 			data-testid={`radio-label-${id}`}
 			tabindex="0"
 			role="radio"
-			aria-checked={custom_models_selection.has(id) ? "true" : "false"}
-			on:click={() => toggle_model_selection(id)}
+			aria-checked={custom_models_selection.includes(id)
+				? "true"
+				: "false"}
 		>
 			<input
 				type="radio"
 				name="radio-options"
 				value={id}
 				data-index={index}
-				aria-checked={custom_models_selection.has(id)}
+				aria-checked={custom_models_selection.includes(id)}
 				{disabled}
+
+			on:click={(e) => {
+				console.log("Target:", e.target);
+				toggle_model_selection(id);
+				e.stopPropagation();
+			}}
 			/>
 			<div>
 				<span class="icon">
