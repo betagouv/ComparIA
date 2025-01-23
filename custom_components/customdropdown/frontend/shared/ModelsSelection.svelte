@@ -123,7 +123,7 @@
 
 	input[type="radio"], input[type="radio"]:disabled {
 		position: fixed;
-		opacity: 0;
+		opacity: 0 !important;
 		pointer-events: none;
 	}
 	/* p {
