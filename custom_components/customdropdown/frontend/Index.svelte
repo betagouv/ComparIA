@@ -260,6 +260,15 @@ on:input={() => gradio.dispatch("input")}
 			</svg>
 			<span> {choice.alt_label}</span></button
 		>
+			{#if mode == "custom"}
+		<button
+			class="model-selection"
+			data-fr-opened="false"
+			aria-controls="modal-mode-selection"
+		>
+			<span>{custom_models_selection[0]} <strong>vs</strong> {custom_models_selection[1]}</span></button
+		>
+		{/if}
 		<input
 			type="submit"
 			class="submit-btn purple-btn btn float-right"
