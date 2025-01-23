@@ -154,6 +154,7 @@ def register_listeners():
         fn=(lambda: None),
         inputs=None,
         outputs=None,
+        show_progress="hidden",
         js="""(args) => {
 setTimeout(() => {
 
@@ -204,6 +205,7 @@ document.getElementById("fr-modal-welcome-close").blur();
     @model_dropdown.select(
         inputs=[app_state, conv_a, conv_b, model_dropdown],
         outputs=[app_state, conv_a, conv_b],
+        show_progress="hidden",
     )
     def pick_model(
         app_state_scoped, conv_a_scoped, conv_b_scoped, model_dropdown_scoped
@@ -698,6 +700,7 @@ setTimeout(() => {
   }
 , 500);
 }""",
+        show_progress="hidden",
     )
 
     gr.on(
@@ -729,6 +732,8 @@ setTimeout(() => {
   }
 }, 500);
 }""",
+        show_progress="hidden",
+
     ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
@@ -821,6 +826,8 @@ nextScreen.scrollIntoView({
   block: 'start'
 });}, 500);
 }""",
+        show_progress="hidden",
+
     )
 
     @chatbot.like(
@@ -989,6 +996,7 @@ revealScreen.scrollIntoView({
   block: 'start'
 });}, 500);
 }""",
+show_progress="hidden",
     )
 
     # gr.on(
