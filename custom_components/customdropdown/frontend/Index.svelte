@@ -138,27 +138,32 @@
 	}
 
 	function toggle_model_selection(id) {
+		console.log("id")
+		console.log(id)
+		console.log("custom_models_selection")
+		console.log(custom_models_selection)
 		// Toggle if already added or to add/delete
-		if (!custom_models_selection.has(id)) {
+		if (!custom_models_selection.has(id) && custom_models_selection.size < 2) {
 			custom_models_selection.add(id);
 		} else {
 			custom_models_selection.delete(id);
 		}
 		gradio.dispatch("select", {
-					mode: mode,
-					custom_models_selection: custom_models_selection,
-					prompt_value: prompt_value,
-				});	}
-	// Handle choice var + prompt update from backend
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+			prompt_value: prompt_value,
+		});
+	}
+	// Handle prompt value update from backend
 	$: {
-		console.log("mode");
-		console.log(mode);
-		console.log("prompt_value");
-		console.log(prompt_value);
-		console.log("value");
-		console.log(value);
-		console.log("value_is_output");
-		console.log(value_is_output);
+	// 	console.log("mode");
+	// 	console.log(mode);
+	// 	console.log("prompt_value");
+	// 	console.log(prompt_value);
+	// 	console.log("value");
+	// 	console.log(value);
+	// 	console.log("value_is_output");
+	// 	console.log(value_is_output);
 		if (value_is_output) {
 			prompt_value = value["prompt_value"];
 		} else {
@@ -324,13 +329,13 @@ on:input={() => gradio.dispatch("input")}
 											class="btn purple-btn float-right"
 											on:click={() =>
 												(show_custom_models_selection = true)}
-											>Suivant</button
+											>Continuer</button
 										>
 									{:else}
 										<button
 											aria-controls="modal-mode-selection"
 											class="btn purple-btn float-right"
-											>Envoyer</button
+											>Valider</button
 										>
 									{/if}
 								</div>
@@ -345,7 +350,13 @@ on:input={() => gradio.dispatch("input")}
 							<h6 id="modal-mode-selection" class="modal-title">
 								Quels modèles voulez-vous comparer ?
 							</h6>
-							<p>Sélectionnez les modèles à comparer (2 max.)</p>
+							<h6 class="float-right">
+								{custom_models_selection.size}/2 modèles
+							</h6>
+							<p>
+								Si vous n’en choisissez qu’un, le second sera
+								sélectionné de manière aléatoire
+							</p>
 							<div>
 								<ModelsSelection
 									{models}
@@ -355,12 +366,21 @@ on:input={() => gradio.dispatch("input")}
 								<div class="fr-mt-2w">
 									<button
 										aria-controls="modal-mode-selection"
-										class="btn">Annuler</button
+										class="btn"
+										on:click={() =>
+											(show_custom_models_selection = false)}
+										>Retour</button
 									>
 									<button
 										aria-controls="modal-mode-selection"
 										class="btn purple-btn float-right"
-										>Envoyer</button
+										on:submit={() =>
+											gradio.dispatch("submit", {
+												prompt_value: prompt_value,
+												mode: mode,
+												custom_models_selection:
+													custom_models_selection,
+											})}>Envoyer</button
 									>
 								</div>
 								<!-- <button

@@ -222,10 +222,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         ]
         
         mode = model_dropdown_scoped['mode']
-        if mode == "random":
-            # TODO: init here instead of on arena load
-            pass
-        elif mode == "big-vs-small":
+        if mode == "big-vs-small":
             first_model = big_models[random.randint(len(big_models))]
             second_model = small_models[random.randint(len(small_models))]
 
@@ -254,12 +251,32 @@ document.getElementById("fr-modal-welcome-close").blur();
             #  FIXME: input sanitization
             # if any(mode[1], not in models):
             #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+            swap = random.randint(2)
             # FIXME: more test and randomize
-            print("choosing first two models of selected: (:")
-            conv_a_scoped.model_name == custom_models_selection[0]
-            conv_b_scoped.model_name == custom_models_selection[1]
-        else:
-            raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+            if len(custom_models_selection) == 0:
+                print("Not chosen yet, default to random")
+                pass
+            elif len(custom_models_selection) == 1:
+                if swap == 0:
+                    conv_a_scoped.model_name = custom_models_selection[0]
+                    # FIXME: chose at random except chosen
+                    # conv_b_scoped.model_name = the random one
+                else:
+                    logger.debug(f"model_dropdown_scoped: {model_dropdown_scoped}")
+                    conv_b_scoped.model_name = custom_models_selection[0]
+                    # FIXME: chose at random except chosen
+                    # conv_b_scoped.model_name = the random one
+            elif len(custom_models_selection) == 2:
+
+                if swap == 0:
+                    conv_a_scoped.model_name =  custom_models_selection[0]
+                    conv_b_scoped.model_name =  custom_models_selection[1]
+                else:
+                    conv_a_scoped.model_name =  custom_models_selection[1]
+                    conv_b_scoped.model_name =  custom_models_selection[0]
+        else: # assume random mode
+            # TODO: init here instead of on arena load
+            pass
         print("picked model a: " + conv_a_scoped.model_name)
         print("picked model b: " + conv_b_scoped.model_name)
         return [app_state_scoped, conv_a_scoped, conv_b_scoped]
