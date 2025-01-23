@@ -12,7 +12,6 @@
 
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 
-	type Item = string | number;
 	export let models: Model[] = [];
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
@@ -138,6 +137,7 @@
 	}
 
 	function toggle_model_selection(id) {
+		var has_changed = false;
 		console.log("id");
 		console.log(id);
 		console.log("custom_models_selection");
@@ -147,17 +147,23 @@
 			if (custom_models_selection.length < 2) {
 				console.log("adding " + id);
 				custom_models_selection.push(id);
+				has_changed = true;
 			}
 		} else {
 			console.log("removing " + id);
 			var index = custom_models_selection.indexOf(id);
 			custom_models_selection.splice(index, 1);
+			has_changed = true;
 		}
-		gradio.dispatch("select", {
-			mode: mode,
-			custom_models_selection: custom_models_selection,
-			prompt_value: prompt_value,
-		});
+		if (has_changed) {
+			value["custom_models_selection"] = custom_models_selection;
+
+			gradio.dispatch("select", {
+				mode: mode,
+				custom_models_selection: custom_models_selection,
+				prompt_value: prompt_value,
+			});
+		}
 	}
 	// Handle prompt value update from backend
 	$: {
@@ -255,12 +261,13 @@ on:input={() => gradio.dispatch("input")}
 	<input
 		type="submit"
 		class="purple-btn btn"
-		on:submit={() =>
+		on:click={() =>
 			gradio.dispatch("submit", {
 				prompt_value: prompt_value,
 				mode: mode,
 				custom_models_selection: custom_models_selection,
 			})}
+		value="Envoyer"
 	/>
 </Block>
 
@@ -338,6 +345,13 @@ on:input={() => gradio.dispatch("input")}
 										>
 									{:else}
 										<button
+											on:click={() =>
+												gradio.dispatch("select", {
+													mode: mode,
+													custom_models_selection:
+														custom_models_selection,
+													prompt_value: prompt_value,
+												})}
 											aria-controls="modal-mode-selection"
 											class="btn purple-btn float-right"
 											>Valider</button
@@ -379,13 +393,13 @@ on:input={() => gradio.dispatch("input")}
 									<button
 										aria-controls="modal-mode-selection"
 										class="btn purple-btn float-right"
-										on:submit={() =>
-											gradio.dispatch("submit", {
+										on:click={() =>
+											gradio.dispatch("select", {
 												prompt_value: prompt_value,
 												mode: mode,
 												custom_models_selection:
 													custom_models_selection,
-											})}>Envoyer</button
+											})}>Valider</button
 									>
 								</div>
 								<!-- <button

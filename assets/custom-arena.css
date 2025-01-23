@@ -396,7 +396,10 @@ li.fr-nav__item {
     padding: 0 20% 1em;
   }
 }
-
+.mode-banner {
+  line-height: 2.8em;
+  background-color: #F3F5F9;
+}
 /* 
 #send-area .small-icon .button-icon {
   width: 15px;

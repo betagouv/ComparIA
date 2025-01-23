@@ -7,8 +7,7 @@
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
 	// export let prompt_value: string = ""; // Initialize as an empty string by default
-	export let custom_models_selection: Item[] = []; // Default to an empty list
-	export let models: Item[] = [];
+
 	// Combine all into one value object based on mode and other properties
 	// export let value: {
 	// 	prompt_value: string;

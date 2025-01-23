@@ -62,9 +62,7 @@
 				data-index={index}
 				aria-checked={custom_models_selection.includes(id)}
 				{disabled}
-
-			on:click={(e) => {
-				console.log("Target:", e.target);
+				on:click={(e) => {
 				toggle_model_selection(id);
 				e.stopPropagation();
 			}}

@@ -3,6 +3,7 @@ from languia.block_arena import (
     buttons_footer,
     chat_area,
     CustomDropdown,
+    CustomChatbot,
     chatbot,
     comments_a,
     comments_b,
@@ -29,6 +30,7 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
+    mode_banner
 )
 import traceback
 import os
@@ -47,6 +49,7 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
+    mode_banner_html
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -300,41 +303,16 @@ document.getElementById("fr-modal-welcome-close").blur();
         app_state_scoped,
         conv_a_scoped: gr.State,
         conv_b_scoped: gr.State,
-        model_dropdown: CustomDropdown,
+        model_dropdown_scoped: CustomDropdown,
+        mode_banner: gr.HTML,
         request: gr.Request,
         event: gr.EventData,
     ):
-        
-        # if retry, resend last user errored message
-        if event._data is not None:
-            last_message_a = conv_a_scoped.messages[-1]
-            last_message_b = conv_b_scoped.messages[-1]
-
-            app_state_scoped.awaiting_responses = False
-            if last_message_a.role == "user" and last_message_b.role == "user":
-                text = last_message_a.content
-                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-            else:
-                raise gr.Error(
-                    message="Il n'est pas possible de réessayer, veuillez recharger la page.",
-                    duration=10,
-                )
-            # # Reinit both generators
-            # gen = [
-            #     bot_response(
-            #         pos[i],
-            #         conversations[i],
-            #         request,
-            #         apply_rate_limit=True,
-            #         use_recommended_config=True,
-            #     )
-            #     for i in range(config.num_sides)
-            # ]
 
         conversations = [conv_a_scoped, conv_b_scoped]
 
-        text = model_dropdown["prompt_value"]
+        text = model_dropdown_scoped["prompt_value"]
+        mode = model_dropdown_scoped["mode"]
         # text = model_dropdown
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
@@ -367,8 +345,10 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
-
         chatbot = to_threeway_chatbot(conversations)
+
+        mode_banner = mode_banner_html(mode)
+
         text = gr.update(visible=True)
         return [
             app_state_scoped,
@@ -378,6 +358,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # 1 chatbot
             chatbot,
             text,
+            mode_banner
         ]
 
     def add_text(
@@ -674,8 +655,8 @@ document.getElementById("fr-modal-welcome-close").blur();
         ],
         fn=add_first_text,
         api_name=False,
-        inputs=[app_state] + [conv_a] + [conv_b] + [model_dropdown],
-        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
+        inputs=[app_state] +  [conv_a] + [conv_b] + [model_dropdown] + [mode_banner],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox] + [mode_banner],
         # scroll_to_output=True,
         show_progress="hidden",
     ).success(

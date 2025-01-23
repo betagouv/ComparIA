@@ -257,7 +257,7 @@ def get_matomo_js(matomo_url, matomo_id):
 
 def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
     # Maybe put orgs countries in an array here
-    std_name = (name.lower())
+    std_name = name.lower()
     logger = logging.getLogger("languia")
     if std_name in all_models_extra_info_toml:
         model = all_models_extra_info_toml[std_name]
@@ -492,3 +492,31 @@ def messages_to_dict(messages):
         ]
     except:
         raise TypeError(f"Expected ChatMessage object, got {type(messages)}")
+
+
+def mode_banner_html(mode):
+    modes = {
+        "custom": [
+            "Mode Sélection",
+            "Les modèles restent anonymes pour éviter tout biais",
+            "glass.svg",
+        ],
+        "big-vs-small": [
+            "Mode Petit contre Grand",
+            "Un petit et un grand modèle choisis au hasard",
+            "ruler.svg",
+        ],
+        "random": [
+            "Mode Aléatoire",
+            "Deux modèles choisis au hasard parmi toute la liste",
+            "dice.svg",
+        ],
+        "small-models": [
+            "Mode Économe",
+            "Deux petits modèles choisis au hasard",
+            "leaf.svg",
+        ],
+    }
+    return f"""
+    <div class="fr-container--fluid text-center mode-banner"><img class="inline" src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
+    """
