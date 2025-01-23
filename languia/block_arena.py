@@ -87,7 +87,7 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w") as mode_screen:
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container") as mode_screen:
 
         # with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w mobile-block"):
         # textbox = gr.Textbox(
@@ -99,14 +99,6 @@ with gr.Blocks(
             interactive=True,
         )
 
-        # first_send_btn = gr.Button(
-        #     interactive=False,
-        #     # scale=1,
-        #     value="Envoyer",
-        #     # icon="assets/dsfr/icons/system/arrow-up-line.svg",
-        #     elem_id="send-btn",
-        #     elem_classes="grow-0 purple-btn fr-container",
-        # )
 
         prompts_suggestions = gr.HTML(
             elem_classes="text-grey-200 fr-container",
@@ -130,9 +122,8 @@ with gr.Blocks(
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
-
+        mode_banner = gr.HTML()
         chatbot = CustomChatbot(
-            current_mode="random",
             type="messages",
             elem_id="main-chatbot",
             # min_width=

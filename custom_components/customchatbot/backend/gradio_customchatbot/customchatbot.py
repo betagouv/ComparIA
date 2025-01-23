@@ -178,9 +178,6 @@ class CustomChatbot(Component):
         latex_delimiters: list[dict[str, str | bool]] | None = None,
         rtl: bool = False,
         likeable: bool = False,
-        current_mode: Literal[
-            "custom", "random", "big-vs-small", "small-models"
-        ] = "random",
         show_share_button: bool | None = None,
         show_copy_button: bool = False,
         avatar_images: tuple[str | Path | None, str | Path | None] | None = None,
@@ -267,7 +264,6 @@ class CustomChatbot(Component):
         self.bubble_full_width = bubble_full_width
         self.line_breaks = line_breaks
         self.likeable = likeable
-        self.current_mode = current_mode
         self.layout = layout
         self.show_copy_all_button = show_copy_all_button
         self.interactive = interactive
