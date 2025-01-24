@@ -279,13 +279,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                 else:
                     conv_a_scoped.model_name =  custom_models_selection[1]
                     conv_b_scoped.model_name =  custom_models_selection[0]
+            if len(custom_models_selection) > 0:
+                app_state_scoped.custom_models_selection = custom_models_selection
+                logger.info("custom_models_selection: " +str(custom_models_selection), extra={"request": request})
+                
         else: # assume random mode
             # TODO: init here instead of on arena load
             pass
         if mode in ["random", "custom", "small-models", "big-vs-small"]:
             app_state_scoped.mode = mode
-        if mode ==  "custom" and len(custom_models_selection) > 0:
-            app_state_scoped.custom_models_selection = custom_models_selection
             
         logger.info("picked model a: " + conv_a_scoped.model_name,            extra={"request": request},
 )
