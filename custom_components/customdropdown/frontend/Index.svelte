@@ -283,17 +283,17 @@ on:input={() => gradio.dispatch("input")}
 						<img
 							src="../assets/orgs/{first_model_icon_path}"
 							alt={first_model_name}
-							width="34"
+							width="20"
 							class="inline"
 						/>&nbsp;
 						<span>
 							{first_model_name}
-							<strong>vs</strong>
-							{#if second_model_icon_path != null}&nbsp;
+							<strong class="fr-text--lg">&nbsp;vs.</strong>
+							{#if second_model_icon_path != null}
 								<img
 									src="../assets/orgs/{second_model_icon_path}"
 									alt={second_model_name}
-									width="34"
+									width="20"
 									class="inline"
 								/>&nbsp;
 							{/if}
