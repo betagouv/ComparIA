@@ -27,6 +27,8 @@ export interface Model {
 	friendly_size: "XS" | "S" | "M" | "L" | "XL" | "XXL";
 	simple_name: string;
 	organisation: string;
+	params: number;
+	total_params: number;
 	distribution: "open-weights" | "api-only";
 	icon_path: string;
 }

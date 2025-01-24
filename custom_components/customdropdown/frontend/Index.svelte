@@ -98,22 +98,19 @@
 		clear_status: LoadingStatus;
 	}>;
 	export let value_is_output = false;
-	export let label = "Textbox";
-	export let lines: number;
+	export let lines: number = 4;
 	export let show_custom_models_selection: boolean = false;
-	export let placeholder = "";
-	export let show_label: boolean;
 	export let max_lines: number;
-	export let type: "text" | "password" | "email" = "text";
 	// export let scale: number | null = null;
 	// export let min_width: number | undefined = undefined;
-	export let show_copy_button = false;
 	export let rtl = false;
 	export let text_align: "left" | "right" | undefined = undefined;
-	export let autofocus = false;
+	export let autofocus = true;
 	export let autoscroll = true;
 	var first_model_name = "Aléatoire";
 	var second_model_name = "Aléatoire";
+	var first_model_icon_path = null;
+	var second_model_icon_path = null;
 
 	export let interactive: boolean;
 	var choice: Choice = choices[0];
@@ -164,7 +161,10 @@
 				(model) => model["id"] === custom_models_selection[0],
 			).simple_name;
 
-			// Reactive statement for second_model_name
+			first_model_icon_path = models.find(
+				(model) => model["id"] === custom_models_selection[0],
+			).icon_path;
+
 			second_model_name =
 				custom_models_selection[1] !== undefined
 					? models.find(
@@ -172,6 +172,15 @@
 								model["id"] === custom_models_selection[1],
 						).simple_name
 					: "Aléatoire";
+
+			second_model_icon_path =
+				custom_models_selection[1] !== undefined
+					? models.find(
+							(model) =>
+								model["id"] === custom_models_selection[1],
+						).simple_name
+					: null;
+
 			gradio.dispatch("select", {
 				mode: mode,
 				custom_models_selection: custom_models_selection,
@@ -179,16 +188,9 @@
 			});
 		}
 	}
+
 	// Handle prompt value update from backend
 	$: {
-		// 	console.log("mode");
-		// 	console.log(mode);
-		// 	console.log("prompt_value");
-		// 	console.log(prompt_value);
-		// 	console.log("value");
-		// 	console.log(value);
-		// 	console.log("value_is_output");
-		// 	console.log(value_is_output);
 		if (value_is_output) {
 			prompt_value = value["prompt_value"];
 		} else {
@@ -208,26 +210,22 @@
 	{scale}
 	{min_width}
 >
-	<h4 class="text-center text-grey-200 fr-mt-4w fr-mb-2w">
+	<h3 class="text-center text-grey-200 fr-mt-12w fr-mb-8w">
 		Comment puis-je vous aider aujourd'hui ?
-	</h4>
+	</h3>
 	<div class="grid">
-		<div class="first-textbox">
+		<div class="first-textbox fr-mb-3v">
 			<TextBox
 				bind:value={prompt_value}
 				bind:value_is_output
 				{elem_id}
 				{elem_classes}
 				{visible}
-				{label}
-				{show_label}
 				{lines}
-				{type}
 				{rtl}
 				{text_align}
 				max_lines={!max_lines ? lines + 1 : max_lines}
-				{placeholder}
-				{show_copy_button}
+				placeholder="Écrivez votre premier message ici"
 				{autofocus}
 				{autoscroll}
 				on:change={() =>
@@ -256,9 +254,10 @@ on:input={() => gradio.dispatch("input")}
 		disabled={!interactive} -->
 
 		<button
-			class="mode-selection-btn"
+			class="mode-selection-btn fr-mr-3v"
 			data-fr-opened="false"
 			aria-controls="modal-mode-selection"
+			on:click={() => (show_custom_models_selection = false)}
 		>
 			<svg
 				width="18"
@@ -280,15 +279,33 @@ on:input={() => gradio.dispatch("input")}
 				data-fr-opened="false"
 				aria-controls="modal-mode-selection"
 			>
-				<span
-					>{first_model_name} <strong>vs</strong>
-					{second_model_name}</span
+				<span class="icon">
+					<img
+						src="../assets/orgs/{first_model_icon_path}"
+						alt={first_model_name}
+						width="34"
+						class="inline"
+					/>&nbsp;
+					<span>
+						{first_model_name}
+						<strong>vs</strong>
+						{#if second_model_icon_path != null}&nbsp;
+							<img
+								src="../assets/orgs/{second_model_icon_path}"
+								alt={second_model_name}
+								width="34"
+								class="inline"
+							/>&nbsp;
+						{/if}
+						{second_model_name}</span
+					></span
 				></button
 			>
 		{/if}
 		<input
 			type="submit"
 			class="submit-btn purple-btn btn"
+			disabled={prompt_value == ""}
 			on:click={() =>
 				gradio.dispatch("submit", {
 					prompt_value: prompt_value,
@@ -320,7 +337,7 @@ on:input={() => gradio.dispatch("input")}
 >
 	<div class="fr-container fr-container--fluid fr-container-md">
 		<div class="fr-grid-row fr-grid-row--center">
-			<div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+			<div class="fr-col-12 fr-col-md-10">
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
 						<button
@@ -348,16 +365,8 @@ on:input={() => gradio.dispatch("input")}
 									disabled={!interactive}
 								/>
 								<!-- <Dropdown
-									{choices}
-									bind:mode
-									on:input={() => gradio.dispatch("input")}
-									on:select={(e) =>
-										gradio.dispatch("select", e.detail)}
-									on:blur={() => gradio.dispatch("blur")}
-									on:focus={() => gradio.dispatch("focus")}
 									on:key_up={(e) =>
 										gradio.dispatch("key_up", e.detail)}
-									disabled={!interactive}
 								/> -->
 								<div class="fr-mt-2w">
 									<button
@@ -396,9 +405,9 @@ on:input={() => gradio.dispatch("input")}
 						{:else}
 							<h6 id="modal-mode-selection" class="modal-title">
 								Quels modèles voulez-vous comparer ?
-							</h6>
-							<h6 class="float-right">
-								{custom_models_selection.length}/2 modèles
+								<span class="text-purple fr-ml-2w">
+									{custom_models_selection.length}/2 modèles
+								</span>
 							</h6>
 							<p>
 								Si vous n’en choisissez qu’un, le second sera
@@ -445,6 +454,10 @@ on:input={() => gradio.dispatch("input")}
 </dialog>
 
 <style>
+	.text-purple {
+		color: #6a6af4;
+	}
+
 	.mode-selection-btn {
 		--hover-tint: transparent;
 		--active-tint: transparent;
@@ -454,11 +467,28 @@ on:input={() => gradio.dispatch("input")}
 		border: 1px solid #e5e5e5 !important;
 		flex-direction: row;
 		padding: 0.5em;
-		min-width: 260px;
+		width: 260px;
 		text-align: left;
-		font-weight: 600;
+		font-weight: 550;
 		font-size: 0.875em;
 		color: #3a3a3a !important;
+		background-color: white;
+	}
+	.model-selection {
+		--hover-tint: transparent;
+		--active-tint: transparent;
+		--focus-tint: transparent;
+		display: flex;
+		border-radius: 0.5em;
+		border: 1px solid #e5e5e5 !important;
+		flex-direction: row;
+		padding: 0.5em;
+		width: 260px;
+		text-align: left;
+		font-weight: 550;
+		font-size: 0.875em;
+		color: #3a3a3a !important;
+		background-color: white;
 	}
 	.mode-selection-btn svg {
 		flex-grow: 0;
