@@ -51,11 +51,13 @@ class Conversation:
 class AppState:
     def __init__(
         self, awaiting_responses=False, model_left=None, model_right=None, category=None
-    ):
+    , custom_models_selection =None, mode="random"):
         self.awaiting_responses = awaiting_responses
         self.model_left = model_left
         self.model_right = model_right
         self.category = category
+        self.mode = mode
+        self.custom_models_selection = custom_models_selection
         self.reactions = []
 
     # def to_dict(self) -> dict:
@@ -101,8 +103,8 @@ with gr.Blocks(
 
 
         prompts_suggestions = gr.HTML(
-            elem_classes="text-grey-200 fr-container",
-            value="""<h6>Suggestions de prompts</h6>""",
+            elem_classes="text-grey-200 fr-container fr-text--lg fr-mt-6w fr-mb-0 fr-pb-0",
+            value="""<strong>Suggestions de prompts</strong>""",
         )
         # FIXME: make a click on already selected be a shuffle
         guided_cards = CustomRadioCard(

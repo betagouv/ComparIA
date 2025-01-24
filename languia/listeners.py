@@ -225,6 +225,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         ]
         
         mode = model_dropdown_scoped['mode']
+        
+        logger.info("chose mode: " +mode, extra={"request": request})
+
         if mode == "big-vs-small":
             first_model = big_models[random.randint(len(big_models))]
             second_model = small_models[random.randint(len(small_models))]
@@ -257,7 +260,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             swap = random.randint(2)
             # FIXME: more test and randomize
             if len(custom_models_selection) == 0:
-                print("Not chosen yet, default to random")
+                logger.debug("custom mode but no model chosen yet, default to random")
                 pass
             elif len(custom_models_selection) == 1:
                 if swap == 0:
@@ -265,7 +268,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # FIXME: chose at random except chosen
                     # conv_b_scoped.model_name = the random one
                 else:
-                    logger.debug(f"model_dropdown_scoped: {model_dropdown_scoped}")
                     conv_b_scoped.model_name = custom_models_selection[0]
                     # FIXME: chose at random except chosen
                     # conv_b_scoped.model_name = the random one
@@ -280,8 +282,15 @@ document.getElementById("fr-modal-welcome-close").blur();
         else: # assume random mode
             # TODO: init here instead of on arena load
             pass
-        print("picked model a: " + conv_a_scoped.model_name)
-        print("picked model b: " + conv_b_scoped.model_name)
+        if mode in ["random", "custom", "small-models", "big-vs-small"]:
+            app_state_scoped.mode = mode
+        if mode ==  "custom" and len(custom_models_selection) > 0:
+            app_state_scoped.custom_models_selection = custom_models_selection
+            
+        logger.info("picked model a: " + conv_a_scoped.model_name,            extra={"request": request},
+)
+        logger.info("picked model b: " + conv_b_scoped.model_name,            extra={"request": request},
+)
         return [app_state_scoped, conv_a_scoped, conv_b_scoped]
 
     @textbox.change(
