@@ -470,7 +470,7 @@ on:input={() => gradio.dispatch("input")}
 		flex-direction: row;
 		padding: 0.5em;
 		text-align: left;
-		font-weight: 550;
+		font-weight: 500;
 		font-size: 0.875em;
 		color: #3a3a3a !important;
 		background-color: white !important;
@@ -487,7 +487,7 @@ on:input={() => gradio.dispatch("input")}
 		padding: 0.5em;
 
 		text-align: left;
-		font-weight: 550;
+		font-weight: 500;
 		font-size: 0.875em;
 		color: #3a3a3a !important;
 		background-color: white !important;
