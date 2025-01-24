@@ -112,6 +112,8 @@
 	export let text_align: "left" | "right" | undefined = undefined;
 	export let autofocus = false;
 	export let autoscroll = true;
+	var first_model_name = "Aléatoire";
+	var second_model_name = "Aléatoire";
 
 	export let interactive: boolean;
 	var choice: Choice = choices[0];
@@ -158,6 +160,18 @@
 		if (has_changed) {
 			value["custom_models_selection"] = custom_models_selection;
 
+			first_model_name = models.find(
+				(model) => model["id"] === custom_models_selection[0],
+			).simple_name;
+
+			// Reactive statement for second_model_name
+			second_model_name =
+				custom_models_selection[1] !== undefined
+					? models.find(
+							(model) =>
+								model["id"] === custom_models_selection[1],
+						).simple_name
+					: "Aléatoire";
 			gradio.dispatch("select", {
 				mode: mode,
 				custom_models_selection: custom_models_selection,
@@ -260,18 +274,21 @@ on:input={() => gradio.dispatch("input")}
 			</svg>
 			<span> {choice.alt_label}</span></button
 		>
-			{#if mode == "custom"}
-		<button
-			class="model-selection"
-			data-fr-opened="false"
-			aria-controls="modal-mode-selection"
-		>
-			<span>{custom_models_selection[0]} <strong>vs</strong> {custom_models_selection[1]}</span></button
-		>
+		{#if mode == "custom"}
+			<button
+				class="model-selection"
+				data-fr-opened="false"
+				aria-controls="modal-mode-selection"
+			>
+				<span
+					>{first_model_name} <strong>vs</strong>
+					{second_model_name}</span
+				></button
+			>
 		{/if}
 		<input
 			type="submit"
-			class="submit-btn purple-btn btn float-right"
+			class="submit-btn purple-btn btn"
 			on:click={() =>
 				gradio.dispatch("submit", {
 					prompt_value: prompt_value,
@@ -485,8 +502,29 @@ on:input={() => gradio.dispatch("input")}
 		order: 2;
 	}
 	@media (min-width: 48em) {
-		.first-textbox, .mode-selection-btn {
+		.first-textbox,
+		.mode-selection-btn {
 			order: initial;
+		}
+
+		.grid {
+			grid-template-areas: "text text text text" "left left-center center right";
+		}
+		.first-textbox {
+			grid-area: text;
+		}
+
+		.mode-selection-btn {
+			grid-area: left;
+		}
+
+		.model-selection {
+			grid-area: "left-center";
+		}
+
+		.submit-btn {
+			grid-area: right;
+			justify-self: right;
 		}
 	}
 </style>
