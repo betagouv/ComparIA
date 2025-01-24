@@ -178,7 +178,7 @@
 					? models.find(
 							(model) =>
 								model["id"] === custom_models_selection[1],
-						).simple_name
+						).icon_path
 					: null;
 
 			gradio.dispatch("select", {
@@ -252,56 +252,57 @@ on:input={() => gradio.dispatch("input")}
 		on:blur={() => gradio.dispatch("blur")}
 		on:focus={() => gradio.dispatch("focus")}
 		disabled={!interactive} -->
-
-		<button
-			class="mode-selection-btn fr-mr-3v"
-			data-fr-opened="false"
-			aria-controls="modal-mode-selection"
-			on:click={() => (show_custom_models_selection = false)}
-		>
-			<svg
-				width="18"
-				height="18"
-				viewBox="0 0 18 18"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-			>
-				<path
-					d="M4.14161 14.0003C4.4848 13.0293 5.41083 12.3337 6.49935 12.3337C7.58785 12.3337 8.51393 13.0293 8.8571 14.0003H17.3327V15.667H8.8571C8.51393 16.638 7.58785 17.3337 6.49935 17.3337C5.41083 17.3337 4.4848 16.638 4.14161 15.667H0.666016V14.0003H4.14161ZM9.1416 8.16699C9.48477 7.196 10.4108 6.50033 11.4993 6.50033C12.5878 6.50033 13.5139 7.196 13.8571 8.16699H17.3327V9.83366H13.8571C13.5139 10.8047 12.5878 11.5003 11.4993 11.5003C10.4108 11.5003 9.48477 10.8047 9.1416 9.83366H0.666016V8.16699H9.1416ZM4.14161 2.33366C4.4848 1.36267 5.41083 0.666992 6.49935 0.666992C7.58785 0.666992 8.51393 1.36267 8.8571 2.33366H17.3327V4.00033H8.8571C8.51393 4.97132 7.58785 5.66699 6.49935 5.66699C5.41083 5.66699 4.4848 4.97132 4.14161 4.00033H0.666016V2.33366H4.14161Z"
-					fill="#6A6AF4"
-				/>
-			</svg>
-			<span> {choice.alt_label}</span></button
-		>
-		{#if mode == "custom"}
+		<div class="selections">
 			<button
-				class="model-selection"
+				class="mode-selection-btn fr-mr-3v"
 				data-fr-opened="false"
 				aria-controls="modal-mode-selection"
+				on:click={() => (show_custom_models_selection = false)}
 			>
-				<span class="icon">
-					<img
-						src="../assets/orgs/{first_model_icon_path}"
-						alt={first_model_name}
-						width="34"
-						class="inline"
-					/>&nbsp;
-					<span>
-						{first_model_name}
-						<strong>vs</strong>
-						{#if second_model_icon_path != null}&nbsp;
-							<img
-								src="../assets/orgs/{second_model_icon_path}"
-								alt={second_model_name}
-								width="34"
-								class="inline"
-							/>&nbsp;
-						{/if}
-						{second_model_name}</span
-					></span
-				></button
+				<svg
+					width="18"
+					height="18"
+					viewBox="0 0 18 18"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+				>
+					<path
+						d="M4.14161 14.0003C4.4848 13.0293 5.41083 12.3337 6.49935 12.3337C7.58785 12.3337 8.51393 13.0293 8.8571 14.0003H17.3327V15.667H8.8571C8.51393 16.638 7.58785 17.3337 6.49935 17.3337C5.41083 17.3337 4.4848 16.638 4.14161 15.667H0.666016V14.0003H4.14161ZM9.1416 8.16699C9.48477 7.196 10.4108 6.50033 11.4993 6.50033C12.5878 6.50033 13.5139 7.196 13.8571 8.16699H17.3327V9.83366H13.8571C13.5139 10.8047 12.5878 11.5003 11.4993 11.5003C10.4108 11.5003 9.48477 10.8047 9.1416 9.83366H0.666016V8.16699H9.1416ZM4.14161 2.33366C4.4848 1.36267 5.41083 0.666992 6.49935 0.666992C7.58785 0.666992 8.51393 1.36267 8.8571 2.33366H17.3327V4.00033H8.8571C8.51393 4.97132 7.58785 5.66699 6.49935 5.66699C5.41083 5.66699 4.4848 4.97132 4.14161 4.00033H0.666016V2.33366H4.14161Z"
+						fill="#6A6AF4"
+					/>
+				</svg>
+				<span> {choice.alt_label}</span></button
 			>
-		{/if}
+			{#if mode == "custom"}
+				<button
+					class="model-selection"
+					data-fr-opened="false"
+					aria-controls="modal-mode-selection"
+				>
+					<span class="icon">
+						<img
+							src="../assets/orgs/{first_model_icon_path}"
+							alt={first_model_name}
+							width="34"
+							class="inline"
+						/>&nbsp;
+						<span>
+							{first_model_name}
+							<strong>vs</strong>
+							{#if second_model_icon_path != null}&nbsp;
+								<img
+									src="../assets/orgs/{second_model_icon_path}"
+									alt={second_model_name}
+									width="34"
+									class="inline"
+								/>&nbsp;
+							{/if}
+							{second_model_name}</span
+						></span
+					></button
+				>
+			{/if}
+		</div>
 		<input
 			type="submit"
 			class="submit-btn purple-btn btn"
@@ -463,18 +464,19 @@ on:input={() => gradio.dispatch("input")}
 		--active-tint: transparent;
 		--focus-tint: transparent;
 		display: flex;
+		width: 100%;
 		border-radius: 0.5em;
 		border: 1px solid #e5e5e5 !important;
 		flex-direction: row;
 		padding: 0.5em;
-		width: 260px;
 		text-align: left;
 		font-weight: 550;
 		font-size: 0.875em;
 		color: #3a3a3a !important;
-		background-color: white;
+		background-color: white !important;
 	}
 	.model-selection {
+		width: 100%;
 		--hover-tint: transparent;
 		--active-tint: transparent;
 		--focus-tint: transparent;
@@ -483,12 +485,12 @@ on:input={() => gradio.dispatch("input")}
 		border: 1px solid #e5e5e5 !important;
 		flex-direction: row;
 		padding: 0.5em;
-		width: 260px;
+
 		text-align: left;
 		font-weight: 550;
 		font-size: 0.875em;
 		color: #3a3a3a !important;
-		background-color: white;
+		background-color: white !important;
 	}
 	.mode-selection-btn svg {
 		flex-grow: 0;
@@ -530,26 +532,32 @@ on:input={() => gradio.dispatch("input")}
 	}
 	.submit-btn {
 		order: 2;
+		width: 100%;
 	}
 	@media (min-width: 48em) {
 		.first-textbox,
 		.mode-selection-btn {
 			order: initial;
 		}
-
+		.submit-btn {
+			width: 200px;
+		}
 		.grid {
-			grid-template-areas: "text text text text" "left left-center center right";
+			grid-template-areas: "text text" "left right";
 		}
 		.first-textbox {
 			grid-area: text;
 		}
 
-		.mode-selection-btn {
+		.selections {
 			grid-area: left;
+			display: flex;
 		}
-
+		.mode-selection-btn {
+			width: 260px;
+		}
 		.model-selection {
-			grid-area: "left-center";
+			width: fit-content;
 		}
 
 		.submit-btn {

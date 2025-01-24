@@ -120,7 +120,7 @@
 	/* label:not([disabled]):active { */
 	label:active,
 	label:focus {
-		outline: 2px solid #6a6af4;
+		outline: 2px solid #6a6af4 !important;
 		/* border: 2px solid var(--blue-france-main-525); */
 	}
 	label.disabled,
