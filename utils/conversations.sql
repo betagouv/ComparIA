@@ -35,6 +35,8 @@ CREATE TABLE IF NOT EXISTS conversations (
     is_unedited_prompt BOOLEAN,
     archived BOOLEAN DEFAULT FALSE,
     -- TODO: add 'interrupted' bool field?
+    mode VARCHAR(255),
+    custom_models_selection JSONB
 );
 
 GRANT USAGE,
