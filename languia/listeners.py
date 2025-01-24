@@ -211,7 +211,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         show_progress="hidden",
     )
     def pick_model(
-        app_state_scoped, conv_a_scoped, conv_b_scoped, model_dropdown_scoped
+        app_state_scoped, conv_a_scoped, conv_b_scoped, model_dropdown_scoped, request: gr.Request
     ):
         small_models = [
             model
