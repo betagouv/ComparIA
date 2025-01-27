@@ -26,7 +26,7 @@
 	// export let container = true;
 	export let max_lines: number;
 	export let rtl = false;
-	export let autofocus = true;
+	export let autofocus = false;
 	export let text_align: "left" | "right" | undefined = undefined;
 	export let autoscroll = true;
 	export let visible = true;

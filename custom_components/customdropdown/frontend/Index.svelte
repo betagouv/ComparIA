@@ -105,7 +105,7 @@
 	// export let min_width: number | undefined = undefined;
 	export let rtl = false;
 	export let text_align: "left" | "right" | undefined = undefined;
-	export let autofocus = true;
+	export let autofocus = false;
 	export let autoscroll = true;
 	var first_model_name = "Aléatoire";
 	var second_model_name = "Aléatoire";
