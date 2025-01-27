@@ -12,6 +12,9 @@ import gradio as gr
 from languia.utils import header_html, welcome_modal_html, footer_html
 
 from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
+from custom_components.customdropdown.backend.gradio_customdropdown import (
+    CustomDropdown,
+)
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
@@ -48,11 +51,13 @@ class Conversation:
 class AppState:
     def __init__(
         self, awaiting_responses=False, model_left=None, model_right=None, category=None
-    ):
+    , custom_models_selection =None, mode="random"):
         self.awaiting_responses = awaiting_responses
         self.model_left = model_left
         self.model_right = model_right
         self.category = category
+        self.mode = mode
+        self.custom_models_selection = custom_models_selection
         self.reactions = []
 
     # def to_dict(self) -> dict:
@@ -84,37 +89,43 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w") as mode_screen:
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container") as mode_screen:
 
-        title = gr.HTML(
-            # Sur Figma: fr-mt-8w
-            elem_classes="text-center text-grey-200 fr-mt-4w fr-mb-2w",
-            value="""<h4>Comment puis-je vous aider aujourd'hui ?</h4>""",
+        # with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w mobile-block"):
+        # textbox = gr.Textbox(
+        model_dropdown = CustomDropdown(
+            models=config.models_extra_info,
+            # FIXME: ignored, hardcoded in custom component
+            choices=["random", "big-vs-small", "small-models", "custom"],
+            # FIXME: ignored, hardcoded in custom component
+            interactive=True,
         )
 
+
+        prompts_suggestions = gr.HTML(
+            elem_classes="text-grey-200 fr-container fr-text--lg fr-mt-6w fr-mb-0 fr-pb-0",
+            value="""<strong>Suggestions de prompts</strong>""",
+        )
+        # FIXME: make a click on already selected be a shuffle
         guided_cards = CustomRadioCard(
             show_label=False,
-            elem_classes="fr-col-12 fr-col-md-8 fr-mx-auto",
+            elem_id="guided-cards",
+            elem_classes="fr-container",
             choices=config.guided_cards_choices,
+            min_columns=1,
         )
-        shuffle_link = gr.Button(
-            scale=0,
-            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
-            visible=False,
-            value="Générer un autre message",
-        )
+        # shuffle_link = gr.Button(
+        #     scale=0,
+        #     elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
+        #     visible=False,
+        #     value="Générer un autre message",
+        # )
 
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
-
-        # {likeable}
-        # placeholder
-        #         placeholder
-        # a placeholder message to display in the chatbot when it is empty. Centered vertically and horizontally in the Chatbot. Supports Markdown and HTML.
-        # TODO: test ChatInterface abstraction
+        mode_banner = gr.HTML()
         chatbot = CustomChatbot(
-            # TODO:
             type="messages",
             elem_id="main-chatbot",
             # min_width=
@@ -136,39 +147,41 @@ with gr.Blocks(
             # autoscroll=True
         )
 
-    with gr.Column(
-        elem_id="send-area", visible=True, elem_classes="fr-pt-1w"
-    ) as send_area:
-        # textbox = gr.Textbox(
-        with gr.Row(elem_classes="flex-md-row flex-col items-start"):
-            textbox = FrInput(
-                elem_id="main-textbox",
-                show_label=False,
-                lines=1,
-                placeholder="Ecrivez votre premier message aux modèles ici",
-                max_lines=7,
-                elem_classes="w-full",
-                # elem_classes="inline-block fr-col-12 fr-col-md-10",
-                container=True,
-                autofocus=True,
-                # autoscroll=True
-            )
-            send_btn = gr.Button(
-                interactive=False,
-                # scale=1,
-                value="Envoyer",
-                # icon="assets/dsfr/icons/system/arrow-up-line.svg",
-                elem_id="send-btn",
-                elem_classes="grow-0 purple-btn w-full",
-            )
-        with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-            conclude_btn = gr.Button(
-                size="lg",
-                value="Passer à la révélation des modèles",
-                elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
-                visible=False,
-                interactive=False,
-            )
+        with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w") as send_area:
+
+            with gr.Row(
+                elem_classes="flex-md-row flex-col items-start",
+                visible=True,
+            ) as send_row:
+                textbox = FrInput(
+                    elem_id="main-textbox",
+                    show_label=False,
+                    lines=1,
+                    placeholder="Continuer à discuter avec les deux modèles d'IA",
+                    max_lines=7,
+                    elem_classes="w-full",
+                    # elem_classes="inline-block fr-col-12 fr-col-md-10",
+                    container=True,
+                    autofocus=True,
+                    # autoscroll=True
+                )
+                send_btn = gr.Button(
+                    interactive=False,
+                    # scale=1,
+                    value="Envoyer",
+                    # icon="assets/dsfr/icons/system/arrow-up-line.svg",
+                    elem_id="send-btn",
+                    elem_classes="grow-0 purple-btn w-full",
+                )
+
+            with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
+                conclude_btn = gr.Button(
+                    size="lg",
+                    value="Passer à la révélation des modèles",
+                    elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
+                    visible=False,
+                    interactive=False,
+                )
 
     with gr.Column(
         # h-screen

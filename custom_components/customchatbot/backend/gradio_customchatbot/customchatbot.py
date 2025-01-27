@@ -36,6 +36,7 @@ from gradio.exceptions import Error
 class MetadataDict(TypedDict):
     bot: Union[str, None]
 
+
 class FileDataDict(TypedDict):
     path: str  # server filepath
     url: NotRequired[Optional[str]]  # normalised server url
@@ -560,6 +561,6 @@ class CustomChatbot(Component):
 
     def example_value(self) -> Any:
         return [
-                Message(role="user", content="Hello!").model_dump(),
-                Message(role="assistant", content="How can I help you?").model_dump(),
-            ]
+            Message(role="user", content="Hello!").model_dump(),
+            Message(role="assistant", content="How can I help you?").model_dump(),
+        ]

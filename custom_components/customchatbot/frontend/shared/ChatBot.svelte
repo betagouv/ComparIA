@@ -789,7 +789,8 @@
 		/* --warning-425-625 */
 		color: #b34000;
 		background-color: #b34000;
-		/* -webkit-mask-image: url("fr-warning-fill.svg");
-		mask-image: url("fr-warning-fill.svg"); */
+		-webkit-mask-image: url("../assets/dsfr/icons/system/fr--warning-fill.svg");
+		mask-image: url("../assets/dsfr/icons/system/fr--warning-fill.svg");
+
 	}
 </style>

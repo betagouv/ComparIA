@@ -2,7 +2,6 @@ import os
 import sentry_sdk
 import json5
 import tomli
-from slugify import slugify
 from languia.utils import get_model_list, get_matomo_js, build_model_extra_info
 import random
 import datetime
@@ -141,6 +140,15 @@ if os.getenv("SENTRY_DSN"):
     )
 
 
+# TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
+if os.getenv("SENTRY_FRONT_DSN"):
+    sentry_head_js = f"""
+ <script type="text/javascript" 
+   src="../assets/bundle.tracing.replay.min.js"
+ ></script>"""
+else:
+    sentry_head_js = ""
+
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
     register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
@@ -212,7 +220,7 @@ api_endpoint_info = json5.load(open(register_api_endpoint_file))
 models = get_model_list(None, api_endpoint_info)
 
 all_models_extra_info_toml = {
-    slugify(k.lower()): v
+    (k.lower()): v
     for k, v in tomli.load(open("./models-extra-info.toml", "rb")).items()
 }
 # TODO: refacto?
@@ -236,65 +244,66 @@ use_remote_storage = False
 
 guided_cards_choices = [
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/lightbulb.svg" alt="Idées" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/lightbulb.svg" alt="Idées" />
             <span id="ideas-description">Générer de nouvelles idées</span>
         </div>""",
         "ideas",
     ),
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/chat-3.svg" alt="Explications" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/chat-3.svg" alt="Explications" />
             <span id="explanations-description">Expliquer simplement un concept</span>
         </div>""",
         "explanations",
     ),
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/translate-2.svg" alt="Traduction" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/translate-2.svg" alt="Traduction" />
             <span id="languages-description">M’exprimer dans une autre langue</span>
         </div>""",
         "languages",
     ),
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/draft.svg" alt="Administratif" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/draft.svg" alt="Administratif" />
             <span id="administrative-description">Rédiger un document administratif</span>
         </div>""",
         "administrative",
     ),
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/bowl.svg" alt="Recettes" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/bowl.svg" alt="Recettes" />
             <span id="recipes-description">Découvrir une nouvelle recette de cuisine</span>
         </div>""",
         "recipes",
     ),
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/clipboard.svg" alt="Conseils" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/clipboard.svg" alt="Conseils" />
             <span id="coach-description">Obtenir des conseils sur l’alimentation et le sport</span>
         </div>""",
         "coach",
     ),
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/book-open-line.svg" alt="Histoires" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/book-open-line.svg" alt="Histoires" />
             <span id="stories-description">Raconter une histoire</span>
         </div>""",
         "stories",
     ),
     (
-        """<div>
-            <img class="fr-mb-3w" src="../assets/extra-icons/music-2.svg" alt="Recommandations" />
+        """<div class="mobile-flex">
+            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/music-2.svg" alt="Recommandations" />
             <span id="recommendations-description">Proposer des idées de films, livres, musiques</span>
         </div>""",
         "recommendations",
     ),
 ]
 
-# Shuffle only at each reload of app to get some randomness
+# Shuffle only at each reload of app to get some randomness, and keep the first four
 random.shuffle(guided_cards_choices)
+guided_cards_choices = guided_cards_choices[0:4]
 
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
     os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 24000)

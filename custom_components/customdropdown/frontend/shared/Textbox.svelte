@@ -10,25 +10,21 @@
 	import { fade } from "svelte/transition";
 	import type { SelectData } from "@gradio/utils";
 
-	import "@gouvfr/dsfr/dist/scheme/scheme.css";
-	import "@gouvfr/dsfr/dist/core/core.css";
-	import "@gouvfr/dsfr/dist/component/form/form.css";
-	import "@gouvfr/dsfr/dist/component/link/link.css";
-	import "@gouvfr/dsfr/dist/component/button/button.css";
-	import "@gouvfr/dsfr/dist/component/input/input.css";
+	// import "@gouvfr/dsfr/dist/scheme/scheme.css";
+	// import "@gouvfr/dsfr/dist/core/core.css";
+	// import "@gouvfr/dsfr/dist/component/form/form.css";
+	// import "@gouvfr/dsfr/dist/component/link/link.css";
+	// import "@gouvfr/dsfr/dist/component/button/button.css";
+	// import "@gouvfr/dsfr/dist/component/input/input.css";
 
 	export let value = "";
 	export let value_is_output = false;
 	export let lines = 1;
 	export let placeholder = "Type here...";
-	export let label: string;
 	// export let info: string | undefined = undefined;
 	export let disabled = false;
-	export let show_label = true;
 	// export let container = true;
 	export let max_lines: number;
-	export let type: "text" | "password" | "email" = "text";
-	export let show_copy_button = false;
 	export let rtl = false;
 	export let autofocus = false;
 	export let text_align: "left" | "right" | undefined = undefined;
@@ -68,7 +64,7 @@
 		}
 	};
 
-	function handle_change(): void {
+	function handle_input(): void {
 		dispatch("change", value);
 		if (!value_is_output) {
 			dispatch("input");
@@ -83,7 +79,7 @@
 		}
 		value_is_output = false;
 	});
-	$: value, handle_change();
+	$: value, handle_input();
 
 	async function handle_copy(): Promise<void> {
 		if ("clipboard" in navigator) {
@@ -181,7 +177,7 @@
 		_el.style.overflowY = "scroll";
 		_el.addEventListener("input", resize);
 
-		if (!_value.trim()) return;
+		// if (!_value.trim()) return;
 		resize({ target: _el });
 
 		return {
@@ -191,80 +187,27 @@
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
-<label id={elem_id} class="container fr-label {elem_classes.join(' ')}"
-	>{#if show_label}{label}{/if}
-
+<label class="container fr-label {elem_classes.join(' ')}">
 	{#if lines === 1 && max_lines === 1}
-		{#if type === "text"}
-			<input
-				data-testid="textbox"
-				type="text"
-				id={elem_id}
-				class:hidden={visible === false}
-				class="scroll-hide fr-input"
-				dir={rtl ? "rtl" : "ltr"}
-				bind:value
-				bind:this={el}
-				{placeholder}
-				{disabled}
-				{autofocus}
-				on:keypress={handle_keypress}
-				on:blur
-				on:select={handle_select}
-				on:focus
-				style={text_align ? "text-align: " + text_align : ""}
-			/>
-		{:else if type === "password"}
-			<input
-				data-testid="password"
-				type="password"
-				class:hidden={visible === false}
-				class="scroll-hide"
-				bind:value
-				bind:this={el}
-				{placeholder}
-				{disabled}
-				{autofocus}
-				on:keypress={handle_keypress}
-				on:blur
-				on:select={handle_select}
-				on:focus
-				autocomplete=""
-			/>
-		{:else if type === "email"}
-			<input
-				data-testid="textbox"
-				type="email"
-				class:hidden={visible === false}
-				class="scroll-hide"
-				bind:value
-				bind:this={el}
-				{placeholder}
-				{disabled}
-				{autofocus}
-				on:keypress={handle_keypress}
-				on:blur
-				on:select={handle_select}
-				on:focus
-				autocomplete="email"
-			/>
-		{/if}
+		<input
+			data-testid="textbox"
+			type="text"
+			id={elem_id}
+			class:hidden={visible === false}
+			class="scroll-hide fr-input"
+			dir={rtl ? "rtl" : "ltr"}
+			bind:value
+			bind:this={el}
+			{placeholder}
+			{disabled}
+			{autofocus}
+			on:keypress={handle_keypress}
+			on:blur
+			on:select={handle_select}
+			on:focus
+			style={text_align ? "text-align: " + text_align : ""}
+		/>
 	{:else}
-		{#if show_label && show_copy_button}
-			{#if copied}
-				<button
-					in:fade={{ duration: 300 }}
-					aria-label="Copied"
-					aria-roledescription="Text copied"><Check /></button
-				>
-			{:else}
-				<button
-					on:click={handle_copy}
-					aria-label="Copy"
-					aria-roledescription="Copy text"><Copy /></button
-				>
-			{/if}
-		{/if}
 		<textarea
 			data-testid="textbox"
 			use:text_area_resize={value}

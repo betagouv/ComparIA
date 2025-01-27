@@ -37,6 +37,10 @@ RUN gradio cc install
 RUN npm install @gouvfr/dsfr
 RUN gradio cc build --no-generate-docs --bump-version
 
+WORKDIR /app/custom_components/customdropdown
+RUN gradio cc install
+RUN gradio cc build --no-generate-docs --bump-version
+
 # Comment this line if you want an image with node
 FROM base AS app
 COPY --from=cc /app/custom_components /app/custom_components

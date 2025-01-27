@@ -693,7 +693,9 @@ def upsert_conv_to_db(data):
                 model_pair_name,
                 opening_msg,
                 selected_category,
-                is_unedited_prompt
+                is_unedited_prompt,
+                mode,
+                custom_models_selection 
                                         )
             VALUES (
                 %(model_a_name)s,
@@ -713,7 +715,9 @@ def upsert_conv_to_db(data):
                 %(model_pair_name)s,
                 %(opening_msg)s,
                 %(selected_category)s,
-                %(is_unedited_prompt)s
+                %(is_unedited_prompt)s,
+                %(mode)s,
+                %(custom_models_selection)s
             )
             ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
@@ -766,7 +770,19 @@ def record_conversations(
         category = app_state_scoped.category
     else:
         category = None
+    
 
+    if hasattr(app_state_scoped, "mode"):
+        mode = app_state_scoped.mode
+    else:
+        mode = None
+    
+
+    if hasattr(app_state_scoped, "custom_models_selection"):
+        custom_models_selection = app_state_scoped.custom_models_selection
+    else:
+        custom_models_selection = []
+    
     data = {
         "selected_category": category,
         "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
@@ -791,6 +807,8 @@ def record_conversations(
         "country": "",
         "city": "",
         "model_pair_name": model_pair_name,
+        "mode": str(mode),
+        "custom_models_selection": json.dumps(custom_models_selection)
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
