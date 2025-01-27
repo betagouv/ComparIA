@@ -14,17 +14,21 @@
   min-height: 100px;
 }
 
-/* #vote-cards label.custom-card span {
-  height: 100%;
+#vote-cards label.custom-card span {
+  margin-left: 20px;
+  /* height: 100%;
   border-left: 1px #CCC solid;
   display: flex;
-  align-items: center;
-} */
+  align-items: center; */
+}
 
 #vote-cards label.custom-card svg {
   height: 100%;
   border-right: 1px #CCC solid;
   display: flex;
+  padding-top: 35px;
+  margin-left: 10px;
+  width: 37px;
   align-items: center;
 }
 
