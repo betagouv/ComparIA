@@ -475,6 +475,7 @@ on:input={() => gradio.dispatch("input")}
 		color: #3a3a3a !important;
 		background-color: white !important;
 	}
+
 	.model-selection {
 		width: 100%;
 		--hover-tint: transparent;
@@ -491,7 +492,9 @@ on:input={() => gradio.dispatch("input")}
 		font-size: 0.875em;
 		color: #3a3a3a !important;
 		background-color: white !important;
+		max-height: 40px;
 	}
+
 	.mode-selection-btn svg {
 		flex-grow: 0;
 	}
