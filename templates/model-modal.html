@@ -26,7 +26,9 @@
                             "open-weights"
                             %}
                             <span class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                                Open weights
+                                Open weights&nbsp;
+                                <a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                    aria-describedby="license-{{ model['id'] }}"></a>
                             </span>
                             {%
                             else
@@ -161,6 +163,10 @@
     </div>
 
     {% if model['distribution'] == "open-weights" %}
+
+    <span class="fr-tooltip fr-placement" id="license-{{ model['id'] }}" role="tooltip" aria-hidden="true">Un modèle "open weights" est disponible en téléchargement librement, possède un certain degré de transparence et permet un réusage assez libre. Qu'un modèle soit "open source" est plus contraignant (principalement par rapport au corpus d'entraînement), et rares sont les modèles qui sont considérés "open source".
+    </span>
+    
     <span class="fr-tooltip fr-placement" id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les paramètres
         ou
         les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui
