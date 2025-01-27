@@ -79,14 +79,14 @@
 						width="34"
 						class="inline"
 					/>
-				</span>&nbsp;<strong>{organisation}</strong>/{simple_name}
+				</span>&nbsp;{organisation}/<strong>{simple_name}</strong>
 			</div>
 			<p>
 				<span
 					class:fr-badge--info={distribution == "api-only"}
 					class:fr-badge--yellow-tournesol={distribution ==
 						"open-weights"}
-					class="fr-badge fr-badge--no-icon fr-mr-1v fr-mb-1v"
+					class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
 				>
 					{distribution == "api-only"
 						? "Propriétaire"
