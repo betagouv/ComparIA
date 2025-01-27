@@ -238,6 +238,8 @@
 		/* border: 1px 1px 0 1px solid #e5e5e5 !important; */
 		/* min-height: 4rem !important; */
 		box-shadow: inset 0 -2px 0 0 #6a6af4 !important;
+		outline: none !important;
+		outline-offset: 0 !important;
 	}
 
 	@media (min-width: 48em) {
