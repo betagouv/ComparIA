@@ -76,7 +76,7 @@
 					<img
 						src="../assets/orgs/{icon_path}"
 						alt={organisation}
-						width="34"
+						width="20"
 						class="inline"
 					/>
 				</span>&nbsp;{organisation}/<strong>{simple_name}</strong>
