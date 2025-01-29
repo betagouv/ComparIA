@@ -21,6 +21,7 @@
 	export let previous_mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
+	export let temp_custom_models_selection: string[] = []; // Default to an empty list
 	export let custom_models_selection: string[] = []; // Default to an empty list
 	// export let previous_custom_models_selection: string[] = []; // Default to an empty list
 
@@ -126,7 +127,7 @@
 			// value.mode = choices[selected_index].value;
 			previous_mode = mode;
 			mode = choices[index].value;
-			if (mode != value["mode"]) {
+			if (mode != value["mode"] && mode != "custom") {
 				value["mode"] = mode;
 				gradio.dispatch("select", {
 					mode: mode,
@@ -141,50 +142,42 @@
 	function toggle_model_selection(id) {
 		var has_changed = false;
 		// Toggle if already added or to add/delete
-		if (!custom_models_selection.includes(id)) {
-			if (custom_models_selection.length < 2) {
+		if (!temp_custom_models_selection.includes(id)) {
+			if (temp_custom_models_selection.length < 2) {
 				console.log("adding " + id);
-				custom_models_selection.push(id);
+				temp_custom_models_selection.push(id);
 				has_changed = true;
 			}
 		} else {
 			console.log("removing " + id);
-			var index = custom_models_selection.indexOf(id);
-			custom_models_selection.splice(index, 1);
+			var index = temp_custom_models_selection.indexOf(id);
+			temp_custom_models_selection.splice(index, 1);
 			has_changed = true;
 		}
 		if (has_changed) {
-			value["custom_models_selection"] = custom_models_selection;
-
 			first_model_name = models.find(
-				(model) => model["id"] === custom_models_selection[0],
+				(model) => model["id"] === temp_custom_models_selection[0],
 			).simple_name;
 
 			first_model_icon_path = models.find(
-				(model) => model["id"] === custom_models_selection[0],
+				(model) => model["id"] === temp_custom_models_selection[0],
 			).icon_path;
 
 			second_model_name =
-				custom_models_selection[1] !== undefined
+				temp_custom_models_selection[1] !== undefined
 					? models.find(
 							(model) =>
-								model["id"] === custom_models_selection[1],
+								model["id"] === temp_custom_models_selection[1],
 						).simple_name
 					: "Aléatoire";
 
 			second_model_icon_path =
-				custom_models_selection[1] !== undefined
+				temp_custom_models_selection[1] !== undefined
 					? models.find(
 							(model) =>
-								model["id"] === custom_models_selection[1],
+								model["id"] === temp_custom_models_selection[1],
 						).icon_path
 					: null;
-
-			gradio.dispatch("select", {
-				mode: mode,
-				custom_models_selection: custom_models_selection,
-				prompt_value: prompt_value,
-			});
 		}
 	}
 
@@ -364,10 +357,6 @@ on:input={() => gradio.dispatch("input")}
 										gradio.dispatch("select", e.detail)}
 									disabled={!interactive}
 								/>
-								<!-- <Dropdown
-									on:key_up={(e) =>
-										gradio.dispatch("key_up", e.detail)}
-								/> -->
 								<div class="fr-mt-2w">
 									<button
 										aria-controls="modal-mode-selection"
@@ -395,12 +384,6 @@ on:input={() => gradio.dispatch("input")}
 										>
 									{/if}
 								</div>
-								<!-- <button
-								aria-controls="modal-mode-selection"
-								class="btn purple-btn"
-								on:click={() => sendComment(commenting)}
-								>Envoyer</button
-							> -->
 							</div>
 						{:else}
 							<h6 id="modal-mode-selection" class="modal-title">
@@ -437,21 +420,20 @@ on:input={() => gradio.dispatch("input")}
 									<button
 										aria-controls="modal-mode-selection"
 										class="btn purple-btn float-right"
-										on:click={() =>
+										on:click={() => {
+											custom_models_selection =
+												temp_custom_models_selection;
+											value["custom_models_selection"] =
+												custom_models_selection;
 											gradio.dispatch("select", {
 												prompt_value: prompt_value,
 												mode: mode,
 												custom_models_selection:
 													custom_models_selection,
-											})}>Valider</button
+											});
+										}}>Valider</button
 									>
 								</div>
-								<!-- <button
-							aria-controls="modal-mode-selection"
-							class="btn purple-btn"
-							on:click={() => sendComment(commenting)}
-							>Envoyer</button
-						> -->
 							</div>{/if}
 					</div>
 				</div>
