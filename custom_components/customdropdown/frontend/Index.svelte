@@ -18,8 +18,11 @@
 	export let visible = true;
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
+	export let previous_mode: "random" | "custom" | "big-vs-small" | "small-models" =
+		"random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
 	export let custom_models_selection: string[] = []; // Default to an empty list
+	// export let previous_custom_models_selection: string[] = []; // Default to an empty list
 
 	// Prompt value
 	// export let value: string = ""
@@ -121,7 +124,7 @@
 		if (index !== null && choices && choices.length > index) {
 			// value = choices[selected_index].value;
 			// value.mode = choices[selected_index].value;
-
+			previous_mode = mode;
 			mode = choices[index].value;
 			if (mode != value["mode"]) {
 				value["mode"] = mode;
@@ -137,10 +140,6 @@
 
 	function toggle_model_selection(id) {
 		var has_changed = false;
-		console.log("id");
-		console.log(id);
-		console.log("custom_models_selection");
-		console.log(custom_models_selection);
 		// Toggle if already added or to add/delete
 		if (!custom_models_selection.includes(id)) {
 			if (custom_models_selection.length < 2) {
@@ -424,9 +423,16 @@ on:input={() => gradio.dispatch("input")}
 									<button
 										aria-controls="modal-mode-selection"
 										class="btn"
-										on:click={() =>
-											(show_custom_models_selection = false)}
-										>Retour</button
+										on:click={() => {
+											mode = previous_mode;
+											gradio.dispatch("select", {
+												prompt_value: prompt_value,
+												mode: mode,
+												custom_models_selection:
+													custom_models_selection,
+											});
+											show_custom_models_selection = false;
+										}}>Retour</button
 									>
 									<button
 										aria-controls="modal-mode-selection"
