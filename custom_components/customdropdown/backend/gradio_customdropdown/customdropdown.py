@@ -167,7 +167,7 @@ class CustomDropdown(FormComponent):
         # if payload is None:
         #     return None
 
-        print(f"preprocess payload: {str(payload)}")
+        # print(f"preprocess payload: {str(payload)}")
         value = dict()
         try:
             value['prompt_value'] = payload['prompt_value']
@@ -196,7 +196,7 @@ class CustomDropdown(FormComponent):
     def postprocess(
         self, value: dict | None
     ) -> str | int | float | list[str | int | float] | None:
-        print(f"postprocess value: {str(value)}")
+        # print(f"postprocess value: {str(value)}")
         if value is None:
             return None
         # FIXME: delete
