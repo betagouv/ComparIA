@@ -1,8 +1,12 @@
 import psycopg2
 import pandas as pd
 import logging
-from languia.config import db as db_config
+import sys
 import os
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+from languia.config import db as db_config
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -46,49 +50,6 @@ QUESTIONS_ONLY_QUERY = """SELECT q.question_id,
         q.city,
         q.msg_rank
    FROM matview_questions q;"""
-
-VOTES_QUERY = """
-SELECT
-    tstamp AS timestamp,
-    model_a_name,
-    model_b_name,
-    chosen_model_name,
-    opening_prompt AS opening_msg,
-    conversation_a,
-    conversation_b,
-    turns AS conv_turns,
-    template,
-    selected_category,
-    is_unedited_prompt,
-    uuid AS conversation_pair_id,
-    session_hash,
-    visitor_uuid AS visitor_id,
-    ip,
-    comments_a AS conv_comments_a,
-    comments_b AS conv_comments_b,
-    CASE WHEN details_a_positive LIKE '%useful%' THEN TRUE ELSE FALSE END AS conv_useful_a,
-    CASE WHEN details_b_positive LIKE '%useful%' THEN TRUE ELSE FALSE END AS conv_useful_b,
-    CASE WHEN details_a_positive LIKE '%creative%' THEN TRUE ELSE FALSE END AS conv_creative_a,
-    CASE WHEN details_b_positive LIKE '%creative%' THEN TRUE ELSE FALSE END AS conv_creative_b,
-    CASE WHEN details_a_positive LIKE '%clear-formatting%' THEN TRUE ELSE FALSE END AS conv_clear_formatting_a,
-    CASE WHEN details_b_positive LIKE '%clear-formatting%' THEN TRUE ELSE FALSE END AS conv_clear_formatting_b,
-    CASE 
-        WHEN details_a_negative LIKE '%hallucinations%' THEN TRUE
-        WHEN details_a_negative LIKE '%incorrect%' THEN TRUE
-        ELSE FALSE 
-    END AS conv_incorrect_a,
-    CASE 
-        WHEN details_b_negative LIKE '%hallucinations%' THEN TRUE
-        WHEN details_b_negative LIKE '%incorrect%' THEN TRUE
-        ELSE FALSE 
-    END AS conv_incorrect_b,
-    CASE WHEN details_a_negative LIKE '%superficial%' THEN TRUE ELSE FALSE END AS conv_superficial_a,
-    CASE WHEN details_b_negative LIKE '%superficial%' THEN TRUE ELSE FALSE END AS conv_superficial_b,
-    CASE WHEN details_a_negative LIKE '%instructions-not-followed%' THEN TRUE ELSE FALSE END AS conv_instructions_not_followed_a,
-    CASE WHEN details_b_negative LIKE '%instructions-not-followed%' THEN TRUE ELSE FALSE END AS conv_instructions_not_followed_b
-FROM votes;
-"""
-
 
 ip_map = pd.read_sql_query("SELECT * FROM ip_map", conn)
 
@@ -191,7 +152,7 @@ def export_data(df, table_name):
 def main():
     # Table-specific queries
     queries = {
-        "votes": VOTES_QUERY,
+        "votes": None,
         "reactions": None,  # Default fetch all
         # "conversations": CONV_QUERY,
         "questions": QUESTIONS_QUERY,
