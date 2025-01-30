@@ -30,7 +30,7 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
-    mode_banner
+    mode_banner,
 )
 import traceback
 import os
@@ -49,7 +49,7 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
-    mode_banner_html
+    mode_banner_html,
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -81,7 +81,6 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
 )
 
 from numpy import random
-
 
 
 # Register listeners
@@ -183,7 +182,11 @@ document.getElementById("fr-modal-welcome-close").blur();
         show_progress="hidden",
     )
     def set_guided_prompt(
-        app_state_scoped, guided_cards, model_dropdown_scoped, event: gr.EventData, request: gr.Request
+        app_state_scoped,
+        guided_cards,
+        model_dropdown_scoped,
+        event: gr.EventData,
+        request: gr.Request,
     ):
 
         # chosen_prompts_pool = guided_cards
@@ -198,12 +201,12 @@ document.getElementById("fr-modal-welcome-close").blur();
         new_value = prompt
 
         model_dropdown_scoped["prompt_value"] = new_value
-        
+
         return {
             app_state: app_state_scoped,
             # first_send_btn: gr.update(interactive=True),
             model_dropdown: model_dropdown_scoped,
-                        shuffle_link: gr.update(visible=True),
+            shuffle_link: gr.update(visible=True),
         }
 
     @model_dropdown.select(
@@ -212,7 +215,11 @@ document.getElementById("fr-modal-welcome-close").blur();
         show_progress="hidden",
     )
     def pick_model(
-        app_state_scoped, conv_a_scoped, conv_b_scoped, model_dropdown_scoped, request: gr.Request
+        app_state_scoped,
+        conv_a_scoped,
+        conv_b_scoped,
+        model_dropdown_scoped,
+        request: gr.Request,
     ):
         small_models = [
             model
@@ -224,10 +231,10 @@ document.getElementById("fr-modal-welcome-close").blur();
             for model in config.models_extra_info
             if model["friendly_size"] in ["M", "L", "XL"]
         ]
-        
-        mode = model_dropdown_scoped['mode']
-        
-        logger.info("chose mode: " +mode, extra={"request": request})
+
+        mode = model_dropdown_scoped["mode"]
+
+        logger.info("chose mode: " + mode, extra={"request": request})
 
     @shuffle_link.click(
         inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
@@ -251,7 +258,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             else:
                 conv_a_scoped.model_name = second_model["id"]
                 conv_b_scoped.model_name = first_model["id"]
-            
+
         elif mode == "small-models":
             first_model = small_models[random.randint(len(small_models))]
             small_models.remove(first_model)
@@ -265,7 +272,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_b_scoped.model_name = second_model["id"]
             # Custom mode
         elif mode == "custom":
-            custom_models_selection = model_dropdown_scoped['custom_models_selection']
+            custom_models_selection = model_dropdown_scoped["custom_models_selection"]
             #  FIXME: input sanitization
             # if any(mode[1], not in models):
             #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
@@ -286,27 +293,34 @@ document.getElementById("fr-modal-welcome-close").blur();
             elif len(custom_models_selection) == 2:
 
                 if swap == 0:
-                    conv_a_scoped.model_name =  custom_models_selection[0]
-                    conv_b_scoped.model_name =  custom_models_selection[1]
+                    conv_a_scoped.model_name = custom_models_selection[0]
+                    conv_b_scoped.model_name = custom_models_selection[1]
                 else:
-                    conv_a_scoped.model_name =  custom_models_selection[1]
-                    conv_b_scoped.model_name =  custom_models_selection[0]
+                    conv_a_scoped.model_name = custom_models_selection[1]
+                    conv_b_scoped.model_name = custom_models_selection[0]
             if len(custom_models_selection) > 0:
                 app_state_scoped.custom_models_selection = custom_models_selection
-                logger.info("custom_models_selection: " +str(custom_models_selection), extra={"request": request})
-                
-        else: # assume random mode
+                logger.info(
+                    "custom_models_selection: " + str(custom_models_selection),
+                    extra={"request": request},
+                )
+
+        else:  # assume random mode
             # TODO: init here instead of on arena load
             pass
         if mode in ["random", "custom", "small-models", "big-vs-small"]:
             app_state_scoped.mode = mode
-            
-        logger.info("picked model a: " + conv_a_scoped.model_name,            extra={"request": request},
-)
-        logger.info("picked model b: " + conv_b_scoped.model_name,            extra={"request": request},
-)
+
+        logger.info(
+            "picked model a: " + conv_a_scoped.model_name,
+            extra={"request": request},
+        )
+        logger.info(
+            "picked model b: " + conv_b_scoped.model_name,
+            extra={"request": request},
+        )
         return [app_state_scoped, conv_a_scoped, conv_b_scoped]
-    
+
     @textbox.change(
         inputs=[app_state, textbox],
         outputs=[send_btn],
@@ -381,7 +395,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # 1 chatbot
             chatbot,
             text,
-            mode_banner
+            mode_banner,
         ]
 
     def add_text(
@@ -392,12 +406,12 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         event: gr.EventData,
     ):
-        
+
         # if retry, resend last user errored message
         if event._data is not None:
             last_message_a = conv_a_scoped.messages[-1]
             last_message_b = conv_b_scoped.messages[-1]
-            
+
             app_state_scoped.awaiting_responses = False
             if last_message_a.role == "user" and last_message_b.role == "user":
                 text = last_message_a.content
@@ -641,7 +655,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 )
 
             chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-            
+
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
     # don't enable conclude if only one user msg
@@ -678,8 +692,13 @@ document.getElementById("fr-modal-welcome-close").blur();
         ],
         fn=add_first_text,
         api_name=False,
-        inputs=[app_state] +  [conv_a] + [conv_b] + [model_dropdown] + [mode_banner],
-        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox] + [mode_banner],
+        inputs=[app_state] + [conv_a] + [conv_b] + [model_dropdown] + [mode_banner],
+        outputs=[app_state]
+        + [conv_a]
+        + [conv_b]
+        + [chatbot]
+        + [textbox]
+        + [mode_banner],
         # scroll_to_output=True,
         show_progress="hidden",
     ).success(
@@ -754,7 +773,6 @@ setTimeout(() => {
 }, 500);
 }""",
         show_progress="hidden",
-
     ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
@@ -848,7 +866,6 @@ nextScreen.scrollIntoView({
 });}, 500);
 }""",
         show_progress="hidden",
-
     )
 
     @chatbot.like(
@@ -1017,7 +1034,7 @@ revealScreen.scrollIntoView({
   block: 'start'
 });}, 500);
 }""",
-show_progress="hidden",
+        show_progress="hidden",
     )
 
     # gr.on(
