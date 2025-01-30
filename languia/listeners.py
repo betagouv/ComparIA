@@ -236,16 +236,6 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         logger.info("chose mode: " + mode, extra={"request": request})
 
-    @shuffle_link.click(
-        inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
-    )
-    def shuffle_prompt(guided_cards, request: gr.Request):
-        prompt = gen_prompt(guided_cards)
-        logger.info(
-            f"shuffle: {prompt}",
-            extra={"request": request},
-        )
-        return prompt
 
         if mode == "big-vs-small":
             first_model = big_models[random.randint(len(big_models))]
@@ -320,6 +310,18 @@ document.getElementById("fr-modal-welcome-close").blur();
             extra={"request": request},
         )
         return [app_state_scoped, conv_a_scoped, conv_b_scoped]
+
+    @shuffle_link.click(
+        inputs=[guided_cards, model_dropdown], outputs=[model_dropdown], api_name=False, show_progress="hidden"
+    )
+    def shuffle_prompt(guided_cards, model_dropdown_scoped, request: gr.Request):
+        prompt = gen_prompt(guided_cards)
+        model_dropdown_scoped["prompt_value"] = prompt
+        logger.info(
+            f"shuffle: {prompt}",
+            extra={"request": request},
+        )
+        return model_dropdown_scoped
 
     @textbox.change(
         inputs=[app_state, textbox],
