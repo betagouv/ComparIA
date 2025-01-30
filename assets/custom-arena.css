@@ -32,7 +32,13 @@
   align-items: center;
 }
 
+.sommet-description {
+  color: #051F43;
+}
 
+.custom-card:has(.degrade) {
+  background: linear-gradient(45deg, #E8E9FE 0%, #F2F5FE 36%, #FFF 100%);
+}
 
 /* BUGFIXES */
 

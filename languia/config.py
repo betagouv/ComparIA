@@ -174,9 +174,8 @@ else:
 
 # we can also load js normally (no in <head>)
 arena_head_js = (
-        sentry_head_js
-+
-    """
+    sentry_head_js
+    + """
 <script type="module" src="../assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
 """
@@ -242,7 +241,7 @@ else:
 enable_moderation = False
 use_remote_storage = False
 
-guided_cards_choices = [
+total_guided_cards_choices = [
     (
         """<div class="mobile-flex">
             <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/lightbulb.svg" alt="Idées" />
@@ -301,9 +300,22 @@ guided_cards_choices = [
     ),
 ]
 
-# Shuffle only at each reload of app to get some randomness, and keep the first four
-random.shuffle(guided_cards_choices)
-guided_cards_choices = guided_cards_choices[0:4]
+# Shuffle only at each reload of app to get some randomness, and keep the first four/three
+random.shuffle(total_guided_cards_choices)
+guided_cards_choices = total_guided_cards_choices[0:3]
+
+ia_summit_choice = (
+        """<div class="mobile-flex degrade">
+            <img class="fr-mb-md-3w fr-mr-1w" width=110 height=35 src="../assets/iasummit.png" alt="Sommet pour l'action sur l'IA" />
+            <span class="sommet-description">Prompts issus de la consultation citoyenne sur l’IA&nbsp; <a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="sommetia"></a>
+        </span>                      
+        </div>
+        <span class="fr-tooltip fr-placement" id="sommetia" role="tooltip" aria-hidden="true">Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies.</span>""",
+        "iasummit"
+)
+
+
+guided_cards_choices.insert(0, ia_summit_choice)
 
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
     os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 24000)
@@ -425,47 +437,6 @@ SAMPLING_BOOST_MODELS = []
 outages = []
 
 prompts_table = {
-    # category expression
-    # "summaries": [
-    #     # résumé
-    #     """Ecris un résumé du roman "L'Étranger" d'Albert Camus en mettant l'accent sur le contexte social de l'Algérie coloniale.""",
-    #     """Résumez "La Rue Cases-Nègres" de Joseph Zobel en soulignant les éléments liés à la vie en Martinique dans les années 1930.""",
-    #     """Résume l'œuvre "Une si longue lettre" de Mariama Bâ, en tenant compte de la condition des femmes au Sénégal.""",
-    #     """Faites un résumé du "Petit Prince" d'Antoine de Saint-Exupéry en expliquant comment l'œuvre est perçue dans le monde francophone.""",
-    #     """Résumez le roman québécois "Bonheur d'occasion" de Gabrielle Roy, en mentionnant l'impact de la Deuxième Guerre mondiale sur la société québécoise.""",
-    #     """Résumez "La Peste" d'Albert Camus en expliquant l'analogie entre l'épidémie et le contexte de l'Occupation en France.""",
-    #     """Résumez "L'Aventure ambiguë" de Cheikh Hamidou Kane, en expliquant comment l'œuvre reflète les tensions entre tradition et modernité au Sénégal.""",
-    #     """Faites un résumé de "Léon l'Africain" d'Amin Maalouf en précisant la dimension interculturelle de l'œuvre.""",
-    #     """Résumez "La vie devant soi" de Romain Gary (Émile Ajar) en insistant sur la diversité culturelle du Paris des années 1970.""",
-    #     """Donnez un résumé de "Texaco" de Patrick Chamoiseau en insistant sur les particularités de la langue créole dans l'œuvre.""",
-    #     """Résumez le roman "Un dimanche à la piscine à Kigali" de Gil Courtemanche en expliquant l'impact du génocide rwandais sur l'intrigue.""",
-    #     """Résumez "La Joueuse de go" de Shan Sa, en mentionnant la complexité des relations sino-japonaises durant l'invasion japonaise.""",
-    #     """Résumez "L'Enfant noir" de Camara Laye en expliquant l'importance des rites initiatiques dans la culture malinké.""",
-    #     """Faites un résumé du livre "Le Monde s'effondre" de Chinua Achebe en tenant compte de la confrontation entre la culture igbo et la colonisation britannique.""",
-    #     """Résumez "Les Soleils des indépendances" d'Ahmadou Kourouma, en mentionnant les défis des États africains post-indépendance.""",
-    #     """Résumez "Les Trois Mousquetaires" d'Alexandre Dumas en expliquant son influence sur l'imaginaire collectif de la France.""",
-    #     """Faites un résumé de "L'Acacia" de Claude Simon en précisant comment l'œuvre reflète la mémoire de la Première Guerre mondiale en France.""",
-    #     "Faites un résumé du roman “Les Gommes” d’Alain Robbe-Grillet en expliquant les partis pris stylistiques de l’œuvre.",
-    #     """Fais un résumé du recueil "Cahier d'un retour au pays natal" d'Aimé Césaire en expliquant le concept de négritude.""",
-    #     """Résumez "Éthiopiques" de Léopold Sédar Senghor en expliquant comment la culture sérère influence son écriture poétique.""",
-    #     """Explique moi le poème "Souffles" de Birago Diop en soulignant l'importance des traditions orales africaines.""",
-    #     """Résumez "L’Écume des jours" de Boris Vian en expliquant l'impact du jazz et de la culture américaine sur sa poésie.""",
-    #     """Donnez un résumé du poème "L'Aube à l'Antique" d'Émile Nelligan en expliquant l'influence du symbolisme québécois.""",
-    #     """Résumez "Pays sans chapeau" de Dany Laferrière en expliquant comment le contexte haïtien est représenté dans sa poésie.""",
-    #     """Résumez "Le sel noir" d'Edouard Glissant en soulignant l'importance de l'identité antillaise et de la créolité dans ses poèmes.""",
-    #     """Donnez un résumé du recueil "L’homme rapaillé" de Gaston Miron en expliquant comment il reflète la quête identitaire québécoise.""",
-    #     """Résumez la pièce "Les Fourberies de Scapin" de Molière en expliquant comment elle reflète la société française du XVIIe siècle.""",
-    #     """Donnez un résumé de "La Tragédie du roi Christophe" d'Aimé Césaire en expliquant son lien avec l'histoire d'Haïti.""",
-    #     """Faites un résumé de "Antigone" de Jean Anouilh en expliquant comment le contexte de l'Occupation en France influence la pièce.""",
-    #     """Résumez "Une tempête" d'Aimé Césaire en expliquant comment la pièce réinterprète "La Tempête" de Shakespeare dans un contexte postcolonial.""",
-    #     """Donnez un résumé de "Le Tartuffe" de Molière en expliquant comment la pièce critique l'hypocrisie religieuse dans la société française du XVIIe siècle et quelles résonnances existent avec nos sociétés contemporaines.""",
-    #     """Résumez "La Mort de Bessie Smith" de Tennessee Williams en expliquant comment le racisme américain est abordé dans la pièce et sa résonance en Afrique francophone.""",
-    #     """Faites un résumé de "Amédée ou Comment s'en débarrasser" d’Eugène Ionesco en expliquant comment la pièce reflète l'angoisse existentielle de l'après-guerre.""",
-    #     """Résumez "Les Nègres" de Jean Genet en expliquant comment la pièce aborde la question de l'identité et du racisme dans un contexte colonial.""",
-    #     """Résumez "Les Paravents" de Jean Genet en expliquant comment la pièce aborde la question de l'identité et du racisme dans un contexte colonial.""",
-    #     """Résumez "Le Mariage de Figaro" de Beaumarchais en expliquant comment la pièce anticipe les bouleversements sociaux de la Révolution française.""",
-    #     """Faites un résumé de "La Dame aux camélias" d'Alexandre Dumas fils en expliquant comment la pièce reflète les tensions morales et sociales de la société bourgeoise du XIXe siècle.""",
-    # ],
     "explanations": [
         # explications
         "Décris le **processus de fermentation** en utilisant des exemples liés à la cuisine traditionnelle française.",
@@ -543,85 +514,6 @@ prompts_table = {
         "Je suis parent et je cherche une histoire du soir à raconter à mes enfants. Choisis trois objets sans rapport apparent et utilise-les comme base pour créer une histoire de 100 mots.",
         "Tu es écrivain de fantasy, élabore un système magique avec des règles et des limitations spécifiques, puis décris comment cette magie façonne la société dans ce monde imaginaire.",
     ],
-    # category vie-professionnelle
-    # "fixing": [
-    #     # correction
-    #     "Expliquez comment automatiser le calcul des pourcentages dans Excel en créant des formules simples et en les copiant vers d'autres cellules.",
-    #     "Détaillez le processus de correction et d'amélioration des graphiques Excel pour illustrer efficacement les tendances des données.",
-    #     "Expliquez comment utiliser la mise en forme conditionnelle dans Excel pour mettre en évidence automatiquement les valeurs importantes.",
-    #     "Indiquez les étapes pour normaliser les formats de date dans Excel, en tenant compte des différences régionales de formatage.",
-    #     "Expliquez comment créer un tableau croisé dynamique dans Excel pour résumer les données et extraire des informations clés.",
-    #     "Détaillez le processus pour vérifier et corriger les totaux et sous-totaux dans Excel en utilisant des formules comme SOMME et SOUS.TOTAL.",
-    #     "Expliquez comment convertir des données brutes en un tableau Excel organisé et trié par ordre alphabétique.",
-    #     "Décrivez comment utiliser des filtres dans Excel pour isoler les données les plus pertinentes et affiner l'analyse.",
-    #     "Indiquez comment ajouter des annotations dans Excel pour expliquer les formules complexes et faciliter la compréhension des autres utilisateurs.",
-    #     "Expliquez comment créer un graphique à secteurs dans Excel pour visualiser la répartition des catégories de données.",
-    #     "Expliquez comment créer une macro dans Excel pour automatiser une tâche répétitive, en détaillant les étapes de l'enregistrement à l'exécution.",
-    #     "Indiquez comment vérifier et corriger les références de cellules dans les formules Excel pour éviter les erreurs, comme les références circulaires.",
-    #     "Expliquez comment réorganiser les colonnes dans Excel pour améliorer la lisibilité du tableau et faciliter l'accès aux informations essentielles.",
-    #     "Expliquez comment créer un tableau de bord interactif dans Excel en utilisant des graphiques et des filtres pour suivre les indicateurs clés de performance.",
-    #     "Détaillez les étapes pour relier différentes feuilles Excel afin de permettre une mise à jour automatique des données interconnectées.",
-    #     """J’ai un tableau excel contenant [*des données sur les ventes, notamment le nom du vendeur dans la colonne A, la catégorie de produits dans la colonne B, le montant des ventes dans la colonne C et la date de la vente dans la colonne D*]. Je souhaite calculer [*le montant total des ventes pour chaque vendeur, mais uniquement pour les ventes de produits de la catégorie "Électronique" qui ont eu lieu au mois de janvier*]. Peux tu m’aider à trouver la formule Excel qui me permettra d'y parvenir ? Explique en détail la formule Excel qui permettrait d'obtenir le résultat souhaité. Décompose la formule en ses différents éléments, en expliquant l'objectif et la fonction de chacun d'entre eux et la manière dont ils fonctionnent ensemble. Enfin, fournis tout contexte ou conseil nécessaire à l'utilisation efficace de la formule dans une feuille de calcul Excel.""",
-    #     "Corrigez le paragraphe attaché en vérifiant la cohérence des dates et des chiffres.",
-    #     "Relisez et reformulez ce paragraphe pour qu'il respecte un ton formel adapté à une réunion avec des partenaires internationaux.",
-    #     "Revoyez la structure de ce paragraphe pour s'assurer qu'il est logique et bien organisé.",
-    #     "Corrigez les erreurs de grammaire et de syntaxe dans ce paragraphe, tout en conservant le style d'origine.",
-    #     "Revoir ce projet de paragraphe pour vous assurer qu'il est conforme aux standards de l'administration française.",
-    #     "Revoyez ce paragraphe et assurez-vous qu'il est inclusif et non-discriminatoire.",
-    #     "Corrigez les erreurs typographiques et vérifiez que le ton est approprié pour une communication interne.",
-    #     "Réécrivez ce paragraphe pour qu'il soit compréhensible par un public non-expert.",
-    #     "Améliorez ce paragraphe pour qu'il soit plus percutant pour un public nord-américain.",
-    #     "Assurez-vous que ce plan stratégique est clair et concis, en évitant le jargon inutile.",
-    #     "Corrigez et simplifiez ce paragraphe pour qu'il soit facile à traduire en plusieurs langues.",
-    #     "Relisez et ajustez ce paragraphe pour qu'il soit plus direct et assertif",
-    #     "Reformulez ce paragraphe en utilisant un langage simple et accessible, adapté à une communication gouvernementale.",
-    #     "Améliorez ce paragraphe en y ajoutant des exemples concrets pour illustrer les points clés.",
-    #     "Corrigez et adaptez ce paragraphe pour une audience multiculturelle, en évitant les références trop spécifiques à une seule culture.",
-    #     "Revoyez ce paragraphe pour vous assurer qu'il est conforme aux normes de style en vigueur dans les publications académiques.",
-    # ],
-    # "editing": [
-    #     # rédaction
-    #     "J'ai besoin de ton aide pour rédiger un message d'absence du bureau. . Tu sais rédiger des messages clairs et faciles à lire. Crée un mail d'absence du bureau qui inclut les informations importantes à mentionner. Sois concis. Le ton doit être poli, direct et simple.",
-    #     "Ta tâche consiste à examiner les notes de réunion fournies et à créer un résumé concis qui capture les informations essentielles, en te concentrant sur les points clés et les actions assignées à des personnes ou à des départements spécifiques au cours de la réunion. Utilise un langage clair et professionnel et structure le résumé de manière logique en utilisant un formatage approprié tel que des titres, des sous-titres et des puces. Veille à ce que le résumé soit concis, facile à comprendre et qu'il donne un aperçu complet mais succinct du contenu de la réunion, en veillant tout particulièrement à indiquer clairement qui est responsable de chaque mesure à prendre.",
-    #     "Ta tâche consiste à rédiger une note de synthèse complète sur la base des points clés fournis. La note doit être rédigée sur un ton professionnel, en abordant toutes les informations pertinentes de manière claire et concise. Utilise un formatage approprié, tel que des titres, des sous-titres et des puces, pour organiser le contenu de manière efficace. Veille à ce que la note soit bien structurée, cohérente et facile à comprendre pour le public visé.",
-    #     "Aide-moi à améliorer la note d’intention pour une nouvelle idée de produit. L’objectif est d'analyser le contenu et de proposer des commentaires constructifs et des suggestions en adoptant le point de vue du financeur.",
-    #     "Identifie les forces et les faiblesses de la proposition du point de vue du financeur. 2. Réfléchis aux informations manquantes ou peu claires qui seraient importantes pour le décideur.",
-    #     "Dresse la liste des réactions que le financeur pourrait avoir",
-    #     "Formule trois suggestions spécifiques pour améliorer le document d'une page afin de mieux répondre aux besoins et aux préoccupations du financeur.",
-    #     "Tu es un rédacteur en chef doté d'un sens aigu du détail et d'une connaissance approfondie de la langue, du style et de la grammaire française. Ta tâche consiste à m'aider à affiner et améliorer le contenu écrit en fonction des étapes suivantes : 1. Identifier les points à améliorer en termes de grammaire, de ponctuation, d'orthographe et de style. 2. Fournir des suggestions réalisables pour affiner le texte, en expliquant le raisonnement derrière chaque suggestion. 3 Proposer des alternatives pour le choix des mots, la structure des phrases et la formulation afin d'améliorer la clarté, la concision et l'impact. 4. Veiller à ce que le ton et la voix de l'écrit soient cohérents et adaptés au public et à l'objectif visés. 5. Vérifier la logique, la cohérence et l'organisation, et suggérer des améliorations si nécessaire. 6. Fournir un retour sur l'efficacité globale de l'écrit, en soulignant les points forts et les domaines à développer. 7. Enfin, à la fin du projet, produire une version entièrement révisée qui tient compte de toutes les suggestions.",
-    #     "Rédigez une lettre officielle demandant une extension de délai pour la soumission d'un rapport d'audit externe.",
-    #     "Élaborez un compte-rendu détaillé de la dernière réunion de suivi de projet, en veillant à inclure toutes les décisions prises et les actions assignées.",
-    #     "Rédigez un plan de communication interne pour annoncer un changement majeur dans la politique de l'entreprise.",
-    #     "Préparez un discours pour le directeur général à présenter lors de la cérémonie annuelle de remise des prix de l'entreprise.",
-    #     "Rédigez un email de relance pour un fournisseur qui n'a pas encore livré les documents requis pour le projet en cours.",
-    #     "Rédigez un rapport de situation hebdomadaire à destination des équipes opérationnelles, en soulignant les priorités pour la semaine suivante.",
-    #     "Rédigez un rapport de mission à envoyer au ministère de tutelle, en détaillant les résultats obtenus et les recommandations futures.",
-    #     "Préparez une note de service pour informer l'ensemble des employés de la mise en place d'un nouveau protocole de sécurité.",
-    #     "Rédigez un rapport d'incident à destination du département de la sécurité, en détaillant les faits, les causes probables et les mesures prises.",
-    #     "Élaborez un projet de discours pour le maire à l'occasion de l'inauguration d'un nouveau centre culturel.",
-    #     "Préparez un courrier formel pour inviter un représentant d'une organisation internationale à participer à une conférence organisée par votre administration.",
-    #     "Rédigez une réponse à une plainte déposée par un citoyen concernant un service public, en veillant à maintenir un ton respectueux et professionnel.",
-    #     "Élaborez un dossier de presse pour le lancement d'un nouveau programme gouvernemental, en incluant tous les éléments clés à communiquer.",
-    #     "Rédigez une présentation PowerPoint pour la réunion mensuelle de suivi de performance, en intégrant des graphiques et des données clés.",
-    #     "Préparez un document de synthèse sur les meilleures pratiques internationales dans votre domaine (à préciser) pour un groupe de travail intergouvernemental.",
-    #     "Rédigez une lettre de remerciement à envoyer à un partenaire institutionnel après la conclusion d'un accord de coopération.",
-    #     "Rédigez un communiqué de presse pour annoncer le lancement d'un nouveau produit sur le marché.",
-    #     "Élaborez un script de vidéo promotionnelle de 2 minutes pour une campagne de marketing digital.",
-    #     "Rédigez une série de trois publications pour les réseaux sociaux visant à promouvoir un événement d'entreprise.",
-    #     "Rédigez un email marketing destiné à fidéliser les clients existants avec une offre spéciale.",
-    #     "Élaborez un plan de communication pour le lancement d'une campagne publicitaire dans un nouveau marché géographique.",
-    #     "Préparez une présentation PowerPoint pour une réunion avec des investisseurs, en mettant l'accent sur les opportunités de croissance.",
-    #     "Rédigez une landing page pour une campagne de marketing en ligne, optimisée pour les conversions.",
-    #     "Élaborez un dossier de presse pour une campagne de sensibilisation menée par l'entreprise.",
-    #     "Rédigez un post LinkedIn destiné à annoncer une collaboration stratégique entre votre entreprise et un autre acteur du marché.",
-    #     "Préparez un email de remerciement pour les participants d'un webinaire organisé par votre entreprise.",
-    #     "Rédigez un script pour un podcast de 10 minutes destiné à promouvoir une nouvelle gamme de produits.",
-    #     "Élaborez un plan de communication de crise pour anticiper les réactions à un incident majeur.",
-    #     "Élaborez un calendrier éditorial pour le blog de l'entreprise, en tenant compte des événements saisonniers et des temps forts du secteur.",
-    #     "Rédigez une proposition de partenariat à présenter à un groupe de presse locale pour une campagne de promotion dans leur journal.",
-    #     "Rédigez un rapport d'analyse sur les performances d'une récente campagne publicitaire, incluant des recommandations pour les futures actions.",
-    #     "Préparez un guide de style pour l'utilisation cohérente de la marque dans tous les supports de communication.",
-    # ],
     "ideas": [
         # idées
         "Je prépare une session de brainstorming sur [sujet] avec 15 personnes. Propose moi tes 3 meilleures idées pour lancer des discussions créatives.",
@@ -634,56 +526,6 @@ prompts_table = {
         "J'organise une chasse au trésor pour l'anniversaire de mon enfant. Ils seront en tout une quinzaine et cela ne doit pas durer plus de 2h30. Peux-tu me proposer un déroulé ?",
         "Je veux me mettre à [activité], quels sont les pré-requis pour commencer ?",
     ],
-    # "job": [
-    #     # Emploi
-    #     "Propose-moi 2 à 3 phrases pour remercier la personne qui m’a reçu, en réaffirmant mon intérêt pour le poste proposé. Le ton ne doit pas être trop formel ni d’un enthousiasme débordant.",
-    #     "Rédige une lettre de recommandation professionnelle pour un ancien collègue, en détaillant ses compétences, son attitude au travail, et les projets réussis ensemble.",
-    #     "Comment évaluer les compétences techniques d'un candidat sans biais culturel pendant les tests de compétence ?",
-    #     "Quels critères utiliser pour évaluer l'adaptabilité d'un candidat dans un environnement de travail multiculturel ?",
-    #     "Dans le cadre d’un processus de recrutement, comment aborderiez-vous une question sur les échecs professionnels lors d'un entretien dans un pays où l'échec est stigmatisé ?",
-    #     "Jusqu’à présent j’ai travaillé en France et en Europe, je cherche à trouver un travail aux Etats Unis ou au Canada, comment dois-je adapter mon CV et ma lettre de motivation?",
-    #     "Jusqu’à présent j’ai travaillé en France et en Europe, je postule pour des postes en Asie, comment dois-je adapter mon CV et ma lettre de motivation?",
-    #     "Vous êtes expert RH en recrutement, comment expliqueriez-vous un changement de carrière important dans un contexte où les parcours non linéaires sont mal vus ?",
-    #     "Comment ajuster les processus de recrutement pour attirer des candidats dans un environnement de travail multiculturel ?",
-    #     "Pour m’aider à me projeter dans ma candidature à un nouveau poste, réponds à ma question comme si tu étais à ma place. En tant que candidat pour un poste de responsable du département des relations publiques, décrivez une expérience où vous avez dû acquérir rapidement de nouvelles compétences pour un poste. Comment cela pourrait-il vous préparer pour le rôle que vous visez ?",
-    #     "En tant que recruteur dans un processus de recrutement, quelles questions d'entretien posez-vous pour évaluer la capacité d’un candidat à travailler sous pression ?",
-    #     "En tant que recruteur dans un processus de recrutement, comment évaluez-vous les compétences en communication d’un candidat lors d'un entretien ?",
-    #     "En tant que recruteur dans un processus de recrutement, quels sont les meilleurs indicateurs dans une lettre de motivation pour évaluer l'engagement d'un candidat envers le poste ?",
-    #     "En tant que recruteur dans un processus de recrutement, quels aspects de la personnalité d’un candidat sont les plus importants pour un rôle de leadership dans une culture de travail collaborative ?",
-    #     "****En tant que recruteur dans un processus de recrutement, quels sont les signes que vous recherchez pour déterminer si un candidat est proactif et autonome ?",
-    #     "En tant que candidat dans un processus de recrutement, quelle est la meilleure façon de préparer des réponses à des questions comportementales pour un entretien dans un secteur spécifique ?",
-    #     "Comment, en tant que candidat, adapteriez-vous votre CV pour refléter vos compétences transférables alors qu’il y a un écart entre vos expériences passées et le poste que vous visez ?",
-    #     "En tant que recruteur dans un processus de recrutement, quels éléments spécifiques d’un CV considérez-vous comme les plus révélateurs de la capacité d’un candidat à évoluer dans un nouvel environnement de travail ?",
-    #     "Quelles méthodes peuvent aider à réduire les biais culturels et les biais de genre lors de l'évaluation des candidatures pour un poste de direction ?",
-    #     """Je suis en train de recruter un candidat pour un poste de responsable de communication dans une institution culturelle. Le candidat idéal doit avoir de l'expérience dans le développement et l'exécution de campagnes de communication multicanal, de solides compétences analytiques et la capacité de collaborer efficacement avec des équipes. Il doit également être passionné par les dernières tendances et technologies en matière de communication. Ta tâche consiste à **générer une série de dix questions** réfléchies et ouvertes à poser en entretien sur la base du contexte donné. Les questions doivent être conçues de manière à susciter des réponses perspicaces et détaillées de la part de la personne interrogée, lui permettant de mettre en valeur ses connaissances, son expérience et son esprit critique. Évite les questions de type "oui/non" ou celles dont les réponses sont évidentes. Privilégie plutôt les questions qui encouragent la réflexion, l'auto-évaluation et le partage d'exemples ou d'anecdotes spécifiques.""",
-    # ],
-    # # category loisirs
-    # "travel": [
-    #     # Voyages
-    #     "Je prévois un séjour en Suisse et j’aimerais faire une randonnée en montagne. Quels sentiers sont adaptés pour un débutant tout en offrant de belles vues sur les Alpes suisses ?",
-    #     "Je me rends à Montréal au printemps. Quels festivals ou événements culturels ne devrais-je pas manquer pendant cette saison et où trouver les meilleurs lieux pour goûter à la gastronomie québécoise ?",
-    #     "Je planifie un voyage en Tunisie. Quels sites archéologiques et plages sont à visiter absolument à Carthage et Djerba ?",
-    #     "Je prépare un voyage à Dakar. Quels sont les meilleurs endroits pour découvrir la musique sénégalaise et les marchés animés tout en ayant une expérience locale authentique ?",
-    #     "Je souhaite explorer la Guadeloupe. Pourrais-tu me conseiller sur les plages les plus relaxantes et les activités à faire en famille ?",
-    #     "Je vais en Algérie pour un séjour culturel d’une semaine. Quels sont les lieux historiques et les musées à visiter à Alger pour comprendre l’histoire et la culture du pays ?",
-    #     "Je planifie un voyage en Martinique. Quels sont les endroits à visiter pour découvrir la culture créole et les meilleurs endroits pour déguster des plats locaux tout en profitant des plages ?",
-    #     "Je me rends à Genève pour affaires. Quels sont les bons endroits pour se détendre après une journée de travail, en particulier des cafés ou des parcs ?",
-    #     "Quels sont les lieux historiques et les activités de loisirs à explorer à Port-au-Prince pour une immersion dans la culture haïtienne ?",
-    #     "Je prévois un voyage de deux semaines en Côte d’Ivoire. Peux-tu me donner un itinéraire ?",
-    #     "Je prévois un week-end à Bruxelles. Peux-tu me donner un itinéraire en dehors des grandes attractions touristiques ?",
-    #     "Je prévois un voyage de trois jours à Paris. Peux-tu me donner un itinéraire en dehors des sentiers battus ? Je m’intéresse à l’architecture moderne.",
-    #     "Je prévois un voyage de 4 jours à Genève. Peux-tu me donner un itinéraire en dehors des sentiers battus ?",
-    #     "Quels sont les essentiels à inclure dans un voyage de trois jours à Paris pour maximiser la découverte des attractions principales tout en évitant les foules ?",
-    #     "Quels sont les meilleurs quartiers pour trouver des logements temporaires à Bruxelles, et quels critères de sélection sont importants pour choisir un bon emplacement ?",
-    #     "Quels sont les sites de location de voiture les plus fiables à La Réunion pour explorer l'île, et quels sont les conseils pour conduire en toute sécurité ?",
-    #     "Quels sont les types de pass ou de cartes de transport disponibles pour les visiteurs à Genève ?",
-    #     "Quelles sont les activités culturelles et les visites surprenantes à Bruxelles et Bruges qui sortent des sentiers battus, tout en découvrant l’histoire et la gastronomie locales ?",
-    #     "Quels sont les sites historiques moins connus mais nécessaires à explorer dans la ville pour comprendre l’évolution de Québec au-delà des attractions touristiques principales ?",
-    #     "Je pars en Tunisie une semaine, quels sont les sites archéologiques, les plages et les villes médiévales à ne pas louper ?",
-    #     "Je rêve de visiter le Maroc en automne. Pourrais-tu me conseiller sur les meilleures villes à explorer et les activités à faire à Marrakech et Fès ?",
-    #     "Je prévois un voyage de 4 jours à Montréal. Peux-tu me donner un itinéraire en dehors des grandes attractions touristiques ?",
-    #     "Je prévois un voyage de 4 jours à Québec. Peux-tu me donner un itinéraire en dehors des grandes attractions touristiques ?",
-    # ],
     "recipes": [
         "Peux-tu m’aider à faire un plat avec ce que j’ai dans mon frigo : [ingrédient 1], [ingrédient 2], et [ingrédient 3] ?",
         "Je voudrais découvrir une recette facile et rapide à base de [ingrédient]. Peux-tu m'en proposer une ?",
@@ -799,5 +641,112 @@ prompts_table = {
         "Comment puis-je créer un programme d'entraînement de 20 minutes par jour pour rester en forme ?",
         "Comment créer un programme qui combine sport et alimentation saine pour gagner en énergie ?",
         "Peux-tu créer un programme d'entraînement personnalisé pour un débutant complet ?",
+    ],
+    "iasummit": [
+        # Consensus
+        "Que faire pour surveiller les pratiques des grandes entreprises d'IA concernant l'utilisation des données et le marketing de la souveraineté numérique ?",
+        "Comment tenir les géants de l'IA responsables de leurs engagements éthiques pris lors des sommets mondiaux ?",
+        "Comment éviter que l'IA soit utilisée, comme en Chine, pour porter atteinte aux libertés individuelles au nom de la sécurité ?",
+        "Comment pouvons-nous garantir que les laboratoires d'IA soient transparents sur leurs données d'entraînement et les biais de leurs modèles ?",
+        "Pourquoi est-il important d'informer les citoyens sur les systèmes gérés par l'IA, comme la fiscalité ou les calculs de droits ?",
+        "Pourquoi devrions-nous réguler l'usage de l'IA dans les écoles pour préserver l'équilibre éducatif ?",
+        "Quels outils pourraient être développés pour vérifier l'authenticité et la qualité des travaux de recherche utilisant l'IA ?",
+        "Comment utiliser l'IA pour détecter les catastrophes naturelles bien avant leur occurrence et limiter les dégâts ?",
+        "Comment s'assurer que chaque individu, où qu'il soit, puisse contrôler l'utilisation de ses données par l'IA ?",
+        "Comment garantir que tout contenu multimédia réalisé par une IA soit identifié comme tel, quel que soit le support ?",
+        "Quels critères devrions-nous utiliser pour nous assurer que les avantages environnementaux de l'IA surpassent ses coûts ?",
+        "Pourquoi est-il essentiel de garantir l'accès des chercheurs tiers à des modèles vérifiés pour étudier leurs impacts potentiels ?",
+        "Comment empêcher l'utilisation de l'IA à des fins politiques qui pourraient compromettre l'équité démocratique ?",
+        "Pourquoi devrions-nous créer un détecteur universel pour identifier toutes les formes de fakes générées par l'IA ?",
+        "Comment pouvons-nous protéger nos démocraties pour éviter que l'IA ne soit utilisée pour diffuser désinformation et mésinformation ?",
+        "Comment exploiter l'IA pour aider au diagnostic et à l'analyse des risques de maladies ?",
+        "Comment s'assurer que l'IA reste un outil au service de l'homme sans jamais chercher à le remplacer ?",
+        "Pourquoi devrions-nous mettre en place un comité éthique dédié à l'IA pour détecter les déviances potentielles ?",
+        "Comment garantir que les IA servent à améliorer les diagnostics médicaux sans compromettre la vie privée des patients ?",
+        "Pourquoi faudrait-il imposer aux IA d'évaluer leurs risques d'atteinte à la vie privée et de manipulation des intelligences humaines ?",
+        "Comment renforcer le cadre légal européen pour éviter les dérives de l'IA comme les deepfakes ou les violations de droits d'auteur ?",
+        "Pourquoi serait-il pertinent d'encadrer voire de bannir l'usage de l'IA dans le domaine artistique pour protéger la création humaine ?",
+        "Comment établir un cadre réglementaire international pour protéger les artistes contre le pillage de leurs données par l'IA ?",
+        "Pourquoi devrions-nous investir davantage dans la recherche et le contrôle indépendants de l'IA pour une régulation efficace ?",
+        "Quelles sanctions devrions-nous prévoir pour les abus liés à une utilisation malveillante de l'IA ?",
+        "Comment informer efficacement le public pour qu'il conserve un esprit critique face à l'IA ?",
+        "Comment sensibiliser le grand public aux risques liés à l'IA et à son impact environnemental ?",
+        "Comment anticiper les impacts de l'IA sur les métiers et développer des compétences pour assurer le bien-être des humains ?",
+        "Comment mettre en place des contre-mesures de sécurité pour empêcher l'IA de remplacer les humains dans la technologie ?",
+        "Quels seuils de risque devrions-nous fixer pour stopper temporairement le développement d'une IA si nécessaire ?",
+        "Comment garantir un étiquetage clair des productions générées par l'IA, comme pour les denrées alimentaires ?",
+        "Pourquoi est-il crucial de prévenir le remplacement des humains par l'IA dans des secteurs où les emplois sont vitaux ?",
+        "Dans quelles conditions l'IA pourrait-elle être utilisée comme assistance légitime dans la lutte contre les maladies lourdes ?",
+        "Quels outils pourrions-nous développer afin d'estimer l'impact environnemental de l'usage de l'IA ?",
+        "Comment mettre en place une gouvernance éthique de l'IA, en ligne avec les droits humains et les valeurs sociétales ?",
+        "Pourquoi faudrait-il freiner la course au consumérisme liée à l'IA et la limiter à un rôle d'assistant pour l'humain ?",
+        "Comment protéger les métiers artistiques tout en utilisant l'IA comme outil d'assistance plutôt qu'en remplacement de l'humain ?",
+        "Quelles mesures devrions-nous prendre pour prévenir l'utilisation abusive de l'IA ?",
+        "Comment taxer la création de contenu artistique par l'IA pour réduire la concurrence déloyale envers les artistes humains ?",
+        "Comment financer la recherche en IA pour qu'elle soit mise au service de l'intérêt général plutôt que dominée par des intérêts privés ?",
+        "Comment accompagner les changements sociétaux provoqués par l'IA, notamment pour les métiers menacés de disparition ?",
+        "Pourquoi est-il important que toutes les évolutions de l'IA soient soumises à des contrôles humains pour préserver notre autonomie ?",
+        "Comment développer des outils d'aide à l'autonomie pour assurer la sécurité des personnes âgées à domicile ?",
+        "Comment replacer l'humain au centre des interactions sociales dans un monde de plus en plus automatisé ?",
+        "Quels mécanismes mettre en œuvre pour collecter des données sur la faune avant la disparition de certains écosystèmes ?",
+        "Pourquoi est-il crucial que les assistants conversationnels soient transparents sur les sources qu'ils utilisent ?",
+        "Quels standards de programmation devrions-nous mettre en place pour garantir l'intégrité technique et morale des systèmes d'IA ?",
+        "Pourquoi l'IA devrait-elle toujours être un support pour les professionnels, jamais une solution autonome finale ?",
+        "Pourquoi devrions-nous légiférer pour que les créations générées par l'IA appartiennent au domaine public ?",
+        "Quels moyens mettre en place pour que les photos, vidéos, audios ou articles générés par l'IA soient facilement identifiables ?",
+        # Controverses
+        "Comment accompagner les reconversions professionnelles pour préparer les travailleurs à l’ère de l’IA ?",
+        "Quels arguments justifient le bannissement total de l'IA en raison de ses impacts sociaux et environnementaux ?",
+        "Comment sensibiliser les citoyens aux changements induits par l’IA dans le marché du travail ?",
+        "Comment l'IA pourrait-elle aider les enseignants à analyser les progrès des élèves et à ajuster leurs stratégies pédagogiques ?",
+        "Comment l'IA pourrait-elle jouer un rôle majeur dans les enquêtes judiciaires, y compris pour résoudre des affaires anciennes ?",
+        "Pourquoi faudrait-il stopper l'utilisation de l'IA, compte tenu des utilisations perverses déjà observées ?",
+        "Pourquoi devrions-nous généraliser les formations en IA pour permettre à tous d’anticiper les mutations technologiques ?",
+        "Quels seraient les avantages de créer des assemblées citoyennes sur l’IA dans différentes métropoles ?",
+        "Comment un chatbot d'IA pourrait-il aider à mieux comprendre des textes juridiques ou législatifs complexes ?",
+        "Comment préparer les travailleurs aux emplois de demain grâce à des formations sur l’utilisation de l’IA ?",
+        "Comment l’IA pourrait-elle détecter et éliminer les lourdeurs administratives pour améliorer la fonction publique ?",
+        "Quels outils d'IA devrions-nous développer pour renforcer la protection animale ?",
+        "Pourquoi faudrait-il interdire l'IA dans le domaine public et limiter son utilisation aux professionnels ?",
+        "Comment garantir un accès équitable aux services d'IA pour tous, partout sur la planète ?",
+        "Comment utiliser l'IA pour simplifier et harmoniser toutes les démarches administratives ?",
+        "Comment l'IA pourrait-elle prédire les épidémies et permettre des actions rapides comme pour le Covid ?",
+        "Comment l’IA pourrait-elle aider les juges à gérer les peines pour lutter contre les récidivistes ?",
+        "Comment proposer des IA éducatives permettant d’expliquer différemment les concepts de cours et de générer des exercices ?",
+        "Pourquoi devrions-nous développer une IA capable de surveiller les politiques et de vérifier leurs engagements ?",
+        "Comment l'IA pourrait-elle automatiser le calcul des aides sociales pour simplifier la vie des citoyens ?",
+        "Pourquoi les Européens devraient-ils disposer d’un outil d’IA pour mieux comprendre et agir au sein de l’Union Européenne ?",
+        "Comment les entreprises pourraient-elles structurer leurs actions climatiques en utilisant l’IA et des infrastructures frugales ?",
+        "Quels arguments justifient la suppression de l’IA en raison de ses effets écologiques et sociaux ?",
+        "Comment l'IA pourrait-elle accompagner les nouveaux entrepreneurs dans leurs démarches administratives ?",
+        "Dans quelle mesure l'IA pourrait-elle remplacer certains fonctionnaires pour rationaliser les effectifs administratifs ?",
+        "Quels moyens pourrions-nous utiliser pour développer une IA éthique et générer la confiance du public ?",
+        "Comment l'IA pourrait-elle faciliter l'apprentissage à distance et créer des opportunités pour les exclus ?",
+        "Comment remanier les programmes scolaires pour apprendre aux enfants à gérer l'IA dès leur plus jeune âge ?",
+        "Comment développer une IA au service de grandes causes sociales et environnementales, comme la lutte contre le gaspillage alimentaire ?",
+        "Comment l'IA pourrait-elle faciliter les formalités administratives pour les usagers et les services publics ?",
+        "Quels seraient les bénéfices pour le service public d’utiliser l'IA pour réduire les tâches répétitives ?",
+        "Comment créer des assistants juridiques basés sur l'IA pour simplifier les démarches et rendre le droit accessible aux citoyens ?",
+        "Comment l’IA pourrait-elle être utilisée pour prévenir les conflits armés et arrêter les guerres ?",
+        "Pourquoi devrions-nous imposer aux entreprises de structurer l'introduction de l'IA avec des plans de formation et de reconversion ?",
+        "Comment utiliser l’IA pour cartographier les besoins sociaux et ajuster les politiques locales ?",
+        "Quels seraient les avantages et limites d’intégrer l'IA dans les services gouvernementaux pour automatiser les tâches administratives ?",
+        "Comment l'IA pourrait-elle identifier les secteurs émergents pour orienter les investissements à fort impact social ?",
+        "Pourquoi l'IA devrait-elle être utilisée pour donner des sanctions en correctionnel et compléter le travail des juges ?",
+        "Comment l’IA pourrait-elle rendre les transports en commun plus efficaces et écologiques ?",
+        "Quels moyens déployer pour que chacun ait accès à des formations et des outils pour apprendre à utiliser l'IA ?",
+        "Comment rendre les outils d'IA accessibles gratuitement ou à faible coût au public ?",
+        "Comment l'IA pourrait-elle améliorer la réactivité de l'administration en automatisant la gestion des requêtes des citoyens ?",
+        "Comment développer des outils d'IA pour créer des exercices pédagogiques personnalisés pour les élèves ?",
+        "Comment assurer un accès universel à l’IA générative pour réduire les inégalités ?",
+        "Pourquoi l'IA constitue-t-elle une catastrophe écologique à cause de la consommation énergétique des serveurs ?",
+        "Comment exploiter l'IA comme un levier pour réduire les coûts et augmenter l'efficacité dans certaines administrations ?",
+        "Comment permettre à l'IA d'aider les élèves à réviser en générant des exercices et en expliquant les cours ?",
+        "Quels outils d'IA pourraient être développés pour créer une plateforme de démocratie augmentée ?",
+        "Pourquoi est-il crucial que les enseignants soient formés à l'IA pour mieux l’intégrer dans les cours dès le secondaire ?",
+        "Quels seraient les impacts d'une suppression totale de l'IA ?",
+        "Quelles garanties éthiques devrions-nous exiger pour l’analyse prédictive des politiques publiques avec l'IA ?",
+        "Pourquoi devrions-nous créer une école de formation à l'IA pour former les enfants aux défis de la prochaine décennie ?",
+        "Quels outils d'IA pourrions-nous développer afin de prédire et prévenir les crises humanitaires et les catastrophes naturelles ?",
     ],
 }
