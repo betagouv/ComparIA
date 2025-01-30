@@ -22,7 +22,7 @@ from languia.block_arena import (
     reveal_screen,
     send_area,
     send_btn,
-    # shuffle_link,
+    shuffle_link,
     supervote_area,
     supervote_send_btn,
     # first_textbox,
@@ -178,7 +178,7 @@ document.getElementById("fr-modal-welcome-close").blur();
     # Step 1.1
     @guided_cards.change(
         inputs=[app_state, guided_cards, model_dropdown],
-        outputs=[app_state, model_dropdown],
+        outputs=[app_state, model_dropdown, shuffle_link],
         api_name=False,
         show_progress="hidden",
     )
@@ -203,6 +203,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             app_state: app_state_scoped,
             # first_send_btn: gr.update(interactive=True),
             model_dropdown: model_dropdown_scoped,
+                        shuffle_link: gr.update(visible=True),
         }
 
     @model_dropdown.select(
@@ -227,6 +228,17 @@ document.getElementById("fr-modal-welcome-close").blur();
         mode = model_dropdown_scoped['mode']
         
         logger.info("chose mode: " +mode, extra={"request": request})
+
+    @shuffle_link.click(
+        inputs=[guided_cards], outputs=[textbox], api_name=False, show_progress="hidden"
+    )
+    def shuffle_prompt(guided_cards, request: gr.Request):
+        prompt = gen_prompt(guided_cards)
+        logger.info(
+            f"shuffle: {prompt}",
+            extra={"request": request},
+        )
+        return prompt
 
         if mode == "big-vs-small":
             first_model = big_models[random.randint(len(big_models))]
@@ -294,7 +306,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         logger.info("picked model b: " + conv_b_scoped.model_name,            extra={"request": request},
 )
         return [app_state_scoped, conv_a_scoped, conv_b_scoped]
-
+    
     @textbox.change(
         inputs=[app_state, textbox],
         outputs=[send_btn],
@@ -385,7 +397,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         if event._data is not None:
             last_message_a = conv_a_scoped.messages[-1]
             last_message_b = conv_b_scoped.messages[-1]
-
+            
             app_state_scoped.awaiting_responses = False
             if last_message_a.role == "user" and last_message_b.role == "user":
                 text = last_message_a.content
@@ -468,7 +480,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             mode_screen: gr.update(visible=False),
             chat_area: gr.update(visible=True),
             send_btn: gr.update(interactive=False),
-            # shuffle_link: gr.update(visible=False),
+            shuffle_link: gr.update(visible=False),
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
@@ -629,7 +641,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 )
 
             chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-
+            
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
     # don't enable conclude if only one user msg
@@ -678,7 +690,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            # + [shuffle_link]
+            + [shuffle_link]
             + [conclude_btn]
         ),
         show_progress="hidden",

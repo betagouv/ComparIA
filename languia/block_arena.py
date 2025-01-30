@@ -114,12 +114,12 @@ with gr.Blocks(
             choices=config.guided_cards_choices,
             min_columns=1,
         )
-        # shuffle_link = gr.Button(
-        #     scale=0,
-        #     elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
-        #     visible=False,
-        #     value="Générer un autre message",
-        # )
+        shuffle_link = gr.Button(
+            scale=0,
+            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
+            visible=False,
+            value="Générer un autre message",
+        )
 
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
