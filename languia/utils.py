@@ -521,11 +521,42 @@ def mode_banner_html(mode):
     <div class="fr-container--fluid text-center mode-banner"><img class="inline" src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
     """
 
+def get_gauge_count():
+    from languia.config import db as db_config
+    logger = logging.getLogger("languia")
+    if not db_config:
+        logger.warn("Cannot log to db: no db configured")
+        return
+    conn = psycopg2.connect(**db_config)
+    cursor = conn.cursor()
+    try:
+        select_statement = sql.SQL(
+            """
+        SELECT COUNT(*) FROM votes
+        +
+        SELECT COUNT(*) FROM reactions
+        ;
+    """
+        )
+
+        cursor.execute(select_statement)
+        conn.commit()
+    except Exception as e:
+        logger.error(f"Error getting vote numbers from db: {e}")
+        stacktrace = traceback.format_exc()
+        logger.error(f"Stacktrace: {stacktrace}", exc_info=True)
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
 def gauge_banner_html():
     return """
     <div class="fr-container--fluid  mode-banner"><span class="legende">Nombre total de votes</span> 
     <div class="linear-gauge">
-  <div class="linear-gauge-fill"><span class="votes">42346</span></div></div><span class="objectif">Objectif : 50000</span>
+  <div class="linear-gauge-fill"><span class="votes">"""
+    + get_gauge_count() + """</span></div></div><span class="objectif">Objectif : 50000</span>
     </div>
     <style>
     .legende {
