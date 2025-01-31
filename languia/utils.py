@@ -518,5 +518,5 @@ def mode_banner_html(mode):
         ],
     }
     return f"""
-    <div class="fr-container--fluid text-center mode-banner"><img class="inline" src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
+    <div class="fr-container--fluid text-center mode-banner fr-text--xs"><img class="inline" height=16 src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
     """
