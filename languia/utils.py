@@ -520,3 +520,29 @@ def mode_banner_html(mode):
     return f"""
     <div class="fr-container--fluid text-center mode-banner"><img class="inline" src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
     """
+
+def gauge_banner_html():
+    return """
+    <div class="fr-container--fluid text-center mode-banner">Nombre total de votes Objectif : 50000
+    <div class="linear-gauge">
+  <div class="linear-gauge-fill"></div>
+</div>
+    </div>
+    <style>
+.linear-gauge-fill {
+      width: 75%; /* Adjust this value to change gauge level */
+  height: 100%;
+  background: var(--yellow-tournesol-925-125);
+  transition: width 0.3s ease-in-out;
+}
+
+.linear-gauge {
+  width: 300px;
+  height: 20px;
+  background: #FFF;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+    </style>
+    """

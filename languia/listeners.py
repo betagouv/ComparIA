@@ -50,6 +50,7 @@ from languia.utils import (
     EmptyResponseError,
     pick_endpoint,
     mode_banner_html,
+    gauge_banner_html,
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -343,7 +344,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_a_scoped: gr.State,
         conv_b_scoped: gr.State,
         model_dropdown_scoped: CustomDropdown,
-        mode_banner: gr.HTML,
         request: gr.Request,
         event: gr.EventData,
     ):
@@ -386,7 +386,8 @@ document.getElementById("fr-modal-welcome-close").blur();
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
         chatbot = to_threeway_chatbot(conversations)
 
-        mode_banner = mode_banner_html(mode)
+        # banner = mode_banner_html(mode)
+        banner = gauge_banner_html()
 
         text = gr.update(visible=True)
         return [
@@ -397,7 +398,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # 1 chatbot
             chatbot,
             text,
-            mode_banner,
+            banner,
         ]
 
     def add_text(
@@ -694,7 +695,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         ],
         fn=add_first_text,
         api_name=False,
-        inputs=[app_state] + [conv_a] + [conv_b] + [model_dropdown] + [mode_banner],
+        inputs=[app_state] + [conv_a] + [conv_b] + [model_dropdown],
         outputs=[app_state]
         + [conv_a]
         + [conv_b]

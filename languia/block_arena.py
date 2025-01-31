@@ -75,6 +75,8 @@ with gr.Blocks(
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
+    from languia.utils import gauge_banner_html
+    mode_banner = gr.HTML(gauge_banner_html())
 
     app_state = gr.State(value=AppState())
 
