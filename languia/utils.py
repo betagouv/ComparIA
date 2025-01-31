@@ -540,6 +540,7 @@ font-weight: bold;
 color: #695240 !important;
 position: absolute;
 top: 10px;
+  margin-left: 5px;
 }
     .objectif {
     font-weight: 500;
@@ -564,6 +565,8 @@ top: 10px;
 .mode-banner {
 display: flex;
 align-items: center;
+justify-content: center;
+gap: 1em;
 }
 
     </style>
