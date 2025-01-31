@@ -526,7 +526,7 @@ def get_gauge_count():
     logger = logging.getLogger("languia")
     if not db_config:
         logger.warn("Cannot log to db: no db configured")
-        return
+        return 40000
     conn = psycopg2.connect(**db_config)
     cursor = conn.cursor()
     try:
@@ -539,8 +539,7 @@ def get_gauge_count():
     """
         )
 
-        cursor.execute(select_statement)
-        conn.commit()
+        res = cursor.execute(select_statement)
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
         stacktrace = traceback.format_exc()
@@ -550,14 +549,22 @@ def get_gauge_count():
             cursor.close()
         if conn:
             conn.close()
+    if res:
+        return res 
+    else: return 40000
 
 def gauge_banner_html():
-    return """
-    <div class="fr-container--fluid  mode-banner"><span class="legende">Nombre total de votes</span> 
+    gauge_count = get_gauge_count()
+    objective = 50000 
+    ratio = 100 * get_gauge_count() / objective
+    gauge = """
+    <div class="fr-container--fluid mode-banner"><span class="legende">Nombre total de votes&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
     <div class="linear-gauge">
-  <div class="linear-gauge-fill"><span class="votes">"""
-    + get_gauge_count() + """</span></div></div><span class="objectif">Objectif : 50000</span>
+  <div class="linear-gauge-fill"><span class="votes">""" + str(gauge_count) + """</span></div></div><span class="objectif">Objectif : """ + str(objective) + """</span>
     </div>
+    <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">Discutez, votez et aidez-nous à atteindre cet objectif !<br />
+<strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />
+Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong></span>
     <style>
     .legende {
             font-size: 0.825em;
@@ -565,13 +572,18 @@ def gauge_banner_html():
             font-weight: bold;
 
     }
+    .legende a {
+    top: 10px;
+    position: relative;
+    }
     .votes {
         font-size: 0.75em;
 font-weight: bold;
 color: #695240 !important;
 position: absolute;
-top: 10px;
   margin-left: 5px;
+    bottom: 0;
+  height: inherit;
 }
     .objectif {
     font-weight: 500;
@@ -579,7 +591,7 @@ top: 10px;
     color: #7F7F7F !important   ;
     }
 .linear-gauge-fill {
-      width: 75%; /* Adjust this value to change gauge level */
+    width: """ + str(int(ratio)) + """%; 
   height: 100%;
   background: var(--yellow-tournesol-925-125);
   transition: width 0.3s ease-in-out;
@@ -601,7 +613,5 @@ gap: 1em;
 }
 
     </style>
-    Discutez, votez et aidez-nous à atteindre cet objectif !
-<strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.
-Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>
     """
+    return gauge
