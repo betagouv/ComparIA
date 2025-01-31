@@ -523,12 +523,29 @@ def mode_banner_html(mode):
 
 def gauge_banner_html():
     return """
-    <div class="fr-container--fluid text-center mode-banner">Nombre total de votes Objectif : 50000
+    <div class="fr-container--fluid  mode-banner"><span class="legende">Nombre total de votes</span> 
     <div class="linear-gauge">
-  <div class="linear-gauge-fill"></div>
-</div>
+  <div class="linear-gauge-fill"><span class="votes">42346</span></div></div><span class="objectif">Objectif : 50000</span>
     </div>
     <style>
+    .legende {
+            font-size: 0.825em;
+            color: #161616 !important;
+            font-weight: bold;
+
+    }
+    .votes {
+        font-size: 0.75em;
+font-weight: bold;
+color: #695240 !important;
+position: absolute;
+top: 10px;
+}
+    .objectif {
+    font-weight: 500;
+    font-size: 0.75em;
+    color: #7F7F7F !important   ;
+    }
 .linear-gauge-fill {
       width: 75%; /* Adjust this value to change gauge level */
   height: 100%;
@@ -540,9 +557,17 @@ def gauge_banner_html():
   width: 300px;
   height: 20px;
   background: #FFF;
-  border-radius: 10px;
+  border-radius: 3px;
+  border: 1px solid #CCCCCC;
   overflow: hidden;
+}
+.mode-banner {
+display: flex;
+align-items: center;
 }
 
     </style>
+    Discutez, votez et aidez-nous à atteindre cet objectif !
+<strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.
+Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>
     """
