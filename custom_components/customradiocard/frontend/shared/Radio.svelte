@@ -69,7 +69,7 @@
 
 <style>
 	label {
-		padding: 1.5rem 1rem 1.5rem 1.5rem !important;
+		padding: 1rem 1rem 1rem 1rem !important;
 		display: flex;
 		align-items: left;
 		transition: var(--button-transition);

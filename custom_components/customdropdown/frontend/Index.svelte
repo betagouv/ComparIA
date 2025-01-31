@@ -47,11 +47,12 @@
 	};
 	export const choices: Choice[] = [
 		{
-			value: "random",
-			label: "Aléatoire",
-			alt_label: "Modèles aléatoires",
-			icon: Dice, // Replace with your icon class or SVG
-			description: "Deux modèles choisis au hasard parmi toute la liste",
+			value: "custom",
+			label: "Sélection manuelle",
+			alt_label: "Sélection manuelle",
+			icon: Glass, // Replace with your icon class or SVG
+			description:
+				"",
 		},
 		{
 			value: "small-models",
@@ -60,7 +61,7 @@
 
 			icon: Leaf, // Replace with your icon class or SVG
 			description:
-				"Minimisez votre impact environnemental avec deux petits modèles",
+				"minimisez votre impact énergétique",
 		},
 		{
 			value: "big-vs-small",
@@ -68,15 +69,15 @@
 			alt_label: "Petit contre grand modèle",
 			icon: Ruler, // Replace with your icon class or SVG
 			description:
-				"Comparez les performances d’un petit modèle contre un grand",
+				"Comparez leur performance",
 		},
+
 		{
-			value: "custom",
-			label: "Sélection manuelle",
-			alt_label: "Sélection manuelle",
-			icon: Glass, // Replace with your icon class or SVG
-			description:
-				"Sélectionnez vous-même jusqu’à deux modèles à comparer",
+			value: "random",
+			label: "Aléatoire",
+			alt_label: "Sélection des modèles",
+			icon: Dice, // Replace with your icon class or SVG
+			description: "modèles tirés au hasard dans la liste",
 		},
 	];
 
@@ -113,7 +114,7 @@
 	var second_model_icon_path = null;
 
 	export let interactive: boolean;
-	var choice: Choice = choices[0];
+	var choice: Choice = choices[3];
 
 	// Handle mode selection
 	function handle_option_selected(index: number): void {
@@ -199,6 +200,13 @@
 			}
 		}
 	}
+	var alt_label : string = "Sélection des modèles"
+	$: if (mode == "custom" && custom_models_selection.length < 1) {
+		alt_label = "Sélection des modèles"
+	}
+	else {
+		alt_label = choice.alt_label
+	}
 </script>
 
 <Block
@@ -210,7 +218,7 @@
 	{scale}
 	{min_width}
 >
-	<h3 class="text-center text-grey-200 fr-mt-12w fr-mb-8w">
+	<h3 class="text-center text-grey-200 fr-mt-12w fr-mb-7w">
 		Comment puis-je vous aider aujourd'hui ?
 	</h3>
 	<div class="grid">
@@ -271,9 +279,9 @@ on:input={() => gradio.dispatch("input")}
 						fill="#6A6AF4"
 					/>
 				</svg>
-				<span> {choice.alt_label}</span></button
-			>
-			{#if mode == "custom"}
+				<span class="label"> {alt_label}</span><span class="chevron">⌄</span
+				></button>
+			{#if mode == "custom" && custom_models_selection.length > 0}
 				<button
 					class="model-selection"
 					data-fr-opened="false"
@@ -299,8 +307,7 @@ on:input={() => gradio.dispatch("input")}
 							{/if}
 							{second_model_name}</span
 						></span
-					></button
-				>
+					></button>
 			{/if}
 		</div>
 		<input
@@ -338,7 +345,7 @@ on:input={() => gradio.dispatch("input")}
 >
 	<div class="fr-container fr-container--fluid fr-container-md">
 		<div class="fr-grid-row fr-grid-row--center">
-			<div class="fr-col-12 fr-col-md-10">
+			<div class="fr-col-12 fr-col-md-6">
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
 						<button
@@ -455,6 +462,12 @@ on:input={() => gradio.dispatch("input")}
 </dialog>
 
 <style>
+	.chevron {
+		font-size: 1.5em;
+		line-height: 0;
+		font-weight: bold;
+	}
+
 	.text-purple {
 		color: #6a6af4;
 	}
@@ -498,9 +511,10 @@ on:input={() => gradio.dispatch("input")}
 	.mode-selection-btn svg {
 		flex-grow: 0;
 	}
-	.mode-selection-btn span {
+	.mode-selection-btn .label {
 		margin-left: 0.5em;
 		flex-grow: 1;
+		font-size: 0.825em;
 	}
 
 	.float-right {
@@ -537,6 +551,8 @@ on:input={() => gradio.dispatch("input")}
 		order: 2;
 		width: 100%;
 	}
+
+
 	@media (min-width: 48em) {
 		.first-textbox,
 		.mode-selection-btn {

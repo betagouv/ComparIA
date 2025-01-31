@@ -71,6 +71,13 @@
   background-color: inherit;
 }
 
+@media (min-width: 48em) {
+
+.fr-header__body-row {
+  padding: 0.5em 0 !important;
+}
+}
+
 /* label, */
 fieldset {
   /* background-color: var(--background-default-grey) !important; */

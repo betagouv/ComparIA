@@ -91,10 +91,9 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container") as mode_screen:
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-6 fr-col-md-8") as mode_screen:
 
-        # with gr.Row(elem_classes="fr-container fr-mb-4w fr-mt-1w mobile-block"):
-        # textbox = gr.Textbox(
+# TODO: rename component, it includes textbox
         model_dropdown = CustomDropdown(
             models=config.models_extra_info,
             # FIXME: ignored, hardcoded in custom component
@@ -105,7 +104,7 @@ with gr.Blocks(
 
 
         prompts_suggestions = gr.HTML(
-            elem_classes="text-grey-200 fr-container fr-text--lg fr-mt-6w fr-mb-0 fr-pb-0",
+            elem_classes="text-grey-200 fr-container fr-text--md fr-mt-6w fr-mb-0 fr-pb-0",
             value="""<strong>Suggestions de prompts</strong>""",
         )
         # FIXME: make a click on already selected be a shuffle

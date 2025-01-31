@@ -244,56 +244,56 @@ use_remote_storage = False
 total_guided_cards_choices = [
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/lightbulb.svg" alt="Idées" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/lightbulb.svg" alt="Idées" />
             <span id="ideas-description">Générer de nouvelles idées</span>
         </div>""",
         "ideas",
     ),
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/chat-3.svg" alt="Explications" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/chat-3.svg" alt="Explications" />
             <span id="explanations-description">Expliquer simplement un concept</span>
         </div>""",
         "explanations",
     ),
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/translate-2.svg" alt="Traduction" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/translate-2.svg" alt="Traduction" />
             <span id="languages-description">M’exprimer dans une autre langue</span>
         </div>""",
         "languages",
     ),
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/draft.svg" alt="Administratif" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/draft.svg" alt="Administratif" />
             <span id="administrative-description">Rédiger un document administratif</span>
         </div>""",
         "administrative",
     ),
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/bowl.svg" alt="Recettes" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/bowl.svg" alt="Recettes" />
             <span id="recipes-description">Découvrir une nouvelle recette de cuisine</span>
         </div>""",
         "recipes",
     ),
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/clipboard.svg" alt="Conseils" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/clipboard.svg" alt="Conseils" />
             <span id="coach-description">Obtenir des conseils sur l’alimentation et le sport</span>
         </div>""",
         "coach",
     ),
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/book-open-line.svg" alt="Histoires" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/book-open-line.svg" alt="Histoires" />
             <span id="stories-description">Raconter une histoire</span>
         </div>""",
         "stories",
     ),
     (
         """<div class="mobile-flex">
-            <img class="fr-mb-md-3w fr-mr-1w" src="../assets/extra-icons/music-2.svg" alt="Recommandations" />
+            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/music-2.svg" alt="Recommandations" />
             <span id="recommendations-description">Proposer des idées de films, livres, musiques</span>
         </div>""",
         "recommendations",

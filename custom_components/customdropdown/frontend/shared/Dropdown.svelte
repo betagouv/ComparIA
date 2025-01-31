@@ -64,9 +64,11 @@
 			<div class="icon">
 				<svelte:component this={icon} />
 			</div>
-			<div>
-				<strong>{label}</strong>
-				<p>{description}</p>
+			<div class="description">
+				<strong>{label}</strong>{#if value != "custom"}&nbsp;: {description}
+				{:else}
+				<span class="chevron-droite">˃</span>
+				{/if}
 			</div>
 		</label>
 	{/each}
@@ -84,7 +86,7 @@
 		border-radius: 0.5em;
 		outline: 0.5px solid #e5e5e5;
 		display: grid;
-		padding: 0.5em 1em 1em 0.25em;
+		padding: 1em 0.5em;
 		align-items: center;
 		grid-template-columns: auto 1fr;
 		margin: 0.75em 0;
@@ -99,12 +101,22 @@
 		opacity: 0;
 		pointer-events: none;
 	}
-	p {
+	/* p {
 		color: #666666 !important;
 		font-size: 0.875em !important;
-	}
-	strong {
+	} */
+	.description {
 		font-size: 0.875em;
 		color: #3a3a3a;
+	}
+	
+	.chevron-droite {
+		line-height: 0;
+		font-size: 2em;
+		font-weight: bold;
+		float: right;
+		top: 20px;
+		margin-right: 0.5em;
+		position: relative;
 	}
 </style>
