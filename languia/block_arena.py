@@ -335,7 +335,7 @@ with gr.Blocks(
                     <p class="text-center text-grey fr-text--sm">Le jeu de données compar:IA sera bientôt publié, continuez à l’alimenter en recommençant l’expérience !
     </p>
                 <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees" target="_blank">Discuter avec deux nouvelles IA</a><br />
-                <a class="fr-mx-auto btn fr-btn--tertiary" href="../modeles" target="_blank">Découvrir la liste des IA</a>
+                <a class="fr-mx-auto link" href="https://languia-metabase.stg.cloud.culture.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1" target="_blank">En savoir plus sur les votes</a>
             """,
             )
         footer_area = gr.HTML(visible=True, value=footer_html)
