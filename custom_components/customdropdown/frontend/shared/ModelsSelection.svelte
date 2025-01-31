@@ -79,7 +79,8 @@
 						width="20"
 						class="inline"
 					/>
-				</span>&nbsp;{organisation}/<strong>{simple_name}</strong>
+				</span>&nbsp;<span class="organisation">{organisation}/</span
+				><strong>{simple_name}</strong>
 			</div>
 			<p>
 				<span
@@ -109,11 +110,13 @@
 	.models-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
+		gap: 0.5em;
 	}
 
 	@media (min-width: 48em) {
 		.models-grid {
 			grid-template-columns: 1fr 1fr 1fr;
+			gap: 1em;
 		}
 	}
 	label.selected,
@@ -133,10 +136,9 @@
 		border-radius: 0.5em;
 		outline: 0.5px solid #e5e5e5;
 		display: grid;
-		padding: 1em;
 		align-items: center;
 		/* grid-template-columns: auto 1fr; */
-		margin: 1em;
+		padding: 0;
 	}
 
 	label .icon {
@@ -156,5 +158,24 @@
 	strong {
 		font-size: 0.875em;
 		color: #3a3a3a;
+	}
+
+	.fr-badge {
+		display: none !important;
+	}
+	.organisation {
+		display: none;
+	}
+
+	@media (min-width: 48em) {
+		.fr-badge {
+			display: block !important;
+		}
+		.organisation {
+			display: inline;
+		}
+		label {
+			padding: 1em;
+		}
 	}
 </style>
