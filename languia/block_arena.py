@@ -90,7 +90,7 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-6 fr-col-md-8") as mode_screen:
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-7 fr-col-md-8") as mode_screen:
 
 # TODO: rename component, it includes textbox
         model_dropdown = CustomDropdown(

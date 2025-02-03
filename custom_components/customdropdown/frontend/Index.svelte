@@ -297,7 +297,6 @@ on:input={() => gradio.dispatch("input")}
 							width="20"
 							class="inline"
 						/>&nbsp;
-						<span>
 							{first_model_name}
 							<strong class="versus">&nbsp;vs.</strong>
 							{#if second_model_icon_path != null}
@@ -308,8 +307,7 @@ on:input={() => gradio.dispatch("input")}
 									class="inline"
 								/>&nbsp;
 							{/if}
-							{second_model_name}</span
-						></button
+							{second_model_name}</button
 				>
 			{/if}
 		</div>
@@ -337,7 +335,7 @@ on:input={() => gradio.dispatch("input")}
 			<div
 				class="fr-col-12"
 				class:fr-col-md-10={show_custom_models_selection}
-				class:fr-col-md-6={!show_custom_models_selection}
+				class:fr-col-md-5={!show_custom_models_selection}
 			>
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
@@ -450,6 +448,7 @@ on:input={() => gradio.dispatch("input")}
 	}
 
 	.model-selection {
+	    align-items: center;
 		width: 100%;
 		--hover-tint: transparent;
 		--active-tint: transparent;
@@ -518,7 +517,7 @@ on:input={() => gradio.dispatch("input")}
 			order: initial;
 		}
 		.submit-btn {
-			width: 200px;
+			width: 200px !important;
 		}
 		.grid {
 			grid-template-areas: "text text" "left right";
