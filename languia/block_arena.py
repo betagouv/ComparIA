@@ -171,7 +171,7 @@ with gr.Blocks(
                     value="Envoyer",
                     # icon="assets/dsfr/icons/system/arrow-up-line.svg",
                     elem_id="send-btn",
-                    elem_classes="grow-0 purple-btn w-full",
+                    elem_classes="grow-0 purple-btn w-full fr-ml-md-1w",
                 )
 
             with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
