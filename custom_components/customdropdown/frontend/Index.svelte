@@ -287,7 +287,7 @@ on:input={() => gradio.dispatch("input")}
 			>
 			{#if mode == "custom" && custom_models_selection.length > 0}
 				<button
-					class="model-selection"
+					class="model-selection fr-mb-md-0 fr-mb-1w"
 					data-fr-opened="false"
 					aria-controls="modal-mode-selection"
 				>
