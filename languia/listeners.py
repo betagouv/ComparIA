@@ -786,7 +786,25 @@ setTimeout(() => {
         show_progress="hidden",
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
+    ).then(
+        fn=enable_conclude,
+        inputs=[app_state, textbox, conv_a],
+        outputs=[textbox, conclude_btn, send_btn],
+        js="""(args) => {
+setTimeout(() => {
+  console.log("scrolling to bot responses");
+  var botRows = document.querySelectorAll('.bot-row');
+    var lastBotRow = botRows.item(botRows.length - 1);
+    lastBotRow.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+, 500);
+}""",
+        show_progress="hidden",
     )
+
 
     def force_vote_or_reveal(
         app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
