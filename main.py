@@ -84,7 +84,7 @@ async def models(request: Request):
             "models": config.models_extra_info,
             "size_desc": size_desc,
             "license_desc": license_desc,
-            "license_attrs": license_attrs,
+            "license_attrs": license_attrs,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective
         },
     )
 
@@ -93,7 +93,7 @@ async def models(request: Request):
 async def about(request: Request):
     return templates.TemplateResponse(
         "about.html",
-        {"title": "À propos", "request": request, "config": config},
+        {"title": "À propos", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
     )
 
 
@@ -105,6 +105,7 @@ async def faq(request: Request):
             "title": "Vos questions les plus courantes",
             "request": request,
             "config": config,
+            "gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective
         },
     )
 
@@ -113,7 +114,8 @@ async def faq(request: Request):
 async def partners(request: Request):
     return templates.TemplateResponse(
         "partners.html",
-        {"title": "Partenaires", "request": request, "config": config},
+        {"title": "Partenaires", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
+        
     )
 
 
@@ -121,7 +123,7 @@ async def partners(request: Request):
 async def legal(request: Request):
     return templates.TemplateResponse(
         "legal.html",
-        {"title": "Mentions légales", "request": request, "config": config},
+        {"title": "Mentions légales", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
     )
 
 
@@ -129,7 +131,7 @@ async def legal(request: Request):
 async def policy(request: Request):
     return templates.TemplateResponse(
         "policy.html",
-        {"title": "Politique de confidentialité", "request": request, "config": config},
+        {"title": "Politique de confidentialité", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
     )
 
 
@@ -141,7 +143,7 @@ async def tos(request: Request):
             "title": "Modalités d’utilisation",
             "request": request,
             "config": config,
-            "models": config.models_extra_info,
+            "models": config.models_extra_info,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective
         },
     )
 
@@ -150,7 +152,7 @@ async def tos(request: Request):
 async def accessibility(request: Request):
     return templates.TemplateResponse(
         "accessibility.html",
-        {"title": "Déclaration d’accessibilité", "request": request, "config": config},
+        {"title": "Déclaration d’accessibilité", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
     )
 
 
@@ -158,7 +160,7 @@ async def accessibility(request: Request):
 async def bnf(request: Request):
     return templates.TemplateResponse(
         "bnf.html",
-        {"title": "Evénement 7 février", "request": request, "config": config},
+        {"title": "Evénement 7 février", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
     )
 
 
