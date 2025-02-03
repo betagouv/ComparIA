@@ -538,7 +538,8 @@ def get_gauge_count():
   (SELECT COUNT(*) FROM reactions) + (SELECT COUNT(*) FROM votes) AS total_count;
     """
         )
-        res = cursor.execute(select_statement)
+        cursor.execute(select_statement)
+        res = cursor.fetchone()
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
     finally:
@@ -546,8 +547,8 @@ def get_gauge_count():
             cursor.close()
         if conn:
             conn.close()
-    if res:
-        return res 
+    if res[0]:
+        return res[0] 
     else: return 40000
 
 def gauge_banner_html():
