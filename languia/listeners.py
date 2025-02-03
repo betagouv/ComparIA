@@ -704,7 +704,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [mode_banner],
         # scroll_to_output=True,
         show_progress="hidden",
-    ).success(
+    ).then(
         fn=goto_chatbot,
         inputs=[],
         outputs=(
