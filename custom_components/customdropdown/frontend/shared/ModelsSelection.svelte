@@ -82,7 +82,7 @@
 				</span>&nbsp;<span class="organisation">{organisation}/</span
 				><strong>{simple_name}</strong>
 			</div>
-			<p>
+			<div>
 				<span
 					class:fr-badge--info={distribution == "api-only"}
 					class:fr-badge--yellow-tournesol={distribution ==
@@ -93,7 +93,9 @@
 						? "Propriétaire"
 						: "Open weights"}
 				</span>
-				<span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v">
+				<span
+					class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
+				>
 					{#if distribution === "api-only"}
 						Taille estimée ({friendly_size})
 					{:else}
@@ -101,7 +103,7 @@
 						paramètres
 					{/if}</span
 				>
-			</p>
+			</div>
 		</label>
 	{/each}
 </div>
