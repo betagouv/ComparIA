@@ -312,6 +312,10 @@ h6.text-blue {
   font-size: 0.75em;
 }
 
+#guided-cards .fr-tooltip {
+  font-weight: 400 !important;
+}
+
 /* General */
 body {
   margin: auto !important;
