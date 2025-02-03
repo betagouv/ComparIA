@@ -9,6 +9,7 @@
 	import { Block } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import TextBox from "./shared/Textbox.svelte";
+	import { fade } from "svelte/transition";
 
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 
@@ -326,20 +327,6 @@ on:input={() => gradio.dispatch("input")}
 		/>
 	</div>
 </Block>
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<!-- <dialog
-	aria-labelledby="modal-mode-selection"
-	id="modal-mode-selection"
-	class="fr-modal"
-	on:blur={() => {
-		sendComment(commenting);
-	}}
-	on:keydown={(e) => {
-		if (e.key === "Escape") {
-			sendComment(commenting);
-		}
-	}}
-> -->
 <dialog
 	aria-labelledby="modal-mode-selection"
 	id="modal-mode-selection"
@@ -378,88 +365,51 @@ on:input={() => gradio.dispatch("input")}
 										gradio.dispatch("select", e.detail)}
 									disabled={!interactive}
 								/>
-								<!-- <Dropdown
-									on:key_up={(e) =>
-										gradio.dispatch("key_up", e.detail)}
-								/> -->
-								<div class="fr-mt-2w">
-									<button
-										aria-controls="modal-mode-selection"
-										class="btn">Annuler</button
-									>
-									{#if mode == "custom"}
+							</div>
+						{:else}
+							<div in:fade>
+								<h6
+									id="modal-mode-selection"
+									class="modal-title"
+								>
+									Quels modèles voulez-vous comparer ?
+									<span class="text-purple fr-ml-2w">
+										{custom_models_selection.length}/2
+										modèles
+									</span>
+								</h6>
+								<p class="fr-mb-2w">
+									Si vous n’en choisissez qu’un, le second
+									sera sélectionné de manière aléatoire
+								</p>
+								<div>
+									<ModelsSelection
+										{models}
+										bind:custom_models_selection
+										{toggle_model_selection}
+									/>
+									<div class="fr-mt-2w">
 										<button
+											class="btn fr-mb-md-0 fr-mb-1w"
+											on:click={() =>
+												(show_custom_models_selection = false)}
+											>Retour</button
+										>
+										<button
+											aria-controls="modal-mode-selection"
 											class="btn purple-btn float-right"
 											on:click={() =>
-												(show_custom_models_selection = true)}
-											>Continuer</button
-										>
-									{:else}
-										<button
-											on:click={() =>
 												gradio.dispatch("select", {
+													prompt_value: prompt_value,
 													mode: mode,
 													custom_models_selection:
 														custom_models_selection,
-													prompt_value: prompt_value,
-												})}
-											aria-controls="modal-mode-selection"
-											class="btn purple-btn float-right"
-											>Valider</button
+												})}>Valider</button
 										>
-									{/if}
+									</div>
 								</div>
-								<!-- <button
-								aria-controls="modal-mode-selection"
-								class="btn purple-btn"
-								on:click={() => sendComment(commenting)}
-								>Envoyer</button
-							> -->
 							</div>
-						{:else}
-							<h6 id="modal-mode-selection" class="modal-title">
-								Quels modèles voulez-vous comparer ?
-								<span class="text-purple fr-ml-2w">
-									{custom_models_selection.length}/2 modèles
-								</span>
-							</h6>
-							<p class="fr-mb-2w">
-								Si vous n’en choisissez qu’un, le second sera
-								sélectionné de manière aléatoire
-							</p>
-							<div>
-								<ModelsSelection
-									{models}
-									bind:custom_models_selection
-									{toggle_model_selection}
-								/>
-								<div class="fr-mt-2w">
-									<button
-										aria-controls="modal-mode-selection"
-										class="btn fr-mb-md-0 fr-mb-1w"
-										on:click={() =>
-											(show_custom_models_selection = false)}
-										>Retour</button
-									>
-									<button
-										aria-controls="modal-mode-selection"
-										class="btn purple-btn float-right"
-										on:click={() =>
-											gradio.dispatch("select", {
-												prompt_value: prompt_value,
-												mode: mode,
-												custom_models_selection:
-													custom_models_selection,
-											})}>Valider</button
-									>
-								</div>
-								<!-- <button
-							aria-controls="modal-mode-selection"
-							class="btn purple-btn"
-							on:click={() => sendComment(commenting)}
-							>Envoyer</button
-						> -->
-							</div>{/if}
+						{/if}
 					</div>
 				</div>
 			</div>

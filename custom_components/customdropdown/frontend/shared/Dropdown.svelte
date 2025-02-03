@@ -52,6 +52,7 @@
 			role="radio"
 			aria-checked={value === mode ? "true" : "false"}
 			on:click={() => handle_option_selected(index)}
+			aria-controls={value != "custom" ? "modal-mode-selection" : ""}
 		>
 			<input
 				type="radio"
