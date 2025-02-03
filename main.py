@@ -61,11 +61,15 @@ app = gr.mount_gradio_app(
     show_error=config.debug,
 )
 
+from languia.utils import get_gauge_count
+gauge_count = get_gauge_count()
+objective = 50000
+gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     return templates.TemplateResponse(
-        "index.html", {"request": request, "config": config}
+        "index.html", {"request": request, "config": config, "gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective}
     )
 
 

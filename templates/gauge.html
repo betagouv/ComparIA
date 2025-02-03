@@ -1,0 +1,61 @@
+<div class="fr-container--fluid mode-banner"><span class="legende">Nombre total de votes&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
+    <div class="linear-gauge">
+  <div class="linear-gauge-fill"><span class="votes">{{ gauge_count }}</span></div></div><span class="objectif">Objectif : {{ objective }}</span>
+    </div>
+    <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">Discutez, votez et aidez-nous à atteindre cet objectif !<br />
+<strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />
+Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong></span>
+    <style>
+    .legende {
+            font-size: 0.825em;
+            color: #161616 !important;
+            font-weight: bold;
+
+    }
+    .legende a {
+    top: 290px;
+    position: relative;
+    }
+    .votes {
+        font-size: 0.75em;
+font-weight: bold;
+color: #695240 !important;
+position: absolute;
+top: 14px;
+  margin-left: 5px;
+    bottom: 0;
+  height: inherit;
+}
+    .objectif {
+    font-weight: 500;
+    font-size: 0.75em;
+    color: #7F7F7F !important   ;
+    }
+.linear-gauge-fill {
+    width: {{ gauge_count_ratio }}%; 
+  height: 100%;
+  background: var(--yellow-tournesol-925-125);
+  transition: width 0.3s ease-in-out;
+}
+
+.linear-gauge {
+  width: 300px;
+  height: 20px;
+  background: #FFF;
+  border-radius: 3px;
+  border: 1px solid #CCCCCC;
+  overflow: hidden;
+}
+.mode-banner {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 1em;
+height: 48px;
+background-color: #F3F5F9;
+--shadow-color: rgba(0, 0, 18, 0.16);
+--raised-shadow: 0 1px 3px var(--shadow-color);
+filter: drop-shadow(0 1px 3px var(--shadow-color))
+}
+
+    </style>
