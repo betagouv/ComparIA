@@ -345,7 +345,7 @@ on:input={() => gradio.dispatch("input")}
 							aria-controls="modal-mode-selection">Fermer</button
 						>
 					</div>
-					<div class="fr-modal__content">
+					<div class="fr-modal__content fr-pb-4w">
 						{#if show_custom_models_selection == false}
 							<h6 id="modal-mode-selection" class="modal-title">
 								Quels modèles voulez-vous comparer ?
