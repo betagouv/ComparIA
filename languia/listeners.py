@@ -661,33 +661,25 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
-    # don't enable conclude if only one user msg
     def enable_conclude(
         app_state_scoped, textbox_scoped, conv_a_scoped, request: gr.Request
     ):
-        if len(conv_a_scoped.messages) == 0:
-            return {
-                textbox: gr.update(visible=True),
-                conclude_btn: gr.skip(),
-                send_btn: gr.skip(),
-            }
-        if len(conv_a_scoped.messages) == 1:
-            return {
-                textbox: gr.update(visible=False),
-                conclude_btn: gr.skip(),
-                send_btn: gr.update(visible=False),
-            }
-        if conv_a_scoped.messages[-1].role == "user":
-            return {
-                textbox: gr.update(visible=False),
-                conclude_btn: gr.update(interactive=True),
-                send_btn: gr.update(visible=False),
-            }
+        # If last msg is from user, don't show send_btn and textbox
+        if conv_a_scoped.messages[-1].role != "user":
+            show_send_btn_and_textbox = True
+        else:
+            show_send_btn_and_textbox = False
+
+        # don't enable conclude if only one user msg
+        if len(conv_a_scoped.messages) in [0,1]:
+            enable_conclude_btn = False
+        else:
+            enable_conclude_btn = True
         return {
-            textbox: gr.update(visible=True),
-            conclude_btn: gr.update(interactive=True),
-            send_btn: gr.update(visible=True),
-        }
+                textbox: gr.update(visible=show_send_btn_and_textbox),
+                conclude_btn: gr.update(interactive=enable_conclude_btn),
+                send_btn: gr.update(visible=show_send_btn_and_textbox),
+            }
 
     gr.on(
         triggers=[
