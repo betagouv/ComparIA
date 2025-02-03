@@ -51,8 +51,7 @@
 			label: "Sélection manuelle",
 			alt_label: "Sélection manuelle",
 			icon: Glass, // Replace with your icon class or SVG
-			description:
-				"",
+			description: "",
 		},
 		{
 			value: "small-models",
@@ -60,16 +59,14 @@
 			alt_label: "Modèles économes",
 
 			icon: Leaf, // Replace with your icon class or SVG
-			description:
-				"minimisez votre impact énergétique",
+			description: "minimisez votre impact énergétique",
 		},
 		{
 			value: "big-vs-small",
 			label: "Petit contre grand",
 			alt_label: "Petit contre grand modèle",
 			icon: Ruler, // Replace with your icon class or SVG
-			description:
-				"Comparez leur performance",
+			description: "Comparez leur performance",
 		},
 
 		{
@@ -133,6 +130,9 @@
 				});
 				choice = choices.find((item) => item.value === mode);
 			}
+		}
+		if (mode == "custom") {
+			show_custom_models_selection = true;
 		}
 	}
 
@@ -200,12 +200,11 @@
 			}
 		}
 	}
-	var alt_label : string = "Sélection des modèles"
+	var alt_label: string = "Sélection des modèles";
 	$: if (mode == "custom" && custom_models_selection.length < 1) {
-		alt_label = "Sélection des modèles"
-	}
-	else {
-		alt_label = choice.alt_label
+		alt_label = "Sélection des modèles";
+	} else {
+		alt_label = choice.alt_label;
 	}
 </script>
 
@@ -279,8 +278,10 @@ on:input={() => gradio.dispatch("input")}
 						fill="#6A6AF4"
 					/>
 				</svg>
-				<span class="label"> {alt_label}</span><span class="chevron">⌄</span
-				></button>
+				<span class="label"> {alt_label}</span><span class="chevron"
+					>⌄</span
+				></button
+			>
 			{#if mode == "custom" && custom_models_selection.length > 0}
 				<button
 					class="model-selection"
@@ -307,7 +308,8 @@ on:input={() => gradio.dispatch("input")}
 							{/if}
 							{second_model_name}</span
 						></span
-					></button>
+					></button
+				>
 			{/if}
 		</div>
 		<input
@@ -345,7 +347,11 @@ on:input={() => gradio.dispatch("input")}
 >
 	<div class="fr-container fr-container--fluid fr-container-md">
 		<div class="fr-grid-row fr-grid-row--center">
-			<div class="fr-col-12" class:fr-col-md-10={show_custom_models_selection} class:fr-col-md-6={!show_custom_models_selection}>
+			<div
+				class="fr-col-12"
+				class:fr-col-md-10={show_custom_models_selection}
+				class:fr-col-md-6={!show_custom_models_selection}
+			>
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
 						<button
@@ -417,7 +423,7 @@ on:input={() => gradio.dispatch("input")}
 									{custom_models_selection.length}/2 modèles
 								</span>
 							</h6>
-							<p class="fr-mb-md-0 fr-mb-2w">
+							<p class="fr-mb-2w">
 								Si vous n’en choisissez qu’un, le second sera
 								sélectionné de manière aléatoire
 							</p>
@@ -551,7 +557,6 @@ on:input={() => gradio.dispatch("input")}
 		order: 2;
 		width: 100% !important;
 	}
-
 
 	@media (min-width: 48em) {
 		.first-textbox,
