@@ -112,7 +112,9 @@
 		await tick();
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			dispatch("submit");
+			if (value != "") {
+				dispatch("submit");
+			}
 		}
 	}
 
