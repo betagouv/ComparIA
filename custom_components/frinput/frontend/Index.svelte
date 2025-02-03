@@ -22,7 +22,6 @@
 		clear_status: LoadingStatus;
 	}>;
 	export let label = "Textbox";
-	export let info: string | undefined = undefined;
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
@@ -32,7 +31,6 @@
 	export let show_label: boolean;
 	export let max_lines: number;
 	export let type: "text" | "password" | "email" = "text";
-	export let container = true;
 	// export let scale: number | null = null;
 	// export let min_width: number | undefined = undefined;
 	export let show_copy_button = false;

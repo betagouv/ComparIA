@@ -9,6 +9,7 @@
 	import { Block } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import TextBox from "./shared/Textbox.svelte";
+	import ChevronBas from "./shared/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
 
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
@@ -38,7 +39,7 @@
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
 	import Dice from "./shared/dice.svelte";
-	import { SvelteComponent } from "svelte";
+
 	type Choice = {
 		value: "random" | "custom" | "big-vs-small" | "small-models";
 		label: string;
@@ -280,7 +281,8 @@ on:input={() => gradio.dispatch("input")}
 					/>
 				</svg>
 				<span class="label"> {alt_label}</span><span class="chevron"
-					>⌄</span
+					><svelte:component this={ChevronBas} />
+					</span
 				></button
 			>
 			{#if mode == "custom" && custom_models_selection.length > 0}
@@ -289,7 +291,6 @@ on:input={() => gradio.dispatch("input")}
 					data-fr-opened="false"
 					aria-controls="modal-mode-selection"
 				>
-					<span class="icon">
 						<img
 							src="../assets/orgs/{first_model_icon_path}"
 							alt={first_model_name}
@@ -298,7 +299,7 @@ on:input={() => gradio.dispatch("input")}
 						/>&nbsp;
 						<span>
 							{first_model_name}
-							<strong class="fr-text--lg">&nbsp;vs.</strong>
+							<strong class="versus">&nbsp;vs.</strong>
 							{#if second_model_icon_path != null}
 								<img
 									src="../assets/orgs/{second_model_icon_path}"
@@ -308,8 +309,7 @@ on:input={() => gradio.dispatch("input")}
 								/>&nbsp;
 							{/if}
 							{second_model_name}</span
-						></span
-					></button
+						></button
 				>
 			{/if}
 		</div>
@@ -418,10 +418,14 @@ on:input={() => gradio.dispatch("input")}
 </dialog>
 
 <style>
+.versus {
+	font-size: 1.125rem;
+
+	line-height: 0 !important;
+}
+
 	.chevron {
-		font-size: 1.5em;
 		line-height: 0;
-		font-weight: bold;
 	}
 
 	.text-purple {
