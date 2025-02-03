@@ -262,7 +262,7 @@ on:input={() => gradio.dispatch("input")}
 		disabled={!interactive} -->
 		<div class="selections">
 			<button
-				class="mode-selection-btn fr-mr-3v"
+				class="mode-selection-btn fr-mb-md-0 fr-mb-1w fr-mr-3v"
 				data-fr-opened="false"
 				aria-controls="modal-mode-selection"
 				on:click={() => (show_custom_models_selection = false)}
@@ -345,7 +345,7 @@ on:input={() => gradio.dispatch("input")}
 >
 	<div class="fr-container fr-container--fluid fr-container-md">
 		<div class="fr-grid-row fr-grid-row--center">
-			<div class="fr-col-12 fr-col-md-6">
+			<div class="fr-col-12" class:fr-col-md-10={show_custom_models_selection} class:fr-col-md-6={!show_custom_models_selection}>
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
 						<button
@@ -417,7 +417,7 @@ on:input={() => gradio.dispatch("input")}
 									{custom_models_selection.length}/2 modèles
 								</span>
 							</h6>
-							<p>
+							<p class="fr-mb-md-0 fr-mb-2w">
 								Si vous n’en choisissez qu’un, le second sera
 								sélectionné de manière aléatoire
 							</p>
@@ -430,7 +430,7 @@ on:input={() => gradio.dispatch("input")}
 								<div class="fr-mt-2w">
 									<button
 										aria-controls="modal-mode-selection"
-										class="btn"
+										class="btn fr-mb-md-0 fr-mb-1w"
 										on:click={() =>
 											(show_custom_models_selection = false)}
 										>Retour</button
@@ -549,7 +549,7 @@ on:input={() => gradio.dispatch("input")}
 	}
 	.submit-btn {
 		order: 2;
-		width: 100%;
+		width: 100% !important;
 	}
 
 

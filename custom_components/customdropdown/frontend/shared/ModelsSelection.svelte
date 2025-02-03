@@ -93,7 +93,7 @@
 						? "Propriétaire"
 						: "Open weights"}
 				</span>
-				<span class="fr-badge fr-badge--no-icon fr-mr-1v fr-mb-1v">
+				<span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v">
 					{#if distribution === "api-only"}
 						Taille estimée ({friendly_size})
 					{:else}
@@ -138,7 +138,7 @@
 		display: grid;
 		align-items: center;
 		/* grid-template-columns: auto 1fr; */
-		padding: 0;
+		padding: 0.25em 0;
 	}
 
 	label .icon {
@@ -165,11 +165,12 @@
 	}
 	.organisation {
 		display: none;
+		font-size: 0.875em;
 	}
 
 	@media (min-width: 48em) {
 		.fr-badge {
-			display: block !important;
+			display: inline !important;
 		}
 		.organisation {
 			display: inline;
