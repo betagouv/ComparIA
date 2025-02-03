@@ -298,7 +298,7 @@ on:input={() => gradio.dispatch("input")}
 							class="inline"
 						/>&nbsp;
 							{first_model_name}
-							<strong class="versus">&nbsp;vs.</strong>
+							<strong class="versus">&nbsp;vs.&nbsp;</strong>
 							{#if second_model_icon_path != null}
 								<img
 									src="../assets/orgs/{second_model_icon_path}"
