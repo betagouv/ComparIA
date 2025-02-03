@@ -522,6 +522,7 @@ def mode_banner_html(mode):
     """
 
 def get_gauge_count():
+    import psycopg2
     from languia.config import db as db_config
     logger = logging.getLogger("languia")
     if not db_config:
@@ -538,7 +539,6 @@ def get_gauge_count():
         ;
     """
         )
-
         res = cursor.execute(select_statement)
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
