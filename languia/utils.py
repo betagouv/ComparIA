@@ -565,7 +565,7 @@ def gauge_banner_html():
 Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong></span>
     <style>
     .legende {
-            font-size: 0.825em;
+            font-size: 0.875em;
             color: #161616 !important;
             font-weight: bold;
 
