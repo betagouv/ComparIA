@@ -329,6 +329,19 @@ description = "Petit frère de la famille Llama 3, ce modèle est optimisé pour
 excerpt = "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité."
 license = "Llama 3 Community"
 
+[mistral-small-24B-Instruct-2501"]
+url = "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501"
+simple_name = "Mistral Small 3"
+organisation = "Mistral"
+params = 24
+icon_path = "mistral.png"
+friendly_size = "M"
+distribution = "open-weights"
+conditions = "free"
+description = "Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme, possède un mode d'appel de fonction et un contexte de 32 000 tokens."
+excerpt = "Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme et possède des capacités de raisonnement avancées."
+license = "Apache 2.0"
+
 [mistral-nemo-2407]
 url = "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407"
 simple_name = "Mistral Nemo"
