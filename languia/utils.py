@@ -523,6 +523,7 @@ def mode_banner_html(mode):
 
 def get_gauge_count():
     import psycopg2
+    from psycopg2 import sql
     from languia.config import db as db_config
     logger = logging.getLogger("languia")
     if not db_config:
@@ -533,17 +534,13 @@ def get_gauge_count():
     try:
         select_statement = sql.SQL(
             """
-        SELECT COUNT(*) FROM votes
-        +
-        SELECT COUNT(*) FROM reactions
-        ;
+        SELECT
+  (SELECT COUNT(*) FROM reactions) + (SELECT COUNT(*) FROM votes) AS total_count;
     """
         )
         res = cursor.execute(select_statement)
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
-        stacktrace = traceback.format_exc()
-        logger.error(f"Stacktrace: {stacktrace}", exc_info=True)
     finally:
         if cursor:
             cursor.close()
