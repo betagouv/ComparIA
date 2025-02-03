@@ -409,13 +409,16 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         event: gr.EventData,
     ):
+        app_state_scoped.awaiting_responses = False
 
         # if retry, resend last user errored message
         if event._data is not None:
+            if conv_a_scoped.messages[-1].role == "assistant":
+                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
             last_message_a = conv_a_scoped.messages[-1]
             last_message_b = conv_b_scoped.messages[-1]
 
-            app_state_scoped.awaiting_responses = False
             if last_message_a.role == "user" and last_message_b.role == "user":
                 text = last_message_a.content
                 conv_a_scoped.messages = conv_a_scoped.messages[:-1]
@@ -588,12 +591,14 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             # Remove last message if it's an assistant message (failed during generation)
             if conv_a_scoped.messages[-1].role == "assistant":
-                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                # conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                conv_a_scoped.messages[-2].error = True
+            else:
+                conv_a_scoped.messages[-1].error = True
             if conv_b_scoped.messages[-1].role == "assistant":
-                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-
-            conv_a_scoped.messages[-1].error = True
-            conv_b_scoped.messages[-1].error = True
+                conv_b_scoped.messages[-2].error = True
+            else:
+                conv_b_scoped.messages[-1].error = True
 
             # Report error to controller
             # on_endpoint_error(
