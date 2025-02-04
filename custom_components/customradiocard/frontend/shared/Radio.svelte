@@ -102,4 +102,8 @@
 	.disabled {
 		cursor: not-allowed;
 	}
+	
+	label img {
+		height: fit-content;
+	}
 </style>

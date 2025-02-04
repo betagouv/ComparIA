@@ -22,7 +22,7 @@ from languia.block_arena import (
     reveal_screen,
     send_area,
     send_btn,
-    # shuffle_link,
+    shuffle_link,
     supervote_area,
     supervote_send_btn,
     # first_textbox,
@@ -30,7 +30,7 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
-    mode_banner
+    mode_banner,
 )
 import traceback
 import os
@@ -49,7 +49,8 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     pick_endpoint,
-    mode_banner_html
+    mode_banner_html,
+    gauge_banner_html,
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -81,7 +82,6 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
 )
 
 from numpy import random
-
 
 
 # Register listeners
@@ -178,12 +178,16 @@ document.getElementById("fr-modal-welcome-close").blur();
     # Step 1.1
     @guided_cards.change(
         inputs=[app_state, guided_cards, model_dropdown],
-        outputs=[app_state, model_dropdown],
+        outputs=[app_state, model_dropdown, shuffle_link],
         api_name=False,
         show_progress="hidden",
     )
     def set_guided_prompt(
-        app_state_scoped, guided_cards, model_dropdown_scoped, event: gr.EventData, request: gr.Request
+        app_state_scoped,
+        guided_cards,
+        model_dropdown_scoped,
+        event: gr.EventData,
+        request: gr.Request,
     ):
 
         # chosen_prompts_pool = guided_cards
@@ -198,11 +202,12 @@ document.getElementById("fr-modal-welcome-close").blur();
         new_value = prompt
 
         model_dropdown_scoped["prompt_value"] = new_value
-        
+
         return {
             app_state: app_state_scoped,
             # first_send_btn: gr.update(interactive=True),
             model_dropdown: model_dropdown_scoped,
+            shuffle_link: gr.update(visible=True),
         }
 
     @model_dropdown.select(
@@ -211,7 +216,11 @@ document.getElementById("fr-modal-welcome-close").blur();
         show_progress="hidden",
     )
     def pick_model(
-        app_state_scoped, conv_a_scoped, conv_b_scoped, model_dropdown_scoped, request: gr.Request
+        app_state_scoped,
+        conv_a_scoped,
+        conv_b_scoped,
+        model_dropdown_scoped,
+        request: gr.Request,
     ):
         small_models = [
             model
@@ -223,10 +232,11 @@ document.getElementById("fr-modal-welcome-close").blur();
             for model in config.models_extra_info
             if model["friendly_size"] in ["M", "L", "XL"]
         ]
-        
-        mode = model_dropdown_scoped['mode']
-        
-        logger.info("chose mode: " +mode, extra={"request": request})
+
+        mode = model_dropdown_scoped["mode"]
+
+        logger.info("chose mode: " + mode, extra={"request": request})
+
 
         if mode == "big-vs-small":
             first_model = big_models[random.randint(len(big_models))]
@@ -239,7 +249,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             else:
                 conv_a_scoped.model_name = second_model["id"]
                 conv_b_scoped.model_name = first_model["id"]
-            
+
         elif mode == "small-models":
             first_model = small_models[random.randint(len(small_models))]
             small_models.remove(first_model)
@@ -253,7 +263,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_b_scoped.model_name = second_model["id"]
             # Custom mode
         elif mode == "custom":
-            custom_models_selection = model_dropdown_scoped['custom_models_selection']
+            custom_models_selection = model_dropdown_scoped["custom_models_selection"]
             #  FIXME: input sanitization
             # if any(mode[1], not in models):
             #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
@@ -274,26 +284,45 @@ document.getElementById("fr-modal-welcome-close").blur();
             elif len(custom_models_selection) == 2:
 
                 if swap == 0:
-                    conv_a_scoped.model_name =  custom_models_selection[0]
-                    conv_b_scoped.model_name =  custom_models_selection[1]
+                    conv_a_scoped.model_name = custom_models_selection[0]
+                    conv_b_scoped.model_name = custom_models_selection[1]
                 else:
-                    conv_a_scoped.model_name =  custom_models_selection[1]
-                    conv_b_scoped.model_name =  custom_models_selection[0]
+                    conv_a_scoped.model_name = custom_models_selection[1]
+                    conv_b_scoped.model_name = custom_models_selection[0]
             if len(custom_models_selection) > 0:
                 app_state_scoped.custom_models_selection = custom_models_selection
-                logger.info("custom_models_selection: " +str(custom_models_selection), extra={"request": request})
-                
-        else: # assume random mode
+                logger.info(
+                    "custom_models_selection: " + str(custom_models_selection),
+                    extra={"request": request},
+                )
+
+        else:  # assume random mode
             # TODO: init here instead of on arena load
             pass
         if mode in ["random", "custom", "small-models", "big-vs-small"]:
             app_state_scoped.mode = mode
-            
-        logger.info("picked model a: " + conv_a_scoped.model_name,            extra={"request": request},
-)
-        logger.info("picked model b: " + conv_b_scoped.model_name,            extra={"request": request},
-)
+
+        logger.info(
+            "picked model a: " + conv_a_scoped.model_name,
+            extra={"request": request},
+        )
+        logger.info(
+            "picked model b: " + conv_b_scoped.model_name,
+            extra={"request": request},
+        )
         return [app_state_scoped, conv_a_scoped, conv_b_scoped]
+
+    @shuffle_link.click(
+        inputs=[guided_cards, model_dropdown], outputs=[model_dropdown], api_name=False, show_progress="hidden"
+    )
+    def shuffle_prompt(guided_cards, model_dropdown_scoped, request: gr.Request):
+        prompt = gen_prompt(guided_cards)
+        model_dropdown_scoped["prompt_value"] = prompt
+        logger.info(
+            f"shuffle: {prompt}",
+            extra={"request": request},
+        )
+        return model_dropdown_scoped
 
     @textbox.change(
         inputs=[app_state, textbox],
@@ -315,7 +344,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         conv_a_scoped: gr.State,
         conv_b_scoped: gr.State,
         model_dropdown_scoped: CustomDropdown,
-        mode_banner: gr.HTML,
         request: gr.Request,
         event: gr.EventData,
     ):
@@ -358,7 +386,8 @@ document.getElementById("fr-modal-welcome-close").blur();
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
         chatbot = to_threeway_chatbot(conversations)
 
-        mode_banner = mode_banner_html(mode)
+        # banner = mode_banner_html(mode)
+        banner = gauge_banner_html()
 
         text = gr.update(visible=True)
         return [
@@ -369,7 +398,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             # 1 chatbot
             chatbot,
             text,
-            mode_banner
+            banner,
         ]
 
     def add_text(
@@ -380,7 +409,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         event: gr.EventData,
     ):
-        
+
         # if retry, resend last user errored message
         if event._data is not None:
             last_message_a = conv_a_scoped.messages[-1]
@@ -443,7 +472,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
         chatbot = to_threeway_chatbot(conversations)
-        text = gr.update(visible=True)
+        text = gr.update(visible=True, value="")
         return [
             app_state_scoped,
             # 2 conversations
@@ -468,7 +497,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             mode_screen: gr.update(visible=False),
             chat_area: gr.update(visible=True),
             send_btn: gr.update(interactive=False),
-            # shuffle_link: gr.update(visible=False),
+            shuffle_link: gr.update(visible=False),
             conclude_btn: gr.update(visible=True, interactive=False),
         }
 
@@ -632,33 +661,25 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
-    # don't enable conclude if only one user msg
     def enable_conclude(
         app_state_scoped, textbox_scoped, conv_a_scoped, request: gr.Request
     ):
-        if len(conv_a_scoped.messages) == 0:
-            return {
-                textbox: gr.update(visible=True),
-                conclude_btn: gr.skip(),
-                send_btn: gr.skip(),
-            }
-        if len(conv_a_scoped.messages) == 1:
-            return {
-                textbox: gr.update(visible=False),
-                conclude_btn: gr.skip(),
-                send_btn: gr.update(visible=False),
-            }
-        if conv_a_scoped.messages[-1].role == "user":
-            return {
-                textbox: gr.update(visible=False),
-                conclude_btn: gr.update(interactive=True),
-                send_btn: gr.update(visible=False),
-            }
+        # If last msg is from user, don't show send_btn and textbox
+        if conv_a_scoped.messages[-1].role != "user":
+            show_send_btn_and_textbox = True
+        else:
+            show_send_btn_and_textbox = False
+
+        # don't enable conclude if only one user msg
+        if len(conv_a_scoped.messages) in [0,1]:
+            enable_conclude_btn = False
+        else:
+            enable_conclude_btn = True
         return {
-            textbox: gr.update(visible=True),
-            conclude_btn: gr.update(interactive=True),
-            send_btn: gr.update(visible=True),
-        }
+                textbox: gr.update(visible=show_send_btn_and_textbox),
+                conclude_btn: gr.update(interactive=enable_conclude_btn),
+                send_btn: gr.update(visible=show_send_btn_and_textbox),
+            }
 
     gr.on(
         triggers=[
@@ -666,11 +687,16 @@ document.getElementById("fr-modal-welcome-close").blur();
         ],
         fn=add_first_text,
         api_name=False,
-        inputs=[app_state] +  [conv_a] + [conv_b] + [model_dropdown] + [mode_banner],
-        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox] + [mode_banner],
+        inputs=[app_state] + [conv_a] + [conv_b] + [model_dropdown],
+        outputs=[app_state]
+        + [conv_a]
+        + [conv_b]
+        + [chatbot]
+        + [textbox]
+        + [mode_banner],
         # scroll_to_output=True,
         show_progress="hidden",
-    ).success(
+    ).then(
         fn=goto_chatbot,
         inputs=[],
         outputs=(
@@ -678,7 +704,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             + [mode_screen]
             + [chat_area]
             + [send_btn]
-            # + [shuffle_link]
+            + [shuffle_link]
             + [conclude_btn]
         ),
         show_progress="hidden",
@@ -742,7 +768,6 @@ setTimeout(() => {
 }, 500);
 }""",
         show_progress="hidden",
-
     ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
@@ -753,7 +778,25 @@ setTimeout(() => {
         show_progress="hidden",
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
+    ).then(
+        fn=enable_conclude,
+        inputs=[app_state, textbox, conv_a],
+        outputs=[textbox, conclude_btn, send_btn],
+        js="""(args) => {
+setTimeout(() => {
+  console.log("scrolling to bot responses");
+  var botRows = document.querySelectorAll('.bot-row');
+    var lastBotRow = botRows.item(botRows.length - 1);
+    lastBotRow.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+, 500);
+}""",
+        show_progress="hidden",
     )
+
 
     def force_vote_or_reveal(
         app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
@@ -836,7 +879,6 @@ nextScreen.scrollIntoView({
 });}, 500);
 }""",
         show_progress="hidden",
-
     )
 
     @chatbot.like(
@@ -1005,7 +1047,7 @@ revealScreen.scrollIntoView({
   block: 'start'
 });}, 500);
 }""",
-show_progress="hidden",
+        show_progress="hidden",
     )
 
     # gr.on(

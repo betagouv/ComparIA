@@ -17,6 +17,15 @@ body.dark {
   --body-background-fill: var(--background-default-grey);
   --body-text-color: var(--text-default-grey);
   --block-background-fill: transparent !important;
+  --block-padding: 0 !important;
+}
+
+.dark .html-container {
+  background-color:   rgb(252, 252, 253);
+}
+
+.dark .user {
+  background-color: #eee !important;
 }
 
 /* .dark textarea, .dark input, .dark .padded {

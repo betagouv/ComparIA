@@ -225,7 +225,6 @@
 	function sendComment(chatbot_index) {
 		// console.log(value[chatbot_index].comment);
 		// console.log(comment);
-		const modal = document.getElementById("modal-prefs");
 		value[chatbot_index].commented = value[chatbot_index].comment != "";
 		dispatch("like", {
 			index: chatbot_index,

@@ -75,6 +75,7 @@ with gr.Blocks(
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
+    mode_banner = gr.HTML()
 
     app_state = gr.State(value=AppState())
 
@@ -89,7 +90,7 @@ with gr.Blocks(
     # gr.HTML(elem_id="header-placeholder")
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-6 fr-col-md-8") as mode_screen:
+    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-7 fr-col-md-8") as mode_screen:
 
 # TODO: rename component, it includes textbox
         model_dropdown = CustomDropdown(
@@ -102,7 +103,7 @@ with gr.Blocks(
 
 
         prompts_suggestions = gr.HTML(
-            elem_classes="text-grey-200 fr-container fr-text--md fr-mt-6w fr-mb-0 fr-pb-0",
+            elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-6w fr-mt-2w fr-mb-0 fr-pb-0",
             value="""<strong>Suggestions de prompts</strong>""",
         )
         # FIXME: make a click on already selected be a shuffle
@@ -113,12 +114,12 @@ with gr.Blocks(
             choices=config.guided_cards_choices,
             min_columns=1,
         )
-        # shuffle_link = gr.Button(
-        #     scale=0,
-        #     elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
-        #     visible=False,
-        #     value="Générer un autre message",
-        # )
+        shuffle_link = gr.Button(
+            scale=0,
+            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
+            visible=False,
+            value="Générer un autre message",
+        )
 
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
@@ -170,7 +171,7 @@ with gr.Blocks(
                     value="Envoyer",
                     # icon="assets/dsfr/icons/system/arrow-up-line.svg",
                     elem_id="send-btn",
-                    elem_classes="grow-0 purple-btn w-full",
+                    elem_classes="grow-0 purple-btn w-full fr-ml-md-1w",
                 )
 
             with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
@@ -332,7 +333,7 @@ with gr.Blocks(
                     <p class="text-center text-grey fr-text--sm">Le jeu de données compar:IA sera bientôt publié, continuez à l’alimenter en recommençant l’expérience !
     </p>
                 <a class="btn purple-btn fr-my-2w" href="../arene/?cgu_acceptees" target="_blank">Discuter avec deux nouvelles IA</a><br />
-                <a class="fr-mx-auto btn fr-btn--tertiary" href="../modeles" target="_blank">Découvrir la liste des IA</a>
+                <a class="fr-mx-auto link" href="https://languia-metabase.stg.cloud.culture.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1" target="_blank">En savoir plus sur les votes</a>
             """,
             )
         footer_area = gr.HTML(visible=True, value=footer_html)

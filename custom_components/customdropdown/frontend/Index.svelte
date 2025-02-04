@@ -9,6 +9,8 @@
 	import { Block } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import TextBox from "./shared/Textbox.svelte";
+	import ChevronBas from "./shared/chevron-bas.svelte";
+	import { fade } from "svelte/transition";
 
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 
@@ -37,7 +39,7 @@
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
 	import Dice from "./shared/dice.svelte";
-	import { SvelteComponent } from "svelte";
+
 	type Choice = {
 		value: "random" | "custom" | "big-vs-small" | "small-models";
 		label: string;
@@ -51,8 +53,7 @@
 			label: "Sélection manuelle",
 			alt_label: "Sélection manuelle",
 			icon: Glass, // Replace with your icon class or SVG
-			description:
-				"",
+			description: "",
 		},
 		{
 			value: "small-models",
@@ -60,16 +61,14 @@
 			alt_label: "Modèles économes",
 
 			icon: Leaf, // Replace with your icon class or SVG
-			description:
-				"minimisez votre impact énergétique",
+			description: "minimisez votre impact énergétique",
 		},
 		{
 			value: "big-vs-small",
 			label: "Petit contre grand",
 			alt_label: "Petit contre grand modèle",
 			icon: Ruler, // Replace with your icon class or SVG
-			description:
-				"Comparez leur performance",
+			description: "Comparez leur performance",
 		},
 
 		{
@@ -133,6 +132,9 @@
 				});
 				choice = choices.find((item) => item.value === mode);
 			}
+		}
+		if (mode == "custom") {
+			show_custom_models_selection = true;
 		}
 	}
 
@@ -200,12 +202,11 @@
 			}
 		}
 	}
-	var alt_label : string = "Sélection des modèles"
+	var alt_label: string = "Sélection des modèles";
 	$: if (mode == "custom" && custom_models_selection.length < 1) {
-		alt_label = "Sélection des modèles"
-	}
-	else {
-		alt_label = choice.alt_label
+		alt_label = "Sélection des modèles";
+	} else {
+		alt_label = choice.alt_label;
 	}
 </script>
 
@@ -262,7 +263,7 @@ on:input={() => gradio.dispatch("input")}
 		disabled={!interactive} -->
 		<div class="selections">
 			<button
-				class="mode-selection-btn fr-mr-3v"
+				class="mode-selection-btn fr-mb-md-0 fr-mb-1w fr-mr-3v"
 				data-fr-opened="false"
 				aria-controls="modal-mode-selection"
 				on:click={() => (show_custom_models_selection = false)}
@@ -279,24 +280,25 @@ on:input={() => gradio.dispatch("input")}
 						fill="#6A6AF4"
 					/>
 				</svg>
-				<span class="label"> {alt_label}</span><span class="chevron">⌄</span
-				></button>
+				<span class="label"> {alt_label}</span><span class="chevron"
+					><svelte:component this={ChevronBas} />
+					</span
+				></button
+			>
 			{#if mode == "custom" && custom_models_selection.length > 0}
 				<button
-					class="model-selection"
+					class="model-selection fr-mb-md-0 fr-mb-1w"
 					data-fr-opened="false"
 					aria-controls="modal-mode-selection"
 				>
-					<span class="icon">
 						<img
 							src="../assets/orgs/{first_model_icon_path}"
 							alt={first_model_name}
 							width="20"
 							class="inline"
 						/>&nbsp;
-						<span>
 							{first_model_name}
-							<strong class="fr-text--lg">&nbsp;vs.</strong>
+							<strong class="versus">&nbsp;vs.&nbsp;</strong>
 							{#if second_model_icon_path != null}
 								<img
 									src="../assets/orgs/{second_model_icon_path}"
@@ -305,9 +307,8 @@ on:input={() => gradio.dispatch("input")}
 									class="inline"
 								/>&nbsp;
 							{/if}
-							{second_model_name}</span
-						></span
-					></button>
+							{second_model_name}</button
+				>
 			{/if}
 		</div>
 		<input
@@ -324,20 +325,6 @@ on:input={() => gradio.dispatch("input")}
 		/>
 	</div>
 </Block>
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
-<!-- <dialog
-	aria-labelledby="modal-mode-selection"
-	id="modal-mode-selection"
-	class="fr-modal"
-	on:blur={() => {
-		sendComment(commenting);
-	}}
-	on:keydown={(e) => {
-		if (e.key === "Escape") {
-			sendComment(commenting);
-		}
-	}}
-> -->
 <dialog
 	aria-labelledby="modal-mode-selection"
 	id="modal-mode-selection"
@@ -345,7 +332,11 @@ on:input={() => gradio.dispatch("input")}
 >
 	<div class="fr-container fr-container--fluid fr-container-md">
 		<div class="fr-grid-row fr-grid-row--center">
-			<div class="fr-col-12 fr-col-md-6">
+			<div
+				class="fr-col-12"
+				class:fr-col-md-10={show_custom_models_selection}
+				class:fr-col-md-5={!show_custom_models_selection}
+			>
 				<div class="fr-modal__body">
 					<div class="fr-modal__header">
 						<button
@@ -354,7 +345,7 @@ on:input={() => gradio.dispatch("input")}
 							aria-controls="modal-mode-selection">Fermer</button
 						>
 					</div>
-					<div class="fr-modal__content">
+					<div class="fr-modal__content fr-pb-4w">
 						{#if show_custom_models_selection == false}
 							<h6 id="modal-mode-selection" class="modal-title">
 								Quels modèles voulez-vous comparer ?
@@ -372,88 +363,51 @@ on:input={() => gradio.dispatch("input")}
 										gradio.dispatch("select", e.detail)}
 									disabled={!interactive}
 								/>
-								<!-- <Dropdown
-									on:key_up={(e) =>
-										gradio.dispatch("key_up", e.detail)}
-								/> -->
-								<div class="fr-mt-2w">
-									<button
-										aria-controls="modal-mode-selection"
-										class="btn">Annuler</button
-									>
-									{#if mode == "custom"}
+							</div>
+						{:else}
+							<div in:fade>
+								<h6
+									id="modal-mode-selection"
+									class="modal-title"
+								>
+									Quels modèles voulez-vous comparer ?
+									<span class="text-purple fr-ml-2w">
+										{custom_models_selection.length}/2
+										modèles
+									</span>
+								</h6>
+								<p class="fr-mb-2w">
+									Si vous n’en choisissez qu’un, le second
+									sera sélectionné de manière aléatoire
+								</p>
+								<div>
+									<ModelsSelection
+										{models}
+										bind:custom_models_selection
+										{toggle_model_selection}
+									/>
+									<div class="fr-mt-2w">
 										<button
+											class="btn fr-mb-md-0 fr-mb-1w"
+											on:click={() =>
+												(show_custom_models_selection = false)}
+											>Retour</button
+										>
+										<button
+											aria-controls="modal-mode-selection"
 											class="btn purple-btn float-right"
 											on:click={() =>
-												(show_custom_models_selection = true)}
-											>Continuer</button
-										>
-									{:else}
-										<button
-											on:click={() =>
 												gradio.dispatch("select", {
+													prompt_value: prompt_value,
 													mode: mode,
 													custom_models_selection:
 														custom_models_selection,
-													prompt_value: prompt_value,
-												})}
-											aria-controls="modal-mode-selection"
-											class="btn purple-btn float-right"
-											>Valider</button
+												})}>Valider</button
 										>
-									{/if}
+									</div>
 								</div>
-								<!-- <button
-								aria-controls="modal-mode-selection"
-								class="btn purple-btn"
-								on:click={() => sendComment(commenting)}
-								>Envoyer</button
-							> -->
 							</div>
-						{:else}
-							<h6 id="modal-mode-selection" class="modal-title">
-								Quels modèles voulez-vous comparer ?
-								<span class="text-purple fr-ml-2w">
-									{custom_models_selection.length}/2 modèles
-								</span>
-							</h6>
-							<p>
-								Si vous n’en choisissez qu’un, le second sera
-								sélectionné de manière aléatoire
-							</p>
-							<div>
-								<ModelsSelection
-									{models}
-									bind:custom_models_selection
-									{toggle_model_selection}
-								/>
-								<div class="fr-mt-2w">
-									<button
-										aria-controls="modal-mode-selection"
-										class="btn"
-										on:click={() =>
-											(show_custom_models_selection = false)}
-										>Retour</button
-									>
-									<button
-										aria-controls="modal-mode-selection"
-										class="btn purple-btn float-right"
-										on:click={() =>
-											gradio.dispatch("select", {
-												prompt_value: prompt_value,
-												mode: mode,
-												custom_models_selection:
-													custom_models_selection,
-											})}>Valider</button
-									>
-								</div>
-								<!-- <button
-							aria-controls="modal-mode-selection"
-							class="btn purple-btn"
-							on:click={() => sendComment(commenting)}
-							>Envoyer</button
-						> -->
-							</div>{/if}
+						{/if}
 					</div>
 				</div>
 			</div>
@@ -462,10 +416,14 @@ on:input={() => gradio.dispatch("input")}
 </dialog>
 
 <style>
+.versus {
+	font-size: 1.125rem;
+
+	line-height: 0 !important;
+}
+
 	.chevron {
-		font-size: 1.5em;
 		line-height: 0;
-		font-weight: bold;
 	}
 
 	.text-purple {
@@ -490,6 +448,7 @@ on:input={() => gradio.dispatch("input")}
 	}
 
 	.model-selection {
+	    align-items: center;
 		width: 100%;
 		--hover-tint: transparent;
 		--active-tint: transparent;
@@ -502,7 +461,7 @@ on:input={() => gradio.dispatch("input")}
 
 		text-align: left;
 		font-weight: 500;
-		font-size: 0.875em;
+		font-size: 0.875em !important;
 		color: #3a3a3a !important;
 		background-color: white !important;
 		max-height: 40px;
@@ -514,7 +473,7 @@ on:input={() => gradio.dispatch("input")}
 	.mode-selection-btn .label {
 		margin-left: 0.5em;
 		flex-grow: 1;
-		font-size: 0.825em;
+		font-size: 0.875em;
 	}
 
 	.float-right {
@@ -549,9 +508,11 @@ on:input={() => gradio.dispatch("input")}
 	}
 	.submit-btn {
 		order: 2;
-		width: 100%;
+		width: 100% !important;
 	}
-
+	.fr-modal__body, .fr-modal, .fr-modal .fr-container, .fr-modal .fr-grid-row, .fr-modal__content {
+		overflow: scroll;
+	}
 
 	@media (min-width: 48em) {
 		.first-textbox,
@@ -559,7 +520,7 @@ on:input={() => gradio.dispatch("input")}
 			order: initial;
 		}
 		.submit-btn {
-			width: 200px;
+			width: 200px !important;
 		}
 		.grid {
 			grid-template-areas: "text text" "left right";

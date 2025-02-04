@@ -110,9 +110,11 @@
 
 	async function handle_keypress(e: KeyboardEvent): Promise<void> {
 		await tick();
-		if (e.key === "Enter") {
+		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			dispatch("submit");
+			if (value != "") {
+				dispatch("submit");
+			}
 		}
 	}
 

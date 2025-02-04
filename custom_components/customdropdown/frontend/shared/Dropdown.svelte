@@ -1,43 +1,15 @@
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
-	import type { ModeAndPromptData } from "./utils.ts";
-	type Item = string | number;
 	export let handle_option_selected;
 	// TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
-	// export let prompt_value: string = ""; // Initialize as an empty string by default
-
-	// Combine all into one value object based on mode and other properties
-	// export let value: {
-	// 	prompt_value: string;
-	// 	mode: "random" | "custom" | "big-vs-small" | "small-models";
-	// 	custom_models_selection: Item[];
-	// } = {
-	// 	prompt_value: "",
-	// 	mode: "random",
-	// 	custom_models_selection: [],
-	// };
+		
 	export let disabled = false;
 
-	let selected_index: number | null = null;
-	const dispatch = createEventDispatcher<{
-		select: ModeAndPromptData;
-		change: never;
-	}>();
 	export var choices;
 
-	// $: {
-	// 	if (
-	// 		selected_index !== null &&
-	// 		choices &&
-	// 		choices.length > selected_index
-	// 	) {
-	// 		// value = choices[selected_index].value;
-	// 		// value.mode = choices[selected_index].value;
-	// 		mode = choices[selected_index].value;
-	// 	}
-	// }
+	import ChevronDroite from "./chevron-droite.svelte";
+
 </script>
 
 <div>
@@ -52,6 +24,7 @@
 			role="radio"
 			aria-checked={value === mode ? "true" : "false"}
 			on:click={() => handle_option_selected(index)}
+			aria-controls={value != "custom" ? "modal-mode-selection" : ""}
 		>
 			<input
 				type="radio"
@@ -67,7 +40,7 @@
 			<div class="description">
 				<strong>{label}</strong>{#if value != "custom"}&nbsp;: {description}
 				{:else}
-				<span class="chevron-droite">˃</span>
+				<span class="chevron-droite"><svelte:component this={ChevronDroite} /></span>
 				{/if}
 			</div>
 		</label>
@@ -112,10 +85,7 @@
 	
 	.chevron-droite {
 		line-height: 0;
-		font-size: 2em;
-		font-weight: bold;
 		float: right;
-		top: 20px;
 		margin-right: 0.5em;
 		position: relative;
 	}
