@@ -116,7 +116,7 @@ with gr.Blocks(
         )
         shuffle_link = gr.Button(
             scale=0,
-            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto",
+            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto mobile-w-full",
             visible=False,
             value="Générer un autre message",
         )

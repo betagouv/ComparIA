@@ -261,8 +261,15 @@ h6.text-blue {
 .w-full {
   width: 100%;
 }
+.mobile-w-full {
+  width: 100%;
+}
 
 @media (min-width: 48em) {
+
+.mobile-w-full {
+  width: inherit;
+}
   .flex-md-row {
     flex-direction: row !important;
   }
