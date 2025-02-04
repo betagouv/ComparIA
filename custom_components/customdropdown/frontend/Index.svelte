@@ -515,12 +515,9 @@
 		order: 2;
 		width: 100% !important;
 	}
-	.fr-modal__body,
-	.fr-modal,
-	.fr-modal .fr-container,
-	.fr-modal .fr-grid-row,
-	.fr-modal__content {
-		overflow: scroll;
+	/* .fr-modal__content { */
+	.fr-modal__body {
+		overflow-y: scroll;
 	}
 
 	@media (min-width: 48em) {
