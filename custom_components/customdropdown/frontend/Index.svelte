@@ -224,7 +224,7 @@
 	{scale}
 	{min_width}
 >
-	<h3 class="text-center text-grey-200 fr-mt-12w fr-mb-7w">
+	<h3 class="text-center text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w">
 		Comment puis-je vous aider aujourd'hui ?
 	</h3>
 	<div class="grid">
