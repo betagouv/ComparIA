@@ -213,6 +213,25 @@
 	} else {
 		alt_label = choice.alt_label;
 	}
+
+
+
+
+    // const modalBody = document.querySelector('.fr-modal__body');
+    // // Get the bottom-buttons element
+    // const bottomButtons = document.querySelector('.bottom-buttons');
+
+    // if (modalBody && bottomButtons) {
+    //     // Get the dimensions and position of the modal body
+    //     const modalRect = modalBody.getBoundingClientRect();
+        
+    //     // Calculate the bottom position
+    //     const modalBottom = modalRect.bottom;
+
+    //     // Set the position of the bottom-buttons
+    //     // Note: This assumes bottom-buttons has position set as "absolute" or "fixed"
+    //     bottomButtons.style.position = 'absolute';
+    //     bottomButtons.style.top = `${modalBottom}px`;
 </script>
 
 <Block
@@ -337,12 +356,34 @@
 >
 	<div class="fr-container fr-container--fluid fr-container-md">
 		<div class="fr-grid-row fr-grid-row--center">
+			
 			<div
 				class="fr-col-12"
 				class:fr-col-md-10={show_custom_models_selection}
 				class:fr-col-md-5={!show_custom_models_selection}
 			>
+
+			{#if show_custom_models_selection == true}
+			<div class="fr-mt-2w bottom-buttons">
+				<button
+					class="btn fr-mb-md-0 fr-mb-1w"
+					on:click={() => (show_custom_models_selection = false)}
+					>Retour</button
+				>
+				<button
+					aria-controls="modal-mode-selection"
+					class="btn purple-btn float-right"
+					on:click={() =>
+						gradio.dispatch("select", {
+							prompt_value: prompt_value,
+							mode: mode,
+							custom_models_selection: custom_models_selection,
+						})}>Valider</button
+				>
+			</div>
+		{/if}
 				<div class="fr-modal__body">
+
 					<div class="fr-modal__header">
 						<button
 							class="fr-btn--close fr-btn"
@@ -391,25 +432,6 @@
 										bind:custom_models_selection
 										{toggle_model_selection}
 									/>
-									<div class="fr-mt-2w">
-										<button
-											class="btn fr-mb-md-0 fr-mb-1w"
-											on:click={() =>
-												(show_custom_models_selection = false)}
-											>Retour</button
-										>
-										<button
-											aria-controls="modal-mode-selection"
-											class="btn purple-btn float-right"
-											on:click={() =>
-												gradio.dispatch("select", {
-													prompt_value: prompt_value,
-													mode: mode,
-													custom_models_selection:
-														custom_models_selection,
-												})}>Valider</button
-										>
-									</div>
 								</div>
 							</div>
 						{/if}
@@ -550,5 +572,12 @@
 			grid-area: right;
 			justify-self: right;
 		}
+	}
+
+	.bottom-buttons {
+		position: fixed;
+		bottom: 10vh;
+		z-index: 1000;
+		background-color: white;
 	}
 </style>
