@@ -19,6 +19,7 @@
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
+	export let disabled = false;
 	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
 		"random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
@@ -229,6 +230,7 @@
 	<div class="grid">
 		<div class="first-textbox fr-mb-3v">
 			<TextBox
+				{disabled}
 				bind:value={prompt_value}
 				bind:value_is_output
 				{elem_id}
@@ -247,12 +249,14 @@
 						mode: mode,
 						custom_models_selection: custom_models_selection,
 					})}
-				on:submit={() =>
+				on:submit={() => {
 					gradio.dispatch("submit", {
 						prompt_value: prompt_value,
 						mode: mode,
 						custom_models_selection: custom_models_selection,
-					})}
+					});
+					disabled = true;
+				}}
 			/>
 		</div>
 
@@ -260,6 +264,7 @@
 			<button
 				class="mode-selection-btn fr-mb-md-0 fr-mb-1w fr-mr-3v"
 				data-fr-opened="false"
+				{disabled}
 				aria-controls="modal-mode-selection"
 				on:click={() => {
 					never_clicked = false;
@@ -284,6 +289,7 @@
 			>
 			{#if mode == "custom" && custom_models_selection.length > 0}
 				<button
+					{disabled}
 					class="model-selection fr-mb-md-0 fr-mb-1w"
 					data-fr-opened="false"
 					aria-controls="modal-mode-selection"
@@ -311,13 +317,15 @@
 		<input
 			type="submit"
 			class="submit-btn purple-btn btn"
-			disabled={prompt_value == ""}
-			on:click={() =>
+			disabled={prompt_value == "" || disabled}
+			on:click={() => {
 				gradio.dispatch("submit", {
 					prompt_value: prompt_value,
 					mode: mode,
 					custom_models_selection: custom_models_selection,
-				})}
+				});
+				disabled = true;
+			}}
 			value="Envoyer"
 		/>
 	</div>

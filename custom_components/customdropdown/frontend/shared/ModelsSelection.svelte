@@ -21,10 +21,10 @@
 	export let disabled = false;
 
 	// let selected_index: number | null = null;
-	const dispatch = createEventDispatcher<{
-		select: ModeAndPromptData;
-		change: never;
-	}>();
+	// const dispatch = createEventDispatcher<{
+	// 	select: ModeAndPromptData;
+	// 	change: never;
+	// }>();
 	export let toggle_model_selection: (id: string) => void;
 	// export var choices;
 
@@ -39,6 +39,13 @@
 	// 		mode = choices[selected_index].value;
 	// 	}
 	// }
+
+	function handleKeyDown(id, event: KeyboardEvent) {
+		if (event.key === " " || event.key === "Enter") {
+			event.preventDefault();
+			toggle_model_selection(id);
+		}
+	}
 </script>
 
 <div class="models-grid">
@@ -56,6 +63,7 @@
 			aria-checked={custom_models_selection.includes(id)
 				? "true"
 				: "false"}
+			on:keydown={(e) => handleKeyDown(id, e)}
 		>
 			<input
 				type="radio"

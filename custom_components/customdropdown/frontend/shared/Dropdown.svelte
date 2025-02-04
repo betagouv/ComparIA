@@ -10,6 +10,12 @@
 
 	import ChevronDroite from "./chevron-droite.svelte";
 
+	function handleKeyDown(index, event: KeyboardEvent) {
+		if (event.key === " " || event.key === "Enter") {
+			event.preventDefault();
+			handle_option_selected(index);
+		}
+	}
 </script>
 
 <div>
@@ -24,6 +30,7 @@
 			role="radio"
 			aria-checked={value === mode ? "true" : "false"}
 			on:click={() => handle_option_selected(index)}
+			on:keydown={(e) => handleKeyDown(index,e)}
 			aria-controls={value != "custom" ? "modal-mode-selection" : ""}
 		>
 			<input
