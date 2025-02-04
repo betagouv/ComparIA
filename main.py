@@ -62,7 +62,7 @@ app = gr.mount_gradio_app(
 )
 
 from languia.utils import get_gauge_count
-objective = 50000
+objective = 40000
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
