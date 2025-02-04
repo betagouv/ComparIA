@@ -176,7 +176,7 @@ document.getElementById("fr-modal-welcome-close").blur();
     # Step 1
 
     # Step 1.1
-    @guided_cards.change(
+    @guided_cards.input(
         inputs=[app_state, guided_cards, model_dropdown],
         outputs=[app_state, model_dropdown, shuffle_link],
         api_name=False,
