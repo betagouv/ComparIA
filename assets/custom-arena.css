@@ -309,6 +309,7 @@ h6.text-blue {
 
 #guided-cards span {
   font-weight: 500;
+  align-self: center;
   font-size: 0.75em;
 }
 
@@ -364,10 +365,19 @@ li.fr-nav__item {
 .hidden {
   display: none;
 }
-
+.md-visible {
+  display: none !important;
+}
 @media (min-width: 48em) {
   .md-visible {
     display: block !important;
+  }
+}
+
+@media (min-width: 48em) {
+
+  .md-hidden {
+    display: none;
   }
 }
 
