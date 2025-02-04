@@ -14,6 +14,7 @@
 
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 
+	export let never_clicked: boolean = true;
 	export let models: Model[] = [];
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
@@ -74,7 +75,7 @@
 		{
 			value: "random",
 			label: "Aléatoire",
-			alt_label: "Sélection des modèles",
+			alt_label: "Modèles aléatoire",
 			icon: Dice, // Replace with your icon class or SVG
 			description: "modèles tirés au hasard dans la liste",
 		},
@@ -203,7 +204,10 @@
 		}
 	}
 	var alt_label: string = "Sélection des modèles";
-	$: if (mode == "custom" && custom_models_selection.length < 1) {
+	$: if (
+		(mode == "custom" && custom_models_selection.length < 1) ||
+		(mode == "random" && never_clicked)
+	) {
 		alt_label = "Sélection des modèles";
 	} else {
 		alt_label = choice.alt_label;
@@ -251,22 +255,16 @@
 					})}
 			/>
 		</div>
-		<!-- on:change={() =>
-	gradio.dispatch("change", {
-		prompt_value: prompt_value,
-		mode: mode,
-		custom_models_selection: custom_models_selection,
-	})}
-on:input={() => gradio.dispatch("input")}
-		on:blur={() => gradio.dispatch("blur")}
-		on:focus={() => gradio.dispatch("focus")}
-		disabled={!interactive} -->
+
 		<div class="selections">
 			<button
 				class="mode-selection-btn fr-mb-md-0 fr-mb-1w fr-mr-3v"
 				data-fr-opened="false"
 				aria-controls="modal-mode-selection"
-				on:click={() => (show_custom_models_selection = false)}
+				on:click={() => {
+					never_clicked = false;
+					show_custom_models_selection = false;
+				}}
 			>
 				<svg
 					width="18"
@@ -282,8 +280,7 @@ on:input={() => gradio.dispatch("input")}
 				</svg>
 				<span class="label"> {alt_label}</span><span class="chevron"
 					><svelte:component this={ChevronBas} />
-					</span
-				></button
+				</span></button
 			>
 			{#if mode == "custom" && custom_models_selection.length > 0}
 				<button
@@ -291,23 +288,23 @@ on:input={() => gradio.dispatch("input")}
 					data-fr-opened="false"
 					aria-controls="modal-mode-selection"
 				>
+					<img
+						src="../assets/orgs/{first_model_icon_path}"
+						alt={first_model_name}
+						width="20"
+						class="inline"
+					/>&nbsp;
+					{first_model_name}
+					<strong class="versus">&nbsp;vs.&nbsp;</strong>
+					{#if second_model_icon_path != null}
 						<img
-							src="../assets/orgs/{first_model_icon_path}"
-							alt={first_model_name}
+							src="../assets/orgs/{second_model_icon_path}"
+							alt={second_model_name}
 							width="20"
 							class="inline"
 						/>&nbsp;
-							{first_model_name}
-							<strong class="versus">&nbsp;vs.&nbsp;</strong>
-							{#if second_model_icon_path != null}
-								<img
-									src="../assets/orgs/{second_model_icon_path}"
-									alt={second_model_name}
-									width="20"
-									class="inline"
-								/>&nbsp;
-							{/if}
-							{second_model_name}</button
+					{/if}
+					{second_model_name}</button
 				>
 			{/if}
 		</div>
@@ -416,11 +413,11 @@ on:input={() => gradio.dispatch("input")}
 </dialog>
 
 <style>
-.versus {
-	font-size: 1.125rem;
+	.versus {
+		font-size: 1.125rem;
 
-	line-height: 0 !important;
-}
+		line-height: 0 !important;
+	}
 
 	.chevron {
 		line-height: 0;
@@ -448,7 +445,7 @@ on:input={() => gradio.dispatch("input")}
 	}
 
 	.model-selection {
-	    align-items: center;
+		align-items: center;
 		width: 100%;
 		--hover-tint: transparent;
 		--active-tint: transparent;
@@ -510,7 +507,11 @@ on:input={() => gradio.dispatch("input")}
 		order: 2;
 		width: 100% !important;
 	}
-	.fr-modal__body, .fr-modal, .fr-modal .fr-container, .fr-modal .fr-grid-row, .fr-modal__content {
+	.fr-modal__body,
+	.fr-modal,
+	.fr-modal .fr-container,
+	.fr-modal .fr-grid-row,
+	.fr-modal__content {
 		overflow: scroll;
 	}
 
