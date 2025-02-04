@@ -521,7 +521,7 @@
 			order: initial;
 		}
 		.submit-btn {
-			width: 200px !important;
+			width: 8.25rem !important;
 		}
 		.grid {
 			grid-template-areas: "text text" "left right";
