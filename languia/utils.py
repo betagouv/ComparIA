@@ -610,6 +610,39 @@ justify-content: center;
 gap: 1em;
 }
 
+  @media (max-width: 48em) {
+
+    .mode-banner {
+      padding-top: 0;
+      padding-bottom: 1em;
+      display: grid;
+      height: auto;
+      grid-template: "a c"
+      "b b";
+    }
+
+    .votes {
+      position: relative;
+      top: -13px;
+    }
+    .legende {
+      grid-area: a;
+
+    }
+    
+    .objectif {
+      grid-area: c;
+      order: 0;
+      display: block;
+    }
+    .linear-gauge {
+      width: auto;
+      margin-top: -10px;
+      order: 2;
+      grid-area: b;
+    }
+  }
+
     </style>
     """
     return gauge
