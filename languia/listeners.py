@@ -210,6 +210,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             shuffle_link: gr.update(visible=True),
         }
 
+    # TODO: refacto...
     @model_dropdown.select(
         inputs=[app_state, conv_a, conv_b, model_dropdown],
         outputs=[app_state, conv_a, conv_b],
@@ -244,11 +245,19 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             swap = random.randint(2)
             if swap == 0:
-                conv_a_scoped.model_name = first_model["id"]
-                conv_b_scoped.model_name = second_model["id"]
+                conv_a_scoped = set_conv_state(
+                    conv_a_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
+                )
+                conv_b_scoped = set_conv_state(
+                    conv_b_scoped, model_name=second_model["id"], endpoint=pick_endpoint(second_model, config.outages)
+                )
             else:
-                conv_a_scoped.model_name = second_model["id"]
-                conv_b_scoped.model_name = first_model["id"]
+                conv_a_scoped = set_conv_state(
+                    conv_a_scoped, model_name=second_model["id"], endpoint=pick_endpoint(second_model, config.outages)
+                )
+                conv_b_scoped = set_conv_state(
+                    conv_b_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
+                )
 
         elif mode == "small-models":
             first_model = small_models[random.randint(len(small_models))]
@@ -259,8 +268,12 @@ document.getElementById("fr-modal-welcome-close").blur();
             else:
                 second_model = small_models[random.randint(len(small_models))]
 
-            conv_a_scoped.model_name = first_model["id"]
-            conv_b_scoped.model_name = second_model["id"]
+            conv_a_scoped = set_conv_state(
+                    conv_a_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
+                )
+            conv_b_scoped = set_conv_state(
+                    conv_b_scoped, model_name=second_model["id"], endpoint=pick_endpoint(second_model, config.outages)
+                )
             # Custom mode
         elif mode == "custom":
             custom_models_selection = model_dropdown_scoped["custom_models_selection"]
@@ -274,21 +287,33 @@ document.getElementById("fr-modal-welcome-close").blur();
                 pass
             elif len(custom_models_selection) == 1:
                 if swap == 0:
-                    conv_a_scoped.model_name = custom_models_selection[0]
+                    conv_a_scoped = set_conv_state(
+                    conv_a_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
+                )
                     # FIXME: chose at random except chosen
                     # conv_b_scoped.model_name = the random one
                 else:
-                    conv_b_scoped.model_name = custom_models_selection[0]
+                    conv_b_scoped = set_conv_state(
+                    conv_b_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
+                )
                     # FIXME: chose at random except chosen
                     # conv_b_scoped.model_name = the random one
             elif len(custom_models_selection) == 2:
 
                 if swap == 0:
-                    conv_a_scoped.model_name = custom_models_selection[0]
-                    conv_b_scoped.model_name = custom_models_selection[1]
+                    conv_a_scoped = set_conv_state(
+                    conv_a_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
+                )
+                    conv_b_scoped = set_conv_state(
+                    conv_b_scoped, model_name=custom_models_selection[1], endpoint=pick_endpoint(custom_models_selection[1], config.outages)
+                )
                 else:
-                    conv_a_scoped.model_name = custom_models_selection[1]
-                    conv_b_scoped.model_name = custom_models_selection[0]
+                    conv_a_scoped = set_conv_state(
+                    conv_a_scoped, model_name=custom_models_selection[1], endpoint=pick_endpoint(custom_models_selection[1], config.outages)
+                )
+                    conv_b_scoped = set_conv_state(
+                    conv_b_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
+                )
             if len(custom_models_selection) > 0:
                 app_state_scoped.custom_models_selection = custom_models_selection
                 logger.info(
