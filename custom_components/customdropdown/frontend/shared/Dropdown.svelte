@@ -64,7 +64,7 @@
 
 	label {
 		border-radius: 0.5em;
-		outline: 0.5px solid #e5e5e5;
+		outline: 1px solid #e5e5e5;
 		display: grid;
 		padding: 1em 0.5em;
 		align-items: center;

@@ -97,22 +97,25 @@
 			gap: 1em;
 		}
 	}
-	label.selected,
+	label.selected, label.selected:active, label.selected:focus {
+		outline: 2px solid #6a6af4 !important;
+	}
+
 	/* label:not([disabled]):active { */
 	label:active,
 	label:focus {
-		outline: 2px solid #6a6af4 !important;
-		/* border: 2px solid var(--blue-france-main-525); */
+		outline: 2px solid #ccc !important;
 	}
+	
 	label.disabled,
 	label.disabled:active,
 	label.disabled:focus {
 		filter: grayscale(100%);
-		outline: 0.5px solid #ccc !important;
+		outline: 1px solid #ccc !important;
 	}
 	label {
 		border-radius: 0.5em;
-		outline: 0.5px solid #e5e5e5;
+		outline: 1px solid #e5e5e5;
 		display: grid;
 		align-items: center;
 		/* grid-template-columns: auto 1fr; */
