@@ -1,44 +1,12 @@
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
-	import type { ModeAndPromptData, Model } from "./utils.js";
-	// export let handle_option_selected;
-	// TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
-	// export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
-	// 	"random";
-	// export let prompt_value: string = ""; // Initialize as an empty string by default
+	import type {  Model } from "./utils.js";
 	export let custom_models_selection: string[] = []; // Default to an empty list
 	export let models: Model[] = [];
-	// Combine all into one value object based on mode and other properties
-	// export let value: {
-	// 	prompt_value: string;
-	// 	mode: "random" | "custom" | "big-vs-small" | "small-models";
-	// 	custom_models_selection: Item[];
-	// } = {
-	// 	prompt_value: "",
-	// 	mode: "random",
-	// 	custom_models_selection: [],
-	// };
+	
 	export let disabled = false;
 
-	// let selected_index: number | null = null;
-	// const dispatch = createEventDispatcher<{
-	// 	select: ModeAndPromptData;
-	// 	change: never;
-	// }>();
+	
 	export let toggle_model_selection: (id: string) => void;
-	// export var choices;
-
-	// $: {
-	// 	if (
-	// 		selected_index !== null &&
-	// 		choices &&
-	// 		choices.length > selected_index
-	// 	) {
-	// 		// value = choices[selected_index].value;
-	// 		// value.mode = choices[selected_index].value;
-	// 		mode = choices[selected_index].value;
-	// 	}
-	// }
 
 	function handleKeyDown(id, event: KeyboardEvent) {
 		if (event.key === " " || event.key === "Enter") {
