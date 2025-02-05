@@ -225,12 +225,12 @@ document.getElementById("fr-modal-welcome-close").blur();
         small_models = [
             model
             for model in config.models_extra_info
-            if model["friendly_size"] in ["XS", "S"]
+            if model["friendly_size"] in ["XS", "S", "M"]
         ]
         big_models = [
             model
             for model in config.models_extra_info
-            if model["friendly_size"] in ["M", "L", "XL"]
+            if model["friendly_size"] in ["L", "XL"]
         ]
 
         mode = model_dropdown_scoped["mode"]
