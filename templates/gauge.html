@@ -44,8 +44,7 @@
         gauge_count_ratio
       }}%;
     height: 100%;
-    background: var(--yellow-tournesol-925-125);
-    transition: width 0.3s ease-in-out;
+    background-color: #fde39c !important;
   }
 
   .linear-gauge {
@@ -69,6 +68,19 @@
     filter: drop-shadow(0 1px 3px var(--shadow-color))
   }
 
+  @media (prefers-color-scheme: dark) {
+  .legende,
+  .objectif  {
+    color: white !important;
+  }
+  .mode-banner {
+    background-color: black;
+  }
+  .votes {
+    color: #695240;
+  }
+
+  }
 
   @media (max-width: 48em) {
 
@@ -96,7 +108,6 @@
       display: block;
     }
     .linear-gauge {
-      width: auto;
       margin-top: -10px;
       order: 2;
       grid-area: b;
