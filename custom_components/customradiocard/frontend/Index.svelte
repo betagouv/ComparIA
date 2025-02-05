@@ -71,12 +71,13 @@
 	.grid {
 		display: grid;
 		grid-template-columns: repeat(var(--min-columns), 1fr);
-		gap: 1.5rem; /* adds a 10px gap between grid cells */
-		padding: 0.75rem; /* adds a 20px padding around the grid */
-		margin: 0.75rem; /* adds a 20px margin around the grid */
+		gap: 0.625rem; 
+		padding: 0.75rem; 
+		margin: 0.75rem; 
 	}
 	@media (min-width: 48em) {
 		.grid {
+			gap: 1.5rem; 
 			grid-template-columns: repeat(var(--columns), 1fr);
 		}
 	}

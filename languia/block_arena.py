@@ -103,7 +103,7 @@ with gr.Blocks(
 
 
         prompts_suggestions = gr.HTML(
-            elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-2w fr-mb-0 fr-pb-0 fr-px-0",
+            elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-0 fr-pb-0 fr-px-0",
             value="""<strong>Suggestions de prompts</strong>""",
         )
         # FIXME: make a click on already selected be a shuffle
