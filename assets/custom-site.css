@@ -132,5 +132,7 @@ a.temp-banner, a.temp-banner:hover a.temp-banner:active {
   display: block;
   background-color: #6A6AF4 !important;
   color: white !important;
-  line-height: 2.5em;
+  line-height: 1.5em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
 }
