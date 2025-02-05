@@ -62,14 +62,23 @@ app = gr.mount_gradio_app(
 )
 
 from languia.utils import get_gauge_count
+
 objective = 40000
+
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     gauge_count = get_gauge_count()
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
-        "index.html", {"request": request, "config": config, "gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective}
+        "index.html",
+        {
+            "request": request,
+            "config": config,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+        },
     )
 
 
@@ -86,9 +95,14 @@ async def models(request: Request):
             "models": config.models_extra_info,
             "size_desc": size_desc,
             "license_desc": license_desc,
-            "license_attrs": license_attrs,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective
+            "license_attrs": license_attrs,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
         },
     )
+
+
 
 
 @app.get("/a-propos", response_class=HTMLResponse)
@@ -98,7 +112,14 @@ async def about(request: Request):
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "about.html",
-        {"title": "À propos", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
+        {
+            "title": "À propos",
+            "request": request,
+            "config": config,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+        },
     )
 
 
@@ -112,7 +133,9 @@ async def faq(request: Request):
             "title": "Vos questions les plus courantes",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
         },
     )
 
@@ -123,8 +146,14 @@ async def partners(request: Request):
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "partners.html",
-        {"title": "Partenaires", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
-        
+        {
+            "title": "Partenaires",
+            "request": request,
+            "config": config,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+        },
     )
 
 
@@ -134,7 +163,14 @@ async def legal(request: Request):
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "legal.html",
-        {"title": "Mentions légales", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
+        {
+            "title": "Mentions légales",
+            "request": request,
+            "config": config,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+        },
     )
 
 
@@ -144,7 +180,14 @@ async def policy(request: Request):
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "policy.html",
-        {"title": "Politique de confidentialité", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
+        {
+            "title": "Politique de confidentialité",
+            "request": request,
+            "config": config,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+        },
     )
 
 
@@ -158,7 +201,10 @@ async def tos(request: Request):
             "title": "Modalités d’utilisation",
             "request": request,
             "config": config,
-            "models": config.models_extra_info,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective
+            "models": config.models_extra_info,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
         },
     )
 
@@ -169,7 +215,14 @@ async def accessibility(request: Request):
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "accessibility.html",
-        {"title": "Déclaration d’accessibilité", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
+        {
+            "title": "Déclaration d’accessibilité",
+            "request": request,
+            "config": config,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+        },
     )
 
 
@@ -179,7 +232,14 @@ async def bnf(request: Request):
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "bnf.html",
-        {"title": "Evénement 7 février", "request": request, "config": config,"gauge_count_ratio": gauge_count_ratio, "gauge_count": gauge_count, "objective": objective},
+        {
+            "title": "Evénement 7 février",
+            "request": request,
+            "config": config,
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+        },
     )
 
 
