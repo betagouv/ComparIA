@@ -161,14 +161,13 @@
 		}
 		if (has_changed) {
 			value["custom_models_selection"] = custom_models_selection;
-
-			first_model_name = models.find(
+			first_model_name = custom_models_selection[0] !== undefined ? models.find(
 				(model) => model["id"] === custom_models_selection[0],
-			).simple_name;
+			).simple_name : "Aléatoire";
 
-			first_model_icon_path = models.find(
+			first_model_icon_path = custom_models_selection[0] !== undefined ? models.find(
 				(model) => model["id"] === custom_models_selection[0],
-			).icon_path;
+			).icon_path : null;
 
 			second_model_name =
 				custom_models_selection[1] !== undefined
