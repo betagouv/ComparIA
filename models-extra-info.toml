@@ -240,12 +240,26 @@ excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la sé
 description = "Doté de 405 milliards de paramètres, ce modèle est la version la plus large de la troisième itération des modèles Hermes. Ce modèle Hermes 3 est un fine-tune conçu par l'entreprise américaine 'Nous Research' à partir du modèle Llama 3.1 405B de Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation."
 license = "Llama 3.1"
 
+["jamba-1.5-large"]
+url = "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large"
+simple_name = "Jamba 1.5 Large"
+organisation = "AI21"
+icon_path = "ai21.webp"
+friendly_size = "XL"
+distribution = "open-weights"
+conditions = "copyleft"
+excerpt = "Sorti en août 2024, ce modèle de l'entreprise AI21 est un modèle de type particulier hybride dit 'SSM' et Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
+description = "Sorti en août 2024, ce modèle de l'entreprise AI21 est un modèle de type particulier hybride dit 'SSM' (State Space Models) et Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
+total_params = 400
+active_params = 94
+license = "Jamba Open Model"
+
 ["lfm-40b"]
 url = "https://www.liquid.ai/liquid-foundation-models"
-simple_name = "LFM 40B MoE"
+simple_name = "LFM 40B"
 organisation = "Liquid"
 icon_path = "liquid.svg"
-friendly_size = "L"
+friendly_size = "M"
 distribution = "api-only"
 conditions = "restricted"
 excerpt = "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
@@ -287,10 +301,23 @@ organisation = "Meta"
 icon_path = "meta.svg"
 friendly_size = "L"
 distribution = "open-weights"
-conditions = "free"
+conditions = "copyleft"
 excerpt = "Doté de 70 milliards de paramètres et sorti en avril 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
 description = "Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps forts des Jeux olympiques de Paris 2024 ! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
 license = "Llama 3.1"
+
+["llama-3.3-70b"]
+url = "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct"
+params = 70
+simple_name = "Llama 3.3 70B"
+organisation = "Meta"
+icon_path = "meta.svg"
+friendly_size = "L"
+distribution = "open-weights"
+conditions = "copyleft"
+excerpt = "Doté de 70 milliards de paramètres et sorti en décembre 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
+description = "Remplaçant la famille Llama 3.2, ce modèle sorti en décembre 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps forts des Jeux olympiques de Paris 2024 ! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
+license = "Llama 3.3"
 
 ["llama-3.1-nemotron-70b-instruct"]
 url = "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct"
