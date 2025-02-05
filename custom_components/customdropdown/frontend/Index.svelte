@@ -76,7 +76,7 @@
 		{
 			value: "random",
 			label: "Aléatoire",
-			alt_label: "Modèles aléatoire",
+			alt_label: "Modèles aléatoires",
 			icon: Dice, // Replace with your icon class or SVG
 			description: "modèles tirés au hasard dans la liste",
 		},
