@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-design/icons-design.css">
     {% block extra_styles %}
     <style>
-      .step-badge {
+      .step-badge, .feedback {
         display: none;
       }
     </style>
@@ -69,9 +69,9 @@
           </div>
   
           <div class="hidden md-visible fr-header__tools fr-col-12 fr-col-lg-4 fr-p-2w">
-            <a title="Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre"
-              href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX" target="_blank" rel="noopener external"
-              class="fr-link fr-icon-pencil-line fr-link--icon-left">Nous aider à améliorer compar:IA</a>
+            <a title="Découvrir compar:IA - ouvre une nouvelle fenêtre"
+              href="https://www.comparia.beta.gouv.fr" target="_blank" rel="noopener external"
+              class="fr-link fr-icon-pencil-line fr-link--icon-left">Découvrir compar:IA</a>
           </div>
         </div>
       </div>
@@ -91,6 +91,12 @@
     {% block content %}
     <main id="contenu">
       {% include "reveal.html" %}
+
+    <div class="text-center">
+
+      <a class="btn purple-btn fr-my-2w" href="https://www.comparia.beta.gouv.fr" >Découvrez compar:IA</a>
+      </div>
+
     </main>
     {% endblock %}
 

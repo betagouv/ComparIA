@@ -65,9 +65,9 @@
                     <div class="">
                         <p class=""><strong><span class="fr-text--xxl">{{ model['params']|int
                                     }}</span><span class="fr-text--xs"> milliards param.{% if
-                                        model['distribution'] != "open-weights" %} (est.){%
-                                        endif
-                                        %}</span></strong></p>
+                                    model['distribution'] != "open-weights" %} (est.){%
+                                    endif
+                                    %}</span></strong></p>
                         <p class="fr-text--sm">taille du modèle
                         </p>
                     </div>
@@ -101,8 +101,8 @@
                     <a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="energie-{{side}}"></a>
                     <div class="">
                         <!-- flashlight -->
-                        <svg transform="scale(1.33)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
-                            class="">
+                        <svg transform="scale(1.33)" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24"
+                            height="24" class="">
                             <path fill="#0063cb" d="M13 10h7l-9 13v-9H4l9-13v9Z" />
                         </svg>
                     </div>
@@ -138,14 +138,15 @@
                         </svg>
                     </div>
                     <div class="">
-                        {% if impact.gwp.value * 1000 < 2 %}
-                        <p><strong><span class="fr-text--xxl">{{ '{:0.2f}'.format(impact.gwp.value * 1000) }}</span>g</strong></p>
-                    {% else %}
-                        <p><strong><span class="fr-text--xxl">{{ (impact.gwp.value * 1000)|round|int }}</span>g</strong></p>
-                    {% endif %}
-                                            </p>
-                        <p class="fr-text--xs">CO<sup>2</sup> émis
-                        </p>
+                        {% if impact.gwp.value * 1000 < 2 %} <p><strong><span class="fr-text--xxl">{{
+                                    '{:0.2f}'.format(impact.gwp.value * 1000) }}</span>g</strong></p>
+                            {% else %}
+                            <p><strong><span class="fr-text--xxl">{{ (impact.gwp.value * 1000)|round|int
+                                        }}</span>g</strong></p>
+                            {% endif %}
+                            </p>
+                            <p class="fr-text--xs">CO<sup>2</sup> émis
+                            </p>
                     </div>
                 </div>
                 <div class="rounded-tile with-icon relative fr-px-1w fr-py-1w">
@@ -201,9 +202,9 @@
         {% endfor %}
     </div>
 </div>
-<div class="text-center">
-<a class="btn purple-btn fr-my-2w" href="../share?i={{b64}}" target="_blank">Partager</a>
-</div><br />
+<div class="feedback">
+{% include 'feedback.html' %}
+</div>
 {% set j2_context = 'arena' %}
 {% for model in [model_a, model_b] %}
 {% include 'model-modal.html' %}
