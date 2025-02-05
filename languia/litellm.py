@@ -90,7 +90,7 @@ def litellm_stream_iter(
     for chunk in res:
         if hasattr(chunk, "id"):
             data["generation_id"] = chunk.id
-            logger.info(f"generation_id: {data["generation_id"]} for api {api_base} and model {model_name}")
+            logger.info(f"generation_id: {chunk.id} for api {api_base} and model {model_name}")
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
