@@ -162,6 +162,7 @@ async def share(i: str, request: Request):
     return templates.TemplateResponse(
         "share.html",
         {
+            "b64": i,
             "title": "Mon bilan",
             "model_a": model_a,
             "model_b": model_b,

@@ -201,7 +201,9 @@
         {% endfor %}
     </div>
 </div>
-
+<div class="text-center">
+<a class="btn purple-btn fr-my-2w" href="../share?i={{b64}}" target="_blank">Partager</a>
+</div><br />
 {% set j2_context = 'arena' %}
 {% for model in [model_a, model_b] %}
 {% include 'model-modal.html' %}

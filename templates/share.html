@@ -20,7 +20,14 @@
 
     <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-design/icons-design.css">
     {% block extra_styles %}
+    <style>
+      .step-badge {
+        display: none;
+      }
+    </style>
     {% endblock %}
+    <!-- <script src="assets/html2canvas.min.js">
+    </script> -->
     <meta name="google-site-verification" content="1xrdIzQy45wIoAeeNvpRb9l8s_k5DjzMtrvbOzx6wMQ" />
 
     <meta property="og:title" content="{{ title|default("") }}{% if title %} - {% endif %}compar:IA, le comparateur d'IA conversationnelles">
