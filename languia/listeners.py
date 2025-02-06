@@ -323,12 +323,12 @@ document.getElementById("fr-modal-welcome-close").blur();
             model_left, model_right = get_battle_pair(
                 config.models,
                 BATTLE_TARGETS,
-                outages,
+                config.outages,
                 SAMPLING_WEIGHTS,
                 SAMPLING_BOOST_MODELS,
             )
-            endpoint_left = pick_endpoint(model_left, outages)
-            endpoint_right = pick_endpoint(model_right, outages)
+            endpoint_left = pick_endpoint(model_left, config.outages)
+            endpoint_right = pick_endpoint(model_right, config.outages)
             # TODO: replace by class method
             conv_a_scoped = set_conv_state(
                 conv_a_scoped, model_name=model_left, endpoint=endpoint_left
