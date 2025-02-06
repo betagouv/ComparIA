@@ -18,19 +18,6 @@
             target="_blank">En savoir plus sur les votes</a>
     </div>
 </div>
-<script>
-
-    function copy() {
-        // Get the text field
-        var copyText = document.getElementById("share-link");
-        // Select the text field
-        copyText.select();
-        copyText.setSelectionRange(0, 99999); // For mobile devices
-
-        // Copy the text inside the text field
-        navigator.clipboard.writeText(copyText.value);
-    }
-</script>
 
 <dialog aria-labelledby="fr-modal-title-share-modal" role="dialog" id="share-modal" class="fr-modal">
     <div class="fr-container fr-container--fluid fr-container-md">
@@ -49,7 +36,7 @@
                         <div class="fr-grid-row fr-mb-4w"><input type="text" id="share-link" class="fr-col-md-8 fr-col-12 fr-input inline"
                                 value="https://www.comparia.beta.gouv.fr/share?i={{b64}}" />
                                 <button
-                                class="fr-col-md-4 fr-col-12 btn purple-btn block" onclick="copy()"><svg width="15" height="16" viewBox="0 0 15 16"
+                                class="fr-col-md-4 fr-col-12 btn purple-btn block" onclick="copie()"><svg width="15" height="16" viewBox="0 0 15 16"
                                     fill="none" xmlns="http://www.w3.org/2000/svg" class="inline">
                                     <path
                                         d="M8.29571 5.08317L9.35636 6.14383C11.4066 8.19412 11.4066 11.5182 9.35636 13.5685L9.09124 13.8336C7.04096 15.8839 3.71685 15.8839 1.6666 13.8336C-0.383657 11.7834 -0.383657 8.45924 1.6666 6.409L2.72726 7.46969C1.2628 8.93414 1.2628 11.3085 2.72726 12.7729C4.19173 14.2374 6.56606 14.2374 8.03059 12.7729L8.29571 12.5078C9.76016 11.0433 9.76016 8.66894 8.29571 7.20449L7.23506 6.14383L8.29571 5.08317ZM13.3338 9.59099L12.2732 8.53034C13.7376 7.06582 13.7376 4.69148 12.2732 3.22702C10.8087 1.76255 8.43439 1.76255 6.96994 3.22702L6.70474 3.49218C5.24027 4.95664 5.24027 7.33102 6.70474 8.79547L7.76539 9.85612L6.70474 10.9168L5.64407 9.85612C3.59382 7.80592 3.59382 4.48177 5.64407 2.43152L5.90924 2.16635C7.95949 0.116099 11.2836 0.116099 13.3338 2.16635C15.3841 4.2166 15.3841 7.54072 13.3338 9.59099Z"

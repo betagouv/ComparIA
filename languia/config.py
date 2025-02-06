@@ -178,6 +178,18 @@ arena_head_js = (
     + """
 <script type="module" src="../assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
+<script type="text/javascript">
+  function copie() {
+    // Get the text field
+    var copyText = document.getElementById("share-link");
+    // Select the text field
+    copyText.select();
+    copyText.setSelectionRange(0, 99999); // For mobile devices
+
+    // Copy the text inside the text field
+    navigator.clipboard.writeText(copyText.value);
+}
+</script>
 """
     + matomo_js
 )
