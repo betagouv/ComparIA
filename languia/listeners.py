@@ -322,8 +322,22 @@ document.getElementById("fr-modal-welcome-close").blur();
                 )
 
         else:  # assume random mode
-            # TODO: init here instead of on arena load
-            pass
+            model_left, model_right = get_battle_pair(
+                config.models,
+                BATTLE_TARGETS,
+                outages,
+                SAMPLING_WEIGHTS,
+                SAMPLING_BOOST_MODELS,
+            )
+            endpoint_left = pick_endpoint(model_left, outages)
+            endpoint_right = pick_endpoint(model_right, outages)
+            # TODO: replace by class method
+            conv_a_scoped = set_conv_state(
+                conv_a_scoped, model_name=model_left, endpoint=endpoint_left
+            )
+            conv_b_scoped = set_conv_state(
+                conv_b_scoped, model_name=model_right, endpoint=endpoint_right
+            )
         if mode in ["random", "custom", "small-models", "big-vs-small"]:
             app_state_scoped.mode = mode
 
