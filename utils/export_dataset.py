@@ -30,7 +30,6 @@ except Exception as e:
     exit(1)
 
 # Query templates
-CONV_QUERY = "SELECT * FROM conversations WHERE archived = FALSE"
 
 QUESTIONS_QUERY = "SELECT refresh_matview_questions(); SELECT * FROM matview_questions;"
 # QUESTIONS_QUERY = "SELECT * FROM matview_questions;"
@@ -80,7 +79,7 @@ def fetch_and_transform_data(table_name, query=None):
     Fetch data from a database table and apply transformations.
     Prioritize visitor_id and fallback to ip_map if no visitor_id.
     """
-    query = query or f"SELECT * FROM {table_name}"
+    query = query or f"SELECT * FROM {table_name} WHERE archived = FALSE"
     try:
         logger.info(f"Fetching data from table: {table_name}")
         df = pd.read_sql_query(query, conn)

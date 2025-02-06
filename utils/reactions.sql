@@ -67,6 +67,7 @@ CREATE TABLE reactions (
     -- Message rank (optional, could be an integer or rating)
     chatbot_index INT NOT NULL,
     question_id VARCHAR(500),
+    archived BOOLEAN DEFAULT FALSE,
     CONSTRAINT unique_conversation_pair UNIQUE (refers_to_conv_id, msg_index)
 );
 
