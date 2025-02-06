@@ -126,12 +126,18 @@
 
 			mode = choices[index].value;
 			if (mode != value["mode"]) {
+				
 				value["mode"] = mode;
-				gradio.dispatch("select", {
-					mode: mode,
-					custom_models_selection: custom_models_selection,
-					prompt_value: prompt_value,
-				});
+				// Don't tell backend to switch to custom if no custom_models_selection yet
+				if (
+					!(mode == "custom" && custom_models_selection.length == 0)
+				) {
+					gradio.dispatch("select", {
+						mode: mode,
+						custom_models_selection: custom_models_selection,
+						prompt_value: prompt_value,
+					});
+				}
 				choice = choices.find((item) => item.value === mode);
 			}
 		}
