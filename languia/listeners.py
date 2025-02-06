@@ -281,10 +281,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
             swap = random.randint(2)
             # FIXME: more test and randomize
-            if len(custom_models_selection) == 0:
-                logger.debug("custom mode but no model chosen yet, default to random")
-                pass
-            elif len(custom_models_selection) == 1:
+            if len(custom_models_selection) == 1:
                 if swap == 0:
                     conv_a_scoped = set_conv_state(
                     conv_a_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
