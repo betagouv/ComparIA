@@ -314,12 +314,11 @@ document.getElementById("fr-modal-welcome-close").blur();
                     conv_b_scoped = set_conv_state(
                     conv_b_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
                 )
-            if len(custom_models_selection) > 0:
-                app_state_scoped.custom_models_selection = custom_models_selection
-                logger.info(
-                    "custom_models_selection: " + str(custom_models_selection),
-                    extra={"request": request},
-                )
+            app_state_scoped.custom_models_selection = custom_models_selection
+            logger.info(
+                "custom_models_selection: " + str(custom_models_selection),
+                extra={"request": request},
+            )
 
         else:  # assume random mode
             model_left, model_right = get_battle_pair(

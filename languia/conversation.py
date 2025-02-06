@@ -69,22 +69,22 @@ def bot_response(
 
     for endpoint in config.api_endpoint_info:
         if "model_id" not in endpoint:
-            logger.warning(f"'model_id' is not defined in endpoint: {endpoint}.")
+            logger.warning(f"'model_id' is not defined in endpoint: {endpoint}.", extra={request: request})
         elif "api_id" not in endpoint:
-            logger.warning(f"'api_id' is not defined in endpoint: {endpoint}.")
+            logger.warning(f"'api_id' is not defined in endpoint: {endpoint}.", extra={request: request})
 
         else:
             if (endpoint.get("model_id")) == state.model_name:
                 model_api_endpoints.append(endpoint)
 
     if model_api_endpoints == []:
-        logger.critical("No endpoint for model name: " + str(state.model_name))
+        logger.critical("No endpoint for model name: " + str(state.model_name), extra={request: request})
         raise Exception("No endpoint for model name: " + str(state.model_name))
 
     if state.endpoint is None:
         state.endpoint = random.choice(model_api_endpoints)
         endpoint_name = state.endpoint["api_id"]
-        logger.info(f"picked_endpoint: {endpoint_name} for {state.model_name}")
+        logger.info(f"picked_endpoint: {endpoint_name} for {state.model_name}", extra={request: request})
 
     endpoint = state.endpoint
     endpoint_name = endpoint["api_id"]
