@@ -128,10 +128,13 @@ def bot_response(
     )
 
     output_tokens = None
+    generation_id = None
 
     for i, data in enumerate(stream_iter):
         if "output_tokens" in data:
             output_tokens = data["output_tokens"]
+        if "generation_id" in data:
+            generation_id = data["generation_id"]
 
         output = data.get("text")
         if output:
@@ -143,6 +146,9 @@ def bot_response(
                 output_tokens=output_tokens,
             )
             yield (state)
+
+    if generation_id:
+        logger.info(f"generation_id: {generation_id} for {litellm_model_name}", extra={"request": request})
 
     stop_tstamp = time.time()
     print("stop: " + str(stop_tstamp))
