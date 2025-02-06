@@ -148,6 +148,8 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
     streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_impact.gwp.value)
     streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_impact.gwp.value)
     
+    # Base64 of reveal properties for sharing
+
     import base64, json
     data = {"a": conv_a.model_name, "b": conv_b.model_name, "ta": model_a_tokens, "tb": model_b_tokens}
     if chosen_model == "model-a":
@@ -156,7 +158,23 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
         data["c"] = "b"
 
     jsonstring = json.dumps(data).encode('ascii')
-    b64 = base64.b64encode(jsonstring).decode("ascii")
+    b64b = base64.b64encode(jsonstring)
+    b64 = b64b.decode("ascii")
+
+    # Screenshot
+
+    from selenium.webdriver.common.by import By
+    from selenium import webdriver
+    import hashlib
+    browser = webdriver.Firefox()
+    browser.get('http://localhost:8000/share?i='+b64)
+    # browser.get('https://www.comparia.beta.gouv.fr/share?i='+b64)
+
+    element = browser.find_element(By.ID, "reveal-grid")
+    md5 = hashlib.md5(b64b).hexdigest()
+
+    element.screenshot('share-'+md5+'.png')
+    browser.quit()
 
     return template.render(
         b64=b64,
