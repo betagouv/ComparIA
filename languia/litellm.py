@@ -90,12 +90,12 @@ def litellm_stream_iter(
     for chunk in res:
         if hasattr(chunk, "id"):
             data["generation_id"] = chunk.id
-            logger.debug(f"generation_id: {chunk.id} for api {api_base} and model {model_name}", extra={request: request})
+            logger.debug(f"generation_id: {chunk.id} for api {api_base} and model {model_name}", extra={"request": request})
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
                 f"reported output tokens for api {api_base} and model {model_name}: "
-                + str(data["output_tokens"],extra={request: request})
+                + str(data["output_tokens"],extra={"request": request})
             )
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "delta") and hasattr(

@@ -92,7 +92,6 @@ def register_listeners():
     def enter_arena(
         app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
     ):
-
         # /!\ careful about user state / shared state if moving this function
         def init_conversations(
             app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
@@ -123,12 +122,12 @@ def register_listeners():
             )
             logger.info(
                 f"selection_modeles: {model_left}, {model_right}",
-                extra={request: request},
+                extra={"request": request},
             )
 
             logger.info(
                 f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}",
-                extra={request: request},
+                extra={"request": request},
             )
             return conv_a_scoped, conv_b_scoped
 
