@@ -22,11 +22,15 @@ from uuid import uuid4
 logger = logging.getLogger("languia")
 
 
-def update_last_message(messages, text, position, output_tokens=None):
+def update_last_message(messages, text, position, output_tokens=None,generation_id=None,duration=0):
 
     metadata = {"bot": position}
     if output_tokens:
         metadata["output_tokens"] = output_tokens
+    if generation_id:
+        metadata["generation_id"] = generation_id
+    if duration != 0:
+        metadata["duration"] = duration
 
     if not messages:
         return [ChatMessage(role="assistant", content=text, metadata=metadata)]
@@ -98,7 +102,7 @@ def bot_response(
             )
 
     start_tstamp = time.time()
-    print("start: " + str(start_tstamp))
+    # print("start: " + str(start_tstamp))
     
     messages_dict = []
 
@@ -144,6 +148,7 @@ def bot_response(
                 text=output,
                 position=position,
                 output_tokens=output_tokens,
+                generation_id=generation_id
             )
             yield (state)
 
@@ -151,7 +156,9 @@ def bot_response(
         logger.info(f"generation_id: {generation_id} for {litellm_model_name}", extra={"request": request})
 
     stop_tstamp = time.time()
-    print("stop: " + str(stop_tstamp))
+    # print("stop: " + str(stop_tstamp))
+    duration = stop_tstamp - start_tstamp
+    logger.debug(f"duration for {generation_id}: {str(duration)}", extra={"request": request})
 
     output = data.get("text")
     if not output or output == "":
@@ -173,6 +180,8 @@ def bot_response(
         text=output,
         position=position,
         output_tokens=output_tokens,
+        duration=duration,
+
     )
 
     yield (state)
