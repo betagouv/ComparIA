@@ -35,7 +35,8 @@ from gradio.exceptions import Error
 
 class MetadataDict(TypedDict):
     bot: Union[str, None]
-
+    duration: Union[float, None]
+    generation_id: Union[str, None]
 
 class FileDataDict(TypedDict):
     path: str  # server filepath
@@ -77,6 +78,8 @@ class ChatbotDataTuples(GradioRootModel):
 
 class Metadata(GradioModel):
     bot: Optional[str] = None
+    duration: Optional[float] = None
+    generation_id: Optional[str] = None
 
 
 class Message(GradioModel):

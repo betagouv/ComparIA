@@ -4,6 +4,8 @@ export type MessageRole = "system" | "user" | "assistant";
 
 export interface Metadata {
 	bot: string | null;
+	generation_id: string | null;
+	duration: number | null;
 }
 
 export interface ComponentData {
