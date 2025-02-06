@@ -147,56 +147,52 @@
 	}
 
 	function toggle_model_selection(id) {
-		var has_changed = false;
-		console.log("id");
-		console.log(id);
-		console.log("custom_models_selection");
-		console.log(custom_models_selection);
 		// Toggle if already added or to add/delete
 		if (!custom_models_selection.includes(id)) {
 			if (custom_models_selection.length < 2) {
 				console.log("adding " + id);
 				custom_models_selection.push(id);
-				has_changed = true;
 			}
 		} else {
 			console.log("removing " + id);
 			var index = custom_models_selection.indexOf(id);
 			custom_models_selection.splice(index, 1);
-			has_changed = true;
 		}
-		if (has_changed) {
-			value["custom_models_selection"] = custom_models_selection;
-			first_model_name = custom_models_selection[0] !== undefined ? models.find(
-				(model) => model["id"] === custom_models_selection[0],
-			).simple_name : "Aléatoire";
 
-			first_model_icon_path = custom_models_selection[0] !== undefined ? models.find(
-				(model) => model["id"] === custom_models_selection[0],
-			).icon_path : null;
+		value["custom_models_selection"] = custom_models_selection;
+		first_model_name =
+			custom_models_selection[0] !== undefined
+				? models.find(
+						(model) => model["id"] === custom_models_selection[0],
+					).simple_name
+				: "Aléatoire";
 
-			second_model_name =
-				custom_models_selection[1] !== undefined
-					? models.find(
-							(model) =>
-								model["id"] === custom_models_selection[1],
-						).simple_name
-					: "Aléatoire";
+		first_model_icon_path =
+			custom_models_selection[0] !== undefined
+				? models.find(
+						(model) => model["id"] === custom_models_selection[0],
+					).icon_path
+				: null;
 
-			second_model_icon_path =
-				custom_models_selection[1] !== undefined
-					? models.find(
-							(model) =>
-								model["id"] === custom_models_selection[1],
-						).icon_path
-					: null;
+		second_model_name =
+			custom_models_selection[1] !== undefined
+				? models.find(
+						(model) => model["id"] === custom_models_selection[1],
+					).simple_name
+				: "Aléatoire";
 
-			gradio.dispatch("select", {
-				mode: mode,
-				custom_models_selection: custom_models_selection,
-				prompt_value: prompt_value,
-			});
-		}
+		second_model_icon_path =
+			custom_models_selection[1] !== undefined
+				? models.find(
+						(model) => model["id"] === custom_models_selection[1],
+					).icon_path
+				: null;
+
+		gradio.dispatch("select", {
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+			prompt_value: prompt_value,
+		});
 	}
 
 	// Handle prompt value update from backend
