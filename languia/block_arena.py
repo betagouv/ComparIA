@@ -200,7 +200,6 @@ with gr.Blocks(
             min_columns=1,
             elem_id="vote-cards",
             elem_classes="justify-center fr-mx-auto fr-col-12 fr-col-md-8",
-            # elem_classes="show-radio self-center justify-center",
             choices=[
                 (
                     """<div class="self-center justify-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <span class="">Modèle A</span>
@@ -226,7 +225,6 @@ with gr.Blocks(
             elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
         ) as supervote_area:
 
-            # with gr.Column():
             with gr.Column(
                 elem_classes="fr-col-12 fr-col-md-6 fr-mr-md-n1w fr-mb-1w bg-white rounded-tile"
             ):
@@ -264,7 +262,6 @@ with gr.Blocks(
                     placeholder="Les réponses du modèle A sont...",
                 )
 
-            # with gr.Column():
             with gr.Column(
                 elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w fr-mb-1w bg-white rounded-tile"
             ):
