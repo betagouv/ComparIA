@@ -84,8 +84,6 @@ async def home(request: Request):
 
 @app.get("/modeles", response_class=HTMLResponse)
 async def models(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "models.html",
         {
@@ -96,9 +94,6 @@ async def models(request: Request):
             "size_desc": size_desc,
             "license_desc": license_desc,
             "license_attrs": license_attrs,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
@@ -194,94 +189,66 @@ async def share(i: str, request: Request):
 
 @app.get("/a-propos", response_class=HTMLResponse)
 async def about(request: Request):
-
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "about.html",
         {
             "title": "À propos",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
 
 @app.get("/faq", response_class=HTMLResponse)
 async def faq(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "faq.html",
         {
             "title": "Vos questions les plus courantes",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
 
 @app.get("/partenaires", response_class=HTMLResponse)
 async def partners(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "partners.html",
         {
             "title": "Partenaires",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
 
 @app.get("/mentions-legales", response_class=HTMLResponse)
 async def legal(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "legal.html",
         {
             "title": "Mentions légales",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
 
 @app.get("/donnees-personnelles", response_class=HTMLResponse)
 async def policy(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "policy.html",
         {
             "title": "Politique de confidentialité",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
 
 @app.get("/modalites", response_class=HTMLResponse)
 async def tos(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "tos.html",
         {
@@ -289,43 +256,30 @@ async def tos(request: Request):
             "request": request,
             "config": config,
             "models": config.models_extra_info,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
 
 @app.get("/accessibilite", response_class=HTMLResponse)
 async def accessibility(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "accessibility.html",
         {
             "title": "Déclaration d’accessibilité",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
 
 @app.get("/bnf", response_class=HTMLResponse)
 async def bnf(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
     return templates.TemplateResponse(
         "bnf.html",
         {
             "title": "Evénement 7 février",
             "request": request,
             "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
         },
     )
 
