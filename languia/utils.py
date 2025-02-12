@@ -551,98 +551,98 @@ def get_gauge_count():
         return res[0] 
     else: return 40000
 
-def gauge_banner_html():
-    gauge_count = get_gauge_count()
-    objective = 40000 
-    ratio = 100 * get_gauge_count() / objective
-    gauge = """
-    <div class="fr-container--fluid mode-banner"><span class="legende">Nombre total de votes&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
-    <div class="linear-gauge">
-  <div class="linear-gauge-fill"><span class="votes">""" + str(gauge_count) + """</span></div></div><span class="objectif">Objectif : """ + str(objective) + """</span>
-    </div>
-    <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">Discutez, votez et aidez-nous à atteindre cet objectif !<br />
-<strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />
-Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong></span>
-    <style>
-    .legende {
-            font-size: 0.875em;
-            color: #161616 !important;
-            font-weight: bold;
+# def gauge_banner_html():
+#     gauge_count = get_gauge_count()
+#     objective = 40000 
+#     ratio = 100 * get_gauge_count() / objective
+#     gauge = """
+#     <div class="fr-container--fluid mode-banner"><span class="legende">Nombre total de votes&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
+#     <div class="linear-gauge">
+#   <div class="linear-gauge-fill"><span class="votes">""" + str(gauge_count) + """</span></div></div><span class="objectif">Objectif : """ + str(objective) + """</span>
+#     </div>
+#     <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">Discutez, votez et aidez-nous à atteindre cet objectif !<br />
+# <strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />
+# Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong></span>
+#     <style>
+#     .legende {
+#             font-size: 0.875em;
+#             color: #161616 !important;
+#             font-weight: bold;
 
-    }
-    .legende a {
-    top: 10px;
-    position: relative;
-    }
-    .votes {
-        font-size: 0.75em;
-font-weight: bold;
-color: #695240 !important;
-position: absolute;
-  margin-left: 5px;
-    bottom: 0;
-  height: inherit;
-}
-    .objectif {
-    font-weight: 500;
-    font-size: 0.75em;
-    color: #7F7F7F !important   ;
-    }
-.linear-gauge-fill {
-    width: """ + str(int(ratio)) + """%; 
-  height: 100%;
-  background: var(--yellow-tournesol-925-125);
-  transition: width 0.3s ease-in-out;
-}
+#     }
+#     .legende a {
+#     top: 10px;
+#     position: relative;
+#     }
+#     .votes {
+#         font-size: 0.75em;
+# font-weight: bold;
+# color: #695240 !important;
+# position: absolute;
+#   margin-left: 5px;
+#     bottom: 0;
+#   height: inherit;
+# }
+#     .objectif {
+#     font-weight: 500;
+#     font-size: 0.75em;
+#     color: #7F7F7F !important   ;
+#     }
+# .linear-gauge-fill {
+#     width: """ + str(int(ratio)) + """%; 
+#   height: 100%;
+#   background: var(--yellow-tournesol-925-125);
+#   transition: width 0.3s ease-in-out;
+# }
 
-.linear-gauge {
-  width: 300px;
-  height: 20px;
-  background: #FFF;
-  border-radius: 3px;
-  border: 1px solid #CCCCCC;
-  overflow: hidden;
-}
-.mode-banner {
-display: flex;
-align-items: center;
-justify-content: center;
-gap: 1em;
-}
+# .linear-gauge {
+#   width: 300px;
+#   height: 20px;
+#   background: #FFF;
+#   border-radius: 3px;
+#   border: 1px solid #CCCCCC;
+#   overflow: hidden;
+# }
+# .mode-banner {
+# display: flex;
+# align-items: center;
+# justify-content: center;
+# gap: 1em;
+# }
 
-  @media (max-width: 48em) {
+#   @media (max-width: 48em) {
 
-    .mode-banner {
-      padding-top: 0;
-      padding-bottom: 1em;
-      display: grid;
-      height: auto;
-      grid-template: "a c"
-      "b b";
-    }
+#     .mode-banner {
+#       padding-top: 0;
+#       padding-bottom: 1em;
+#       display: grid;
+#       height: auto;
+#       grid-template: "a c"
+#       "b b";
+#     }
 
-    .votes {
-      position: relative;
-      top: -13px;
-    }
-    .legende {
-      grid-area: a;
+#     .votes {
+#       position: relative;
+#       top: -13px;
+#     }
+#     .legende {
+#       grid-area: a;
 
-    }
+#     }
     
-    .objectif {
-      grid-area: c;
-      order: 0;
-      display: block;
-    }
-    .linear-gauge {
-      width: auto;
-      margin-top: -10px;
-      order: 2;
-      grid-area: b;
-    }
-  }
+#     .objectif {
+#       grid-area: c;
+#       order: 0;
+#       display: block;
+#     }
+#     .linear-gauge {
+#       width: auto;
+#       margin-top: -10px;
+#       order: 2;
+#       grid-area: b;
+#     }
+#   }
 
-    </style>
-    """
-    return gauge
+#     </style>
+#     """
+#     return gauge

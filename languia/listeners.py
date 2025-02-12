@@ -50,7 +50,6 @@ from languia.utils import (
     EmptyResponseError,
     pick_endpoint,
     mode_banner_html,
-    gauge_banner_html,
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -420,8 +419,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
         chatbot = to_threeway_chatbot(conversations)
 
-        # banner = mode_banner_html(mode)
-        banner = gauge_banner_html()
+        banner = mode_banner_html(mode)
 
         text = gr.update(visible=True)
         return [
