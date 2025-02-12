@@ -73,7 +73,7 @@ But as it was easier to run models in vLLM Docker containers or by using externa
 ### Custom Components
 Our main focus with compar:IA is to invest heavily on overall design and UX/UI. Thanks to Gradio's [Custom Components](https://www.gradio.app/guides/custom-components-in-five-minutes) we can customize any Gradio component as a Svelte app, and control the user interface look and feel.
 
-We currently use 4 distinct (and poorly named) Custom Components:
+We currently use 4 distinct (and sometimes poorly named) Custom Components:
 - `FrInput`: the [DSFR](https://www.systeme-de-design.gouv.fr/) input component
 - `CustomDropdown`: encompasses most of the first screen, with mode selection, models selection, and initial textarea
 - `CustomRadioCard`: used in the first screen for suggestions and later for voting
@@ -81,7 +81,7 @@ We currently use 4 distinct (and poorly named) Custom Components:
 
 ### Mounted `gradio.Blocks` within a FastAPI app
 
-Because we needed a static website as well, we used Gradio's [`mount_gradio_app`](https://www.gradio.app/docs/gradio/mount_gradio_app`) feature, allowing you to customize how FastAPI serves the gradio app (Gradio is based on FastAPI), while using the underlying FastAPI app to serve other pages. This lives in `main.py` while the main Gradio code is in `languia/block_arena.py`.
+Because we needed a static website as well, we used Gradio's [`mount_gradio_app`](https://www.gradio.app/docs/gradio/mount_gradio_app`) feature, allowing you to customize how FastAPI serves the gradio app (Gradio is based on FastAPI), while using the underlying FastAPI app to serve other pages. This lives in `main.py` while most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py`.
 The static site's pages are in the `templates/` folder, which also hosts the complex Jinja2 template files needed in the arena (especially after the "reveal" step).
 
 ### Future evolutions
