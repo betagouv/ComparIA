@@ -155,6 +155,7 @@ class PrivacyClassifier:
                     'messages': [{"role": "user", "content": prompt}],
                     'stream': False,
                     "options": {
+                        "temperature":0.7,
                         "num_ctx": 4096
                     }
                 },
