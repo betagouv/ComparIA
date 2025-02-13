@@ -81,8 +81,8 @@ def is_unedited_prompt(opening_msg, category):
     return opening_msg in prompts_table[category]
 
 def metadata_to_dict(metadata):
-    metadata_dict = metadata.model_dump()
-    metadata_dict.pop("bot")
+    metadata_dict = dict(metadata)
+    metadata_dict.pop("bot", None)
     if not metadata_dict.get("duration") or metadata_dict.get("duration") == 0:
         metadata_dict.pop("duration", None)
     if not metadata_dict.get("generation_id"):
