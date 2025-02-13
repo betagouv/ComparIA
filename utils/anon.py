@@ -12,14 +12,15 @@ import pandas as pd
 import math
 
 class Config:
-    MODEL_NAME = "mistral"  
-    BASE_URL = 'http://localhost:11434/api'
+    MODEL_NAME = "phi4"
+    # https://compariahub3767824947.openai.azure.com/openai/deployments/gpt-4o-mini-2024-07-18/chat/completions?api-version=2024-02-15-preview
+    BASE_URL = 'http://localhost:11434/api/chat'
     MAX_RETRIES = 3
     RETRY_DELAY = 1
     
     # Dataset settings
     BATCH_SIZE = 50  # Size of batches for processing
-    DEFAULT_SAMPLE_SIZE = 5  # None means process all entries
+    DEFAULT_SAMPLE_SIZE = None  # None means process all entries
     SAVE_INTERVAL = 50  # Save results every N questions
     
     TEST_CASES = [
@@ -148,11 +149,17 @@ class PrivacyClassifier:
         for attempt in range(Config.MAX_RETRIES):
             try:
                 start_time = time.time()
-                response = requests.post(f'{self.base_url}/chat', json={
+                response = requests.post(self.base_url, 
+                json={
                     'model': Config.MODEL_NAME,
                     'messages': [{"role": "user", "content": prompt}],
-                    'stream': False
-                })
+                    'stream': False,
+                    "options": {
+                        "num_ctx": 4096
+                    }
+                },
+                # headers={'api-key': ''}
+                )
                 
                 elapsed = time.time() - start_time
                 content = response.json()['message']['content'].lower().strip().rstrip('.')
@@ -258,8 +265,8 @@ def main():
         hf_token = input("Please enter your Hugging Face token: ").strip()
     
     classifier = PrivacyClassifier(output_dir=args.output)
-    if not classifier.setup():
-        return
+    # if not classifier.setup():
+    #     return
     
     df = classifier.process_dataset(hf_token=hf_token, num_samples=args.samples)
     if df is not None:
