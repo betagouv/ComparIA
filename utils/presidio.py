@@ -7,20 +7,24 @@ import argparse
 from pathlib import Path
 import time
 import logging
-from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 from tqdm import tqdm
 import pandas as pd
-import math
+from typing import Dict, List, Optional
+import logging as logger
 
-from presidio_analyzer import AnalyzerEngine, BatchAnalyzerEngine, RecognizerResult, DictAnalyzerResult
-from presidio_anonymizer import AnonymizerEngine, BatchAnonymizerEngine
-from presidio_anonymizer.entities import EngineResult
-
-# Dataset settings
-BATCH_SIZE = 50  # Size of batches for processing
-DEFAULT_SAMPLE_SIZE = 5  # None means process all entries
-SAVE_INTERVAL = 50  # Save results every N questions
+class Config:
+    # API endpoints
+    ANALYZE_URL = "http://localhost:5002/analyze"
+    ANONYMIZE_URL = "http://localhost:5001/anonymize"
+    LANGUAGE = "en"
+    
+    # Dataset settings
+    BATCH_SIZE = 50
+    DEFAULT_SAMPLE_SIZE = 500
+    SAVE_INTERVAL = 50
+    MAX_RETRIES = 3
+    RETRY_DELAY = 1
 
 class PrivacyStats:
     def __init__(self):
@@ -64,51 +68,84 @@ class PrivacyStats:
 
 class PrivacyClassifier:
     def __init__(self, output_dir: str = 'results'):
-        self.analyzer = AnalyzerEngine()
-        self.batch_analyzer = BatchAnalyzerEngine(analyzer_engine=self.analyzer)
-        self.anonymizer = AnonymizerEngine()
         self.stats = PrivacyStats()
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        self._setup_logging()
 
-    def _setup_logging(self):
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.FileHandler(self.output_dir / 'privacy_classifier.log'),
-                logging.StreamHandler()
-            ]
-        )
-        self.logger = logging.getLogger(__name__)
+    def _call_api(self, url: str, payload: dict) -> Optional[dict]:
+        for attempt in range(Config.MAX_RETRIES):
+            try:
+                response = requests.post(
+                    url,
+                    json=payload,
+                    headers={"Content-type": "application/json"},
+                    timeout=10
+                )
+                response.raise_for_status()
+                print(response.json())
+                return response.json()
+            except Exception as e:
+                logger.warning(f"Attempt {attempt + 1} failed: {str(e)}")
+                if attempt < Config.MAX_RETRIES - 1:
+                    time.sleep(Config.RETRY_DELAY)
+        return None
 
-    def analyze_text(self, text: str) -> List:
-        return self.analyzer.analyze(text=text, language=Config.LANGUAGE)
+    def analyze_text(self, text: str) -> Optional[List[dict]]:
+        payload = {
+            "text": text,
+            "language": Config.LANGUAGE
+        }
+        result = self._call_api(Config.ANALYZE_URL, payload)
+        return result if result else None
 
-    def anonymize_text(self, text: str, recognizer_results: List) -> str:
-        return self.anonymizer.anonymize(text=text, analyzer_results=recognizer_results).text
+    def anonymize_text(self, text: str, analyzer_results: List[dict]) -> Optional[str]:
+        payload = {
+            "text": text,
+            "analyzer_results": analyzer_results
+        }
+        result = self._call_api(Config.ANONYMIZE_URL, payload)
+        return result.get("text") if result else None
 
     def process_batch(self, batch: List[Dict]) -> List[Dict]:
-        """Process a batch of questions"""
         results = []
-        for item in tqdm(batch, desc=f"Processing batch {self.stats.total_processed//BATCH_SIZE + 1}"):
+        for item in tqdm(batch, desc=f"Processing batch {self.stats.total_processed//Config.BATCH_SIZE + 1}"):
             text = item['question_content']
-            result_list = self.analyze_text(text)
-            pii_present = bool(result_list)
-
-            # Optional: Replace PII with anonymized content
-            if pii_present:
-                anonymized_text = self.anonymize_text(text, result_list)
-            else:
+            start_time = time.time()
+            
+            try:
+                # Analyze text
+                analysis_result = self.analyze_text(text)
+                if analysis_result is None:
+                    raise ValueError("Analysis API failed")
+                
+                pii_present = len(analysis_result) > 0
+                elapsed = time.time() - start_time
+                
+                # Anonymize if PII found
                 anonymized_text = text
+                if pii_present:
+                    anonymized = self.anonymize_text(text, analysis_result)
+                    if anonymized:
+                        anonymized_text = anonymized
+                
+                self.stats.add_result(pii_present, elapsed)
+                
+                results.append({
+                    'text': text,
+                    'anonymized_text': anonymized_text,
+                    'pii_present': pii_present,
+                    'question_id': item.get('question_id', 'unknown')
+                })
 
-            results.append({
-                'text': text,
-                'anonymized_text': anonymized_text,
-                'pii_present': pii_present,
-                'question_id': item.get('question_id', 'unknown')
-            })
+            except Exception as e:
+                logger.error(f"Error processing item: {str(e)}")
+                self.stats.add_error()
+                results.append({
+                    'text': text,
+                    'anonymized_text': "ERROR",
+                    'pii_present': "error",
+                    'question_id': item.get('question_id', 'unknown')
+                })
 
             if self.stats.should_save():
                 self.save_results(pd.DataFrame(results), is_final=False)
@@ -124,11 +161,11 @@ class PrivacyClassifier:
             num_samples = num_samples or DEFAULT_SAMPLE_SIZE or total_available
             num_samples = min(num_samples, total_available)
 
-            self.logger.info(f"Processing {num_samples} out of {total_available} questions")
+            logger.info(f"Processing {num_samples} out of {total_available} questions")
 
             all_results = []
-            for i in range(0, num_samples, BATCH_SIZE):
-                batch_size = min(BATCH_SIZE, num_samples - i)
+            for i in range(0, num_samples, Config.BATCH_SIZE):
+                batch_size = min(Config.BATCH_SIZE, num_samples - i)
                 batch = ds['train'].select(range(i, i + batch_size))
                 batch_results = self.process_batch(batch)
                 all_results.extend(batch_results)
@@ -136,7 +173,7 @@ class PrivacyClassifier:
             return pd.DataFrame(all_results)
 
         except Exception as e:
-            self.logger.error(f"Error processing dataset: {str(e)}")
+            logger.error(f"Error processing dataset: {str(e)}")
             return None
 
     def save_results(self, df: pd.DataFrame, is_final: bool = True):
@@ -163,13 +200,13 @@ class PrivacyClassifier:
             summary.to_csv(self.output_dir / f'{prefix}_summary_{timestamp}.csv', index=False)
 
             if is_final:
-                self.logger.info(f"\nFinal results saved to {self.output_dir}")
+                logger.info(f"\nFinal results saved to {self.output_dir}")
             else:
-                self.logger.info(f"\nIntermediate results saved at {self.stats.total_processed} questions")
+                logger.info(f"\nIntermediate results saved at {self.stats.total_processed} questions")
 
 def main():
     parser = argparse.ArgumentParser(description='Privacy classifier using Presidio')
-    parser.add_argument('--samples', type=int, default=DEFAULT_SAMPLE_SIZE, 
+    parser.add_argument('--samples', type=int, default=Config.DEFAULT_SAMPLE_SIZE, 
                         help='Number of samples to process (default: all)')
     parser.add_argument('--output', type=str, default='results', help='Output directory')
     parser.add_argument('--token', type=str, help='Hugging Face token')
