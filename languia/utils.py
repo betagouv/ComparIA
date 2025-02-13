@@ -80,12 +80,17 @@ def is_unedited_prompt(opening_msg, category):
 
     return opening_msg in prompts_table[category]
 
-def filter_metadata_bot(metadata):
-    metadata.pop("bot")
-    return metadata
+def metadata_to_dict(metadata):
+    metadata_dict = metadata.model_dump()
+    metadata_dict.pop("bot")
+    if not metadata_dict.get("duration") or metadata_dict.get("duration") == 0:
+        metadata_dict.pop("duration", None)
+    if not metadata_dict.get("generation_id"):
+        metadata_dict.pop("generation_id", None)
+    return metadata_dict
 
 def messages_to_dict_list(messages):
-    return [{"role": message.role, "content": message.content, "metadata": filter_metadata_bot(message.metadata) } for message in messages]
+    return [{"role": message.role, "content": message.content, "metadata": metadata_to_dict(message.metadata) } for message in messages]
 
 
 with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
