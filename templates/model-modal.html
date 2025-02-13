@@ -26,7 +26,7 @@
                             "open-weights"
                             %}
                             <span class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                                Open weights&nbsp;
+                                Semi-ouvert&nbsp;
                                 <a class="fr-icon fr-icon--xs fr-icon--question-line"
                                     aria-describedby="license-{{ model['id'] }}"></a>
                             </span>
@@ -164,7 +164,7 @@
 
     {% if model['distribution'] == "open-weights" %}
 
-    <span class="fr-tooltip fr-placement" id="license-{{ model['id'] }}" role="tooltip" aria-hidden="true">Modèle dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit "open source" est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés "open source".
+    <span class="fr-tooltip fr-placement" id="license-{{ model['id'] }}" role="tooltip" aria-hidden="true">Modèle dit "open weights" dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit "open source" est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés "open source".
     </span>
     
     <span class="fr-tooltip fr-placement" id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les paramètres
