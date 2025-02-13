@@ -212,7 +212,7 @@ friendly_size = "M"
 distribution = "api-only"
 license = "propriétaire OpenAI"
 conditions = "restricted"
-description = "Modèle lancé en juillet 2024 et remplaçant GPT-3.5, GPT-4o mini est une version plus petite de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT."
+description = "Modèle lancé en juillet 2024 et remplaçant GPT-3.5, GPT-4o mini est une version plus petite de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA."
 excerpt = "Le plus petit des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en juillet 2024."
 
 [gpt-4o-2024-08-06]
@@ -224,7 +224,7 @@ friendly_size = "XL"
 distribution = "api-only"
 license = "propriétaire OpenAI"
 conditions = "restricted"
-description = "Modèle lancé en août 2024 et successeur de GPT-4, GPT-4o est une version améliorée de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT."
+description = "Modèle lancé en août 2024 et successeur de GPT-4, GPT-4o est une version améliorée de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA."
 excerpt = "Le plus grand des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en août 2024."
 
 ["hermes-3-llama-3.1-405b"]
@@ -450,8 +450,8 @@ icon_path = "mistral.png"
 friendly_size = "L"
 distribution = "open-weights"
 conditions = "free"
-description = "Modèle phare de la société française Mistral, ce modèle gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
-excerpt = "Modèle phare de la société française Mistral, ce modèle gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
+description = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
+excerpt = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
 license = "Mistral AI Research"
 
 [phi-3-mini-4k]
