@@ -603,10 +603,10 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             if os.getenv("SENTRY_DSN"):
 
-                with sentry_sdk.configure_scope() as scope:
+                # with sentry_sdk.configure_scope() as scope:
                     # Set the fingerprint based on the message content
-                    scope.fingerprint = [e]
-                    sentry_sdk.capture_exception(e, scope)
+                    # scope.fingerprint = [e]
+                sentry_sdk.capture_exception(e)
 
             logger.exception(
                 f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
