@@ -63,7 +63,7 @@ app = gr.mount_gradio_app(
 
 from languia.utils import get_gauge_count
 
-objective = 40000
+objective = 50000
 
 
 @app.get("/", response_class=HTMLResponse)
