@@ -35,10 +35,10 @@ class TXT360Category(str, Enum):
 # Define the response model
 class SumUp(BaseModel):
     short_summary: str
-    keywords: list[str]
+    keywords: set[str]
     # lmarena_categories: list[str]
-    txt360_categories: list[TXT360Category]
-    languages: list[str]
+    txt360_categories: set[TXT360Category]
+    languages: set[str]
 
 
 client = OpenAI(
