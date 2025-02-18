@@ -10,6 +10,8 @@ import os
 import shutil
 from datetime import datetime
 
+logger.basicConfig(
+            level=logger.INFO)
 
 def commit_datasets():
     
@@ -105,11 +107,12 @@ def commit_datasets():
                 continue
 
             # Push
-            push_result = subprocess.run(['git', '-C', repo_path, 'push', '--dry-run'])
-            if push_result.returncode == 0:
-                logger.info(f"Successfully pushed changes for {repo}")
-            else:
-                logger.error(f"Failed to push changes for {repo}: {push_result.stderr}")
+            logger.info(f"Would run: git -C {repo_path} push")
+            # push_result = subprocess.run(['git', '-C', repo_path, 'push'])
+            # if push_result.returncode == 0:
+            #     logger.info(f"Successfully pushed changes for {repo}")
+            # else:
+            #     logger.error(f"Failed to push changes for {repo}: {push_result.stderr}")
         else:
             logger.info(f"No changes to commit in {repo}")
 
