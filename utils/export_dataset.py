@@ -5,7 +5,30 @@ import sys
 import os
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-from languia.config import db as db_config
+
+
+if any(
+    os.getenv(var)
+    for var in [
+        "LANGUIA_DB_NAME",
+        "LANGUIA_DB_USER",
+        "LANGUIA_DB_PASSWORD",
+        "LANGUIA_DB_HOST",
+        "LANGUIA_DB_PORT",
+    ]
+):
+    # and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
+    db_config = {
+        "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
+        "user": os.getenv("LANGUIA_DB_USER", "languia"),
+        "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
+        "host": os.getenv("LANGUIA_DB_HOST", "languia-db"),
+        "port": os.getenv("LANGUIA_DB_PORT", 5432),
+        "sslmode": os.getenv("LANGUIA_DB_SSL_MODE", "prefer"),
+        "connect_timeout": 3,
+    }
+else:
+    db_config = None
 
 
 # Configure logging
