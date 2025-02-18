@@ -85,7 +85,6 @@ def litellm_stream_iter(
     logger = logging.getLogger("languia")
 
     data = dict()
-    buffer = ""
 
     for chunk in res:
         if hasattr(chunk, "id"):
@@ -106,7 +105,6 @@ def litellm_stream_iter(
                 content = ""
 
             text += content
-            buffer += content
 
             data["text"] = text
 
@@ -124,11 +122,5 @@ def litellm_stream_iter(
                     break
             # Special handling for certain models
             # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
-
-        if len(buffer.split()) >= 30:
-            # if "\n" in buffer or "." in buffer:
-
-            # Reset word count after yielding
-            buffer = ""
             yield data
     yield data
