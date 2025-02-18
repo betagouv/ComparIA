@@ -104,6 +104,7 @@ class Classifier:
                 for line in f:
                     record = json.loads(line)
                     self.processed_ids.add(record["conversation_pair_id"])
+                print("Loaded "+str(len(self.processed_ids))+ " already processed IDs.")
         except FileNotFoundError:
             pass
 
@@ -176,8 +177,9 @@ Conversation B:
 
         for pair_id, records in tqdm(grouped.items(), desc="Processing pairs"):
             if pair_id in self.processed_ids:
+                print("Skipping already processed ID: "+pair_id)
                 continue
-                
+            print("Processing ID: "+pair_id)
             result = self._process_conversation_pair(pair_id, records)
             if result:
                 results.append(result)
@@ -216,7 +218,7 @@ def main():
     parser = argparse.ArgumentParser(description='Conversation Analyzer')
     parser.add_argument('--token', type=str, required=True, help='Hugging Face token')
     parser.add_argument('--samples', type=int, default=Config.DEFAULT_SAMPLE_SIZE, help='Number of samples to process')
-    parser.add_argument('--output', type=str, default='results', help='Output directory')
+    parser.add_argument('--output', type=str, default='results-output', help='Output directory')
     
     args = parser.parse_args()
     
