@@ -61,6 +61,9 @@ class TXT360Category(str, Enum):
     shopping_commodity = "Shopping & Commodity"
     society_social_issues_human_rights = "Society & Social Issues & Human Rights"
     sports = "Sports"
+    # needed!
+    # history = "History"
+    # philosophy = "Philosophy"
     other = "Other"
 
 class AnalysisResult(BaseModel):
@@ -200,6 +203,7 @@ Conversation B:
         try:
             ds = load_dataset("ministere-culture/comparia-questions", token=hf_token)
             total_available = len(ds['train'])
+            print("Total lines to analyze: "+str(total_available))
             num_samples = num_samples or total_available
 
             self.logger.info(f"Processing {num_samples} out of {total_available} questions")
