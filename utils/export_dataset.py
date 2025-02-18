@@ -36,7 +36,7 @@ DATABASE_URI = os.getenv("DATABASE_URI")
 
 # Establish database connection
 try:
-    conn = create_engine(DATABASE_URI)
+    conn = create_engine(DATABASE_URI,execution_options = {'stream_results':True})
     logger.info("Database connection established successfully.")
 except Exception as e:
     logger.error(f"Failed to connect to the database: {e}")
