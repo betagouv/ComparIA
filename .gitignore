@@ -48,3 +48,6 @@ register-api-endpoint-file*.json
 docker/.env
 .env
 languia-*.json
+utils/results/
+utils/results-output/
+datasets/
