@@ -13,12 +13,14 @@
 } */
 body.dark {
   color: var(--body-text-color) !important;
-  background-color: var(--background-default-grey) !important;
-  --body-background-fill: var(--background-default-grey);
+  background-color: transparent !important;
+  --body-background-fill: transparent !important;
   --body-text-color: var(--text-default-grey);
   --block-background-fill: transparent !important;
   --block-padding: 0 !important;
+  --block-border-color: transparent !important;
 }
+
 
 .dark .html-container {
   background-color:   rgb(252, 252, 253);
