@@ -33,7 +33,7 @@ def litellm_stream_iter(
     api_key=None,
     request=None,
     api_version=None,
-    vertex_ai_location=None
+    vertex_ai_location=None,
 ):
 
     from languia.config import debug
@@ -51,13 +51,12 @@ def litellm_stream_iter(
     else:
         litellm.vertex_location = vertex_ai_location
 
-
-# TODO: openrouter specific params
-# completion = client.chat.completions.create(
-#   extra_headers={
-#     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
-#     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
-#   },
+    # TODO: openrouter specific params
+    # completion = client.chat.completions.create(
+    #   extra_headers={
+    #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
+    #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
+    #   },
     res = litellm.completion(
         api_version=api_version,
         timeout=GLOBAL_TIMEOUT,
@@ -77,9 +76,9 @@ def litellm_stream_iter(
         # top_p=top_p,
     )
 
-# TODO: openrouter specific params
-            # transforms = [""],
-            # route= ""
+    # TODO: openrouter specific params
+    # transforms = [""],
+    # route= ""
 
     text = ""
     logger = logging.getLogger("languia")
@@ -89,12 +88,16 @@ def litellm_stream_iter(
     for chunk in res:
         if hasattr(chunk, "id"):
             data["generation_id"] = chunk.id
-            logger.debug(f"generation_id: {chunk.id} for api {api_base} and model {model_name}", extra={"request": request})
+            logger.debug(
+                f"generation_id: {chunk.id} for api {api_base} and model {model_name}",
+                extra={"request": request},
+            )
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
                 f"reported output tokens for api {api_base} and model {model_name}: "
-                + str(data["output_tokens"],extra={"request": request})
+                + str(data["output_tokens"]),
+                extra={"request": request},
             )
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "delta") and hasattr(
@@ -115,7 +118,9 @@ def litellm_stream_iter(
                 elif chunk.choices[0].finish_reason == "length":
                     # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
                     # raise ContextTooLongError
-                    logger.warning("context_too_long: " + str(chunk), extra={request: request})
+                    logger.warning(
+                        "context_too_long: " + str(chunk), extra={request: request}
+                    )
 
                     if os.getenv("SENTRY_DSN"):
                         sentry_sdk.capture_message(f"context_too_long: {chunk}")
