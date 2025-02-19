@@ -112,7 +112,7 @@ conditions = "free"
 excerpt = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
-["jpacifico/Chocolatine-2-14B-Instruct-v2.0.3"]
+["Chocolatine-2-14B-Instruct-v2.0.3"]
 url = "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3"
 simple_name = "Chocolatine 2 14B"
 organisation = "jpacifico"
