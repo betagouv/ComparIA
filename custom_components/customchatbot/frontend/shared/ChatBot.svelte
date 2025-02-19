@@ -394,7 +394,7 @@
 				<div class="message-row {layout} {role}-row">
 					{#each messages as message, j}
 						<Message
-							messages={[message]}
+							{message}
 							{role}
 							{layout}
 							{dispatch}
