@@ -90,13 +90,12 @@ def metadata_to_dict(metadata):
         metadata_dict.pop("generation_id", None)
     return metadata_dict
 
-
 def messages_to_dict_list(messages):
     return [
         {
             "role": message.role,
             "content": message.content,
-            "metadata": metadata_to_dict(message.metadata),
+            **({"metadata": metadata_to_dict(message.metadata)} if metadata_to_dict(message.metadata) else {})
         }
         for message in messages
     ]
