@@ -80,6 +80,7 @@ def is_unedited_prompt(opening_msg, category):
 
     return opening_msg in prompts_table[category]
 
+
 def metadata_to_dict(metadata):
     metadata_dict = dict(metadata)
     metadata_dict.pop("bot", None)
@@ -89,8 +90,16 @@ def metadata_to_dict(metadata):
         metadata_dict.pop("generation_id", None)
     return metadata_dict
 
+
 def messages_to_dict_list(messages):
-    return [{"role": message.role, "content": message.content, "metadata": metadata_to_dict(message.metadata) } for message in messages]
+    return [
+        {
+            "role": message.role,
+            "content": message.content,
+            "metadata": metadata_to_dict(message.metadata),
+        }
+        for message in messages
+    ]
 
 
 with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
@@ -526,13 +535,15 @@ def mode_banner_html(mode):
         ],
     }
     return f"""
-    <div class="fr-container--fluid text-center mode-banner fr-text--xs"><img class="inline" height=16 src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
+    <div class="fr-container--fluid text-center mode-banner fr-py-1w fr-text--xs"><img class="inline" height="20" src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
     """
+
 
 def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as db_config
+
     logger = logging.getLogger("languia")
     if not db_config:
         logger.warn("Cannot log to db: no db configured")
@@ -556,12 +567,14 @@ def get_gauge_count():
         if conn:
             conn.close()
     if res[0]:
-        return res[0] 
-    else: return 40000
+        return res[0]
+    else:
+        return 40000
+
 
 # def gauge_banner_html():
 #     gauge_count = get_gauge_count()
-#     objective = 40000 
+#     objective = 40000
 #     ratio = 100 * get_gauge_count() / objective
 #     gauge = """
 #     <div class="fr-container--fluid mode-banner"><span class="legende">Nombre total de votes&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
@@ -597,7 +610,7 @@ def get_gauge_count():
 #     color: #7F7F7F !important   ;
 #     }
 # .linear-gauge-fill {
-#     width: """ + str(int(ratio)) + """%; 
+#     width: """ + str(int(ratio)) + """%;
 #   height: 100%;
 #   background: var(--yellow-tournesol-925-125);
 #   transition: width 0.3s ease-in-out;
@@ -637,7 +650,7 @@ def get_gauge_count():
 #       grid-area: a;
 
 #     }
-    
+
 #     .objectif {
 #       grid-area: c;
 #       order: 0;
