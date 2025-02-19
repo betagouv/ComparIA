@@ -122,8 +122,8 @@ friendly_size = "M"
 distribution = "open-weights"
 license = "MIT"
 conditions = "free"
-excerpt = "Reposant sur le modèle Qwen2.5 de la société Qwen, ce modèle a été spécialisé sur la langue française."
-description = "Reposant sur le modèle Qwen2.5 de la société Qwen, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
+excerpt = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française."
+description = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
 ["deepseek-v3-chat"]
 url = "https://huggingface.co/deepseek-ai/DeepSeek-V3"
