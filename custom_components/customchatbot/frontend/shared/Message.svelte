@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { is_component_message } from "../shared/utils";
-	import type { Client } from "@gradio/client";
+	import { sanitize } from "@gradio/sanitize";
+
 	import type { NormalisedMessage } from "../types";
 	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
@@ -12,7 +12,7 @@
 	export let value: NormalisedMessage[];
 
 	export let role = "user";
-	export let messages: NormalisedMessage[] = [];
+	export let message: NormalisedMessage;
 	export let layout: "bubble" | "panel";
 	// export let bubble_full_width: boolean;
 	export let render_markdown: boolean;
@@ -32,6 +32,8 @@
 	export let target: HTMLElement | null;
 	export let root: string;
 	export let disabled = false;
+	var thought = "";
+	var content = "";
 
 	export let theme_mode: "light" | "dark" | "system";
 	export let _components: Record<string, ComponentType<SvelteComponent>>;
@@ -51,6 +53,29 @@
 		value?: string[],
 	) => void;
 	export let scroll: () => void;
+
+	function get_thought_from_content(content) {
+		if (!content.includes("<think>")) {
+			return "";
+		} else {
+			return content
+				.replace("<think>", "")
+				.split("</think>")[0]
+				.replace("</think>", "");
+		}
+	}
+
+	function remove_thought_from_content(msg_content) {
+		if (!msg_content.includes("<think>")) {
+			return msg_content;
+		} else {
+			if (!msg_content.includes("</think>")) {
+				return "";
+			} else {
+				return msg_content.split("</think>")[1];
+			}
+		}
+	}
 
 	function get_message_label_data(message: NormalisedMessage): string {
 		if (message.type === "text") {
@@ -102,103 +127,114 @@
 		disabled,
 		generating,
 		show_copy_button,
-		message: messages,
+		message: message,
 		position: role === "user" ? "right" : "left",
 		layout,
 	};
-
+	$: {
+		thought = get_thought_from_content(message.content);
+		console.log("thought");
+		console.log(thought);
+	}
+	$: {
+		content = remove_thought_from_content(message.content);
+		console.log("content");
+		console.log(content);
+	}
 </script>
 
-<!-- {#if role === "user"} -->
-
-{#each messages as message, thought_index}
-	<div
-		class="message {role} {get_message_bot_position(message)}"
+<!-- TODO: messages only has one message always... should simplify -->
+<div
+	class="message {role} {get_message_bot_position(message)}"
+	class:message-markdown-disabled={!render_markdown}
+>
+	
+	<button
+		data-testid={role}
+		class:latest={i === value.length - 1}
 		class:message-markdown-disabled={!render_markdown}
-		class:thought={thought_index > 0}
+		style:user-select="text"
+		class:selectable
+		style:cursor={selectable ? "default" : "default"}
+		style:text-align={rtl ? "right" : "left"}
+		dir={rtl ? "rtl" : "ltr"}
+		aria-label={role + "'s message: " + get_message_label_data(message)}
 	>
-		<button
-			data-testid={role}
-			class:latest={i === value.length - 1}
-			class:message-markdown-disabled={!render_markdown}
-			style:user-select="text"
-			class:selectable
-			style:cursor={selectable ? "default" : "default"}
-			style:text-align={rtl ? "right" : "left"}
-			dir={rtl ? "rtl" : "ltr"}
-			aria-label={role + "'s message: " + get_message_label_data(message)}
-		>
-			{#if message.type === "text"}
-				<div>
-					{#if message.role === "assistant"}
-						<div class="model-title">
-							{#if message.metadata?.bot === "a"}
-								<svg
-									class="inline"
-									width="26"
-									height="32"
-									name="disque violet (modèle A)"
-									role="img"
-									aria-label="disque violet (modèle A)"
-									><circle
-										cx="13"
-										cy="13"
-										r="12"
-										fill="#A96AFE"
-										stroke="none"
-									></circle></svg
-								>
-								<h3 class="inline">Modèle A</h3>
-							{:else if message.metadata?.bot === "b"}
-								<svg
-									class="inline"
-									width="26"
-									height="32"
-									name="disque orange (modèle B)"
-									role="img"
-									aria-label="disque orange (modèle B)"
-									><circle
-										cx="13"
-										cy="13"
-										r="12"
-										fill="#ff9575"
-										stroke="none"
-									></circle></svg
-								>
-								<h3 class="inline">Modèle B</h3>
-							{/if}
-						</div>
-						<Markdown
-							message={message.content}
-							{latex_delimiters}
-							{sanitize_html}
-							{render_markdown}
-							{line_breaks}
-							on:load={scroll}
-							{root}
-						/>
-						{#if generating}
-							<Pending />
+		{#if message.type === "text"}
+			<div>
+				{#if message.role === "assistant"}
+					<div class="model-title">
+						{#if message.metadata?.bot === "a"}
+							<svg
+								class="inline"
+								width="26"
+								height="32"
+								name="disque violet (modèle A)"
+								role="img"
+								aria-label="disque violet (modèle A)"
+								><circle
+									cx="13"
+									cy="13"
+									r="12"
+									fill="#A96AFE"
+									stroke="none"
+								></circle></svg
+							>
+							<h3 class="inline">Modèle A</h3>
+						{:else if message.metadata?.bot === "b"}
+							<svg
+								class="inline"
+								width="26"
+								height="32"
+								name="disque orange (modèle B)"
+								role="img"
+								aria-label="disque orange (modèle B)"
+								><circle
+									cx="13"
+									cy="13"
+									r="12"
+									fill="#ff9575"
+									stroke="none"
+								></circle></svg
+							>
+							<h3 class="inline">Modèle B</h3>
 						{/if}
-					{:else}
-						<Markdown
-							message={message.content}
-							{latex_delimiters}
-							{sanitize_html}
-							{render_markdown}
-							{line_breaks}
-							on:load={scroll}
-							{root}
-						/>
+					</div>
+					{#if thought != ""}
+		<div class="thought">
+			{sanitize(thought, root)}
+		</div>
+	{/if}
+					<Markdown
+						message={content}
+						{latex_delimiters}
+						{sanitize_html}
+						{render_markdown}
+						{line_breaks}
+						on:load={scroll}
+						{root}
+					/>
+					{#if generating}
+						<Pending />
 					{/if}
-				</div>
-			{/if}
-			{#if message.role === "assistant"}
-				<ButtonPanel {...button_panel_props} />
-			{/if}
-		</button>
-	</div>
-{/each}
+				{:else}
+					<Markdown
+						message={message.content}
+						{latex_delimiters}
+						{sanitize_html}
+						{render_markdown}
+						{line_breaks}
+						on:load={scroll}
+						{root}
+					/>
+				{/if}
+			</div>
+		{/if}
+		{#if message.role === "assistant"}
+			<ButtonPanel {...button_panel_props} />
+		{/if}
+	</button>
+</div>
 
 <style>
 	.model-title {
@@ -328,6 +364,12 @@
 		border-color: var(--border-color-accent-subdued);
 		background-color: var(--color-accent-soft);
 	} */
+
+	.thought {
+		color: #666;
+		font-style: italic;
+	}
+
 	.selectable {
 		cursor: default;
 	}
