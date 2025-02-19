@@ -277,7 +277,7 @@ async def bnf(request: Request):
     return templates.TemplateResponse(
         "bnf.html",
         {
-            "title": "Evénement 7 février",
+            "title": "Conférences",
             "request": request,
             "config": config,
         },
