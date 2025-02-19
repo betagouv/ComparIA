@@ -125,6 +125,20 @@ conditions = "free"
 excerpt = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
+["deepseek-r1"]
+url = "https://huggingface.co/deepseek-ai/DeepSeek-R1"
+simple_name = "DeepSeek R1"
+organisation = "DeepSeek"
+total_params = 671
+active_params = 37
+icon_path = "deepseek.webp"
+friendly_size = "XL"
+distribution = "open-weights"
+license = "MIT"
+conditions = "free"
+excerpt = "Modèle phare de la société chinoise DeepSeek, DeepSeek R1 est un modèle basé sur Deepseek V3 qui élabore un raisonnement avant de formuler une réponse."
+description = "Modèle phare de la société chinoise DeepSeek, DeepSeek R1 est un modèle qui élabore un raisonnement avant de formuler une réponse. DeepSeek R1 est basé sur Deepseek V3, qui possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+
 ["deepseek-v3-chat"]
 url = "https://huggingface.co/deepseek-ai/DeepSeek-V3"
 simple_name = "DeepSeek v3"
