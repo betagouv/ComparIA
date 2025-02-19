@@ -360,8 +360,6 @@ body {
     max-width: calc(50%);
   }
 }
-
-
 /* Screen by screen */
 
 /* Screen 0 */
@@ -699,6 +697,11 @@ li.fr-nav__item {
   background-color: #FCFCFD;
   /* background-color: var(--background-alt-grey); */
   /* border-top: solid 1px var(--border-default-grey); */
+}
+
+.feedback-btns {
+  width: 280px;
+  justify-content: center;
 }
 
 /* FICHE MODÈLE */
