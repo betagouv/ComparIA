@@ -63,7 +63,7 @@ app = gr.mount_gradio_app(
 
 from languia.utils import get_gauge_count
 
-objective = 50000
+objective = 70000
 
 
 @app.get("/", response_class=HTMLResponse)
@@ -102,8 +102,10 @@ async def models(request: Request):
 async def share(i: str, request: Request):
 
     from languia.config import all_models_extra_info_toml
+
     try:
         import base64, json
+
         decoded = base64.b64decode(i)
         print(decoded)
         data = json.loads(decoded)
@@ -119,7 +121,7 @@ async def share(i: str, request: Request):
         model_a_tokens = data.get("ta")
         assert isinstance(data.get("tb"), int)
         model_b_tokens = data.get("tb")
-        assert (data.get("c") in ['a','b'] or data.get("c") == None)
+        assert data.get("c") in ["a", "b"] or data.get("c") == None
         if data.get("c") == "a":
             chosen_model = "model-a"
         elif data.get("c") == "b":
