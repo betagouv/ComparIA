@@ -160,8 +160,8 @@ def register_listeners():
 setTimeout(() => {
 
 const cookieExists = document.cookie.includes('comparia_already_visited');
+document.cookie = 'comparia_already_visited=true; SameSite=Strict; Secure; Path=/;'
 if (!cookieExists) {
-    document.cookie = 'comparia_already_visited=true; SameSite=None; Secure;'
     const modal = document.getElementById("fr-modal-welcome");
     dsfr(modal).modal.disclose();
 }
