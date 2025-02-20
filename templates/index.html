@@ -183,8 +183,17 @@
 {% include 'gauge.html' %}
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
+        const acceptTosCheckbox = document.getElementById('accept_tos');
+
+        function precheckEnterArena() {
+
+            const cookieExists = document.cookie.includes('comparia_already_visited');
+            if (cookieExists) {
+                acceptTosCheckbox.checked = true
+            }
+        }
+
         function validateAndRedirect() {
-            const acceptTosCheckbox = document.getElementById('accept_tos');
             const startArenaBtn = document.getElementById('start_arena_btn');
             const errorMessage = document.getElementById('checkbox-error-messages');
 
@@ -206,7 +215,7 @@
                 }
             });
         }
-
+        precheckEnterArena();
         validateAndRedirect();
     });
 </script>
