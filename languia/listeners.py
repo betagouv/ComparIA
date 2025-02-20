@@ -161,7 +161,7 @@ setTimeout(() => {
 
 const cookieExists = document.cookie.includes('comparia_already_visited');
 if (!cookieExists) {
-    document.cookie = 'name=comparia_already_visited; SameSite=None; Secure;'
+    document.cookie = 'comparia_already_visited=true; SameSite=None; Secure;'
     const modal = document.getElementById("fr-modal-welcome");
     dsfr(modal).modal.disclose();
 }
