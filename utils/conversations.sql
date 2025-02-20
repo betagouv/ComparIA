@@ -36,7 +36,13 @@ CREATE TABLE IF NOT EXISTS conversations (
     archived BOOLEAN DEFAULT FALSE,
     -- TODO: add 'interrupted' bool field?
     mode VARCHAR(255),
-    custom_models_selection JSONB
+    custom_models_selection JSONB,
+    short_summary TEXT,
+    keywords JSONB,
+    categories JSONB,
+    languages JSONB,
+    pii_analyzed BOOLEAN DEFAULT FALSE,
+    contains_pii BOOLEAN,
 );
 
 GRANT USAGE,
