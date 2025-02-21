@@ -20,8 +20,7 @@ CREATE TABLE reactions (
     -- Indicates the model position ('a' or 'b')
     conv_turns INT NOT NULL,
     -- Number of turns in the conversation
-    template JSONB,
-    -- Template data (JSONB format)
+    system_prompt TEXT,
     conversation_pair_id VARCHAR NOT NULL,
     -- Unique identifier for the pair of conversations
     conv_a_id VARCHAR(500) NOT NULL,
