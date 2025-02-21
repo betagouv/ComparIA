@@ -23,7 +23,6 @@ class Conversation:
     def __init__(
         self,
         messages=[],
-        output_tokens=None,
         model_name=None,
     ):
 
@@ -32,7 +31,7 @@ class Conversation:
             self.messages = [ChatMessage(role="system",content=system_prompt)] + messages
         else:
             self.messages = messages
-        self.output_tokens = output_tokens
+        self.output_tokens = None
         self.conv_id = str(uuid4())
         self.model_name = model_name
         self.endpoint = pick_endpoint(model_name)
