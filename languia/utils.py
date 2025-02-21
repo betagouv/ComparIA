@@ -181,9 +181,9 @@ def get_unavailable_models(broken_endpoints):
     logger = logging.getLogger("languia")
     from languia.config import models_extra_info
 
-    for model_id in models_extra_info:
-        if get_endpoints(model_id, broken_endpoints) == []:
-            unavailable_models.append(model_id)
+    for model in models_extra_info:
+        if get_endpoints(model['id'], broken_endpoints) == []:
+            unavailable_models.append(model['id'])
     logger.debug(f"unavailable_models: {unavailable_models}")
     return unavailable_models
 
@@ -233,8 +233,8 @@ def choose_among(
             models = all_models
 
     chosen_idx = np.random.choice(len(models), p=None)
-    chosen_model = models[chosen_idx]
-    return chosen_model
+    chosen_model_name = models[chosen_idx]["id"]
+    return chosen_model_name
 
 
 def pick_models(mode, custom_models_selection, outages):

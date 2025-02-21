@@ -227,7 +227,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             model_name=first_model_name,
         )
         conv_b_scoped = Conversation(
-            conv_b_scoped,
             model_name=second_model_name,
         )
 
