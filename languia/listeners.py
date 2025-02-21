@@ -586,7 +586,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # inputs=conversations + [temperature, top_p, max_output_tokens],
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         outputs=[app_state, conv_a, conv_b, chatbot, textbox],
-        api_name=False,
+        # api_name=False,
         show_progress="hidden",
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
