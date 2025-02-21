@@ -192,9 +192,10 @@ class AppState:
     #     return self.__dict__.copy()
 
 def choose_among(
-    all_models,
+    models,
     excluded,
 ):
+    all_models = models
     models = [model for model in all_models if model not in excluded]
     logger = logging.getLogger("languia")
     if len(models) == 0:
