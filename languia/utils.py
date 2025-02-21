@@ -78,6 +78,15 @@ def count_turns(messages):
         
 
 
+def get_model_template(model_name):
+    from languia.config import models_system_prompts
+
+    if model_name in models_system_prompts:
+        return [ChatMessage(role="system", content=models_system_prompts[model_name])]
+    else:
+        return []
+
+
 def is_unedited_prompt(opening_msg, category):
     if not category:
         return False

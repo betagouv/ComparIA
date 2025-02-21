@@ -243,6 +243,9 @@ models_extra_info = [
 
 models_extra_info.sort(key=lambda x: x["simple_name"])
 
+# TODO: integrate into extra info? Config file?
+models_system_prompts = {"chocolatine-2-14b-instruct-v2.0.3": {"Tu es un assistant IA serviable et bienveillant. Tu fais des réponses concises et précises."}}
+
 headers = {"User-Agent": "FastChat Client"}
 
 if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
