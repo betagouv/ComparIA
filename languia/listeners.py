@@ -223,13 +223,16 @@ document.getElementById("fr-modal-welcome-close").blur();
             mode, custom_models_selection, outages=config.outages
         )
 
+        # FIXME: check if template doesn't mess with everything ID-wise and dataset-wise
         conv_a_scoped = Conversation(
             model_name=first_model_name,
         )
         conv_b_scoped = Conversation(
             model_name=second_model_name,
         )
-
+# Could be added at init
+        conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
+        conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
         logger.info(
             f"selection_modeles: {first_model_name}, {second_model_name}",
             extra={"request": request},
@@ -253,12 +256,6 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
 
-        # TODO: check if template doesn't mess with everything ID-wise and dataset-wise
-
-        conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
-        conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
-
-        app_state_scoped.awaiting_responses = True
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
@@ -267,6 +264,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         banner = mode_banner_html(mode)
 
         text = gr.update(visible=True)
+        app_state_scoped.awaiting_responses = True
         return [
             app_state_scoped,
             # 2 conversations
