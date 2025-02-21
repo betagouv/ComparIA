@@ -7,6 +7,10 @@ import logging
 
 import requests
 
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+    ChatMessage,
+)
+
 
 class ContextTooLongError(ValueError):
     def __str__(self):
@@ -133,14 +137,17 @@ with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
 
-def pick_endpoint(model_id, broken_endpoints):
+# TODO: remove and replace with litellm's Router abstraction
+def pick_endpoint(model_id):
     from languia.config import api_endpoint_info
+    from languia.config import outages
 
     logger = logging.getLogger("languia")
 
     for endpoint in api_endpoint_info:
         api_id = endpoint.get("api_id")
-        if endpoint.get("model_id") == model_id and api_id not in broken_endpoints:
+        # FIXME: outages is full of api_id not model_id
+        if endpoint.get("model_id") == model_id and api_id not in outages:
             logger.debug(f"got_endpoint: {api_id} for {model_id}")
             return endpoint
     return None
@@ -169,10 +176,12 @@ def get_endpoints(model_id, broken_endpoints):
     return endpoints
 
 
-def get_unavailable_models(broken_endpoints, all_model_ids):
+def get_unavailable_models(broken_endpoints):
     unavailable_models = []
     logger = logging.getLogger("languia")
-    for model_id in all_model_ids:
+    from languia.config import models_extra_info
+
+    for model_id in models_extra_info:
         if get_endpoints(model_id, broken_endpoints) == []:
             unavailable_models.append(model_id)
     logger.debug(f"unavailable_models: {unavailable_models}")
@@ -200,6 +209,7 @@ class AppState:
     # def to_dict(self) -> dict:
     #     return self.__dict__.copy()
 
+
 def choose_among(
     models,
     excluded,
@@ -214,6 +224,7 @@ def choose_among(
         if len(all_models) == 0:
             logger.critical("No model to choose from")
             import gradio as gr
+
             raise gr.Error(
                 duration=0,
                 message="Le comparateur a un problème et aucun des modèles n'est disponible, veuillez revenir plus tard.",
@@ -225,34 +236,40 @@ def choose_among(
     chosen_model = models[chosen_idx]
     return chosen_model
 
+
 def pick_models(mode, custom_models_selection, outages):
     from languia.config import models_extra_info
+
+    # FIXME: outages is full of api_id not model_id
+    unavailable_models = get_unavailable_models(outages)
 
     small_models = [
         model
         for model in models_extra_info
-        if model["friendly_size"] in ["XS", "S", "M"] and model["id"] not in outages
+        if model["friendly_size"] in ["XS", "S", "M"]
+        and model["id"] not in unavailable_models
     ]
     big_models = [
         model
         for model in models_extra_info
-        if model["friendly_size"] in ["L", "XL"] and model["id"] not in outages
+        if model["friendly_size"] in ["L", "XL"]
+        and model["id"] not in unavailable_models
     ]
 
-    from random import randint
+    import random
 
     if mode == "big-vs-small":
         # choose_among?
-        first_model = big_models[randint(len(big_models))]
-        second_model = small_models[randint(len(small_models))]
+        first_model = big_models[random.randint(0, len(big_models))]
+        second_model = small_models[random.randint(0, len(small_models))]
 
         model_left_name = first_model["id"]
         model_right_name = second_model["id"]
     elif mode == "small-models":
-        first_model = small_models[randint(len(small_models))]
+        first_model = small_models[random.randint(0, len(small_models))]
         # TODO: choose_among(models, excluded) with a warning if it couldn't exclude it
         second_model = choose_among(
-            models=small_models, excluded=[model_left_name] + outages
+            models=small_models, excluded=unavailable_models + [model_left_name]
         )
         model_left_name = first_model["id"]
         model_right_name = second_model["id"]
@@ -268,7 +285,7 @@ def pick_models(mode, custom_models_selection, outages):
             model_left_name = custom_models_selection[0]
             model_right_name = choose_among(
                 models=models_extra_info,
-                excluded=[custom_models_selection[0]] + outages,
+                excluded=[custom_models_selection[0]] + unavailable_models,
             )
 
         elif len(custom_models_selection) == 2:
@@ -276,16 +293,15 @@ def pick_models(mode, custom_models_selection, outages):
             model_left_name = custom_models_selection[0]
             model_right_name = custom_models_selection[1]
 
-
     else:  # assume random mode
         model_left_name = choose_among(
-                models=models_extra_info,
-                excluded=outages)
+            models=models_extra_info, excluded=unavailable_models
+        )
         model_right_name = choose_among(
-                models=models_extra_info,
-                excluded=[model_left_name] + outages)
-    
-    swap = randint(2)
+            models=models_extra_info, excluded=[model_left_name] + unavailable_models
+        )
+
+    swap = random.randint(0, 1)
     if swap == 1:
         model_right_name, model_left_name = model_left_name, model_right_name
 
