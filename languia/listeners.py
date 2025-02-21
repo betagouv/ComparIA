@@ -58,9 +58,6 @@ from languia.logs import vote_last_response, sync_reactions, record_conversation
 
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
-    SAMPLING_WEIGHTS,
-    BATTLE_TARGETS,
-    SAMPLING_BOOST_MODELS,
 )
 
 # from fastchat.model.model_adapter import get_conversation_template
