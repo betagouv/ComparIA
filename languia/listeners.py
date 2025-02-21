@@ -243,6 +243,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
 
+        # TODO: check if template doesn't mess with everything ID-wise and dataset-wise
+
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
 
@@ -250,7 +252,7 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
-        chatbot = to_threeway_chatbot(conversations)
+        chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
 
         banner = mode_banner_html(mode)
 
