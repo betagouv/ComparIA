@@ -32,7 +32,7 @@ class Conversation:
         else:
             self.messages = messages
         self.output_tokens = None
-        self.conv_id = str(uuid4())
+        self.conv_id = str(uuid4()).replace("-","")
         self.model_name = model_name
         self.endpoint = pick_endpoint(model_name)
 
