@@ -112,7 +112,7 @@ conditions = "free"
 excerpt = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
-["Chocolatine-2-14B-Instruct-v2.0.3"]
+["chocolatine-2-14b-instruct-v2.0.3"]
 url = "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3"
 simple_name = "Chocolatine 2 14B"
 organisation = "jpacifico"
@@ -124,6 +124,20 @@ license = "MIT"
 conditions = "free"
 excerpt = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
+
+["chocolatine-2-14b-instruct-v2.0.3-q8"]
+url = "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3"
+simple_name = "Chocolatine 2 14B"
+organisation = "jpacifico"
+params = 14
+quantization = "q8"
+icon_path = "huggingface.svg"
+friendly_size = "M"
+distribution = "open-weights"
+license = "MIT"
+conditions = "free"
+excerpt = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française."
+description = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français. Il est proposé ici en version quantisée q8 (compressée de moitié)."
 
 ["deepseek-r1"]
 url = "https://huggingface.co/deepseek-ai/DeepSeek-R1"

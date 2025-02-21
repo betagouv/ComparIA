@@ -297,8 +297,11 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
                 size_to_params = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
                 model["params"] = size_to_params[model["friendly_size"]]
 
-        # We suppose from q4 to fp16
-        model["required_ram"] = model["params"]
+        if model.get("quantization", None) == "q8":
+            model["required_ram"] = model["params"]*2
+        else:
+            # We suppose from q4 to fp16
+            model["required_ram"] = model["params"]
 
         return model
         # To fix this, please complete `models-extra-info.json` to register your model
