@@ -172,8 +172,14 @@ def get_unavailable_models(broken_endpoints, all_model_ids):
 
 class AppState:
     def __init__(
-        self, awaiting_responses=False, model_left=None, model_right=None, category=None
-    , custom_models_selection =None, mode="random"):
+        self,
+        awaiting_responses=False,
+        model_left=None,
+        model_right=None,
+        category=None,
+        custom_models_selection=None,
+        mode="random",
+    ):
         self.awaiting_responses = awaiting_responses
         self.model_left = model_left
         self.model_right = model_right
@@ -184,6 +190,7 @@ class AppState:
 
     # def to_dict(self) -> dict:
     #     return self.__dict__.copy()
+
 
 # TODO: add to broken_endpoints for next n min when detected an error
 # TODO: simplify battle targets formula
@@ -231,43 +238,34 @@ def get_battle_pair(
 
 
 def pick_model(mode, custom_models_selection, outages):
+    from languia import config
+
     small_models = [
         model
         for model in config.models_extra_info
-        if model["friendly_size"] in ["XS", "S", "M"]
+        if model["friendly_size"] in ["XS", "S", "M"] and model["id"] not in outages
     ]
     big_models = [
         model
         for model in config.models_extra_info
-        if model["friendly_size"] in ["L", "XL"]
+        if model["friendly_size"] in ["L", "XL"] and model["id"] not in outages
     ]
 
-    # mode = model_dropdown_scoped["mode"]
-
-    # logger.info("chose mode: " + mode, extra={"request": request})
-
-    import random
+    from random import randint
 
     if mode == "big-vs-small":
-        first_model = big_models[random.randint(len(big_models))]
-        second_model = small_models[random.randint(len(small_models))]
+        # choose_among?
+        first_model = big_models[randint(len(big_models))]
+        second_model = small_models[randint(len(small_models))]
 
-        swap = random.randint(2)
-        if swap == 0:
-            model_left_name = first_model["id"]
-            model_right_name = second_model["id"]
-        else:
-            model_left_name = second_model["id"]
-            model_right_name = first_model["id"]
-
+        model_left_name = first_model["id"]
+        model_right_name = second_model["id"]
     elif mode == "small-models":
-        first_model = small_models[random.randint(len(small_models))]
-        small_models.remove(first_model)
-        if small_models == []:
-            # If there was just one small model :o
-            second_model = first_model
-        else:
-            second_model = small_models[random.randint(len(small_models))]
+        first_model = small_models[randint(len(small_models))]
+        # TODO: choose_among(models, excluded) with a warning if it couldn't exclude it
+        second_model = choose_among(
+            models=small_models, excluded=[model_left_name] + outages
+        )
         model_left_name = first_model["id"]
         model_right_name = second_model["id"]
 
@@ -278,81 +276,32 @@ def pick_model(mode, custom_models_selection, outages):
         # if any(mode[1], not in models):
         #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
         swap = random.randint(2)
-        # FIXME: more test and randomize
+
         if len(custom_models_selection) == 1:
-            if swap == 0:
-                model_left_name = custom_models_selection[0]
-                model_right_name = (
-                    get_battle_pair()
-                )  # FIXME: chose at random except chosen
-                # conv_b_scoped.model_name = the random one
-            else:
-                conv_b_scoped = set_conv_state(
-                    conv_b_scoped,
-                    model_name=custom_models_selection[0],
-                    endpoint=pick_endpoint(custom_models_selection[0], config.outages),
-                )
-                # FIXME: chose at random except chosen
-                # conv_b_scoped.model_name = the random one
+            model_left_name = custom_models_selection[0]
+            model_right_name = choose_among(
+                models=config.models_extra_info,
+                excluded=[custom_models_selection[0]] + outages,
+            )
+
         elif len(custom_models_selection) == 2:
 
-            if swap == 0:
-                conv_a_scoped = set_conv_state(
-                    conv_a_scoped,
-                    model_name=custom_models_selection[0],
-                    endpoint=pick_endpoint(custom_models_selection[0], config.outages),
-                )
-                conv_b_scoped = set_conv_state(
-                    conv_b_scoped,
-                    model_name=custom_models_selection[1],
-                    endpoint=pick_endpoint(custom_models_selection[1], config.outages),
-                )
-            else:
-                conv_a_scoped = set_conv_state(
-                    conv_a_scoped,
-                    model_name=custom_models_selection[1],
-                    endpoint=pick_endpoint(custom_models_selection[1], config.outages),
-                )
-                conv_b_scoped = set_conv_state(
-                    conv_b_scoped,
-                    model_name=custom_models_selection[0],
-                    endpoint=pick_endpoint(custom_models_selection[0], config.outages),
-                )
-        app_state_scoped.custom_models_selection = custom_models_selection
-        logger.info(
-            "custom_models_selection: " + str(custom_models_selection),
-            extra={"request": request},
-        )
+            model_left_name = custom_models_selection[0]
+            model_right_name = custom_models_selection[1]
+
 
     else:  # assume random mode
-        model_left, model_right = get_battle_pair(
-            config.models,
-            BATTLE_TARGETS,
-            config.outages,
-            SAMPLING_WEIGHTS,
-            SAMPLING_BOOST_MODELS,
-        )
-        endpoint_left = pick_endpoint(model_left, config.outages)
-        endpoint_right = pick_endpoint(model_right, config.outages)
-        # TODO: replace by class method
-        conv_a_scoped = set_conv_state(
-            conv_a_scoped, model_name=model_left, endpoint=endpoint_left
-        )
-        conv_b_scoped = set_conv_state(
-            conv_b_scoped, model_name=model_right, endpoint=endpoint_right
-        )
+        model_left_name = choose_among(
+                models=config.models_extra_info,
+                excluded=outages)
+        model_right_name = choose_among(
+                models=config.models_extra_info,
+                excluded=[model_left_name] + outages)
+    
+    swap = randint(2)
+    if swap == 1:
+        model_right_name, model_left_name = model_left_name, model_right_name
 
-    if mode in ["random", "custom", "small-models", "big-vs-small"]:
-        app_state_scoped.mode = mode
-
-    logger.info(
-        "picked model a: " + conv_a_scoped.model_name,
-        extra={"request": request},
-    )
-    logger.info(
-        "picked model b: " + conv_b_scoped.model_name,
-        extra={"request": request},
-    )
     return [model_left_name, model_right_name]
 
 
