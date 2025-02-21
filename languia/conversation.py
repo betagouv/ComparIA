@@ -188,7 +188,11 @@ def bot_response(
 
 
 def set_conv_state(state, model_name, endpoint):
-    state.messages = [config.get_model_system_prompt(model_name)]
+    system_prompt = config.get_model_system_prompt(model_name)
+    if system_prompt:
+        state.messages = [ChatMessage(role="system",content=system_prompt)]
+    else:
+        state.messages = []
     state.output_tokens = None
 
     # TODO: get it from api if generated
