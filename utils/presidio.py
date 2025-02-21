@@ -95,88 +95,43 @@ class PrivacyClassifier:
         return None
 
 
-from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
-from presidio_analyzer.nlp_engine import NlpEngineProvider
+    from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
+    from presidio_analyzer.nlp_engine import NlpEngineProvider
 
-# Create configuration containing engine name and models
-configuration = {
+    # Create configuration containing engine name and models
+    configuration = {
     "nlp_engine_name": "spacy",
     "models": [{"lang_code": "fr", "model_name": "fr_core_news_sm"}],
-}
+    }
 
-# Create NLP engine based on configuration
-provider = NlpEngineProvider(nlp_configuration=configuration)
-nlp_engine_with_french = provider.create_engine()
+    # Create NLP engine based on configuration
+    provider = NlpEngineProvider(nlp_configuration=configuration)
+    nlp_engine_with_french = provider.create_engine()
 
-from presidio_analyzer import (
+    from presidio_analyzer import (
     AnalyzerEngine,
     BatchAnalyzerEngine,
     RecognizerResult,
     DictAnalyzerResult,
-)
-from presidio_anonymizer import AnonymizerEngine, BatchAnonymizerEngine
-from presidio_anonymizer.entities import EngineResult
+    )
+    from presidio_anonymizer import AnonymizerEngine, BatchAnonymizerEngine
+    from presidio_anonymizer.entities import EngineResult
 
-# Dataset settings
-BATCH_SIZE = 50  # Size of batches for processing
-DEFAULT_SAMPLE_SIZE = 5  # None means process all entries
-SAVE_INTERVAL = 50  # Save results every N questions
+    # Dataset settings
+    BATCH_SIZE = 50  # Size of batches for processing
+    DEFAULT_SAMPLE_SIZE = 5  # None means process all entries
+    SAVE_INTERVAL = 50  # Save results every N questions
 
-
-class PrivacyStats:
-    def __init__(self):
-        self.total_processed = 0
-        self.pii_detected = 0
-        self.non_pii = 0
-        self.errors = 0
-        self.start_time = datetime.now()
-        self.response_times = []
-        self.last_save_point = 0
-
+    
         # Pass the created NLP engine and supported_languages to the AnalyzerEngine
-        self.analyzer = AnalyzerEngine(
-            nlp_engine=nlp_engine_with_french, supported_languages=["fr"]
+    self.analyzer = AnalyzerEngine(
+           nlp_engine=nlp_engine_with_french, supported_languages=["fr"]
         )
-        self.batch_analyzer = BatchAnalyzerEngine(analyzer_engine=self.analyzer)
-        self.anonymizer = AnonymizerEngine()
-        self.stats = PrivacyStats()
-        self.output_dir = Path("results")
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-
-    def add_result(self, pii_present: bool, time_taken: float):
-        self.total_processed += 1
-        if pii_present:
-            self.pii_detected += 1
-        else:
-            self.non_pii += 1
-        self.response_times.append(time_taken)
-
-    def add_error(self):
-        self.errors += 1
-        self.total_processed += 1
-
-    def should_save(self) -> bool:
-        return (self.total_processed - self.last_save_point) >= Config.SAVE_INTERVAL
-
-    def update_save_point(self):
-        self.last_save_point = self.total_processed
-
-    def get_summary(self) -> Dict:
-        end_time = datetime.now()
-        return {
-            "total_processed": self.total_processed,
-            "pii_detected": self.pii_detected,
-            "non_pii": self.non_pii,
-            "error_count": self.errors,
-            "avg_response_time": (
-                (sum(self.response_times) / len(self.response_times))
-                if self.response_times
-                else 0
-            ),
-            "total_time": str(end_time - self.start_time),
-            "timestamp": end_time.isoformat(),
-        }
-
+    self.batch_analyzer = BatchAnalyzerEngine(analyzer_engine=self.analyzer)
+    self.anonymizer = AnonymizerEngine()
+    self.stats = PrivacyStats()
+    self.output_dir = Path("results")
+    self.output_dir.mkdir(parents=True, exist_ok=True)
     def analyze_text(self, text: str) -> List:
         return self.analyzer.analyze(text=text, language=Config.LANGUAGE)
 
