@@ -9,7 +9,14 @@ from tqdm import tqdm
 import pandas as pd
 from typing import Dict, List, Optional
 import logging as logger
-
+from presidio_analyzer import (
+AnalyzerEngine,
+BatchAnalyzerEngine,
+RecognizerResult,
+DictAnalyzerResult,
+)
+from presidio_anonymizer import AnonymizerEngine, BatchAnonymizerEngine
+from presidio_anonymizer.entities import EngineResult
 
 class Config:
     # API endpoints
@@ -71,6 +78,31 @@ class PrivacyStats:
 
 
 class PrivacyClassifier:
+    # Create NLP engine based on configuration
+
+
+
+    # Dataset settings
+    BATCH_SIZE = 50  # Size of batches for processing
+    DEFAULT_SAMPLE_SIZE = 5  # None means process all entries
+    SAVE_INTERVAL = 50  # Save results every N questions
+
+    
+        # Pass the created NLP engine and supported_languages to the AnalyzerEngine
+
+    from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
+    from presidio_analyzer.nlp_engine import NlpEngineProvider
+
+    # Create configuration containing engine name and models
+    configuration = {
+    "nlp_engine_name": "spacy",
+    "models": [{"lang_code": "fr", "model_name": "fr_core_news_sm"}],
+    }
+    provider = NlpEngineProvider(nlp_configuration=configuration)
+    nlp_engine_with_french = provider.create_engine()
+
+  
+
     def __init__(self, output_dir: str = "results"):
         self.stats = PrivacyStats()
         self.output_dir = Path(output_dir)
@@ -94,47 +126,7 @@ class PrivacyClassifier:
                     time.sleep(Config.RETRY_DELAY)
         return None
 
-
-    from presidio_analyzer import AnalyzerEngine, RecognizerRegistry
-    from presidio_analyzer.nlp_engine import NlpEngineProvider
-
-    # Create configuration containing engine name and models
-    configuration = {
-    "nlp_engine_name": "spacy",
-    "models": [{"lang_code": "fr", "model_name": "fr_core_news_sm"}],
-    }
-
-    # Create NLP engine based on configuration
-    provider = NlpEngineProvider(nlp_configuration=configuration)
-    nlp_engine_with_french = provider.create_engine()
-
-    from presidio_analyzer import (
-    AnalyzerEngine,
-    BatchAnalyzerEngine,
-    RecognizerResult,
-    DictAnalyzerResult,
-    )
-    from presidio_anonymizer import AnonymizerEngine, BatchAnonymizerEngine
-    from presidio_anonymizer.entities import EngineResult
-
-    # Dataset settings
-    BATCH_SIZE = 50  # Size of batches for processing
-    DEFAULT_SAMPLE_SIZE = 5  # None means process all entries
-    SAVE_INTERVAL = 50  # Save results every N questions
-
     
-        # Pass the created NLP engine and supported_languages to the AnalyzerEngine
-    self.analyzer = AnalyzerEngine(
-           nlp_engine=nlp_engine_with_french, supported_languages=["fr"]
-        )
-    self.batch_analyzer = BatchAnalyzerEngine(analyzer_engine=self.analyzer)
-    self.anonymizer = AnonymizerEngine()
-    self.stats = PrivacyStats()
-    self.output_dir = Path("results")
-    self.output_dir.mkdir(parents=True, exist_ok=True)
-    def analyze_text(self, text: str) -> List:
-        return self.analyzer.analyze(text=text, language=Config.LANGUAGE)
-
     def anonymize_text(self, text: str, recognizer_results: List) -> str:
         return self.anonymizer.anonymize(
             text=text, analyzer_results=recognizer_results
@@ -155,6 +147,16 @@ class PrivacyClassifier:
     #     }
     #     result = self._call_api(Config.ANONYMIZE_URL, payload)
     #     return result.get("text") if result else None
+    def analyze_text(self, text: str) -> List:
+            self.analyzer = AnalyzerEngine(
+            nlp_engine=self.nlp_engine_with_french, supported_languages=["fr"]
+                )
+            self.batch_analyzer = BatchAnalyzerEngine(analyzer_engine=self.analyzer)
+            self.anonymizer = AnonymizerEngine()
+            self.stats = PrivacyStats()
+            self.output_dir = Path("results")
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+            return self.analyzer.analyze(text=text, language=Config.LANGUAGE)
 
     def process_batch(self, batch: List[Dict]) -> List[Dict]:
         results = []
