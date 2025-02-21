@@ -35,8 +35,7 @@ from languia.block_arena import (
 import traceback
 import os
 import sentry_sdk
-import uuid
-from time import sleep
+
 import openai
 
 from languia.utils import (
@@ -89,47 +88,12 @@ def register_listeners():
 
     # Step 0
 
-    def enter_arena(
-        app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
+    def enter_arena(request: gr.Request
     ):
-        # /!\ careful about user state / shared state if moving this function
-        def init_conversations(
-            app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
-        ):
-            app_state_scoped.awaiting_responses = False
-            config.outages = refresh_outages(
-                config.outages, controller_url=config.controller_url
-            )
-
-            # outages = [outage.get("api_id") for outage in config.outages]
-            outages = config.outages
-            # app_state.model_left, app_state.model_right = get_battle_pair(
-            model_left, model_right = get_battle_pair(
-                config.models,
-                BATTLE_TARGETS,
-                outages,
-                SAMPLING_WEIGHTS,
-                SAMPLING_BOOST_MODELS,
-            )
-            endpoint_left = pick_endpoint(model_left, outages)
-            endpoint_right = pick_endpoint(model_right, outages)
-            # TODO: replace by class method
-            conv_a_scoped = set_conv_state(
-                conv_a_scoped, model_name=model_left, endpoint=endpoint_left
-            )
-            conv_b_scoped = set_conv_state(
-                conv_b_scoped, model_name=model_right, endpoint=endpoint_right
-            )
-            logger.info(
-                f"selection_modeles: {model_left}, {model_right}",
-                extra={"request": request},
-            )
-
-            logger.info(
-                f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}",
-                extra={"request": request},
-            )
-            return conv_a_scoped, conv_b_scoped
+        # Refresh on picking model? Do it async? Should do it globally and async...
+        config.outages = refresh_outages(
+            config.outages, controller_url=config.controller_url
+        )
 
         # TODO: actually check for it
         # tos_accepted = request...
@@ -138,25 +102,15 @@ def register_listeners():
             f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
-        app_state_scoped.awaiting_responses = False
-        conv_a_scoped, conv_b_scoped = init_conversations(
-            app_state_scoped, conv_a_scoped, conv_b_scoped, request
-        )
-        return [app_state_scoped, conv_a_scoped, conv_b_scoped]
 
     gr.on(
         triggers=[demo.load],
         fn=enter_arena,
-        inputs=[app_state, conv_a, conv_b],
-        outputs=[app_state, conv_a, conv_b],
+        inputs=None,
+        outputs=None,
         api_name=False,
         show_progress="hidden",
         # concurrency_limit=None
-    ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
-        show_progress="hidden",
         js="""(args) => {
 setTimeout(() => {
 
