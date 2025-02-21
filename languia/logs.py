@@ -264,11 +264,8 @@ def vote_last_response(
         "conv_turns": count_turns((conversations[0].messages)),
         "selected_category": category,
         "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
-        "template": (
-            []
-            if conversations[0].template_name == "zero_shot"
-            else json.dumps(conversations[0].template)
-        ),
+        # FIXME: template is different in the 2 conversations!!!
+        "template": [],
         "conversation_pair_id": conversations[0].conv_id
         + "-"
         + conversations[1].conv_id,
@@ -614,11 +611,7 @@ def record_reaction(
         "model_pos": model_pos,
         # conversation can be longer if like is on older messages
         "conv_turns": conv_turns,
-        "template": json.dumps(
-            []
-            if conversations[0].template_name == "zero_shot"
-            else json.dumps(conversations[0].template)
-        ),
+        "template": json.dumps(current_conversation.template),
         "conversation_pair_id": conversation_pair_id,
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,
@@ -792,11 +785,8 @@ def record_conversations(
         "conversation_a": json.dumps(conversation_a_messages),
         "conversation_b": json.dumps(conversation_b_messages),
         "conv_turns": conv_turns,
-        "template": json.dumps(
-            []
-            if conversations[0].template_name == "zero_shot"
-            else json.dumps(conversations[0].template)
-        ),
+        # FIXME: pb, it's a template per conv
+        "template": [],
         "conversation_pair_id": conv_pair_id,
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,
