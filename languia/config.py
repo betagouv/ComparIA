@@ -254,7 +254,7 @@ enable_moderation = False
 use_remote_storage = False
 
 def get_model_system_prompt(model_name):
-    if "chocolatine" in model_name:
+    if "chocolatine" in model_name or "lfm-40b" in model_name:
         return "Tu es un assistant IA serviable et bienveillant. Tu fais des réponses concises et précises."
     else:
         return None
