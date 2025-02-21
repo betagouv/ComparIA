@@ -163,143 +163,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             shuffle_link: gr.update(visible=True),
         }
 
-    # TODO: refacto...
-    @model_dropdown.select(
-        inputs=[app_state, conv_a, conv_b, model_dropdown],
-        outputs=[app_state, conv_a, conv_b],
-        show_progress="hidden",
-    )
-    def pick_model(
-        app_state_scoped,
-        conv_a_scoped,
-        conv_b_scoped,
-        model_dropdown_scoped,
-        request: gr.Request,
-    ):
-        small_models = [
-            model
-            for model in config.models_extra_info
-            if model["friendly_size"] in ["XS", "S", "M"]
-        ]
-        big_models = [
-            model
-            for model in config.models_extra_info
-            if model["friendly_size"] in ["L", "XL"]
-        ]
-
-        mode = model_dropdown_scoped["mode"]
-
-        logger.info("chose mode: " + mode, extra={"request": request})
-
-
-        if mode == "big-vs-small":
-            first_model = big_models[random.randint(len(big_models))]
-            second_model = small_models[random.randint(len(small_models))]
-
-            swap = random.randint(2)
-            if swap == 0:
-                conv_a_scoped = set_conv_state(
-                    conv_a_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
-                )
-                conv_b_scoped = set_conv_state(
-                    conv_b_scoped, model_name=second_model["id"], endpoint=pick_endpoint(second_model, config.outages)
-                )
-            else:
-                conv_a_scoped = set_conv_state(
-                    conv_a_scoped, model_name=second_model["id"], endpoint=pick_endpoint(second_model, config.outages)
-                )
-                conv_b_scoped = set_conv_state(
-                    conv_b_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
-                )
-
-        elif mode == "small-models":
-            first_model = small_models[random.randint(len(small_models))]
-            small_models.remove(first_model)
-            if small_models == []:
-                # If there was just one small model :o
-                second_model = first_model
-            else:
-                second_model = small_models[random.randint(len(small_models))]
-
-            conv_a_scoped = set_conv_state(
-                    conv_a_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
-                )
-            conv_b_scoped = set_conv_state(
-                    conv_b_scoped, model_name=second_model["id"], endpoint=pick_endpoint(second_model, config.outages)
-                )
-            # Custom mode
-        elif mode == "custom":
-            custom_models_selection = model_dropdown_scoped["custom_models_selection"]
-            #  FIXME: input sanitization
-            # if any(mode[1], not in models):
-            #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
-            swap = random.randint(2)
-            # FIXME: more test and randomize
-            if len(custom_models_selection) == 1:
-                if swap == 0:
-                    conv_a_scoped = set_conv_state(
-                    conv_a_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
-                )
-                    # FIXME: chose at random except chosen
-                    # conv_b_scoped.model_name = the random one
-                else:
-                    conv_b_scoped = set_conv_state(
-                    conv_b_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
-                )
-                    # FIXME: chose at random except chosen
-                    # conv_b_scoped.model_name = the random one
-            elif len(custom_models_selection) == 2:
-
-                if swap == 0:
-                    conv_a_scoped = set_conv_state(
-                    conv_a_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
-                )
-                    conv_b_scoped = set_conv_state(
-                    conv_b_scoped, model_name=custom_models_selection[1], endpoint=pick_endpoint(custom_models_selection[1], config.outages)
-                )
-                else:
-                    conv_a_scoped = set_conv_state(
-                    conv_a_scoped, model_name=custom_models_selection[1], endpoint=pick_endpoint(custom_models_selection[1], config.outages)
-                )
-                    conv_b_scoped = set_conv_state(
-                    conv_b_scoped, model_name=custom_models_selection[0], endpoint=pick_endpoint(custom_models_selection[0], config.outages)
-                )
-            app_state_scoped.custom_models_selection = custom_models_selection
-            logger.info(
-                "custom_models_selection: " + str(custom_models_selection),
-                extra={"request": request},
-            )
-
-        else:  # assume random mode
-            model_left, model_right = get_battle_pair(
-                config.models,
-                BATTLE_TARGETS,
-                config.outages,
-                SAMPLING_WEIGHTS,
-                SAMPLING_BOOST_MODELS,
-            )
-            endpoint_left = pick_endpoint(model_left, config.outages)
-            endpoint_right = pick_endpoint(model_right, config.outages)
-            # TODO: replace by class method
-            conv_a_scoped = set_conv_state(
-                conv_a_scoped, model_name=model_left, endpoint=endpoint_left
-            )
-            conv_b_scoped = set_conv_state(
-                conv_b_scoped, model_name=model_right, endpoint=endpoint_right
-            )
-        if mode in ["random", "custom", "small-models", "big-vs-small"]:
-            app_state_scoped.mode = mode
-
-        logger.info(
-            "picked model a: " + conv_a_scoped.model_name,
-            extra={"request": request},
-        )
-        logger.info(
-            "picked model b: " + conv_b_scoped.model_name,
-            extra={"request": request},
-        )
-        return [app_state_scoped, conv_a_scoped, conv_b_scoped]
-
     @shuffle_link.click(
         inputs=[guided_cards, model_dropdown], outputs=[model_dropdown], api_name=False, show_progress="hidden"
     )
@@ -328,29 +191,44 @@ document.getElementById("fr-modal-welcome-close").blur();
             return gr.update(interactive=True)
 
     def add_first_text(
-        app_state_scoped,
-        conv_a_scoped: gr.State,
-        conv_b_scoped: gr.State,
+        app_state_scoped: AppState,
         model_dropdown_scoped: CustomDropdown,
         request: gr.Request,
-        event: gr.EventData,
+        # event: gr.EventData,
     ):
+        # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
+        # TODO: remove and use litellm outage detection w/ routing and/or just openrouter
+        config.outages = refresh_outages(
+            config.outages, controller_url=config.controller_url
+        )
 
-        conversations = [conv_a_scoped, conv_b_scoped]
-
-        text = model_dropdown_scoped["prompt_value"]
-        mode = model_dropdown_scoped["mode"]
-        # text = model_dropdown
+        text = model_dropdown_scoped.get("prompt_value", "")
+        mode = model_dropdown_scoped.get("mode", "random")
+        custom_models_selection = model_dropdown_scoped.get("custom_models_selection", [])
+        
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
-        if app_state_scoped.awaiting_responses:
-            raise (
-                gr.Error(
-                    message="Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question.",
-                    duration=10,
-                )
+
+        from languia.utils import pick_model
+        # TODO: merge pick_model and get_battle_pair...
+        first_model_name, second_model_name = pick_model(mode, custom_models_selection, outages=config.outages)
+        
+        conv_a_scoped = set_conv_state(
+                conv_a_scoped, model_name=first_model_name, endpoint=pick_endpoint(first_model_name, config.outages)
             )
+        conv_b_scoped = set_conv_state(
+                conv_b_scoped, model_name=second_model_name, endpoint=pick_endpoint(second_model_name, config.outages)
+            )
+        logger.info(
+            f"selection_modeles: {first_model_name}, {second_model_name}",
+            extra={"request": request},
+        )
+
+        logger.info(
+            f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}",
+            extra={"request": request},
+        )
 
         logger.info(
             f"msg_user: {text}",
@@ -364,10 +242,10 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
-        for i in range(config.num_sides):
-            conversations[i].messages.append(ChatMessage(role="user", content=text))
-        conv_a_scoped = conversations[0]
-        conv_b_scoped = conversations[1]
+
+        conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
+        conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
+
         app_state_scoped.awaiting_responses = True
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
@@ -671,7 +549,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         ],
         fn=add_first_text,
         api_name=False,
-        inputs=[app_state] + [conv_a] + [conv_b] + [model_dropdown],
+        inputs=[app_state, model_dropdown],
         outputs=[app_state]
         + [conv_a]
         + [conv_b]

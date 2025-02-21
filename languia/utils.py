@@ -95,12 +95,17 @@ def metadata_to_dict(metadata):
         metadata_dict.pop("generation_id", None)
     return metadata_dict
 
+
 def messages_to_dict_list(messages):
     return [
         {
             "role": message.role,
             "content": message.content,
-            **({"metadata": metadata_to_dict(message.metadata)} if metadata_to_dict(message.metadata) else {})
+            **(
+                {"metadata": metadata_to_dict(message.metadata)}
+                if metadata_to_dict(message.metadata)
+                else {}
+            ),
         }
         for message in messages
     ]
@@ -223,6 +228,132 @@ def get_battle_pair(
         return chosen_model, rival_model
     else:
         return rival_model, chosen_model
+
+
+def pick_model(mode, custom_models_selection, outages):
+    small_models = [
+        model
+        for model in config.models_extra_info
+        if model["friendly_size"] in ["XS", "S", "M"]
+    ]
+    big_models = [
+        model
+        for model in config.models_extra_info
+        if model["friendly_size"] in ["L", "XL"]
+    ]
+
+    # mode = model_dropdown_scoped["mode"]
+
+    # logger.info("chose mode: " + mode, extra={"request": request})
+
+    import random
+
+    if mode == "big-vs-small":
+        first_model = big_models[random.randint(len(big_models))]
+        second_model = small_models[random.randint(len(small_models))]
+
+        swap = random.randint(2)
+        if swap == 0:
+            model_left_name = first_model["id"]
+            model_right_name = second_model["id"]
+        else:
+            model_left_name = second_model["id"]
+            model_right_name = first_model["id"]
+
+    elif mode == "small-models":
+        first_model = small_models[random.randint(len(small_models))]
+        small_models.remove(first_model)
+        if small_models == []:
+            # If there was just one small model :o
+            second_model = first_model
+        else:
+            second_model = small_models[random.randint(len(small_models))]
+        model_left_name = first_model["id"]
+        model_right_name = second_model["id"]
+
+        # Custom mode
+    elif mode == "custom" and len(custom_models_selection) > 0:
+        # custom_models_selection = model_dropdown_scoped["custom_models_selection"]
+        #  FIXME: input sanitization
+        # if any(mode[1], not in models):
+        #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+        swap = random.randint(2)
+        # FIXME: more test and randomize
+        if len(custom_models_selection) == 1:
+            if swap == 0:
+                model_left_name = custom_models_selection[0]
+                model_right_name = (
+                    get_battle_pair()
+                )  # FIXME: chose at random except chosen
+                # conv_b_scoped.model_name = the random one
+            else:
+                conv_b_scoped = set_conv_state(
+                    conv_b_scoped,
+                    model_name=custom_models_selection[0],
+                    endpoint=pick_endpoint(custom_models_selection[0], config.outages),
+                )
+                # FIXME: chose at random except chosen
+                # conv_b_scoped.model_name = the random one
+        elif len(custom_models_selection) == 2:
+
+            if swap == 0:
+                conv_a_scoped = set_conv_state(
+                    conv_a_scoped,
+                    model_name=custom_models_selection[0],
+                    endpoint=pick_endpoint(custom_models_selection[0], config.outages),
+                )
+                conv_b_scoped = set_conv_state(
+                    conv_b_scoped,
+                    model_name=custom_models_selection[1],
+                    endpoint=pick_endpoint(custom_models_selection[1], config.outages),
+                )
+            else:
+                conv_a_scoped = set_conv_state(
+                    conv_a_scoped,
+                    model_name=custom_models_selection[1],
+                    endpoint=pick_endpoint(custom_models_selection[1], config.outages),
+                )
+                conv_b_scoped = set_conv_state(
+                    conv_b_scoped,
+                    model_name=custom_models_selection[0],
+                    endpoint=pick_endpoint(custom_models_selection[0], config.outages),
+                )
+        app_state_scoped.custom_models_selection = custom_models_selection
+        logger.info(
+            "custom_models_selection: " + str(custom_models_selection),
+            extra={"request": request},
+        )
+
+    else:  # assume random mode
+        model_left, model_right = get_battle_pair(
+            config.models,
+            BATTLE_TARGETS,
+            config.outages,
+            SAMPLING_WEIGHTS,
+            SAMPLING_BOOST_MODELS,
+        )
+        endpoint_left = pick_endpoint(model_left, config.outages)
+        endpoint_right = pick_endpoint(model_right, config.outages)
+        # TODO: replace by class method
+        conv_a_scoped = set_conv_state(
+            conv_a_scoped, model_name=model_left, endpoint=endpoint_left
+        )
+        conv_b_scoped = set_conv_state(
+            conv_b_scoped, model_name=model_right, endpoint=endpoint_right
+        )
+
+    if mode in ["random", "custom", "small-models", "big-vs-small"]:
+        app_state_scoped.mode = mode
+
+    logger.info(
+        "picked model a: " + conv_a_scoped.model_name,
+        extra={"request": request},
+    )
+    logger.info(
+        "picked model b: " + conv_b_scoped.model_name,
+        extra={"request": request},
+    )
+    return [model_left_name, model_right_name]
 
 
 def get_matomo_js(matomo_url, matomo_id):
