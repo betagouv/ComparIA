@@ -555,8 +555,18 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
             system_prompt_offset = 0
 
         msg_index = bot_msg_rank * 2 + 1 + system_prompt_offset
-        question_content = chatbot.messages[chatbot_index-1].content
-
+        # FIXME: make msg_index be sent correctly from view... needs refacto to pass both convs to view instead of a merged one
+        if role == "a":
+            question_content = chatbot[chatbot_index-1]['content']
+        elif role == "b":
+            question_content = chatbot[chatbot_index-2]['content']
+        else:
+            # if no role available: alternatively, if message before is a bot's, then it's the message even before
+            if chatbot[chatbot_index-1]['role'] == "bot":
+                question_content = chatbot[chatbot_index-2]['content']
+            else:
+                question_content = chatbot[chatbot_index-1]['content']
+        
         record_reaction(
             conversations=[conv_a, conv_b],
             model_pos=role,
