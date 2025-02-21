@@ -1,0 +1,10 @@
+FROM python:3.11
+RUN pip install presidio_analyzer
+RUN pip install presidio_anonymizer
+RUN python -m spacy download fr_core_news_sm
+RUN pip install requests datasets argparse pathlib tqdm pandas
+
+
+COPY ./utils/presidio.py .
+ENTRYPOINT ["python", "./presidio.py"]
+
