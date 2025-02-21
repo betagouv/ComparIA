@@ -163,7 +163,8 @@ def save_vote_to_db(data):
             conv_turns, 
             selected_category, 
             is_unedited_prompt, 
-            template, 
+            system_prompt_a, 
+            system_prompt_b, 
             conversation_pair_id, 
             ip, 
             session_hash, 
@@ -196,7 +197,8 @@ def save_vote_to_db(data):
             %(conv_turns)s, 
             %(selected_category)s, 
             %(is_unedited_prompt)s, 
-            %(template)s, 
+            %(system_prompt_a)s, 
+            %(system_prompt_b)s, 
             %(conversation_pair_id)s, 
             %(ip)s, 
             %(session_hash)s, 
@@ -240,6 +242,7 @@ def vote_last_response(
     request: gr.Request,
 ):
     logger = logging.getLogger("languia")
+    from languia.config import get_model_system_prompt
 
     chosen_model_name = get_chosen_model_name(which_model_radio, conversations)
     both_equal = chosen_model_name is None
@@ -264,9 +267,8 @@ def vote_last_response(
         "conv_turns": count_turns((conversations[0].messages)),
         "selected_category": category,
         "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
-        # FIXME: template is different in the 2 conversations!!!
-        "template": [],
-        "conversation_pair_id": conversations[0].conv_id
+        "system_prompt_a": get_model_system_prompt(conversations[0].model_name),
+        "system_prompt_b": get_model_system_prompt(conversations[1].model_name),        "conversation_pair_id": conversations[0].conv_id
         + "-"
         + conversations[1].conv_id,
         # Warning: IP is a PII
@@ -351,7 +353,8 @@ def upsert_reaction_to_db(data, request):
             conversation_b, 
             model_pos, 
             conv_turns, 
-            template, 
+            system_prompt_a, 
+            system_prompt_b, 
             conversation_pair_id, 
             conv_a_id, 
             conv_b_id, 
@@ -387,7 +390,8 @@ def upsert_reaction_to_db(data, request):
             %(conversation_b)s, 
             %(model_pos)s, 
             %(conv_turns)s, 
-            %(template)s, 
+            %(system_prompt_a)s, 
+            %(system_prompt_b)s, 
             %(conversation_pair_id)s, 
             %(conv_a_id)s, 
             %(conv_b_id)s, 
@@ -423,7 +427,8 @@ def upsert_reaction_to_db(data, request):
             conversation_b = EXCLUDED.conversation_b,
             model_pos = EXCLUDED.model_pos,
             conv_turns = EXCLUDED.conv_turns,
-            template = EXCLUDED.template,
+            system_prompt_a = EXCLUDED.system_prompt_a,
+            system_prompt_b = EXCLUDED.system_prompt_b,
             conv_a_id = EXCLUDED.conv_a_id,
             conv_b_id = EXCLUDED.conv_b_id,
             conversation_pair_id = EXCLUDED.conversation_pair_id,
@@ -540,7 +545,7 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         # Alternative:
         # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
         # role_index = chatbot_index % 3
-        # FIXME: don't forget to offset template messages if any
+        # FIXME: check if system prompt influences, should'nt if filtered in threeway conv?
         # TODO: save it as msg metadata instead?
         bot_msg_rank = chatbot_index // 3
         # skip rank * 2 past messages + 1 to get the bot message and not the user one
@@ -570,6 +575,7 @@ def record_reaction(
     comment,
     request: gr.Request,
 ):
+    from languia.config import get_model_system_prompt
     logger = logging.getLogger("languia")
     if model_pos not in ["a", "b"]:
         raise gr.Error(f"Weird model_pos: {model_pos}")
@@ -611,7 +617,7 @@ def record_reaction(
         "model_pos": model_pos,
         # conversation can be longer if like is on older messages
         "conv_turns": conv_turns,
-        "template": json.dumps(current_conversation.template),
+        "system_prompt": get_model_system_prompt(current_conversation.model_name),
         "conversation_pair_id": conversation_pair_id,
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,
@@ -746,6 +752,7 @@ def record_conversations(
     conversations,
     request: gr.Request,
 ):
+    from languia.config import get_model_system_prompt
     # logger = logging.getLogger("languia")
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
@@ -785,8 +792,8 @@ def record_conversations(
         "conversation_a": json.dumps(conversation_a_messages),
         "conversation_b": json.dumps(conversation_b_messages),
         "conv_turns": conv_turns,
-        # FIXME: pb, it's a template per conv
-        "template": [],
+        "system_prompt_a": get_model_system_prompt(conversations[0].model_name),
+        "system_prompt_b": get_model_system_prompt(conversations[1].model_name),
         "conversation_pair_id": conv_pair_id,
         "conv_a_id": conversations[0].conv_id,
         "conv_b_id": conversations[1].conv_id,

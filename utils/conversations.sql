@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS conversations (
     conversation_b JSONB,
     conv_turns INT,
     --     -- Number of turns in the conversation
-    template_a JSONB,
-    template_b JSONB,
+    system_prompt_a TEXT,
+    system_prompt_b TEXT,
     --     -- Template data (JSONB format)
     conversation_pair_id VARCHAR UNIQUE,
     --     -- Unique identifier for the pair of conversations
