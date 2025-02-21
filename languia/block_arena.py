@@ -36,14 +36,13 @@ class Conversation:
         messages=[],
         output_tokens=None,
         conv_id=None,
-        template=None,
         model_name=None,
         endpoint=None,
     ):
+        # FIXME: refacto to set system prompt here
         self.messages = messages
         self.output_tokens = output_tokens
         self.conv_id = conv_id
-        self.template = template
         self.model_name = model_name
         self.endpoint = endpoint
 

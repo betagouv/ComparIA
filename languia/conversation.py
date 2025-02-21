@@ -188,16 +188,11 @@ def bot_response(
 
 
 def set_conv_state(state, model_name, endpoint):
-    # self.messages = get_conversation_template(model_name)
-    state.messages = []
+    state.messages = [config.get_model_system_prompt(model_name)]
     state.output_tokens = None
 
     # TODO: get it from api if generated
     state.conv_id = uuid4().hex
-
-    # TODO: add template info? and test it
-    state.template_name = "zero_shot"
-    state.template = []
     state.model_name = model_name
     state.endpoint = endpoint
     return state

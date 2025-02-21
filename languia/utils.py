@@ -469,7 +469,9 @@ def on_endpoint_error(controller_url, api_id, reason):
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
-    for msg_a, msg_b in zip(conversations[0].messages, conversations[1].messages):
+    conv_a_messages = [message for message in conversations[0].messages if message.role != "system"]
+    conv_b_messages = [message for message in conversations[1].messages if message.role != "system"]
+    for msg_a, msg_b in zip(conv_a_messages, conv_b_messages):
         if msg_a.role == "user":
             # Could even test if msg_a == msg_b
             if msg_b.role != "user":
