@@ -67,7 +67,10 @@
                                     }}</span><span class="fr-text--xs"> milliards param.{% if
                                     model['distribution'] != "open-weights" %} (est.){%
                                     endif
-                                    %}</span></strong></p>
+                                    %}{% if
+                                        model.get('quantization', '') == "q8" %} (quantisé){%
+                                        endif
+                                        %}</span></strong></p>
                         <p class="fr-text--sm">taille du modèle
                         </p>
                     </div>
