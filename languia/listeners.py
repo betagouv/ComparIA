@@ -649,10 +649,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 )  # Simpler to repick 2 models
                 model_left, model_right = get_battle_pair(
                     config.models,
-                    BATTLE_TARGETS,
                     config.outages,
-                    SAMPLING_WEIGHTS,
-                    SAMPLING_BOOST_MODELS,
                 )
 
                 conv_a_scoped = set_conv_state(

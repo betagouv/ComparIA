@@ -119,17 +119,6 @@ with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
 
-def get_sample_weight(model, broken_endpoints, sampling_weights, sampling_boost_models):
-    if model in broken_endpoints:
-        return 0
-    # Give a 1 weight if model not in weights
-    weight = sampling_weights.get(model, 1)
-    # weight = sampling_weights.get(model, 0)
-    if model in sampling_boost_models:
-        weight *= 5
-    return weight
-
-
 def pick_endpoint(model_id, broken_endpoints):
     from languia.config import api_endpoint_info
 
@@ -193,12 +182,10 @@ class AppState:
 
 # TODO: add to broken_endpoints for next n min when detected an error
 # TODO: simplify battle targets formula
+# TODO: merge w/ pick_model
 def get_battle_pair(
     all_models,
-    battle_targets,
     broken_endpoints,
-    sampling_weights,
-    sampling_boost_models,
 ):
 
     unavailable_models = get_unavailable_models(broken_endpoints, all_models)
@@ -219,42 +206,16 @@ def get_battle_pair(
         logger.warn("Only one model configured! Making it fight with itself")
         return models[0], models[0]
 
-    # model_weights = []
-    # for model in models:
-    #     weight = get_sample_weight(
-    #         model, broken_endpoints, sampling_weights, sampling_boost_models
-    #     )
-    #     model_weights.append(weight)
-    # total_weight = np.sum(model_weights)
-    # model_weights = model_weights / total_weight
-    # chosen_idx = np.random.choice(len(models), p=model_weights)
     chosen_idx = np.random.choice(len(models), p=None)
     chosen_model = models[chosen_idx]
-    # for p, w in zip(models, model_weights):
-    #     print(p, w)
 
     rival_models = []
-    # rival_weights = []
     for model in models:
         if model == chosen_model:
             continue
-        # weight = get_sample_weight(
-        #     model, broken_endpoints, sampling_weights, sampling_boost_models
-        # )
-        # if (
-        #     weight != 0
-        #     and chosen_model in battle_targets
-        #     and model in battle_targets[chosen_model]
-        # ):
-        #     # boost to 50% chance
-        #     weight = total_weight / len(battle_targets[chosen_model])
         rival_models.append(model)
-        # rival_weights.append(weight)
-    # for p, w in zip(rival_models, rival_weights):
-    #     print(p, w)
-    # rival_weights = rival_weights / np.sum(rival_weights)
+
     rival_idx = np.random.choice(len(rival_models), p=None)
-    # rival_idx = np.random.choice(len(rival_models), p=rival_weights)
     rival_model = rival_models[rival_idx]
 
     swap = np.random.randint(2)
