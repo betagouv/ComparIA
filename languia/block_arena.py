@@ -9,7 +9,7 @@ import gradio as gr
 
 # from gradio_modal import Modal
 
-from languia.utils import header_html, welcome_modal_html, footer_html
+from languia.utils import header_html, welcome_modal_html, footer_html, AppState
 
 from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
 from custom_components.customdropdown.backend.gradio_customdropdown import (
@@ -46,21 +46,6 @@ class Conversation:
         self.model_name = model_name
         self.endpoint = endpoint
 
-
-class AppState:
-    def __init__(
-        self, awaiting_responses=False, model_left=None, model_right=None, category=None
-    , custom_models_selection =None, mode="random"):
-        self.awaiting_responses = awaiting_responses
-        self.model_left = model_left
-        self.model_right = model_right
-        self.category = category
-        self.mode = mode
-        self.custom_models_selection = custom_models_selection
-        self.reactions = []
-
-    # def to_dict(self) -> dict:
-    #     return self.__dict__.copy()
 
 
 with gr.Blocks(

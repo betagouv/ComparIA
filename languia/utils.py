@@ -176,6 +176,21 @@ def get_unavailable_models(broken_endpoints, all_model_ids):
     return unavailable_models
 
 
+class AppState:
+    def __init__(
+        self, awaiting_responses=False, model_left=None, model_right=None, category=None
+    , custom_models_selection =None, mode="random"):
+        self.awaiting_responses = awaiting_responses
+        self.model_left = model_left
+        self.model_right = model_right
+        self.category = category
+        self.mode = mode
+        self.custom_models_selection = custom_models_selection
+        self.reactions = []
+
+    # def to_dict(self) -> dict:
+    #     return self.__dict__.copy()
+
 # TODO: add to broken_endpoints for next n min when detected an error
 # TODO: simplify battle targets formula
 def get_battle_pair(

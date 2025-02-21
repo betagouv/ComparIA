@@ -40,6 +40,7 @@ from time import sleep
 import openai
 
 from languia.utils import (
+    AppState,
     get_ip,
     get_matomo_tracker_from_cookies,
     get_battle_pair,
