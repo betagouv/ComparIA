@@ -70,7 +70,12 @@ def get_chosen_model_name(which_model_radio, conversations):
 
 
 def count_turns(messages):
-    return len(messages) // 2
+    
+    if messages[0].role == "system":
+        return (len(messages)-1) // 2
+    else:
+        return len(messages) // 2
+        
 
 
 def is_unedited_prompt(opening_msg, category):
