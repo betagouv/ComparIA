@@ -252,7 +252,12 @@ def vote_last_response(
     t = datetime.datetime.now()
 
     model_pair_name = sorted(filter(None, [conversations[0].model_name, conversations[1].model_name]))
-    opening_msg = conversations[0].messages[0].content
+
+    if conversations[0].messages[0].role == "system":
+        opening_msg = conversations[0].messages[1].content
+    else:
+        opening_msg = conversations[0].messages[0].content
+    
     data = {
         "timestamp": str(t),
         "model_a_name": conversations[0].model_name,
@@ -614,7 +619,12 @@ def record_reaction(
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
 
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
-    opening_msg = conversations[0].messages[0].content
+
+    if conversations[0].messages[0].role == "system":
+        opening_msg = conversations[0].messages[1].content
+    else:
+        opening_msg = conversations[0].messages[0].content
+
     conv_turns = count_turns((conversations[0].messages))
     t = datetime.datetime.now()
     refers_to_model = current_conversation.model_name
@@ -781,7 +791,12 @@ def record_conversations(
 
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
 
-    opening_msg = conversations[0].messages[0].content
+
+    if conversations[0].messages[0].role == "system":
+        opening_msg = conversations[0].messages[1].content
+    else:
+        opening_msg = conversations[0].messages[0].content
+    
     conv_turns = count_turns((conversations[0].messages))
     t = datetime.datetime.now()
 
