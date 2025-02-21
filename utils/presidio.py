@@ -1,12 +1,10 @@
-# Presidio settings
-LANGUAGE = "fr"
+
 import json
 import requests
 from datasets import load_dataset
 import argparse
 from pathlib import Path
 import time
-import logging
 from datetime import datetime
 from tqdm import tqdm
 import pandas as pd
@@ -15,10 +13,10 @@ import logging as logger
 
 class Config:
     # API endpoints
-    ANALYZE_URL = "http://localhost:5002/analyze"
-    ANONYMIZE_URL = "http://localhost:5001/anonymize"
-    LANGUAGE = "en"
-    
+    # ANALYZE_URL = "http://localhost:5002/analyze"
+    # ANONYMIZE_URL = "http://localhost:5001/anonymize"
+    # Presidio settings
+    LANGUAGE = "fr"
     # Dataset settings
     BATCH_SIZE = 50
     DEFAULT_SAMPLE_SIZE = 500
@@ -90,21 +88,95 @@ class PrivacyClassifier:
                     time.sleep(Config.RETRY_DELAY)
         return None
 
-    def analyze_text(self, text: str) -> Optional[List[dict]]:
-        payload = {
-            "text": text,
-            "language": Config.LANGUAGE
-        }
-        result = self._call_api(Config.ANALYZE_URL, payload)
-        return result if result else None
+# from presidio_analyzer.nlp_engine import NlpEngineProvider
+# nlp_config= {
+#             "nlp_engine_name": "spacy",
+#             "models": [
+#                 {"lang_code": "no", "model_name": "nb_core_news_md"},
+#                 {"lang_code": "en", "model_name": "en_core_web_md"},
+#             ],
+#         }
+# provider = NlpEngineProvider(nlp_configuration=nlp_config)
 
-    def anonymize_text(self, text: str, analyzer_results: List[dict]) -> Optional[str]:
-        payload = {
-            "text": text,
-            "analyzer_results": analyzer_results
+from presidio_analyzer import AnalyzerEngine, BatchAnalyzerEngine, RecognizerResult, DictAnalyzerResult
+from presidio_anonymizer import AnonymizerEngine, BatchAnonymizerEngine
+from presidio_anonymizer.entities import EngineResult
+
+# Dataset settings
+BATCH_SIZE = 50  # Size of batches for processing
+DEFAULT_SAMPLE_SIZE = 5  # None means process all entries
+SAVE_INTERVAL = 50  # Save results every N questions
+
+class PrivacyStats:
+    def __init__(self):
+        self.total_processed = 0
+        self.pii_detected = 0
+        self.non_pii = 0
+        self.errors = 0
+        self.start_time = datetime.now()
+        self.response_times = []
+        self.last_save_point = 0
+
+        self.analyzer = AnalyzerEngine()
+        self.batch_analyzer = BatchAnalyzerEngine(analyzer_engine=self.analyzer)
+        self.anonymizer = AnonymizerEngine()
+        self.stats = PrivacyStats()
+        self.output_dir = Path("results")
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+
+    def add_result(self, pii_present: bool, time_taken: float):
+        self.total_processed += 1
+        if pii_present:
+            self.pii_detected += 1
+        else:
+            self.non_pii += 1
+        self.response_times.append(time_taken)
+
+    def add_error(self):
+        self.errors += 1
+        self.total_processed += 1
+
+    def should_save(self) -> bool:
+        return (self.total_processed - self.last_save_point) >= Config.SAVE_INTERVAL
+
+    def update_save_point(self):
+        self.last_save_point = self.total_processed
+
+    def get_summary(self) -> Dict:
+        end_time = datetime.now()
+        return {
+            "total_processed": self.total_processed,
+            "pii_detected": self.pii_detected,
+            "non_pii": self.non_pii,
+            "error_count": self.errors,
+            "avg_response_time": (sum(self.response_times) / len(self.response_times)) if self.response_times else 0,
+            "total_time": str(end_time - self.start_time),
+            "timestamp": end_time.isoformat()
         }
-        result = self._call_api(Config.ANONYMIZE_URL, payload)
-        return result.get("text") if result else None
+
+
+    def analyze_text(self, text: str) -> List:
+        return self.analyzer.analyze(text=text, language=Config.LANGUAGE)
+
+    def anonymize_text(self, text: str, recognizer_results: List) -> str:
+        return self.anonymizer.anonymize(text=text, analyzer_results=recognizer_results).text
+
+    # def analyze_text(self, text: str) -> Optional[List[dict]]:
+    #     payload = {
+    #         "text": text,
+    #         "language": Config.LANGUAGE
+    #     }
+    #     result = self._call_api(Config.ANALYZE_URL, payload)
+    #     return result if result else None
+
+    # def anonymize_text(self, text: str, analyzer_results: List[dict]) -> Optional[str]:
+    #     payload = {
+    #         "text": text,
+    #         "analyzer_results": analyzer_results
+    #     }
+    #     result = self._call_api(Config.ANONYMIZE_URL, payload)
+    #     return result.get("text") if result else None
 
     def process_batch(self, batch: List[Dict]) -> List[Dict]:
         results = []
@@ -158,7 +230,7 @@ class PrivacyClassifier:
             ds = load_dataset("ministere-culture/comparia-questions", token=hf_token)
             total_available = len(ds['train'])
 
-            num_samples = num_samples or DEFAULT_SAMPLE_SIZE or total_available
+            num_samples = num_samples or Config.DEFAULT_SAMPLE_SIZE or total_available
             num_samples = min(num_samples, total_available)
 
             logger.info(f"Processing {num_samples} out of {total_available} questions")
