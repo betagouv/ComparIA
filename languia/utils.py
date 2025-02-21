@@ -191,63 +191,41 @@ class AppState:
     # def to_dict(self) -> dict:
     #     return self.__dict__.copy()
 
-
-# TODO: add to broken_endpoints for next n min when detected an error
-# TODO: simplify battle targets formula
-# TODO: merge w/ pick_model
-def get_battle_pair(
+def choose_among(
     all_models,
-    broken_endpoints,
+    excluded,
 ):
-
-    unavailable_models = get_unavailable_models(broken_endpoints, all_models)
-    models = [model for model in all_models if model not in unavailable_models]
+    models = [model for model in all_models if model not in excluded]
     logger = logging.getLogger("languia")
     if len(models) == 0:
-        logger.critical("Model list doesn't contain any model")
+        logger.warning("Couldn't respect exclusion prefs")
         # Maybe sleep then kill container?
-        raise gr.Error(
-            duration=0,
-            message="Le comparateur a un problème et aucun des modèles n'est disponible, veuillez revenir plus tard.",
-        )
-        # os.kill(os.getpid(), signal.SIGINT)
-        # parent = psutil.Process(psutil.Process(os.getpid()).ppid())
-        # parent.kill()
 
-    if len(models) == 1:
-        logger.warn("Only one model configured! Making it fight with itself")
-        return models[0], models[0]
+        if len(all_models) == 0:
+            logger.critical("No model to choose from")
+            import gradio as gr
+            raise gr.Error(
+                duration=0,
+                message="Le comparateur a un problème et aucun des modèles n'est disponible, veuillez revenir plus tard.",
+            )
+        else:
+            models = all_models
 
     chosen_idx = np.random.choice(len(models), p=None)
     chosen_model = models[chosen_idx]
+    return chosen_model
 
-    rival_models = []
-    for model in models:
-        if model == chosen_model:
-            continue
-        rival_models.append(model)
-
-    rival_idx = np.random.choice(len(rival_models), p=None)
-    rival_model = rival_models[rival_idx]
-
-    swap = np.random.randint(2)
-    if swap == 0:
-        return chosen_model, rival_model
-    else:
-        return rival_model, chosen_model
-
-
-def pick_model(mode, custom_models_selection, outages):
-    from languia import config
+def pick_models(mode, custom_models_selection, outages):
+    from languia.config import models_extra_info
 
     small_models = [
         model
-        for model in config.models_extra_info
+        for model in models_extra_info
         if model["friendly_size"] in ["XS", "S", "M"] and model["id"] not in outages
     ]
     big_models = [
         model
-        for model in config.models_extra_info
+        for model in models_extra_info
         if model["friendly_size"] in ["L", "XL"] and model["id"] not in outages
     ]
 
@@ -275,12 +253,11 @@ def pick_model(mode, custom_models_selection, outages):
         #  FIXME: input sanitization
         # if any(mode[1], not in models):
         #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
-        swap = random.randint(2)
 
         if len(custom_models_selection) == 1:
             model_left_name = custom_models_selection[0]
             model_right_name = choose_among(
-                models=config.models_extra_info,
+                models=models_extra_info,
                 excluded=[custom_models_selection[0]] + outages,
             )
 
@@ -292,10 +269,10 @@ def pick_model(mode, custom_models_selection, outages):
 
     else:  # assume random mode
         model_left_name = choose_among(
-                models=config.models_extra_info,
+                models=models_extra_info,
                 excluded=outages)
         model_right_name = choose_among(
-                models=config.models_extra_info,
+                models=models_extra_info,
                 excluded=[model_left_name] + outages)
     
     swap = randint(2)

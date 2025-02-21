@@ -42,7 +42,7 @@ from languia.utils import (
     AppState,
     get_ip,
     get_matomo_tracker_from_cookies,
-    get_battle_pair,
+    pick_models,
     refresh_outages,
     on_endpoint_error,
     gen_prompt,
@@ -85,8 +85,7 @@ def register_listeners():
 
     # Step 0
 
-    def enter_arena(request: gr.Request
-    ):
+    def enter_arena(request: gr.Request):
         # Refresh on picking model? Do it async? Should do it globally and async...
         config.outages = refresh_outages(
             config.outages, controller_url=config.controller_url
@@ -161,7 +160,10 @@ document.getElementById("fr-modal-welcome-close").blur();
         }
 
     @shuffle_link.click(
-        inputs=[guided_cards, model_dropdown], outputs=[model_dropdown], api_name=False, show_progress="hidden"
+        inputs=[guided_cards, model_dropdown],
+        outputs=[model_dropdown],
+        api_name=False,
+        show_progress="hidden",
     )
     def shuffle_prompt(guided_cards, model_dropdown_scoped, request: gr.Request):
         prompt = gen_prompt(guided_cards)
@@ -193,6 +195,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         # event: gr.EventData,
     ):
+
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
         # TODO: remove and use litellm outage detection w/ routing and/or just openrouter
         config.outages = refresh_outages(
@@ -201,22 +204,36 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = model_dropdown_scoped.get("prompt_value", "")
         mode = model_dropdown_scoped.get("mode", "random")
-        custom_models_selection = model_dropdown_scoped.get("custom_models_selection", [])
-        
+        custom_models_selection = model_dropdown_scoped.get(
+            "custom_models_selection", []
+        )
+
+        logger.info("chose mode: " + mode, extra={"request": request})
+        logger.info(
+            "custom_models_selection: " + str(custom_models_selection),
+            extra={"request": request},
+        )
         # Check if "Enter" pressed and no text or still awaiting response and return early
         if text == "":
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
-        from languia.utils import pick_model
-        # TODO: merge pick_model and get_battle_pair...
-        first_model_name, second_model_name = pick_model(mode, custom_models_selection, outages=config.outages)
-        
+        from languia.utils import pick_models
+
+        first_model_name, second_model_name = pick_models(
+            mode, custom_models_selection, outages=config.outages
+        )
+
         conv_a_scoped = set_conv_state(
-                conv_a_scoped, model_name=first_model_name, endpoint=pick_endpoint(first_model_name, config.outages)
-            )
+            conv_a_scoped,
+            model_name=first_model_name,
+            endpoint=pick_endpoint(first_model_name, config.outages),
+        )
         conv_b_scoped = set_conv_state(
-                conv_b_scoped, model_name=second_model_name, endpoint=pick_endpoint(second_model_name, config.outages)
-            )
+            conv_b_scoped,
+            model_name=second_model_name,
+            endpoint=pick_endpoint(second_model_name, config.outages),
+        )
+
         logger.info(
             f"selection_modeles: {first_model_name}, {second_model_name}",
             extra={"request": request},
@@ -374,7 +391,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
     ):
         conversations = [conv_a_scoped, conv_b_scoped]
-        pos = ["a", "b"]
 
         try:
             gen_a = bot_response(
@@ -436,8 +452,8 @@ document.getElementById("fr-modal-welcome-close").blur();
             if os.getenv("SENTRY_DSN"):
 
                 # with sentry_sdk.configure_scope() as scope:
-                    # Set the fingerprint based on the message content
-                    # scope.fingerprint = [e]
+                # Set the fingerprint based on the message content
+                # scope.fingerprint = [e]
                 sentry_sdk.capture_exception(e)
 
             logger.exception(
@@ -478,7 +494,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 logger.debug(
                     "refreshed outage models:" + str(config.outages)
                 )  # Simpler to repick 2 models
-                model_left, model_right = get_battle_pair(
+                model_left, model_right = pick_models(
                     config.models,
                     config.outages,
                 )
@@ -532,15 +548,15 @@ document.getElementById("fr-modal-welcome-close").blur();
             show_send_btn_and_textbox = False
 
         # don't enable conclude if only one user msg
-        if len(conv_a_scoped.messages) in [0,1]:
+        if len(conv_a_scoped.messages) in [0, 1]:
             enable_conclude_btn = False
         else:
             enable_conclude_btn = True
         return {
-                textbox: gr.update(visible=show_send_btn_and_textbox),
-                conclude_btn: gr.update(interactive=enable_conclude_btn),
-                send_btn: gr.update(visible=show_send_btn_and_textbox),
-            }
+            textbox: gr.update(visible=show_send_btn_and_textbox),
+            conclude_btn: gr.update(interactive=enable_conclude_btn),
+            send_btn: gr.update(visible=show_send_btn_and_textbox),
+        }
 
     gr.on(
         triggers=[
@@ -657,7 +673,6 @@ setTimeout(() => {
 }""",
         show_progress="hidden",
     )
-
 
     def force_vote_or_reveal(
         app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
