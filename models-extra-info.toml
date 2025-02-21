@@ -150,8 +150,8 @@ friendly_size = "XL"
 distribution = "open-weights"
 license = "MIT"
 conditions = "free"
-excerpt = "Modèle phare de la société chinoise DeepSeek, DeepSeek R1 est un modèle basé sur Deepseek V3 qui élabore un raisonnement avant de formuler une réponse."
-description = "Modèle phare de la société chinoise DeepSeek, DeepSeek R1 est un modèle qui élabore un raisonnement avant de formuler une réponse. DeepSeek R1 est basé sur Deepseek V3, qui possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+excerpt = "Sorti en janvier 2025, ce modèle est basé sur Deepseek V3 qui élabore un raisonnement avant de formuler une réponse."
+description = "Sorti en janvier 2025, ce modèle phare de la société chinoise DeepSeek, est un modèle qui élabore un raisonnement avant de formuler une réponse. DeepSeek R1 est basé sur Deepseek V3, qui possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 
 ["deepseek-v3-chat"]
 url = "https://huggingface.co/deepseek-ai/DeepSeek-V3"
@@ -164,8 +164,8 @@ friendly_size = "XL"
 distribution = "open-weights"
 license = "MIT"
 conditions = "free"
-excerpt = "Modèle phare de la société chinoise DeepSeek, DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
-description = "Modèle phare de la société chinoise DeepSeek, et comparable aux meilleurs modèles propriétaires à sa sortie, DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+excerpt = "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+description = "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 
 ["gemini-1.5-pro-002"]
 url = "https://ai.google.dev/gemini-api"
