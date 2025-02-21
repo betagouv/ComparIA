@@ -49,19 +49,19 @@ QUESTIONS_QUERY = "SELECT refresh_matview_questions(); SELECT * FROM matview_que
 # Needs additional priv.
 # QUESTIONS_QUERY = "REFRESH MATERIALIZED VIEW matview_questions; SELECT * FROM matview_questions;"
 
-QUESTIONS_ONLY_QUERY = """SELECT q.question_id,
-        q.timestamp,
-        q.question_content,
-        q.conv_turns,
-        q.template,
-        q.conversation_pair_id,
-        q.session_hash,
-        q.visitor_id,
-        q.ip,
-        q.country,
-        q.city,
-        q.msg_rank
-   FROM matview_questions q;"""
+# QUESTIONS_ONLY_QUERY = """SELECT q.question_id,
+#         q.timestamp,
+#         q.question_content,
+#         q.conv_turns,
+#         q.template,
+#         q.conversation_pair_id,
+#         q.session_hash,
+#         q.visitor_id,
+#         q.ip,
+#         q.country,
+#         q.city,
+#         q.msg_rank
+#    FROM matview_questions q;"""
 
 ip_map = pd.read_sql_query("SELECT * FROM ip_map", conn)
 
@@ -181,7 +181,7 @@ def main():
         "reactions": None,  # Default fetch all
         # "conversations": CONV_QUERY,
         "questions": QUESTIONS_QUERY,
-        "questions_only": QUESTIONS_ONLY_QUERY,
+        # "questions_only": QUESTIONS_ONLY_QUERY,
     }
 
     for table, query in queries.items():
@@ -197,7 +197,7 @@ def main():
         'votes': 'comparia-preferences',
         'reactions': 'comparia-preferences',
         'questions': 'comparia-questions',
-        'questions_only': 'comparia-questions'
+        # 'questions_only': 'comparia-questions'
     }
 
     dataset_dir = 'datasets'
