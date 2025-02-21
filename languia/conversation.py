@@ -19,6 +19,25 @@ import logging
 
 from uuid import uuid4
 
+class Conversation:
+    def __init__(
+        self,
+        messages=[],
+        output_tokens=None,
+        model_name=None,
+    ):
+
+        system_prompt = config.get_model_system_prompt(model_name)
+        if system_prompt:
+            self.messages = [ChatMessage(role="system",content=system_prompt)] + messages
+        else:
+            self.messages = messages
+        self.output_tokens = output_tokens
+        self.conv_id = str(uuid4())
+        self.model_name = model_name
+        self.endpoint = pick_endpoint(model_name)
+
+
 logger = logging.getLogger("languia")
 
 
@@ -186,17 +205,3 @@ def bot_response(
 
     yield (state)
 
-
-def set_conv_state(state, model_name, endpoint):
-    system_prompt = config.get_model_system_prompt(model_name)
-    if system_prompt:
-        state.messages = [ChatMessage(role="system",content=system_prompt)]
-    else:
-        state.messages = []
-    state.output_tokens = None
-
-    # TODO: get it from api if generated
-    state.conv_id = uuid4().hex
-    state.model_name = model_name
-    state.endpoint = endpoint
-    return state

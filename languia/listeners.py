@@ -62,7 +62,7 @@ from languia.config import (
 
 # from fastchat.model.model_adapter import get_conversation_template
 
-from languia.conversation import bot_response, set_conv_state
+from languia.conversation import bot_response, Conversation
 
 
 import gradio as gr
@@ -223,15 +223,12 @@ document.getElementById("fr-modal-welcome-close").blur();
             mode, custom_models_selection, outages=config.outages
         )
 
-        conv_a_scoped = set_conv_state(
-            conv_a_scoped,
+        conv_a_scoped = Conversation(
             model_name=first_model_name,
-            endpoint=pick_endpoint(first_model_name, config.outages),
         )
-        conv_b_scoped = set_conv_state(
+        conv_b_scoped = Conversation(
             conv_b_scoped,
             model_name=second_model_name,
-            endpoint=pick_endpoint(second_model_name, config.outages),
         )
 
         logger.info(
