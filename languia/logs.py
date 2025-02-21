@@ -542,17 +542,27 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         # Alternative:
         # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
         # role_index = chatbot_index % 3
-        # FIXME: check if system prompt influences, should'nt if filtered in threeway conv?
+        # system prompt doesn't influence msg_rank, only msg_index, should'nt if filtered in threeway conv?
         # TODO: save it as msg metadata instead?
         bot_msg_rank = chatbot_index // 3
-        # skip rank * 2 past messages + 1 to get the bot message and not the user one
-        msg_index = bot_msg_rank * 2 + 1
+        # FIXME: make msg_index be sent correctly from view... needs refacto to pass both convs to view instead of a merged one
+        # skip rank * 2 past messages + 1 to get the bot message and not the user one + 1 if system prompt
+        if role == "a" and conv_a.messages[0].role == "system":
+            system_prompt_offset = 1
+        elif role == "b" and conv_b.messages[0].role == "system":
+            system_prompt_offset = 1
+        else:
+            system_prompt_offset = 0
+
+        msg_index = bot_msg_rank * 2 + 1 + system_prompt_offset
+        question_content = chatbot.messages[chatbot_index-1].content
 
         record_reaction(
             conversations=[conv_a, conv_b],
             model_pos=role,
             msg_index=msg_index,
             chatbot_index=chatbot_index,
+            question_content=question_content,
             response_content=data["value"],
             reaction=reaction,
             prefs=data.get("prefs", []),
@@ -564,8 +574,10 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
 def record_reaction(
     conversations,
     model_pos,
+    # FIXME: msg_index is wrong because of formula in sync_reactions
     msg_index,
     chatbot_index,
+    question_content,
     response_content,
     reaction,
     prefs,
@@ -598,7 +610,7 @@ def record_reaction(
     refers_to_model = current_conversation.model_name
     # rank begins at zero
     msg_rank = msg_index // 2
-    question_content = current_conversation.messages[msg_rank * 2].content
+
     conversation_pair_id = conversations[0].conv_id + "-" + conversations[1].conv_id
     question_id = conversation_pair_id + "-" + str(msg_rank)
     data = {
