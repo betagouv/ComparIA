@@ -547,7 +547,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             model_dropdown.submit,
         ],
         fn=add_first_text,
-        api_name=False,
+        # api_name=False,
         inputs=[app_state, model_dropdown],
         outputs=[app_state]
         + [conv_a]
