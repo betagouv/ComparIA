@@ -243,9 +243,6 @@ models_extra_info = [
 
 models_extra_info.sort(key=lambda x: x["simple_name"])
 
-# TODO: integrate into extra info? Config file?
-models_system_prompts = {"chocolatine-2-14b-instruct-v2.0.3": {"Tu es un assistant IA serviable et bienveillant. Tu fais des réponses concises et précises."}}
-
 headers = {"User-Agent": "FastChat Client"}
 
 if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
@@ -256,11 +253,13 @@ else:
 enable_moderation = False
 use_remote_storage = False
 
+
 def get_model_system_prompt(model_name):
     if "chocolatine" in model_name or "lfm-40b" in model_name:
         return "Tu es un assistant IA serviable et bienveillant. Tu fais des réponses concises et précises."
     else:
         return None
+
 
 total_guided_cards_choices = [
     (
@@ -326,14 +325,14 @@ random.shuffle(total_guided_cards_choices)
 guided_cards_choices = total_guided_cards_choices[0:3]
 
 ia_summit_choice = (
-        """<div class="mobile-flex degrade">
+    """<div class="mobile-flex degrade">
             <img class="md-visible fr-mb-md-3w fr-mr-1w" width=110 height=35 src="../assets/iasummit.png" alt="Sommet pour l'action sur l'IA" />
             <img class="md-hidden fr-mb-md-3w fr-mr-1w" width=35 height=35 src="../assets/iasummit-small.png" alt="Sommet pour l'action sur l'IA" />
             <span class="sommet-description">Prompts issus de la consultation citoyenne sur l’IA&nbsp; <a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="sommetia"></a>
         </span>                      
         </div>
         <span class="fr-tooltip fr-placement" id="sommetia" role="tooltip" aria-hidden="true">Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies.</span>""",
-        "iasummit"
+    "iasummit",
 )
 
 

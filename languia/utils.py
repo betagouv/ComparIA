@@ -74,21 +74,11 @@ def get_chosen_model_name(which_model_radio, conversations):
 
 
 def count_turns(messages):
-    
+
     if messages[0].role == "system":
-        return (len(messages)-1) // 2
+        return (len(messages) - 1) // 2
     else:
         return len(messages) // 2
-        
-
-
-def get_model_template(model_name):
-    from languia.config import models_system_prompts
-
-    if model_name in models_system_prompts:
-        return [ChatMessage(role="system", content=models_system_prompts[model_name])]
-    else:
-        return []
 
 
 def is_unedited_prompt(opening_msg, category):
@@ -182,8 +172,8 @@ def get_unavailable_models(broken_endpoints):
     from languia.config import models_extra_info
 
     for model in models_extra_info:
-        if get_endpoints(model['id'], broken_endpoints) == []:
-            unavailable_models.append(model['id'])
+        if get_endpoints(model["id"], broken_endpoints) == []:
+            unavailable_models.append(model["id"])
     logger.debug(f"unavailable_models: {unavailable_models}")
     return unavailable_models
 
@@ -362,7 +352,7 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
                 model["params"] = size_to_params[model["friendly_size"]]
 
         if model.get("quantization", None) == "q8":
-            model["required_ram"] = model["params"]*2
+            model["required_ram"] = model["params"] * 2
         else:
             # We suppose from q4 to fp16
             model["required_ram"] = model["params"]
@@ -536,8 +526,12 @@ def on_endpoint_error(controller_url, api_id, reason):
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
-    conv_a_messages = [message for message in conversations[0].messages if message.role != "system"]
-    conv_b_messages = [message for message in conversations[1].messages if message.role != "system"]
+    conv_a_messages = [
+        message for message in conversations[0].messages if message.role != "system"
+    ]
+    conv_b_messages = [
+        message for message in conversations[1].messages if message.role != "system"
+    ]
     for msg_a, msg_b in zip(conv_a_messages, conv_b_messages):
         if msg_a.role == "user":
             # Could even test if msg_a == msg_b
