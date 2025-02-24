@@ -6,7 +6,7 @@ type Item = string | number;
 
 export interface ModeAndPromptData {
 	prompt_value: string;
-	mode: "random" | "custom" | "big-vs-small" | "small-models";
+	mode: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning";
 	custom_models_selection: string[];
 }
 

@@ -585,6 +585,11 @@ def mode_banner_html(mode):
             "Un petit et un grand modèle choisis au hasard",
             "ruler.svg",
         ],
+        "reasoning": [
+            "Mode Raisonnement",
+            "Deux modèles avec raisonnement intégré",
+            "chip.svg",
+        ],
         "random": [
             "Mode Aléatoire",
             "Deux modèles choisis au hasard parmi toute la liste",

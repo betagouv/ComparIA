@@ -20,7 +20,7 @@
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let disabled = false;
-	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
+	export let mode: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning" =
 		"random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
 	export let custom_models_selection: string[] = []; // Default to an empty list
@@ -30,7 +30,7 @@
 	// Combine all into one value object based on mode and other properties
 	export let value: {
 		prompt_value: string;
-		mode: "random" | "custom" | "big-vs-small" | "small-models";
+		mode: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning";
 		custom_models_selection: string[];
 	} = {
 		prompt_value: "",
@@ -40,10 +40,11 @@
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
+	import Chip from "./shared/chip.svelte";
 	import Dice from "./shared/dice.svelte";
 
 	type Choice = {
-		value: "random" | "custom" | "big-vs-small" | "small-models";
+		value: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning";
 		label: string;
 		alt_label: string;
 		icon: any;
@@ -71,6 +72,13 @@
 			alt_label: "Petit contre grand modèle",
 			icon: Ruler, // Replace with your icon class or SVG
 			description: "Comparez leur performance",
+		},
+		{
+			value: "reasoning",
+			label: "Mode raisonnement",
+			alt_label: "Modèles avec raisonnement",
+			icon: Chip, // Replace with your icon class or SVG
+			description: "Des modèles avec raisonnement intégré",
 		},
 
 		{

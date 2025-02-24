@@ -1,8 +1,7 @@
 <script lang="ts">
 	export let handle_option_selected;
 	// TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
-	export let mode: "random" | "custom" | "big-vs-small" | "small-models" =
-		"random";
+	export let mode;
 		
 	export let disabled = false;
 
