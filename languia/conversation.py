@@ -12,17 +12,40 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from languia.utils import ContextTooLongError, EmptyResponseError
+from languia.utils import ContextTooLongError, EmptyResponseError, pick_endpoint
 from languia import config
 
 import logging
 
 from uuid import uuid4
 
+
+class Conversation:
+    def __init__(
+        self,
+        messages=[],
+        model_name=None,
+    ):
+
+        system_prompt = config.get_model_system_prompt(model_name)
+        if system_prompt:
+            self.messages = [
+                ChatMessage(role="system", content=system_prompt)
+            ] + messages
+        else:
+            self.messages = messages
+        self.output_tokens = None
+        self.conv_id = str(uuid4()).replace("-", "")
+        self.model_name = model_name
+        self.endpoint = pick_endpoint(model_name)
+
+
 logger = logging.getLogger("languia")
 
 
-def update_last_message(messages, text, position, output_tokens=None,generation_id=None,duration=0):
+def update_last_message(
+    messages, text, position, output_tokens=None, generation_id=None, duration=0
+):
 
     metadata = {"bot": position}
     if output_tokens:
@@ -74,22 +97,34 @@ def bot_response(
 
     for endpoint in config.api_endpoint_info:
         if "model_id" not in endpoint:
-            logger.warning(f"'model_id' is not defined in endpoint: {endpoint}.", extra={"request": request})
+            logger.warning(
+                f"'model_id' is not defined in endpoint: {endpoint}.",
+                extra={"request": request},
+            )
         elif "api_id" not in endpoint:
-            logger.warning(f"'api_id' is not defined in endpoint: {endpoint}.", extra={"request": request})
+            logger.warning(
+                f"'api_id' is not defined in endpoint: {endpoint}.",
+                extra={"request": request},
+            )
 
         else:
             if (endpoint.get("model_id")) == state.model_name:
                 model_api_endpoints.append(endpoint)
 
     if model_api_endpoints == []:
-        logger.critical("No endpoint for model name: " + str(state.model_name), extra={"request": request})
+        logger.critical(
+            "No endpoint for model name: " + str(state.model_name),
+            extra={"request": request},
+        )
         raise Exception("No endpoint for model name: " + str(state.model_name))
 
     if state.endpoint is None:
         state.endpoint = random.choice(model_api_endpoints)
         endpoint_name = state.endpoint["api_id"]
-        logger.info(f"picked_endpoint: {endpoint_name} for {state.model_name}", extra={"request": request})
+        logger.info(
+            f"picked_endpoint: {endpoint_name} for {state.model_name}",
+            extra={"request": request},
+        )
 
     endpoint = state.endpoint
     endpoint_name = endpoint["api_id"]
@@ -104,7 +139,7 @@ def bot_response(
 
     start_tstamp = time.time()
     # print("start: " + str(start_tstamp))
-    
+
     messages_dict = []
 
     for message in state.messages:
@@ -114,9 +149,7 @@ def bot_response(
             raise TypeError(f"Expected ChatMessage object, got {type(message)}")
 
     litellm_model_name = (
-        endpoint.get("api_type", "openai")
-        + "/"
-        + endpoint["model_name"]
+        endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
     )
     stream_iter = litellm_stream_iter(
         model_name=litellm_model_name,
@@ -149,17 +182,22 @@ def bot_response(
                 text=output,
                 position=position,
                 output_tokens=output_tokens,
-                generation_id=generation_id
+                generation_id=generation_id,
             )
             yield (state)
 
     if generation_id:
-        logger.info(f"generation_id: {generation_id} for {litellm_model_name}", extra={"request": request})
+        logger.info(
+            f"generation_id: {generation_id} for {litellm_model_name}",
+            extra={"request": request},
+        )
 
     stop_tstamp = time.time()
     # print("stop: " + str(stop_tstamp))
     duration = stop_tstamp - start_tstamp
-    logger.debug(f"duration for {generation_id}: {str(duration)}", extra={"request": request})
+    logger.debug(
+        f"duration for {generation_id}: {str(duration)}", extra={"request": request}
+    )
 
     output = data.get("text")
     if not output or output == "":
@@ -182,22 +220,6 @@ def bot_response(
         position=position,
         output_tokens=output_tokens,
         duration=duration,
-
     )
 
     yield (state)
-
-
-def set_conv_state(state, model_name, endpoint):
-    system_prompt = config.get_model_system_prompt(model_name)
-    if system_prompt:
-        state.messages = [ChatMessage(role="system",content=system_prompt)]
-    else:
-        state.messages = []
-    state.output_tokens = None
-
-    # TODO: get it from api if generated
-    state.conv_id = uuid4().hex
-    state.model_name = model_name
-    state.endpoint = endpoint
-    return state

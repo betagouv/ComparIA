@@ -7,6 +7,10 @@ import logging
 
 import requests
 
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+    ChatMessage,
+)
+
 
 class ContextTooLongError(ValueError):
     def __str__(self):
@@ -70,12 +74,11 @@ def get_chosen_model_name(which_model_radio, conversations):
 
 
 def count_turns(messages):
-    
+
     if messages[0].role == "system":
-        return (len(messages)-1) // 2
+        return (len(messages) - 1) // 2
     else:
         return len(messages) // 2
-        
 
 
 def is_unedited_prompt(opening_msg, category):
@@ -95,12 +98,17 @@ def metadata_to_dict(metadata):
         metadata_dict.pop("generation_id", None)
     return metadata_dict
 
+
 def messages_to_dict_list(messages):
     return [
         {
             "role": message.role,
             "content": message.content,
-            **({"metadata": metadata_to_dict(message.metadata)} if metadata_to_dict(message.metadata) else {})
+            **(
+                {"metadata": metadata_to_dict(message.metadata)}
+                if metadata_to_dict(message.metadata)
+                else {}
+            ),
         }
         for message in messages
     ]
@@ -119,25 +127,17 @@ with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
 
-def get_sample_weight(model, broken_endpoints, sampling_weights, sampling_boost_models):
-    if model in broken_endpoints:
-        return 0
-    # Give a 1 weight if model not in weights
-    weight = sampling_weights.get(model, 1)
-    # weight = sampling_weights.get(model, 0)
-    if model in sampling_boost_models:
-        weight *= 5
-    return weight
-
-
-def pick_endpoint(model_id, broken_endpoints):
+# TODO: remove and replace with litellm's Router abstraction
+def pick_endpoint(model_id):
     from languia.config import api_endpoint_info
+    from languia.config import outages
 
     logger = logging.getLogger("languia")
 
     for endpoint in api_endpoint_info:
         api_id = endpoint.get("api_id")
-        if endpoint.get("model_id") == model_id and api_id not in broken_endpoints:
+        # FIXME: outages is full of api_id not model_id
+        if endpoint.get("model_id") == model_id and api_id not in outages:
             logger.debug(f"got_endpoint: {api_id} for {model_id}")
             return endpoint
     return None
@@ -166,87 +166,136 @@ def get_endpoints(model_id, broken_endpoints):
     return endpoints
 
 
-def get_unavailable_models(broken_endpoints, all_model_ids):
+def get_unavailable_models(broken_endpoints):
     unavailable_models = []
     logger = logging.getLogger("languia")
-    for model_id in all_model_ids:
-        if get_endpoints(model_id, broken_endpoints) == []:
-            unavailable_models.append(model_id)
+    from languia.config import models_extra_info
+
+    for model in models_extra_info:
+        if get_endpoints(model["id"], broken_endpoints) == []:
+            unavailable_models.append(model["id"])
     logger.debug(f"unavailable_models: {unavailable_models}")
     return unavailable_models
 
 
-# TODO: add to broken_endpoints for next n min when detected an error
-# TODO: simplify battle targets formula
-def get_battle_pair(
-    all_models,
-    battle_targets,
-    broken_endpoints,
-    sampling_weights,
-    sampling_boost_models,
-):
+class AppState:
+    def __init__(
+        self,
+        awaiting_responses=False,
+        model_left=None,
+        model_right=None,
+        category=None,
+        custom_models_selection=None,
+        mode="random",
+    ):
+        self.awaiting_responses = awaiting_responses
+        self.model_left = model_left
+        self.model_right = model_right
+        self.category = category
+        self.mode = mode
+        self.custom_models_selection = custom_models_selection
+        self.reactions = []
 
-    unavailable_models = get_unavailable_models(broken_endpoints, all_models)
-    models = [model for model in all_models if model not in unavailable_models]
+    # def to_dict(self) -> dict:
+    #     return self.__dict__.copy()
+
+
+def choose_among(
+    models,
+    excluded,
+):
+    all_models = models
+    models = [model for model in all_models if model not in excluded]
     logger = logging.getLogger("languia")
     if len(models) == 0:
-        logger.critical("Model list doesn't contain any model")
+        logger.warning("Couldn't respect exclusion prefs")
         # Maybe sleep then kill container?
-        raise gr.Error(
-            duration=0,
-            message="Le comparateur a un problème et aucun des modèles n'est disponible, veuillez revenir plus tard.",
-        )
-        # os.kill(os.getpid(), signal.SIGINT)
-        # parent = psutil.Process(psutil.Process(os.getpid()).ppid())
-        # parent.kill()
 
-    if len(models) == 1:
-        logger.warn("Only one model configured! Making it fight with itself")
-        return models[0], models[0]
+        if len(all_models) == 0:
+            logger.critical("No model to choose from")
+            import gradio as gr
 
-    # model_weights = []
-    # for model in models:
-    #     weight = get_sample_weight(
-    #         model, broken_endpoints, sampling_weights, sampling_boost_models
-    #     )
-    #     model_weights.append(weight)
-    # total_weight = np.sum(model_weights)
-    # model_weights = model_weights / total_weight
-    # chosen_idx = np.random.choice(len(models), p=model_weights)
+            raise gr.Error(
+                duration=0,
+                message="Le comparateur a un problème et aucun des modèles n'est disponible, veuillez revenir plus tard.",
+            )
+        else:
+            models = all_models
+
     chosen_idx = np.random.choice(len(models), p=None)
-    chosen_model = models[chosen_idx]
-    # for p, w in zip(models, model_weights):
-    #     print(p, w)
+    chosen_model_name = models[chosen_idx]["id"]
+    return chosen_model_name
 
-    rival_models = []
-    # rival_weights = []
-    for model in models:
-        if model == chosen_model:
-            continue
-        # weight = get_sample_weight(
-        #     model, broken_endpoints, sampling_weights, sampling_boost_models
-        # )
-        # if (
-        #     weight != 0
-        #     and chosen_model in battle_targets
-        #     and model in battle_targets[chosen_model]
-        # ):
-        #     # boost to 50% chance
-        #     weight = total_weight / len(battle_targets[chosen_model])
-        rival_models.append(model)
-        # rival_weights.append(weight)
-    # for p, w in zip(rival_models, rival_weights):
-    #     print(p, w)
-    # rival_weights = rival_weights / np.sum(rival_weights)
-    rival_idx = np.random.choice(len(rival_models), p=None)
-    # rival_idx = np.random.choice(len(rival_models), p=rival_weights)
-    rival_model = rival_models[rival_idx]
 
-    swap = np.random.randint(2)
-    if swap == 0:
-        return chosen_model, rival_model
-    else:
-        return rival_model, chosen_model
+def pick_models(mode, custom_models_selection, outages):
+    from languia.config import models_extra_info
+
+    # FIXME: outages is full of api_id not model_id
+    unavailable_models = get_unavailable_models(outages)
+
+    small_models = [
+        model
+        for model in models_extra_info
+        if model["friendly_size"] in ["XS", "S", "M"]
+        and model["id"] not in unavailable_models
+    ]
+    big_models = [
+        model
+        for model in models_extra_info
+        if model["friendly_size"] in ["L", "XL"]
+        and model["id"] not in unavailable_models
+    ]
+
+    import random
+
+    if mode == "big-vs-small":
+        # choose_among?
+        first_model = big_models[random.randint(0, len(big_models))]
+        second_model = small_models[random.randint(0, len(small_models))]
+
+        model_left_name = first_model["id"]
+        model_right_name = second_model["id"]
+    elif mode == "small-models":
+        first_model = small_models[random.randint(0, len(small_models))]
+        # TODO: choose_among(models, excluded) with a warning if it couldn't exclude it
+        second_model = choose_among(
+            models=small_models, excluded=unavailable_models + [model_left_name]
+        )
+        model_left_name = first_model["id"]
+        model_right_name = second_model["id"]
+
+        # Custom mode
+    elif mode == "custom" and len(custom_models_selection) > 0:
+        # custom_models_selection = model_dropdown_scoped["custom_models_selection"]
+        #  FIXME: input sanitization
+        # if any(mode[1], not in models):
+        #     raise Exception(f"Model choice from value {str(model_dropdown_scoped)} not among possibilities")
+
+        if len(custom_models_selection) == 1:
+            model_left_name = custom_models_selection[0]
+            model_right_name = choose_among(
+                models=models_extra_info,
+                excluded=[custom_models_selection[0]] + unavailable_models,
+            )
+
+        elif len(custom_models_selection) == 2:
+
+            model_left_name = custom_models_selection[0]
+            model_right_name = custom_models_selection[1]
+
+    else:  # assume random mode
+        model_left_name = choose_among(
+            models=models_extra_info, excluded=unavailable_models
+        )
+        model_right_name = choose_among(
+            models=models_extra_info, excluded=[model_left_name] + unavailable_models
+        )
+
+    swap = random.randint(0, 1)
+    if swap == 1:
+        model_right_name, model_left_name = model_left_name, model_right_name
+
+    return [model_left_name, model_right_name]
 
 
 def get_matomo_js(matomo_url, matomo_id):
@@ -303,7 +352,7 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
                 model["params"] = size_to_params[model["friendly_size"]]
 
         if model.get("quantization", None) == "q8":
-            model["required_ram"] = model["params"]*2
+            model["required_ram"] = model["params"] * 2
         else:
             # We suppose from q4 to fp16
             model["required_ram"] = model["params"]
@@ -477,8 +526,12 @@ def on_endpoint_error(controller_url, api_id, reason):
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
-    conv_a_messages = [message for message in conversations[0].messages if message.role != "system"]
-    conv_b_messages = [message for message in conversations[1].messages if message.role != "system"]
+    conv_a_messages = [
+        message for message in conversations[0].messages if message.role != "system"
+    ]
+    conv_b_messages = [
+        message for message in conversations[1].messages if message.role != "system"
+    ]
     for msg_a, msg_b in zip(conv_a_messages, conv_b_messages):
         if msg_a.role == "user":
             # Could even test if msg_a == msg_b

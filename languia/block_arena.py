@@ -9,7 +9,8 @@ import gradio as gr
 
 # from gradio_modal import Modal
 
-from languia.utils import header_html, welcome_modal_html, footer_html
+from languia.utils import header_html, welcome_modal_html, footer_html, AppState
+
 
 from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
 from custom_components.customdropdown.backend.gradio_customdropdown import (
@@ -22,46 +23,6 @@ from custom_components.customradiocard.backend.gradio_customradiocard import (
 from custom_components.frinput.backend.gradio_frinput import FrInput
 
 from languia import config
-
-
-# // Enable navigation prompt
-# window.onbeforeunload = function() {
-#     return true;
-# };
-# // Remove navigation prompt
-# window.onbeforeunload = null;
-class Conversation:
-    def __init__(
-        self,
-        messages=[],
-        output_tokens=None,
-        conv_id=None,
-        model_name=None,
-        endpoint=None,
-    ):
-        # FIXME: refacto to set system prompt here
-        self.messages = messages
-        self.output_tokens = output_tokens
-        self.conv_id = conv_id
-        self.model_name = model_name
-        self.endpoint = endpoint
-
-
-class AppState:
-    def __init__(
-        self, awaiting_responses=False, model_left=None, model_right=None, category=None
-    , custom_models_selection =None, mode="random"):
-        self.awaiting_responses = awaiting_responses
-        self.model_left = model_left
-        self.model_right = model_right
-        self.category = category
-        self.mode = mode
-        self.custom_models_selection = custom_models_selection
-        self.reactions = []
-
-    # def to_dict(self) -> dict:
-    #     return self.__dict__.copy()
-
 
 with gr.Blocks(
     title="Discussion - compar:IA, le comparateur d'IA conversationnelles",
@@ -78,8 +39,8 @@ with gr.Blocks(
 
     app_state = gr.State(value=AppState())
 
-    conv_a = gr.State(value=Conversation())
-    conv_b = gr.State(value=Conversation())
+    conv_a = gr.State()
+    conv_b = gr.State()
     # model_selectors = [None] * num_sides
 
     # TODO: check cookies on load!
