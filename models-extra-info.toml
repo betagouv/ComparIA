@@ -138,6 +138,21 @@ license = "MIT"
 conditions = "free"
 excerpt = "Modèle phare de la société chinoise DeepSeek, DeepSeek R1 est un modèle basé sur Deepseek V3 qui élabore un raisonnement avant de formuler une réponse."
 description = "Modèle phare de la société chinoise DeepSeek, DeepSeek R1 est un modèle qui élabore un raisonnement avant de formuler une réponse. DeepSeek R1 est basé sur Deepseek V3, qui possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+reasoning = true
+
+["deepseek-r1-distill-llama-70b"]
+url = "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b"
+simple_name = "DeepSeek R1 Llama 70B"
+organisation = "DeepSeek"
+params = 70
+icon_path = "deepseek.webp"
+friendly_size = "L"
+distribution = "open-weights"
+# license = ""
+# conditions = ""
+# excerpt = ""
+# description = ""
+reasoning = true
 
 ["deepseek-v3-chat"]
 url = "https://huggingface.co/deepseek-ai/DeepSeek-V3"
@@ -480,6 +495,20 @@ conditions = "free"
 description = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
 excerpt = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
 license = "Mistral AI Research"
+
+["o3-mini"]
+# url = "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
+simple_name = "o3-mini"
+organisation = "OpenAI"
+# params = 123
+# icon_path = "mistral.png"
+friendly_size = "XL"
+reasoning = true
+# distribution = "open-weights"
+# conditions = "free"
+# description = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
+# excerpt = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
+# license = "Mistral AI Research"
 
 [phi-3-mini-4k]
 url = "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct"
