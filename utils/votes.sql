@@ -24,6 +24,8 @@ CREATE TABLE votes (
     conv_comments_b TEXT,
     conv_useful_a BOOLEAN,
     conv_useful_b BOOLEAN,
+    conv_complete_a BOOLEAN,
+    conv_complete_b BOOLEAN,
     conv_creative_a BOOLEAN,
     conv_creative_b BOOLEAN,
     conv_clear_formatting_a BOOLEAN,

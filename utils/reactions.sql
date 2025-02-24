@@ -50,20 +50,14 @@ CREATE TABLE reactions (
     comment TEXT,
     -- Free text comment (optional)
     useful BOOLEAN,
-    -- Is the conversation useful? (boolean)
+    complete BOOLEAN,
     creative BOOLEAN,
-    -- Is the conversation creative? (boolean)
     clear_formatting BOOLEAN,
-    -- Does the conversation have clear formatting? (boolean)
     incorrect BOOLEAN,
-    -- Is the conversation incorrect? (boolean)
     superficial BOOLEAN,
-    -- Is the conversation superficial? (boolean)
     instructions_not_followed BOOLEAN,
-    -- Did the conversation not follow instructions? (boolean)
     model_pair_name JSONB,
     msg_rank INT NOT NULL,
-    -- Message rank (optional, could be an integer or rating)
     chatbot_index INT NOT NULL,
     question_id VARCHAR(500),
     archived BOOLEAN DEFAULT FALSE,
