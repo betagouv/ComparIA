@@ -293,6 +293,7 @@ def vote_last_response(
         "conv_instructions_not_followed_a": "instructions-not-followed"
         in details["prefs_a"],
         "conv_useful_b": "useful" in details["prefs_b"],
+        "conv_complete_b": "complete" in details["prefs_b"],
         "conv_creative_b": "creative" in details["prefs_b"],
         "conv_clear_formatting_b": "clear-formatting" in details["prefs_b"],
         "conv_incorrect_b": "incorrect" in details["prefs_b"],
