@@ -231,7 +231,11 @@ document.getElementById("fr-modal-welcome-close").blur();
             for model in config.models_extra_info
             if model["friendly_size"] in ["L", "XL"]
         ]
-
+        reasoning_models = [
+            model
+            for model in config.models_extra_info
+            if model.get("reasoning", False)]
+        
         mode = model_dropdown_scoped["mode"]
 
         logger.info("chose mode: " + mode, extra={"request": request})
@@ -256,7 +260,21 @@ document.getElementById("fr-modal-welcome-close").blur();
                 conv_b_scoped = set_conv_state(
                     conv_b_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
                 )
+        elif mode == "reasoning":
+            first_model = reasoning_models[random.randint(len(reasoning_models))]
+            reasoning_models.remove(first_model)
+            if reasoning_models == []:
+                # If there was just one small model :o
+                second_model = first_model
+            else:
+                second_model = reasoning_models[random.randint(len(reasoning_models))]
 
+            conv_a_scoped = set_conv_state(
+                    conv_a_scoped, model_name=first_model["id"], endpoint=pick_endpoint(first_model, config.outages)
+                )
+            conv_b_scoped = set_conv_state(
+                    conv_b_scoped, model_name=second_model["id"], endpoint=pick_endpoint(second_model, config.outages)
+                )
         elif mode == "small-models":
             first_model = small_models[random.randint(len(small_models))]
             small_models.remove(first_model)

@@ -96,7 +96,7 @@ with gr.Blocks(
         model_dropdown = CustomDropdown(
             models=config.models_extra_info,
             # FIXME: ignored, hardcoded in custom component
-            choices=["random", "big-vs-small", "small-models", "custom"],
+            choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
             # FIXME: ignored, hardcoded in custom component
             interactive=True,
         )
