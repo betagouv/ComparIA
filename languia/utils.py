@@ -562,8 +562,10 @@ def get_gauge_count():
     try:
         select_statement = sql.SQL(
             """
-        SELECT
-  (SELECT COUNT(*) FROM reactions) + (SELECT COUNT(*) FROM votes) AS total_count;
+        SELECT 
+(SELECT n_live_tup FROM pg_stat_user_tables WHERE relname='reactions') + 
+(SELECT n_live_tup FROM pg_stat_user_tables WHERE relname='votes') 
+AS total_approx;
     """
         )
         cursor.execute(select_statement)
