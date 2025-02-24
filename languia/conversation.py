@@ -40,6 +40,7 @@ def update_last_message(messages, text, position, output_tokens=None,generation_
         messages.append(ChatMessage(role="assistant", content=text, metadata=metadata))
     else:
         last_message.content = text
+        # FIXME: possible "Metadata has no update method", maybe transform to dict and back to Metadata object
         last_message.metadata.update(metadata)
 
     return messages
