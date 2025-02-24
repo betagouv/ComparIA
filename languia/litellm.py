@@ -41,10 +41,13 @@ def litellm_stream_iter(
     # Too verbose:
     # if debug:
     #     litellm.set_verbose=True
-
+    if os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY") and os.getenv("LANGFUSE_HOST"):
+        print("loading langfuse")
+        litellm.success_callback = ["langfuse"] 
+        litellm.failure_callback.append("langfuse")
     if os.getenv("SENTRY_DSN"):
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
-        litellm.failure_callback = ["sentry"]
+        litellm.failure_callback.append("sentry")
 
     if not vertex_ai_location and os.getenv("VERTEXAI_LOCATION"):
         litellm.vertex_location = os.getenv("VERTEXAI_LOCATION")
