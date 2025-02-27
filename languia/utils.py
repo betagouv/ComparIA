@@ -605,14 +605,14 @@ def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as db_config
-
+    result = 55000
     logger = logging.getLogger("languia")
     if not db_config:
         logger.warn("Cannot log to db: no db configured")
-        return 40000
-    conn = psycopg2.connect(**db_config)
-    cursor = conn.cursor()
+        return result
     try:
+        conn = psycopg2.connect(**db_config)
+        cursor = conn.cursor()
         select_statement = sql.SQL(
             """
         SELECT 
@@ -623,6 +623,7 @@ AS total_approx;
         )
         cursor.execute(select_statement)
         res = cursor.fetchone()
+        result = res[0]
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
     finally:
@@ -630,11 +631,7 @@ AS total_approx;
             cursor.close()
         if conn:
             conn.close()
-    if res[0]:
-        return res[0]
-    else:
-        return 40000
-
+        return result
 
 # def gauge_banner_html():
 #     gauge_count = get_gauge_count()
