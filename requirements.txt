@@ -15,3 +15,4 @@ google-auth
 pandas
 psycopg2-binary
 tiktoken
+langfuse
