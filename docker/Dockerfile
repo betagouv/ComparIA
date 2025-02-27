@@ -1,6 +1,6 @@
 # FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04 AS build
 # FROM debian:11-slim
-FROM python:3.10-slim AS base
+FROM public.ecr.aws/docker/library/python:3.10-slim AS base
 
 # Debug tools
 RUN apt-get update -y && apt-get install -y curl postgresql-client
