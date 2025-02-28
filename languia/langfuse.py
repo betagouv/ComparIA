@@ -1,5 +1,5 @@
 """
-Utilities to communicate with different APIs
+Use langfuse + litellm
 """
 
 import os
@@ -11,6 +11,7 @@ from gradio import Error
 
 from languia.config import GLOBAL_TIMEOUT
 import litellm
+from langfuse.openai import openai
 
 import json
 
@@ -27,13 +28,13 @@ else:
 
 
 @observe()
-def litellm_stream_iter(
+def langfuse_stream(
     model_name,
     messages,
     temperature,
     max_new_tokens,
     api_base=None,
-    api_key=None,
+    api_key="dummy",
     request=None,
     api_version=None,
     vertex_ai_location=None,
@@ -41,20 +42,17 @@ def litellm_stream_iter(
 
     from languia.config import debug
 
-    # Too verbose:
-    # if debug:
-    #     litellm.set_verbose=True
-    if (
-        os.getenv("LANGFUSE_PUBLIC_KEY")
-        and os.getenv("LANGFUSE_SECRET_KEY")
-        and os.getenv("LANGFUSE_HOST")
-    ):
-        print("loading langfuse")
-        litellm.success_callback = ["langfuse"]
-        litellm.failure_callback.append("langfuse")
-    if os.getenv("SENTRY_DSN"):
-        litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
-        litellm.failure_callback.append("sentry")
+
+    #     os.getenv("LANGFUSE_PUBLIC_KEY")
+    #     and os.getenv("LANGFUSE_SECRET_KEY")
+    #     and os.getenv("LANGFUSE_HOST")
+
+
+        # litellm.success_callback = ["langfuse"]
+        # litellm.failure_callback.append("langfuse")
+    # if os.getenv("SENTRY_DSN"):
+    #     litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
+    #     litellm.failure_callback.append("sentry")
 
     if not vertex_ai_location and os.getenv("VERTEXAI_LOCATION"):
         litellm.vertex_location = os.getenv("VERTEXAI_LOCATION")
@@ -67,12 +65,11 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-    res = litellm.completion(
-        api_version=api_version,
+    openai.api_key = "dummy"
+    openai.base_url="http://0.0.0.0:4000"
+    res = openai.chat.completions.create(
         timeout=GLOBAL_TIMEOUT,
-        stream_timeout=30,
-        base_url=api_base,
-        api_key=api_key,
+        # stream_timeout=30,
         # max_retries=
         model=model_name,
         messages=messages,
@@ -80,8 +77,8 @@ def litellm_stream_iter(
         max_tokens=max_new_tokens,
         stream=True,
         stream_options={"include_usage": True},
-        vertex_credentials=vertex_credentials_json,
-        vertex_ai_location=litellm.vertex_location,
+        # vertex_credentials=vertex_credentials_json,
+        # vertex_ai_location=litellm.vertex_location,
         metadata={
             "session_hash": request.session_hash,
             # "conversation_id
@@ -93,7 +90,7 @@ def litellm_stream_iter(
         # top_p=top_p,
     )
 
-    # TODO: openrouter specific params
+    # openrouter specific params
     # transforms = [""],
     # route= ""
 
@@ -133,16 +130,14 @@ def litellm_stream_iter(
                     data["text"] = text
                     break
                 elif chunk.choices[0].finish_reason == "length":
-                    # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
-                    # raise ContextTooLongError
+
                     logger.warning(
                         "context_too_long: " + str(chunk), extra={request: request}
                     )
 
-                    if os.getenv("SENTRY_DSN"):
-                        sentry_sdk.capture_message(f"context_too_long: {chunk}")
+                    # if os.getenv("SENTRY_DSN"):
+                    #     sentry_sdk.capture_message(f"context_too_long: {chunk}")
                     break
-            # Special handling for certain models
-            # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
+                
             yield data
     yield data

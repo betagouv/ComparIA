@@ -349,9 +349,14 @@ def get_model_extra_info(name: str, models_extra_info: list):
 
 def get_model_list():
     logger = logging.getLogger("languia")
-    
-    logger.debug(f"All models: {models}")
-    return models
+    response = requests.get("http://0.0.0.0:4000/models")
+
+    parsed_data = json.loads(response.content)
+
+    model_ids = [model["id"] for model in parsed_data["data"]]
+
+    logger.debug(f"All models: {model_ids}")
+    return model_ids
 
 
 def is_limit_reached(model_name, ip):
@@ -394,53 +399,6 @@ def gen_prompt(category):
     # for category in get_categories(prompts_pool):
     # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
     return prompts[np.random.randint(len(prompts))]
-
-
-def refresh_unavailable_models(previous_unavailable_models, controller_url):
-    logger = logging.getLogger("languia")
-    try:
-        response = requests.get(controller_url + "/unavailable_models/", timeout=1)
-    except Exception as e:
-        logger.warning("controller_inaccessible: " + str(e))
-        return previous_unavailable_models
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Parse the JSON response
-        data = response.json()
-        logger.debug("refreshed outage models:" + str(data))
-        return data
-    else:
-        logger.warning(
-            f"Failed to retrieve outage data. Status code: {response.status_code}"
-        )
-        return previous_unavailable_models
-
-
-# def add_outage_model(controller_url, model_name, endpoint_name, reason):
-#     logger = logging.getLogger("languia")
-
-#     try:
-#         response = requests.post(
-#             params={
-#                 "reason": str(reason),
-#                 "model_name": model_name,
-#                 "endpoint": endpoint_name,
-#             },
-#             # params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
-#             url=f"{controller_url}/unavailable_models/",
-#             timeout=2,
-#         )
-#     except Exception:
-#         pass
-
-
-def test_endpoint(controller_url, api_id):
-    return requests.get(
-        # params={"model_name": model_name},
-        url=f"{controller_url}/unavailable_models/{api_id}",
-        timeout=2,
-    )
-
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
