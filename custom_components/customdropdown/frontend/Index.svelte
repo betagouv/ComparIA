@@ -123,7 +123,7 @@
 	var second_model_icon_path = null;
 
 	export let interactive: boolean;
-	var choice: Choice = choices[3];
+	var choice: Choice = choices[4];
 
 	// Handle mode selection
 	function handle_option_selected(index: number): void {
