@@ -152,6 +152,25 @@ license = "MIT"
 conditions = "free"
 excerpt = "Sorti en janvier 2025, ce modèle est basé sur Deepseek V3 qui élabore un raisonnement avant de formuler une réponse."
 description = "Sorti en janvier 2025, ce modèle phare de la société chinoise DeepSeek, est un modèle qui élabore un raisonnement avant de formuler une réponse. DeepSeek R1 est basé sur Deepseek V3, qui possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+reasoning = true
+
+["deepseek-r1-distill-llama-70b"]
+url = "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b"
+simple_name = "DeepSeek R1 Llama 70B"
+organisation = "DeepSeek"
+params = 70
+icon_path = "deepseek.webp"
+friendly_size = "L"
+distribution = "open-weights"
+conditions = "copyleft"
+excerpt = "Ce modèle est un modèle Llama 3.3 70B transformé par l'entreprise DeepSeek pour être doté d'un système de raisonnement à travers un corpus synthétique généré par DeepSeek R1."
+description = "Ce modèle est un modèle Llama 3.3 70B transformé par l'entreprise DeepSeek pour être doté d'un système de raisonnement à travers un corpus synthétique généré par DeepSeek R1. Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
+license = "Llama 3.3"
+# license = ""
+# conditions = ""
+# excerpt = ""
+# description = ""
+reasoning = true
 
 ["deepseek-v3-chat"]
 url = "https://huggingface.co/deepseek-ai/DeepSeek-V3"
@@ -494,6 +513,20 @@ conditions = "free"
 description = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
 excerpt = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
 license = "Mistral AI Research"
+
+["o3-mini"]
+# url = "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
+simple_name = "o3-mini"
+organisation = "OpenAI"
+# params = 123
+# icon_path = "mistral.png"
+friendly_size = "XL"
+reasoning = true
+# distribution = "open-weights"
+# conditions = "free"
+# description = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
+# excerpt = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
+# license = "Mistral AI Research"
 
 [phi-3-mini-4k]
 url = "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct"
