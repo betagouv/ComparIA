@@ -521,18 +521,18 @@ def mode_banner_html(mode):
     modes = {
         "custom": [
             "Mode Sélection",
-            "Les modèles restent anonymes pour éviter tout biais",
+            "Reconnaîtrez-vous les deux modèles que vous avez choisis ?",
             "glass.svg",
         ],
         "big-vs-small": [
             "Mode Petit contre Grand",
-            "Un petit et un grand modèle choisis au hasard",
+            "Un petit modèle contre un grand, les deux tirés au hasard",
             "ruler.svg",
         ],
         "reasoning": [
             "Mode Raisonnement",
-            "Deux modèles avec raisonnement intégré",
-            "chip.svg",
+            "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
+            "brain.svg",
         ],
         "random": [
             "Mode Aléatoire",
@@ -540,8 +540,8 @@ def mode_banner_html(mode):
             "dice.svg",
         ],
         "small-models": [
-            "Mode Économe",
-            "Deux petits modèles choisis au hasard",
+            "Mode Frugal",
+            "Deux modèles tirés au hasard parmi ceux de plus petite taille",
             "leaf.svg",
         ],
     }

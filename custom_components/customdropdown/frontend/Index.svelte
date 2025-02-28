@@ -40,7 +40,7 @@
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
-	import Chip from "./shared/chip.svelte";
+	import Brain from "./shared/brain.svelte";
 	import Dice from "./shared/dice.svelte";
 
 	type Choice = {
@@ -60,33 +60,32 @@
 		},
 		{
 			value: "small-models",
-			label: "Économe",
-			alt_label: "Modèles économes",
+			label: "Frugal",
+			alt_label: "Modèles frugaux",
 
 			icon: Leaf, // Replace with your icon class or SVG
-			description: "minimisez votre impact énergétique",
+			description: "Deux modèles tirés au hasard parmi ceux de plus petite taille",
 		},
 		{
 			value: "big-vs-small",
-			label: "Petit contre grand",
-			alt_label: "Petit contre grand modèle",
+			label: "David contre Goliath",
+			alt_label: "David contre Goliath",
 			icon: Ruler, // Replace with your icon class or SVG
-			description: "Comparez leur performance",
+			description: "Un petit modèle contre un grand, les deux tirés au hasard",
 		},
 		{
 			value: "reasoning",
-			label: "Mode raisonnement",
+			label: "Raisonnement",
 			alt_label: "Modèles avec raisonnement",
-			icon: Chip, // Replace with your icon class or SVG
-			description: "Des modèles avec raisonnement intégré",
+			icon: Brain, // Replace with your icon class or SVG
+			description: "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
 		},
-
 		{
 			value: "random",
 			label: "Aléatoire",
 			alt_label: "Modèles aléatoires",
 			icon: Dice, // Replace with your icon class or SVG
-			description: "modèles tirés au hasard dans la liste",
+			description: "Deux modèles tirés au hasard dans la liste",
 		},
 	];
 
