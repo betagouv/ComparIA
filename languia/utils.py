@@ -126,16 +126,6 @@ with open("./templates/header-arena.html", encoding="utf-8") as header_file:
 with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
-
-def get_endpoint(model_id):
-    from languia.config import api_endpoint_info
-
-    for endpoint in api_endpoint_info:
-        if endpoint.get("model_id") == model_id:
-            return endpoint
-    return None
-
-
 class AppState:
     def __init__(
         self,
@@ -357,25 +347,9 @@ def get_model_extra_info(name: str, models_extra_info: list):
     }
 
 
-def get_model_list(_controller_url, api_endpoint_info):
+def get_model_list():
     logger = logging.getLogger("languia")
-
-    # Add models from the controller
-    # if controller_url:
-    #     ret = requests.post(controller_url + "/refresh_all_workers")
-    #     assert ret.status_code == 200
-
-    #     ret = requests.post(controller_url + "/list_language_models")
-    #     models = ret.json()["models"]
-    # else:
-    models = []
-    # Add models from the API providers
-    models.extend(
-        model_id
-        for model_dict in api_endpoint_info
-        if (model_id := model_dict.get("model_id")) is not None
-        and model_id not in models
-    )
+    
     logger.debug(f"All models: {models}")
     return models
 

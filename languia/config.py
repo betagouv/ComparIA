@@ -149,12 +149,6 @@ if os.getenv("SENTRY_FRONT_DSN"):
 else:
     sentry_head_js = ""
 
-
-if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
-    register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
-else:
-    register_api_endpoint_file = "register-api-endpoint-file.json"
-
 enable_moderation = False
 use_remote_storage = False
 
@@ -226,9 +220,7 @@ with open("./assets/dark.css", encoding="utf-8") as css_file:
 css = css_dsfr + custom_css + darkfixes_css
 
 
-api_endpoint_info = json5.load(open(register_api_endpoint_file))
-
-models = get_model_list(None, api_endpoint_info)
+models = get_model_list()
 
 all_models_extra_info_toml = {
     (k.lower()): v
