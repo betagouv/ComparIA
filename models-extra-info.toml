@@ -166,10 +166,6 @@ conditions = "copyleft"
 excerpt = "Ce modèle est un modèle Llama 3.3 70B transformé par l'entreprise DeepSeek pour être doté d'un système de raisonnement à travers un corpus synthétique généré par DeepSeek R1."
 description = "Ce modèle est un modèle Llama 3.3 70B transformé par l'entreprise DeepSeek pour être doté d'un système de raisonnement à travers un corpus synthétique généré par DeepSeek R1. Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
 license = "Llama 3.3"
-# license = ""
-# conditions = ""
-# excerpt = ""
-# description = ""
 reasoning = true
 
 ["deepseek-v3-chat"]
