@@ -29,7 +29,7 @@ templates = Jinja2Templates(directory="templates")
 app = FastAPI()
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
-outages = {}
+unavailable_models = {}
 
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
@@ -39,33 +39,32 @@ tests: List = []
 scheduled_tasks = set()
 
 
-@app.get("/outages/{api_id}/create", status_code=201)
-@app.post("/outages/{api_id}/create", status_code=201)
-def disable_endpoint(api_id: str, test: dict = None):
-    global outages
-    print("disabling " + api_id)
+@app.get("/unavailable_models/{model_id}/create", status_code=201)
+@app.post("/unavailable_models/{model_id}/create", status_code=201)
+def disable_model(model_id: str, test: dict = None):
+    global unavailable_models
+    print("disabling " + model_id)
     outage = {
         "detection_time": datetime.now().isoformat(),
-        "api_id": api_id,
-        # "model_id": api_id,
+        "model_id": model_id,
     }
     if test:
         outage.update(test)
-    outages[outage["api_id"]] = outage
+    unavailable_models[outage["model_id"]] = outage
 
     return outage
 
 
-@app.get("/outages/")
-def get_outages():
-    return (api_id for api_id, _outage in outages.items())
+@app.get("/unavailable_models/")
+def get_unavailable_models():
+    return (model_id for model_id, _outage in unavailable_models.items())
 
 
-@app.get("/outages/{api_id}/delete", status_code=204)
-@app.delete("/outages/{api_id}", status_code=204)
-def remove_outages(api_id: str):
-    if api_id in outages:
-        del outages[api_id]
+@app.get("/unavailable_models/{model_id}/delete", status_code=204)
+@app.delete("/unavailable_models/{model_id}", status_code=204)
+def remove_unavailable_models(model_id: str):
+    if model_id in unavailable_models:
+        del unavailable_models[model_id]
         return True
     else:
         return False
@@ -79,18 +78,18 @@ else:
 endpoints = json5.load(open(register_api_endpoint_file))
 
 
-@app.get("/outages/{api_id}")
-def test_endpoint(api_id):
+@app.get("/unavailable_models/{model_id}")
+def test_model(model_id):
     global tests
-    if api_id == "None":
+    if model_id == "None":
         return {"success": False, "error_message": "Don't test 'None'!"}
 
     from languia.utils import get_endpoint
 
-    endpoint = get_endpoint(api_id)
+    endpoint = get_endpoint(model_id)
 
     # Log the outage test
-    logging.info(f"Testing endpoint: {api_id}")
+    logging.info(f"Testing endpoint: {model_id}")
 
     # Define test parameters
     temperature = 1
@@ -98,7 +97,7 @@ def test_endpoint(api_id):
     stream = True
 
     try:
-        endpoint = get_endpoint(api_id)
+        endpoint = get_endpoint(model_id)
 
         model_name = endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
 
@@ -134,7 +133,6 @@ def test_endpoint(api_id):
 
         test = {
             "model_id": endpoint.get("model_id"),
-            "api_id": api_id,
             "timestamp": int(time.time()),
         }
         if output_tokens:
@@ -142,9 +140,9 @@ def test_endpoint(api_id):
 
         # Check if the response is successful
         if text:
-            logging.info(f"Test successful: {api_id}")
-            if remove_outages(api_id):
-                test.update({"info": "Removed model from outages list."})
+            logging.info(f"Test successful: {model_id}")
+            if remove_unavailable_models(model_id):
+                test.update({"info": "Removed model from unavailable_models list."})
 
             test.update(
                 {
@@ -153,7 +151,7 @@ def test_endpoint(api_id):
                 }
             )
         else:
-            reason = f"No content from api {api_id}"
+            reason = f"No content from model {model_id}"
             # logging.error(f"Test failed: {model_name}")
             # logging.error(reason)
             # test.update({"success": False, "message": reason})
@@ -165,18 +163,17 @@ def test_endpoint(api_id):
         return test
     except Exception as e:
         reason = str(e)
-        logging.error(f"Error: {reason}. Endpoint: {api_id}")
+        logging.error(f"Error: {reason}. Model: {model_id}")
         stacktrace = traceback.print_exc()
         test = {
             "model_id": endpoint.get("model_id"),
-            "api_id": api_id,
             "timestamp": int(time.time()),
             "success": False,
             "message": reason,
             "stacktrace": stacktrace,
         }
 
-        disable_endpoint(api_id, test)
+        disable_model(model_id, test)
         tests.append(test)
         if len(tests) > 25:
             tests = tests[-25:]
@@ -190,10 +187,10 @@ def test_endpoint(api_id):
 def index(request: Request, scheduled_tests: bool = False):
     global tests
     return templates.TemplateResponse(
-        "outages.html",
+        "unavailable_models.html",
         {
             "tests": tests,
-            "outages": outages,
+            "unavailable_models": unavailable_models,
             "endpoints": endpoints,
             "request": request,
             "scheduled_tests": scheduled_tests,
@@ -208,10 +205,10 @@ def test_all_endpoints(background_tasks: BackgroundTasks):
     Initiates background tasks to test all models asynchronously.
     """
     for endpoint in endpoints:
-        if endpoint.get("api_id") not in scheduled_tasks:
+        if endpoint.get("model_id") not in scheduled_tasks:
             try:
-                background_tasks.add_task(test_endpoint, endpoint.get("api_id"))
-                scheduled_tasks.add(endpoint.get("api_id"))
+                background_tasks.add_task(test_model, endpoint.get("model_id"))
+                scheduled_tasks.add(endpoint.get("model_id"))
             except Exception:
                 pass
     return RedirectResponse(url="/?scheduled_tests=true", status_code=302)

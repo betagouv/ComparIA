@@ -43,12 +43,10 @@ from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
-    refresh_outages,
-    on_endpoint_error,
+    refresh_unavailable_models,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
-    pick_endpoint,
     mode_banner_html,
 )
 
@@ -87,8 +85,8 @@ def register_listeners():
 
     def enter_arena(request: gr.Request):
         # Refresh on picking model? Do it async? Should do it globally and async...
-        config.outages = refresh_outages(
-            config.outages, controller_url=config.controller_url
+        config.unavailable_models = refresh_unavailable_models(
+            config.unavailable_models, controller_url=config.controller_url
         )
 
         # TODO: actually check for it
@@ -198,8 +196,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
-        config.outages = refresh_outages(
-            config.outages, controller_url=config.controller_url
+        config.unavailable_models = refresh_unavailable_models(
+            config.unavailable_models, controller_url=config.controller_url
         )
 
         text = model_dropdown_scoped.get("prompt_value", "")
@@ -221,7 +219,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         from languia.utils import pick_models
 
         first_model_name, second_model_name = pick_models(
-            mode, custom_models_selection, outages=config.outages
+            mode, custom_models_selection, unavailable_models=config.unavailable_models
         )
 
         conv_a_scoped = Conversation(
@@ -468,13 +466,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_a_scoped.messages[-1].error = True
             conv_b_scoped.messages[-1].error = True
 
-            # Report error to controller
-            # on_endpoint_error(
-            #     config.controller_url,
-            #     error_with_endpoint,
-            #     reason=str(e),
-            # )
-
             # If it's the first message in conversation, re-roll
             # TODO: refacto bc of system prompt logic (first messages could already have a >2 length if not zero-shot)
             if len(conv_a_scoped.messages) == 1 or (
@@ -483,12 +474,12 @@ document.getElementById("fr-modal-welcome-close").blur();
             ):
                 original_user_prompt = conv_a_scoped.messages[0].content
 
-                config.outages = refresh_outages(
-                    config.outages, controller_url=config.controller_url
+                config.unavailable_models = refresh_unavailable_models(
+                    config.unavailable_models, controller_url=config.controller_url
                 )
 
                 logger.debug(
-                    "refreshed outage models:" + str(config.outages)
+                    "refreshed outage models:" + str(config.unavailable_models)
                 )  # Simpler to repick 2 models
 
                 model_left, model_right = pick_models(
@@ -496,7 +487,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # Doesn't make sense to
                     [],
                     # temporarily exclude the buggy model here
-                    config.outages + [error_with_model],
+                    config.unavailable_models + [error_with_model],
                 )
                 logger.info(
                     f"reinitializing convs w/ two new models: {model_left} and {model_right}",

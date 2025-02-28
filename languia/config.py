@@ -343,8 +343,8 @@ BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
 )
 
 
-# outage models won't be sampled.
-outages = []
+# unavailable models won't be sampled.
+unavailable_models = []
 
 prompts_table = {
     "explanations": [

@@ -127,55 +127,13 @@ with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
 
-# TODO: remove and replace with litellm's Router abstraction
-def pick_endpoint(model_id):
+def get_endpoint(model_id):
     from languia.config import api_endpoint_info
-    from languia.config import outages
-
-    logger = logging.getLogger("languia")
 
     for endpoint in api_endpoint_info:
-        api_id = endpoint.get("api_id")
-        # FIXME: outages is full of api_id not model_id
-        if endpoint.get("model_id") == model_id and api_id not in outages:
-            logger.debug(f"got_endpoint: {api_id} for {model_id}")
+        if endpoint.get("model_id") == model_id:
             return endpoint
     return None
-
-
-def get_endpoint(endpoint_id):
-    from languia.config import api_endpoint_info
-
-    for endpoint in api_endpoint_info:
-        if endpoint.get("api_id") == endpoint_id:
-            return endpoint
-    return None
-
-
-def get_endpoints(model_id, broken_endpoints):
-
-    from languia.config import api_endpoint_info
-
-    endpoints = []
-    for endpoint in api_endpoint_info:
-        if (
-            endpoint.get("model_id") == model_id
-            and endpoint.get("api_id") not in broken_endpoints
-        ):
-            endpoints.append(endpoint)
-    return endpoints
-
-
-def get_unavailable_models(broken_endpoints):
-    unavailable_models = []
-    logger = logging.getLogger("languia")
-    from languia.config import models_extra_info
-
-    for model in models_extra_info:
-        if get_endpoints(model["id"], broken_endpoints) == []:
-            unavailable_models.append(model["id"])
-    logger.debug(f"unavailable_models: {unavailable_models}")
-    return unavailable_models
 
 
 class AppState:
@@ -226,11 +184,8 @@ def choose_among(
     return chosen_model_name
 
 
-def pick_models(mode, custom_models_selection, outages):
+def pick_models(mode, custom_models_selection, unavailable_models):
     from languia.config import models_extra_info
-
-    # FIXME: outages is full of api_id not model_id
-    unavailable_models = get_unavailable_models(outages)
 
     small_models = [
         model
@@ -467,13 +422,13 @@ def gen_prompt(category):
     return prompts[np.random.randint(len(prompts))]
 
 
-def refresh_outages(previous_outages, controller_url):
+def refresh_unavailable_models(previous_unavailable_models, controller_url):
     logger = logging.getLogger("languia")
     try:
-        response = requests.get(controller_url + "/outages/", timeout=1)
+        response = requests.get(controller_url + "/unavailable_models/", timeout=1)
     except Exception as e:
         logger.warning("controller_inaccessible: " + str(e))
-        return previous_outages
+        return previous_unavailable_models
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -484,7 +439,7 @@ def refresh_outages(previous_outages, controller_url):
         logger.warning(
             f"Failed to retrieve outage data. Status code: {response.status_code}"
         )
-        return previous_outages
+        return previous_unavailable_models
 
 
 # def add_outage_model(controller_url, model_name, endpoint_name, reason):
@@ -498,7 +453,7 @@ def refresh_outages(previous_outages, controller_url):
 #                 "endpoint": endpoint_name,
 #             },
 #             # params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
-#             url=f"{controller_url}/outages/",
+#             url=f"{controller_url}/unavailable_models/",
 #             timeout=2,
 #         )
 #     except Exception:
@@ -508,26 +463,9 @@ def refresh_outages(previous_outages, controller_url):
 def test_endpoint(controller_url, api_id):
     return requests.get(
         # params={"model_name": model_name},
-        url=f"{controller_url}/outages/{api_id}",
+        url=f"{controller_url}/unavailable_models/{api_id}",
         timeout=2,
     )
-
-
-def on_endpoint_error(controller_url, api_id, reason):
-    logger = logging.getLogger("languia")
-    try:
-        return test_endpoint(controller_url, api_id)
-        # await test_model(controller_url, model_name)
-        # return True
-    except Exception as e:
-        logger.warning("Failed to request endpoint testing: " + str(e))
-        return False
-        # pass
-
-    # if response.status_code == 201:
-    #     logger.info(f"endpoint_desactive: {model_name} at {endpoint_name}")
-    # else:
-    #     logger.error(f"Failed to post outage data. Status code: {response.status_code}")
 
 
 def to_threeway_chatbot(conversations):

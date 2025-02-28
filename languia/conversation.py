@@ -12,7 +12,7 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from languia.utils import ContextTooLongError, EmptyResponseError, pick_endpoint
+from languia.utils import ContextTooLongError, EmptyResponseError, get_endpoint
 from languia import config
 
 import logging
@@ -37,7 +37,7 @@ class Conversation:
         self.output_tokens = None
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = pick_endpoint(model_name)
+        self.endpoint = get_endpoint(model_name)
 
 
 logger = logging.getLogger("languia")
@@ -86,48 +86,23 @@ def bot_response(
     # top_p = float(top_p)
     # max_new_tokens = int(max_new_tokens)
 
-    # if apply_rate_limit:
-    #     ip = get_ip(request)
-    #     ret = is_limit_reached(state.model_name, ip)
-    #     if ret is not None and ret["is_limit_reached"]:
-    #         error_msg = RATE_LIMIT_MSG + "\n\n" + ret["reason"]
-    #         logger.warn(f"rate limit reached. error_msg: {ret['reason']}")
+    # TODO: apply rate limit by ip
 
-    model_api_endpoints = []
-
-    for endpoint in config.api_endpoint_info:
-        if "model_id" not in endpoint:
-            logger.warning(
-                f"'model_id' is not defined in endpoint: {endpoint}.",
-                extra={"request": request},
-            )
-        elif "api_id" not in endpoint:
-            logger.warning(
-                f"'api_id' is not defined in endpoint: {endpoint}.",
-                extra={"request": request},
-            )
-
-        else:
-            if (endpoint.get("model_id")) == state.model_name:
-                model_api_endpoints.append(endpoint)
-
-    if model_api_endpoints == []:
+    if not state.endpoint:
         logger.critical(
             "No endpoint for model name: " + str(state.model_name),
             extra={"request": request},
         )
         raise Exception("No endpoint for model name: " + str(state.model_name))
 
-    if state.endpoint is None:
-        state.endpoint = random.choice(model_api_endpoints)
-        endpoint_name = state.endpoint["api_id"]
-        logger.info(
-            f"picked_endpoint: {endpoint_name} for {state.model_name}",
-            extra={"request": request},
-        )
-
     endpoint = state.endpoint
+
     endpoint_name = endpoint["api_id"]
+    logger.info(
+        f"using endpoint {endpoint_name} for {state.model_name}",
+        extra={"request": request},
+    )
+
     if use_recommended_config:
         recommended_config = endpoint.get("recommended_config", None)
         if recommended_config is not None:
