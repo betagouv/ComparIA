@@ -208,9 +208,8 @@ def choose_among(
     models = [model for model in all_models if model not in excluded]
     logger = logging.getLogger("languia")
     if len(models) == 0:
+        # TODO: tell user in a toast notif that we couldn't respect prefs
         logger.warning("Couldn't respect exclusion prefs")
-        # Maybe sleep then kill container?
-
         if len(all_models) == 0:
             logger.critical("No model to choose from")
             import gradio as gr

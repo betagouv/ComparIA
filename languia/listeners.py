@@ -197,13 +197,14 @@ document.getElementById("fr-modal-welcome-close").blur();
     ):
 
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
-        # TODO: remove and use litellm outage detection w/ routing and/or just openrouter
+        # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         config.outages = refresh_outages(
             config.outages, controller_url=config.controller_url
         )
 
         text = model_dropdown_scoped.get("prompt_value", "")
         mode = model_dropdown_scoped.get("mode", "random")
+        app_state_scoped.mode = mode
         custom_models_selection = model_dropdown_scoped.get(
             "custom_models_selection", []
         )
@@ -223,14 +224,13 @@ document.getElementById("fr-modal-welcome-close").blur();
             mode, custom_models_selection, outages=config.outages
         )
 
-        # FIXME: check if template doesn't mess with everything ID-wise and dataset-wise
         conv_a_scoped = Conversation(
             model_name=first_model_name,
         )
         conv_b_scoped = Conversation(
             model_name=second_model_name,
         )
-# Could be added at init
+        # Could be added in Converstation.__init__?
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
         logger.info(
@@ -255,7 +255,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
-
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
@@ -477,8 +476,11 @@ document.getElementById("fr-modal-welcome-close").blur();
             # )
 
             # If it's the first message in conversation, re-roll
-            # TODO: need to be adapted to template logic (first messages could already have a >2 length if not zero-shot)
-            if len(conv_a_scoped.messages) == 1:
+            # TODO: refacto bc of system prompt logic (first messages could already have a >2 length if not zero-shot)
+            if len(conv_a_scoped.messages) == 1 or (
+                len(conv_a_scoped.messages) == 2
+                and conv_a_scoped.messages[0].role == "system"
+            ):
                 original_user_prompt = conv_a_scoped.messages[0].content
 
                 config.outages = refresh_outages(
@@ -488,20 +490,21 @@ document.getElementById("fr-modal-welcome-close").blur();
                 logger.debug(
                     "refreshed outage models:" + str(config.outages)
                 )  # Simpler to repick 2 models
+
                 model_left, model_right = pick_models(
-                    config.models,
-                    config.outages,
+                    app_state_scoped.mode,
+                    # Doesn't make sense to
+                    [],
+                    # temporarily exclude the buggy model here
+                    config.outages + [error_with_model],
                 )
 
-                conv_a_scoped = set_conv_state(
-                    conv_a_scoped,
+                # Don't reuse same conversation ID, is that good?
+                conv_a_scoped = Conversation(
                     model_name=model_left,
-                    endpoint=pick_endpoint(model_left, config.outages),
                 )
-                conv_b_scoped = set_conv_state(
-                    conv_b_scoped,
+                conv_b_scoped = Conversation(
                     model_name=model_right,
-                    endpoint=pick_endpoint(model_right, config.outages),
                 )
                 conv_a_scoped.messages.append(
                     ChatMessage(role="user", content=original_user_prompt, error=True)
