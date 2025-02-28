@@ -498,14 +498,22 @@ document.getElementById("fr-modal-welcome-close").blur();
                     # temporarily exclude the buggy model here
                     config.outages + [error_with_model],
                 )
-
-                # Don't reuse same conversation ID, is that good?
+                logger.info(
+                    f"reinitializing convs w/ two new models: {model_left} and {model_right}",
+                    extra={"request": request},
+                )
                 conv_a_scoped = Conversation(
                     model_name=model_left,
                 )
                 conv_b_scoped = Conversation(
                     model_name=model_right,
                 )
+                logger.info(
+                    f"new conv ids: {conv_a_scoped.conv_id} and {conv_b_scoped.conv_id}",
+                    extra={"request": request},
+                )
+
+                # Don't reuse same conversation ID, is that good?
                 conv_a_scoped.messages.append(
                     ChatMessage(role="user", content=original_user_prompt, error=True)
                 )
