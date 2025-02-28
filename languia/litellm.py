@@ -14,6 +14,8 @@ import litellm
 
 import json
 
+from langfuse.decorators import langfuse_context, observe
+
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "r") as file:
         vertex_credentials = json.load(file)
@@ -24,6 +26,7 @@ else:
     vertex_credentials_json = None
 
 
+@observe()
 def litellm_stream_iter(
     model_name,
     messages,
@@ -41,9 +44,13 @@ def litellm_stream_iter(
     # Too verbose:
     # if debug:
     #     litellm.set_verbose=True
-    if os.getenv("LANGFUSE_PUBLIC_KEY") and os.getenv("LANGFUSE_SECRET_KEY") and os.getenv("LANGFUSE_HOST"):
+    if (
+        os.getenv("LANGFUSE_PUBLIC_KEY")
+        and os.getenv("LANGFUSE_SECRET_KEY")
+        and os.getenv("LANGFUSE_HOST")
+    ):
         print("loading langfuse")
-        litellm.success_callback = ["langfuse"] 
+        litellm.success_callback = ["langfuse"]
         litellm.failure_callback.append("langfuse")
     if os.getenv("SENTRY_DSN"):
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
@@ -75,6 +82,13 @@ def litellm_stream_iter(
         stream_options={"include_usage": True},
         vertex_credentials=vertex_credentials_json,
         vertex_ai_location=litellm.vertex_location,
+        metadata={
+            "session_hash": request.session_hash,
+            # "conversation_id
+            # Is that useful?
+            "existing_trace_id": langfuse_context.get_current_trace_id(),  # set langfuse trace ID
+            "parent_observation_id": langfuse_context.get_current_observation_id(),
+        },
         # Not available like this
         # top_p=top_p,
     )
