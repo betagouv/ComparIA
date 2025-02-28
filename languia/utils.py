@@ -245,6 +245,9 @@ def pick_models(mode, custom_models_selection, outages):
         if model["friendly_size"] in ["L", "XL"]
         and model["id"] not in unavailable_models
     ]
+    reasoning_models = [
+        model for model in models_extra_info if model.get("reasoning", False)
+    ]
 
     import random
 
@@ -259,11 +262,15 @@ def pick_models(mode, custom_models_selection, outages):
         first_model = small_models[random.randint(0, len(small_models))]
         # TODO: choose_among(models, excluded) with a warning if it couldn't exclude it
         second_model = choose_among(
-            models=small_models, excluded=unavailable_models + [model_left_name]
+            models=small_models, excluded=unavailable_models + [first_model]
         )
         model_left_name = first_model["id"]
         model_right_name = second_model["id"]
-
+    elif mode == "reasoning":
+        first_model = reasoning_models[random.randint(0, len(reasoning_models))]
+        second_model = choose_among(
+            models=reasoning_models, excluded=unavailable_models + [first_model]
+        )
         # Custom mode
     elif mode == "custom" and len(custom_models_selection) > 0:
         # custom_models_selection = model_dropdown_scoped["custom_models_selection"]
@@ -610,6 +617,7 @@ def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as db_config
+
     result = 55000
     logger = logging.getLogger("languia")
     if not db_config:
@@ -637,6 +645,7 @@ AS total_approx;
         if conn:
             conn.close()
         return result
+
 
 # def gauge_banner_html():
 #     gauge_count = get_gauge_count()
