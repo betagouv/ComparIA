@@ -51,3 +51,4 @@ languia-*.json
 utils/results/
 utils/results-output/
 datasets/
+litellm_config.yml
