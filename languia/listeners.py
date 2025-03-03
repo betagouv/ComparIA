@@ -291,90 +291,9 @@ document.getElementById("fr-modal-welcome-close").blur();
             # shuffle_link
             gr.update(visible=False),
             # conclude_btn
-            gr.update(visible=True, interactive=False),
+            gr.update(visible=True, interactive=False)
         ]
 
-    def add_text(
-        app_state_scoped,
-        conv_a_scoped: gr.State,
-        conv_b_scoped: gr.State,
-        text: gr.Text,
-        request: gr.Request,
-        event: gr.EventData,
-    ):
-
-        # if retry, resend last user errored message
-        if event._data is not None:
-            last_message_a = conv_a_scoped.messages[-1]
-            last_message_b = conv_b_scoped.messages[-1]
-
-            app_state_scoped.awaiting_responses = False
-            if last_message_a.role == "user" and last_message_b.role == "user":
-                text = last_message_a.content
-                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-            else:
-                raise gr.Error(
-                    message="Il n'est pas possible de réessayer, veuillez recharger la page.",
-                    duration=10,
-                )
-            # # Reinit both generators
-            # gen = [
-            #     bot_response(
-            #         pos[i],
-            #         conversations[i],
-            #         request,
-            #         apply_rate_limit=True,
-            #         use_recommended_config=True,
-            #     )
-            #     for i in range(config.num_sides)
-            # ]
-
-        conversations = [conv_a_scoped, conv_b_scoped]
-
-        # Check if "Enter" pressed and no text or still awaiting response and return early
-        if text == "":
-            raise (gr.Error("Veuillez entrer votre texte.", duration=10))
-        if app_state_scoped.awaiting_responses:
-            raise (
-                gr.Error(
-                    message="Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question.",
-                    duration=10,
-                )
-            )
-
-        logger.info(
-            f"msg_user: {text}",
-            extra={"request": request},
-        )
-
-        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
-            logger.info(
-                f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
-                extra={"request": request},
-            )
-
-        text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
-        for i in range(config.num_sides):
-            conversations[i].messages.append(ChatMessage(role="user", content=text))
-        conv_a_scoped = conversations[0]
-        conv_b_scoped = conversations[1]
-        app_state_scoped.awaiting_responses = True
-
-        # record for questions only dataset and stats on ppl abandoning before generation completion
-        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
-
-        chatbot = to_threeway_chatbot(conversations)
-        text = gr.update(visible=True, value="")
-        return [
-            app_state_scoped,
-            # 2 conversations
-            conv_a_scoped,
-            conv_b_scoped,
-            # 1 chatbot
-            chatbot,
-            text,
-        ]
 
     def first_bot_response_multi(
         app_state_scoped,
@@ -425,15 +344,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                     chatbot,
                     gr.skip(),
                 ]
-            # When context is too long, Albert API answers:
-            # openai.BadRequestError: Error code: 400 - {'detail': 'Context length too large'}
-            # When context is too long, HF API answers:
-            # "openai.APIError: An error occurred during streaming"
-            # TODO: timeout problems on scaleway Ampere models?
-            # except httpcore.ReadTimeout:
-            #     pass
-            # except httpx.ReadTimeout:
-            #     pass
         except (
             BaseException,
             openai.APIError,
@@ -470,12 +380,14 @@ document.getElementById("fr-modal-welcome-close").blur();
             conv_b_scoped.messages[-1].error = True
 
             # If it's the first message in conversation, re-roll
-            # TODO: refacto bc of system prompt logic (first messages could already have a >2 length if not zero-shot)
             if len(conv_a_scoped.messages) == 1 or (
                 len(conv_a_scoped.messages) == 2
                 and conv_a_scoped.messages[0].role == "system"
             ):
-                original_user_prompt = conv_a_scoped.messages[0].content
+                if len(conv_a_scoped.messages) == 1:
+                    original_user_prompt = conv_a_scoped.messages[0].content
+                else:
+                    original_user_prompt = conv_a_scoped.messages[1].content
 
                 config.unavailable_models = refresh_unavailable_models(
                     config.unavailable_models, controller_url=config.controller_url
@@ -537,6 +449,77 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
+    def add_text(
+        app_state_scoped,
+        conv_a_scoped: gr.State,
+        conv_b_scoped: gr.State,
+        text: gr.Text,
+        request: gr.Request,
+        event: gr.EventData,
+    ):
+
+        # if retry, resend last user errored message
+        if event._data is not None:
+            last_message_a = conv_a_scoped.messages[-1]
+            last_message_b = conv_b_scoped.messages[-1]
+
+            app_state_scoped.awaiting_responses = False
+            if last_message_a.role == "user" and last_message_b.role == "user":
+                text = last_message_a.content
+                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            else:
+                raise gr.Error(
+                    message="Il n'est pas possible de réessayer, veuillez recharger la page.",
+                    duration=10,
+                )
+
+        conversations = [conv_a_scoped, conv_b_scoped]
+
+        # Check if "Enter" pressed and no text or still awaiting response and return early
+        if text == "":
+            raise (gr.Error("Veuillez entrer votre texte.", duration=10))
+        if app_state_scoped.awaiting_responses:
+            raise (
+                gr.Error(
+                    message="Veuillez attendre la fin de la réponse des modèles avant de renvoyer une question.",
+                    duration=10,
+                )
+            )
+
+        logger.info(
+            f"msg_user: {text}",
+            extra={"request": request},
+        )
+
+        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+            logger.info(
+                f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
+                extra={"request": request},
+            )
+
+        text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
+        for i in range(config.num_sides):
+            conversations[i].messages.append(ChatMessage(role="user", content=text))
+        conv_a_scoped = conversations[0]
+        conv_b_scoped = conversations[1]
+        app_state_scoped.awaiting_responses = True
+
+        # record for questions only dataset and stats on ppl abandoning before generation completion
+        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+
+        chatbot = to_threeway_chatbot(conversations)
+        text = gr.update(visible=True, value="")
+        return [
+            app_state_scoped,
+            # 2 conversations
+            conv_a_scoped,
+            conv_b_scoped,
+            # 1 chatbot
+            chatbot,
+            text,
+        ]
+    
     def bot_response_multi(
         app_state_scoped,
         conv_a_scoped,
