@@ -11,7 +11,6 @@ from gradio import Error
 
 from languia.config import GLOBAL_TIMEOUT
 import litellm
-
 import json
 
 from langfuse.decorators import langfuse_context, observe
@@ -43,7 +42,8 @@ def litellm_stream_iter(
 
     # Too verbose:
     # if debug:
-    #     litellm.set_verbose=True
+    #     litellm._turn_on_debug()
+
     if (
         os.getenv("LANGFUSE_PUBLIC_KEY")
         and os.getenv("LANGFUSE_SECRET_KEY")
@@ -124,6 +124,8 @@ def litellm_stream_iter(
                 else:
                     content = ""
                 # TODO: extract thinking here
+                if hasattr(chunk.choices[0].delta, "reasoning"):
+                    content = chunk.choices[0].delta.reasoning or ""
             else:
                 content = ""
 
