@@ -268,42 +268,6 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = gr.update(visible=True)
         app_state_scoped.awaiting_responses = True
-        return [
-            app_state_scoped,
-            # 2 conversations
-            conv_a_scoped,
-            conv_b_scoped,
-            # 1 chatbot
-            chatbot,
-            text,
-            banner,
-            # textbox
-            gr.update(
-                value="",
-                placeholder="Continuer à discuter avec les deux modèles d'IA",
-            ),
-            # mode_screen
-            gr.update(visible=False),
-            # chat_area
-            gr.update(visible=True),
-            # send_btn
-            gr.update(interactive=False),
-            # shuffle_link
-            gr.update(visible=False),
-            # conclude_btn
-            gr.update(visible=True, interactive=False)
-        ]
-
-
-    def first_bot_response_multi(
-        app_state_scoped,
-        conv_a_scoped,
-        conv_b_scoped,
-        chatbot,
-        textbox,
-        request: gr.Request,
-    ):
-        conversations = [conv_a_scoped, conv_b_scoped]
 
         try:
             gen_a = bot_response(
@@ -337,19 +301,46 @@ document.getElementById("fr-modal-welcome-close").blur();
                     break
 
                 chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+                # yield [
+                #     app_state_scoped,
+                #     conv_a_scoped,
+                #     conv_b_scoped,
+                #     chatbot,
+                #     gr.skip(),
+                # ]
                 yield [
                     app_state_scoped,
+                    # 2 conversations
                     conv_a_scoped,
                     conv_b_scoped,
+                    # 1 chatbot
                     chatbot,
-                    gr.skip(),
+                    text,
+                    banner,
+                    # textbox
+                    gr.update(
+                        value="",
+                        placeholder="Continuer à discuter avec les deux modèles d'IA",
+                    ),
+                    # mode_screen
+                    gr.update(visible=False),
+                    # chat_area
+                    gr.update(visible=True),
+                    # send_btn
+                    gr.update(interactive=False),
+                    # shuffle_link
+                    gr.update(visible=False),
+                    # conclude_btn
+                    gr.update(visible=True, interactive=False),
                 ]
+
         except (
             BaseException,
             openai.APIError,
             openai.BadRequestError,
             EmptyResponseError,
         ) as e:
+            conversations = [conv_a_scoped, conv_b_scoped]
             error_with_endpoint = conversations[i].endpoint.get("api_id")
             error_with_model = conversations[i].model_name
 
@@ -408,12 +399,8 @@ document.getElementById("fr-modal-welcome-close").blur();
                     f"reinitializing convs w/ two new models: {model_left} and {model_right}",
                     extra={"request": request},
                 )
-                conv_a_scoped = copy.deepcopy(Conversation(
-                    model_name=model_left
-                ))
-                conv_b_scoped = copy.deepcopy(Conversation(
-                    model_name=model_right
-                ))
+                conv_a_scoped = copy.deepcopy(Conversation(model_name=model_left))
+                conv_b_scoped = copy.deepcopy(Conversation(model_name=model_right))
                 logger.info(
                     f"new conv ids: {conv_a_scoped.conv_id} and {conv_b_scoped.conv_id}",
                     extra={"request": request},
@@ -428,7 +415,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 )
         finally:
 
-            # Got answer at this point
+            # Got answer at this point (or error?)
             app_state_scoped.awaiting_responses = False
 
             record_conversations(
@@ -447,7 +434,31 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
 
-            yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
+            yield [
+                app_state_scoped,
+                # 2 conversations
+                conv_a_scoped,
+                conv_b_scoped,
+                # 1 chatbot
+                chatbot,
+                text,
+                banner,
+                # textbox
+                gr.update(
+                    value="",
+                    placeholder="Continuer à discuter avec les deux modèles d'IA",
+                ),
+                # mode_screen
+                gr.update(visible=False),
+                # chat_area
+                gr.update(visible=True),
+                # send_btn
+                gr.update(interactive=False),
+                # shuffle_link
+                gr.update(visible=False),
+                # conclude_btn
+                gr.update(visible=True, interactive=False),
+            ]
 
     def add_text(
         app_state_scoped,
@@ -519,7 +530,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             chatbot,
             text,
         ]
-    
+
     def bot_response_multi(
         app_state_scoped,
         conv_a_scoped,
@@ -528,7 +539,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         textbox,
         request: gr.Request,
     ):
-        conversations = [conv_a_scoped, conv_b_scoped]
 
         try:
             gen_a = bot_response(
@@ -575,6 +585,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             openai.BadRequestError,
             EmptyResponseError,
         ) as e:
+            conversations = [conv_a_scoped, conv_b_scoped]
             error_with_endpoint = conversations[i].endpoint.get("api_id")
             error_with_model = conversations[i].model_name
 
@@ -652,7 +663,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             model_dropdown.submit,
         ],
         fn=add_first_text,
-        # api_name=False,
+        api_name=False,
         inputs=[app_state, model_dropdown],
         outputs=[app_state]
         + [conv_a]
@@ -667,16 +678,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [shuffle_link]
         + [conclude_btn],
         show_progress="hidden",
-        # scroll_to_output=True
-    ).then(
-        # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
-        fn=first_bot_response_multi,
-        # inputs=conversations + [temperature, top_p, max_output_tokens],
-        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
-        outputs=[app_state, conv_a, conv_b, chatbot, textbox],
-        # api_name=False,
-        show_progress="hidden",
-        # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
     ).then(
         fn=enable_conclude,
