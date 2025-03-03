@@ -213,7 +213,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     elif mode == "small-models":
         model_left_name = choose_among(models=small_models, excluded=unavailable_models)
         model_right_name = choose_among(
-            models=small_models, excluded=unavailable_models + [first_model]
+            models=small_models, excluded=unavailable_models + [model_left_name]
         )
     elif mode == "reasoning":
         model_left_name = choose_among(

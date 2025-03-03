@@ -217,7 +217,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         if text == "":
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
-        from languia.utils import pick_models
 
         first_model_name, second_model_name = pick_models(
             mode, custom_models_selection, unavailable_models=config.unavailable_models
