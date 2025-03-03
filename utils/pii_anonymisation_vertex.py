@@ -98,8 +98,6 @@ class Classifier:
                 self.logger.warning(f"Attempt {attempt + 1} failed: {str(e)}")
                 if attempt < Config.MAX_RETRIES - 1:
                     time.sleep(Config.RETRY_DELAY)
-
-        self.stats.add_error()
         return None
 
     def calculate_diff(self, input_str, result_str):
