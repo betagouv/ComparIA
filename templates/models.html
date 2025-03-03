@@ -260,8 +260,10 @@
                 <div class="fr-container fr-pl-4w">
                     <!-- <button class="fr-btn--close fr-btn fr-pt-2w" title="Fermer la fenêtre modale"
                         aria-controls="fr-modal-filters-section">Fermer</button> -->
-                    <h5 class="md-visible hidden fr-mb-md-1w">Filtres</h5>
-                    <div><a href="#" id="reset-filters-link">Réinitialiser</a><button
+                    <!-- <h5 class="md-visible hidden fr-mb-md-1w">Filtres</h5> -->
+                    <h4 id="models-count" aria-live="polite">{{ models | list | length }} modèles</h4>
+
+                    <div><button
                             class="right fr-btn purple-btn fr-mb-4w md-hidden" title="Voir les résultats"
                             id="results-count" aria-controls="fr-modal-filters-section">Voir les {{ models | list |
                             length }}
@@ -329,12 +331,13 @@
                     </div>
                 </fieldset>
                 </form>
+                <a href="#" id="reset-filters-link">Réinitialiser</a>
             </div>
     </div>
     </aside>
 
     <section class="fr-col-md-9 fr-pl-md-4w fr-px-md-4w fr-px-2w fr-my-2w fr-mt-md-4w fr-mb-md-10w">
-        <h4 id="models-count" aria-live="polite">{{ models | list | length }} modèles</h4>
+<!-- Put sort here -->
         <div class="fr-grid-row fr-grid-row--gutters">
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
