@@ -376,7 +376,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             text,
         ]
 
-    def bot_response_multi(
+    def first_bot_response_multi(
         app_state_scoped,
         conv_a_scoped,
         conv_b_scoped,
@@ -537,6 +537,113 @@ document.getElementById("fr-modal-welcome-close").blur();
 
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
+    def bot_response_multi(
+        app_state_scoped,
+        conv_a_scoped,
+        conv_b_scoped,
+        chatbot,
+        textbox,
+        request: gr.Request,
+    ):
+        conversations = [conv_a_scoped, conv_b_scoped]
+
+        try:
+            gen_a = bot_response(
+                "a",
+                conv_a_scoped,
+                request,
+                apply_rate_limit=True,
+                use_recommended_config=True,
+            )
+            gen_b = bot_response(
+                "b",
+                conv_b_scoped,
+                request,
+                apply_rate_limit=True,
+                use_recommended_config=True,
+            )
+            while True:
+                try:
+                    i = 0
+                    response_a = next(gen_a)
+                    conv_a_scoped = response_a
+                except StopIteration:
+                    response_a = None
+                try:
+                    i = 1
+                    response_b = next(gen_b)
+                    conv_b_scoped = response_b
+                except StopIteration:
+                    response_b = None
+                if response_a is None and response_b is None:
+                    break
+
+                chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+                yield [
+                    app_state_scoped,
+                    conv_a_scoped,
+                    conv_b_scoped,
+                    chatbot,
+                    gr.skip(),
+                ]
+        except (
+            BaseException,
+            openai.APIError,
+            openai.BadRequestError,
+            EmptyResponseError,
+        ) as e:
+            error_with_endpoint = conversations[i].endpoint.get("api_id")
+            error_with_model = conversations[i].model_name
+
+            if os.getenv("SENTRY_DSN"):
+
+                # with sentry_sdk.configure_scope() as scope:
+                # Set the fingerprint based on the message content
+                # scope.fingerprint = [e]
+                sentry_sdk.capture_exception(e)
+
+            logger.exception(
+                f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
+                extra={
+                    "request": request,
+                    "error": str(e),
+                    "stacktrace": traceback.format_exc(),
+                },
+                exc_info=True,
+            )
+
+            # Remove last message if it's an assistant message (failed during generation)
+            if conv_a_scoped.messages[-1].role == "assistant":
+                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+            if conv_b_scoped.messages[-1].role == "assistant":
+                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+
+            conv_a_scoped.messages[-1].error = True
+            conv_b_scoped.messages[-1].error = True
+
+        finally:
+
+            # Got answer at this point
+            app_state_scoped.awaiting_responses = False
+
+            record_conversations(
+                app_state_scoped, [conv_a_scoped, conv_b_scoped], request
+            )
+
+            if not conv_a_scoped.messages[-1].role == "user":
+                logger.info(
+                    f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
+                    extra={"request": request},
+                )
+                logger.info(
+                    f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
+                    extra={"request": request},
+                )
+
+            chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+
+            yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
+
     def enable_conclude(
         app_state_scoped, textbox_scoped, conv_a_scoped, request: gr.Request
     ):
@@ -580,7 +687,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # scroll_to_output=True
     ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
-        fn=bot_response_multi,
+        fn=first_bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         outputs=[app_state, conv_a, conv_b, chatbot, textbox],
@@ -648,9 +755,9 @@ setTimeout(() => {
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
     ).then(
-        fn=enable_conclude,
-        inputs=[app_state, textbox, conv_a],
-        outputs=[textbox, conclude_btn, send_btn],
+        fn=(lambda: None),
+        inputs=None,
+        outputs=None,
         js="""(args) => {
 setTimeout(() => {
   console.log("scrolling to bot responses");
