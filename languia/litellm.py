@@ -47,7 +47,7 @@ def litellm_stream_iter(
     if (
         os.getenv("LANGFUSE_PUBLIC_KEY")
         and os.getenv("LANGFUSE_SECRET_KEY")
-        and os.getenv("LANGFUSE_HOST")
+        # os.getenv("LANGFUSE_HOST") is optional (sent to SaaS if unset)
     ):
         print("loading langfuse")
         litellm.success_callback = ["langfuse"]
