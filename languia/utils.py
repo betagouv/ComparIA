@@ -133,6 +133,7 @@ def get_endpoint(model_id):
     for endpoint in api_endpoint_info:
         if endpoint.get("model_id") == model_id:
             return endpoint
+
     return None
 
 
@@ -206,24 +207,20 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     import random
 
     if mode == "big-vs-small":
-        # choose_among?
-        first_model = big_models[random.randint(0, len(big_models))]
-        second_model = small_models[random.randint(0, len(small_models))]
+        model_left_name =  choose_among(models=big_models, excluded=unavailable_models)
+        model_right_name =  choose_among(models=small_models, excluded=unavailable_models)
 
-        model_left_name = first_model["id"]
-        model_right_name = second_model["id"]
     elif mode == "small-models":
-        first_model = small_models[random.randint(0, len(small_models))]
-        # TODO: choose_among(models, excluded) with a warning if it couldn't exclude it
-        second_model = choose_among(
+        model_left_name = choose_among(models=small_models, excluded=unavailable_models)
+        model_right_name = choose_among(
             models=small_models, excluded=unavailable_models + [first_model]
         )
-        model_left_name = first_model["id"]
-        model_right_name = second_model["id"]
     elif mode == "reasoning":
-        first_model = reasoning_models[random.randint(0, len(reasoning_models))]
-        second_model = choose_among(
-            models=reasoning_models, excluded=unavailable_models + [first_model]
+        model_left_name = choose_among(
+            models=reasoning_models, excluded=unavailable_models
+        )
+        model_right_name = choose_among(
+            models=reasoning_models, excluded=unavailable_models + [model_left_name]
         )
         # Custom mode
     elif mode == "custom" and len(custom_models_selection) > 0:
