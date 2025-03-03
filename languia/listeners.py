@@ -224,12 +224,16 @@ document.getElementById("fr-modal-welcome-close").blur();
         )
 
         # Important: to avoid sharing object references between Gradio sessions
-        conv_a_scoped = copy.deepcopy(Conversation(
-            model_name=first_model_name,
-        ))
-        conv_b_scoped = copy.deepcopy(Conversation(
-            model_name=second_model_name,
-        ))
+        conv_a_scoped = copy.deepcopy(
+            Conversation(
+                model_name=first_model_name,
+            )
+        )
+        conv_b_scoped = copy.deepcopy(
+            Conversation(
+                model_name=second_model_name,
+            )
+        )
         # Could be added in Converstation.__init__?
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
@@ -273,6 +277,21 @@ document.getElementById("fr-modal-welcome-close").blur();
             chatbot,
             text,
             banner,
+            # textbox
+            gr.update(
+                value="",
+                placeholder="Continuer à discuter avec les deux modèles d'IA",
+            ),
+            # mode_screen
+            gr.update(visible=False),
+            # chat_area
+            gr.update(visible=True),
+            # send_btn
+            gr.update(interactive=False),
+            # shuffle_link
+            gr.update(visible=False),
+            # conclude_btn
+            gr.update(visible=True, interactive=False),
         ]
 
     def add_text(
@@ -356,24 +375,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             chatbot,
             text,
         ]
-
-    def goto_chatbot(
-        request: gr.Request,
-        #  FIXME: ignored
-        api_name=False,
-    ):
-        logger.debug("goto_chatbot")
-        return {
-            textbox: gr.update(
-                value="",
-                placeholder="Continuer à discuter avec les deux modèles d'IA",
-            ),
-            mode_screen: gr.update(visible=False),
-            chat_area: gr.update(visible=True),
-            send_btn: gr.update(interactive=False),
-            shuffle_link: gr.update(visible=False),
-            conclude_btn: gr.update(visible=True, interactive=False),
-        }
 
     def bot_response_multi(
         app_state_scoped,
@@ -568,20 +569,13 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [conv_b]
         + [chatbot]
         + [textbox]
-        + [mode_banner],
-        # scroll_to_output=True,
-        show_progress="hidden",
-    ).then(
-        fn=goto_chatbot,
-        inputs=[],
-        outputs=(
-            [textbox]
-            + [mode_screen]
-            + [chat_area]
-            + [send_btn]
-            + [shuffle_link]
-            + [conclude_btn]
-        ),
+        + [mode_banner]
+        + [textbox]
+        + [mode_screen]
+        + [chat_area]
+        + [send_btn]
+        + [shuffle_link]
+        + [conclude_btn],
         show_progress="hidden",
         # scroll_to_output=True
     ).then(
