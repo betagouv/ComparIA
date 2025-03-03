@@ -399,7 +399,7 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                 model_left, model_right = pick_models(
                     app_state_scoped.mode,
-                    # Doesn't make sense to
+                    # Doesn't make sense to keep custom model options here
                     [],
                     # temporarily exclude the buggy model here
                     config.unavailable_models + [error_with_model],
@@ -408,12 +408,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                     f"reinitializing convs w/ two new models: {model_left} and {model_right}",
                     extra={"request": request},
                 )
-                conv_a_scoped = Conversation(
-                    model_name=model_left,
-                )
-                conv_b_scoped = Conversation(
-                    model_name=model_right,
-                )
+                conv_a_scoped = copy.deepcopy(Conversation(
+                    model_name=model_left
+                ))
+                conv_b_scoped = copy.deepcopy(Conversation(
+                    model_name=model_right
+                ))
                 logger.info(
                     f"new conv ids: {conv_a_scoped.conv_id} and {conv_b_scoped.conv_id}",
                     extra={"request": request},
