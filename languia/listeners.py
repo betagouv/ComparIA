@@ -36,6 +36,8 @@ import traceback
 import os
 import sentry_sdk
 
+import copy
+
 import openai
 
 from languia.utils import (
@@ -193,7 +195,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         # event: gr.EventData,
     ):
-
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         config.unavailable_models = refresh_unavailable_models(
@@ -222,12 +223,13 @@ document.getElementById("fr-modal-welcome-close").blur();
             mode, custom_models_selection, unavailable_models=config.unavailable_models
         )
 
-        conv_a_scoped = Conversation(
+        # Important: to avoid sharing object references between Gradio sessions
+        conv_a_scoped = copy.deepcopy(Conversation(
             model_name=first_model_name,
-        )
-        conv_b_scoped = Conversation(
+        ))
+        conv_b_scoped = copy.deepcopy(Conversation(
             model_name=second_model_name,
-        )
+        ))
         # Could be added in Converstation.__init__?
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
