@@ -89,11 +89,12 @@ def litellm_stream_iter(
             "existing_trace_id": langfuse_context.get_current_trace_id(),  # set langfuse trace ID
             "parent_observation_id": langfuse_context.get_current_observation_id(),
         },
+        include_reasoning=True,
         # Not available like this
         # top_p=top_p,
     )
 
-    # TODO: openrouter specific params
+    # openrouter specific params
     # transforms = [""],
     # route= ""
 
@@ -117,10 +118,12 @@ def litellm_stream_iter(
                 extra={"request": request},
             )
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
-            if hasattr(chunk.choices[0], "delta") and hasattr(
-                chunk.choices[0].delta, "content"
-            ):
-                content = chunk.choices[0].delta.content or ""
+            if hasattr(chunk.choices[0], "delta"):
+                if hasattr(chunk.choices[0].delta, "content"):
+                    content = chunk.choices[0].delta.content or ""
+                else:
+                    content = ""
+                # TODO: extract thinking here
             else:
                 content = ""
 
