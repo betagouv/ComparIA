@@ -20,8 +20,13 @@
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let disabled = false;
-	export let mode: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning" =
-		"random";
+	type Mode =
+		| "random"
+		| "custom"
+		| "big-vs-small"
+		| "small-models"
+		| "reasoning";
+	export let mode: Mode = "random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
 	export let custom_models_selection: string[] = []; // Default to an empty list
 
@@ -30,7 +35,7 @@
 	// Combine all into one value object based on mode and other properties
 	export let value: {
 		prompt_value: string;
-		mode: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning";
+		mode: Mode;
 		custom_models_selection: string[];
 	} = {
 		prompt_value: "",
@@ -44,7 +49,7 @@
 	import Dice from "./shared/dice.svelte";
 
 	type Choice = {
-		value: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning";
+		value: Mode;
 		label: string;
 		alt_label: string;
 		icon: any;
@@ -64,21 +69,24 @@
 			alt_label: "Modèles frugaux",
 
 			icon: Leaf, // Replace with your icon class or SVG
-			description: "Deux modèles tirés au hasard parmi ceux de plus petite taille",
+			description:
+				"Deux modèles tirés au hasard parmi ceux de plus petite taille",
 		},
 		{
 			value: "big-vs-small",
 			label: "David contre Goliath",
 			alt_label: "David contre Goliath",
 			icon: Ruler, // Replace with your icon class or SVG
-			description: "Un petit modèle contre un grand, les deux tirés au hasard",
+			description:
+				"Un petit modèle contre un grand, les deux tirés au hasard",
 		},
 		{
 			value: "reasoning",
 			label: "Raisonnement",
 			alt_label: "Modèles avec raisonnement",
 			icon: Brain, // Replace with your icon class or SVG
-			description: "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
+			description:
+				"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
 		},
 		{
 			value: "random",
@@ -133,7 +141,6 @@
 
 			mode = choices[index].value;
 			if (mode != value["mode"]) {
-				
 				value["mode"] = mode;
 				// Don't tell backend to switch to custom if no custom_models_selection yet
 				if (
