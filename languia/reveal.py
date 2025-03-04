@@ -31,6 +31,7 @@ license_desc = {
     "Mistral AI Non-Production": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
 }
 
+# TODO: move tu utils
 license_attrs = {
     # Utilisation commerciale
     # Modification autorisée

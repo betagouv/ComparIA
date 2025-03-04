@@ -302,6 +302,19 @@ def params_to_friendly_size(params):
 
     return "M"
 
+def get_conditions_from_license(license_name):
+    if "propriétaire" in license_name:
+        return "restricted"
+    elif license_name in ["Gemma", "CC-BY-NC-4.0"]:
+        return "copyleft"
+    else:
+        return "free"
+
+def get_distrib_clause_from_license(license_name):
+    if "propriétaire" in license_name:
+        return "api-only"
+    else:
+        return "open-weights"
 
 def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
 
@@ -312,9 +325,11 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
     model["simple_name"] = model.get("simple_name", std_name)
     model["icon_path"] = model.get("icon_path", "huggingface.svg")
 
+    model["license"] = model.get("license", "MIT")
+    model["distribution"] = get_distrib_clause_from_license(model["license"])
+    model["conditions"] = get_conditions_from_license(model["license"])
+
     # TODO: dict for organisation = "DeepSeek" => icon_path = "deepseek.webp" 
-    # TODO: deduce distribution and conditions attrs from license
-    model.get("")
 
     if not any(model.get(key) for key in ("friendly_size", "params", "total_params")):
         model["params"] = 100
