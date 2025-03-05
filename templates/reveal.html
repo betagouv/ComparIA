@@ -41,6 +41,8 @@
                     %}Taille estimée ({{ model['friendly_size'] }})
                     {% endif %}
                 </span>
+                <span class="fr-badge fr-badge--no-icon fr-mr-1v">Sortie {{ model['release_date'] }}
+                </span>
                 <span class="fr-badge fr-badge--no-icon fr-mr-1v">
                     Licence {% if
                     model['distribution'] == "open-weights" %}{{ model['license'] }}{%

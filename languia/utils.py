@@ -324,6 +324,7 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
 
     model["simple_name"] = model.get("simple_name", std_name)
     model["icon_path"] = model.get("icon_path", "huggingface.svg")
+    model["release_date"] = model.get("release_date", "2024")
 
     model["license"] = model.get("license", "MIT")
     model["distribution"] = get_distrib_clause_from_license(model["license"])
