@@ -374,6 +374,7 @@ li.fr-nav__item {
 
 .fr-header__service-tagline {
   color: #3A3A3A;
+  font-size: 0.75em !important;
 }
 
 #header-html a[target=_blank]::after {
