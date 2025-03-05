@@ -141,20 +141,21 @@ async def share(i: str, request: Request):
         get_llm_impact,
         calculate_lightbulb_consumption,
         calculate_streaming_hours,
+        convert_range_to_value,
     )
 
     model_a_impact = get_llm_impact(model_a, model_a_name, model_a_tokens, None)
     model_b_impact = get_llm_impact(model_b, model_b_name, model_b_tokens, None)
 
-    lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(
-        model_a_impact.energy.value
-    )
-    lightbulb_b, lightbulb_b_unit = calculate_lightbulb_consumption(
-        model_b_impact.energy.value
-    )
+    model_a_kwh = convert_range_to_value(model_a_impact.energy.value)
+    model_b_kwh = convert_range_to_value(model_b_impact.energy.value)
+    model_a_co2 = convert_range_to_value(model_a_impact.gwp.value)
+    model_b_co2 = convert_range_to_value(model_b_impact.gwp.value)
+    lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(model_a_kwh)
+    lightbulb_b, lightbulb_b_unit = calculate_lightbulb_consumption(model_b_kwh)
 
-    streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_impact.gwp.value)
-    streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_impact.gwp.value)
+    streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_co2)
+    streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_co2)
 
     return templates.TemplateResponse(
         "share.html",
@@ -164,8 +165,10 @@ async def share(i: str, request: Request):
             "model_a": model_a,
             "model_b": model_b,
             "chosen_model": chosen_model,
-            "model_a_impact": model_a_impact,
-            "model_b_impact": model_b_impact,
+            "model_a_kwh": model_a_kwh,
+            "model_b_kwh": model_b_kwh,
+            "model_a_co2": model_a_co2,
+            "model_b_co2": model_b_co2,
             "size_desc": size_desc,
             "license_desc": license_desc,
             "license_attrs": license_attrs,

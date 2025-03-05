@@ -49,7 +49,15 @@ license_attrs = {
 }
 
 
-def calculate_lightbulb_consumption(impact_energy_value_or_range):
+def convert_range_to_value(value_or_range):
+
+    if hasattr(value_or_range, "min"):
+        return (value_or_range.min + value_or_range.max) / 2
+    else:
+        return value_or_range
+
+
+def calculate_lightbulb_consumption(impact_energy_value):
     """
     Calculates the energy consumption of a 5W LED light and determines the most sensible time unit.
 
@@ -61,12 +69,6 @@ def calculate_lightbulb_consumption(impact_energy_value_or_range):
         - An integer representing the consumption time.
         - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
     """
-    if hasattr(impact_energy_value_or_range, "min"):
-        impact_energy_value = (
-            impact_energy_value_or_range.min + impact_energy_value_or_range.max
-        ) / 2
-    else:
-        impact_energy_value = impact_energy_value_or_range
     # Calculate consumption time using Wh
     watthours = impact_energy_value * 1000
     consumption_hours = watthours / 5
@@ -85,7 +87,7 @@ def calculate_lightbulb_consumption(impact_energy_value_or_range):
         return int(consumption_seconds), "s"
 
 
-def calculate_streaming_hours(impact_gwp_value_or_range):
+def calculate_streaming_hours(impact_gwp_value):
     """
     Calculates equivalent streaming hours and determines a sensible time unit.
 
@@ -98,12 +100,6 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
         - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
     """
 
-    if hasattr(impact_gwp_value_or_range, "min"):
-        impact_gwp_value = (
-            impact_gwp_value_or_range.min + impact_gwp_value_or_range.max
-        ) / 2
-    else:
-        impact_gwp_value = impact_gwp_value_or_range
     # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
     streaming_hours = (impact_gwp_value * 10000) / 317
 
@@ -117,8 +113,7 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
     else:
         return int(streaming_hours * 60 * 60), "s"
 
-
-def build_reveal_html(conv_a, conv_b, which_model_radio):
+def build_reveal_dict(conv_a, conv_b, chosen_model):
     from languia.config import models_extra_info
 
     logger = logging.getLogger("languia")
@@ -154,19 +149,21 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
     model_a_impact = get_llm_impact(model_a, conv_a.model_name, model_a_tokens, None)
     model_b_impact = get_llm_impact(model_b, conv_b.model_name, model_b_tokens, None)
 
-    env = Environment(loader=FileSystemLoader("templates"))
 
-    template = env.get_template("reveal.html")
-    chosen_model = get_chosen_model(which_model_radio)
+
+    model_a_kwh = convert_range_to_value(model_a_impact.energy.value)
+    model_b_kwh = convert_range_to_value(model_b_impact.energy.value)
+    model_a_co2 = convert_range_to_value(model_a_impact.gwp.value)
+    model_b_co2 = convert_range_to_value(model_b_impact.gwp.value)
     lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(
-        model_a_impact.energy.value
+        model_a_kwh
     )
     lightbulb_b, lightbulb_b_unit = calculate_lightbulb_consumption(
-        model_b_impact.energy.value
+        model_b_kwh
     )
 
-    streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_impact.gwp.value)
-    streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_impact.gwp.value)
+    streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_co2)
+    streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_co2)
 
     import base64, json
 
@@ -184,13 +181,15 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
     jsonstring = json.dumps(data).encode("ascii")
     b64 = base64.b64encode(jsonstring).decode("ascii")
 
-    return template.render(
+    return dict(
         b64=b64,
         model_a=model_a,
         model_b=model_b,
         chosen_model=chosen_model,
-        model_a_impact=model_a_impact,
-        model_b_impact=model_b_impact,
+        model_a_kwh=model_a_kwh,
+        model_b_kwh=model_b_kwh,
+        model_a_co2=model_a_co2,
+        model_b_co2=model_b_co2,
         size_desc=size_desc,
         license_desc=license_desc,
         license_attrs=license_attrs,
@@ -203,8 +202,14 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
         lightbulb_a=lightbulb_a,
         lightbulb_a_unit=lightbulb_a_unit,
         lightbulb_b=lightbulb_b,
-        lightbulb_b_unit=lightbulb_b_unit,
-    )
+        lightbulb_b_unit=lightbulb_b_unit)
+
+def build_reveal_html(conv_a, conv_b, which_model_radio):
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template("reveal.html")
+    chosen_model = get_chosen_model(which_model_radio)
+    reveal_dict = build_reveal_dict(conv_a, conv_b, chosen_model)
+    return template.render(**reveal_dict)
 
 
 def determine_choice_badge(reactions):

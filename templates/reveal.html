@@ -6,10 +6,12 @@
     <h4 class="text-center fr-mt-2w fr-mb-3w">Les IA sont démasquées !</h4>
 
     <div id="reveal-grid" class="grid grid-cols-md-2 grid-cols-1 fr-mx-md-12w">
-        {% for model, side, impact, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a,
-        'model-a', model_a_impact, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a, streaming_a_unit),
+        {% for model, side, kwh, co2, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a,
+        'model-a', model_a_kwh, model_a_co2, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a,
+        streaming_a_unit),
         (model_b,
-        'model-b', model_b_impact, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b, streaming_b_unit)] %}
+        'model-b', model_b_kwh, model_b_co2, model_b_tokens, lightbulb_b, lightbulb_b_unit, streaming_b,
+        streaming_b_unit)] %}
 
         <div class="rounded-tile bg-white text-left fr-mb-1w fr-p-4w fr-mx-3v">
             {% if chosen_model == side %}
@@ -70,9 +72,9 @@
                                     model['distribution'] != "open-weights" %} (est.){%
                                     endif
                                     %}{% if
-                                        model.get('quantization', '') == "q8" %} (quantisé){%
-                                        endif
-                                        %}</span></strong></p>
+                                    model.get('quantization', '') == "q8" %} (quantisé){%
+                                    endif
+                                    %}</span></strong></p>
                         <p class="fr-text--sm">taille du modèle
                         </p>
                     </div>
@@ -112,7 +114,7 @@
                         </svg>
                     </div>
                     <div class="">
-                        <p><strong><span class="fr-text--xxl">{{ (impact.energy.value*1000)|round|int
+                        <p><strong><span class="fr-text--xxl">{{ kwh*1000|round|int
                                     }}</span>Wh</strong>
                         </p>
                         <p class="fr-text--xs">énergie conso.
@@ -143,10 +145,10 @@
                         </svg>
                     </div>
                     <div class="">
-                        {% if impact.gwp.value * 1000 < 2 %} <p><strong><span class="fr-text--xxl">{{
-                                    '{:0.2f}'.format(impact.gwp.value * 1000) }}</span>g</strong></p>
+                        {% if convert_range_to_value(co2) * 1000 < 2 %} <p><strong><span class="fr-text--xxl">{{
+                                    '{:0.2f}'.format(co2 * 1000) }}</span>g</strong></p>
                             {% else %}
-                            <p><strong><span class="fr-text--xxl">{{ (impact.gwp.value * 1000)|round|int
+                            <p><strong><span class="fr-text--xxl">{{ (co2 * 1000)|round|int
                                         }}</span>g</strong></p>
                             {% endif %}
                             </p>
@@ -208,7 +210,7 @@
     </div>
 </div>
 <div class="feedback">
-{% include 'feedback.html' %}
+    {% include 'feedback.html' %}
 </div>
 {% set j2_context = 'arena' %}
 {% for model in [model_a, model_b] %}
