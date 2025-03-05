@@ -283,54 +283,84 @@ def get_matomo_js(matomo_url, matomo_id):
     return js
 
 
+def params_to_friendly_size(params):
+    """
+    Converts a parameter value to a friendly size description.
+
+    Args:
+        param (int): The parameter value
+
+    Returns:
+        str: The friendly size description
+    """
+    intervals = [(0, 7), (7, 20), (20, 70), (70, 150), (150, float("inf"))]
+    sizes = ["XS", "S", "M", "L", "XL"]
+
+    for i, (lower, upper) in enumerate(intervals):
+        if lower <= params <= upper:
+            return sizes[i]
+
+    return "M"
+
+def get_conditions_from_license(license_name):
+    if "propriétaire" in license_name:
+        return "restricted"
+    elif license_name in ["Gemma", "CC-BY-NC-4.0"]:
+        return "copyleft"
+    else:
+        return "free"
+
+def get_distrib_clause_from_license(license_name):
+    if "propriétaire" in license_name:
+        return "api-only"
+    else:
+        return "open-weights"
+
 def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
-    # Maybe put orgs countries in an array here
+
     std_name = name.lower()
-    logger = logging.getLogger("languia")
-    if std_name in all_models_extra_info_toml:
-        model = all_models_extra_info_toml[std_name]
-        # TODO: Should use a dict instead
-        model["id"] = std_name
-        if "excerpt" not in model and "description" in model:
-            if len(model["description"]) > 190:
-                model["excerpt"] = model["description"][0:190] + "[…]"
-            else:
-                model["excerpt"] = model["description"]
+    model = all_models_extra_info_toml.get(std_name, {"id": std_name})
 
-        if "params" not in model:
-            if "total_params" in model:
-                model["params"] = model["total_params"]
-            else:
-                logger.warn(
-                    "Params not found for model "
-                    + std_name
-                    + ", infering from friendly size (when closed model for example)"
-                )
-                size_to_params = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-                model["params"] = size_to_params[model["friendly_size"]]
+    model["id"] = model.get("id", std_name)
+    model["simple_name"] = model.get("simple_name", std_name)
+    model["icon_path"] = model.get("icon_path", "huggingface.svg")
+    # model["release_date"] = model.get("release_date", None)
 
-        if model.get("quantization", None) == "q8":
-            model["required_ram"] = model["params"] * 2
+    model["license"] = model.get("license", "MIT")
+    model["distribution"] = get_distrib_clause_from_license(model["license"])
+    model["conditions"] = get_conditions_from_license(model["license"])
+
+    # TODO: dict for organisation = "DeepSeek" => icon_path = "deepseek.webp" 
+
+    if not any(model.get(key) for key in ("friendly_size", "params", "total_params")):
+        model["params"] = 100
+
+    # Determine params if not listed explicitly
+    if "params" not in model:
+        PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
+        model["params"] = model.get(
+            "total_params",
+            PARAMS_SIZE_MAP.get(model.get("friendly_size"), 100),
+        )
+
+    # Determine friendly size if not listed explicitly
+    model["friendly_size"] = model.get(
+        "friendly_size", params_to_friendly_size(model["params"])
+    )
+
+    if "excerpt" not in model and "description" in model:
+        if len(model["description"]) > 190:
+            model["excerpt"] = model["description"][0:190] + "[…]"
         else:
-            # We suppose from q4 to fp16
-            model["required_ram"] = model["params"]
+            model["excerpt"] = model["description"]
 
-        return model
-        # To fix this, please complete `models-extra-info.json` to register your model
-    return {
-        "id": "other",
-        "simple_name": "Autre",
-        "organisation": "Autre",
-        "params": 7,
-        "required_ram": 7,
-        "friendly_size": "M",
-        "distribution": "open-weights",
-        "conditions": "restricted",
-        "description": "Un modèle open weights disponible via Hugging Face.",
-        "excerpt": "Un modèle open weights",
-        "icon_path": "huggingface.svg",
-        "license": "Autre",
-    }
+    if model.get("quantization", None) == "q8":
+        model["required_ram"] = model["params"] * 2
+    else:
+        # We suppose from q4 to fp16
+        model["required_ram"] = model["params"]
+
+    return model
 
 
 def get_model_extra_info(name: str, models_extra_info: list):
@@ -338,20 +368,11 @@ def get_model_extra_info(name: str, models_extra_info: list):
     for model in models_extra_info:
         if model["id"] == std_name:
             return model
-    return {
-        "id": "other",
-        "params": 7,
-        "required_ram": 7,
-        "simple_name": "Autre",
-        "organisation": "Autre",
-        "friendly_size": "M",
-        "distribution": "open-weights",
-        "conditions": "copyleft",
-        "description": "Un modèle open weights disponible via Hugging Face.",
-        "excerpt": "Un modèle open weights",
-        "icon_path": "huggingface.svg",
-        "license": "Autre",
-    }
+    # if not found return minimalistic dict
+    return {"id": name}
+
+
+import json
 
 
 def get_model_list(_controller_url, api_endpoint_info):

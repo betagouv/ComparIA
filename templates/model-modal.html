@@ -1,7 +1,7 @@
 {% if j2_context == "arena" %}
-    {% set src = '../' %}
+{% set src = '../' %}
 {% else %}
-    {% set src = '' %}
+{% set src = '' %}
 {% endif %}
 
 <dialog aria-labelledby="fr-modal-title-modal-{{ model['id'] }}" role="dialog" id="fr-modal-{{ model['id'] }}"
@@ -16,7 +16,8 @@
                     </div>
                     <div class="fr-modal__content fr-mb-4w modal-model">
                         <h6 class="fr-mb-2w github-title"><img class="relative inline fr-mt-n2v"
-                                src="{{ src }}assets/orgs/{{ model['icon_path'] }}" width="34" /> {{ model['organisation']
+                                src="{{ src }}assets/orgs/{{ model['icon_path'] }}" width="34" /> {{
+                            model['organisation']
                             }}/<strong>{{
                                 model["simple_name"] }}</strong>
                         </h6>
@@ -33,11 +34,11 @@
                             {%
                             else
                             %}
-                            <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                            <span class="fr-badge fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                 Propriétaire
                             </span>
                             {% endif %}
-                            <span class="fr-badge fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                            <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                 {% if
                                 model['distribution'] == "open-weights" %}{{ model['params']|int }} mds de
                                 paramètres&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line"
@@ -46,7 +47,9 @@
                                 else
                                 %}Taille estimée ({{ model['friendly_size'] }})
                                 {% endif %}
-                            </span>
+                            </span>{% if 'release_date' in model %}
+                            <span class="fr-badge fr-badge--no-icon fr-mr-1v">Sortie {{ model['release_date'] }}
+                            </span>{% endif %}
                             <span class="fr-badge fr-badge--no-icon fr-mr-1v">
                                 Licence {% if
                                 model['distribution'] == "open-weights" %}{{ model['license'] }}{%
@@ -54,6 +57,7 @@
                                 %}commerciale
                                 {% endif %}
                             </span>
+
                         </p>
                         <p>{{ model['description'] }}</p>
                         <div>
@@ -83,8 +87,9 @@
                                 {% if
                                 model['distribution'] == "open-weights" %}
                                 <p class="fr-text--sm text-grey"><strong>
-                                    Licence {{
-                                    model['license'] }}</strong>&nbsp;: {{ license_desc[model["license"]]|default("Les
+                                        Licence {{
+                                        model['license'] }}</strong>&nbsp;: {{
+                                    license_desc[model["license"]]|default("Les
                                     informations de
                                     licence n'ont pas été remplies pour ce modèle.") }}
                                 </p>
@@ -164,9 +169,13 @@
 
     {% if model['distribution'] == "open-weights" %}
 
-    <span class="fr-tooltip fr-placement" id="license-{{ model['id'] }}" role="tooltip" aria-hidden="true">Modèle dit "open weights" dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit "open source" est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés "open source".
+    <span class="fr-tooltip fr-placement" id="license-{{ model['id'] }}" role="tooltip" aria-hidden="true">Modèle dit
+        "open weights" dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables
+        par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit "open
+        source" est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares
+        sont les modèles qui sont considérés "open source".
     </span>
-    
+
     <span class="fr-tooltip fr-placement" id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les paramètres
         ou
         les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui

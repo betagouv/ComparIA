@@ -1,26 +1,7 @@
-# ["Albert MFS"]
-# simple_name = "Albert MFS"
-# organisation = "Albert"
-# # icon_path = "marianne.png"
-# friendly_size = "S"
-# distribution = "open-weights"
-# conditions = "free"
-
-# [Alpaca-13B]
-# simple_name = "Alpaca-13B"
-# organisation = "Stanford"
-# # icon_path = "stanford.png"
-# friendly_size = "S"
-# distribution = "open-weights"
-# conditions = "restricted"
-
 [Aya23-35B]
 simple_name = "Aya23-35B"
 organisation = "Cohere"
 icon_path = "cohere.png"
-friendly_size = "M"
-distribution = "open-weights"
-conditions = "copyleft"
 params = 35
 license = "CC-BY-NC-4.0"
 description = "Aya 23 35B de Cohere est un modèle de taille moyenne de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
@@ -29,9 +10,6 @@ description = "Aya 23 35B de Cohere est un modèle de taille moyenne de la famil
 simple_name = "Aya 23 8B"
 organisation = "Cohere"
 icon_path = "cohere.png"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "copyleft"
 params = 8
 license = "CC-BY-NC-4.0"
 description = "Aya 23 8B de Cohere est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
@@ -40,20 +18,9 @@ description = "Aya 23 8B de Cohere est un petit modèle de la famille Command R 
 simple_name = "Aya Expanse 8B"
 organisation = "Cohere"
 icon_path = "cohere.png"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "copyleft"
 params = 8
 license = "CC-BY-NC-4.0"
 description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
-
-# ["Claude 3 Opus"]
-# simple_name = "Claude 3 Opus"
-# organisation = "Anthropic"
-# # icon_path = "anthropic.png"
-# friendly_size = "L"
-# distribution = "api-only"
-# conditions = "restricted"
 
 [claude-3-5-sonnet-v2]
 simple_name = "Claude 3.5 Sonnet v2"
@@ -62,21 +29,17 @@ icon_path = "anthropic.png"
 friendly_size = "XL"
 active_params = 100
 params = 300
-distribution = "api-only"
-conditions = "restricted"
 description = "Meilleur modèle de la famille Claude, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel. La version v2 est sortie en octobre 2024."
 license = "propriétaire Anthropic"
 url = "https://www.anthropic.com/news/3-5-models-and-computer-use"
+release_date = "10/2024"
 
 [command-r-plus]
 simple_name = "Command R+"
 organisation = "Cohere"
 icon_path = "cohere.png"
-friendly_size = "L"
-distribution = "open-weights"
 params = 104
 license = "CC-BY-NC-4.0"
-conditions = "copyleft"
 description = "Grand frère de la famille Command R de Cohere, ce modèle de langage est orienté pour l'usage professionnel et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
 
 [c4ai-command-r-08-2024]
@@ -84,20 +47,10 @@ simple_name = "Command R"
 params = 35
 organisation = "Cohere"
 icon_path = "cohere.png"
-friendly_size = "M"
-distribution = "open-weights"
-conditions = "copyleft"
 license = "CC-BY-NC-4.0"
 excerpt = "Actualisé en août 2024, ce modèle multilingue de l'entreprise canadienne Cohere, a été entrainé sur 23 langues et est conçu pour les tâches de recherche et d'extraction d'informations."
 description = "Actualisé en août 2024, ce modèle multilingue de l'entreprise canadienne Cohere, plus petit que Command R+, a été entrainé sur 23 langues et est conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
-
-# ["CroissantLLMChat-v0.1"]
-# simple_name = "CroissantLLMChat-v0.1"
-# organisation = "ILLUIN"
-# # icon_path = "illuin.png"
-# friendly_size = "XS"
-# distribution = "open-weights"
-# conditions = "free"
+release_date = "08/2024"
 
 ["chocolatine-14b-instruct-dpo-v1.2"]
 url = "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF"
@@ -105,10 +58,7 @@ simple_name = "Chocolatine 14B"
 organisation = "jpacifico"
 params = 14
 icon_path = "huggingface.svg"
-friendly_size = "M"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 excerpt = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
@@ -118,10 +68,7 @@ simple_name = "Chocolatine 2 14B"
 organisation = "jpacifico"
 params = 14
 icon_path = "huggingface.svg"
-friendly_size = "M"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 excerpt = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française."
 description = "Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français."
 
@@ -132,12 +79,10 @@ organisation = "jpacifico"
 params = 14
 quantization = "q8"
 icon_path = "huggingface.svg"
-friendly_size = "M"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 excerpt = "Sorti en février 2025, et reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française."
 description = "Sorti en février 2025, et reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français. Il est proposé ici en version quantisée q8 (compressée de moitié)."
+release_date = "02/2025"
 
 ["deepseek-r1"]
 url = "https://huggingface.co/deepseek-ai/DeepSeek-R1"
@@ -146,13 +91,11 @@ organisation = "DeepSeek"
 total_params = 671
 active_params = 37
 icon_path = "deepseek.webp"
-friendly_size = "XL"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 excerpt = "Sorti en janvier 2025, ce modèle est basé sur Deepseek V3 qui élabore un raisonnement avant de formuler une réponse."
 description = "Sorti en janvier 2025, ce modèle phare de la société chinoise DeepSeek, est un modèle qui élabore un raisonnement avant de formuler une réponse. DeepSeek R1 est basé sur Deepseek V3, qui possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 reasoning = true
+release_date = "01/2025"
 
 ["deepseek-r1-distill-llama-70b"]
 url = "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b"
@@ -160,9 +103,6 @@ simple_name = "DeepSeek R1 Llama 70B"
 organisation = "DeepSeek"
 params = 70
 icon_path = "deepseek.webp"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "copyleft"
 excerpt = "Ce modèle est un modèle Llama 3.3 70B transformé par l'entreprise DeepSeek pour être doté d'un système de raisonnement à travers un corpus synthétique généré par DeepSeek R1."
 description = "Ce modèle est un modèle Llama 3.3 70B transformé par l'entreprise DeepSeek pour être doté d'un système de raisonnement à travers un corpus synthétique généré par DeepSeek R1. Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
 license = "Llama 3.3"
@@ -175,10 +115,7 @@ organisation = "DeepSeek"
 total_params = 671
 active_params = 37
 icon_path = "deepseek.webp"
-friendly_size = "XL"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 excerpt = "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 description = "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 
@@ -190,11 +127,10 @@ simple_name = "Gemini 1.5 Pro"
 organisation = "Google"
 icon_path = "google.png"
 friendly_size = "XL"
-distribution = "api-only"
 license = "propriétaire Gemini"
-conditions = "restricted"
 description = "Sorti en février 2024 et amélioré en septembre 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
 excerpt = "Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
+release_date = "02/2024"
 
 ["gemini-2.0-flash-exp"]
 url = "https://ai.google.dev/gemini-api"
@@ -203,20 +139,16 @@ simple_name = "Gemini 2.0 Flash"
 organisation = "Google"
 icon_path = "google.png"
 friendly_size = "M"
-distribution = "api-only"
 license = "propriétaire Gemini"
-conditions = "restricted"
 description = "Sorti en décembre 2024 en version expérimentale, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
 excerpt = "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés."
+release_date = "12/2024"
 
 ["gemma-2-27b-it-q8"]
 url = "https://huggingface.co/google/gemma-2-27b-it"
 simple_name = "Gemma 2 27b"
 organisation = "Google"
 icon_path = "google.png"
-friendly_size = "M"
-distribution = "open-weights"
-conditions = "copyleft"
 license = "Gemma"
 params = 27
 excerpt = "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision."
@@ -227,25 +159,21 @@ url = "https://huggingface.co/google/gemma-2-9b-it"
 simple_name = "Gemma 2 9B"
 organisation = "Google"
 icon_path = "google.png"
-friendly_size = "S"
-distribution = "open-weights"
 license = "Gemma"
 params = 9
-conditions = "copyleft"
 excerpt = "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
 description = "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
+release_date = "06/2024"
 
 [gemma-2-2b-it]
 url = "https://huggingface.co/google/gemma-2-2b-it"
 simple_name = "Gemma 2 2B"
 organisation = "Google"
 icon_path = "google.png"
-friendly_size = "XS"
-distribution = "open-weights"
 license = "Gemma"
 params = 2
-conditions = "copyleft"
 description = "Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros."
+release_date = "07/2024"
 
 ["gpt-3.5-turbo-0301"]
 url = "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo"
@@ -253,11 +181,10 @@ simple_name = "GPT-3.5"
 organisation = "OpenAI"
 icon_path = "openai.svg"
 friendly_size = "L"
-distribution = "api-only"
 license = "propriétaire OpenAI"
-conditions = "restricted"
 description = "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel."
 excerpt = "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel."
+release_date = "03/2023"
 
 ["gpt-4o-mini-2024-07-18"]
 url = "https://platform.openai.com/docs/models/gp#gpt-4o-mini"
@@ -265,11 +192,10 @@ simple_name = "GPT-4o mini"
 organisation = "OpenAI"
 icon_path = "openai.svg"
 friendly_size = "M"
-distribution = "api-only"
 license = "propriétaire OpenAI"
-conditions = "restricted"
 description = "Modèle lancé en juillet 2024 et remplaçant GPT-3.5, GPT-4o mini est une version plus petite de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA."
 excerpt = "Le plus petit des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en juillet 2024."
+release_date = "07/2024"
 
 [gpt-4o-2024-08-06]
 url = "https://platform.openai.com/docs/models/gpt#gpt-4o"
@@ -277,24 +203,21 @@ simple_name = "GPT-4o"
 organisation = "OpenAI"
 icon_path = "openai.svg"
 friendly_size = "XL"
-distribution = "api-only"
 license = "propriétaire OpenAI"
-conditions = "restricted"
 description = "Modèle lancé en août 2024 et successeur de GPT-4, GPT-4o est une version améliorée de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA."
 excerpt = "Le plus grand des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en août 2024."
+release_date = "08/2024"
 
 ["hermes-3-llama-3.1-405b"]
 url = "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B"
 simple_name = "Hermes 3 405B"
 organisation = "Nous"
 icon_path = "nous.webp"
-friendly_size = "XL"
-distribution = "open-weights"
 params = 405
-conditions = "free"
 excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la série Hermes. C'est une adaptation du modèle Llama 3.1 405B de Meta."
 description = "Doté de 405 milliards de paramètres, ce modèle est la version la plus large de la troisième itération des modèles Hermes. Ce modèle Hermes 3 est un fine-tune conçu par l'entreprise américaine 'Nous Research' à partir du modèle Llama 3.1 405B de Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation."
 license = "Llama 3.1"
+release_date = "07/2024"
 
 ["jamba-1.5-large"]
 url = "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large"
@@ -302,13 +225,12 @@ simple_name = "Jamba 1.5 Large"
 organisation = "AI21"
 icon_path = "ai21.webp"
 friendly_size = "XL"
-distribution = "open-weights"
-conditions = "copyleft"
 excerpt = "Sorti en août 2024, ce modèle de l'entreprise AI21 est un modèle de type particulier hybride dit 'SSM' et Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
 description = "Sorti en août 2024, ce modèle de l'entreprise AI21 est un modèle de type particulier hybride dit 'SSM' (State Space Models) et Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
 total_params = 400
 active_params = 94
 license = "Jamba Open Model"
+release_date = "08/2024"
 
 ["lfm-40b"]
 url = "https://www.liquid.ai/liquid-foundation-models"
@@ -316,38 +238,33 @@ simple_name = "LFM 40B"
 organisation = "Liquid"
 icon_path = "liquid.svg"
 friendly_size = "M"
-distribution = "api-only"
-conditions = "restricted"
 excerpt = "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
 description = "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts (MoE), dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
 params = 40
 license = "propriétaire Liquid"
+release_date = "09/2024"
 
 ["llama-3.1-405b"]
 url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct"
 simple_name = "Llama 3.1 405B"
 organisation = "Meta"
 icon_path = "meta.svg"
-friendly_size = "XL"
-distribution = "open-weights"
-conditions = "free"
 excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la série Llama de Meta, optimisé pour des tâches complexes de programmation, de mathématique et de raisonnement."
 description = "Doté de 405 milliards de paramètres, ce modèle est le plus gros modèle de langage entraîné à ce jour par l'entreprise Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation. Le modèle a été entraîné sur un corpus de 15 milliards de tokens dont la limite de connaissances est fixée au mois de décembre 2023."
 params = 405
 license = "Llama 3.1"
+release_date = "07/2024"
 
 ["llama-3.1-8b"]
 url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct"
 simple_name = "Llama 3.1 8B"
 organisation = "Meta"
 icon_path = "meta.svg"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "free"
 excerpt = "Version la plus légère de Llama 3.1, ce modèle est rapide et adapté aux applications courantes. Sorti en avril 2024, les données sur lesquelles il a été entraîné remontent au mois de décembre 2023."
 description = "Lancé en avril 2024, ce modèle cadet de la famille Llama 3.1 a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il est adapté aux tâches multilingues et au traitement de longs textes pouvant aller jusqu’à 128 000 tokens."
 params = 8
 license = "Llama 3.1"
+release_date = "04/2024"
 
 ["llama-3.1-70b"]
 url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct"
@@ -355,12 +272,10 @@ params = 70
 simple_name = "Llama 3.1 70B"
 organisation = "Meta"
 icon_path = "meta.svg"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "copyleft"
 excerpt = "Doté de 70 milliards de paramètres et sorti en avril 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
 description = "Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps forts des Jeux olympiques de Paris 2024 ! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
 license = "Llama 3.1"
+release_date = "04/2024"
 
 ["llama-3.3-70b"]
 url = "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct"
@@ -368,12 +283,10 @@ params = 70
 simple_name = "Llama 3.3 70B"
 organisation = "Meta"
 icon_path = "meta.svg"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "copyleft"
 excerpt = "Doté de 70 milliards de paramètres et sorti en décembre 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
 description = "Remplaçant la famille Llama 3.2, ce modèle sorti en décembre 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps forts des Jeux olympiques de Paris 2024 ! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
 license = "Llama 3.3"
+release_date = "12/2024"
 
 ["llama-3.1-nemotron-70b-instruct"]
 url = "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct"
@@ -381,33 +294,26 @@ params = 70
 simple_name = "Llama 3.1 Nemotron 70B"
 organisation = "NVIDIA"
 icon_path = "nvidia.svg"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "free"
 excerpt = "Doté de 70 milliards de paramètres, ce modèle est un fine-tune conçu par le concepteur de cartes graphiques NVIDIA à partir du modèle Llama 3.1 70B de Meta."
 description = "Doté de 70 milliards de paramètres, ce modèle est un fine-tune conçu par le concepteur de cartes graphiques NVIDIA à partir du modèle Llama 3.1 70B de Meta. Sorti en octobre 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
 license = "Llama 3.1"
+release_date = "10/2024"
 
 [Meta-Llama-3-70B-Instruct]
 params = 70
 simple_name = "Llama 3 70B"
 organisation = "Meta"
 icon_path = "meta.svg"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "restricted"
 excerpt = "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens mais supporte un contexte relativement restreint de 8000 tokens."
 description = "Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il supporte un contexte de 8000 tokens."
 license = "Llama 3 Community"
+release_date = "04/2024"
 
 [Meta-Llama-3-8B-Instruct]
 params = 8
 simple_name = "Llama 3 8B"
 organisation = "Meta"
 icon_path = "meta.svg"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "restricted"
 description = "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité."
 excerpt = "Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité."
 license = "Llama 3 Community"
@@ -418,9 +324,6 @@ simple_name = "Mistral Small 3"
 organisation = "Mistral"
 params = 24
 icon_path = "mistral.png"
-friendly_size = "M"
-distribution = "open-weights"
-conditions = "free"
 description = "Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme, possède un mode d'appel de fonction et un contexte de 32 000 tokens."
 excerpt = "Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme et possède des capacités de raisonnement avancées."
 license = "Apache 2.0"
@@ -431,12 +334,10 @@ simple_name = "Mistral Nemo"
 params = 12
 organisation = "Mistral"
 icon_path = "mistral.png"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "free"
 description = "Sorti en juillet 2024, ce modèle de petit gabarit est entraîné pour des tâches de raisonnement, de connaissances générales et de programmation. Il utilise le tokenizer Tekken, efficace pour compresser des textes allant jusqu’à 128 000 tokens en plus de 100 langues."
 excerpt = "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter un contexte de 128k tokens en plus de 100 langues. Sorti en juillet 2024."
 license = "Apache 2.0"
+release_date = "07/2024"
 
 [ministral-8b-instruct-2410]
 url = "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410"
@@ -444,30 +345,10 @@ simple_name = "Ministral"
 params = 8
 organisation = "Mistral"
 icon_path = "mistral.png"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "free"
 description = "Sorti en octobre 2024, ce modèle de petit gabarit est entraîné pour des tâches de raisonnement, de connaissances générales et de programmation. Il utilise le tokenizer Tekken, efficace pour compresser des textes. Il parle plus de 100 langues."
 excerpt = "Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter plus de 100 langues. Sorti en octobre 2024."
 license = "Mistral AI Non-Production"
-
-# ["Mistral-7B-Instruct-v0.3"]
-# simple_name = "Mistral-7B"
-# params = 7
-# organisation = "Mistral"
-# # icon_path = "mistral.png"
-# friendly_size = "S"
-# distribution = "open-weights"
-# conditions = "free"
-# license = "Apache 2.0"
-
-# [Mistral-Large-2402]
-# simple_name = "Mistral-Large-2402"
-# organisation = "Mistral"
-# # icon_path = "mistral.png"
-# friendly_size = "L"
-# distribution = "api-only"
-# conditions = "restricted"
+release_date = "10/2024"
 
 ["Mixtral-8x22B-Instruct-v0.1"]
 url = "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1"
@@ -476,12 +357,10 @@ active_params = 44
 total_params = 176
 organisation = "Mistral"
 icon_path = "mistral.png"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "free"
 excerpt = "Ce modèle multilingue sorti en avril 2024 a particulièrement été entraîné en anglais, français, allemand, italien et espagnol ainsi que sur des tâches de mathématiques, programmation et raisonnement."
 description = "L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût. Seuls 39Mds de paramètres sont actifs sur 141Mds. La fenêtre contextuelle de 64000 tokens permet de rappeler des informations précises à partir de grands documents. Sorti en avril 2024."
 license = "Apache 2.0"
+release_date = "04/2024"
 
 ["Mixtral-8x7B-Instruct-v0.1"]
 url = "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1"
@@ -490,9 +369,6 @@ organisation = "Mistral"
 active_params = 14
 total_params = 56
 icon_path = "mistral.png"
-friendly_size = "M"
-distribution = "open-weights"
-conditions = "free"
 description = "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol. Grâce à l’architecture SMoE (sparse mixture of experts), seule une fraction des paramètres est activée pour chaque inférence, réduisant ainsi les coûts et la latence."
 excerpt = "Ce modèle entraîné sur un corpus multilingue est efficace pour des tâches variées et peu complexes."
 license = "Apache 2.0"
@@ -503,15 +379,12 @@ simple_name = "Mistral Large"
 organisation = "Mistral"
 params = 123
 icon_path = "mistral.png"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "free"
 description = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
 excerpt = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
 license = "Mistral AI Research"
+release_date = "11/2024"
 
 ["o3-mini"]
-# url = "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
 simple_name = "o3-mini"
 organisation = "OpenAI"
 # params = 123
@@ -530,10 +403,7 @@ simple_name = "Phi-3-Mini"
 organisation = "Microsoft"
 params = 3.8
 icon_path = "microsoft.png"
-friendly_size = "XS"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 description = "Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
 excerpt = "Performant pour des tâches de génération de code, et de résumé, ce modèle compact supporte un contexte restreint de 4000 tokens."
 
@@ -543,10 +413,7 @@ simple_name = "Phi-3.5-mini"
 organisation = "Microsoft"
 params = 3.8
 icon_path = "microsoft.png"
-friendly_size = "XS"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 description = "Petit modèle de la famille Phi, remplaçant Phi-3-mini, ce modèle supporte un grand contexte de 128 000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré."
 excerpt = "Performant pour des tâches de génération de code et de résumé, ce modèle gère un grand contexte de 128k tokens."
 
@@ -556,12 +423,10 @@ simple_name = "Phi-4"
 organisation = "Microsoft"
 params = 14.7
 icon_path = "microsoft.png"
-friendly_size = "S"
-distribution = "open-weights"
 license = "MIT"
-conditions = "free"
 description = "Modèle de décembre 2024 de la famille Phi, remplaçant Phi-3.5, ce petit modèle a été entrainé sur une dizaine de milliards de tokens, soit un gros corpus synthétique et filtré issu du web."
 excerpt = "Modèle de décembre 2024 de la famille Phi, remplaçant Phi-3.5, ce petit modèle a été entrainé sur une dizaine de milliards de tokens, soit un gros corpus synthétique et filtré issu du web."
+release_date = "12/2024"
 
 [Phi-3-small-8k-Instruct]
 license = "MIT"
@@ -570,17 +435,11 @@ description = "Grand frère de la famille Phi3, ce modèle supporte un contexte 
 excerpt = "Optimisé pour le raisonnement logique, ce petit modèle supporte un contexte de 8000 tokens, adapté pour la génération de code et tâches complexes."
 organisation = "Microsoft"
 icon_path = "microsoft.png"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "free"
 
 ["Qwen1.5-32B-Chat"]
 simple_name = "Qwen1.5-32B"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
-friendly_size = "M"
-distribution = "open-weights"
-conditions = "restricted"
 license = "Apache 2.0"
 
 ["qwen2.5-coder-32b-instruct"]
@@ -588,10 +447,7 @@ simple_name = "Qwen2.5-Coder-32B"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
 params = 32
-friendly_size = "M"
-distribution = "open-weights"
 license = "Apache 2.0"
-conditions = "free"
 description = "Modèle de la famille CodeQwen et produit par l'entreprise chinoise Alibaba, ce modèle est spécialisé dans la génération de code et l'usage de son modèle en tant qu'agent."
 url = "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct"
 
@@ -599,9 +455,6 @@ url = "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct"
 simple_name = "Qwen2-57B-A14B-Instruct"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
-friendly_size = "M"
-distribution = "open-weights"
-conditions = "restricted"
 license = "Apache 2.0"
 
 [Qwen2-72b-instruct]
@@ -609,9 +462,6 @@ url = "https://huggingface.co/Qwen/Qwen2-72B-Instruct"
 simple_name = "Qwen2-72b-instruct"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "restricted"
 license = "Apache 2.0"
 
 [Qwen2-7B-instruct]
@@ -619,9 +469,6 @@ url = "https://huggingface.co/Qwen/Qwen2-7B-Instruct"
 simple_name = "Qwen2-7B"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "free"
 description = "Petit frère de la famille Qwen2 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes."
 excerpt = "Supportant un contexte de 130k tokens, ce petit modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
 params = 7
@@ -632,10 +479,7 @@ url = "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct"
 simple_name = "Qwen2.5-7B"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
-friendly_size = "S"
-distribution = "open-weights"
 dataset = "private"
-conditions = "free"
 description = "Petit modèle de la famille Qwen2.5 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes."
 excerpt = "Supportant un contexte de 130k tokens, ce modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
 params = 7
@@ -646,9 +490,6 @@ url = "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct"
 simple_name = "Qwen2.5-32B"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
-friendly_size = "L"
-distribution = "open-weights"
-conditions = "free"
 description = "Modèle intermédiaire de la famille Qwen2.5 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes."
 excerpt = "Supportant un contexte de 130k tokens, ce modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement."
 params = 32
@@ -659,9 +500,6 @@ url = "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
 simple_name = "Yi-1.5 9B"
 organisation = "01-ai"
 icon_path = "yi.svg"
-friendly_size = "S"
-distribution = "open-weights"
-conditions = "free"
 description = "Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en code, maths, raisonnement, suivi d'instructions, avec une solide compréhension du langage."
 excerpt = "Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en code, maths, raisonnement, suivi d'instructions, avec une solide compréhension du langage."
 params = 9
