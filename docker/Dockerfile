@@ -1,11 +1,7 @@
-# FROM nvidia/cuda:12.2.0-runtime-ubuntu20.04 AS build
-# FROM debian:11-slim
-FROM public.ecr.aws/docker/library/python:3.10-slim AS base
+FROM public.ecr.aws/docker/library/python:3.11-slim AS base
 
 # Debug tools
 RUN apt-get update -y && apt-get install -y curl postgresql-client
-# RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
-# RUN python3.9 get-pip.py
 COPY ./requirements.txt /requirements.txt
 RUN pip3 install -r requirements.txt
 WORKDIR /app
