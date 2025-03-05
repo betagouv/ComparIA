@@ -69,20 +69,19 @@
 				>
 					{distribution == "api-only"
 						? "Propriétaire"
-						: "Open weights"}
+						: "Semi-ouvert"}
 				</span>
 				{#if release_date }<span
-				class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">Sortie {
+				class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">Sortie&nbsp;{
 				release_date }
 			</span>{/if}
 				<span
 					class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v"
 				>
 					{#if distribution === "api-only"}
-						Taille estimée ({friendly_size})
+						Taille&nbsp;estimée&nbsp;({friendly_size})
 					{:else}
-						{typeof params === "number" ? params : total_params} mds
-						paramètres
+						{typeof params === "number" ? params : total_params}&nbsp;mds&nbsp;paramètres
 					{/if}</span
 				>
 			</div>
