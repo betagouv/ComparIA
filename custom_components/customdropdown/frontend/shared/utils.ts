@@ -31,6 +31,7 @@ export interface Model {
 	total_params: number;
 	distribution: "open-weights" | "api-only";
 	icon_path: string;
+	release_date: string | null;
 }
 
 // export function handle_change(

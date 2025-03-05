@@ -17,7 +17,7 @@
 </script>
 
 <div class="models-grid">
-	{#each models as { id, simple_name, icon_path, organisation, params, total_params, friendly_size, distribution }, index}
+	{#each models as { id, simple_name, icon_path, organisation, params, total_params, friendly_size, distribution, release_date}, index}
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
@@ -59,18 +59,24 @@
 				><strong>{simple_name}</strong>
 			</div>
 			<div>
+
 				<span
-					class:fr-badge--info={distribution == "api-only"}
 					class:fr-badge--yellow-tournesol={distribution ==
-						"open-weights"}
+						"open-weights"} 
+					class:fr-badge--orange-terre-battue={distribution ==
+						"api-only"} 
 					class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
 				>
 					{distribution == "api-only"
 						? "Propriétaire"
 						: "Open weights"}
 				</span>
+				{#if release_date }<span
+				class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">Sortie {
+				release_date }
+			</span>{/if}
 				<span
-					class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
+					class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v"
 				>
 					{#if distribution === "api-only"}
 						Taille estimée ({friendly_size})
