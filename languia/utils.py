@@ -319,9 +319,9 @@ def get_distrib_clause_from_license(license_name):
 def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
 
     std_name = name.lower()
-    logger = logging.getLogger("languia")
     model = all_models_extra_info_toml.get(std_name, {"id": std_name})
 
+    model["id"] = model.get("id", std_name)
     model["simple_name"] = model.get("simple_name", std_name)
     model["icon_path"] = model.get("icon_path", "huggingface.svg")
     model["release_date"] = model.get("release_date", "06/2024")
