@@ -267,28 +267,7 @@
                             length }}
                             résultats</button></div>
                     <form id="model-filter-form">
-                        <fieldset class="fr-fieldset">
-                            <legend class="fr-pt-2w fr-mb-1w">Date de sortie</legend>
-                            <div class="fr-checkbox-group fr-checkbox-group--sm">
-                                {% set release_dates = [] %}
-                                {% for model in models %}
-                                {% if model.release_date not in release_dates %}
-                                {% set _ = release_dates.append(model.release_date) %}
-                                {% endif %}
-                                {% endfor %}
-                                {% set _ = release_dates.sort(reverse=True) %} {# Sort the list of years #}
-                                {% for year in release_dates %}
-                                <div class="fr-checkbox">
-                                    <input type="checkbox" id="year-{{ year }}" name="year-filter" value="{{ year }}" />
-                                    <label for="year-{{ year }}">
-                                        <strong>{{ year }}</strong>
-                                        <span class="filter-number">{{ models | selectattr('release_date', '==', year) |
-                                            list | length }}</span>
-                                    </label>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </fieldset>
+
                         <fieldset class="fr-fieldset">
                             <legend class="fr-pt-2w fr-mb-1w">Taille (paramètres)</legend>
                             <div class="fr-checkbox-group fr-checkbox-group--sm">
@@ -388,11 +367,13 @@
                                 {%
                                 else
                                 %}
-                                <span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                <span
+                                    class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                     Propriétaire
                                 </span>
                                 {% endif %}
-                                <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">Sortie {{ model['release_date'] }}
+                                <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">Sortie {{
+                                    model['release_date'] }}
                                 </span>
                                 <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                     {% if
