@@ -148,7 +148,7 @@
                         {% if (co2 * 1000) < 2 %} <p><strong><span class="fr-text--xxl">{{
                                     '{:0.2f}'.format(co2 * 1000) }}</span>g</strong></p>
                             {% else %}
-                            <p><strong><span class="fr-text--xxl">{{ (co2 * 1000)|round|int
+                            <p><strong><span class="fr-text--xxl">{{ '{:.0f}'.format(co2 * 1000) 
                                         }}</span>g</strong></p>
                             {% endif %}
                             </p>
