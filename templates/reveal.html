@@ -114,8 +114,8 @@
                         </svg>
                     </div>
                     <div class="">
-                        <p><strong><span class="fr-text--xxl">{{ kwh*1000|round|int
-                                    }}</span>Wh</strong>
+                        <p><strong><span class="fr-text--xxl">{% if (co2 * 1000) < 2 %} {{ '{:0.2f}' .format(co2 * 1000)
+                                        }} {% else %} {{ '{:.0f}' .format(co2 * 1000) }}{% endif %}</span>Wh</strong>
                         </p>
                         <p class="fr-text--xs">énergie conso.
                         </p>
@@ -145,7 +145,7 @@
                         </svg>
                     </div>
                     <div class="">
-                        {% if convert_range_to_value(co2) * 1000 < 2 %} <p><strong><span class="fr-text--xxl">{{
+                        {% if (co2 * 1000) < 2 %} <p><strong><span class="fr-text--xxl">{{
                                     '{:0.2f}'.format(co2 * 1000) }}</span>g</strong></p>
                             {% else %}
                             <p><strong><span class="fr-text--xxl">{{ (co2 * 1000)|round|int
