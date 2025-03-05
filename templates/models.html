@@ -405,11 +405,13 @@
                                 {%
                                 else
                                 %}
-                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                <span class="fr-badge fr-badge--sm fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                     Propriétaire
                                 </span>
                                 {% endif %}
-                                <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">Sortie {{ model['release_date'] }}
+                                </span>
+                                <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                     {% if
                                     model['distribution'] == "open-weights" %}{{ model['params']|round|int }} mds de
                                     paramètres&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line"
