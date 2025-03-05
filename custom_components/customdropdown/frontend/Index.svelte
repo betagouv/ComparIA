@@ -131,7 +131,7 @@
 	var second_model_icon_path = null;
 
 	export let interactive: boolean;
-	var choice: Choice = choices[4];
+	var choice: Choice = choices[choices.length - 1];
 
 	// Handle mode selection
 	function handle_option_selected(index: number): void {

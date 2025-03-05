@@ -18,7 +18,7 @@
 </script>
 
 <div>
-	{#each choices as { value, label, alt_label, icon, description }, index}
+	{#each choices as { value, label, _alt_label, icon, description }, index}
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
