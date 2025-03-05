@@ -74,8 +74,18 @@
 @media (min-width: 48em) {
 
 .fr-header__body-row {
-  padding: 0.5em 0 !important;
+  padding: 0 !important;
 }
+
+.fr-header__logo {
+  padding: 1rem 0.75rem 0 0.75rem !important;
+}
+}
+
+.fr-header__logo {
+  padding: 0 0.75rem;
+  scale: 80%;
+
 }
 
 /* label, */
