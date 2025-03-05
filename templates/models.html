@@ -465,14 +465,13 @@
                 modelItems.forEach(model => {
                     const modelParams = model.getAttribute('data-friendly-size');
                     const modelLicense = model.getAttribute('data-license');
-                    const modelYear = model.getAttribute('data-release-date');
+                    const releaseDate = model.getAttribute('data-release-date');
                     const isProprietaire = modelLicense.includes("propriétaire");
                     const licenseMatch = selectedLicenseFilters.length === 0 ||
                         selectedLicenseFilters.includes(modelLicense) ||
                         (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
                     const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
-                    const yearMatch = selectedYearFilters.length === 0 || selectedYearFilters.includes(modelYear);
-                    if (paramMatch && licenseMatch && yearMatch) {
+                    if (paramMatch && licenseMatch) {
                         model.classList.remove('fading', 'hidden');
                     } else {
                         model.classList.add('hidden');
@@ -500,7 +499,11 @@
                         }
                         break;
                     case 'date-desc':
-                        comparison = parseInt(b.dataset.releaseDate.split('/')[1]) - parseInt(a.dataset.releaseDate.split('/')[1]);
+                        const [monthA, yearA] = a.dataset.releaseDate.split('/').map(Number);
+                        const [monthB, yearB] = b.dataset.releaseDate.split('/').map(Number);
+
+                        comparison = yearB - yearA || monthB - monthA;
+
                         break;
                     case 'params-asc':
                         comparison = parseInt(a.dataset.params) - parseInt(b.dataset.params);
