@@ -259,32 +259,30 @@
             <div class="fr-container--fluid modal-filters-content">
                 <div class="fr-container fr-pl-4w">
                     <!-- <button class="fr-btn--close fr-btn fr-pt-2w" title="Fermer la fenêtre modale"
-                        aria-controls="fr-modal-filters-section">Fermer</button> -->
+    aria-controls="fr-modal-filters-section">Fermer</button> -->
                     <!-- <h5 class="md-visible hidden fr-mb-md-1w">Filtres</h5> -->
                     <h4 id="models-count" aria-live="polite">{{ models | list | length }} modèles</h4>
-
                     <div><button class="right fr-btn purple-btn fr-mb-4w md-hidden" title="Voir les résultats"
                             id="results-count" aria-controls="fr-modal-filters-section">Voir les {{ models | list |
                             length }}
                             résultats</button></div>
-
                     <form id="model-filter-form">
                         <fieldset class="fr-fieldset">
                             <legend class="fr-pt-2w fr-mb-1w">Date de sortie</legend>
                             <div class="fr-checkbox-group fr-checkbox-group--sm">
-                                {% set release_years = [] %}
+                                {% set release_dates = [] %}
                                 {% for model in models %}
-                                {% if model.release_year not in release_years %}
-                                {% set _ = release_years.append(model.release_year) %}
+                                {% if model.release_date not in release_dates %}
+                                {% set _ = release_dates.append(model.release_date) %}
                                 {% endif %}
                                 {% endfor %}
-                                {% set _ = release_years.sort(reverse=True) %} {# Sort the list of years #}
-                                {% for year in release_years %}
+                                {% set _ = release_dates.sort(reverse=True) %} {# Sort the list of years #}
+                                {% for year in release_dates %}
                                 <div class="fr-checkbox">
                                     <input type="checkbox" id="year-{{ year }}" name="year-filter" value="{{ year }}" />
                                     <label for="year-{{ year }}">
                                         <strong>{{ year }}</strong>
-                                        <span class="filter-number">{{ models | selectattr('release_year', '==', year) |
+                                        <span class="filter-number">{{ models | selectattr('release_date', '==', year) |
                                             list | length }}</span>
                                     </label>
                                 </div>
@@ -315,7 +313,6 @@
                     <div class="fr-checkbox-group fr-checkbox-group--sm licenses-checkboxes">
                         {% set proprietary_licenses = [] %}
                         {% set other_licenses = [] %}
-
                         {% for model in models %}
                         {% if 'propriétaire' in model.license %}
                         {% if model.license not in proprietary_licenses %}
@@ -327,7 +324,6 @@
                         {% endif %}
                         {% endif %}
                         {% endfor %}
-
                         {% for license in other_licenses %}
                         <div class="fr-checkbox">
                             <input type="checkbox" id="license-{{ license }}" name="license-filter"
@@ -339,7 +335,6 @@
                             </label>
                         </div>
                         {% endfor %}
-
                         {% if proprietary_licenses %}
                         <div class="fr-checkbox">
                             <input type="checkbox" id="license-proprietaire" name="license-filter" value="Propriétaire">
@@ -356,32 +351,21 @@
             </div>
     </div>
     </aside>
-
     <section class="fr-col-md-9 fr-pl-md-4w fr-px-md-4w fr-px-2w fr-my-2w fr-mt-md-4w fr-mb-md-10w">
-
         <div class="fr-mb-2w">
-            <label for="sort-by-date" class="fr-label">Trier par date de sortie :</label>
-            <select class="fr-select" id="sort-by-date">
-                <option value="default">Par défaut</option>
-                <option value="newest">Plus récent</option>
-                <option value="oldest">Plus ancien</option>
-            </select>
-        </div>
-
-        <div class="fr-mb-2w">
-            <label for="sort-by-params" class="fr-label">Trier par taille (paramètres) :</label>
-            <select class="fr-select" id="sort-by-params">
-                <option value="default">Par défaut</option>
-                <option value="largest">Plus grand</option>
-                <option value="smallest">Plus petit</option>
+            <label for="sort-by" class="fr-label">Trier par :</label>
+            <select class="fr-select" id="sort-by">
+                <option value="name-asc">Nom du modèle (A à Z)</option>
+                <option value="date-desc">Date de sortie (plus récent)</option>
+                <option value="params-asc">Taille (du plus petit au plus grand)</option>
             </select>
         </div>
         <!-- Put sort here -->
         <div class="fr-grid-row fr-grid-row--gutters" id="model-container">
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
-                data-license="{{ model['license'] }}" data-release-year="{{ model['release_year'] }}"
-                data-params="{{ model['params']|round|int }}">
+                data-license="{{ model['license'] }}" data-release-date="{{ model['release_date'] }}"
+                data-params="{{ model['params']|round|int }}" data-name="{{ model['simple_name'] }}">
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
@@ -394,7 +378,6 @@
                                     model["simple_name"] }}</strong>
                             </h6>
                             <p class="fr-mb-4w">
-
                                 {% if model['distribution'] ==
                                 "open-weights"
                                 %}
@@ -421,32 +404,27 @@
                                     %}Taille estimée ({{ model['friendly_size'] }})
                                     {% endif %}
                                 </span>
-
                             </p>
                             <p class="fr-card__desc">{{ model['excerpt'] }}</p>
                             <!-- <a href="{{ model.link }}" target="_blank" rel="noopener external"
-                        class="fr-link--icon-right fr-link">    En savoir plus</a> -->
+    class="fr-link--icon-right fr-link"> En savoir plus</a> -->
                         </div>
                     </div>
                 </div>
             </div>
-
             {% endfor %}
     </section>
     </div>
 </main>
 {% set j2_context = 'fastapi' %}
-
 {% for model in models %}
 {% include 'model-modal.html' %}
 {% endfor %}
-
 <script type="text/javascript">
     // Fix modal half-scrolled bug
     document.getElementById('show-filters-btn').addEventListener('click', function () {
         window.scrollTo(0, 0);
     });
-
     document.addEventListener('DOMContentLoaded', function () {
         const resetFiltersLink = document.getElementById('reset-filters-link');
         const paramFilters = document.querySelectorAll('input[name="param-filter"]');
@@ -455,16 +433,12 @@
         const modelItems = document.querySelectorAll('.model-item');
         const modelsCountElement = document.getElementById('models-count');
         const resultsCountElement = document.getElementById('results-count');
-
-        const sortByDateSelect = document.getElementById('sort-by-date');
-        const sortByParamsSelect = document.getElementById('sort-by-params');
+        const sortSelect = document.getElementById('sort-by');
         const modelContainer = document.getElementById('model-container');
-
         // Utility function to get selected filter values
         function getSelectedFilters(filters) {
             return Array.from(filters).filter(input => input.checked).map(input => input.value);
         }
-
         // Update the reset filters link state
         function updateResetFiltersLink() {
             const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0 || getSelectedFilters(yearFilters).length > 0;
@@ -482,15 +456,12 @@
             const activeParamFilters = getSelectedFilters(paramFilters).length;
             const activeLicenseFilters = getSelectedFilters(licenseFilters).length;
             const activeYearFilters = getSelectedFilters(yearFilters).length;
-
-
             const filtersIndicator = document.querySelector('.filters-indicator');
             if (filtersIndicator) {
                 let totalActiveFilters = 0;
                 if (activeParamFilters > 0) totalActiveFilters++;
                 if (activeLicenseFilters > 0) totalActiveFilters++;
                 if (activeYearFilters > 0) totalActiveFilters++;
-
                 if (totalActiveFilters > 0) {
                     filtersIndicator.textContent = totalActiveFilters.toString();
                     filtersIndicator.style.display = 'inline-block';
@@ -500,37 +471,26 @@
                 }
             }
         }
-
         function applyFilter() {
             const selectedParamFilters = getSelectedFilters(paramFilters);
             const selectedLicenseFilters = getSelectedFilters(licenseFilters);
             const selectedYearFilters = getSelectedFilters(yearFilters);
-
-
             // Fade out all items
             modelItems.forEach(model => {
                 model.classList.add('fading');
                 model.classList.remove('hidden'); // Ensure display is not none during fade-out
-
             });
-
             setTimeout(() => {
                 modelItems.forEach(model => {
                     const modelParams = model.getAttribute('data-friendly-size');
                     const modelLicense = model.getAttribute('data-license');
-                    const modelYear = model.getAttribute('data-release-year');
-
-
+                    const modelYear = model.getAttribute('data-release-date');
                     const isProprietaire = modelLicense.includes("propriétaire");
                     const licenseMatch = selectedLicenseFilters.length === 0 ||
                         selectedLicenseFilters.includes(modelLicense) ||
                         (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
-
                     const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
-
                     const yearMatch = selectedYearFilters.length === 0 || selectedYearFilters.includes(modelYear);
-
-
                     if (paramMatch && licenseMatch && yearMatch) {
                         model.classList.remove('fading', 'hidden');
                     } else {
@@ -539,53 +499,39 @@
                 });
                 updateModelsCount();
                 sortModels(); // Apply sorting after filtering
-
             }, 200);
-
             updateResetFiltersLink();
             updateActiveFiltersCount();
         }
-
         function sortModels() {
-            const sortByDate = sortByDateSelect.value;
-            const sortByParams = sortByParamsSelect.value;
-
+            const sortBy = sortSelect.value;
             let sortedModels = Array.from(modelItems);
-
-            // Sort by Date
-            if (sortByDate !== 'default') {
-                sortedModels.sort((a, b) => {
-                    const dateA = parseInt(a.dataset.releaseYear);
-                    const dateB = parseInt(b.dataset.releaseYear);
-
-                    if (sortByDate === 'newest') {
-                        return dateB - dateA;
-                    } else { // oldest
-                        return dateA - dateB;
-                    }
-                });
-            }
-
-            // Sort by Params
-            if (sortByParams !== 'default') {
-                sortedModels.sort((a, b) => {
-                    const paramsA = parseInt(a.dataset.params);
-                    const paramsB = parseInt(b.dataset.params);
-
-                    if (sortByParams === 'largest') {
-                        return paramsB - paramsA;
-                    } else { // smallest
-                        return paramsA - paramsB;
-                    }
-                });
-            }
-
-
+            sortedModels.sort((a, b) => {
+                let comparison = 0;
+                switch (sortBy) {
+                    case 'name-asc':
+                        const nameA = a.dataset.name.toUpperCase();
+                        const nameB = b.dataset.name.toUpperCase();
+                        if (nameA < nameB) {
+                            comparison = -1;
+                        } else if (nameA > nameB) {
+                            comparison = 1;
+                        }
+                        break;
+                    case 'date-desc':
+                        comparison = parseInt(b.dataset.releaseDate.split('/')[1]) - parseInt(a.dataset.releaseDate.split('/')[1]);
+                        break;
+                    case 'params-asc':
+                        comparison = parseInt(a.dataset.params) - parseInt(b.dataset.params);
+                        break;
+                    default:
+                        break;
+                }
+                return comparison;
+            });
             // Update the DOM
             sortedModels.forEach(model => modelContainer.appendChild(model));
         }
-
-
         // Reset all filters
         function resetFilters() {
             paramFilters.forEach(input => (input.checked = false));
@@ -593,26 +539,20 @@
             yearFilters.forEach(input => (input.checked = false));
             applyFilter();
         }
-
         // Initialize event listeners
         function initEventListeners() {
             [...paramFilters, ...licenseFilters, ...yearFilters].forEach(input => {
                 input.addEventListener('change', applyFilter);
             });
-
             resetFiltersLink.addEventListener('click', resetFilters);
-
-            sortByDateSelect.addEventListener('change', sortModels);
-            sortByParamsSelect.addEventListener('change', sortModels);
+            sortSelect.addEventListener('change', sortModels);
         }
-
         // Initialize the script
         function init() {
             updateResetFiltersLink();
             initEventListeners();
             sortModels(); // Initial sort
         }
-
         init();
     });
 </script>
