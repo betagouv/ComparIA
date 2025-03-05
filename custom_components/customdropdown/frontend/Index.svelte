@@ -57,6 +57,14 @@
 		description: string;
 	};
 	export const choices: Choice[] = [
+
+	{
+			value: "random",
+			label: "Aléatoire",
+			alt_label: "Modèles aléatoires",
+			icon: Dice, // Replace with your icon class or SVG
+			description: "Deux modèles tirés au hasard dans la liste",
+		},
 		{
 			value: "custom",
 			label: "Sélection manuelle",
@@ -89,13 +97,6 @@
 		// 	description:
 		// 		"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
 		// },
-		{
-			value: "random",
-			label: "Aléatoire",
-			alt_label: "Modèles aléatoires",
-			icon: Dice, // Replace with your icon class or SVG
-			description: "Deux modèles tirés au hasard dans la liste",
-		},
 	];
 
 	export let container = true;
@@ -131,7 +132,8 @@
 	var second_model_icon_path = null;
 
 	export let interactive: boolean;
-	var choice: Choice = choices[choices.length - 1];
+	// random by default
+	var choice: Choice = choices[0];
 
 	// Handle mode selection
 	function handle_option_selected(index: number): void {
