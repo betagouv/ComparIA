@@ -61,8 +61,10 @@ def calculate_lightbulb_consumption(impact_energy_value_or_range):
         - An integer representing the consumption time.
         - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
     """
-    if impact_energy_value_or_range.hasattr("min"):
-        impact_energy_value = (impact_energy_value_or_range.min + impact_energy_value_or_range.max) / 2
+    if hasattr(impact_energy_value_or_range, "min"):
+        impact_energy_value = (
+            impact_energy_value_or_range.min + impact_energy_value_or_range.max
+        ) / 2
     else:
         impact_energy_value = impact_energy_value_or_range
     # Calculate consumption time using Wh
@@ -96,8 +98,10 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
         - A string representing the most sensible time unit ('days', 'hours', 'minutes', or 'seconds').
     """
 
-    if impact_gwp_value_or_range.hasattr("min"):
-        impact_gwp_value = (impact_gwp_value_or_range.min + impact_gwp_value_or_range.max) / 2
+    if hasattr(impact_gwp_value_or_range, "min"):
+        impact_gwp_value = (
+            impact_gwp_value_or_range.min + impact_gwp_value_or_range.max
+        ) / 2
     else:
         impact_gwp_value = impact_gwp_value_or_range
     # Calculate streaming hours: https://impactco2.fr/outils/usagenumerique/streamingvideo
@@ -126,15 +130,23 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
         model_a_tokens = conv_a.output_tokens
         logger.debug("output_tokens (model a): " + str(model_a_tokens))
     else:
-        model_a_tokens = token_counter(messages=messages_to_dict(conv_a.messages), model=conv_a.model_name)
-        logger.debug("output_tokens (model a) (litellm tokenizer): " + str(model_a_tokens))
-        
+        model_a_tokens = token_counter(
+            messages=messages_to_dict(conv_a.messages), model=conv_a.model_name
+        )
+        logger.debug(
+            "output_tokens (model a) (litellm tokenizer): " + str(model_a_tokens)
+        )
+
     if conv_b.output_tokens and conv_b.output_tokens != 0:
         model_b_tokens = conv_b.output_tokens
         logger.debug("output_tokens (model b): " + str(model_b_tokens))
     else:
-        model_b_tokens = token_counter(messages=messages_to_dict(conv_b.messages), model=conv_b.model_name)
-        logger.debug("output_tokens (model b) (litellm tokenizer): " + str(model_b_tokens))
+        model_b_tokens = token_counter(
+            messages=messages_to_dict(conv_b.messages), model=conv_b.model_name
+        )
+        logger.debug(
+            "output_tokens (model b) (litellm tokenizer): " + str(model_b_tokens)
+        )
 
     # TODO:
     # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
@@ -155,15 +167,21 @@ def build_reveal_html(conv_a, conv_b, which_model_radio):
 
     streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_impact.gwp.value)
     streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_impact.gwp.value)
-    
+
     import base64, json
-    data = {"a": conv_a.model_name, "b": conv_b.model_name, "ta": model_a_tokens, "tb": model_b_tokens}
+
+    data = {
+        "a": conv_a.model_name,
+        "b": conv_b.model_name,
+        "ta": model_a_tokens,
+        "tb": model_b_tokens,
+    }
     if chosen_model == "model-a":
         data["c"] = "a"
     elif chosen_model == "model-b":
         data["c"] = "b"
 
-    jsonstring = json.dumps(data).encode('ascii')
+    jsonstring = json.dumps(data).encode("ascii")
     b64 = base64.b64encode(jsonstring).decode("ascii")
 
     return template.render(
@@ -243,12 +261,18 @@ def get_llm_impact(
         # TODO: add request latency
         model_active_parameter_count = int(model_extra_info["active_params"])
         model_total_parameter_count = int(model_extra_info["total_params"])
-        if "quantization" in model_extra_info and model_extra_info.get("quantization", None) == "q8":
-                model_active_parameter_count = int(model_extra_info["active_params"]) // 2
-                model_total_parameter_count = int(model_extra_info["total_params"]) // 2
+        if (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q8"
+        ):
+            model_active_parameter_count = int(model_extra_info["active_params"]) // 2
+            model_total_parameter_count = int(model_extra_info["total_params"]) // 2
     else:
         if "params" in model_extra_info:
-            if "quantization" in model_extra_info and model_extra_info.get("quantization", None) == "q8":
+            if (
+                "quantization" in model_extra_info
+                and model_extra_info.get("quantization", None) == "q8"
+            ):
                 model_active_parameter_count = int(model_extra_info["params"]) // 2
                 model_total_parameter_count = int(model_extra_info["params"]) // 2
             else:
@@ -257,17 +281,13 @@ def get_llm_impact(
                 model_total_parameter_count = int(model_extra_info["params"])
         else:
             logger.error(
-                "Couldn' calculate impact for"
-                + model_name
-                + ", missing params"
+                "Couldn' calculate impact for" + model_name + ", missing params"
             )
             return None
 
     # TODO: move to config.py
     electricity_mix_zone = "WOR"
-    electricity_mix = electricity_mixes.find_electricity_mix(
-        zone=electricity_mix_zone
-    )
+    electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
     if_electricity_mix_adpe = electricity_mix.adpe
     if_electricity_mix_pe = electricity_mix.pe
     if_electricity_mix_gwp = electricity_mix.gwp
@@ -279,6 +299,6 @@ def get_llm_impact(
         if_electricity_mix_adpe=if_electricity_mix_adpe,
         if_electricity_mix_pe=if_electricity_mix_pe,
         if_electricity_mix_gwp=if_electricity_mix_gwp,
-        request_latency=request_latency
+        request_latency=request_latency,
     )
     return impact
