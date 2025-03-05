@@ -263,13 +263,34 @@
                     <!-- <h5 class="md-visible hidden fr-mb-md-1w">Filtres</h5> -->
                     <h4 id="models-count" aria-live="polite">{{ models | list | length }} modèles</h4>
 
-                    <div><button
-                            class="right fr-btn purple-btn fr-mb-4w md-hidden" title="Voir les résultats"
+                    <div><button class="right fr-btn purple-btn fr-mb-4w md-hidden" title="Voir les résultats"
                             id="results-count" aria-controls="fr-modal-filters-section">Voir les {{ models | list |
                             length }}
                             résultats</button></div>
 
                     <form id="model-filter-form">
+                        <fieldset class="fr-fieldset">
+                            <legend class="fr-pt-2w fr-mb-1w">Date de sortie</legend>
+                            <div class="fr-checkbox-group fr-checkbox-group--sm">
+                                {% set release_years = [] %}
+                                {% for model in models %}
+                                {% if model.release_year not in release_years %}
+                                {% set _ = release_years.append(model.release_year) %}
+                                {% endif %}
+                                {% endfor %}
+                                {% set _ = release_years.sort(reverse=True) %} {# Sort the list of years #}
+                                {% for year in release_years %}
+                                <div class="fr-checkbox">
+                                    <input type="checkbox" id="year-{{ year }}" name="year-filter" value="{{ year }}" />
+                                    <label for="year-{{ year }}">
+                                        <strong>{{ year }}</strong>
+                                        <span class="filter-number">{{ models | selectattr('release_year', '==', year) |
+                                            list | length }}</span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </fieldset>
                         <fieldset class="fr-fieldset">
                             <legend class="fr-pt-2w fr-mb-1w">Taille (paramètres)</legend>
                             <div class="fr-checkbox-group fr-checkbox-group--sm">
@@ -337,11 +358,30 @@
     </aside>
 
     <section class="fr-col-md-9 fr-pl-md-4w fr-px-md-4w fr-px-2w fr-my-2w fr-mt-md-4w fr-mb-md-10w">
-<!-- Put sort here -->
-        <div class="fr-grid-row fr-grid-row--gutters">
+
+        <div class="fr-mb-2w">
+            <label for="sort-by-date" class="fr-label">Trier par date de sortie :</label>
+            <select class="fr-select" id="sort-by-date">
+                <option value="default">Par défaut</option>
+                <option value="newest">Plus récent</option>
+                <option value="oldest">Plus ancien</option>
+            </select>
+        </div>
+
+        <div class="fr-mb-2w">
+            <label for="sort-by-params" class="fr-label">Trier par taille (paramètres) :</label>
+            <select class="fr-select" id="sort-by-params">
+                <option value="default">Par défaut</option>
+                <option value="largest">Plus grand</option>
+                <option value="smallest">Plus petit</option>
+            </select>
+        </div>
+        <!-- Put sort here -->
+        <div class="fr-grid-row fr-grid-row--gutters" id="model-container">
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
-                data-license="{{ model['license'] }}">
+                data-license="{{ model['license'] }}" data-release-year="{{ model['release_year'] }}"
+                data-params="{{ model['params']|round|int }}">
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
@@ -409,9 +449,14 @@
         const resetFiltersLink = document.getElementById('reset-filters-link');
         const paramFilters = document.querySelectorAll('input[name="param-filter"]');
         const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
+        const yearFilters = document.querySelectorAll('input[name="year-filter"]');
         const modelItems = document.querySelectorAll('.model-item');
         const modelsCountElement = document.getElementById('models-count');
         const resultsCountElement = document.getElementById('results-count');
+
+        const sortByDateSelect = document.getElementById('sort-by-date');
+        const sortByParamsSelect = document.getElementById('sort-by-params');
+        const modelContainer = document.getElementById('model-container');
 
         // Utility function to get selected filter values
         function getSelectedFilters(filters) {
@@ -420,7 +465,7 @@
 
         // Update the reset filters link state
         function updateResetFiltersLink() {
-            const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0;
+            const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0 || getSelectedFilters(yearFilters).length > 0;
             resetFiltersLink.disabled = !hasFilters;
             resetFiltersLink.classList.toggle('disabled', !hasFilters);
         }
@@ -434,25 +479,31 @@
         function updateActiveFiltersCount() {
             const activeParamFilters = getSelectedFilters(paramFilters).length;
             const activeLicenseFilters = getSelectedFilters(licenseFilters).length;
+            const activeYearFilters = getSelectedFilters(yearFilters).length;
+
 
             const filtersIndicator = document.querySelector('.filters-indicator');
             if (filtersIndicator) {
-                if (activeParamFilters > 0 && activeLicenseFilters > 0) {
-                    filtersIndicator.textContent = '2';
-                } else if (activeParamFilters > 0 || activeLicenseFilters > 0) {
-                    filtersIndicator.textContent = '1';
+                let totalActiveFilters = 0;
+                if (activeParamFilters > 0) totalActiveFilters++;
+                if (activeLicenseFilters > 0) totalActiveFilters++;
+                if (activeYearFilters > 0) totalActiveFilters++;
+
+                if (totalActiveFilters > 0) {
+                    filtersIndicator.textContent = totalActiveFilters.toString();
+                    filtersIndicator.style.display = 'inline-block';
                 } else {
                     filtersIndicator.textContent = '';
                     filtersIndicator.style.display = 'none';
-                    return;
                 }
-                filtersIndicator.style.display = 'inline-block';
             }
         }
 
         function applyFilter() {
             const selectedParamFilters = getSelectedFilters(paramFilters);
             const selectedLicenseFilters = getSelectedFilters(licenseFilters);
+            const selectedYearFilters = getSelectedFilters(yearFilters);
+
 
             // Fade out all items
             modelItems.forEach(model => {
@@ -465,6 +516,8 @@
                 modelItems.forEach(model => {
                     const modelParams = model.getAttribute('data-friendly-size');
                     const modelLicense = model.getAttribute('data-license');
+                    const modelYear = model.getAttribute('data-release-year');
+
 
                     const isProprietaire = modelLicense.includes("propriétaire");
                     const licenseMatch = selectedLicenseFilters.length === 0 ||
@@ -473,13 +526,17 @@
 
                     const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
 
-                    if (paramMatch && licenseMatch) {
+                    const yearMatch = selectedYearFilters.length === 0 || selectedYearFilters.includes(modelYear);
+
+
+                    if (paramMatch && licenseMatch && yearMatch) {
                         model.classList.remove('fading', 'hidden');
                     } else {
                         model.classList.add('hidden');
                     }
                 });
                 updateModelsCount();
+                sortModels(); // Apply sorting after filtering
 
             }, 200);
 
@@ -487,27 +544,71 @@
             updateActiveFiltersCount();
         }
 
+        function sortModels() {
+            const sortByDate = sortByDateSelect.value;
+            const sortByParams = sortByParamsSelect.value;
+
+            let sortedModels = Array.from(modelItems);
+
+            // Sort by Date
+            if (sortByDate !== 'default') {
+                sortedModels.sort((a, b) => {
+                    const dateA = parseInt(a.dataset.releaseYear);
+                    const dateB = parseInt(b.dataset.releaseYear);
+
+                    if (sortByDate === 'newest') {
+                        return dateB - dateA;
+                    } else { // oldest
+                        return dateA - dateB;
+                    }
+                });
+            }
+
+            // Sort by Params
+            if (sortByParams !== 'default') {
+                sortedModels.sort((a, b) => {
+                    const paramsA = parseInt(a.dataset.params);
+                    const paramsB = parseInt(b.dataset.params);
+
+                    if (sortByParams === 'largest') {
+                        return paramsB - paramsA;
+                    } else { // smallest
+                        return paramsA - paramsB;
+                    }
+                });
+            }
+
+
+            // Update the DOM
+            sortedModels.forEach(model => modelContainer.appendChild(model));
+        }
+
 
         // Reset all filters
         function resetFilters() {
             paramFilters.forEach(input => (input.checked = false));
             licenseFilters.forEach(input => (input.checked = false));
+            yearFilters.forEach(input => (input.checked = false));
             applyFilter();
         }
 
         // Initialize event listeners
         function initEventListeners() {
-            [...paramFilters, ...licenseFilters].forEach(input => {
+            [...paramFilters, ...licenseFilters, ...yearFilters].forEach(input => {
                 input.addEventListener('change', applyFilter);
             });
 
             resetFiltersLink.addEventListener('click', resetFilters);
+
+            sortByDateSelect.addEventListener('change', sortModels);
+            sortByParamsSelect.addEventListener('change', sortModels);
         }
 
         // Initialize the script
         function init() {
             updateResetFiltersLink();
             initEventListeners();
+            sortModels(); // Initial sort
         }
 
         init();
