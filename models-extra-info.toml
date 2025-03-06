@@ -133,6 +133,18 @@ description = "Sorti en février 2024 et amélioré en septembre 2024, ce modèl
 excerpt = "Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio."
 release_date = "02/2024"
 
+["gemini-2.0-flash-001"]
+url = "https://ai.google.dev/gemini-api"
+params = 40
+simple_name = "Gemini 2.0 Flash"
+organisation = "Google"
+icon_path = "google.png"
+friendly_size = "M"
+license = "propriétaire Gemini"
+description = "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
+excerpt = "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés."
+release_date = "12/2024"
+
 ["gemini-2.0-flash-exp"]
 url = "https://ai.google.dev/gemini-api"
 params = 40
@@ -141,7 +153,7 @@ organisation = "Google"
 icon_path = "google.png"
 friendly_size = "M"
 license = "propriétaire Gemini"
-description = "Sorti en décembre 2024 en version expérimentale, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
+description = "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
 excerpt = "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés."
 release_date = "12/2024"
 
