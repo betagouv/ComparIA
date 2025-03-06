@@ -200,7 +200,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         config.unavailable_models = refresh_unavailable_models(
             config.unavailable_models, controller_url=config.controller_url
         )
-
+        didnt_reset_prompt = True
         text = model_dropdown_scoped.get("prompt_value", "")
         mode = model_dropdown_scoped.get("mode", "random")
         app_state_scoped.mode = mode
@@ -307,6 +307,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                 #     chatbot,
                 #     gr.skip(),
                 # ]
+                # TODO: refacto to make a first yield for elements then only for conv...?
+                if didnt_reset_prompt:
+                    new_textbox = gr.update(
+                        value="",
+                        placeholder="Continuer à discuter avec les deux modèles d'IA",
+                    )
+                    didnt_reset_prompt = False
+                else:
+                    new_textbox = gr.skip()
                 yield [
                     app_state_scoped,
                     # 2 conversations
@@ -317,10 +326,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     text,
                     banner,
                     # textbox
-                    gr.update(
-                        value="",
-                        placeholder="Continuer à discuter avec les deux modèles d'IA",
-                    ),
+                    new_textbox,
                     # mode_screen
                     gr.update(visible=False),
                     # chat_area
@@ -443,10 +449,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 text,
                 banner,
                 # textbox
-                gr.update(
-                    value="",
-                    placeholder="Continuer à discuter avec les deux modèles d'IA",
-                ),
+                gr.skip(),
                 # mode_screen
                 gr.update(visible=False),
                 # chat_area
