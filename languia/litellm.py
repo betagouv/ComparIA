@@ -36,6 +36,7 @@ def litellm_stream_iter(
     request=None,
     api_version=None,
     vertex_ai_location=None,
+    include_reasoning=False
 ):
 
     from languia.config import debug
@@ -67,32 +68,35 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-    res = litellm.completion(
-        api_version=api_version,
-        timeout=GLOBAL_TIMEOUT,
-        stream_timeout=30,
-        base_url=api_base,
-        api_key=api_key,
+    
+    kwargs = {
+        "api_version": api_version,
+        "timeout": GLOBAL_TIMEOUT,
+        "stream_timeout": 30,
+        "base_url": api_base,
+        "api_key": api_key,
         # max_retries=
-        model=model_name,
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_new_tokens,
-        stream=True,
-        stream_options={"include_usage": True},
-        vertex_credentials=vertex_credentials_json,
-        vertex_ai_location=litellm.vertex_location,
-        metadata={
+        "model": model_name,
+        "messages": messages,
+        "temperature": temperature,
+        "max_tokens": max_new_tokens,
+        "stream": True,
+        "stream_options": {"include_usage": True},
+        "vertex_credentials": vertex_credentials_json,
+        "vertex_ai_location": litellm.vertex_location,
+        "metadata": {
             "session_hash": getattr(request, "session_hash", ""),
             # "conversation_id
             # Is that useful?
             "existing_trace_id": langfuse_context.get_current_trace_id(),  # set langfuse trace ID
             "parent_observation_id": langfuse_context.get_current_observation_id(),
         },
-        include_reasoning=True,
-        # Not available like this
-        # top_p=top_p,
-    )
+    }
+
+    if include_reasoning:
+        kwargs["include_reasoning"] = True
+
+    res = litellm.completion(**kwargs)
 
     # openrouter specific params
     # transforms = [""],

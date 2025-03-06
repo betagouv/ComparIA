@@ -4,7 +4,6 @@ The gradio utilities for chatting with a single model.
 
 import gradio as gr
 
-import random
 from languia.litellm import litellm_stream_iter
 
 import time
@@ -111,6 +110,7 @@ def bot_response(
             max_new_tokens = recommended_config.get(
                 "max_new_tokens", int(max_new_tokens)
             )
+            include_reasoning = recommended_config.get("include_reasoning", False)
 
     start_tstamp = time.time()
     # print("start: " + str(start_tstamp))
@@ -126,6 +126,8 @@ def bot_response(
     litellm_model_name = (
         endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
     )
+
+
     stream_iter = litellm_stream_iter(
         model_name=litellm_model_name,
         messages=messages_dict,
@@ -138,6 +140,7 @@ def bot_response(
         max_new_tokens=max_new_tokens,
         request=request,
         vertex_ai_location=endpoint.get("vertex_ai_location", None),
+        include_reasoning=include_reasoning
     )
 
     output_tokens = None
