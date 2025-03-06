@@ -4,6 +4,8 @@ import time
 import vertexai
 from vertexai.generative_models import GenerativeModel
 from typing import Optional
+import os
+
 
 class Config:
     PROJECT_ID = "languia-430909"
@@ -21,6 +23,7 @@ class Config:
         "Text: {text}\n"
         "Answer: "
     )
+
 
 class PrivacyClassifier:
     def __init__(self):
@@ -49,7 +52,9 @@ class PrivacyClassifier:
 
                 if content in ["true", "false"]:
                     result = content == "true"
-                    print(f"Text: '{text[:50]}...', Result: {result}, Time: {elapsed:.2f}s")
+                    print(
+                        f"Text: '{text[:50]}...', Result: {result}, Time: {elapsed:.2f}s"
+                    )
                     return result
                 else:
                     print(f"Warning: Unexpected response: {response.text}")
@@ -65,43 +70,69 @@ class PrivacyClassifier:
     def analyze_text(self, text: str) -> Optional[bool]:
         return self._get_classification(text)
 
+def get_conv_b_index(conversation_a, conversation_b, a_index):
+
+    if not conversation_a or not conversation_b:
+        return None
+
+    offset_a = (
+        1 if conversation_a and conversation_a[0].get("role") == "system" else 0
+    )
+    offset_b = (
+        1 if conversation_b and conversation_b[0].get("role") == "system" else 0
+    )
+
+    return a_index - offset_a + offset_b
+
+
 def process_conversations(db_params, classifier: PrivacyClassifier):
     try:
-        conn = psycopg2.connect(**db_params)
+        conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id, conversation_a FROM conversations WHERE pii_analyzed = FALSE;")
+        cursor.execute(
+            "SELECT conversation_pair_id, conversation_a, conversation_b FROM conversations WHERE pii_analyzed = FALSE;"
+        )
         conversations = cursor.fetchall()
 
-        pii_question_ids = []  # List to store question IDs with PII
+        # Check if CSV file exists and write header if not
+        csv_exists = os.path.exists("pii_question_ids.csv")
+        if not csv_exists:
+            with open("pii_question_ids.csv", "w") as f:
+                f.write("q_id_a,q_id_b,contains_pii\n")
 
-        for conversation_id, conversation_a in conversations:
+        for conversation_id, conversation_a, conversation_b in conversations:
             contains_pii = False
+            pii_messages = []
+
+            # Analyze conversation_a
             if conversation_a:
                 for msg_index, message in enumerate(conversation_a):
                     if message.get("role") == "user":
                         question_content = message.get("content", "")
                         if classifier.analyze_text(question_content):
                             contains_pii = True
-                            pii_question_ids.append(f"{conversation_id}-{msg_index},true") #added to list.
+                            a_q_id = f"{conversation_id}-{msg_index}"
+                            b_q_id = f"{conversation_id}-{get_conv_b_index(conversation_a, conversation_b, msg_index)}"
+                            pii_messages.append(f"{a_q_id},{b_q_id},true")
+                        else:
+                            a_q_id = f"{conversation_id}-{msg_index}"
+                            b_q_id = f"{conversation_id}-{get_conv_b_index(conversation_a, conversation_b, msg_index)}"
+                            pii_messages.append(f"{a_q_id},{b_q_id},false")
 
             cursor.execute(
-                "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s WHERE id = %s;",
+                "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s WHERE conversation_pair_id = %s;",
                 (contains_pii, conversation_id),
             )
+            conn.commit()
 
-        conn.commit()
+            # Append PII messages to CSV
+            if pii_messages:
+                with open("pii_question_ids.csv", "a") as f:
+                    for q_id in pii_messages:
+                        f.write(q_id + "\n")
+
         print("Conversations processed successfully.")
-
-        # Save PII question IDs to a CSV file
-        if pii_question_ids:
-            with open("pii_question_ids.txt", "w") as f:
-                f.write("q_id\n")  # Write header
-                for q_id in pii_question_ids:
-                    f.write(q_id + "\n")
-            print("\nPII question IDs saved to pii_question_ids.txt")
-        else:
-            print("\nNo PII found in the processed conversations.")
 
     except psycopg2.Error as e:
         print(f"Error: {e}")
@@ -112,14 +143,8 @@ def process_conversations(db_params, classifier: PrivacyClassifier):
             cursor.close()
             conn.close()
 
-# # Example usage
-# db_params = {
-#     "dbname": "your_dbname",
-#     "user": "your_user",
-#     "password": "your_password",
-#     "host": "your_host",
-#     "port": "your_port",
-# }
 
-# classifier = PrivacyClassifier()
-# process_conversations(db_params, classifier)
+db_params = os.getenv("DATABASE_URI")
+
+classifier = PrivacyClassifier()
+process_conversations(db_params, classifier)
