@@ -4,6 +4,7 @@ from vertexai.generative_models import GenerativeModel
 import time
 import os
 import psycopg2
+import csv
 from typing import Optional
 
 
@@ -19,12 +20,14 @@ class Config:
         "Replaced text: "
     )
     CONNECTION_URI = os.getenv("CONNECTION_URI")
-
+    CSV_PATH = "./utils/results/pii_comparia.csv"
+    
 
 class Classifier:
     def __init__(self):
         self.model = self._initialize_model()
         self.conversation_cache = {}  # Cache for entire conversations
+        self._load_cache_from_csv()
 
     def _initialize_model(self):
         try:
@@ -56,6 +59,25 @@ class Classifier:
                     time.sleep(Config.RETRY_DELAY)
         return None
 
+    def _load_cache_from_csv(self):
+        try:
+            with open(Config.CSV_PATH, "r", encoding="utf-8") as csvfile:
+                reader = csv.DictReader(csvfile)
+                for row in reader:
+                    question_id = row["question_id"]
+                    text = row["text"]
+                    redacted_llm = row["redacted (LLM)"]
+                    conversation_pair_id = "-".join(question_id.split("-")[:2])
+
+                    if conversation_pair_id not in self.conversation_cache:
+                        self.conversation_cache[conversation_pair_id] = {}
+                    self.conversation_cache[conversation_pair_id][text] = redacted_llm
+
+        except FileNotFoundError:
+            print(f"CSV file not found: {Config.CSV_PATH}")
+        except Exception as e:
+            print(f"Error loading CSV: {e}")
+
     def process_database_records(self):
         if not Config.CONNECTION_URI:
             print("CONNECTION_URI environment variable not set.")
@@ -83,20 +105,12 @@ class Classifier:
                     conv_a = json.loads(conv_a_json)
                     conv_b = json.loads(conv_b_json)
 
-                    if conversation_pair_id in self.conversation_cache:
-                        sanitized_conv_a, sanitized_conv_b, opening_msg = (
-                            self.conversation_cache[conversation_pair_id]
-                        )
-                    else:
-                        sanitized_conv_a, opening_msg = self.sanitize_conversation(
-                            conv_a, True
-                        )
-                        sanitized_conv_b, _ = self.sanitize_conversation(conv_b, False)
-                        self.conversation_cache[conversation_pair_id] = (
-                            sanitized_conv_a,
-                            sanitized_conv_b,
-                            opening_msg,
-                        )
+                    sanitized_conv_a, opening_msg = self.sanitize_conversation(
+                        conv_a, True, conversation_pair_id
+                    )
+                    sanitized_conv_b, _ = self.sanitize_conversation(
+                        conv_b, False, conversation_pair_id
+                    )
 
                     self.update_database(
                         conversation_pair_id,
@@ -115,14 +129,27 @@ class Classifier:
                 cur.close()
                 conn.close()
 
-    def sanitize_conversation(self, conversation, get_opening_msg=False):
+    def sanitize_conversation(
+        self, conversation, get_opening_msg=False, conversation_pair_id=None
+    ):
         sanitized_conversation = []
         opening_msg = None
         first_user_message = True
 
         for message in conversation:
             if message.get("role") == "user":
-                sanitized_content = self._get_anonymization(message.get("content", ""))
+                text = message.get("content", "")
+                if (
+                    conversation_pair_id
+                    and conversation_pair_id in self.conversation_cache
+                    and text in self.conversation_cache[conversation_pair_id]
+                ):
+                    sanitized_content = self.conversation_cache[conversation_pair_id][
+                        text
+                    ]
+                else:
+                    sanitized_content = self._get_anonymization(text)
+
                 if sanitized_content is not None:
                     sanitized_conversation.append(
                         {"role": "user", "content": sanitized_content}
