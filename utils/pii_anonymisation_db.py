@@ -26,6 +26,7 @@ class Config:
 class Classifier:
     def __init__(self):
         self.needed = 0
+        self.error = []
         self.model = self._initialize_model()
         self.conversation_cache = {}  # Cache for entire conversations
         self._load_cache_from_csv()
@@ -59,6 +60,8 @@ class Classifier:
                 print(
                     f"Anonymization attempt {attempt + 1} successful. Time taken: {elapsed:.2f} seconds."
                 )
+                print(f"Response: {response.text}...")
+                input()
                 return response.text
 
             except Exception as e:
@@ -139,10 +142,13 @@ class Classifier:
                             opening_msg,
                         )
                     else:
-                        print("Not updating db, one of those is empty:")
-                        print(sanitized_conv_a)
-                        print(sanitized_conv_b)
-                        print(opening_msg)
+                        print(
+                            f"Not updating db for {conversation_pair_id}, one of those is empty: sanitized_conv_a, sanitized_conv_b, opening_msg"
+                        )
+                        # print(sanitized_conv_a)
+                        # print(sanitized_conv_b)
+                        # print(opening_msg)
+                        self.error.append(conversation_pair_id)
 
                 except json.JSONDecodeError as e:
                     print(f"JSON decode error for ID {conversation_pair_id}: {e}")
@@ -150,6 +156,11 @@ class Classifier:
         except psycopg2.Error as e:
             print(f"Database error: {e}")
         finally:
+            print("Errors: ")
+            print(str(self.error))
+            with open("anon-error.log", "a") as f:
+                f.write(f"{self.error}\n")
+
             if conn:
                 cur.close()
                 conn.close()
@@ -208,8 +219,8 @@ class Classifier:
             conn = psycopg2.connect(Config.DATABASE_URI)
             cur = conn.cursor()
 
-            print(
-                # cur.execute(
+            # print(
+            cur.execute(
                 """
                 UPDATE conversations
                 SET conversation_a_pii_removed = %s, conversation_b_pii_removed = %s, opening_msg_pii_removed = %s
