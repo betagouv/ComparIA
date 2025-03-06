@@ -126,8 +126,7 @@ def test_model(model_id):
 
             output = data.get("text")
             if output:
-                output.strip()
-                text += output
+                text = output
 
         test = {
             "model_id": endpoint.get("model_id"),
