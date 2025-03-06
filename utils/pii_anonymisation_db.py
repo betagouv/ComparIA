@@ -29,7 +29,7 @@ class Classifier:
         self.error = []
         self.model = self._initialize_model()
         self.conversation_cache = {}  # Cache for entire conversations
-        self._load_cache_from_csv()
+        # self._load_cache_from_csv()
 
     def _initialize_model(self):
         try:
@@ -60,8 +60,7 @@ class Classifier:
                 print(
                     f"Anonymization attempt {attempt + 1} successful. Time taken: {elapsed:.2f} seconds."
                 )
-                print(f"Response: {response.text}...")
-                input()
+                print(f"Response: {response.text}")
                 return response.text
 
             except Exception as e:
@@ -71,26 +70,26 @@ class Classifier:
         print(f"Anonymization failed for text: {text[:50]}...")
         return None
 
-    def _load_cache_from_csv(self):
-        try:
-            print(f"Loading cache from CSV: {Config.CSV_PATH}")
-            with open(Config.CSV_PATH, "r", encoding="utf-8") as csvfile:
-                reader = csv.DictReader(csvfile)
-                for row in reader:
-                    question_id = row["question_id"]
-                    text = row["text"]
-                    redacted_llm = row["redacted (LLM)"]
-                    conversation_pair_id = "-".join(question_id.split("-")[:2])
+    # def _load_cache_from_csv(self):
+    #     try:
+    #         print(f"Loading cache from CSV: {Config.CSV_PATH}")
+    #         with open(Config.CSV_PATH, "r", encoding="utf-8") as csvfile:
+    #             reader = csv.DictReader(csvfile)
+    #             for row in reader:
+    #                 question_id = row["question_id"]
+    #                 text = row["text"]
+    #                 redacted_llm = row["redacted (LLM)"]
+    #                 conversation_pair_id = "-".join(question_id.split("-")[:2])
 
-                    if conversation_pair_id not in self.conversation_cache:
-                        self.conversation_cache[conversation_pair_id] = {}
-                    self.conversation_cache[conversation_pair_id][text] = redacted_llm
-            print(f"Cache loaded successfully. Entries: {len(self.conversation_cache)}")
+    #                 if conversation_pair_id not in self.conversation_cache:
+    #                     self.conversation_cache[conversation_pair_id] = {}
+    #                 self.conversation_cache[conversation_pair_id][text] = redacted_llm
+    #         print(f"Cache loaded successfully. Entries: {len(self.conversation_cache)}")
 
-        except FileNotFoundError:
-            print(f"CSV file not found: {Config.CSV_PATH}")
-        except Exception as e:
-            print(f"Error loading CSV: {e}")
+    #     except FileNotFoundError:
+    #         print(f"CSV file not found: {Config.CSV_PATH}")
+    #     except Exception as e:
+    #         print(f"Error loading CSV: {e}")
 
     def process_database_records(self):
         if not Config.DATABASE_URI:
