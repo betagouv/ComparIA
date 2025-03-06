@@ -54,3 +54,9 @@ datasets/
 litellm_config.yml
 results-output/
 venv.bak
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
