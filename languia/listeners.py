@@ -217,7 +217,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         if text == "":
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
-
         first_model_name, second_model_name = pick_models(
             mode, custom_models_selection, unavailable_models=config.unavailable_models
         )
@@ -393,9 +392,17 @@ document.getElementById("fr-modal-welcome-close").blur();
                     "refreshed outage models:" + str(config.unavailable_models)
                 )  # Simpler to repick 2 models
 
+                if app_state_scoped.mode == "custom":
+                    gr.Warning(
+                        duration=20,
+                        title="",
+                        message="""<div class="visible fr-p-2w">Le comparateur n'a pas pu piocher parmi les modèles sélectionnés car ils ne sont temporairement pas disponibles. Si vous réessayez, le comparateur piochera parmi d'autres modèles.</div>""",
+                    )
+
                 model_left, model_right = pick_models(
                     app_state_scoped.mode,
                     # Doesn't make sense to keep custom model options here
+                    # FIXME: if error with model wasn't the one chosen (case where you select only one model) just reroll the other one
                     [],
                     # temporarily exclude the buggy model here
                     config.unavailable_models + [error_with_model],

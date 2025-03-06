@@ -2,6 +2,7 @@ import numpy as np
 import os
 
 from gradio import Request
+import gradio as gr
 
 import logging
 
@@ -158,7 +159,7 @@ class AppState:
     # def to_dict(self) -> dict:
     #     return self.__dict__.copy()
 
-
+# TODO: refacto to expose "all_models" to choose from them if constraints can't be respected
 def choose_among(
     models,
     excluded,
@@ -173,7 +174,6 @@ def choose_among(
         logger.warning("Couldn't respect exclusion prefs")
         if len(all_models) == 0:
             logger.critical("No model to choose from")
-            import gradio as gr
 
             raise gr.Error(
                 duration=0,
