@@ -424,6 +424,7 @@ def count_output_tokens(messages) -> int:
 
 
 def shuffle_prompt(guided_cards, request):
+    logger = logging.getLogger("languia")
     prompt = gen_prompt(guided_cards)
     logger.info(
         f"shuffle: {prompt}",
