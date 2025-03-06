@@ -19,12 +19,13 @@ class Config:
         "Original text: {text}\n"
         "Replaced text: "
     )
-    CONNECTION_URI = os.getenv("CONNECTION_URI")
+    DATABASE_URI = os.getenv("DATABASE_URI")
     CSV_PATH = "./utils/results/pii_comparia.csv"
-    
+
 
 class Classifier:
     def __init__(self):
+        self.needed = 0
         self.model = self._initialize_model()
         self.conversation_cache = {}  # Cache for entire conversations
         self._load_cache_from_csv()
@@ -89,20 +90,20 @@ class Classifier:
             print(f"Error loading CSV: {e}")
 
     def process_database_records(self):
-        if not Config.CONNECTION_URI:
-            print("CONNECTION_URI environment variable not set.")
+        if not Config.DATABASE_URI:
+            print("DATABASE_URI environment variable not set.")
             return
 
         try:
             print("Connecting to database...")
-            conn = psycopg2.connect(Config.CONNECTION_URI)
+            conn = psycopg2.connect(Config.DATABASE_URI)
             cur = conn.cursor()
 
             cur.execute(
                 """
                 SELECT conversation_pair_id, conversation_a, conversation_b
                 FROM conversations
-                WHERE pii_detected = true AND opening_msg_pii_removed IS NULL;
+                WHERE contains_pii = true AND opening_msg_pii_removed IS NULL;
                 """
             )
 
@@ -114,8 +115,8 @@ class Classifier:
                 print(f"Processing ID: {conversation_pair_id}")
 
                 try:
-                    conv_a = json.loads(conv_a_json)
-                    conv_b = json.loads(conv_b_json)
+                    conv_a = conv_a_json
+                    conv_b = conv_b_json
 
                     sanitized_conv_a, opening_msg = self.sanitize_conversation(
                         conv_a, True, conversation_pair_id
@@ -123,13 +124,25 @@ class Classifier:
                     sanitized_conv_b, _ = self.sanitize_conversation(
                         conv_b, False, conversation_pair_id
                     )
-
-                    self.update_database(
-                        conversation_pair_id,
-                        json.dumps(sanitized_conv_a),
-                        json.dumps(sanitized_conv_b),
-                        opening_msg,
-                    )
+                    if (
+                        sanitized_conv_a
+                        and len(sanitized_conv_a) > 0
+                        and sanitized_conv_b
+                        and len(sanitized_conv_b) > 0
+                        and (opening_msg)
+                        and (len(opening_msg) > 0)
+                    ):
+                        self.update_database(
+                            conversation_pair_id,
+                            json.dumps(sanitized_conv_a),
+                            json.dumps(sanitized_conv_b),
+                            opening_msg,
+                        )
+                    else:
+                        print("Not updating db, one of those is empty:")
+                        print(sanitized_conv_a)
+                        print(sanitized_conv_b)
+                        print(opening_msg)
 
                 except json.JSONDecodeError as e:
                     print(f"JSON decode error for ID {conversation_pair_id}: {e}")
@@ -162,6 +175,7 @@ class Classifier:
                     ]
                     print(f"Cache hit for: {text[:30]}...")
                 else:
+                    print(f"No cache for: {text[:30]}...")
                     sanitized_content = self._get_anonymization(text)
 
                 if sanitized_content is not None:
@@ -172,10 +186,11 @@ class Classifier:
                         opening_msg = sanitized_content
                         first_user_message = False
                 else:
-                    sanitized_conversation.append(message)
-                    if get_opening_msg and first_user_message:
-                        opening_msg = message.get("content", "")
-                        first_user_message = False
+                    return None, None
+                    # sanitized_conversation.append(message)
+                    # if get_opening_msg and first_user_message:
+                    #     opening_msg = message.get("content", "")
+                    #     first_user_message = False
             else:
                 sanitized_conversation.append(message)
         return sanitized_conversation, opening_msg
@@ -184,16 +199,17 @@ class Classifier:
         self, conversation_pair_id, sanitized_conv_a, sanitized_conv_b, opening_msg
     ):
         """Update the database with the redacted conversations."""
-        if not Config.CONNECTION_URI:
-            print("CONNECTION_URI environment variable not set.")
+        if not Config.DATABASE_URI:
+            print("DATABASE_URI environment variable not set.")
             return
 
         try:
             print(f"Updating database for conversation_pair_id: {conversation_pair_id}")
-            conn = psycopg2.connect(Config.CONNECTION_URI)
+            conn = psycopg2.connect(Config.DATABASE_URI)
             cur = conn.cursor()
 
-            cur.execute(
+            print(
+                # cur.execute(
                 """
                 UPDATE conversations
                 SET conversation_a_pii_removed = %s, conversation_b_pii_removed = %s, opening_msg_pii_removed = %s
