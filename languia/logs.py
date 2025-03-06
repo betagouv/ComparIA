@@ -80,8 +80,6 @@ class PostgresHandler(logging.Handler):
                 self.connection = psycopg2.connect(**self.db_config)
             except psycopg2.Error as e:
                 print(f"Error connecting to database: {e}")
-                stacktrace = traceback.format_exc()
-                print(f"Stacktrace: {stacktrace}")
 
     def emit(self, record):
 
@@ -132,8 +130,6 @@ class PostgresHandler(logging.Handler):
         except psycopg2.Error as e:
             # Don't use logger on purpose to avoid endless loops
             print(f"Error logging to Postgres: {e}")
-            stacktrace = traceback.format_exc()
-            print(f"Stacktrace: {stacktrace}")
             # Could do:
             # self.handleError(record)
 
@@ -229,8 +225,6 @@ def save_vote_to_db(data):
         conn.commit()
     except Exception as e:
         logger.error(f"Error saving vote to db: {e}")
-        stacktrace = traceback.format_exc()
-        logger.error(f"Stacktrace: {stacktrace}", exc_info=True)
     finally:
         if cursor:
             cursor.close()
@@ -482,8 +476,6 @@ def upsert_reaction_to_db(data, request):
     except Exception as e:
         logger.error(f"Error saving reaction to DB: {e}")
         logger.error(f"SQL: {query}")
-        stacktrace = traceback.format_exc()
-        logger.error(f"Stacktrace: {stacktrace}")
 
     finally:
         if cursor:
@@ -522,9 +514,6 @@ WHERE refers_to_conv_id = %(refers_to_conv_id)s
 
     except Exception as e:
         logger.error(f"Error deleting reaction from DB: {e}")
-        stacktrace = traceback.format_exc()
-        logger.error(f"Stacktrace: {stacktrace}")
-
     finally:
         if cursor:
             cursor.close()
@@ -775,8 +764,6 @@ def upsert_conv_to_db(data):
 
     except Exception as e:
         logger.error(f"Error saving conversation to DB: {e}")
-        stacktrace = traceback.format_exc()
-        logger.error(f"Stacktrace: {stacktrace}")
 
     finally:
         if cursor:
