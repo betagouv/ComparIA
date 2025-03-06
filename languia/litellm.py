@@ -83,7 +83,7 @@ def litellm_stream_iter(
         vertex_credentials=vertex_credentials_json,
         vertex_ai_location=litellm.vertex_location,
         metadata={
-            "session_hash": request.session_hash,
+            "session_hash": getattr(request.session_hash, ""),
             # "conversation_id
             # Is that useful?
             "existing_trace_id": langfuse_context.get_current_trace_id(),  # set langfuse trace ID
