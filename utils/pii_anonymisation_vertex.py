@@ -3,7 +3,6 @@ import argparse
 from pathlib import Path
 import logging
 from typing import List, Set, Optional
-from collections import defaultdict
 from tqdm import tqdm
 import vertexai
 from vertexai.generative_models import GenerativeModel
@@ -25,8 +24,8 @@ class Config:
 
     PROMPT_TEMPLATE = (
         "Task: Replace the parts of the text that contains personal, sensitive, or private information with '********'.\n"
-        "Text: {text}\n"
-        "Answer: "
+        "Original text: {text}\n"
+        "Replaced text: "
     )
 
 
