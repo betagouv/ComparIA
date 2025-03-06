@@ -672,6 +672,11 @@
 		border: 1px solid var(--border-color-accent);
 	}
 
+	.message-wrap :global(pre) {
+		max-width: 600px;
+	}
+
+
 	/* KaTeX */
 	/* .message-wrap :global(span.katex) {
 		font-size: var(--text-lg);
