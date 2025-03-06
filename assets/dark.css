@@ -38,10 +38,14 @@ body.dark {
 .dark .chatbot p,
 .dark p,
 .dark #free-mode p,
-.dark #guided-area p, .dark .step-badge, .dark strong,  .dark li
+.dark #guided-area p, .dark .step-badge, .dark strong,  .dark li, .dark td, .dark th, .dark tr, .dark code
 /* , .dark  .prose * */
  {
   color: #262626 !important;
+  --body-text-color: #262626 !important;
+}
+
+.dark .prose * {
   --body-text-color: #262626 !important;
 }
 
