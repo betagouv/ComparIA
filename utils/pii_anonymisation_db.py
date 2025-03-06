@@ -32,6 +32,7 @@ class Classifier:
     def _initialize_model(self):
         try:
             vertexai.init(project=Config.PROJECT_ID, location=Config.LOCATION)
+            print(f"Model initialized successfully: {Config.MODEL_NAME}")
             return GenerativeModel(Config.MODEL_NAME)
         except Exception as e:
             print(f"Model initialization failed: {str(e)}")
@@ -40,6 +41,9 @@ class Classifier:
     def _get_anonymization(self, text: str) -> Optional[str]:
         """Get anonymization from model with retries."""
         prompt = Config.PROMPT_TEMPLATE.format(text=text)
+        print(
+            f"Starting anonymization for text: {text[:50]}..."
+        )  # print first 50 chars of text.
 
         for attempt in range(Config.MAX_RETRIES):
             try:
@@ -51,16 +55,21 @@ class Classifier:
                     },
                 )
                 elapsed = time.time() - start_time
+                print(
+                    f"Anonymization attempt {attempt + 1} successful. Time taken: {elapsed:.2f} seconds."
+                )
                 return response.text
 
             except Exception as e:
                 print(f"Attempt {attempt + 1} failed: {str(e)}")
                 if attempt < Config.MAX_RETRIES - 1:
                     time.sleep(Config.RETRY_DELAY)
+        print(f"Anonymization failed for text: {text[:50]}...")
         return None
 
     def _load_cache_from_csv(self):
         try:
+            print(f"Loading cache from CSV: {Config.CSV_PATH}")
             with open(Config.CSV_PATH, "r", encoding="utf-8") as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
@@ -72,6 +81,7 @@ class Classifier:
                     if conversation_pair_id not in self.conversation_cache:
                         self.conversation_cache[conversation_pair_id] = {}
                     self.conversation_cache[conversation_pair_id][text] = redacted_llm
+            print(f"Cache loaded successfully. Entries: {len(self.conversation_cache)}")
 
         except FileNotFoundError:
             print(f"CSV file not found: {Config.CSV_PATH}")
@@ -84,6 +94,7 @@ class Classifier:
             return
 
         try:
+            print("Connecting to database...")
             conn = psycopg2.connect(Config.CONNECTION_URI)
             cur = conn.cursor()
 
@@ -96,6 +107,7 @@ class Classifier:
             )
 
             rows = cur.fetchall()
+            print(f"Found {len(rows)} rows to process.")
 
             for row in rows:
                 conversation_pair_id, conv_a_json, conv_b_json = row
@@ -128,6 +140,7 @@ class Classifier:
             if conn:
                 cur.close()
                 conn.close()
+                print("Database connection closed.")
 
     def sanitize_conversation(
         self, conversation, get_opening_msg=False, conversation_pair_id=None
@@ -147,6 +160,7 @@ class Classifier:
                     sanitized_content = self.conversation_cache[conversation_pair_id][
                         text
                     ]
+                    print(f"Cache hit for: {text[:30]}...")
                 else:
                     sanitized_content = self._get_anonymization(text)
 
@@ -175,6 +189,7 @@ class Classifier:
             return
 
         try:
+            print(f"Updating database for conversation_pair_id: {conversation_pair_id}")
             conn = psycopg2.connect(Config.CONNECTION_URI)
             cur = conn.cursor()
 
@@ -188,7 +203,7 @@ class Classifier:
             )
 
             conn.commit()
-            print(f"Updated database for conversation_pair_id: {conversation_pair_id}")
+            print(f"Database updated for conversation_pair_id: {conversation_pair_id}")
 
         except psycopg2.Error as e:
             print(f"Database update failed: {e}")
