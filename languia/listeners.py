@@ -469,6 +469,7 @@ document.getElementById("fr-modal-welcome-close").blur();
     ):
 
         # if retry, resend last user errored message
+        # TODO: check if it's a retry event more robustly, with listener specifically on Event.retry
         if event._data is not None:
             last_message_a = conv_a_scoped.messages[-1]
             last_message_b = conv_b_scoped.messages[-1]
@@ -738,9 +739,9 @@ setTimeout(() => {
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
     ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
+        fn=enable_conclude,
+        inputs=[app_state, textbox, conv_a],
+        outputs=[textbox, conclude_btn, send_btn],
         js="""(args) => {
 setTimeout(() => {
   console.log("scrolling to bot responses");
