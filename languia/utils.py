@@ -166,6 +166,8 @@ def choose_among(
     all_models = models
     models = [model for model in all_models if model not in excluded]
     logger = logging.getLogger("languia")
+    logger.debug("chosing from:"+str(models))
+    logger.debug("excluded:"+str(models))
     if len(models) == 0:
         # TODO: tell user in a toast notif that we couldn't respect prefs
         logger.warning("Couldn't respect exclusion prefs")
@@ -175,7 +177,7 @@ def choose_among(
 
             raise gr.Error(
                 duration=0,
-                message="Le comparateur a un problème et aucun des modèles n'est disponible, veuillez revenir plus tard.",
+                message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
             )
         else:
             models = all_models
