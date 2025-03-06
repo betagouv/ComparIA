@@ -203,12 +203,10 @@ def test_all_endpoints(background_tasks: BackgroundTasks):
     Initiates background tasks to test all models asynchronously.
     """
     for endpoint in endpoints:
-        if endpoint.get("model_id") not in scheduled_tasks:
-            try:
-                background_tasks.add_task(test_model, endpoint.get("model_id"))
-                scheduled_tasks.add(endpoint.get("model_id"))
-            except Exception:
-                pass
+        try:
+            background_tasks.add_task(test_model, endpoint.get("model_id"))
+        except Exception:
+            pass
     return RedirectResponse(url="/?scheduled_tests=true", status_code=302)
 
 
