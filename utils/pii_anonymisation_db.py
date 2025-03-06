@@ -4,6 +4,8 @@ from vertexai.generative_models import GenerativeModel
 import time
 import os
 import psycopg2
+from typing import Optional
+
 
 class Config:
     PROJECT_ID = "languia-430909"
@@ -18,9 +20,11 @@ class Config:
     )
     CONNECTION_URI = os.getenv("CONNECTION_URI")
 
+
 class Classifier:
     def __init__(self):
         self.model = self._initialize_model()
+        self.conversation_cache = {}  # Cache for entire conversations
 
     def _initialize_model(self):
         try:
@@ -31,7 +35,7 @@ class Classifier:
             return None
 
     def _get_anonymization(self, text: str) -> Optional[str]:
-        """Get anonymization from model with retries"""
+        """Get anonymization from model with retries."""
         prompt = Config.PROMPT_TEMPLATE.format(text=text)
 
         for attempt in range(Config.MAX_RETRIES):
@@ -44,7 +48,6 @@ class Classifier:
                     },
                 )
                 elapsed = time.time() - start_time
-
                 return response.text
 
             except Exception as e:
@@ -66,7 +69,7 @@ class Classifier:
                 """
                 SELECT conversation_pair_id, conversation_a, conversation_b
                 FROM conversations
-                WHERE pii_detected = true AND opening_msg_pii_removed = NULL;
+                WHERE pii_detected = true AND opening_msg_pii_removed IS NULL;
                 """
             )
 
@@ -80,13 +83,30 @@ class Classifier:
                     conv_a = json.loads(conv_a_json)
                     conv_b = json.loads(conv_b_json)
 
-                    sanitized_conv_a = self.sanitize_conversation(conv_a)
-                    sanitized_conv_b = self.sanitize_conversation(conv_b)
+                    if conversation_pair_id in self.conversation_cache:
+                        sanitized_conv_a, sanitized_conv_b, opening_msg = (
+                            self.conversation_cache[conversation_pair_id]
+                        )
+                    else:
+                        sanitized_conv_a, opening_msg = self.sanitize_conversation(
+                            conv_a, True
+                        )
+                        sanitized_conv_b, _ = self.sanitize_conversation(conv_b, False)
+                        self.conversation_cache[conversation_pair_id] = (
+                            sanitized_conv_a,
+                            sanitized_conv_b,
+                            opening_msg,
+                        )
 
-                    self.update_database(conversation_pair_id, json.dumps(sanitized_conv_a), json.dumps(sanitized_conv_b))
+                    self.update_database(
+                        conversation_pair_id,
+                        json.dumps(sanitized_conv_a),
+                        json.dumps(sanitized_conv_b),
+                        opening_msg,
+                    )
 
                 except json.JSONDecodeError as e:
-                    print(f"JSON decode error for ID {question_id}: {e}")
+                    print(f"JSON decode error for ID {conversation_pair_id}: {e}")
 
         except psycopg2.Error as e:
             print(f"Database error: {e}")
@@ -95,20 +115,33 @@ class Classifier:
                 cur.close()
                 conn.close()
 
-    def sanitize_conversation(self, conversation):
+    def sanitize_conversation(self, conversation, get_opening_msg=False):
         sanitized_conversation = []
+        opening_msg = None
+        first_user_message = True
+
         for message in conversation:
             if message.get("role") == "user":
                 sanitized_content = self._get_anonymization(message.get("content", ""))
                 if sanitized_content is not None:
-                    sanitized_conversation.append({"role": "user", "content": sanitized_content})
+                    sanitized_conversation.append(
+                        {"role": "user", "content": sanitized_content}
+                    )
+                    if get_opening_msg and first_user_message:
+                        opening_msg = sanitized_content
+                        first_user_message = False
                 else:
-                    sanitized_conversation.append(message) # if fail keep original
+                    sanitized_conversation.append(message)
+                    if get_opening_msg and first_user_message:
+                        opening_msg = message.get("content", "")
+                        first_user_message = False
             else:
                 sanitized_conversation.append(message)
-        return sanitized_conversation
+        return sanitized_conversation, opening_msg
 
-    def update_database(self, conversation_pair_id, sanitized_conv_a, sanitized_conv_b):
+    def update_database(
+        self, conversation_pair_id, sanitized_conv_a, sanitized_conv_b, opening_msg
+    ):
         """Update the database with the redacted conversations."""
         if not Config.CONNECTION_URI:
             print("CONNECTION_URI environment variable not set.")
@@ -137,9 +170,11 @@ class Classifier:
                 cur.close()
                 conn.close()
 
+
 def main():
     classifier = Classifier()
     classifier.process_database_records()
+
 
 if __name__ == "__main__":
     main()
