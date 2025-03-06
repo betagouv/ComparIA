@@ -118,6 +118,7 @@ icon_path = "deepseek.webp"
 license = "MIT"
 excerpt = "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 description = "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+release_date = "12/2024"
 
 ["gemini-1.5-pro-002"]
 url = "https://ai.google.dev/gemini-api"
@@ -327,6 +328,7 @@ icon_path = "mistral.png"
 description = "Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme, possède un mode d'appel de fonction et un contexte de 32 000 tokens."
 excerpt = "Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme et possède des capacités de raisonnement avancées."
 license = "Apache 2.0"
+release_date = "01/2025"
 
 [mistral-nemo-2407]
 url = "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407"
@@ -387,15 +389,13 @@ release_date = "11/2024"
 ["o3-mini"]
 simple_name = "o3-mini"
 organisation = "OpenAI"
-# params = 123
-# icon_path = "mistral.png"
+icon_path = "openai.svg"
 friendly_size = "XL"
 reasoning = true
-# distribution = "open-weights"
-# conditions = "free"
-# description = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
-# excerpt = "Sorti en novembre 2024, ce modèle de la société française Mistral gère l'anglais, le français, l'italien, l'allemand et l'espagnol."
-# license = "Mistral AI Research"
+license = "propriétaire OpenAI"
+# description = ""
+# excerpt = ""
+release_date = "11/2024"
 
 [phi-3-mini-4k]
 url = "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct"
@@ -450,6 +450,7 @@ params = 32
 license = "Apache 2.0"
 description = "Modèle de la famille CodeQwen et produit par l'entreprise chinoise Alibaba, ce modèle est spécialisé dans la génération de code et l'usage de son modèle en tant qu'agent."
 url = "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct"
+release_date = "11/2024"
 
 [Qwen2-57B-A14B-Instruct]
 simple_name = "Qwen2-57B-A14B-Instruct"
