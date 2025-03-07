@@ -5,6 +5,7 @@ import vertexai
 from vertexai.generative_models import GenerativeModel
 from typing import Optional, List, Tuple
 import os
+from enum import Enum
 
 class Config:
     PROJECT_ID = "languia-430909"
@@ -58,7 +59,37 @@ class Config:
         },
     }
 
+    def _analyze_conversation(self, conversation_a: List[dict], conversation_b: List[dict]) -> Optional[dict]:
+        print("Analyzing conversation...")
+        try:
+            vertexai.init(project=self.PROJECT_ID, location=self.LOCATION)
+            model = GenerativeModel(self.MODEL_NAME)
+
+            prompt = f"""
+            Analyze the following two conversations and determine if they contain PII, categorize them, extract keywords (5 to 7), provide a short summary, and identify the languages used (2-letter codes).
+            Conversation A: {conversation_a}
+            Conversation B: {conversation_b}
+
+            Return the response in the following JSON schema:
+            {json.dumps(self.response_schema, indent=2)}
+            """
+
+            response = model.generate_content(prompt, generation_config={"response_mime_type": "application/json"})
+            print("Gemini API response received.")
+            try:
+                analysis_result = json.loads(response.text)[0]
+                print("Analysis result parsed successfully.")
+                return analysis_result
+            except json.JSONDecodeError as e:
+                print(f"Error decoding JSON response: {e}, response text: {response.text}")
+                return None
+
+        except Exception as e:
+            print(f"Error during analysis: {e}")
+            return None
+
     def analyze_conversations(self, conversation_a: List[dict], conversation_b: List[dict], conversation_id: int) -> Tuple[Optional[List[dict]], Optional[List[dict]], Optional[List[str]], Optional[str], Optional[List[str]]]:
+        print(f"Analyzing conversation pair ID: {conversation_id}")
         analysis_result = self._analyze_conversation(conversation_a, conversation_b)
         if analysis_result:
             contains_pii = analysis_result.get('contains_pii')
@@ -71,29 +102,40 @@ class Config:
         else:
             return None, None, None, None, None
 
-def process_conversations(db_params, analyzer: ConversationAnalyzer):
+
+def process_conversations(db_params, analyzer: Config):
+    conn = None
     try:
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT conversation_pair_id, conversation_a, conversation_b FROM conversations WHERE pii_analyzed = FALSE OR short_summary = NULL;")
-        conversations = cursor.fetchall()
-        print(f"{len(conversations)} to enrich...")
+        cursor.execute("SELECT count(*) FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;")
+        count = cursor.fetchone()[0]
+        print(f"{count} conversations to enrich...")
+        
+        cursor.execute("SELECT conversation_pair_id, conversation_a, conversation_b FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;")
         failed_calls = []
+        while True:
+            conversation = cursor.fetchone()
+            if conversation is None:
+                break
+            conversation_id, conversation_a, conversation_b = conversation
 
-        for conversation_id, conversation_a, conversation_b in conversations:
+            print(f"Processing conversation pair ID: {conversation_id}")
             contains_pii, categories, keywords, short_summary, languages = analyzer.analyze_conversations(conversation_a, conversation_b, conversation_id)
             if contains_pii is None:
-                failed_calls.append(conversation_id)
+                print(f"Analysis failed for conversation pair ID: {conversation_id}")
+                with open("topics-pii-error.log", "a") as f:
+                    f.write(f"{conversation_id}\n")
                 continue
 
-            contains_pii = any(result['contains_pii'] for result in contains_pii)
 
             cursor.execute(
                 "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s WHERE conversation_pair_id = %s;",
                 (contains_pii, short_summary, json.dumps(keywords), json.dumps(categories), json.dumps(languages), conversation_id),
             )
             conn.commit()
+            print(f"Conversation pair ID: {conversation_id} enriched successfully.")
 
         if failed_calls:
             print(f"Failed calls for conversation_pair_ids: {failed_calls}")
@@ -102,7 +144,7 @@ def process_conversations(db_params, analyzer: ConversationAnalyzer):
                 f.write(f"{failed_calls}\n")
 
     except psycopg2.Error as e:
-        print(f"Error: {e}")
+        print(f"Database Error: {e}")
         if conn:
             conn.rollback()
     finally:
@@ -111,5 +153,5 @@ def process_conversations(db_params, analyzer: ConversationAnalyzer):
             conn.close()
 
 db_params = os.getenv("DATABASE_URI")
-analyzer = ConversationAnalyzer()
+analyzer = Config()
 process_conversations(db_params, analyzer)
