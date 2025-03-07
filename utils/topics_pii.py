@@ -7,9 +7,11 @@ from typing import Optional, List, Tuple
 import os
 from enum import Enum
 
+
 class Config:
     PROJECT_ID = "languia-430909"
     LOCATION = "europe-west1"
+    # MODEL_NAME = "gemini-2.0-flash-lite"
     MODEL_NAME = "gemini-2.0-flash-001"
     MAX_RETRIES = 3
     RETRY_DELAY = 1
@@ -55,11 +57,19 @@ class Config:
                 "short_summary": {"type": "STRING"},
                 "languages": {"type": "ARRAY", "items": {"type": "STRING"}},
             },
-            "required": ["contains_pii", "categories", "keywords", "short_summary", "languages"],
+            "required": [
+                "contains_pii",
+                "categories",
+                "keywords",
+                "short_summary",
+                "languages",
+            ],
         },
     }
 
-    def _analyze_conversation(self, conversation_a: List[dict], conversation_b: List[dict]) -> Optional[dict]:
+    def _analyze_conversation(
+        self, conversation_a: List[dict], conversation_b: List[dict]
+    ) -> Optional[dict]:
         print("Analyzing conversation...")
         try:
             vertexai.init(project=self.PROJECT_ID, location=self.LOCATION)
@@ -74,29 +84,44 @@ class Config:
             {json.dumps(self.response_schema, indent=2)}
             """
 
-            response = model.generate_content(prompt, generation_config={"response_mime_type": "application/json"})
+            response = model.generate_content(
+                prompt, generation_config={"response_mime_type": "application/json"}
+            )
             print("Gemini API response received.")
             try:
                 analysis_result = json.loads(response.text)[0]
                 print("Analysis result parsed successfully.")
                 return analysis_result
             except json.JSONDecodeError as e:
-                print(f"Error decoding JSON response: {e}, response text: {response.text}")
+                print(
+                    f"Error decoding JSON response: {e}, response text: {response.text}"
+                )
                 return None
 
         except Exception as e:
             print(f"Error during analysis: {e}")
             return None
 
-    def analyze_conversations(self, conversation_a: List[dict], conversation_b: List[dict], conversation_id: int) -> Tuple[Optional[List[dict]], Optional[List[dict]], Optional[List[str]], Optional[str], Optional[List[str]]]:
-        print(f"Analyzing conversation pair ID: {conversation_id}")
+    def analyze_conversations(
+        self,
+        conversation_a: List[dict],
+        conversation_b: List[dict],
+        conversation_pair_id: int,
+    ) -> Tuple[
+        Optional[List[dict]],
+        Optional[List[dict]],
+        Optional[List[str]],
+        Optional[str],
+        Optional[List[str]],
+    ]:
+        print(f"Analyzing conversation pair ID: {conversation_pair_id}")
         analysis_result = self._analyze_conversation(conversation_a, conversation_b)
         if analysis_result:
-            contains_pii = analysis_result.get('contains_pii')
-            categories = analysis_result.get('categories')
-            keywords = analysis_result.get('keywords')
-            short_summary = analysis_result.get('short_summary')
-            languages = analysis_result.get('languages')
+            contains_pii = analysis_result.get("contains_pii")
+            categories = analysis_result.get("categories")
+            keywords = analysis_result.get("keywords")
+            short_summary = analysis_result.get("short_summary")
+            languages = analysis_result.get("languages")
 
             return contains_pii, categories, keywords, short_summary, languages
         else:
@@ -109,9 +134,25 @@ def process_conversations(db_params, analyzer: Config):
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE short_summary IS NULL;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE short_summary IS NULL;"
+        )
         no_summary_count = cursor.fetchone()[0]
         print(f"{no_summary_count} conversations with no short summary.")
+
+        cursor.execute("SELECT count(*) FROM conversations WHERE keywords IS NULL;")
+        no_keywords_count = cursor.fetchone()[0]
+        print(f"{no_keywords_count} conversations with no keywords.")
+
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE short_summary IS NOT NULL;"
+        )
+        summary_count = cursor.fetchone()[0]
+        print(f"{summary_count} conversations with a short summary.")
+
+        cursor.execute("SELECT count(*) FROM conversations WHERE keywords IS NOT NULL;")
+        keywords_count = cursor.fetchone()[0]
+        print(f"{keywords_count} conversations with a keywords.")
 
         cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii = FALSE;")
         contains_pii_false_count = cursor.fetchone()[0]
@@ -133,37 +174,76 @@ def process_conversations(db_params, analyzer: Config):
         pii_analyzed_true_count = cursor.fetchone()[0]
         print(f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE.")
 
-        cursor.execute("SELECT conversation_pair_id, conversation_a, conversation_b, short_summary, keywords, languages, contains_pii, pii_analyzed FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;")
+        cursor.execute(
+            "SELECT conversation_pair_id, conversation_a, conversation_b, short_summary, keywords, languages, contains_pii, pii_analyzed FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;"
+        )
 
         failed_calls = []
         while True:
             conversation = cursor.fetchone()
             if conversation is None:
                 break
-            conversation_id, conversation_a, conversation_b, existing_summary, existing_keywords, existing_languages, existing_contains_pii, existing_pii_analyzed = conversation
+            (
+                conversation_pair_id,
+                conversation_a,
+                conversation_b,
+                existing_summary,
+                existing_keywords,
+                existing_languages,
+                existing_contains_pii,
+                existing_pii_analyzed,
+            ) = conversation
 
-            print(f"Processing conversation pair ID: {conversation_id}")
-            if existing_summary or existing_keywords or existing_languages or existing_contains_pii is not None or existing_pii_analyzed:
-                print(f"Conversation {conversation_id} already has data:")
+            print(f"Processing conversation pair ID: {conversation_pair_id}")
+            if (
+                existing_summary
+                or existing_keywords
+                or existing_languages
+                or existing_contains_pii is not None
+                or existing_pii_analyzed
+            ):
+                print(f"Conversation {conversation_pair_id} already has data:")
                 print(f"  Short Summary: {existing_summary}")
                 print(f"  Keywords: {existing_keywords}")
                 print(f"  Languages: {existing_languages}")
                 print(f"  Contains PII: {existing_contains_pii}")
                 print(f"  PII Analyzed: {existing_pii_analyzed}")
 
-            contains_pii, categories, keywords, short_summary, languages = analyzer.analyze_conversations(conversation_a, conversation_b, conversation_id)
+            contains_pii, categories, keywords, short_summary, languages = (
+                analyzer.analyze_conversations(
+                    conversation_a, conversation_b, conversation_pair_id
+                )
+            )
             if contains_pii is None:
-                print(f"Analysis failed for conversation pair ID: {conversation_id}")
+                print(
+                    f"Analysis failed for conversation pair ID: {conversation_pair_id}"
+                )
                 with open("topics-pii-error.log", "a") as f:
-                    f.write(f"{conversation_id}\n")
+                    f.write(f"{conversation_pair_id}\n")
                 continue
 
+            
+            print(f"Data to be inserted for {conversation_pair_id}:")
+            print(f"  Short Summary: {short_summary}")
+            print(f"  Keywords: {keywords}")
+            print(f"  Languages: {languages}")
+            print(f"  categories: {categories}")
+            print(f"  Contains PII: {contains_pii}")
             cursor.execute(
                 "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s WHERE conversation_pair_id = %s;",
-                (contains_pii, short_summary, json.dumps(keywords), json.dumps(categories), json.dumps(languages), conversation_id),
+                (
+                    contains_pii,
+                    short_summary,
+                    json.dumps(keywords),
+                    json.dumps(categories),
+                    json.dumps(languages),
+                    conversation_pair_id,
+                ),
             )
             conn.commit()
-            print(f"Conversation pair ID: {conversation_id} enriched successfully.")
+            print(
+                f"Conversation pair ID: {conversation_pair_id} enriched successfully."
+            )
 
         if failed_calls:
             print(f"Failed calls for conversation_pair_ids: {failed_calls}")
@@ -179,6 +259,7 @@ def process_conversations(db_params, analyzer: Config):
         if conn:
             cursor.close()
             conn.close()
+
 
 db_params = os.getenv("DATABASE_URI")
 analyzer = Config()
