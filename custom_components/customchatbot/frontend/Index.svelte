@@ -8,10 +8,8 @@
 	import ChatBot from "./shared/ChatBot.svelte";
 	import ExtendedLikeData from "./shared/ChatBot.svelte";
 	import type { UndoRetryData } from "./shared/utils";
-	import { Block, BlockLabel } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
-	import { Chat } from "@gradio/icons";
-	import { StatusTracker } from "@gradio/statustracker";
+
 	import type { Message, TupleFormat, NormalisedMessage } from "./types";
 
 	import { update_messages } from "./shared/utils";
