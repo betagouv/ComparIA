@@ -216,6 +216,7 @@
 		// If clicked on second model, close model selection modal
 		if (custom_models_selection.length == 2) {
 			const modeSelectionModal = document.getElementById("modal-mode-selection")
+			// maybe add a 500 ms delay
 			window.dsfr(modeSelectionModal).modal.conceal()
 		}
 	}
