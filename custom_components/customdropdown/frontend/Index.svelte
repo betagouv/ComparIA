@@ -12,6 +12,8 @@
 	import ChevronBas from "./shared/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
 
+	// import { dsfr } from "@gouvfr/dsfr";
+
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 
 	export let never_clicked: boolean = true;
@@ -210,6 +212,12 @@
 			custom_models_selection: custom_models_selection,
 			prompt_value: prompt_value,
 		});
+
+		// If clicked on second model, close model selection modal
+		if (custom_models_selection.length == 2) {
+			const modeSelectionModal = document.getElementById("modal-mode-selection")
+			window.dsfr(modeSelectionModal).modal.conceal()
+		}
 	}
 
 	// Handle prompt value update from backend
