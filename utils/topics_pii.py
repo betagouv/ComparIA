@@ -109,26 +109,54 @@ def process_conversations(db_params, analyzer: Config):
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;")
-        count = cursor.fetchone()[0]
-        print(f"{count} conversations to enrich...")
-        
-        cursor.execute("SELECT conversation_pair_id, conversation_a, conversation_b FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;")
+        cursor.execute("SELECT count(*) FROM conversations WHERE short_summary IS NULL;")
+        no_summary_count = cursor.fetchone()[0]
+        print(f"{no_summary_count} conversations with no short summary.")
+
+        cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii = FALSE;")
+        contains_pii_false_count = cursor.fetchone()[0]
+        print(f"{contains_pii_false_count} conversations with contains_pii = FALSE.")
+
+        cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii = TRUE;")
+        contains_pii_true_count = cursor.fetchone()[0]
+        print(f"{contains_pii_true_count} conversations with contains_pii = TRUE.")
+
+        cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii IS NULL;")
+        contains_pii_null_count = cursor.fetchone()[0]
+        print(f"{contains_pii_null_count} conversations with contains_pii = NULL.")
+
+        cursor.execute("SELECT count(*) FROM conversations WHERE pii_analyzed = FALSE;")
+        pii_analyzed_false_count = cursor.fetchone()[0]
+        print(f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE.")
+
+        cursor.execute("SELECT count(*) FROM conversations WHERE pii_analyzed = TRUE;")
+        pii_analyzed_true_count = cursor.fetchone()[0]
+        print(f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE.")
+
+        cursor.execute("SELECT conversation_pair_id, conversation_a, conversation_b, short_summary, keywords, languages, contains_pii, pii_analyzed FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;")
+
         failed_calls = []
         while True:
             conversation = cursor.fetchone()
             if conversation is None:
                 break
-            conversation_id, conversation_a, conversation_b = conversation
+            conversation_id, conversation_a, conversation_b, existing_summary, existing_keywords, existing_languages, existing_contains_pii, existing_pii_analyzed = conversation
 
             print(f"Processing conversation pair ID: {conversation_id}")
+            if existing_summary or existing_keywords or existing_languages or existing_contains_pii is not None or existing_pii_analyzed:
+                print(f"Conversation {conversation_id} already has data:")
+                print(f"  Short Summary: {existing_summary}")
+                print(f"  Keywords: {existing_keywords}")
+                print(f"  Languages: {existing_languages}")
+                print(f"  Contains PII: {existing_contains_pii}")
+                print(f"  PII Analyzed: {existing_pii_analyzed}")
+
             contains_pii, categories, keywords, short_summary, languages = analyzer.analyze_conversations(conversation_a, conversation_b, conversation_id)
             if contains_pii is None:
                 print(f"Analysis failed for conversation pair ID: {conversation_id}")
                 with open("topics-pii-error.log", "a") as f:
                     f.write(f"{conversation_id}\n")
                 continue
-
 
             cursor.execute(
                 "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s WHERE conversation_pair_id = %s;",
