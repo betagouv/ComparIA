@@ -179,12 +179,9 @@ def process_conversations(db_params, analyzer: Config):
         )
 
         failed_calls = []
-        while True:
-            conversation = cursor.fetchone()
-            if conversation is None:
-                break
-            (
-                conversation_pair_id,
+        conversations_to_process = cursor.fetchall()
+        for conversation in conversations_to_process:
+            (    conversation_pair_id,
                 conversation_a,
                 conversation_b,
                 existing_summary,
@@ -256,6 +253,12 @@ def process_conversations(db_params, analyzer: Config):
         if conn:
             conn.rollback()
     finally:
+
+        if failed_calls:
+            print(f"Failed calls for conversation_pair_ids: {failed_calls}")
+
+            with open("topics-pii-error.log", "a") as f:
+                f.write(f"{failed_calls}\n")
         if conn:
             cursor.close()
             conn.close()
