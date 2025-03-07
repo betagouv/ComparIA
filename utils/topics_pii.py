@@ -130,6 +130,7 @@ class Config:
 
 def process_conversations(db_params, analyzer: Config):
     conn = None
+    failed_calls = []
     try:
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
@@ -152,7 +153,7 @@ def process_conversations(db_params, analyzer: Config):
 
         cursor.execute("SELECT count(*) FROM conversations WHERE keywords IS NOT NULL;")
         keywords_count = cursor.fetchone()[0]
-        print(f"{keywords_count} conversations with a keywords.")
+        print(f"{keywords_count} conversations with keywords.")
 
         cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii = FALSE;")
         contains_pii_false_count = cursor.fetchone()[0]
@@ -178,7 +179,6 @@ def process_conversations(db_params, analyzer: Config):
             "SELECT conversation_pair_id, conversation_a, conversation_b, short_summary, keywords, languages, contains_pii, pii_analyzed FROM conversations WHERE pii_analyzed = FALSE OR short_summary IS NULL;"
         )
 
-        failed_calls = []
         conversations_to_process = cursor.fetchall()
         for conversation in conversations_to_process:
             (    conversation_pair_id,
