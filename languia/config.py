@@ -179,15 +179,28 @@ arena_head_js = (
 <script type="module" src="../assets/dsfr/dsfr.module.js"></script>
 <script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
 <script type="text/javascript">
-  function copie() {
-    // Get the text field
-    var copyText = document.getElementById("share-link");
-    // Select the text field
-    copyText.select();
-    copyText.setSelectionRange(0, 99999); // For mobile devices
+function createSnackbar(message) {
+    const snackbar = document.getElementById('snackbar');
+    const messageText = snackbar.querySelector('.message');
+    messageText.textContent = message;
 
-    // Copy the text inside the text field
+    snackbar.classList.add('show');
+
+    setTimeout(() => {
+        snackbar.classList.remove('show');
+    }, 2000);
+}
+function closeSnackbar() {
+    const snackbar = document.getElementById('snackbar');
+    snackbar.classList.remove('show');
+}
+
+function copie() {
+    const copyText = document.getElementById("share-link");
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
     navigator.clipboard.writeText(copyText.value);
+    createSnackbar("Lien copié dans le presse-papiers");
 }
 </script>
 """
