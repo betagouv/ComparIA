@@ -9,6 +9,7 @@ from typing import Optional
 import pandas as pd
 import difflib
 
+
 class Config:
     PROJECT_ID = "languia-430909"
     LOCATION = "europe-west1"
@@ -22,11 +23,13 @@ class Config:
     )
     DATABASE_URI = os.getenv("DATABASE_URI")
 
+
 class Classifier:
     def __init__(self):
         self.needed = 0
         self.error = []
         self.model = self._initialize_model()
+        self.anonymization_cache = {}  # Cache to store anonymized texts
 
     def _initialize_model(self):
         try:
@@ -37,34 +40,35 @@ class Classifier:
             print(f"Model initialization failed: {str(e)}")
             return None
 
-
     def _get_anonymization(self, text: str, question_id=None) -> Optional[str]:
-        """Get anonymization from model with retries."""
+        """Get anonymization from model or cache with retries."""
+        if text in self.anonymization_cache:
+            print(f"Using cached anonymization for text: {text[:50]}...")
+            return self.anonymization_cache[text]
+
         prompt = Config.PROMPT_TEMPLATE.format(text=text)
-        print(
-            f"Starting anonymization for text: {text[:50]}..."
-        )  # print first 50 chars of text
+        print(f"Starting anonymization for text: {text[:50]}...")
 
         for attempt in range(Config.MAX_RETRIES):
             try:
                 start_time = time.time()
                 response = self.model.generate_content(
                     prompt,
-                    generation_config={
-                        "temperature": 0.7,
-                    },
+                    generation_config={"temperature": 0.7},
                 )
                 elapsed = time.time() - start_time
                 print(
                     f"Anonymization attempt {attempt + 1} successful. Time taken: {elapsed:.2f} seconds."
                 )
                 print(f"Response: {response.text}")
+                self.anonymization_cache[text] = response.text  # Cache the result
                 return response.text
 
             except Exception as e:
                 print(f"Attempt {attempt + 1} failed: {str(e)}")
                 if attempt < Config.MAX_RETRIES - 1:
                     time.sleep(Config.RETRY_DELAY)
+
         print(f"Anonymization failed for text: {text[:50]}...")
         return None
 
@@ -107,13 +111,14 @@ class Classifier:
                     sanitized_conv_b, _ = self.sanitize_conversation(
                         conv_b, False, conversation_pair_id
                     )
+
                     if (
                         sanitized_conv_a
                         and len(sanitized_conv_a) > 0
                         and sanitized_conv_b
                         and len(sanitized_conv_b) > 0
-                        and (opening_msg)
-                        and (len(opening_msg) > 0)
+                        and opening_msg
+                        and len(opening_msg) > 0
                     ):
                         self.update_database(
                             conversation_pair_id,
@@ -121,7 +126,6 @@ class Classifier:
                             json.dumps(sanitized_conv_b),
                             opening_msg,
                         )
-
                     else:
                         print(
                             f"Not updating db for {conversation_pair_id}, one of those is empty: sanitized_conv_a, sanitized_conv_b, opening_msg"
@@ -154,7 +158,9 @@ class Classifier:
         for message in conversation:
             if message.get("role") == "user":
                 text = message.get("content", "")
-                sanitized_content = self._get_anonymization(text, question_id=conversation_pair_id)
+                sanitized_content = self._get_anonymization(
+                    text, question_id=conversation_pair_id
+                )
 
                 if sanitized_content is not None:
                     sanitized_conversation.append(
@@ -167,6 +173,7 @@ class Classifier:
                     return None, None
             else:
                 sanitized_conversation.append(message)
+
         return sanitized_conversation, opening_msg
 
     def update_database(
@@ -201,12 +208,11 @@ class Classifier:
                 conn.close()
 
 
-
 def main():
     classifier = Classifier()
     if Config.DATABASE_URI:
         classifier.process_database_records()
 
+
 if __name__ == "__main__":
     main()
-
