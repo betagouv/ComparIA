@@ -129,7 +129,7 @@ def test_model(model_id):
                 text = output
 
         test = {
-            "model_id": endpoint.get("model_id"),
+            "model_id": model_id,
             "timestamp": int(time.time()),
         }
         if output_tokens:
@@ -163,7 +163,7 @@ def test_model(model_id):
         logging.error(f"Error: {reason}. Model: {model_id}")
         stacktrace = traceback.print_exc()
         test = {
-            "model_id": endpoint.get("model_id"),
+            "model_id": model_id,
             "timestamp": int(time.time()),
             "success": False,
             "message": reason,
