@@ -96,9 +96,6 @@ class Classifier:
             for row in rows:
                 conversation_pair_id, conv_a_json, conv_b_json = row
                 print(f"Processing ID: {conversation_pair_id}")
-                if conversation_pair_id in self.processed_ids:
-                    print("Skipping already processed ID: " + conversation_pair_id)
-                    continue
 
                 try:
                     conv_a = conv_a_json
