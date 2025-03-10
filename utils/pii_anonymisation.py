@@ -4,9 +4,10 @@ from vertexai.generative_models import GenerativeModel
 import time
 import os
 import psycopg2
-import csv
+import logging
 from typing import Optional
-
+import pandas as pd
+import difflib
 
 class Config:
     PROJECT_ID = "languia-430909"
@@ -20,16 +21,12 @@ class Config:
         "Replaced text: "
     )
     DATABASE_URI = os.getenv("DATABASE_URI")
-    CSV_PATH = "./utils/results/pii_comparia.csv"
-
 
 class Classifier:
     def __init__(self):
         self.needed = 0
         self.error = []
         self.model = self._initialize_model()
-        self.conversation_cache = {}  # Cache for entire conversations
-        # self._load_cache_from_csv()
 
     def _initialize_model(self):
         try:
@@ -40,12 +37,13 @@ class Classifier:
             print(f"Model initialization failed: {str(e)}")
             return None
 
-    def _get_anonymization(self, text: str) -> Optional[str]:
+
+    def _get_anonymization(self, text: str, question_id=None) -> Optional[str]:
         """Get anonymization from model with retries."""
         prompt = Config.PROMPT_TEMPLATE.format(text=text)
         print(
             f"Starting anonymization for text: {text[:50]}..."
-        )  # print first 50 chars of text.
+        )  # print first 50 chars of text
 
         for attempt in range(Config.MAX_RETRIES):
             try:
@@ -70,26 +68,9 @@ class Classifier:
         print(f"Anonymization failed for text: {text[:50]}...")
         return None
 
-    # def _load_cache_from_csv(self):
-    #     try:
-    #         print(f"Loading cache from CSV: {Config.CSV_PATH}")
-    #         with open(Config.CSV_PATH, "r", encoding="utf-8") as csvfile:
-    #             reader = csv.DictReader(csvfile)
-    #             for row in reader:
-    #                 question_id = row["question_id"]
-    #                 text = row["text"]
-    #                 redacted_llm = row["redacted (LLM)"]
-    #                 conversation_pair_id = "-".join(question_id.split("-")[:2])
-
-    #                 if conversation_pair_id not in self.conversation_cache:
-    #                     self.conversation_cache[conversation_pair_id] = {}
-    #                 self.conversation_cache[conversation_pair_id][text] = redacted_llm
-    #         print(f"Cache loaded successfully. Entries: {len(self.conversation_cache)}")
-
-    #     except FileNotFoundError:
-    #         print(f"CSV file not found: {Config.CSV_PATH}")
-    #     except Exception as e:
-    #         print(f"Error loading CSV: {e}")
+    def calculate_diff(self, input_str, result_str):
+        diff = difflib.Differ()
+        return diff.compare(input_str.splitlines(), result_str.splitlines())
 
     def process_database_records(self):
         if not Config.DATABASE_URI:
@@ -115,6 +96,9 @@ class Classifier:
             for row in rows:
                 conversation_pair_id, conv_a_json, conv_b_json = row
                 print(f"Processing ID: {conversation_pair_id}")
+                if conversation_pair_id in self.processed_ids:
+                    print("Skipping already processed ID: " + conversation_pair_id)
+                    continue
 
                 try:
                     conv_a = conv_a_json
@@ -140,13 +124,11 @@ class Classifier:
                             json.dumps(sanitized_conv_b),
                             opening_msg,
                         )
+
                     else:
                         print(
                             f"Not updating db for {conversation_pair_id}, one of those is empty: sanitized_conv_a, sanitized_conv_b, opening_msg"
                         )
-                        # print(sanitized_conv_a)
-                        # print(sanitized_conv_b)
-                        # print(opening_msg)
                         self.error.append(conversation_pair_id)
 
                 except json.JSONDecodeError as e:
@@ -175,18 +157,7 @@ class Classifier:
         for message in conversation:
             if message.get("role") == "user":
                 text = message.get("content", "")
-                if (
-                    conversation_pair_id
-                    and conversation_pair_id in self.conversation_cache
-                    and text in self.conversation_cache[conversation_pair_id]
-                ):
-                    sanitized_content = self.conversation_cache[conversation_pair_id][
-                        text
-                    ]
-                    print(f"Cache hit for: {text[:30]}...")
-                else:
-                    print(f"No cache for: {text[:30]}...")
-                    sanitized_content = self._get_anonymization(text)
+                sanitized_content = self._get_anonymization(text, question_id=conversation_pair_id)
 
                 if sanitized_content is not None:
                     sanitized_conversation.append(
@@ -197,10 +168,6 @@ class Classifier:
                         first_user_message = False
                 else:
                     return None, None
-                    # sanitized_conversation.append(message)
-                    # if get_opening_msg and first_user_message:
-                    #     opening_msg = message.get("content", "")
-                    #     first_user_message = False
             else:
                 sanitized_conversation.append(message)
         return sanitized_conversation, opening_msg
@@ -208,7 +175,6 @@ class Classifier:
     def update_database(
         self, conversation_pair_id, sanitized_conv_a, sanitized_conv_b, opening_msg
     ):
-        """Update the database with the redacted conversations."""
         if not Config.DATABASE_URI:
             print("DATABASE_URI environment variable not set.")
             return
@@ -218,7 +184,6 @@ class Classifier:
             conn = psycopg2.connect(Config.DATABASE_URI)
             cur = conn.cursor()
 
-            # print(
             cur.execute(
                 """
                 UPDATE conversations
@@ -239,10 +204,12 @@ class Classifier:
                 conn.close()
 
 
+
 def main():
     classifier = Classifier()
-    classifier.process_database_records()
-
+    if Config.DATABASE_URI:
+        classifier.process_database_records()
 
 if __name__ == "__main__":
     main()
+
