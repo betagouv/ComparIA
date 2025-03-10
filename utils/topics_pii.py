@@ -1,6 +1,5 @@
 import psycopg2
 import json
-import time
 import vertexai
 from vertexai.generative_models import GenerativeModel
 from typing import Optional, List, Tuple

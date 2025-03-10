@@ -4,10 +4,7 @@ from vertexai.generative_models import GenerativeModel
 import time
 import os
 import psycopg2
-import logging
 from typing import Optional
-import pandas as pd
-import difflib
 
 
 class Config:
@@ -71,10 +68,6 @@ class Classifier:
 
         print(f"Anonymization failed for text: {text[:50]}...")
         return None
-
-    def calculate_diff(self, input_str, result_str):
-        diff = difflib.Differ()
-        return diff.compare(input_str.splitlines(), result_str.splitlines())
 
     def process_database_records(self):
         if not Config.DATABASE_URI:
