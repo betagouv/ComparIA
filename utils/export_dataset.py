@@ -1,4 +1,3 @@
-import psycopg2
 import pandas as pd
 import logging
 import sys
@@ -87,7 +86,7 @@ def fetch_and_transform_data(table_name, query=None):
         return df
     except Exception as e:
         logger.error(f"Failed to fetch data from {table_name}: {e}")
-        return pd.DataFrame() 
+        return pd.DataFrame()
 
 def export_data(df, table_name):
     if df.empty:
@@ -117,7 +116,7 @@ def export_data(df, table_name):
 
 
 def main():
-    repos = ['comparia-preferences', 'comparia-questions', 'comparia-samples']
+    repos = ['comparia-conversations', 'comparia-reactions', 'comparia-votes']
     for repo in repos:
         repo_path = os.path.join("../languia-data", repo)
         if not os.path.exists(repo_path):
@@ -140,11 +139,37 @@ def main():
         data = fetch_and_transform_data(table, query=query)
         export_data(data, table)
 
+        if table == "conversations":
+            logger.info("Processing conversations_raw with PII scrubbing...")
+            conversations_pii_removed = pd.read_sql_query("SELECT * FROM conversations WHERE archived = FALSE", conn)
+            conversations_pii_removed["visitor_id"] = conversations_pii_removed["visitor_id"].apply(
+                lambda x: hash_md5(x) if pd.notnull(x) else None
+            )
+            conversations_pii_removed["visitor_id"] = conversations_pii_removed.apply(
+                lambda row: (
+                    hash_md5(f"ip-{ip_to_number(row['ip'])}")
+                    if pd.isnull(row["visitor_id"]) and pd.notnull(row["ip"])
+                    else row["visitor_id"]
+                ),
+                axis=1,
+            )
+
+            conversations_pii_removed["conversation_a"] = conversations_pii_removed.apply(lambda row: "" if row["contains_pii"] else row["conversation_a"], axis=1)
+            conversations_pii_removed["conversation_b"] = conversations_pii_removed.apply(lambda row: "" if row["contains_pii"] else row["conversation_b"], axis=1)
+            conversations_pii_removed["opening_msg"] = conversations_pii_removed.apply(lambda row: "" if row["contains_pii"] else row["opening_msg"], axis=1)
+
+            if "ip" in conversations_pii_removed.columns:
+                conversations_pii_removed = conversations_pii_removed.drop(columns=["ip"])
+            if "ip_id" in conversations_pii_removed.columns:
+                conversations_pii_removed = conversations_pii_removed.drop(columns=["ip_id"])
+
+            export_data(conversations_pii_removed, "conversations_pii_removed")
 
     table_repos = {
         'votes': 'comparia-votes',
         'reactions': 'comparia-reactions',
-        'conversations': 'comparia-conversations',
+        'conversations': 'comparia-conversations_raw',
+        'conversations_pii_removed':'comparia-conversations'
     }
 
     dataset_dir = 'datasets'
@@ -158,26 +183,12 @@ def main():
         if not os.path.isfile(src_path):
             continue
 
-        # Determine destination repositories
-        if '_samples' in filename:
-            base_name = filename.split('_samples')[0]
-            is_sample = True
-        else:
-            base_name = os.path.splitext(filename)[0]
-            is_sample = False
+        base_name = os.path.splitext(filename)[0]
 
         main_repo = table_repos.get(base_name)
         destinations = []
 
-        if main_repo:
-            if not is_sample:
-                destinations.append(main_repo)
-            else:
-                destinations.append(main_repo)
-                destinations.append('comparia-samples')
-        else:
-            if is_sample:
-                destinations.append('comparia-samples')
+        destinations.append(main_repo)
 
         # Copy to each destination
         for dest_repo in destinations:
