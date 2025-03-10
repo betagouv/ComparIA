@@ -1,10 +1,9 @@
 gradio==5.19.0
 ecologits==0.6.1
-litellm
 
+litellm
 google-cloud-aiplatform
 huggingface-hub
-# litellm[proxy]
 fastapi
 tomli
 json5
