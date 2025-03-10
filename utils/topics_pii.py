@@ -250,8 +250,6 @@ def process_conversations(db_params, analyzer: Config):
 
     except psycopg2.Error as e:
         print(f"Database Error: {e}")
-        if conn:
-            conn.rollback()
     finally:
 
         if failed_calls:
