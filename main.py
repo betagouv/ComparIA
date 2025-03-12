@@ -49,7 +49,6 @@ demo.run_startup_events()
 app = gr.mount_gradio_app(
     app,
     demo,
-    favicon_path=config.assets_absolute_path+"/favicon.png",
     path="/arene",
     root_path="/arene",
     # allowed_paths=[config.assets_absolute_path],
@@ -65,6 +64,13 @@ app = gr.mount_gradio_app(
 from languia.utils import get_gauge_count
 
 objective = 70000
+
+
+favicon_path="assets/favicon/favicon.ico"
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(favicon_path)
 
 
 @app.get("/", response_class=HTMLResponse)
