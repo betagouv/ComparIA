@@ -49,6 +49,7 @@ demo.run_startup_events()
 app = gr.mount_gradio_app(
     app,
     demo,
+    favicon_path=config.assets_absolute_path+"/favicon.png",
     path="/arene",
     root_path="/arene",
     # allowed_paths=[config.assets_absolute_path],
