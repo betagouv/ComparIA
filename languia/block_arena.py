@@ -35,7 +35,6 @@ with gr.Blocks(
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
-    mode_banner = gr.HTML()
 
     app_state = gr.State(value=AppState())
 

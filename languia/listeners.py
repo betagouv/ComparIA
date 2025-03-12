@@ -1018,33 +1018,3 @@ revealScreen.scrollIntoView({
 }""",
         show_progress="hidden",
     )
-
-    # gr.on(
-    #     triggers=retry_modal_btn.click,
-    #     fn=(lambda: Modal(visible=True)),
-    #     inputs=[],
-    #     outputs=retry_modal,
-    #     api_name=False,
-    # )
-    # gr.on(
-    #     triggers=close_retry_modal_btn.click,
-    #     fn=(lambda: Modal(visible=False)),
-    #     inputs=[],
-    #     outputs=retry_modal,
-    #     api_name=False,
-    # )
-
-    # On reset go to mode selection mode_screen
-
-    # gr.on(
-    #     triggers=[retry_btn.click],
-    #     api_name=False,
-    #     # triggers=[clear_btn.click, retry_btn.click],
-    #     fn=clear_history,
-    #     inputs=conversations + [chatbot] + [textbox],
-    # )
-
-    # def clear_history(
-    #     request: gr.Request,
-    # ):
-    # return
