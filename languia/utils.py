@@ -463,32 +463,6 @@ def refresh_unavailable_models(previous_unavailable_models, controller_url):
         return previous_unavailable_models
 
 
-# def add_outage_model(controller_url, model_name, endpoint_name, reason):
-#     logger = logging.getLogger("languia")
-
-#     try:
-#         response = requests.post(
-#             params={
-#                 "reason": str(reason),
-#                 "model_name": model_name,
-#                 "endpoint": endpoint_name,
-#             },
-#             # params={"reason": str(reason), "model_name": model_name, "endpoint": endpoint_name},
-#             url=f"{controller_url}/unavailable_models/",
-#             timeout=2,
-#         )
-#     except Exception:
-#         pass
-
-
-def test_endpoint(controller_url, api_id):
-    return requests.get(
-        # params={"model_name": model_name},
-        url=f"{controller_url}/unavailable_models/{api_id}",
-        timeout=2,
-    )
-
-
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
     conv_a_messages = [

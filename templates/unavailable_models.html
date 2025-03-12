@@ -61,15 +61,15 @@
                 <!-- <th>Stats</th> -->
             </tr>
             {% for endpoint in endpoints %}
-                {% if endpoint['model_id'] not in unavailable_models %}
-                <tr>
-                    <td>{{ endpoint['model_id'] }}</td>
-                    <td>{{ endpoint['model_id'] }}</td>
-                    <td><a href="/unavailable_models/{{ endpoint['model_id'] }}">Tester ?</a></td>
-                    <td><a href="/unavailable_models/{{ endpoint['model_id'] }}/create">Désactiver ?</a></td>
-                    <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
-                </tr>
-                {% endif %}
+            {% if endpoint['model_id'] not in unavailable_models %}
+            <tr>
+                <td>{{ endpoint['model_id'] }}</td>
+                <td>{{ endpoint['model_id'] }}</td>
+                <td><a href="/unavailable_models/{{ endpoint['model_id'] }}">Tester ?</a></td>
+                <td><a href="/unavailable_models/{{ endpoint['model_id'] }}/create">Désactiver ?</a></td>
+                <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
+            </tr>
+            {% endif %}
             {% endfor %}
         </table>
         <h4 class="fr-h4">Endpoints désactivés</h4>
@@ -83,15 +83,15 @@
                 <!-- <th>Stats</th> -->
             </tr>
             {% for endpoint in endpoints %}
-                {% if endpoint['model_id'] in unavailable_models %}
-                <tr>
-                    <td>{{ endpoint['api_id'] }}</td>
-                    <td>{{ endpoint['model_id'] }}</td>
-                    <td><a href="/unavailable_models/{{ endpoint['model_id'] }}">Tester ?</a></td>
-                    <td><a href="/unavailable_models/{{ endpoint['model_id'] }}/delete">Réactiver ?</a></td>
-                    <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
-                </tr>
-                {% endif %}
+            {% if endpoint['model_id'] in unavailable_models %}
+            <tr>
+                <td>{{ endpoint['api_id'] }}</td>
+                <td>{{ endpoint['model_id'] }}</td>
+                <td><a href="/unavailable_models/{{ endpoint['model_id'] }}">Tester ?</a></td>
+                <td><a href="/unavailable_models/{{ endpoint['model_id'] }}/delete">Réactiver ?</a></td>
+                <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
+            </tr>
+            {% endif %}
             {% endfor %}
         </table>
 
@@ -100,7 +100,6 @@
             <tr>
                 <th>Date</th>
                 <th>Modèle</th>
-                <th>Endpoint</th>
                 <th>Nombre de tokens</th>
                 <th>Résultat</th>
             </tr>
@@ -110,7 +109,6 @@
                 % 60 %} {% set time_ago=minutes ~ "min " ~ seconds ~ "s" %} {% endif %} <tr>
                 <td>il y a {{ time_ago }}</td>
                 <td>{{ test['model_id'] }}</td>
-                <td>{{ test['api_id'] }}</td>
                 <td>{{ test.get('output_tokens', '') }}</td>
                 <td>{{ test['message'] }}</td>
                 </tr>
