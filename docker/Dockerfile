@@ -44,7 +44,7 @@ COPY --from=cc /app/custom_components /app/custom_components
 ARG GIT_COMMIT
 ENV GIT_COMMIT=$GIT_COMMIT
 
-COPY controller.py main.py models-extra-info.toml /app/
+COPY controller.py main.py demo.py models-extra-info.toml /app/
 # Useful for export scripts
 COPY utils /app/utils
 COPY templates /app/templates
