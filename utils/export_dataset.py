@@ -118,7 +118,7 @@ def export_data(df, table_name):
 def main():
     repos = ['comparia-conversations', 'comparia-reactions', 'comparia-votes']
     for repo in repos:
-        repo_path = os.path.join("../languia-data", repo)
+        repo_path = os.path.join("../", repo)
         if not os.path.exists(repo_path):
             logger.error(f"Repository directory not found: {repo_path}")
             continue
