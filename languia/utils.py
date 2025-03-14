@@ -165,11 +165,11 @@ def choose_among(
     excluded,
 ):
     all_models = models
-    models = [model for model in all_models if model not in excluded]
+    models_pool = [model_name for model_name in all_models if model_name not in excluded]
     logger = logging.getLogger("languia")
-    logger.debug("chosing from:"+str(models))
-    logger.debug("excluded:"+str(models))
-    if len(models) == 0:
+    logger.debug("chosing from:"+str(models_pool))
+    logger.debug("excluded:"+str(excluded))
+    if len(models_pool) == 0:
         # TODO: tell user in a toast notif that we couldn't respect prefs
         logger.warning("Couldn't respect exclusion prefs")
         if len(all_models) == 0:
@@ -180,30 +180,31 @@ def choose_among(
                 message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
             )
         else:
-            models = all_models
+            models_pool = all_models
 
-    chosen_idx = np.random.choice(len(models), p=None)
-    chosen_model_name = models[chosen_idx]["id"]
+    chosen_idx = np.random.choice(len(models_pool), p=None)
+    chosen_model_name = models_pool[chosen_idx]
     return chosen_model_name
 
 
 def pick_models(mode, custom_models_selection, unavailable_models):
     from languia.config import models_extra_info
+    from languia.config import models as models_names
 
     small_models = [
-        model
+        model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["XS", "S", "M"]
         and model["id"] not in unavailable_models
     ]
     big_models = [
-        model
+        model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["L", "XL"]
         and model["id"] not in unavailable_models
     ]
     reasoning_models = [
-        model for model in models_extra_info if model.get("reasoning", False)
+        model["id"] for model in models_extra_info if model.get("reasoning", False)
     ]
 
     import random
@@ -234,7 +235,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         if len(custom_models_selection) == 1:
             model_left_name = custom_models_selection[0]
             model_right_name = choose_among(
-                models=models_extra_info,
+                models=models_names,
                 excluded=[custom_models_selection[0]] + unavailable_models,
             )
 
@@ -245,10 +246,10 @@ def pick_models(mode, custom_models_selection, unavailable_models):
 
     else:  # assume random mode
         model_left_name = choose_among(
-            models=models_extra_info, excluded=unavailable_models
+            models=models_names, excluded=unavailable_models
         )
         model_right_name = choose_among(
-            models=models_extra_info, excluded=[model_left_name] + unavailable_models
+            models=models_names, excluded=[model_left_name] + unavailable_models
         )
 
     swap = random.randint(0, 1)
@@ -377,25 +378,11 @@ def get_model_extra_info(name: str, models_extra_info: list):
 import json
 
 
-def get_model_list(_controller_url, api_endpoint_info):
+def get_model_names_list(api_endpoint_info):
     logger = logging.getLogger("languia")
 
-    # Add models from the controller
-    # if controller_url:
-    #     ret = requests.post(controller_url + "/refresh_all_workers")
-    #     assert ret.status_code == 200
-
-    #     ret = requests.post(controller_url + "/list_language_models")
-    #     models = ret.json()["models"]
-    # else:
-    models = []
-    # Add models from the API providers
-    models.extend(
-        model_id
-        for model_dict in api_endpoint_info
-        if (model_id := model_dict.get("model_id")) is not None
-        and model_id not in models
-    )
+    models = [model_dict.get("model_id")
+        for model_dict in api_endpoint_info]
     logger.debug(f"All models: {models}")
     return models
 
