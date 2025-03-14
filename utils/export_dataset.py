@@ -172,20 +172,41 @@ def main():
 
             conversations_pii_removed["conversation_a"] = (
                 conversations_pii_removed.apply(
-                    lambda row: "" if row["contains_pii"] else row["conversation_a"],
+                    lambda row: (
+                        row["conversation_a_pii_removed"]
+                        if row["contains_pii"]
+                        else row["conversation_a"]
+                    ),
                     axis=1,
                 )
             )
             conversations_pii_removed["conversation_b"] = (
                 conversations_pii_removed.apply(
-                    lambda row: "" if row["contains_pii"] else row["conversation_b"],
+                    lambda row: (
+                        row["conversation_b_pii_removed"]
+                        if row["contains_pii"]
+                        else row["conversation_b"]
+                    ),
                     axis=1,
                 )
             )
             conversations_pii_removed["opening_msg"] = conversations_pii_removed.apply(
-                lambda row: "" if row["contains_pii"] else row["opening_msg"], axis=1
+                lambda row: (
+                    row["opening_msg_pii_removed"]
+                    if row["contains_pii"]
+                    else row["opening_msg"]
+                ),
+                axis=1,
             )
-
+            conversations_pii_removed = conversations_pii_removed.drop(
+                columns=[
+                    "conversation_a_pii_removed",
+                    "conversation_b_pii_removed",
+                    "opening_msg_pii_removed",
+                ]
+            )
+            
+            conversations_pii_removed.rename(columns={"contains_pii": "pii_removed"})
             if "ip" in conversations_pii_removed.columns:
                 conversations_pii_removed = conversations_pii_removed.drop(
                     columns=["ip"]
