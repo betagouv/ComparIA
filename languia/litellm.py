@@ -87,9 +87,9 @@ def litellm_stream_iter(
         "metadata": {
             "session_hash": getattr(request, "session_hash", ""),
             # "conversation_id
-            # Is that useful?
-            "existing_trace_id": langfuse_context.get_current_trace_id(),  # set langfuse trace ID
-            "parent_observation_id": langfuse_context.get_current_observation_id(),
+            # Creates nested traces for convos A and B
+            "existing_trace_id": langfuse_context.get_current_trace_id(),
+            # "parent_observation_id": langfuse_context.get_current_observation_id(),
         },
     }
 
@@ -129,7 +129,7 @@ def litellm_stream_iter(
                     content = ""
                 # TODO: extract thinking here / pass to frontend / wrap into <think> tags
                 if hasattr(chunk.choices[0].delta, "reasoning"):
-                    # print("GOT REASONING")
+                    print("GOT REASONING")
                     content = chunk.choices[0].delta.reasoning or ""
             else:
                 content = ""
