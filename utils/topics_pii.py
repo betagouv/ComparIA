@@ -5,6 +5,8 @@ from vertexai.generative_models import GenerativeModel
 from typing import Optional, List, Tuple
 import os
 from enum import Enum
+from concurrent.futures import ThreadPoolExecutor  # Or ProcessPoolExecutor if needed
+
 
 
 class Config:
@@ -127,6 +129,82 @@ class Config:
             return None, None, None, None, None
 
 
+def process_conversation(conversation, analyzer, db_params):
+    conn = None
+    try:
+        conn = psycopg2.connect(db_params)
+        cursor = conn.cursor()
+
+        (
+            conversation_pair_id,
+            conversation_a,
+            conversation_b,
+            existing_summary,
+            existing_keywords,
+            existing_languages,
+            existing_contains_pii,
+            existing_pii_analyzed,
+        ) = conversation
+
+        print(f"Processing conversation pair ID: {conversation_pair_id}")
+        if (
+            existing_summary
+            or existing_keywords
+            or existing_languages
+            or existing_contains_pii is not None
+            or existing_pii_analyzed
+        ):
+            print(f"Conversation {conversation_pair_id} already has data:")
+            print(f"  Short Summary: {existing_summary}")
+            print(f"  Keywords: {existing_keywords}")
+            print(f"  Languages: {existing_languages}")
+            print(f"  Contains PII: {existing_contains_pii}")
+            print(f"  PII Analyzed: {existing_pii_analyzed}")
+            return None  # Indicate no analysis was performed
+
+        contains_pii, categories, keywords, short_summary, languages = (
+            analyzer.analyze_conversations(
+                conversation_a, conversation_b, conversation_pair_id
+            )
+        )
+        if contains_pii is None:
+            print(
+                f"Analysis failed for conversation pair ID: {conversation_pair_id}"
+            )
+            with open("topics-pii-error.log", "a") as f:
+                f.write(f"{conversation_pair_id}\n")
+            return conversation_pair_id # return the id of the failed conversation
+
+        print(f"Data to be inserted for {conversation_pair_id}:")
+        print(f"  Short Summary: {short_summary}")
+        print(f"  Keywords: {keywords}")
+        print(f"  Languages: {languages}")
+        print(f"  categories: {categories}")
+        print(f"  Contains PII: {contains_pii}")
+        cursor.execute(
+            "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s WHERE conversation_pair_id = %s;",
+            (
+                contains_pii,
+                short_summary,
+                json.dumps(keywords),
+                json.dumps(categories),
+                json.dumps(languages),
+                conversation_pair_id,
+            ),
+        )
+        conn.commit()
+        print(
+            f"Conversation pair ID: {conversation_pair_id} enriched successfully."
+        )
+        return None  # Return None if successful
+    except psycopg2.Error as e:
+        print(f"Database Error in process_conversation: {e}")
+        return conversation_pair_id
+    finally:
+        if conn:
+            cursor.close()
+            conn.close()
+
 def process_conversations(db_params, analyzer: Config):
     conn = None
     failed_calls = []
@@ -179,67 +257,17 @@ def process_conversations(db_params, analyzer: Config):
         )
 
         conversations_to_process = cursor.fetchall()
-        for conversation in conversations_to_process:
-            (    conversation_pair_id,
-                conversation_a,
-                conversation_b,
-                existing_summary,
-                existing_keywords,
-                existing_languages,
-                existing_contains_pii,
-                existing_pii_analyzed,
-            ) = conversation
+        cursor.close()
 
-            print(f"Processing conversation pair ID: {conversation_pair_id}")
-            if (
-                existing_summary
-                or existing_keywords
-                or existing_languages
-                or existing_contains_pii is not None
-                or existing_pii_analyzed
-            ):
-                print(f"Conversation {conversation_pair_id} already has data:")
-                print(f"  Short Summary: {existing_summary}")
-                print(f"  Keywords: {existing_keywords}")
-                print(f"  Languages: {existing_languages}")
-                print(f"  Contains PII: {existing_contains_pii}")
-                print(f"  PII Analyzed: {existing_pii_analyzed}")
-
-            contains_pii, categories, keywords, short_summary, languages = (
-                analyzer.analyze_conversations(
-                    conversation_a, conversation_b, conversation_pair_id
-                )
-            )
-            if contains_pii is None:
-                print(
-                    f"Analysis failed for conversation pair ID: {conversation_pair_id}"
-                )
-                with open("topics-pii-error.log", "a") as f:
-                    f.write(f"{conversation_pair_id}\n")
-                continue
-
-            
-            print(f"Data to be inserted for {conversation_pair_id}:")
-            print(f"  Short Summary: {short_summary}")
-            print(f"  Keywords: {keywords}")
-            print(f"  Languages: {languages}")
-            print(f"  categories: {categories}")
-            print(f"  Contains PII: {contains_pii}")
-            cursor.execute(
-                "UPDATE conversations SET pii_analyzed = TRUE, contains_pii = %s, short_summary = %s, keywords = %s, categories = %s, languages = %s WHERE conversation_pair_id = %s;",
-                (
-                    contains_pii,
-                    short_summary,
-                    json.dumps(keywords),
-                    json.dumps(categories),
-                    json.dumps(languages),
-                    conversation_pair_id,
-                ),
-            )
-            conn.commit()
-            print(
-                f"Conversation pair ID: {conversation_pair_id} enriched successfully."
-            )
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = [
+                executor.submit(process_conversation, conversation, analyzer, db_params)
+                for conversation in conversations_to_process
+            ]
+            for future in futures:
+                result = future.result()
+                if result is not None:
+                    failed_calls.append(result)
 
         if failed_calls:
             print(f"Failed calls for conversation_pair_ids: {failed_calls}")

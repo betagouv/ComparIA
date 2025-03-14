@@ -188,6 +188,39 @@ params = 2
 description = "Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros."
 release_date = "07/2024"
 
+["gemma-3-12b"]
+url = "https://huggingface.co/google/gemma-3-12b-it"
+simple_name = "Gemma 3 12b"
+organisation = "Google"
+icon_path = "google.png"
+license = "Gemma"
+params = 12
+excerpt = "Troisième génération de la famille Gemma de Google, ce modèle est multimodal et sa taille lui permet de fonctionner sur des cartes graphiques à usage non professionnel."
+description = "Troisième génération de la famille Gemma de Google, ce modèle est multimodal et sa taille lui permet de fonctionner sur des cartes graphiques à usage non professionnel."
+release_date = "03/2025"
+
+["gemma-3-4b"]
+url = "https://huggingface.co/google/gemma-3-4b-it"
+simple_name = "Gemma 3 4b"
+organisation = "Google"
+icon_path = "google.png"
+license = "Gemma"
+params = 4
+excerpt = "Troisième génération de la famille Gemma de Google, sa toute petite taille lui permet de fonctionner sur des petites cartes graphiques voire sur téléphone portable."
+description = "Troisième génération de la famille Gemma de Google, ce modèle est multimodal et sa taille lui permet de fonctionner sur des petites cartes graphiques voire sur téléphone portable."
+release_date = "03/2025"
+
+["gemma-3-27b"]
+url = "https://huggingface.co/google/gemma-3-27b-it"
+simple_name = "Gemma 3 27b"
+organisation = "Google"
+icon_path = "google.png"
+license = "Gemma"
+params = 27
+excerpt = "Modèle de troisième génération de la famille Gemma de Google. Malgré sa moyenne taille, il pouvait rivaliser à sa sortie avec de nombreux modèles propriétaires supposés bien plus gros."
+description = "Troisième génération de la famille Gemma de Google, ce modèle est multimodal et malgré sa moyenne taille, il pouvait rivaliser à sa sortie avec de nombreux modèles propriétaires supposés bien plus gros."
+release_date = "03/2025"
+
 ["gpt-3.5-turbo-0301"]
 url = "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo"
 simple_name = "GPT-3.5"
