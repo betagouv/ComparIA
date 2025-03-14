@@ -27,8 +27,7 @@
 		| "custom"
 		| "big-vs-small"
 		| "small-models"
-		// | "reasoning"
-		;
+		| "reasoning";
 	export let mode: Mode = "random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
 	export let custom_models_selection: string[] = []; // Default to an empty list
@@ -91,14 +90,14 @@
 			description:
 				"Un petit modèle contre un grand, les deux tirés au hasard",
 		},
-		// {
-		// 	value: "reasoning",
-		// 	label: "Raisonnement",
-		// 	alt_label: "Modèles avec raisonnement",
-		// 	icon: Brain, // Replace with your icon class or SVG
-		// 	description:
-		// 		"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
-		// },
+		{
+			value: "reasoning",
+			label: "Raisonnement",
+			alt_label: "Modèles avec raisonnement",
+			icon: Brain, // Replace with your icon class or SVG
+			description:
+				"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
+		},
 	];
 
 	export let container = true;
