@@ -140,7 +140,7 @@ def main():
     queries = {
         "votes": None,
         "reactions": None,
-        "conversations": None,
+        "conversations": "SELECT * FROM conversations WHERE archived = FALSE and pii_analyzed = TRUE",
     }
 
     for table, query in queries.items():
@@ -155,7 +155,8 @@ def main():
 
             logger.info("Processing conversations with PII scrubbing...")
             conversations_pii_removed = pd.read_sql_query(
-                "SELECT * FROM conversations WHERE archived = FALSE", conn
+                "SELECT * FROM conversations WHERE archived = FALSE and pii_analyzed=TRUE",
+                conn,
             )
             conversations_pii_removed["visitor_id"] = conversations_pii_removed[
                 "visitor_id"
