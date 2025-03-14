@@ -131,7 +131,7 @@ def main():
     queries = {
         "votes": None,
         "reactions": None,
-        "conversations": None,
+        "conversations": None
     }
 
     for table, query in queries.items():
@@ -239,5 +239,5 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        conn.close()
+        conn.dispose()
         logger.info("Database connection closed.")
