@@ -88,8 +88,8 @@ def litellm_stream_iter(
             "session_hash": getattr(request, "session_hash", ""),
             # "conversation_id
             # Creates nested traces for convos A and B
-            "existing_trace_id": langfuse_context.get_current_trace_id(),
-            # "parent_observation_id": langfuse_context.get_current_observation_id(),
+            # "existing_trace_id": langfuse_context.get_current_trace_id(),
+            "parent_observation_id": langfuse_context.get_current_observation_id(),
         },
     }
 
