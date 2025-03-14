@@ -151,8 +151,6 @@ def process_conversation(conversation, analyzer, db_params):
             existing_summary
             or existing_keywords
             or existing_languages
-            or existing_contains_pii is not None
-            or existing_pii_analyzed
         ):
             print(f"Conversation {conversation_pair_id} already has data:")
             print(f"  Short Summary: {existing_summary}")
