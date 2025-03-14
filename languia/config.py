@@ -31,29 +31,7 @@ from httpx import Timeout
 
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
-if any(
-    os.getenv(var)
-    for var in [
-        "LANGUIA_DB_NAME",
-        "LANGUIA_DB_USER",
-        "LANGUIA_DB_PASSWORD",
-        "LANGUIA_DB_HOST",
-        "LANGUIA_DB_PORT",
-    ]
-):
-    # and os.getenv("LANGUIA_DB_DISABLED", "false").lower() != "true":
-    db = {
-        "dbname": os.getenv("LANGUIA_DB_NAME", "languia"),
-        "user": os.getenv("LANGUIA_DB_USER", "languia"),
-        "password": os.getenv("LANGUIA_DB_PASSWORD", ""),
-        "host": os.getenv("LANGUIA_DB_HOST", "languia-db"),
-        "port": os.getenv("LANGUIA_DB_PORT", 5432),
-        "sslmode": os.getenv("LANGUIA_DB_SSL_MODE", "prefer"),
-        "connect_timeout": 3,
-    }
-else:
-    db = None
-
+db = os.getenv("COMPARIA_DB_URI", None)
 
 def build_logger(logger_filename):
     # TODO: log "funcName"
