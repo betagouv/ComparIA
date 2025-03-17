@@ -81,7 +81,14 @@ def fetch_and_transform_data(table_name, query=None):
 
         if "archived" in df.columns:
             df = df.drop(columns=["archived"])
-            
+
+        # TODO: move 'complete' column from reactions dataset after 'clear_formatting'
+        # clear_formatting	incorrect
+        # if "complete" in df.columns:
+        #   old_cols = df.columns.values
+        #   new_cols= ['a', 'y', 'b', 'x']
+        #   df = df.reindex(columns=new_cols)
+
         # Unused
         # if "country" in df.columns:
         #     df = df.drop(columns=["country"])
