@@ -137,6 +137,10 @@ def main():
         else:
             logger.error(f"Failed to pull changes for {repo}: {result.stderr}")
 
+    # TODO: could use LEFT JOIN
+    # LEFT JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id AND c.contains_pii = TRUE
+    # WHERE v.archived = FALSE AND c.conversation_pair_id IS NULL;
+
     queries = {
         "votes": """SELECT * FROM votes WHERE archived = FALSE AND EXISTS (
 SELECT 1
