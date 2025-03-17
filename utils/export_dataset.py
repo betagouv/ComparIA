@@ -138,8 +138,20 @@ def main():
             logger.error(f"Failed to pull changes for {repo}: {result.stderr}")
 
     queries = {
-        "votes": None,
-        "reactions": None,
+        "votes": """SELECT * FROM votes WHERE archived = FALSE AND EXISTS (
+SELECT 1
+FROM conversations
+WHERE conversations.conversation_pair_id = votes.conversation_pair_id
+AND contains_pii = FALSE
+);
+""",
+        "reactions": """SELECT * FROM reactions WHERE archived = FALSE AND EXISTS (
+SELECT 1
+FROM conversations
+WHERE conversations.conversation_pair_id = votes.conversation_pair_id
+AND contains_pii = FALSE
+);
+""",
         "conversations": "SELECT * FROM conversations WHERE archived = FALSE and pii_analyzed = TRUE",
     }
 
@@ -205,7 +217,7 @@ def main():
                     "opening_msg_pii_removed",
                 ]
             )
-            
+
             conversations_pii_removed.rename(columns={"contains_pii": "pii_removed"})
             if "ip" in conversations_pii_removed.columns:
                 conversations_pii_removed = conversations_pii_removed.drop(
