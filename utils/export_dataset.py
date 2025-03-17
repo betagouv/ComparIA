@@ -79,6 +79,15 @@ def fetch_and_transform_data(table_name, query=None):
                 axis=1,
             )
 
+        if "archived" in df.columns:
+            df = df.drop(columns=["archived"])
+            
+        # Unused
+        # if "country" in df.columns:
+        #     df = df.drop(columns=["country"])
+        # if "city" in df.columns:
+        #     df = df.drop(columns=["city"])
+
         if "ip" in df.columns:
             df = df.drop(columns=["ip"])
         if "ip_id" in df.columns:
@@ -231,6 +240,9 @@ AND contains_pii = FALSE
                 conversations_pii_removed = conversations_pii_removed.drop(
                     columns=["ip_id"]
                 )
+
+            if "archived" in df.columns:
+                df = df.drop(columns=["archived"])
 
             export_data(conversations_pii_removed, "conversations")
 
