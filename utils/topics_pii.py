@@ -77,7 +77,7 @@ class Config:
             model = GenerativeModel(self.MODEL_NAME)
 
             prompt = f"""
-            Analyze the following two conversations and determine if they contain personal info (names, emails, addresses) or sensitive info (medical, financial), categorize them, extract keywords (5 to 7), provide a short summary, and identify the languages used (2-letter codes).
+            Analyze the following two conversations and determine if they contain personal info (names, emails, addresses) or sensitive info (medical, financial), categorize them, extract keywords (5 to 7, careful not to use PIIs in it), provide a short summary (don't use PIIs in summary), and identify the languages used (2-letter codes).
             Conversation A: {conversation_a}
             Conversation B: {conversation_b}
 

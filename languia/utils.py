@@ -535,15 +535,15 @@ def mode_banner_html(mode):
 def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
-    from languia.config import db as db_config
+    from languia.config import db as dsn
 
     result = 55000
     logger = logging.getLogger("languia")
-    if not db_config:
-        logger.warn("Cannot log to db: no db configured")
+    if not dsn:
+        logger.warning("Cannot log to db: no db configured")
         return result
     try:
-        conn = psycopg2.connect(**db_config)
+        conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
         select_statement = sql.SQL(
             """

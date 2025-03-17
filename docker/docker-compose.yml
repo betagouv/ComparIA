@@ -34,6 +34,6 @@ services:
   #   volumes:
   #     - ./db:/data
   #   environment:
-  #     - POSTGRES_DB=${LANGUIA_DB_NAME}
-  #     - POSTGRES_USER=${LANGUIA_DB_USER}
+  #     - POSTGRES_DB=languia
+  #     - POSTGRES_USER=languia
   #     - POSTGRES_PASSWORD=${LANGUIA_DB_PASSWORD}

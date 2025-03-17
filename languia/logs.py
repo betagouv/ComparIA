@@ -69,15 +69,15 @@ class JSONFormatter(logging.Formatter):
 
 
 class PostgresHandler(logging.Handler):
-    def __init__(self, db_config):
+    def __init__(self, dsn):
         super().__init__()
-        self.db_config = db_config
+        self.dsn = dsn
         self.connection = None
 
     def connect(self):
         if not self.connection or self.connection.closed:
             try:
-                self.connection = psycopg2.connect(**self.db_config)
+                self.connection = psycopg2.connect(self.dsn)
             except psycopg2.Error as e:
                 print(f"Error connecting to database: {e}")
 
@@ -135,13 +135,13 @@ class PostgresHandler(logging.Handler):
 
 
 def save_vote_to_db(data):
-    from languia.config import db as db_config
+    from languia.config import db as dsn
 
     logger = logging.getLogger("languia")
-    if not db_config:
+    if not dsn:
         logger.warn("Cannot log to db: no db configured")
         return
-    conn = psycopg2.connect(**db_config)
+    conn = psycopg2.connect(dsn)
     cursor = conn.cursor()
     try:
         insert_statement = sql.SQL(
@@ -335,10 +335,10 @@ def vote_last_response(
 
 def upsert_reaction_to_db(data, request):
     logger = logging.getLogger("languia")
-    from languia.config import db as db_config
+    from languia.config import db as dsn
 
     # Ensure database configuration exists
-    if not db_config:
+    if not dsn:
         logger.warning("Cannot log to db: no db configured")
         return
 
@@ -467,7 +467,7 @@ def upsert_reaction_to_db(data, request):
         #     ELSE 'updated'
         # END) AS operation;
 
-        conn = psycopg2.connect(**db_config)
+        conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
         cursor.execute(query, data)
         conn.commit()
@@ -488,10 +488,10 @@ def upsert_reaction_to_db(data, request):
 
 def delete_reaction_in_db(msg_index, refers_to_conv_id):
     logger = logging.getLogger("languia")
-    from languia.config import db as db_config
+    from languia.config import db as dsn
 
     # Ensure database configuration exists
-    if not db_config:
+    if not dsn:
         logger.warning("Cannot log to db: no db configured")
         return
 
@@ -499,7 +499,7 @@ def delete_reaction_in_db(msg_index, refers_to_conv_id):
     cursor = None
     data = {"msg_index": msg_index, "refers_to_conv_id": refers_to_conv_id}
     try:
-        conn = psycopg2.connect(**db_config)
+        conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
         query = sql.SQL(
             """DELETE FROM reactions
@@ -686,10 +686,10 @@ def record_reaction(
 
 def upsert_conv_to_db(data):
 
-    from languia.config import db as db_config
+    from languia.config import db as dsn
 
     logger = logging.getLogger("languia")
-    if not db_config:
+    if not dsn:
         logger.warn("Cannot log to db: no db configured")
         return
 
@@ -697,7 +697,7 @@ def upsert_conv_to_db(data):
     cursor = None
 
     try:
-        conn = psycopg2.connect(**db_config)
+        conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
         query = sql.SQL(
             # TODO: tstamp should be earlier
@@ -756,7 +756,7 @@ def upsert_conv_to_db(data):
                 """
         )
 
-        conn = psycopg2.connect(**db_config)
+        conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
         cursor.execute(query, data)
         conn.commit()
