@@ -249,6 +249,7 @@
         border: var(--border-default-grey) solid 1px;
         background-image: none !important;
     }
+
     #sort-by {
         max-width: 400px;
     }
@@ -494,6 +495,21 @@
             updateResetFiltersLink();
             updateActiveFiltersCount();
         }
+        function naturalSort(a, b) {
+            const partsA = a.toLowerCase().split(/(\d+)/);
+            const partsB = b.toLowerCase().split(/(\d+)/);
+
+            for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+                const nA = parseInt(partsA[i]);
+                const nB = parseInt(partsB[i]);
+                if (!isNaN(nA) && !isNaN(nB)) {
+                    if (nA !== nB) return nA - nB;
+                } else if (partsA[i] !== partsB[i]) {
+                    return (partsA[i] || '').localeCompare(partsB[i] || '');
+                }
+            }
+            return 0;
+        }
         function sortModels() {
             const sortBy = sortSelect.value;
             let sortedModels = Array.from(modelItems);
@@ -501,13 +517,7 @@
                 let comparison = 0;
                 switch (sortBy) {
                     case 'name-asc':
-                        const nameA = a.dataset.name.toUpperCase();
-                        const nameB = b.dataset.name.toUpperCase();
-                        if (nameA < nameB) {
-                            comparison = -1;
-                        } else if (nameA > nameB) {
-                            comparison = 1;
-                        }
+                        comparison = naturalSort(a.dataset.name, b.dataset.name);
                         break;
                     case 'date-desc':
                         const [monthA, yearA] = a.dataset.releaseDate.split('/').map(Number);
