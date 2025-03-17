@@ -263,16 +263,18 @@ AND contains_pii = FALSE
         main_repo = table_repos.get(base_name)
         destinations = []
 
-        destinations.append(main_repo)
+        if main_repo is not None:
+            destinations.append(main_repo)
 
-        # Copy to each destination
-        for dest_repo in destinations:
-            dest_path = os.path.join(os.getcwd(), dest_repo, filename)
-            try:
-                shutil.copy(src_path, dest_path)
-                logger.info(f"Copied {filename} to {dest_repo}")
-            except Exception as e:
-                logger.error(f"Failed to copy {filename} to {dest_repo}: {e}")
+            for dest_repo in destinations:
+                dest_path = os.path.join(os.getcwd(), dest_repo, filename)
+                try:
+                    shutil.copy(src_path, dest_path)
+                    logger.info(f"Copied {filename} to {dest_repo}")
+                except Exception as e:
+                    logger.error(f"Failed to copy {filename} to {dest_repo}: {e}")
+        else:
+            logger.warning(f"No destination repository found for {filename}")
 
     # Commit and push changes for each repository
     for repo in repos:
