@@ -159,7 +159,7 @@ release_date = "12/2024"
 
 ["gemma-2-27b-it-q8"]
 url = "https://huggingface.co/google/gemma-2-27b-it"
-simple_name = "Gemma 2 27b"
+simple_name = "Gemma 2 27B"
 organisation = "Google"
 icon_path = "google.png"
 license = "Gemma"
@@ -190,7 +190,7 @@ release_date = "07/2024"
 
 ["gemma-3-12b"]
 url = "https://huggingface.co/google/gemma-3-12b-it"
-simple_name = "Gemma 3 12b"
+simple_name = "Gemma 3 12B"
 organisation = "Google"
 icon_path = "google.png"
 license = "Gemma"
@@ -201,7 +201,7 @@ release_date = "03/2025"
 
 ["gemma-3-4b"]
 url = "https://huggingface.co/google/gemma-3-4b-it"
-simple_name = "Gemma 3 4b"
+simple_name = "Gemma 3 4B"
 organisation = "Google"
 icon_path = "google.png"
 license = "Gemma"
@@ -212,7 +212,7 @@ release_date = "03/2025"
 
 ["gemma-3-27b"]
 url = "https://huggingface.co/google/gemma-3-27b-it"
-simple_name = "Gemma 3 27b"
+simple_name = "Gemma 3 27B"
 organisation = "Google"
 icon_path = "google.png"
 license = "Gemma"
