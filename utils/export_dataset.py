@@ -82,6 +82,9 @@ def fetch_and_transform_data(table_name, query=None):
         if "archived" in df.columns:
             df = df.drop(columns=["archived"])
 
+        if "pii_analyzed" in df.columns:
+            df = df.drop(columns=["pii_analyzed"])
+
         # TODO: move 'complete' column from reactions dataset after 'clear_formatting'
         # clear_formatting	incorrect
         # if "complete" in df.columns:
@@ -248,8 +251,14 @@ AND contains_pii = FALSE
                     columns=["ip_id"]
                 )
 
+            # TODO: refacto in a drop_useless_cols func
+
             if "archived" in df.columns:
                 df = df.drop(columns=["archived"])
+                
+            if "pii_analyzed" in df.columns:
+                df = df.drop(columns=["pii_analyzed"])
+                
 
             export_data(conversations_pii_removed, "conversations")
 
