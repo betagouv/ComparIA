@@ -232,6 +232,16 @@ document.getElementById("fr-modal-welcome-close").blur();
                 model_name=second_model_name,
             )
         )
+
+        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+            logger.info(
+                f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
+                extra={"request": request},
+            )
+
+        text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
+
+
         # Could be added in Converstation.__init__?
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
@@ -249,14 +259,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             f"msg_user: {text}",
             extra={"request": request},
         )
-
-        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
-            logger.info(
-                f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
-                extra={"request": request},
-            )
-
-        text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)

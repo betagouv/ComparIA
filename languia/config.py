@@ -330,7 +330,7 @@ ia_summit_choice = (
 guided_cards_choices.insert(0, ia_summit_choice)
 
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
-    os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 24000)
+    os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 60_000)
 )
 
 
