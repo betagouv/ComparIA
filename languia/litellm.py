@@ -62,13 +62,17 @@ def litellm_stream_iter(
     else:
         litellm.vertex_location = vertex_ai_location
 
-    # TODO: openrouter specific params
+    # nice to have: openrouter specific params
     # completion = client.chat.completions.create(
     #   extra_headers={
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-    
+    langfuse_context.update_current_trace(
+        # should we use the user's cookie value here?
+        # "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        session_id=getattr(request, "session_hash", "")
+    )
     kwargs = {
         "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
