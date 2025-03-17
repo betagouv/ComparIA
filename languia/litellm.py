@@ -72,7 +72,7 @@ def litellm_stream_iter(
     #   },
     langfuse_context.update_current_trace(
         # should we use the user's cookie value here?
-        # "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+        user_id=get_matomo_tracker_from_cookies(request.cookies),
         session_id=getattr(request, "session_hash", "")
     )
     kwargs = {
