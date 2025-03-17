@@ -13,6 +13,8 @@ from languia.config import GLOBAL_TIMEOUT
 import litellm
 import json
 
+from languia.utils import get_matomo_tracker_from_cookies
+
 from langfuse.decorators import langfuse_context, observe
 
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
@@ -90,6 +92,7 @@ def litellm_stream_iter(
         "vertex_ai_location": litellm.vertex_location,
         "metadata": {
             "session_hash": getattr(request, "session_hash", ""),
+            "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
             # "conversation_id
             # Creates nested traces for convos A and B
             # "existing_trace_id": langfuse_context.get_current_trace_id(),
