@@ -89,7 +89,7 @@ def litellm_stream_iter(
             # "conversation_id
             # Creates nested traces for convos A and B
             # "existing_trace_id": langfuse_context.get_current_trace_id(),
-            # "parent_observation_id": langfuse_context.get_current_observation_id(),
+            "parent_observation_id": langfuse_context.get_current_observation_id(),
         },
     }
 
