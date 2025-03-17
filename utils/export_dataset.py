@@ -152,7 +152,7 @@ AND contains_pii = FALSE
         "reactions": """SELECT * FROM reactions WHERE archived = FALSE AND EXISTS (
 SELECT 1
 FROM conversations
-WHERE conversations.conversation_pair_id = votes.conversation_pair_id
+WHERE conversations.conversation_pair_id = reactions.conversation_pair_id
 AND contains_pii = FALSE
 );
 """,
