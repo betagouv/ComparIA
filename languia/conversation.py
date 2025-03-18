@@ -156,9 +156,6 @@ def bot_response(
 
         output = data.get("text")
         reasoning = data.get("reasoning")
-        if reasoning:
-            print("reasoning")
-            print(reasoning)
         if output or reasoning:
             output.strip()
             state.messages = update_last_message(
