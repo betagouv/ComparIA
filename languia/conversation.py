@@ -11,7 +11,7 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from languia.utils import ContextTooLongError, EmptyResponseError, get_endpoint
+from languia.utils import ContextTooLongError, EmptyResponseError, get_endpoint, messages_to_dict_list
 from languia import config
 
 import logging
@@ -125,14 +125,7 @@ def bot_response(
     start_tstamp = time.time()
     # print("start: " + str(start_tstamp))
 
-    messages_dict = []
-
-    for message in state.messages:
-        try:
-            messages_dict.append({"role": message.role, "content": message.content})
-        except:
-            raise TypeError(f"Expected ChatMessage object, got {type(message)}")
-
+    messages_dict = messages_to_dict_list(state.messages)
     litellm_model_name = (
         endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
     )
