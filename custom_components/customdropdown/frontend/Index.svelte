@@ -27,8 +27,7 @@
 		| "custom"
 		| "big-vs-small"
 		| "small-models"
-		// | "reasoning"
-		;
+		| "reasoning";
 	export let mode: Mode = "random";
 	export let prompt_value: string = ""; // Initialize as an empty string by default
 	export let custom_models_selection: string[] = []; // Default to an empty list
@@ -59,8 +58,7 @@
 		description: string;
 	};
 	export const choices: Choice[] = [
-
-	{
+		{
 			value: "random",
 			label: "Aléatoire",
 			alt_label: "Modèles aléatoires",
@@ -91,14 +89,14 @@
 			description:
 				"Un petit modèle contre un grand, les deux tirés au hasard",
 		},
-		// {
-		// 	value: "reasoning",
-		// 	label: "Raisonnement",
-		// 	alt_label: "Modèles avec raisonnement",
-		// 	icon: Brain, // Replace with your icon class or SVG
-		// 	description:
-		// 		"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
-		// },
+		{
+			value: "reasoning",
+			label: "Raisonnement",
+			alt_label: "Modèles avec raisonnement",
+			icon: Brain, // Replace with your icon class or SVG
+			description:
+				"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
+		},
 	];
 
 	export let container = true;
@@ -215,9 +213,11 @@
 
 		// If clicked on second model, close model selection modal
 		if (custom_models_selection.length == 2) {
-			const modeSelectionModal = document.getElementById("modal-mode-selection")
+			const modeSelectionModal = document.getElementById(
+				"modal-mode-selection",
+			);
 			// maybe add a 500 ms delay
-			window.dsfr(modeSelectionModal).modal.conceal()
+			window.dsfr(modeSelectionModal).modal.conceal();
 		}
 	}
 
