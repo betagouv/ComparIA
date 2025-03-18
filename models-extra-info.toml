@@ -210,6 +210,28 @@ excerpt = "Troisième génération de la famille Gemma de Google, sa toute petit
 description = "Troisième génération de la famille Gemma de Google, ce modèle est multimodal et sa taille lui permet de fonctionner sur des petites cartes graphiques voire sur téléphone portable."
 release_date = "03/2025"
 
+["mistral-small-3.1-24b"]
+url = "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503"
+simple_name = "Mistral Small 3.1 24B"
+organisation = "Mistral AI"
+icon_path = "mistral.png"
+license = "Mistral"
+params = 24
+excerpt = "Mistral Small 3.1 24B Instruct est une variante améliorée du Mistral Small 3 (janvier 2025), dotée de 24 milliards de paramètres et de capacités multimodales avancées."
+description = "Mistral Small 3.1 24B Instruct est un modèle multimodal qui offre des performances de pointe dans les tâches de raisonnement basées sur le texte et la vision, y compris l'analyse d'images, la programmation, le raisonnement mathématique et le soutien multilingue pour des dizaines de langues."
+release_date = "03/2025"
+
+["command-a"]
+url = "https://huggingface.co/cohere/command-a"
+simple_name = "Command A"
+organisation = "Cohere"
+icon_path = "cohere.png"
+license = "CC-BY-NC-4.0"
+params = 111
+excerpt = "Command A d'entreprise canadienne Cohere est un modèle de 111 milliards de paramètres axé sur le multilinguisme la livraison de grandes performances dans les cas d'utilisation agentique, multilingues et de codage."
+description = "Command A est un modèle de 111 milliards de paramètres avec une fenêtre de contexte de 256 000, axé sur la livraison de grandes performances dans les cas d'utilisation agentique, multilingues et de codage."
+release_date = "03/2025"
+
 ["gemma-3-27b"]
 url = "https://huggingface.co/google/gemma-3-27b-it"
 simple_name = "Gemma 3 27B"
