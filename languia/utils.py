@@ -106,6 +106,11 @@ def messages_to_dict_list(messages):
             "role": message.role,
             "content": message.content,
             **(
+                {"reasoning": message.reasoning}
+                if message.reasoning
+                else {}
+            ),
+            **(
                 {"metadata": metadata_to_dict(message.metadata)}
                 if metadata_to_dict(message.metadata)
                 else {}
@@ -472,7 +477,7 @@ def to_threeway_chatbot(conversations):
                         "role": "assistant",
                         "content": msg_a.content,
                         "error": msg_a.error,
-                        # TODO: add duration here?
+                        "reasoning": msg_a.reasoning,
                         "metadata": msg_a.metadata,
                     }
                 )
@@ -484,19 +489,11 @@ def to_threeway_chatbot(conversations):
                         "role": "assistant",
                         "content": msg_b.content,
                         "error": msg_a.error,
+                        "reasoning": msg_b.reasoning,
                         "metadata": msg_b.metadata,
                     }
                 )
     return threeway_chatbot
-
-
-def messages_to_dict(messages):
-    try:
-        return [
-            {"role": message.role, "content": message.content} for message in messages
-        ]
-    except:
-        raise TypeError(f"Expected ChatMessage object, got {type(messages)}")
 
 
 def mode_banner_html(mode):

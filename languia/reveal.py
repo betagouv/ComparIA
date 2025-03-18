@@ -1,5 +1,5 @@
 import logging
-from languia.utils import get_model_extra_info, get_chosen_model, messages_to_dict
+from languia.utils import get_model_extra_info, get_chosen_model, messages_to_dict_list
 
 from litellm import token_counter
 
@@ -132,7 +132,7 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         logger.debug("output_tokens (model a): " + str(model_a_tokens))
     else:
         model_a_tokens = token_counter(
-            messages=messages_to_dict(conv_a.messages), model=conv_a.model_name
+            messages=messages_to_dict_list(conv_a.messages), model=conv_a.model_name
         )
         logger.debug(
             "output_tokens (model a) (litellm tokenizer): " + str(model_a_tokens)
@@ -143,7 +143,7 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         logger.debug("output_tokens (model b): " + str(model_b_tokens))
     else:
         model_b_tokens = token_counter(
-            messages=messages_to_dict(conv_b.messages), model=conv_b.model_name
+            messages=messages_to_dict_list(conv_b.messages), model=conv_b.model_name
         )
         logger.debug(
             "output_tokens (model b) (litellm tokenizer): " + str(model_b_tokens)
