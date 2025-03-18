@@ -60,20 +60,6 @@ class FileMessage(GradioModel):
     alt_text: Optional[str] = None
 
 
-class ComponentMessage(GradioModel):
-    component: str
-    value: Any
-    constructor_args: dict[str, Any]
-    props: dict[str, Any]
-
-
-class ChatbotDataTuples(GradioRootModel):
-    root: list[
-        tuple[
-            Union[str, FileMessage, ComponentMessage, None],
-            Union[str, FileMessage, ComponentMessage, None],
-        ]
-    ]
 
 
 class Metadata(GradioModel):
@@ -86,7 +72,8 @@ class Message(GradioModel):
     role: str
     error: bool = False
     metadata: Metadata = Field(default_factory=Metadata)
-    content: Union[str, FileMessage, ComponentMessage]
+    content: str
+    reasoning: Optional[str] = None
 
 
 class ExampleMessage(TypedDict):
@@ -107,14 +94,12 @@ class ChatMessage:
     role: Literal["user", "assistant", "system"]
     content: str | FileData | Component | FileDataDict | tuple | list
     error: bool = False
+    reasoning: str | None = None
     metadata: MetadataDict | Metadata = field(default_factory=Metadata)
 
 
 class ChatbotDataMessages(GradioRootModel):
     root: list[Message]
-
-
-TupleFormat = list[list[Union[str, tuple[str], tuple[str, str], None]]]
 
 if TYPE_CHECKING:
     from gradio.components import Timer
@@ -159,9 +144,7 @@ class CustomChatbot(Component):
 
     def __init__(
         self,
-        value: list[MessageDict | Message] | TupleFormat | Callable | None = None,
-        *,
-        type: Literal["messages", "tuples"] | None = "messages",
+        value: list[MessageDict | Message] | Callable | None = None,
         label: str | None = None,
         every: Timer | float | None = None,
         inputs: Component | Sequence[Component] | set[Component] | None = None,
@@ -228,26 +211,7 @@ class CustomChatbot(Component):
             examples: A list of example messages to display in the chatbot before any user/assistant messages are shown. Each example should be a dictionary with an optional "text" key representing the message that should be populated in the CustomChatbot when clicked, an optional "files" key, whose value should be a list of files to populate in the CustomChatbot, an optional "icon" key, whose value should be a filepath or URL to an image to display in the example box, and an optional "display_text" key, whose value should be the text to display in the example box. If "display_text" is not provided, the value of "text" will be displayed.
             show_copy_all_button: If True, will show a copy all button that copies all chatbot messages to the clipboard.
         """
-        if type is None:
-            warnings.warn(
-                "You have not specified a value for the `type` parameter. Defaulting to the 'tuples' format for chatbot messages, but this is deprecated and will be removed in a future version of Gradio. Please set type='messages' instead, which uses openai-style 'role' and 'content' keys.",
-                UserWarning,
-            )
-            type = "tuples"
-        elif type == "tuples":
-            warnings.warn(
-                "The 'tuples' format for chatbot messages is deprecated and will be removed in a future version of Gradio. Please set type='messages' instead, which uses openai-style 'role' and 'content' keys.",
-                UserWarning,
-            )
-        if type not in ["messages", "tuples"]:
-            raise ValueError(
-                f"The `type` parameter must be 'messages' or 'tuples', received: {type}"
-            )
-        self.type: Literal["tuples", "messages"] = type
-        if self.type == "messages":
-            self.data_model = ChatbotDataMessages
-        else:
-            self.data_model = ChatbotDataTuples
+        self.data_model = ChatbotDataMessages
         self.autoscroll = autoscroll
         self.height = height
         self.max_height = max_height
@@ -320,107 +284,40 @@ class CustomChatbot(Component):
                                 file_info[i] = file_data
 
     @staticmethod
-    def _check_format(messages: list[Any], type: Literal["messages", "tuples"]):
-        if type == "messages":
-            all_valid = all(
-                isinstance(message, dict)
-                and "role" in message
-                and "content" in message
-                or isinstance(message, ChatMessage | Message)
-                for message in messages
-            )
-            if not all_valid:
-                raise Error(
-                    "Data incompatible with messages format. Each message should be a dictionary with 'role' and 'content' keys or a ChatMessage object."
-                )
-        elif not all(
-            isinstance(message, (tuple, list)) and len(message) == 2
+    def _check_format(messages: list[Any]):
+        all_valid = all(
+            isinstance(message, dict)
+            and "role" in message
+            and "content" in message
+            or isinstance(message, ChatMessage | Message)
             for message in messages
-        ):
+        )
+        if not all_valid:
             raise Error(
-                "Data incompatible with tuples format. Each message should be a list of length 2."
+                "Data incompatible with messages format. Each message should be a dictionary with 'role' and 'content' keys or a ChatMessage object."
             )
 
     def _preprocess_content(
         self,
-        chat_message: str | FileMessage | ComponentMessage | None,
-    ) -> str | GradioComponent | tuple[str | None] | tuple[str | None, str] | None:
+        chat_message: str | None,
+    ) -> str | None:
         if chat_message is None:
             return None
-        elif isinstance(chat_message, FileMessage):
-            if chat_message.alt_text is not None:
-                return (chat_message.file.path, chat_message.alt_text)
-            else:
-                return (chat_message.file.path,)
-        elif isinstance(chat_message, str):
-            return chat_message
-        elif isinstance(chat_message, ComponentMessage):
-            capitalized_component = (
-                chat_message.component.upper()
-                if chat_message.component in ("json", "html")
-                else chat_message.component.capitalize()
-            )
-            component = import_component_and_data(capitalized_component)
-            if component is not None:
-                instance = component()  # type: ignore
-                if not instance.data_model:
-                    payload = chat_message.value
-                elif issubclass(instance.data_model, GradioModel):
-                    payload = instance.data_model(**chat_message.value)
-                elif issubclass(instance.data_model, GradioRootModel):
-                    payload = instance.data_model(root=chat_message.value)
-                else:
-                    payload = chat_message.value
-                value = instance.preprocess(payload)
-                return component(value=value, **chat_message.constructor_args)  # type: ignore
-            else:
-                raise ValueError(
-                    f"Invalid component for CustomChatbot component: {chat_message.component}"
-                )
-        else:
-            raise ValueError(
-                f"Invalid message for CustomChatbot component: {chat_message}"
-            )
+        return chat_message
 
-    def _preprocess_messages_tuples(
-        self, payload: ChatbotDataTuples
-    ) -> list[list[str | tuple[str] | tuple[str, str] | None]]:
-        processed_messages = []
-        for message_pair in payload.root:
-            if not isinstance(message_pair, (tuple, list)):
-                raise TypeError(
-                    f"Expected a list of lists or list of tuples. Received: {message_pair}"
-                )
-            if len(message_pair) != 2:
-                raise TypeError(
-                    f"Expected a list of lists of length 2 or list of tuples of length 2. Received: {message_pair}"
-                )
-            processed_messages.append(
-                [
-                    self._preprocess_content(message_pair[0]),
-                    self._preprocess_content(message_pair[1]),
-                ]
-            )
-        return processed_messages
 
     def preprocess(
         self,
-        payload: ChatbotDataTuples | ChatbotDataMessages | None,
-    ) -> (
-        list[list[str | tuple[str] | tuple[str, str] | None]] | list[MessageDict] | None
-    ):
+        payload: ChatbotDataMessages | None,
+    ) -> list[MessageDict] | None:
         """
         Parameters:
             payload: data as a ChatbotData object
         Returns:
-            If type is 'tuples', passes the messages in the chatbot as a `list[list[str | None | tuple]]`, i.e. a list of lists. The inner list has 2 elements: the user message and the response message. Each message can be (1) a string in valid Markdown, (2) a tuple if there are displayed files: (a filepath or URL to a file, [optional string alt text]), or (3) None, if there is no message displayed. If type is 'messages', passes the value as a list of dictionaries with 'role' and 'content' keys. The `content` key's value supports everything the `tuples` format supports.
+            Passes the value as a list of dictionaries with 'role' and 'content' keys. The `content` key's value is a string.
         """
         if payload is None:
             return payload
-        if self.type == "tuples":
-            if not isinstance(payload, ChatbotDataTuples):
-                raise Error("Data incompatible with the tuples format")
-            return self._preprocess_messages_tuples(cast(ChatbotDataTuples, payload))
         if not isinstance(payload, ChatbotDataMessages):
             raise Error("Data incompatible with the messages format")
         message_dicts = []
@@ -448,58 +345,12 @@ class CustomChatbot(Component):
 
     def _postprocess_content(
         self,
-        chat_message: (
-            str
-            | tuple
-            | list
-            | FileDataDict
-            | FileData
-            | GradioComponent
-            | ComponentMessage
-            | None
-        ),
-    ) -> str | FileMessage | ComponentMessage | None:
+        chat_message: str | None,
+    ) -> str | None:
         if chat_message is None:
             return None
-        if isinstance(chat_message, (FileMessage, ComponentMessage, str)):
-            return chat_message
-        elif isinstance(chat_message, FileData):
-            return FileMessage(file=chat_message)
-        elif isinstance(chat_message, GradioComponent):
-            chat_message.unrender()
-            component = import_component_and_data(type(chat_message).__name__)
-            if component:
-                chat_message.constructor_args["render"] = False
-                component = chat_message.__class__(**chat_message.constructor_args)
-                chat_message.constructor_args.pop("value", None)
-                config = component.get_config()
-                return ComponentMessage(
-                    component=type(chat_message).__name__.lower(),
-                    value=config.get("value", None),
-                    constructor_args=chat_message.constructor_args,
-                    props=config,
-                )
-        elif isinstance(chat_message, dict) and "path" in chat_message:
-            filepath = chat_message["path"]
-            return self._create_file_message(chat_message, filepath)
-        elif isinstance(chat_message, (tuple, list)):
-            filepath = str(chat_message[0])
-            return self._create_file_message(chat_message, filepath)
-        else:
-            raise ValueError(
-                f"Invalid message for CustomChatbot component: {chat_message}"
-            )
+        return chat_message
 
-    def _postprocess_messages_tuples(self, value: TupleFormat) -> ChatbotDataTuples:
-        processed_messages = []
-        for message_pair in value:
-            processed_messages.append(
-                [
-                    self._postprocess_content(message_pair[0]),
-                    self._postprocess_content(message_pair[1]),
-                ]
-            )
-        return ChatbotDataTuples(root=processed_messages)
 
     def _postprocess_message_messages(
         self, message: MessageDict | ChatMessage
@@ -514,6 +365,7 @@ class CustomChatbot(Component):
                 content=message.content,  # type: ignore
                 metadata=message.metadata,  # type: ignore
                 error=message.error,  # type: ignore
+                reasoning=message.reasoning,  # type: ignore
             )
         elif isinstance(message, Message):
             return message
@@ -531,23 +383,17 @@ class CustomChatbot(Component):
 
     def postprocess(
         self,
-        value: TupleFormat | list[MessageDict | Message] | None,
-    ) -> ChatbotDataTuples | ChatbotDataMessages:
+        value: list[MessageDict | Message] | None,
+    ) -> ChatbotDataMessages:
         """
         Parameters:
-            value: If type is `tuples`, expects a `list[list[str | None | tuple]]`, i.e. a list of lists. The inner list should have 2 elements: the user message and the response message. The individual messages can be (1) strings in valid Markdown, (2) tuples if sending files: (a filepath or URL to a file, [optional string alt text]) -- if the file is image/video/audio, it is displayed in the CustomChatbot, or (3) None, in which case the message is not displayed. If type is 'messages', passes the value as a list of dictionaries with 'role' and 'content' keys. The `content` key's value supports everything the `tuples` format supports.
+            value: Passes the value as a list of dictionaries with 'role' and 'content' keys. The `content` key's value is a string.
         Returns:
-            an object of type ChatbotData
+            an object of type ChatbotDataMessages
         """
-        data_model = cast(
-            Union[type[ChatbotDataTuples], type[ChatbotDataMessages]], self.data_model
-        )
         if value is None:
-            return data_model(root=[])
-        if self.type == "tuples":
-            self._check_format(value, "tuples")
-            return self._postprocess_messages_tuples(cast(TupleFormat, value))
-        self._check_format(value, "messages")
+            return ChatbotDataMessages(root=[])
+        self._check_format(value)
         processed_messages = [
             self._postprocess_message_messages(cast(MessageDict, message))
             for message in value
@@ -555,15 +401,13 @@ class CustomChatbot(Component):
         return ChatbotDataMessages(root=processed_messages)
 
     def example_payload(self) -> Any:
-        if self.type == "messages":
-            return [
-                Message(role="user", content="Hello!").model_dump(),
-                Message(role="assistant", content="How can I help you?").model_dump(),
-            ]
-        return [["Hello!", None]]
+        return [
+            Message(role="user", content="Hello!").model_dump(),
+            Message(role="assistant", content="How can I help you?").model_dump(),
+        ]
 
     def example_value(self) -> Any:
         return [
             Message(role="user", content="Hello!").model_dump(),
-            Message(role="assistant", content="How can I help you?").model_dump(),
+            Message(role="assistant", content="How can I help you?", reasoning="This is a sample response").model_dump(),
         ]

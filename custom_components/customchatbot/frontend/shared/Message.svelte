@@ -36,7 +36,6 @@
 	var content = "";
 
 	export let theme_mode: "light" | "dark" | "system";
-	export let _components: Record<string, ComponentType<SvelteComponent>>;
 	export let i: number;
 	export let show_copy_button: boolean;
 	export let generating: boolean;
@@ -56,21 +55,7 @@
 
 
 	function get_message_label_data(message: NormalisedMessage): string {
-		if (message.type === "text") {
-			return message.content;
-		} else if (
-			message.type === "component" &&
-			message.content.component === "file"
-		) {
-			if (Array.isArray(message.content.value)) {
-				return `file of extension type: ${message.content.value[0].orig_name?.split(".").pop()}`;
-			}
-			return (
-				`file of extension type: ${message.content.value?.orig_name?.split(".").pop()}` +
-				(message.content.value?.orig_name ?? "")
-			);
-		}
-		return `a component of type ${message.content.component ?? "unknown"}`;
+		return message.content;
 	}
 
 	function get_message_bot_position(message: NormalisedMessage): string {
@@ -115,7 +100,7 @@
 		console.log(thought);
 	}
 	$: {
-		content = message.type === "text" ? message.content : "";
+		content = message.content;
 		console.log("content");
 		console.log(content);
 	}
@@ -138,9 +123,8 @@
 		dir={rtl ? "rtl" : "ltr"}
 		aria-label={role + "'s message: " + get_message_label_data(message)}
 	>
-		{#if message.type === "text"}
-			<div>
-				{#if message.role === "assistant"}
+		<div class="message-content">
+			{#if message.role === "assistant"}
 					<div class="model-title">
 						{#if message.metadata?.bot === "a"}
 							<svg
@@ -207,7 +191,6 @@
 					/>
 				{/if}
 			</div>
-		{/if}
 		{#if message.role === "assistant"}
 			<ButtonPanel {...button_panel_props} />
 		{/if}
@@ -228,18 +211,12 @@
 		color: var(--text-default-grey);
 	}
 
-	.component {
-		padding: 0;
-		border-radius: var(--radius-md);
-		width: fit-content;
-		overflow: hidden;
+	.message-content {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
 	}
-	/* .message-wrap,
-	.message-row,
-	.flex-wrap,
-	.styler {
-		background-color: #fcfcfd;
-	} */
+
 
 	.message.bot button {
 		border-color: #e5e5e5;
