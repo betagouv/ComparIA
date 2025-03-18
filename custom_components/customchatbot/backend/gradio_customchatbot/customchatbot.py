@@ -38,6 +38,7 @@ class MetadataDict(TypedDict):
     duration: Union[float, None]
     generation_id: Union[str, None]
 
+
 class FileDataDict(TypedDict):
     path: str  # server filepath
     url: NotRequired[Optional[str]]  # normalised server url
@@ -58,8 +59,6 @@ class MessageDict(TypedDict):
 class FileMessage(GradioModel):
     file: FileData
     alt_text: Optional[str] = None
-
-
 
 
 class Metadata(GradioModel):
@@ -100,6 +99,7 @@ class ChatMessage:
 
 class ChatbotDataMessages(GradioRootModel):
     root: list[Message]
+
 
 if TYPE_CHECKING:
     from gradio.components import Timer
@@ -144,7 +144,7 @@ class CustomChatbot(Component):
 
     def __init__(
         self,
-        value: list[MessageDict | Message] | Callable | None = None,
+        value: list[list[MessageDict | Message]] | Callable | None = None,
         label: str | None = None,
         every: Timer | float | None = None,
         inputs: Component | Sequence[Component] | set[Component] | None = None,
@@ -283,19 +283,19 @@ class CustomChatbot(Component):
                                 file_data = FileDataDict(**file_data)
                                 file_info[i] = file_data
 
-    @staticmethod
-    def _check_format(messages: list[Any]):
-        all_valid = all(
-            isinstance(message, dict)
-            and "role" in message
-            and "content" in message
-            or isinstance(message, ChatMessage | Message)
-            for message in messages
-        )
-        if not all_valid:
-            raise Error(
-                "Data incompatible with messages format. Each message should be a dictionary with 'role' and 'content' keys or a ChatMessage object."
-            )
+    # @staticmethod
+    # def _check_format(messages: list[Any]):
+    #     all_valid = all(
+    #         isinstance(message, dict)
+    #         and "role" in message
+    #         and "content" in message
+    #         or isinstance(message, ChatMessage | Message)
+    #         for message in messages
+    #     )
+    #     if not all_valid:
+    #         raise Error(
+    #             "Data incompatible with messages format. Each message should be a dictionary with 'role' and 'content' keys or a ChatMessage object."
+    #         )
 
     def _preprocess_content(
         self,
@@ -305,10 +305,9 @@ class CustomChatbot(Component):
             return None
         return chat_message
 
-
     def preprocess(
         self,
-        payload: ChatbotDataMessages | None,
+        payload: list[ChatbotDataMessages] | None,
     ) -> list[MessageDict] | None:
         """
         Parameters:
@@ -318,14 +317,16 @@ class CustomChatbot(Component):
         """
         if payload is None:
             return payload
-        if not isinstance(payload, ChatbotDataMessages):
-            raise Error("Data incompatible with the messages format")
         message_dicts = []
-        for message in payload.root:
-            message_dict = cast(MessageDict, message.model_dump())
-            message_dict["content"] = self._preprocess_content(message.content)
-            message_dicts.append(message_dict)
-        return message_dicts
+        conv_dicts = []
+        for conversation in payload.root:
+            for message in conversation:
+                message_dict = cast(MessageDict, message.model_dump())
+                message_dict["content"] = self._preprocess_content(message.content)
+                message_dicts.append(message_dict)
+            conv_dicts.append(message_dicts)
+
+        return conv_dicts
 
     @staticmethod
     def _get_alt_text(chat_message: dict | list | tuple | GradioComponent):
@@ -350,7 +351,6 @@ class CustomChatbot(Component):
         if chat_message is None:
             return None
         return chat_message
-
 
     def _postprocess_message_messages(
         self, message: MessageDict | ChatMessage
@@ -383,8 +383,8 @@ class CustomChatbot(Component):
 
     def postprocess(
         self,
-        value: list[MessageDict | Message] | None,
-    ) -> ChatbotDataMessages:
+        value: list[list[MessageDict | Message]] | None,
+    ) -> list[ChatbotDataMessages]:
         """
         Parameters:
             value: Passes the value as a list of dictionaries with 'role' and 'content' keys. The `content` key's value is a string.
@@ -393,12 +393,15 @@ class CustomChatbot(Component):
         """
         if value is None:
             return ChatbotDataMessages(root=[])
-        self._check_format(value)
-        processed_messages = [
-            self._postprocess_message_messages(cast(MessageDict, message))
-            for message in value
-        ]
-        return ChatbotDataMessages(root=processed_messages)
+        # self._check_format(value)
+        conversations = []
+        for conversation in value:
+            processed_messages = [
+                self._postprocess_message_messages(cast(MessageDict, message))
+                for message in value
+            ]
+            conversations.append(ChatbotDataMessages(root=processed_messages))
+        return conversations
 
     def example_payload(self) -> Any:
         return [
@@ -408,6 +411,20 @@ class CustomChatbot(Component):
 
     def example_value(self) -> Any:
         return [
-            Message(role="user", content="Hello!").model_dump(),
-            Message(role="assistant", content="How can I help you?", reasoning="This is a sample response").model_dump(),
+            [
+                Message(role="user", content="Hello!").model_dump(),
+                Message(
+                    role="assistant",
+                    content="How can I help you?",
+                    reasoning="This is a sample response",
+                ).model_dump(),
+            ],
+            [
+                Message(role="user", content="Hi!").model_dump(),
+                Message(
+                    role="assistant",
+                    content="What can I do for you?",
+                    reasoning="Another sample response",
+                ).model_dump(),
+            ],
         ]
