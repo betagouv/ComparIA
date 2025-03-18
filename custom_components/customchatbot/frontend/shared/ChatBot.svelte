@@ -12,7 +12,6 @@
 
 <script lang="ts">
 	import {
-		format_chat_for_sharing,
 		type UndoRetryData,
 		is_one_of_last_two_bot_msgs,
 		group_messages,
@@ -25,8 +24,6 @@
 	import {
 		afterUpdate,
 		createEventDispatcher,
-		type SvelteComponent,
-		type ComponentType,
 		tick,
 		onMount,
 	} from "svelte";
@@ -50,7 +47,6 @@
 
 	export let _fetch: typeof fetch;
 
-	let _components: Record<string, ComponentType<SvelteComponent>> = {};
 
 	const is_browser = typeof window !== "undefined";
 
@@ -66,7 +62,6 @@
 	export let generating = false;
 	export let selectable = false;
 	export let likeable = false;
-	export let show_share_button = false;
 	export let show_copy_all_button = false;
 	export let rtl = false;
 	export let show_copy_button = false;
@@ -164,7 +159,7 @@
 	onMount(() => {
 		scroll_on_value_update();
 	});
-	$: if (value || pending_message || _components) {
+	$: if (value || pending_message) {
 		scroll_on_value_update();
 	}
 
@@ -342,29 +337,7 @@
 
 {#if value !== null && value.length > 0}
 	<div>
-		{#if show_share_button}
-			<IconButton
-				Icon={Community}
-				on:click={async () => {
-					try {
-						// @ts-ignore
-						const formatted = await format_chat_for_sharing(value);
-						dispatch("share", {
-							description: formatted,
-						});
-					} catch (e) {
-						console.error(e);
-						let message =
-							e instanceof ShareError
-								? e.message
-								: "Share failed.";
-						dispatch("error", message);
-					}
-				}}
-			>
-				<Community />
-			</IconButton>
-		{/if}
+		
 		{#if show_copy_all_button}
 			<CopyAll {value} />
 		{/if}
@@ -401,7 +374,6 @@
 							{i}
 							{value}
 							{latex_delimiters}
-							{_components}
 							{disabled}
 							generating={generating &&
 								is_one_of_last_two_bot_msgs([message], value)}

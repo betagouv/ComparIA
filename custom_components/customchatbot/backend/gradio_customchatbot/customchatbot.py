@@ -165,7 +165,6 @@ class CustomChatbot(Component):
         latex_delimiters: list[dict[str, str | bool]] | None = None,
         rtl: bool = False,
         likeable: bool = False,
-        show_share_button: bool | None = None,
         show_copy_button: bool = False,
         avatar_images: tuple[str | Path | None, str | Path | None] | None = None,
         interactive: bool = True,
@@ -200,7 +199,6 @@ class CustomChatbot(Component):
             min_height: The minimum height of the component, specified in pixels if a number is passed, or in CSS units if a string is passed. If messages exceed the height, the component will expand to fit the content. Will not have any effect if `height` is set and is larger than `min_height`.
             latex_delimiters: A list of dicts of the form {"left": open delimiter (str), "right": close delimiter (str), "display": whether to display in newline (bool)} that will be used to render LaTeX expressions. If not provided, `latex_delimiters` is set to `[{ "left": "$$", "right": "$$", "display": True }]`, so only expressions enclosed in $$ delimiters will be rendered as LaTeX, and in a new line. Pass in an empty list to disable LaTeX rendering. For more information, see the [KaTeX documentation](https://katex.org/docs/autorender.html).
             rtl: If True, sets the direction of the rendered text to right-to-left. Default is False, which renders text left-to-right.
-            show_share_button: If True, will show a share icon in the corner of the component that allows user to share outputs to Hugging Face Spaces Discussions. If False, icon does not appear. If set to None (default behavior), then the icon appears if this Gradio app is launched on Spaces, but not otherwise.
             show_copy_button: If True, will show a copy button for each chatbot message.
             avatar_images: Tuple of two avatar image paths or URLs for user and bot (in that order). Pass None for either the user or bot image to skip. Must be within the working directory of the Gradio app or an external URL.
             sanitize_html: If False, will disable HTML sanitization for chatbot messages. This is not recommended, as it can lead to security vulnerabilities.
@@ -221,11 +219,6 @@ class CustomChatbot(Component):
         if latex_delimiters is None:
             latex_delimiters = [{"left": "$$", "right": "$$", "display": True}]
         self.latex_delimiters = latex_delimiters
-        self.show_share_button = (
-            (utils.get_space() is not None)
-            if show_share_button is None
-            else show_share_button
-        )
         self.render_markdown = render_markdown
         self.show_copy_button = show_copy_button
         self.sanitize_html = sanitize_html

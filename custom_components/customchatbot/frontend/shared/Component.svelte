@@ -40,7 +40,6 @@
 		this={components[type]}
 		{value}
 		show_label={false}
-		show_share_button={true}
 		{i18n}
 		label=""
 		waveform_settings={{}}
