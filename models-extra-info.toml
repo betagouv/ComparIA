@@ -460,8 +460,8 @@ icon_path = "openai.svg"
 friendly_size = "XL"
 reasoning = true
 license = "propriétaire OpenAI"
-# description = ""
-# excerpt = ""
+description = "Modèle optimisé pour les tâches de raisonnement STEM (science, technologie, ingénierie, mathématiques) et l'écriture de code. Il se démarque dans les domaines scientifiques, mathématiques et de la programmation."
+excerpt = "o3-mini est fait pour le raisonnement et le code. Il offre un bon équilibre entre performance, coût et latence, tout en étant plus petit que d'autres modèles de chez OpenAI."
 release_date = "11/2024"
 
 [phi-3-mini-4k]
