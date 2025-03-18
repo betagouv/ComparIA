@@ -222,7 +222,7 @@ description = "Mistral Small 3.1 24B Instruct est un modèle multimodal qui offr
 release_date = "03/2025"
 
 ["command-a"]
-url = "https://huggingface.co/cohere/command-a"
+url = "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025"
 simple_name = "Command A"
 organisation = "Cohere"
 icon_path = "cohere.png"
