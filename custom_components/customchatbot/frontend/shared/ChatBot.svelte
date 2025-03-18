@@ -179,15 +179,13 @@
 	});
 
 	export let hasError: boolean = false;
-	export let errorMsg: string = null;
 
 	$: {
-		errorMsg = groupedMessages.some((messages) =>
+		hasError = groupedMessages.some((messages) =>
 			messages.some((message) => message?.error),
 		);
-		hasError = !!errorMsg
-		console.log("errorMsg:");
-		console.log(errorMsg);
+		// console.log("hasError:");
+		// console.log(hasError);
 		// console.log("messages:");
 		// console.log(groupedMessages);
 	}
@@ -462,11 +460,11 @@
 				erreur temporaire
 			</h3>
 			<p>
-				Une erreur temporaire est survenue: {errorMsg}<br />
+				Une erreur temporaire est survenue.<br />
 				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou bien
 				conclure votre expérience en donnant votre avis sur les modèles{/if}.
 			</p>
-			<!-- error: {errorMsg} -->
+			<!-- error: {hasError} -->
 			<p class="text-center">
 				<button
 					class="fr-btn purple-btn"
