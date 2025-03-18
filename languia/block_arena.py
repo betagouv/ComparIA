@@ -85,7 +85,6 @@ with gr.Blocks(
     ) as chat_area:
         mode_banner = gr.HTML()
         chatbot = CustomChatbot(
-            type="messages",
             elem_id="main-chatbot",
             # min_width=
             # height="100vh",
