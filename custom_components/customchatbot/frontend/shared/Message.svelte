@@ -53,7 +53,6 @@
 	) => void;
 	export let scroll: () => void;
 
-
 	function get_message_label_data(message: NormalisedMessage): string {
 		return message.content;
 	}
@@ -111,7 +110,6 @@
 	class="message {role} {get_message_bot_position(message)}"
 	class:message-markdown-disabled={!render_markdown}
 >
-	
 	<button
 		data-testid={role}
 		class:latest={i === value.length - 1}
@@ -125,72 +123,73 @@
 	>
 		<div class="message-content">
 			{#if message.role === "assistant"}
-					<div class="model-title">
-						{#if message.metadata?.bot === "a"}
-							<svg
-								class="inline"
-								width="26"
-								height="32"
-								name="disque violet (modèle A)"
-								role="img"
-								aria-label="disque violet (modèle A)"
-								><circle
-									cx="13"
-									cy="13"
-									r="12"
-									fill="#A96AFE"
-									stroke="none"
-								></circle></svg
-							>
-							<h3 class="inline">Modèle A</h3>
-						{:else if message.metadata?.bot === "b"}
-							<svg
-								class="inline"
-								width="26"
-								height="32"
-								name="disque orange (modèle B)"
-								role="img"
-								aria-label="disque orange (modèle B)"
-								><circle
-									cx="13"
-									cy="13"
-									r="12"
-									fill="#ff9575"
-									stroke="none"
-								></circle></svg
-							>
-							<h3 class="inline">Modèle B</h3>
-						{/if}
-					</div>
-					{#if thought != ""}
-		<div class="thought">
-			{sanitize(thought, root)}
-		</div>
-	{/if}
-					<Markdown
-						message={content}
-						{latex_delimiters}
-						{sanitize_html}
-						{render_markdown}
-						{line_breaks}
-						on:load={scroll}
-						{root}
-					/>
-					{#if generating}
-						<Pending />
+				<div class="model-title">
+					{#if message.metadata?.bot === "a"}
+						<svg
+							class="inline"
+							width="26"
+							height="32"
+							name="disque violet (modèle A)"
+							role="img"
+							aria-label="disque violet (modèle A)"
+							><circle
+								cx="13"
+								cy="13"
+								r="12"
+								fill="#A96AFE"
+								stroke="none"
+							></circle></svg
+						>
+						<h3 class="inline">Modèle A</h3>
+					{:else if message.metadata?.bot === "b"}
+						<svg
+							class="inline"
+							width="26"
+							height="32"
+							name="disque orange (modèle B)"
+							role="img"
+							aria-label="disque orange (modèle B)"
+							><circle
+								cx="13"
+								cy="13"
+								r="12"
+								fill="#ff9575"
+								stroke="none"
+							></circle></svg
+						>
+						<h3 class="inline">Modèle B</h3>
 					{/if}
-				{:else}
-					<Markdown
-						message={message.content}
-						{latex_delimiters}
-						{sanitize_html}
-						{render_markdown}
-						{line_breaks}
-						on:load={scroll}
-						{root}
-					/>
+				</div>
+				{#if thought != ""}
+					<div class="thought">
+						{@html sanitize(thought.split('\n').join('<br>'), root)}
+
+					</div>
 				{/if}
-			</div>
+				<Markdown
+					message={content}
+					{latex_delimiters}
+					{sanitize_html}
+					{render_markdown}
+					{line_breaks}
+					on:load={scroll}
+					{root}
+				/>
+				{#if generating}
+					<Pending />
+				{/if}
+			{:else}
+				<Markdown
+					message={message.content}
+					{latex_delimiters}
+					{sanitize_html}
+					{render_markdown}
+					{line_breaks}
+					on:load={scroll}
+					{root}
+				/>
+			{/if}
+		</div>
 		{#if message.role === "assistant"}
 			<ButtonPanel {...button_panel_props} />
 		{/if}
@@ -216,7 +215,6 @@
 		flex-direction: column;
 		gap: 0.5rem;
 	}
-
 
 	.message.bot button {
 		border-color: #e5e5e5;
