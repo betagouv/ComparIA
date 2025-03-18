@@ -10,14 +10,14 @@
 	import type { UndoRetryData } from "./shared/utils";
 	import type { LoadingStatus } from "@gradio/statustracker";
 
-	import type { Message, TupleFormat, NormalisedMessage } from "./types";
+	import type { Message, NormalisedMessage } from "./types";
 
 	import { update_messages } from "./shared/utils";
 
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
-	export let value: TupleFormat | Message[] = [];
+	export let value: Message[] = [];
 	// export let scale: number | null = null;
 	// export let min_width: number | undefined = undefined;
 	// export let label: string;

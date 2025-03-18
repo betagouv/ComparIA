@@ -23,14 +23,13 @@ export interface Message {
 }
 
 export interface TextMessage extends Message {
-	type: "text";
 	content: string;
 	reasoning?: string;
-	liked: boolean;
-	disliked: boolean;
+	liked?: boolean;
+	disliked?: boolean;
 	prefs?: string[];
 	comment: string;
-	commented: boolean;
+	commented?: boolean;
 	error?: boolean
 }
 
@@ -43,6 +42,5 @@ export interface ExampleMessage {
 
 export type message_data = string | null;
 
-export type TupleFormat = [message_data, message_data][] | null;
 
 export type NormalisedMessage = TextMessage;
