@@ -4,7 +4,6 @@
 	import DownloadIcon from "./Download.svelte";
 	import { DownloadLink } from "@gradio/wasm/svelte";
 	import type { NormalisedMessage, TextMessage } from "../types";
-	import { is_component_message } from "./utils";
 	import { Retry, Undo } from "@gradio/icons";
 	import IconButton from "./IconButton.svelte";
 
@@ -41,10 +40,7 @@
 	$: message_text = is_all_text(message) ? all_text(message) : "";
 
 	$: show_copy = show_copy_button && message && is_all_text(message);
-	$: show_download =
-		!Array.isArray(message) &&
-		is_component_message(message) &&
-		message.content.value?.url;
+	
 </script>
 
 <div class="button-panel">
@@ -55,14 +51,7 @@
 			{/if}
 		</div>
 		<div class="message-buttons-right {layout} message-buttons">
-			{#if show_download && !Array.isArray(message) && is_component_message(message)}
-				<DownloadLink
-					href={message?.content?.value.url}
-					download={message.content.value.orig_name || "image"}
-				>
-					<IconButton Icon={DownloadIcon} />
-				</DownloadLink>
-			{/if}
+
 			<!-- {#if show_retry}
 				<IconButton
 					Icon={Retry}

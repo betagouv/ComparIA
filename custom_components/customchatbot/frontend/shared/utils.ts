@@ -1,17 +1,11 @@
 import type { FileData } from "@gradio/client";
-import type { ComponentType, SvelteComponent } from "svelte";
 import { uploadToHuggingFace } from "@gradio/utils";
 import type {
-	TupleFormat,
-	ComponentMessage,
-	ComponentData,
-	TextMessage,
 	NormalisedMessage,
 	Message,
 	MessageRole
 } from "../types";
-import type { LoadedComponent } from "../../core/src/types";
-import { Gradio } from "@gradio/utils";
+
 export const format_chat_for_sharing = async (
 	chat: [string | FileData | null, string | FileData | null][]
 ): Promise<string> => {
@@ -69,7 +63,7 @@ export const format_chat_for_sharing = async (
 
 export interface UndoRetryData {
 	index: number | [number, number];
-	value: string | FileData | ComponentData;
+	value: string | FileData;
 }
 
 const redirect_src_url = (src: string, root: string): string =>
@@ -85,19 +79,6 @@ function get_component_for_mime_type(
 	return "file";
 }
 
-function convert_file_message_to_component_message(
-	message: any
-): ComponentData {
-	const _file = Array.isArray(message.file) ? message.file[0] : message.file;
-	return {
-		component: get_component_for_mime_type(_file?.mime_type),
-		value: message.file,
-		alt_text: message.alt_text,
-		constructor_args: {},
-		props: {}
-	} as ComponentData;
-}
-
 export function update_messages(
 	new_messages: Message[] | null,
 	old_messages: Message[] | null,
@@ -109,17 +90,16 @@ export function update_messages(
 	if (old_messages === null) {
 		// If there are no old messages, just return the new messages as is
 		return new_messages.map((message, i) => {
-		  return {
+		return {
 			role: message.role,
 			metadata: message.metadata,
 			content: redirect_src_url(message.content, root),
-			type: "text",
 			index: i,
 			comment: message.comment !== undefined ? message.comment : "",
 			liked: message.liked !== undefined ? message.liked : false,
 			disliked: message.disliked !== undefined ? message.disliked : false,
 			commented: message.commented !== undefined ? message.commented : false,
-			error: message.error !== undefined ? message.error : false,
+			error: message.error !== undefined ? message.error : null,
 			reasoning: message.reasoning !== undefined ? message.reasoning : "",
 
 		};
@@ -129,33 +109,24 @@ export function update_messages(
 	return new_messages.map((message, i) => {
 		const oldMessage = old_messages[i];
 
-		if (typeof message.content === "string") {
-			return {
-				...oldMessage, // spread the old message first
-				...message, // override with the new message
-		  
-				role: message.role,
-				metadata: message.metadata,
-				content: redirect_src_url(message.content, root),
-				type: "text",
-				index: i,
-				error: message.error !== undefined ? message.error : oldMessage?.error || false,
-				liked: message.liked !== undefined ? message.liked : oldMessage?.liked || false,
-				disliked: message.disliked !== undefined ? message.disliked : oldMessage?.disliked || false,
-				commented: message.commented !== undefined ? message.commented : oldMessage?.commented || false,
-				// prefs: message.prefs !== undefined ? message.prefs : oldMessage?.prefs || [],
+		return {
+			...oldMessage, // spread the old message first
+			...message, // override with the new message
+
+			role: message.role,
+			metadata: message.metadata,
+			content: redirect_src_url(message.content, root),
+			index: i,
+			error: message.error !== undefined ? message.error : oldMessage?.error || false,
+			liked: message.liked !== undefined ? message.liked : oldMessage?.liked || false,
+			disliked: message.disliked !== undefined ? message.disliked : oldMessage?.disliked || false,
+			commented: message.commented !== undefined ? message.commented : oldMessage?.commented || false,
+			// prefs: message.prefs !== undefined ? message.prefs : oldMessage?.prefs || [],
+			reasoning: message.reasoning !== undefined ? message.reasoning : "",
 
 
-			};
-		}
-		return { type: "component", ...message } as ComponentMessage;
+		};
 	});
-}
-
-export function is_component_message(
-	message: NormalisedMessage
-): message is ComponentMessage {
-	return message.type === "component";
 }
 
 export function is_one_of_last_two_bot_msgs(
@@ -168,7 +139,7 @@ export function is_one_of_last_two_bot_msgs(
 
 export function group_messages(
 	messages: NormalisedMessage[],
-	msg_format: "messages" | "tuples"
+
 ): NormalisedMessage[][] {
 	const groupedMessages: NormalisedMessage[][] = [];
 	let currentGroup: NormalisedMessage[] = [];
@@ -194,44 +165,4 @@ export function group_messages(
 	}
 
 	return groupedMessages;
-}
-
-export async function load_components(
-	component_names: string[],
-	_components: Record<string, ComponentType<SvelteComponent>>,
-	load_component: Gradio["load_component"]
-): Promise<Record<string, ComponentType<SvelteComponent>>> {
-	let names: string[] = [];
-	let components: ReturnType<typeof load_component>["component"][] = [];
-
-	component_names.forEach((component_name) => {
-		if (_components[component_name] || component_name === "file") {
-			return;
-		}
-
-		const { name, component } = load_component(component_name, "base");
-		names.push(name);
-		components.push(component);
-		component_name;
-	});
-
-	const loaded_components: LoadedComponent[] = await Promise.all(components);
-	loaded_components.forEach((component, i) => {
-		_components[names[i]] = component.default;
-	});
-
-	return _components;
-}
-
-export function get_components_from_messages(
-	messages: NormalisedMessage[] | null
-): string[] {
-	if (!messages) return [];
-	let components: Set<string> = new Set();
-	messages.forEach((message) => {
-		if (message.type === "component") {
-			components.add(message.content.component);
-		}
-	});
-	return Array.from(components);
 }

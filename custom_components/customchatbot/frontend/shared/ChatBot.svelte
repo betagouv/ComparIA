@@ -16,8 +16,6 @@
 		type UndoRetryData,
 		is_one_of_last_two_bot_msgs,
 		group_messages,
-		load_components,
-		get_components_from_messages,
 	} from "./utils";
 	import type { NormalisedMessage } from "../types";
 	import { copy } from "@gradio/utils";
@@ -51,21 +49,12 @@
 	import CopyAll from "./CopyAll.svelte";
 
 	export let _fetch: typeof fetch;
-	export let load_component: Gradio["load_component"];
 
 	let _components: Record<string, ComponentType<SvelteComponent>> = {};
 
 	const is_browser = typeof window !== "undefined";
 
-	async function update_components(): Promise<void> {
-		_components = await load_components(
-			get_components_from_messages(value),
-			_components,
-			load_component,
-		);
-	}
-
-	$: value, update_components();
+	$: value;
 
 	export let latex_delimiters: {
 		left: string;
