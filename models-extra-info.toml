@@ -563,6 +563,16 @@ excerpt = "Supportant un contexte de 130k tokens, ce modèle multilingue et poly
 params = 32
 license = "Apache 2.0"
 
+["qwq-32b"]
+url = "https://huggingface.co/Qwen/QwQ-32B"
+simple_name = "QwQ-32B"
+organisation = "Alibaba"
+icon_path = "qwen.jpg"
+description = "QwQ-32B est le modèle de raisonnement de taille moyenne de la série Qwen. Il est capable d'atteindre des performances compétitives par rapport aux modèles de raisonnement de pointe comme DeepSeek-R1 et o1-mini."
+excerpt = "Modèle de raisonnement de taille moyenne, QwQ-32B atteint des performances compétitives par rapport aux modèles de raisonnement de pointe comme DeepSeek-R1 et o1-mini."
+params = 32
+license = "Apache 2.0"
+
 ["Yi-1.5-9B-Chat"]
 url = "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
 simple_name = "Yi-1.5 9B"
