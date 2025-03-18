@@ -137,7 +137,7 @@ def litellm_stream_iter(
                 # TODO: extract thinking here / pass to frontend / wrap into <think> tags
                 if hasattr(chunk.choices[0].delta, "reasoning"):
                     print("GOT REASONING")
-                    content = chunk.choices[0].delta.reasoning or ""
+                    data["reasoning"] += chunk.choices[0].delta.reasoning or ""
             else:
                 content = ""
 

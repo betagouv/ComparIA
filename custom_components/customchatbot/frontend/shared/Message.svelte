@@ -54,28 +54,6 @@
 	) => void;
 	export let scroll: () => void;
 
-	function get_thought_from_content(content) {
-		if (!content.includes("<think>")) {
-			return "";
-		} else {
-			return content
-				.replace("<think>", "")
-				.split("</think>")[0]
-				.replace("</think>", "");
-		}
-	}
-
-	function remove_thought_from_content(msg_content) {
-		if (!msg_content.includes("<think>")) {
-			return msg_content;
-		} else {
-			if (!msg_content.includes("</think>")) {
-				return "";
-			} else {
-				return msg_content.split("</think>")[1];
-			}
-		}
-	}
 
 	function get_message_label_data(message: NormalisedMessage): string {
 		if (message.type === "text") {
@@ -132,12 +110,12 @@
 		layout,
 	};
 	$: {
-		thought = get_thought_from_content(message.content);
+		thought = message.reasoning || "";
 		console.log("thought");
 		console.log(thought);
 	}
 	$: {
-		content = remove_thought_from_content(message.content);
+		content = message.type === "text" ? message.content : "";
 		console.log("content");
 		console.log(content);
 	}

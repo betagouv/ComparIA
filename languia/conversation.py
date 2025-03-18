@@ -43,27 +43,31 @@ logger = logging.getLogger("languia")
 
 
 def update_last_message(
-    messages, text, position, output_tokens=None, generation_id=None, duration=0
+    messages, text, position, output_tokens=None, generation_id=None, duration=0, reasoning=None
 ):
+    # Create metadata dictionary with optional fields
+    metadata = {
+        "bot": position,
+        **({"output_tokens": output_tokens} if output_tokens else {}),
+        **({"generation_id": generation_id} if generation_id else {}),
+        **({"duration": duration} if duration != 0 else {})
+    }
 
-    metadata = {"bot": position}
-    if output_tokens:
-        metadata["output_tokens"] = output_tokens
-    if generation_id:
-        metadata["generation_id"] = generation_id
-    if duration != 0:
-        metadata["duration"] = duration
+    # Create new message if needed
+    if not messages or messages[-1].role == "user":
+        return messages + [ChatMessage(
+            role="assistant",
+            content=text,
+            metadata=metadata,
+            reasoning=reasoning
+        )]
 
-    if not messages:
-        return [ChatMessage(role="assistant", content=text, metadata=metadata)]
-
+    # Update existing message
     last_message = messages[-1]
-    if last_message.role == "user":
-        messages.append(ChatMessage(role="assistant", content=text, metadata=metadata))
-    else:
-        last_message.content = text
-        # FIXME: possible "Metadata has no update method", maybe transform to dict and back to Metadata object
-        last_message.metadata.update(metadata)
+    last_message.content = text
+    last_message.metadata = {**last_message.metadata, **metadata}
+    if reasoning is not None:
+        last_message.reasoning = reasoning
 
     return messages
 
@@ -154,6 +158,7 @@ def bot_response(
             generation_id = data["generation_id"]
 
         output = data.get("text")
+        reasoning = data.get("reasoning")
         if output:
             output.strip()
             state.messages = update_last_message(
@@ -162,6 +167,7 @@ def bot_response(
                 position=position,
                 output_tokens=output_tokens,
                 generation_id=generation_id,
+                reasoning=reasoning
             )
             yield (state)
 

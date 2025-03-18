@@ -33,6 +33,7 @@ export interface Message {
 export interface TextMessage extends Message {
 	type: "text";
 	content: string;
+	reasoning?: string;
 	liked: boolean;
 	disliked: boolean;
 	prefs?: string[];
@@ -44,6 +45,7 @@ export interface TextMessage extends Message {
 export interface ComponentMessage extends Message {
 	type: "component";
 	content: ComponentData;
+	reasoning?: string;
 	liked: boolean;
 	disliked: boolean;
 	prefs?: string[];
