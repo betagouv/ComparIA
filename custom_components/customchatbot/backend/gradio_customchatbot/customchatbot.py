@@ -255,27 +255,6 @@ class CustomChatbot(Component):
         self.placeholder = placeholder
 
         self.examples = examples
-        if self.examples is not None:
-            for i, example in enumerate(self.examples):
-                if "icon" in example and isinstance(example["icon"], str):
-                    example["icon"] = self.serve_static_file(example["icon"])
-                file_info = example.get("files")
-                if file_info is not None and not isinstance(file_info, list):
-                    raise Error(
-                        "Data incompatible with files format. The 'files' passed should be a list of file paths or URLs."
-                    )
-                if file_info is not None:
-                    for i, file in enumerate(file_info):
-                        if isinstance(file, str):
-                            orig_name = Path(file).name
-                            file_data = self.serve_static_file(file)
-                            if file_data is not None:
-                                file_data["orig_name"] = orig_name
-                                file_data["mime_type"] = client_utils.get_mimetype(
-                                    orig_name
-                                )
-                                file_data = FileDataDict(**file_data)
-                                file_info[i] = file_data
 
     @staticmethod
     def _check_format(messages: list[Any]):
