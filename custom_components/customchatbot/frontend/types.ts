@@ -10,9 +10,9 @@ export interface Metadata {
 
 export interface Message {
 	role: MessageRole;
-	type: string;
 	metadata: Metadata;
 	content: string;
+	reasoning?: string;
 	index: number | [number, number];
 	liked?: boolean;
 	disliked?: boolean;

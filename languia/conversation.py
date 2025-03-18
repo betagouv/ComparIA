@@ -43,24 +43,29 @@ logger = logging.getLogger("languia")
 
 
 def update_last_message(
-    messages, text, position, output_tokens=None, generation_id=None, duration=0, reasoning=None
+    messages,
+    text,
+    position,
+    output_tokens=None,
+    generation_id=None,
+    duration=0,
+    reasoning=None,
 ):
     # Create metadata dictionary with optional fields
     metadata = {
         "bot": position,
         **({"output_tokens": output_tokens} if output_tokens else {}),
         **({"generation_id": generation_id} if generation_id else {}),
-        **({"duration": duration} if duration != 0 else {})
+        **({"duration": duration} if duration != 0 else {}),
     }
 
     # Create new message if needed
     if not messages or messages[-1].role == "user":
-        return messages + [ChatMessage(
-            role="assistant",
-            content=text,
-            metadata=metadata,
-            reasoning=reasoning
-        )]
+        return messages + [
+            ChatMessage(
+                role="assistant", content=text, metadata=metadata, reasoning=reasoning
+            )
+        ]
 
     # Update existing message
     last_message = messages[-1]
@@ -132,7 +137,6 @@ def bot_response(
         endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
     )
 
-
     stream_iter = litellm_stream_iter(
         model_name=litellm_model_name,
         messages=messages_dict,
@@ -145,7 +149,7 @@ def bot_response(
         max_new_tokens=max_new_tokens,
         request=request,
         vertex_ai_location=endpoint.get("vertex_ai_location", None),
-        include_reasoning=include_reasoning
+        include_reasoning=include_reasoning,
     )
 
     output_tokens = None
@@ -159,7 +163,10 @@ def bot_response(
 
         output = data.get("text")
         reasoning = data.get("reasoning")
-        if output:
+        if reasoning:
+            print("reasoning")
+            print(reasoning)
+        if output or reasoning:
             output.strip()
             state.messages = update_last_message(
                 messages=state.messages,
@@ -167,7 +174,7 @@ def bot_response(
                 position=position,
                 output_tokens=output_tokens,
                 generation_id=generation_id,
-                reasoning=reasoning
+                reasoning=reasoning,
             )
             yield (state)
 
@@ -185,6 +192,7 @@ def bot_response(
     )
 
     output = data.get("text")
+    reasoning = data.get("reasoning")
     if not output or output == "":
         logger.error(
             f"reponse_vide: {state.model_name}, data: " + str(data),
@@ -205,6 +213,7 @@ def bot_response(
         position=position,
         output_tokens=output_tokens,
         duration=duration,
+        reasoning=reasoning,
     )
 
     yield (state)

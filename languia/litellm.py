@@ -110,6 +110,7 @@ def litellm_stream_iter(
     # route= ""
 
     text = ""
+    reasoning = ""
     logger = logging.getLogger("languia")
 
     data = dict()
@@ -134,15 +135,18 @@ def litellm_stream_iter(
                     content = chunk.choices[0].delta.content or ""
                 else:
                     content = ""
-                # TODO: extract thinking here / pass to frontend / wrap into <think> tags
                 if hasattr(chunk.choices[0].delta, "reasoning"):
-                    print("GOT REASONING")
-                    data["reasoning"] += chunk.choices[0].delta.reasoning or ""
+                    reasoning_delta = chunk.choices[0].delta.reasoning or ""
+                    print("reasoning_delta")
+                    print(reasoning_delta)
+                else:
+                    reasoning_delta = ""
             else:
                 content = ""
 
             text += content
-
+            reasoning += reasoning_delta
+            data["reasoning"] = reasoning
             data["text"] = text
 
             if hasattr(chunk.choices[0], "finish_reason"):

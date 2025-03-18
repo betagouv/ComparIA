@@ -119,11 +119,13 @@ export function update_messages(
 			liked: message.liked !== undefined ? message.liked : false,
 			disliked: message.disliked !== undefined ? message.disliked : false,
 			commented: message.commented !== undefined ? message.commented : false,
-			error: message.error !== undefined ? message.error : false
-		  };
+			error: message.error !== undefined ? message.error : false,
+			reasoning: message.reasoning !== undefined ? message.reasoning : "",
+
+		};
 		});
-	  }
-	
+	}
+
 	return new_messages.map((message, i) => {
 		const oldMessage = old_messages[i];
 

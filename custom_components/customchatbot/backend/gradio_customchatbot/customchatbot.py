@@ -53,6 +53,8 @@ class MessageDict(TypedDict):
     role: Literal["user", "assistant", "system"]
     metadata: NotRequired[MetadataDict]
     error: NotRequired[bool]
+    
+    reasoning: NotRequired[str]
 
 
 class FileMessage(GradioModel):
@@ -324,6 +326,8 @@ class CustomChatbot(Component):
         for message in payload.root:
             message_dict = cast(MessageDict, message.model_dump())
             message_dict["content"] = self._preprocess_content(message.content)
+            if hasattr(message, "reasoning") and message.reasoning != "":
+                message_dict["reasoning"] = message.reasoning
             message_dicts.append(message_dict)
         return message_dicts
 
