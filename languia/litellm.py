@@ -13,7 +13,7 @@ from languia.config import GLOBAL_TIMEOUT
 import litellm
 import json
 
-from languia.utils import get_matomo_tracker_from_cookies
+from languia.utils import get_matomo_tracker_from_cookies, get_ip
 
 from langfuse.decorators import langfuse_context, observe
 
@@ -70,9 +70,20 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
+    if request:
+        if hasattr(request, "cookies"):
+            user_id = get_matomo_tracker_from_cookies(request.cookies)
+        else:
+            try:
+                user_id = get_ip(request)
+            except:
+                user_id = None
+    else:
+        user_id = None
+
     langfuse_context.update_current_trace(
         # should we use the user's cookie value here?
-        user_id=get_matomo_tracker_from_cookies(request.cookies),
+        user_id=user_id,
         session_id=getattr(request, "session_hash", "")
     )
     kwargs = {
