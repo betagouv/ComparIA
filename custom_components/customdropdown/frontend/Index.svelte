@@ -216,8 +216,12 @@
 			const modeSelectionModal = document.getElementById(
 				"modal-mode-selection",
 			);
-			// maybe add a 500 ms delay
-			window.dsfr(modeSelectionModal).modal.conceal();
+			if (modeSelectionModal) {
+				window.setTimeout(() => {
+					// @ts-ignore - DSFR is globally available
+					window.dsfr(modeSelectionModal).modal.conceal();
+				}, 300);
+			}
 		}
 	}
 
