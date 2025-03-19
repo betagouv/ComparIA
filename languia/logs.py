@@ -50,16 +50,19 @@ class JSONFormatter(logging.Formatter):
 
         # if 'request' in record.args:
         if hasattr(record, "request"):
-            # log_data = record.request
-            # request_dict = record.request.kwargs
-            log_data["query_params"] = dict(record.request.query_params)
-            log_data["path_params"] = dict(record.request.path_params)
-            # TODO: remove IP?
-            log_data["ip"] = get_ip(record.request)
-            log_data["session_hash"] = record.request.session_hash
-            # if isinstance(request_dict, dict):
-            #     request_json = json.dumps(request_dict)
-            # delattr(record, 'request')
+            try:
+                # log_data = record.request
+                # request_dict = record.request.kwargs
+                log_data["query_params"] = dict(record.request.query_params)
+                log_data["path_params"] = dict(record.request.path_params)
+                # TODO: remove IP?
+                log_data["ip"] = get_ip(record.request)
+                log_data["session_hash"] = record.request.session_hash
+                # if isinstance(request_dict, dict):
+                #     request_json = json.dumps(request_dict)
+                # delattr(record, 'request')
+            except:
+                pass
         if hasattr(record, "extra"):
             log_data["extra"] = record.extra
         # Add the args dictionary to the JSON payload
