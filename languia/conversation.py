@@ -167,6 +167,11 @@ def bot_response(
                 reasoning=reasoning,
             )
             yield (state)
+        import numpy
+        if numpy.random.random() < 0.1:
+            raise Exception("Yo")
+
+
 
     if generation_id:
         logger.info(
