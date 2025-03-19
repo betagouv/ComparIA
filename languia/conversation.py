@@ -86,7 +86,7 @@ def bot_response(
     request: gr.Request,
     temperature=0.7,
     # top_p=1.0,
-    max_new_tokens=2048,
+    max_new_tokens=4096,
     apply_rate_limit=True,
     use_recommended_config=True,
     include_reasoning=False
@@ -183,7 +183,7 @@ def bot_response(
 
     output = data.get("text")
     reasoning = data.get("reasoning")
-    if not output or output == "":
+    if (not output or output == "") and (not reasoning or reasoning == ""):
         logger.error(
             f"reponse_vide: {state.model_name}, data: " + str(data),
             exc_info=True,
