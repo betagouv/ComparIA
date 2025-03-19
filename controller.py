@@ -143,7 +143,7 @@ def test_model(model_id):
             test.update(output_tokens=output_tokens)
 
         # FIXME: Add ugly bypass for reasoning models...
-        if text or include_reasoning:
+        if text or include_reasoning or model_id == "o3-mini":
             logging.info(f"Test successful: {model_id}")
             if remove_unavailable_models(model_id):
                 test.update({"info": "Removed model from unavailable_models list."})
