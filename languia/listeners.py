@@ -373,8 +373,8 @@ document.getElementById("fr-modal-welcome-close").blur();
             if conv_b_scoped.messages[-1].role == "assistant":
                 conv_b_scoped.messages = conv_b_scoped.messages[:-1]
 
-            conv_a_scoped.messages[-1].error = True
-            conv_b_scoped.messages[-1].error = True
+            conv_a_scoped.messages[-1].error = str(e)
+            conv_b_scoped.messages[-1].error = str(e)
 
             # If it's the first message in conversation, re-roll
             if len(conv_a_scoped.messages) == 1 or (
@@ -422,10 +422,10 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                 # Don't reuse same conversation ID, is that good?
                 conv_a_scoped.messages.append(
-                    ChatMessage(role="user", content=original_user_prompt, error=True)
+                    ChatMessage(role="user", content=original_user_prompt, error=str(e))
                 )
                 conv_b_scoped.messages.append(
-                    ChatMessage(role="user", content=original_user_prompt, error=True)
+                    ChatMessage(role="user", content=original_user_prompt, error=str(e))
                 )
         finally:
 
@@ -624,8 +624,8 @@ document.getElementById("fr-modal-welcome-close").blur();
             if conv_b_scoped.messages[-1].role == "assistant":
                 conv_b_scoped.messages = conv_b_scoped.messages[:-1]
 
-            conv_a_scoped.messages[-1].error = True
-            conv_b_scoped.messages[-1].error = True
+            conv_a_scoped.messages[-1].error = str(e)
+            conv_b_scoped.messages[-1].error = str(e)
 
         finally:
 

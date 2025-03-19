@@ -21,12 +21,7 @@
 	import Message from "./Message.svelte";
 
 	import { dequal } from "dequal/lite";
-	import {
-		afterUpdate,
-		createEventDispatcher,
-		tick,
-		onMount,
-	} from "svelte";
+	import { afterUpdate, createEventDispatcher, tick, onMount } from "svelte";
 
 	import { Trash, Community, ScrollDownArrow } from "@gradio/icons";
 	import IconButton from "./IconButton.svelte";
@@ -46,7 +41,6 @@
 	import CopyAll from "./CopyAll.svelte";
 
 	export let _fetch: typeof fetch;
-
 
 	const is_browser = typeof window !== "undefined";
 
@@ -182,10 +176,21 @@
 	export let errorMsg: string = null;
 
 	$: {
-		errorMsg = groupedMessages.some((messages) =>
-			messages.some((message) => message?.error),
-		);
-		hasError = !!errorMsg
+		errorMsg = null;
+
+		for (const messages of groupedMessages) {
+			for (const message of messages) {
+				if (message?.error) {
+					errorMsg = message.error;
+					break;
+				}
+			}
+			if (errorMsg) {
+				break;
+			}
+		}
+
+		hasError = !!errorMsg;
 		console.log("errorMsg:");
 		console.log(errorMsg);
 		// console.log("messages:");
@@ -257,7 +262,7 @@
 
 			dispatch("retry", {
 				index: msg.index,
-				value: msg.error
+				value: msg.error,
 				// value: msg.error || msg.content,
 				// value: msg.content,
 				// error: msg.metadata?.error || msg.error
@@ -337,7 +342,6 @@
 
 {#if value !== null && value.length > 0}
 	<div>
-		
 		{#if show_copy_all_button}
 			<CopyAll {value} />
 		{/if}
@@ -463,8 +467,9 @@
 			</h3>
 			<p>
 				Une erreur temporaire est survenue: {errorMsg}<br />
-				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou bien
-				conclure votre expérience en donnant votre avis sur les modèles{/if}.
+				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou
+					bien conclure votre expérience en donnant votre avis sur les
+					modèles{/if}.
 			</p>
 			<!-- error: {errorMsg} -->
 			<p class="text-center">
@@ -639,7 +644,6 @@
 		max-width: 600px;
 	}
 
-
 	/* KaTeX */
 	/* .message-wrap :global(span.katex) {
 		font-size: var(--text-lg);
@@ -758,6 +762,5 @@
 		background-color: #b34000;
 		-webkit-mask-image: url("../assets/dsfr/icons/system/fr--warning-fill.svg");
 		mask-image: url("../assets/dsfr/icons/system/fr--warning-fill.svg");
-
 	}
 </style>

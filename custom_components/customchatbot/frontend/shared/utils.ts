@@ -53,7 +53,7 @@ export function update_messages(
 			metadata: message.metadata,
 			content: redirect_src_url(message.content, root),
 			index: i,
-			error: message.error !== undefined ? message.error : oldMessage?.error || false,
+			error: message.error !== undefined ? message.error : oldMessage?.error || null,
 			liked: message.liked !== undefined ? message.liked : oldMessage?.liked || false,
 			disliked: message.disliked !== undefined ? message.disliked : oldMessage?.disliked || false,
 			commented: message.commented !== undefined ? message.commented : oldMessage?.commented || false,
