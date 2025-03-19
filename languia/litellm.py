@@ -78,14 +78,13 @@ def litellm_stream_iter(
                 user_id = get_ip(request)
             except:
                 user_id = None
-    else:
-        user_id = None
+        langfuse_context.update_current_trace(
+            # should we use the user's cookie value here?
+            user_id=user_id,
+            session_id=getattr(request, "session_hash", "")
+        )
 
-    langfuse_context.update_current_trace(
-        # should we use the user's cookie value here?
-        user_id=user_id,
-        session_id=getattr(request, "session_hash", "")
-    )
+
     kwargs = {
         "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
@@ -102,12 +101,9 @@ def litellm_stream_iter(
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
         "metadata": {
-            "session_hash": getattr(request, "session_hash", ""),
-            "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
-            # "conversation_id
+            "parent_observation_id": langfuse_context.get_current_observation_id(),
             # Creates nested traces for convos A and B
             # "existing_trace_id": langfuse_context.get_current_trace_id(),
-            "parent_observation_id": langfuse_context.get_current_observation_id(),
         },
     }
 
