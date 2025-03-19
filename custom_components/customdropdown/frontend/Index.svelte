@@ -330,7 +330,7 @@
 						alt={first_model_name}
 						width="20"
 						class="inline"
-					/>&nbsp;
+					/>&thinsp;
 					{first_model_name}
 					<strong class="versus">&nbsp;vs.&nbsp;</strong>
 					{#if second_model_icon_path != null}
@@ -339,7 +339,7 @@
 							alt={second_model_name}
 							width="20"
 							class="inline"
-						/>&nbsp;
+						/>&thinsp;
 					{/if}
 					{second_model_name}</button
 				>
@@ -454,7 +454,7 @@
 <style>
 	.versus {
 		font-size: 1.125rem;
-
+		margin: 0 5px;
 		line-height: 0 !important;
 	}
 
