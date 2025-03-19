@@ -572,6 +572,7 @@ description = "QwQ-32B est le modèle de raisonnement de taille moyenne de la s�
 excerpt = "Modèle de raisonnement de taille moyenne, QwQ-32B atteint des performances compétitives par rapport aux modèles de raisonnement de pointe comme DeepSeek-R1 et o1-mini."
 params = 32
 license = "Apache 2.0"
+reasoning = true
 
 ["Yi-1.5-9B-Chat"]
 url = "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
