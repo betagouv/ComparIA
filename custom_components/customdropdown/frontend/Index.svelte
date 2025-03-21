@@ -475,7 +475,8 @@
 		border-radius: 0.5em;
 		border: 1px solid #e5e5e5 !important;
 		flex-direction: row;
-		padding: 0.5em;
+		padding: 0 0.5em 0 0.5em;
+		align-items: center;
 		text-align: left;
 		font-weight: 500;
 		font-size: 0.875em;
