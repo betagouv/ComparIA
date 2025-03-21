@@ -1,46 +1,39 @@
 function() {
 
   function makeSecondHeaderSticky(firstHeaderId, secondHeaderId) {
-    let firstHeader = document.getElementById(firstHeaderId);
-    let secondHeader = document.getElementById(secondHeaderId);
-
-    if (!firstHeader || !secondHeader) {
-      console.error("The headers are not found. This is a failure.");
-      return;
-    }
-
-    let initialFirstHeaderHeight = firstHeader.offsetHeight;
-    let minFirstHeaderHeight = initialFirstHeaderHeight;
 
     function handleScroll() {
-      // Ugly fix bc header gets rerendered on step 2
+      // // Ugly fix bc this script should be active only when second header gets rendered
       let firstHeader = document.getElementById(firstHeaderId);
       let secondHeader = document.getElementById(secondHeaderId);
 
+      if (!firstHeader || !secondHeader) {
+        return;
+      }
+
       const scrollY = window.scrollY;
+
       const secondHeaderHeight = secondHeader.offsetHeight;
+      const firstHeaderHeight = firstHeader.offsetHeight;
 
-      minFirstHeaderHeight = Math.min(minFirstHeaderHeight, firstHeader.offsetHeight);
-
-      if (scrollY >= minFirstHeaderHeight) {
+      if (scrollY >= firstHeaderHeight) {
         if (secondHeader.style.position !== 'fixed') {
           secondHeader.style.position = 'fixed';
           secondHeader.style.top = '0px';
           secondHeader.style.zIndex = "850";
-          firstHeader.style.paddingBottom = `${secondHeaderHeight}px`; // Expand first header
+          firstHeader.style.marginBottom = `${secondHeaderHeight}px`; // Expand first header
         }
       } else {
         if (secondHeader.style.position !== 'relative') {
           secondHeader.style.position = 'relative';
           secondHeader.style.top = '';
           secondHeader.style.zIndex = "750";
-          firstHeader.style.paddingBottom = '';
+          firstHeader.style.marginBottom = '';
         }
       }
     }
 
     function handleResize() {
-      minFirstHeaderHeight = firstHeader.offsetHeight; // Reset max on resize
       handleScroll(); //re-evaluate scroll position after resize.
     }
 
