@@ -49,7 +49,9 @@
 .toast-body.warning:has(.visible) {
   display: block;
 }
-
+.toast-close.warning {
+  display: none;
+} 
 /* Gradio overrides */
 :root {
   --block-background-fill: transparent !important;
