@@ -329,7 +329,7 @@
 						src="../assets/orgs/{first_model_icon_path}"
 						alt={first_model_name}
 						width="20"
-						class="inline"
+						class="inline fr-mr-1v"
 					/>&thinsp;
 					{first_model_name}
 					<strong class="versus">&nbsp;vs.&nbsp;</strong>
@@ -338,7 +338,7 @@
 							src="../assets/orgs/{second_model_icon_path}"
 							alt={second_model_name}
 							width="20"
-							class="inline"
+							class="inline fr-mr-1v"
 						/>&thinsp;
 					{/if}
 					{second_model_name}</button
