@@ -562,7 +562,7 @@ def second_header_html(step=1, mode_str="random"):
             "glass.svg",
         ],
         "big-vs-small": [
-            "Mode Petit contre Grand",
+            "Mode David contre Goliath",
             "Un petit modèle contre un grand, les deux tirés au hasard",
             "ruler.svg",
         ],
