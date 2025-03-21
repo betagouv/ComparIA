@@ -115,7 +115,6 @@
             .align-center {
               align-items: center;
             }
-
           </style>
 
         </div>
@@ -127,20 +126,41 @@
 <div id="second-header" class="fr-container--fluid fr-py-1w">
   <div class="fr-mb-4w fr-mb-md-0 fr-container fr-grid-row">
     <div class="flex fr-col-12 fr-col-md-8 align-center grid">
-      <div><span class="step-badge">Étape 1/2</span></div>
+      <div><span class="step-badge">Étape {{ step }}/2</span></div>
       <p class="fr-ml-1w">
-        <strong class="text-dark-grey">Que pensez-vous des réponses ?</strong><br />
+        <strong class="text-dark-grey">
+          {% if step == 1 %}
+          Que pensez-vous des réponses ?
+          {% else %}
+          Les modèles sont démasqués !
+          {% endif %}
+        </strong>
+        <br />
         <span class="text-grey fr-text--sm">
-          Prêtez attention au fond et à la forme puis évaluez
-          chaque réponse
+          {% if step == 1 %}
+          Prêtez attention au fond et à la forme puis évaluez chaque réponse
+          {% else %}
+          Découvrez l’impact environnemental de vos discussions avec chaque modèle
+          {% endif %}
         </span>
       </p>
     </div>
-    <div class="fr-col-12 fr-col-md-4 align-center">
-      <div class="bg-white mode-sticker fr-py-1v text-center"><img class="inline" height="20"
-          src="../assets/extra-icons/{{mode[2]}}" />&nbsp;<strong>{{mode[0]}}</strong>
+    <div class="fr-col-12 fr-col-md-4 grid align-center">
+      {% if step == 1 %}
+      <div class="bg-white mode-sticker fr-py-1v text-center">
+        <img class="inline" height="20" src="../assets/extra-icons/{{ mode[2] }}" />
+        &nbsp;<strong>{{ mode[0] }}</strong>
         &nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="mode-desc"></a>
       </div>
+      {% else %}
+
+        <!--<a class="btn purple-btn feedback-btns" href="../arene/?cgu_acceptees" target="_blank"><svg width="21" height="20" viewBox="0 0 21 20" fill="none"
+                xmlns="http://www.w3.org/2000/svg">
+                
+            </svg>&nbsp;Reposer ma question</a>-->
+        <a class="btn purple-btn feedback-btns" href="../arene/?cgu_acceptees" target="_blank">Nouvelle discussion</a>
+       
+      {% endif %}
     </div>
   </div>
 </div>

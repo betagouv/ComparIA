@@ -31,7 +31,6 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
-    # mode_banner,
 )
 import traceback
 import os
@@ -50,7 +49,7 @@ from languia.utils import (
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
-    mode_banner_html,
+    second_header_html,
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -264,7 +263,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-        banner = mode_banner_html(mode)
+        banner = second_header_html(1, mode)
 
         text = gr.update(visible=True)
         app_state_scoped.awaiting_responses = True
@@ -801,12 +800,15 @@ setTimeout(() => {
         else:
             your_choice_badge = None
 
+        banner = second_header_html(2)
+
         reveal_html = build_reveal_html(
             conv_a_scoped,
             conv_b_scoped,
             which_model_radio=your_choice_badge,
         )
         return {
+            header: gr.HTML(banner),
             chatbot: gr.update(interactive=False),
             send_area: gr.update(visible=False),
             reveal_screen: gr.update(
@@ -821,6 +823,7 @@ setTimeout(() => {
         inputs=[app_state, conv_a, conv_b],
         outputs=[
             chatbot,
+            header,
             send_area,
             vote_area,
             buttons_footer,
@@ -948,6 +951,7 @@ nextScreen.scrollIntoView({
             details,
             request,
         )
+        banner = second_header_html(2)
 
         reveal_html = build_reveal_html(
             conv_a=conv_a_scoped,
@@ -955,6 +959,7 @@ nextScreen.scrollIntoView({
             which_model_radio=which_model_radio_output,
         )
         return {
+            header: gr.HTML(banner),
             positive_a: gr.update(interactive=False),
             positive_b: gr.update(interactive=False),
             negative_a: gr.update(interactive=False),
@@ -984,7 +989,7 @@ nextScreen.scrollIntoView({
             + [comments_b]
         ),
         outputs=[
-            app_state,
+            header,
             positive_a,
             positive_b,
             negative_a,
@@ -995,7 +1000,7 @@ nextScreen.scrollIntoView({
             reveal_screen,
             results_area,
             buttons_footer,
-            which_model_radio,
+            which_model_radio
         ],
         # outputs=[quiz_modal],
         api_name=False,

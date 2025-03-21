@@ -531,7 +531,7 @@ AS total_approx;
         return result
 
 
-def mode_banner_html(mode_str):
+def second_header_html(step=1, mode_str="random"):
 
     from languia.utils import get_gauge_count
 
@@ -568,14 +568,7 @@ def mode_banner_html(mode_str):
         ],
     }
 
-    mode = modes.get(
-        mode_str,
-        [
-            "Mode Aléatoire",
-            "Deux modèles choisis au hasard parmi toute la liste",
-            "dice.svg",
-        ],
-    )
+    mode = modes.get(mode_str)
     from jinja2 import Environment, FileSystemLoader
 
     env = Environment(loader=FileSystemLoader("templates"))
@@ -583,6 +576,7 @@ def mode_banner_html(mode_str):
 
     return template.render(
         {
+            "step": step,
             "gauge_count_ratio": gauge_count_ratio,
             "gauge_count": gauge_count,
             "objective": objective,

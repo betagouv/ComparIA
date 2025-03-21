@@ -14,7 +14,7 @@ from languia.utils import (
     welcome_modal_html,
     footer_html,
     AppState,
-    mode_banner_html,
+    second_header_html,
 )
 
 
@@ -52,11 +52,7 @@ with gr.Blocks(
     # tos_cookie = check_for_tos_cookie(request)
     welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
 
-    # gr.HTML(elem_id="header-placeholder")
-    # banner = mode_banner_html(mode)
-
-    header = gr.HTML(mode_banner_html("random"), elem_id="header-html")
-    # header = gr.HTML(header_html, elem_id="header-html")
+    header = gr.HTML(second_header_html(1, "random"), elem_id="header-html")
 
     with gr.Column(
         elem_id="mode-screen",
@@ -66,9 +62,9 @@ with gr.Blocks(
         # TODO: rename component, it includes textbox
         model_dropdown = CustomDropdown(
             models=config.models_extra_info,
-            # FIXME: ignored, hardcoded in custom component
+            # ignored, hardcoded in custom component
             choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
-            # FIXME: ignored, hardcoded in custom component
+            # ignored, hardcoded in custom component
             interactive=True,
         )
 
@@ -76,7 +72,6 @@ with gr.Blocks(
             elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-0 fr-pb-0 fr-px-0",
             value="""<strong>Suggestions de prompts</strong>""",
         )
-        # FIXME: make a click on already selected be a shuffle
         guided_cards = CustomRadioCard(
             show_label=False,
             elem_id="guided-cards",
@@ -94,19 +89,14 @@ with gr.Blocks(
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
-        # mode_banner = gr.HTML()
+
         chatbot = CustomChatbot(
             elem_id="main-chatbot",
-            # min_width=
-            # height="100vh",
-            # height="max(100vh, 100%)",
+            
             height="100%",
-            # Doesn't show because it always has at least our message
-            # Note: supports HTML, use it!
             placeholder="<em>Veuillez écrire aux modèles</em>",
-            # No difference
-            # bubble_full_width=False,
-            layout="panel",  # or "bubble"
+
+            layout="panel",  # no effect
             likeable=True,
             # UserWarning: show_label has no effect when container is False.
             show_label=False,
@@ -129,10 +119,8 @@ with gr.Blocks(
                     placeholder="Continuer à discuter avec les deux modèles d'IA",
                     max_lines=7,
                     elem_classes="w-full",
-                    # elem_classes="inline-block fr-col-12 fr-col-md-10",
                     container=True,
                     autofocus=True,
-                    # autoscroll=True
                 )
                 send_btn = gr.Button(
                     interactive=False,
