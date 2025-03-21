@@ -808,7 +808,7 @@ setTimeout(() => {
             which_model_radio=your_choice_badge,
         )
         return {
-            header: gr.HTML(banner),
+            header: gr.update(value=banner),
             chatbot: gr.update(interactive=False),
             send_area: gr.update(visible=False),
             reveal_screen: gr.update(
@@ -959,7 +959,7 @@ nextScreen.scrollIntoView({
             which_model_radio=which_model_radio_output,
         )
         return {
-            header: gr.HTML(banner),
+            header: gr.update(value=banner),
             positive_a: gr.update(interactive=False),
             positive_b: gr.update(interactive=False),
             negative_a: gr.update(interactive=False),

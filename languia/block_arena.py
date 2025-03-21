@@ -52,7 +52,7 @@ with gr.Blocks(
     # tos_cookie = check_for_tos_cookie(request)
     welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
 
-    header = gr.HTML(second_header_html(1, "random"), elem_id="header-html")
+    header = gr.HTML(header_html, elem_id="header-html")
 
     with gr.Column(
         elem_id="mode-screen",
@@ -92,10 +92,8 @@ with gr.Blocks(
 
         chatbot = CustomChatbot(
             elem_id="main-chatbot",
-            
             height="100%",
             placeholder="<em>Veuillez écrire aux modèles</em>",
-
             layout="panel",  # no effect
             likeable=True,
             # UserWarning: show_label has no effect when container is False.
