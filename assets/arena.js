@@ -1,5 +1,43 @@
 function() {
 
+  function makeSecondHeaderSticky(firstHeaderId, secondHeaderId) {
+ 
+    const firstHeader = document.getElementById(firstHeaderId);
+    const secondHeader = document.getElementById(secondHeaderId);
+  
+    if (!firstHeader || !secondHeader) {
+      console.error("The headers are not found. This is a failure.");
+      return;
+    }
+  
+    const firstHeaderHeight = firstHeader.offsetHeight;
+    const secondHeaderHeight = secondHeader.offsetHeight;
+  
+    function handleScroll() {
+      const scrollY = window.scrollY;
+  
+      if (scrollY >= firstHeaderHeight) {
+        if (secondHeader.style.position !== 'fixed') {
+          secondHeader.style.position = 'fixed';
+          secondHeader.style.top = '0px';
+          firstHeader.style.paddingBottom = `${secondHeaderHeight}px`; // Expand first header
+        }
+      } else {
+        if (secondHeader.style.position !== 'relative') {
+          secondHeader.style.position = 'relative';
+          secondHeader.style.top = '';
+          firstHeader.style.paddingBottom = '';
+        }
+      }
+    }
+  
+    window.addEventListener('scroll', handleScroll);
+  
+    handleScroll();
+  }
+  
+  makeSecondHeaderSticky('main-header', 'second-header'); 
+  
   function adjustFooter() {
     const footer = document.getElementById('send-area');
     const modeScreen = document.getElementById('mode-screen');
