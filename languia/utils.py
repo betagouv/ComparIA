@@ -129,6 +129,21 @@ with open("./templates/footer.html", encoding="utf-8") as footer_file:
     footer_html = footer_file.read()
 
 
+def get_user_info(request):
+    if request:
+        if hasattr(request, "cookies"):
+            user_id = get_matomo_tracker_from_cookies(request.cookies)
+        else:
+            try:
+                user_id = get_ip(request)
+            except:
+                user_id = None
+        session_id = getattr(request, "session_hash", None)
+    else:
+        session_id = None
+        user_id = None
+    return user_id, session_id
+
 def get_endpoint(model_id):
     from languia.config import api_endpoint_info
 

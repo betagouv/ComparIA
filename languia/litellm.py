@@ -13,7 +13,7 @@ from languia.config import GLOBAL_TIMEOUT
 import litellm
 import json
 
-from languia.utils import get_matomo_tracker_from_cookies, get_ip
+from languia.utils import get_matomo_tracker_from_cookies, get_ip, get_user_info
 
 from langfuse.decorators import langfuse_context, observe
 
@@ -25,22 +25,6 @@ else:
     logger = logging.getLogger("languia")
     logger.warn("No Google creds detected!")
     vertex_credentials_json = None
-
-
-def update_trace_with_user_info(langfuse_context, request):
-    if request:
-        if hasattr(request, "cookies"):
-            user_id = get_matomo_tracker_from_cookies(request.cookies)
-        else:
-            try:
-                user_id = get_ip(request)
-            except:
-                user_id = None
-        langfuse_context.update_current_trace(
-            # should we use the user's cookie value here?
-            user_id=user_id,
-            session_id=getattr(request, "session_hash", ""),
-        )
 
 
 @observe(as_type="generation")
@@ -85,8 +69,14 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-    update_trace_with_user_info(langfuse_context, request)
-
+    
+    
+    user_id, session_id = get_user_info(request)
+    # note: doesn't seem to have an effect?
+    langfuse_context.update_current_trace(
+            user_id=user_id,
+            session_id=session_id)
+    
     kwargs = {
         "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
@@ -104,6 +94,8 @@ def litellm_stream_iter(
         "vertex_ai_location": litellm.vertex_location,
         "metadata": {
             "parent_observation_id": langfuse_context.get_current_observation_id(),
+            "trace_user_id": user_id,
+            "session_id": session_id,      
             # Creates nested traces for convos A and B
             # "existing_trace_id": langfuse_context.get_current_trace_id(),
         },
