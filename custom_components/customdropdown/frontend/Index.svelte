@@ -17,8 +17,61 @@
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 
 	export let never_clicked: boolean = true;
+
+	// Cookie handling
+	const browser = typeof window !== "undefined";
 	export let models: Model[] = [];
 	export let elem_id = "";
+// Cookie handling
+function getCookie(name: string): string | null {
+        if (!browser) {
+            console.debug("getCookie: browser is undefined, returning null.");
+            return null;
+        }
+        const value = `; ${document.cookie}`;
+        console.debug(`getCookie: document.cookie is: ${document.cookie}`);
+        console.debug(`getCookie: value is: ${value}`);
+        const parts = value.split(`; ${name}=`);
+        console.debug(`getCookie: parts are: ${JSON.stringify(parts)}`);
+        if (parts.length === 2) {
+            const result = parts.pop().split(";").shift();
+            console.debug(`getCookie: found cookie ${name}, value is: ${result}`);
+            return result;
+        }
+        console.debug(`getCookie: cookie ${name} not found, returning null.`);
+        return null;
+    }
+
+    function setCookie(name: string, value: string, days = 7): void {
+        if (!browser) {
+            console.debug("setCookie: browser is undefined, exiting.");
+            return;
+        }
+        const date = new Date();
+        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+        const expires = date.toUTCString();
+        console.debug(`setCookie: setting cookie ${name} to ${value}, expires: ${expires}, path: /`);
+        document.cookie = `${name}=${value};expires=${expires};path=/`;
+        console.debug(`setCookie: document.cookie after setting is: ${document.cookie}`);
+
+    }
+
+	// Initialize from cookies
+	let initialMode: Mode = "random";
+	let initialModels: string[] = [];
+	let initialPrompt = "";
+
+	if (browser) {
+		const savedMode = getCookie("customdropdown_mode");
+		const savedModels = getCookie("customdropdown_models");
+
+		if (savedMode) initialMode = savedMode as Mode;
+		if (savedModels) initialModels = JSON.parse(savedModels);
+	}
+
+	export let mode: Mode = initialMode;
+	export let custom_models_selection: string[] = initialModels;
+	export let prompt_value: string = initialPrompt;
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let disabled = false;
@@ -28,9 +81,6 @@
 		| "big-vs-small"
 		| "small-models"
 		| "reasoning";
-	export let mode: Mode = "random";
-	export let prompt_value: string = ""; // Initialize as an empty string by default
-	export let custom_models_selection: string[] = []; // Default to an empty list
 
 	// Prompt value
 	// export let value: string = ""
@@ -154,6 +204,13 @@
 						custom_models_selection: custom_models_selection,
 						prompt_value: prompt_value,
 					});
+
+					// Save to cookies
+					setCookie("customdropdown_mode", mode);
+					setCookie(
+						"customdropdown_models",
+						JSON.stringify(custom_models_selection),
+					);
 				}
 				choice = choices.find((item) => item.value === mode);
 			}
@@ -274,12 +331,20 @@
 				placeholder="Écrivez votre premier message ici"
 				{autofocus}
 				{autoscroll}
-				on:change={() =>
+				on:change={() => {
 					gradio.dispatch("change", {
 						prompt_value: prompt_value,
 						mode: mode,
 						custom_models_selection: custom_models_selection,
-					})}
+					});
+
+					// Save to cookies
+					setCookie("customdropdown_mode", mode);
+					setCookie(
+						"customdropdown_models",
+						JSON.stringify(custom_models_selection),
+					);
+				}}
 				on:submit={() => {
 					gradio.dispatch("submit", {
 						prompt_value: prompt_value,
