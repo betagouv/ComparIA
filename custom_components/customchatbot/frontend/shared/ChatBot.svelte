@@ -562,14 +562,6 @@
 		padding-top: var(--spacing-xxl);
 	}
 
-	.step-badge {
-		border-radius: 3.75em;
-		text-align: center;
-		background-color: #ececfe;
-		padding: 5px 10px;
-		font-weight: bold;
-	}
-
 	@media (prefers-color-scheme: dark) {
 		.bubble-wrap {
 			background: var(--background-fill-secondary);
