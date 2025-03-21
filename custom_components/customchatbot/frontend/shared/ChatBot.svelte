@@ -426,18 +426,6 @@
 					{/each}
 				</div>
 
-				{#if role === "user" && i === 0}
-					<div class="prose text-center fr-mb-4w fr-mb-md-0">
-						<span class="step-badge">Étape 1/2</span>
-						<h4 class="fr-mt-2w fr-mb-1v">
-							Que pensez-vous des réponses ?
-						</h4>
-						<p class="text-grey fr-text--sm">
-							Prêtez attention au fond et à la forme puis évaluez
-							chaque réponse
-						</p>
-					</div>
-				{/if}
 			{/each}
 			{#if pending_message}
 				<Pending {layout} />
