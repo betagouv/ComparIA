@@ -496,39 +496,6 @@ def to_threeway_chatbot(conversations):
     return threeway_chatbot
 
 
-def mode_banner_html(mode):
-    modes = {
-        "custom": [
-            "Mode Sélection",
-            "Reconnaîtrez-vous les deux modèles que vous avez choisis ?",
-            "glass.svg",
-        ],
-        "big-vs-small": [
-            "Mode Petit contre Grand",
-            "Un petit modèle contre un grand, les deux tirés au hasard",
-            "ruler.svg",
-        ],
-        "reasoning": [
-            "Mode Raisonnement",
-            "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
-            "brain.svg",
-        ],
-        "random": [
-            "Mode Aléatoire",
-            "Deux modèles choisis au hasard parmi toute la liste",
-            "dice.svg",
-        ],
-        "small-models": [
-            "Mode Frugal",
-            "Deux modèles tirés au hasard parmi ceux de plus petite taille",
-            "leaf.svg",
-        ],
-    }
-    return f"""
-    <div class="fr-container--fluid text-center mode-banner fr-py-1w fr-text--xs"><img class="inline" height="20" src="../assets/extra-icons/{modes.get(mode)[2]}" />&nbsp;<strong>{modes.get(mode)[0]}</strong>&nbsp;: <span class="text-grey">{modes.get(mode)[1]}</span></div>
-    """
-
-
 def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
@@ -563,98 +530,53 @@ AS total_approx;
         return result
 
 
-# def gauge_banner_html():
-#     gauge_count = get_gauge_count()
-#     objective = 40000
-#     ratio = 100 * get_gauge_count() / objective
-#     gauge = """
-#     <div class="fr-container--fluid mode-banner"><span class="legende">Nombre total de votes&nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
-#     <div class="linear-gauge">
-#   <div class="linear-gauge-fill"><span class="votes">""" + str(gauge_count) + """</span></div></div><span class="objectif">Objectif : """ + str(objective) + """</span>
-#     </div>
-#     <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">Discutez, votez et aidez-nous à atteindre cet objectif !<br />
-# <strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />
-# Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong></span>
-#     <style>
-#     .legende {
-#             font-size: 0.875em;
-#             color: #161616 !important;
-#             font-weight: bold;
+def mode_banner_html(mode):
 
-#     }
-#     .legende a {
-#     top: 10px;
-#     position: relative;
-#     }
-#     .votes {
-#         font-size: 0.75em;
-# font-weight: bold;
-# color: #695240 !important;
-# position: absolute;
-#   margin-left: 5px;
-#     bottom: 0;
-#   height: inherit;
-# }
-#     .objectif {
-#     font-weight: 500;
-#     font-size: 0.75em;
-#     color: #7F7F7F !important   ;
-#     }
-# .linear-gauge-fill {
-#     width: """ + str(int(ratio)) + """%;
-#   height: 100%;
-#   background: var(--yellow-tournesol-925-125);
-#   transition: width 0.3s ease-in-out;
-# }
+    from languia.utils import get_gauge_count
 
-# .linear-gauge {
-#   width: 300px;
-#   height: 20px;
-#   background: #FFF;
-#   border-radius: 3px;
-#   border: 1px solid #CCCCCC;
-#   overflow: hidden;
-# }
-# .mode-banner {
-# display: flex;
-# align-items: center;
-# justify-content: center;
-# gap: 1em;
-# }
+    objective = 70000
 
-#   @media (max-width: 48em) {
 
-#     .mode-banner {
-#       padding-top: 0;
-#       padding-bottom: 1em;
-#       display: grid;
-#       height: auto;
-#       grid-template: "a c"
-#       "b b";
-#     }
+    gauge_count = get_gauge_count()
+    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
 
-#     .votes {
-#       position: relative;
-#       top: -13px;
-#     }
-#     .legende {
-#       grid-area: a;
+    modes = {
+        "custom": [
+            "Mode Sélection",
+            "Reconnaîtrez-vous les deux modèles que vous avez choisis ?",
+            "glass.svg",
+        ],
+        "big-vs-small": [
+            "Mode Petit contre Grand",
+            "Un petit modèle contre un grand, les deux tirés au hasard",
+            "ruler.svg",
+        ],
+        "reasoning": [
+            "Mode Raisonnement",
+            "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
+            "brain.svg",
+        ],
+        "random": [
+            "Mode Aléatoire",
+            "Deux modèles choisis au hasard parmi toute la liste",
+            "dice.svg",
+        ],
+        "small-models": [
+            "Mode Frugal",
+            "Deux modèles tirés au hasard parmi ceux de plus petite taille",
+            "leaf.svg",
+        ],
+    }
+    from jinja2 import Environment, FileSystemLoader
 
-#     }
+    env = Environment(loader=FileSystemLoader("templates"))
+    template = env.get_template("header-chat.html")
 
-#     .objectif {
-#       grid-area: c;
-#       order: 0;
-#       display: block;
-#     }
-#     .linear-gauge {
-#       width: auto;
-#       margin-top: -10px;
-#       order: 2;
-#       grid-area: b;
-#     }
-#   }
-
-#     </style>
-#     """
-#     return gauge
+    return template.render(
+        {
+            "gauge_count_ratio": gauge_count_ratio,
+            "gauge_count": gauge_count,
+            "objective": objective,
+            "modes": modes,
+            "mode": mode
+        })
