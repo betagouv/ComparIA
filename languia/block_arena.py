@@ -83,7 +83,7 @@ with gr.Blocks(
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
-        mode_banner = gr.HTML()
+        # mode_banner = gr.HTML()
         chatbot = CustomChatbot(
             elem_id="main-chatbot",
             # min_width=

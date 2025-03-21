@@ -13,6 +13,7 @@ from languia.block_arena import (
     conv_b,
     demo,
     guided_cards,
+    header,
     mode_screen,
     negative_a,
     negative_b,
@@ -30,7 +31,7 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
-    mode_banner,
+    # mode_banner,
 )
 import traceback
 import os
@@ -263,7 +264,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-
         banner = mode_banner_html(mode)
 
         text = gr.update(visible=True)
@@ -682,7 +682,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [conv_b]
         + [chatbot]
         + [textbox]
-        + [mode_banner]
+        + [header]
         + [textbox]
         + [mode_screen]
         + [chat_area]
