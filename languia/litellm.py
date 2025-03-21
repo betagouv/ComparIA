@@ -27,7 +27,23 @@ else:
     vertex_credentials_json = None
 
 
-@observe()
+def update_trace_with_user_info(langfuse_context, request):
+    if request:
+        if hasattr(request, "cookies"):
+            user_id = get_matomo_tracker_from_cookies(request.cookies)
+        else:
+            try:
+                user_id = get_ip(request)
+            except:
+                user_id = None
+        langfuse_context.update_current_trace(
+            # should we use the user's cookie value here?
+            user_id=user_id,
+            session_id=getattr(request, "session_hash", ""),
+        )
+
+
+@observe(as_type="generation")
 def litellm_stream_iter(
     model_name,
     messages,
@@ -38,12 +54,11 @@ def litellm_stream_iter(
     request=None,
     api_version=None,
     vertex_ai_location=None,
-    include_reasoning=False
+    include_reasoning=False,
 ):
 
-    from languia.config import debug
-
     # Too verbose:
+    # from languia.config import debug
     # if debug:
     #     litellm._turn_on_debug()
 
@@ -70,20 +85,7 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-    if request:
-        if hasattr(request, "cookies"):
-            user_id = get_matomo_tracker_from_cookies(request.cookies)
-        else:
-            try:
-                user_id = get_ip(request)
-            except:
-                user_id = None
-        langfuse_context.update_current_trace(
-            # should we use the user's cookie value here?
-            user_id=user_id,
-            session_id=getattr(request, "session_hash", "")
-        )
-
+    update_trace_with_user_info(langfuse_context, request)
 
     kwargs = {
         "api_version": api_version,
