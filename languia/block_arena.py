@@ -9,7 +9,13 @@ import gradio as gr
 
 # from gradio_modal import Modal
 
-from languia.utils import header_html, welcome_modal_html, footer_html, AppState
+from languia.utils import (
+    header_html,
+    welcome_modal_html,
+    footer_html,
+    AppState,
+    mode_banner_html,
+)
 
 
 from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
@@ -47,11 +53,17 @@ with gr.Blocks(
     welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
 
     # gr.HTML(elem_id="header-placeholder")
-    header = gr.HTML(header_html, elem_id="header-html")
+    # banner = mode_banner_html(mode)
 
-    with gr.Column(elem_id="mode-screen", elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-7 fr-col-md-8") as mode_screen:
+    header = gr.HTML(mode_banner_html("random"), elem_id="header-html")
+    # header = gr.HTML(header_html, elem_id="header-html")
 
-# TODO: rename component, it includes textbox
+    with gr.Column(
+        elem_id="mode-screen",
+        elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-7 fr-col-md-8",
+    ) as mode_screen:
+
+        # TODO: rename component, it includes textbox
         model_dropdown = CustomDropdown(
             models=config.models_extra_info,
             # FIXME: ignored, hardcoded in custom component
@@ -59,7 +71,6 @@ with gr.Blocks(
             # FIXME: ignored, hardcoded in custom component
             interactive=True,
         )
-
 
         prompts_suggestions = gr.HTML(
             elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-0 fr-pb-0 fr-px-0",
