@@ -18,63 +18,41 @@
 
 	export let never_clicked: boolean = true;
 
-	// Cookie handling
-	const browser = typeof window !== "undefined";
 	export let models: Model[] = [];
 	export let elem_id = "";
-// Cookie handling
-function getCookie(name: string): string | null {
-        if (!browser) {
-            console.debug("getCookie: browser is undefined, returning null.");
-            return null;
-        }
-        const value = `; ${document.cookie}`;
-        console.debug(`getCookie: document.cookie is: ${document.cookie}`);
-        console.debug(`getCookie: value is: ${value}`);
-        const parts = value.split(`; ${name}=`);
-        console.debug(`getCookie: parts are: ${JSON.stringify(parts)}`);
-        if (parts.length === 2) {
-            const result = parts.pop().split(";").shift();
-            console.debug(`getCookie: found cookie ${name}, value is: ${result}`);
-            return result;
-        }
-        console.debug(`getCookie: cookie ${name} not found, returning null.`);
-        return null;
-    }
 
-    function setCookie(name: string, value: string, days = 7): void {
-        if (!browser) {
-            console.debug("setCookie: browser is undefined, exiting.");
-            return;
-        }
-        const date = new Date();
-        date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-        const expires = date.toUTCString();
-        console.debug(`setCookie: setting cookie ${name} to ${value}, expires: ${expires}, path: /`);
-        document.cookie = `${name}=${value};expires=${expires};path=/`;
-        console.debug(`setCookie: document.cookie after setting is: ${document.cookie}`);
-
-    }
-
-	// Initialize from cookies
-	let initialMode: Mode = "random";
-	let initialModels: string[] = [];
-	let initialPrompt = "";
-
-	if (browser) {
-		const savedMode = getCookie("customdropdown_mode");
-		const savedModels = getCookie("customdropdown_models");
-
-		if (savedMode) initialMode = savedMode as Mode;
-		if (savedModels) initialModels = JSON.parse(savedModels);
+	// Cookie handling
+	const browser = typeof window !== "undefined";
+	function getCookie(name: string): string | null {
+		if (!browser) {
+			return null;
+		}
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) {
+			const result = parts.pop().split(";").shift();
+			console.debug(
+				`getCookie: found cookie ${name}, value is: ${result}`,
+			);
+			return result;
+		}
+		console.debug(`getCookie: cookie ${name} not found, returning null.`);
+		return null;
 	}
 
-	export let mode: Mode = initialMode;
-	export let custom_models_selection: string[] = initialModels;
-	export let prompt_value: string = initialPrompt;
-	export let elem_classes: string[] = [];
-	export let visible = true;
-	export let disabled = false;
+	function setCookie(name: string, value: string, days = 7): void {
+		if (!browser) {
+			console.debug("setCookie: browser is undefined, exiting.");
+			return;
+		}
+		const date = new Date();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		const expires = date.toUTCString();
+		console.debug(
+			`setCookie: setting cookie ${name} to ${value}, expires: ${expires}, path: /`,
+		);
+		document.cookie = `${name}=${value};expires=${expires};path=/`;
+	}
 	type Mode =
 		| "random"
 		| "custom"
@@ -82,18 +60,6 @@ function getCookie(name: string): string | null {
 		| "small-models"
 		| "reasoning";
 
-	// Prompt value
-	// export let value: string = ""
-	// Combine all into one value object based on mode and other properties
-	export let value: {
-		prompt_value: string;
-		mode: Mode;
-		custom_models_selection: string[];
-	} = {
-		prompt_value: "",
-		mode: "random",
-		custom_models_selection: [],
-	};
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
@@ -149,6 +115,45 @@ function getCookie(name: string): string | null {
 		},
 	];
 
+	// Initialize from cookies
+	let initialMode: Mode = "random";
+	let initialModels: string[] = [];
+	let initialPrompt = "";
+
+	if (browser) {
+		const savedMode = getCookie("customdropdown_mode");
+		const savedModels = getCookie("customdropdown_models");
+
+		if (savedMode) initialMode = savedMode as Mode;
+		if (savedModels) initialModels = JSON.parse(savedModels);
+	}
+
+	export let mode: Mode = initialMode;
+	export let custom_models_selection: string[] = initialModels;
+	export let prompt_value: string = initialPrompt;
+
+	let first_model_name = "Aléatoire";
+	let second_model_name = "Aléatoire";
+	let first_model_icon_path = null;
+	let second_model_icon_path = null;
+
+	let choice: Choice = choices[0];
+	// Prompt value
+
+	// Combine all into one value object based on mode and other properties
+	export let value: {
+		prompt_value: string;
+		mode: Mode;
+		custom_models_selection: string[];
+	} = {
+		prompt_value: prompt_value,
+		mode: mode,
+		custom_models_selection: custom_models_selection,
+	};
+
+	export let elem_classes: string[] = [];
+	export let visible = true;
+	export let disabled = false;
 	export let container = true;
 	export let scale: number | null = null;
 	export let min_width: number | undefined = undefined;
@@ -176,14 +181,8 @@ function getCookie(name: string): string | null {
 	export let text_align: "left" | "right" | undefined = undefined;
 	export let autofocus = false;
 	export let autoscroll = true;
-	var first_model_name = "Aléatoire";
-	var second_model_name = "Aléatoire";
-	var first_model_icon_path = null;
-	var second_model_icon_path = null;
 
 	export let interactive: boolean;
-	// random by default
-	var choice: Choice = choices[0];
 
 	// Handle mode selection
 	function handle_option_selected(index: number): void {
@@ -337,13 +336,6 @@ function getCookie(name: string): string | null {
 						mode: mode,
 						custom_models_selection: custom_models_selection,
 					});
-
-					// Save to cookies
-					setCookie("customdropdown_mode", mode);
-					setCookie(
-						"customdropdown_models",
-						JSON.stringify(custom_models_selection),
-					);
 				}}
 				on:submit={() => {
 					gradio.dispatch("submit", {
@@ -352,6 +344,13 @@ function getCookie(name: string): string | null {
 						custom_models_selection: custom_models_selection,
 					});
 					disabled = true;
+
+					// Save to cookies
+					setCookie("customdropdown_mode", mode);
+					setCookie(
+						"customdropdown_models",
+						JSON.stringify(custom_models_selection),
+					);
 				}}
 			/>
 		</div>
