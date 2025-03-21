@@ -1,4 +1,3 @@
-
 <header role="banner" class="fr-header" id="main-header">
   <div class="fr-header__body">
     <div class="fr-container">
@@ -28,7 +27,8 @@
           <div class="fr-container--fluid counter"><span class="legende">Total des votes&nbsp;<a
                 class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
             <div class="linear-gauge">
-            <span class="votes">{{ gauge_count }}</span></div><span class="objectif">Objectif : {{ objective }}</span>
+              <span class="votes">{{ gauge_count }}</span>
+            </div><span class="objectif">Objectif : {{ objective }}</span>
 
           </div>
           <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">Discutez, votez et
@@ -38,6 +38,13 @@
             Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des
               futurs modèles de langue.</strong></span>
           <style>
+            #main-header {
+              z-index: 800;
+              --shadow-color: rgba(0, 0, 18, 0.16);
+              --raised-shadow: 0 1px 3px var(--shadow-color);
+              filter: drop-shadow(0 1px 3px var(--shadow-color));
+            }
+
             .legende {
               font-size: 0.875em;
               color: #161616 !important;
@@ -64,7 +71,7 @@
             .linear-gauge {
               width: 200px;
               height: 20px;
-              background: linear-gradient(to right, var(--yellow-tournesol-925-125) {{ gauge_count_ratio }}%, white 0);
+              background: linear-gradient(to right, var(--yellow-tournesol-925-125) {{gauge_count_ratio}}%, white 0);
               background-size: 100% 100%;
               border-radius: 3px;
               border: 1px solid #CCCCCC;
@@ -76,20 +83,38 @@
               align-items: center;
               justify-content: center;
               gap: 1em;
-                padding-top: 0;
-                padding-bottom: 1em;
-                height: auto;
-              }
+              padding-top: 0;
+              padding-bottom: 1em;
+              height: auto;
+            }
 
 
-              .objectif {
-                display: block;
-              }
-              #second-header {
-                width: 100%;
-                z-index: 750;
-              }
+            .objectif {
+              display: block;
+            }
 
+            #second-header {
+              width: 100%;
+              z-index: 750;
+              background-color: #F3F5F9;
+              --shadow-color: rgba(0, 0, 18, 0.16);
+              --raised-shadow: 0 1px 3px var(--shadow-color);
+              filter: drop-shadow(0 1px 3px var(--shadow-color));
+            }
+
+            .text-dark-grey {
+              color: #3A3A3A;
+            }
+
+            .mode-sticker {
+              z-index: 750;
+              border-radius: 0.5em;
+              border: #E5E5E5 dashed 1px;
+            }
+
+            .align-center {
+              align-items: center;
+            }
 
           </style>
 
@@ -99,18 +124,25 @@
   </div>
 </header>
 
-<div id="second-header" class="fr-container--fluid text-center mode-banner fr-py-1w fr-text--xs">
-  <div class="prose text-center fr-mb-4w fr-mb-md-0">
-    <p class="fr-mt-2w fr-mb-1v">
-      <span class="step-badge">Étape 1/2</span>
-      Que pensez-vous des réponses ?
-    </p>
-    <p class="text-grey fr-text--sm">
-      Prêtez attention au fond et à la forme puis évaluez
-      chaque réponse
-    </p>
+<div id="second-header" class="fr-container--fluid fr-py-1w">
+  <div class="fr-mb-4w fr-mb-md-0 fr-container fr-grid-row">
+    <div class="flex fr-col-12 fr-col-md-8 align-center grid">
+      <div><span class="step-badge">Étape 1/2</span></div>
+      <p class="fr-ml-1w">
+        <strong class="text-dark-grey">Que pensez-vous des réponses ?</strong><br />
+        <span class="text-grey fr-text--sm">
+          Prêtez attention au fond et à la forme puis évaluez
+          chaque réponse
+        </span>
+      </p>
+    </div>
+    <div class="fr-col-12 fr-col-md-4 align-center">
+      <div class="bg-white mode-sticker fr-py-1v text-center"><img class="inline" height="20"
+          src="../assets/extra-icons/{{mode[2]}}" />&nbsp;<strong>{{mode[0]}}</strong>
+        &nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="mode-desc"></a>
+      </div>
+    </div>
   </div>
-  <div class="bg-white"><img class="inline" height="20"
-      src="../assets/extra-icons/{{modes.get(mode)[2]}}" />&nbsp;<strong>{{modes.get(mode)[0]}}</strong>&nbsp;: <span
-      class="text-grey">{{modes.get(mode)[1]}}</span></div>
 </div>
+
+<span class="fr-tooltip fr-placement" id="mode-desc" role="tooltip" aria-hidden="true">{{mode[1]}}</span>

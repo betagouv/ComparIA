@@ -25,12 +25,14 @@ function() {
         if (secondHeader.style.position !== 'fixed') {
           secondHeader.style.position = 'fixed';
           secondHeader.style.top = '0px';
+          secondHeader.style.zIndex = "850";
           firstHeader.style.paddingBottom = `${secondHeaderHeight}px`; // Expand first header
         }
       } else {
         if (secondHeader.style.position !== 'relative') {
           secondHeader.style.position = 'relative';
           secondHeader.style.top = '';
+          secondHeader.style.zIndex = "750";
           firstHeader.style.paddingBottom = '';
         }
       }

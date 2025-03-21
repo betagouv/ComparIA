@@ -105,11 +105,7 @@ def messages_to_dict_list(messages):
         {
             "role": message.role,
             "content": message.content,
-            **(
-                {"reasoning": message.reasoning}
-                if message.reasoning
-                else {}
-            ),
+            **({"reasoning": message.reasoning} if message.reasoning else {}),
             **(
                 {"metadata": metadata_to_dict(message.metadata)}
                 if metadata_to_dict(message.metadata)
@@ -164,16 +160,19 @@ class AppState:
     # def to_dict(self) -> dict:
     #     return self.__dict__.copy()
 
+
 # TODO: refacto to expose "all_models" to choose from them if constraints can't be respected
 def choose_among(
     models,
     excluded,
 ):
     all_models = models
-    models_pool = [model_name for model_name in all_models if model_name not in excluded]
+    models_pool = [
+        model_name for model_name in all_models if model_name not in excluded
+    ]
     logger = logging.getLogger("languia")
-    logger.debug("chosing from:"+str(models_pool))
-    logger.debug("excluded:"+str(excluded))
+    logger.debug("chosing from:" + str(models_pool))
+    logger.debug("excluded:" + str(excluded))
     if len(models_pool) == 0:
         # TODO: tell user in a toast notif that we couldn't respect prefs
         logger.warning("Couldn't respect exclusion prefs")
@@ -215,8 +214,10 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     import random
 
     if mode == "big-vs-small":
-        model_left_name =  choose_among(models=big_models, excluded=unavailable_models)
-        model_right_name =  choose_among(models=small_models, excluded=unavailable_models)
+        model_left_name = choose_among(models=big_models, excluded=unavailable_models)
+        model_right_name = choose_among(
+            models=small_models, excluded=unavailable_models
+        )
 
     elif mode == "small-models":
         model_left_name = choose_among(models=small_models, excluded=unavailable_models)
@@ -250,9 +251,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
             model_right_name = custom_models_selection[1]
 
     else:  # assume random mode
-        model_left_name = choose_among(
-            models=models_names, excluded=unavailable_models
-        )
+        model_left_name = choose_among(models=models_names, excluded=unavailable_models)
         model_right_name = choose_among(
             models=models_names, excluded=[model_left_name] + unavailable_models
         )
@@ -310,6 +309,7 @@ def params_to_friendly_size(params):
 
     return "M"
 
+
 def get_conditions_from_license(license_name):
     if "propriétaire" in license_name:
         return "restricted"
@@ -318,11 +318,13 @@ def get_conditions_from_license(license_name):
     else:
         return "free"
 
+
 def get_distrib_clause_from_license(license_name):
     if "propriétaire" in license_name:
         return "api-only"
     else:
         return "open-weights"
+
 
 def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
 
@@ -338,7 +340,7 @@ def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
     model["distribution"] = get_distrib_clause_from_license(model["license"])
     model["conditions"] = get_conditions_from_license(model["license"])
 
-    # TODO: dict for organisation = "DeepSeek" => icon_path = "deepseek.webp" 
+    # TODO: dict for organisation = "DeepSeek" => icon_path = "deepseek.webp"
 
     if not any(model.get(key) for key in ("friendly_size", "params", "total_params")):
         model["params"] = 100
@@ -386,8 +388,7 @@ import json
 def get_model_names_list(api_endpoint_info):
     logger = logging.getLogger("languia")
 
-    models = [model_dict.get("model_id")
-        for model_dict in api_endpoint_info]
+    models = [model_dict.get("model_id") for model_dict in api_endpoint_info]
     logger.debug(f"All models: {models}")
     return models
 
@@ -530,12 +531,11 @@ AS total_approx;
         return result
 
 
-def mode_banner_html(mode):
+def mode_banner_html(mode_str):
 
     from languia.utils import get_gauge_count
 
     objective = 70000
-
 
     gauge_count = get_gauge_count()
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
@@ -567,6 +567,15 @@ def mode_banner_html(mode):
             "leaf.svg",
         ],
     }
+
+    mode = modes.get(
+        mode_str,
+        [
+            "Mode Aléatoire",
+            "Deux modèles choisis au hasard parmi toute la liste",
+            "dice.svg",
+        ],
+    )
     from jinja2 import Environment, FileSystemLoader
 
     env = Environment(loader=FileSystemLoader("templates"))
@@ -577,6 +586,6 @@ def mode_banner_html(mode):
             "gauge_count_ratio": gauge_count_ratio,
             "gauge_count": gauge_count,
             "objective": objective,
-            "modes": modes,
-            "mode": mode
-        })
+            "mode": mode,
+        }
+    )

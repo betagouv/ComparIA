@@ -1,4 +1,4 @@
-<div class="fr-container--fluid mode-banner"><span class="legende">Nombre total de votes&nbsp;<a
+<div class="fr-container--fluid gauge-banner"><span class="legende">Nombre total de votes&nbsp;<a
       class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
   <div class="linear-gauge">
     <div class="linear-gauge-fill"><span class="votes">{{ gauge_count }}</span></div>
@@ -56,7 +56,7 @@
     overflow: hidden;
   }
 
-  .mode-banner {
+  .gauge-banner {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -73,7 +73,7 @@
   .objectif  {
     color: white !important;
   }
-  .mode-banner {
+  .gauge-banner {
     background-color: black;
   }
   .votes {
@@ -84,7 +84,7 @@
 
   @media (max-width: 48em) {
 
-    .mode-banner {
+    .gauge-banner {
       padding-top: 1em;
       padding-bottom: 1em;
       display: grid;

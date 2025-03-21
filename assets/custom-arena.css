@@ -431,7 +431,8 @@ li.fr-nav__item {
   display: inline-block;
   border-radius: 3.75em;
   text-align: center;
-  background-color: #ECECFE;
+  color: white;
+  background-color: var(--blue-france-main-525);
   padding: 5px 10px;
   font-weight: bold;
 }
@@ -467,10 +468,7 @@ li.fr-nav__item {
     padding: 0 20% 1em;
   }
 }
-.mode-banner {
-  line-height: 2.8em;
-  background-color: #F3F5F9;
-}
+
 /* 
 #send-area .small-icon .button-icon {
   width: 15px;
