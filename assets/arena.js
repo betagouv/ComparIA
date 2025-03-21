@@ -1,27 +1,28 @@
 function() {
 
   function makeSecondHeaderSticky(firstHeaderId, secondHeaderId) {
- 
-    const firstHeader = document.getElementById(firstHeaderId);
-    const secondHeader = document.getElementById(secondHeaderId);
-  
+    let firstHeader = document.getElementById(firstHeaderId);
+    let secondHeader = document.getElementById(secondHeaderId);
+
     if (!firstHeader || !secondHeader) {
       console.error("The headers are not found. This is a failure.");
       return;
     }
-  
-    let firstHeaderHeight = firstHeader.offsetHeight;
-    let secondHeaderHeight = secondHeader.offsetHeight;
-  
-    function recalculateHeights() {
-      firstHeaderHeight = firstHeader.offsetHeight;
-      secondHeaderHeight = secondHeader.offsetHeight;
-    }
+
+    let initialFirstHeaderHeight = firstHeader.offsetHeight;
+    let minFirstHeaderHeight = initialFirstHeaderHeight;
 
     function handleScroll() {
+      // Ugly fix bc header gets rerendered on step 2
+      let firstHeader = document.getElementById(firstHeaderId);
+      let secondHeader = document.getElementById(secondHeaderId);
+
       const scrollY = window.scrollY;
-  
-      if (scrollY >= firstHeaderHeight) {
+      const secondHeaderHeight = secondHeader.offsetHeight;
+
+      minFirstHeaderHeight = Math.min(minFirstHeaderHeight, firstHeader.offsetHeight);
+
+      if (scrollY >= minFirstHeaderHeight) {
         if (secondHeader.style.position !== 'fixed') {
           secondHeader.style.position = 'fixed';
           secondHeader.style.top = '0px';
@@ -37,21 +38,20 @@ function() {
         }
       }
     }
-  
+
     function handleResize() {
-      recalculateHeights();
-      handleScroll(); // Re-evaluate scroll position after resize
+      minFirstHeaderHeight = firstHeader.offsetHeight; // Reset max on resize
+      handleScroll(); //re-evaluate scroll position after resize.
     }
 
-    window.addEventListener('scroll', handleScroll); // Extra initial calculation
+    window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleResize);
 
-    recalculateHeights();
     handleScroll();
   }
-  
-  makeSecondHeaderSticky('main-header', 'second-header'); 
-  
+
+  makeSecondHeaderSticky('main-header', 'second-header');
+
   function adjustFooter() {
     const footer = document.getElementById('send-area');
     const modeScreen = document.getElementById('mode-screen');
