@@ -11,61 +11,19 @@
 	import TextBox from "./shared/Textbox.svelte";
 	import ChevronBas from "./shared/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
-
-	// import { dsfr } from "@gouvfr/dsfr";
-
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
-
-	export let never_clicked: boolean = true;
-
-	export let models: Model[] = [];
-	export let elem_id = "";
-
-	// Cookie handling
-	const browser = typeof window !== "undefined";
-	function getCookie(name: string): string | null {
-		if (!browser) {
-			return null;
-		}
-		const value = `; ${document.cookie}`;
-		const parts = value.split(`; ${name}=`);
-		if (parts.length === 2) {
-			const result = parts.pop().split(";").shift();
-			console.debug(
-				`getCookie: found cookie ${name}, value is: ${result}`,
-			);
-			return result;
-		}
-		console.debug(`getCookie: cookie ${name} not found, returning null.`);
-		return null;
-	}
-
-	function setCookie(name: string, value: string, days = 7): void {
-		if (!browser) {
-			console.debug("setCookie: browser is undefined, exiting.");
-			return;
-		}
-		const date = new Date();
-		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-		const expires = date.toUTCString();
-		console.debug(
-			`setCookie: setting cookie ${name} to ${value}, expires: ${expires}, path: /`,
-		);
-		document.cookie = `${name}=${value};expires=${expires};path=/`;
-	}
-	type Mode =
-		| "random"
-		| "custom"
-		| "big-vs-small"
-		| "small-models"
-		| "reasoning";
-
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
 	import Brain from "./shared/brain.svelte";
 	import Dice from "./shared/dice.svelte";
 
+	type Mode =
+		| "random"
+		| "custom"
+		| "big-vs-small"
+		| "small-models"
+		| "reasoning";
 	type Choice = {
 		value: Mode;
 		label: string;
@@ -73,99 +31,21 @@
 		icon: any;
 		description: string;
 	};
-	export const choices: Choice[] = [
-		{
-			value: "random",
-			label: "Aléatoire",
-			alt_label: "Modèles aléatoires",
-			icon: Dice, // Replace with your icon class or SVG
-			description: "Deux modèles tirés au hasard dans la liste",
-		},
-		{
-			value: "custom",
-			label: "Sélection manuelle",
-			alt_label: "Sélection manuelle",
-			icon: Glass, // Replace with your icon class or SVG
-			description: "",
-		},
-		{
-			value: "small-models",
-			label: "Frugal",
-			alt_label: "Modèles frugaux",
 
-			icon: Leaf, // Replace with your icon class or SVG
-			description:
-				"Deux modèles tirés au hasard parmi ceux de plus petite taille",
-		},
-		{
-			value: "big-vs-small",
-			label: "David contre Goliath",
-			alt_label: "David contre Goliath",
-			icon: Ruler, // Replace with your icon class or SVG
-			description:
-				"Un petit modèle contre un grand, les deux tirés au hasard",
-		},
-		{
-			value: "reasoning",
-			label: "Raisonnement",
-			alt_label: "Modèles avec raisonnement",
-			icon: Brain, // Replace with your icon class or SVG
-			description:
-				"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
-		},
-	];
-
-	// Initialize from cookies
-	let initialMode: Mode = "random";
-	let initialModels: string[] = [];
-	let initialPrompt = "";
-
-	if (browser) {
-		const savedMode = getCookie("customdropdown_mode");
-		const savedModels = getCookie("customdropdown_models");
-
-		if (savedMode) initialMode = savedMode as Mode;
-		if (savedModels) initialModels = JSON.parse(savedModels);
-	}
-
-	export let mode: Mode = initialMode;
-	export let custom_models_selection: string[] = initialModels;
-	export let prompt_value: string = initialPrompt;
-
-	let first_model_name = "Aléatoire";
-	let second_model_name = "Aléatoire";
-	let first_model_icon_path = null;
-	let second_model_icon_path = null;
-
-	let choice: Choice = choices[0];
-	// Prompt value
-
-	// Combine all into one value object based on mode and other properties
-	export let value: {
-		prompt_value: string;
-		mode: Mode;
-		custom_models_selection: string[];
-	} = {
-		prompt_value: prompt_value,
-		mode: mode,
-		custom_models_selection: custom_models_selection,
-	};
-
+	export let never_clicked: boolean = true;
+	export let models: Model[] = [];
+	export let elem_id = "";
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let disabled = false;
 	export let container = true;
 	export let scale: number | null = null;
 	export let min_width: number | undefined = undefined;
-	// export let allow_custom_value = false;
-	// FIXME: types for events
 	export let gradio: Gradio<{
 		change: ModeAndPromptData;
 		input: never;
 		submit: ModeAndPromptData;
-		// submit: never;
 		select: ModeAndPromptData;
-		// select: SelectData;
 		blur: never;
 		focus: never;
 		key_up: KeyUpData;
@@ -174,37 +54,145 @@
 	export let value_is_output = false;
 	export let lines: number = 4;
 	export let show_custom_models_selection: boolean = false;
-	export let max_lines: number;
-	// export let scale: number | null = null;
-	// export let min_width: number | undefined = undefined;
+	export let max_lines: number = 4;
 	export let rtl = false;
 	export let text_align: "left" | "right" | undefined = undefined;
 	export let autofocus = false;
 	export let autoscroll = true;
-
 	export let interactive: boolean;
+	export let value: ModeAndPromptData;
 
-	// Handle mode selection
+	export const choices: Choice[] = [
+		{
+			value: "random",
+			label: "Aléatoire",
+			alt_label: "Modèles aléatoires",
+			icon: Dice,
+			description: "Deux modèles tirés au hasard dans la liste",
+		},
+		{
+			value: "custom",
+			label: "Sélection manuelle",
+			alt_label: "Sélection manuelle",
+			icon: Glass,
+			description: "",
+		},
+		{
+			value: "small-models",
+			label: "Frugal",
+			alt_label: "Modèles frugaux",
+			icon: Leaf,
+			description:
+				"Deux modèles tirés au hasard parmi ceux de plus petite taille",
+		},
+		{
+			value: "big-vs-small",
+			label: "David contre Goliath",
+			alt_label: "David contre Goliath",
+			icon: Ruler,
+			description:
+				"Un petit modèle contre un grand, les deux tirés au hasard",
+		},
+		{
+			value: "reasoning",
+			label: "Raisonnement",
+			alt_label: "Modèles avec raisonnement",
+			icon: Brain,
+			description:
+				"Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
+		},
+	];
+
+	const browser = typeof window !== "undefined";
+
+	function getCookie(name: string): string | null {
+		if (!browser) return null;
+		const value = `; ${document.cookie}`;
+		const parts = value.split(`; ${name}=`);
+		if (parts.length === 2) return parts.pop()!.split(";").shift() || null;
+		return null;
+	}
+
+	function setCookie(name: string, value: string, days = 7): void {
+		if (!browser) return;
+		const date = new Date();
+		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+		document.cookie = `<span class="math-inline">\{name\}\=</span>{value};expires=${date.toUTCString()};path=/`;
+	}
+
+	let initialMode: Mode =
+		(getCookie("customdropdown_mode") as Mode) || "random";
+	let initialModels: string[] =
+		browser && getCookie("customdropdown_models")
+			? JSON.parse(getCookie("customdropdown_models")!)
+			: [];
+	let initialPrompt = "";
+
+	export let mode: Mode = initialMode;
+	export let custom_models_selection: string[] = initialModels;
+	export let prompt_value: string = initialPrompt;
+
+	let choice: Choice = get_choice(initialMode) || choices[0];
+	let firstModelName = "Aléatoire";
+	let secondModelName = "Aléatoire";
+	let firstModelIconPath: string | null = null;
+	let secondModelIconPath: string | null = null;
+
+	$: {
+		if (mode === "custom") {
+			firstModelName =
+				custom_models_selection[0] !== undefined
+					? models.find(
+							(model) =>
+								model["id"] === custom_models_selection[0],
+						).simple_name
+					: "Aléatoire";
+			secondModelName =
+				custom_models_selection[1] !== undefined
+					? models.find(
+							(model) =>
+								model["id"] === custom_models_selection[1],
+						).simple_name
+					: "Aléatoire";
+			firstModelIconPath =
+				custom_models_selection[0] !== undefined
+					? models.find(
+							(model) =>
+								model["id"] === custom_models_selection[0],
+						).icon_path
+					: null;
+			secondModelIconPath =
+				custom_models_selection[1] !== undefined
+					? models.find(
+							(model) =>
+								model["id"] === custom_models_selection[1],
+						).icon_path
+					: null;
+		} else {
+			firstModelName = "Aléatoire";
+			secondModelName = "Aléatoire";
+			firstModelIconPath = null;
+			secondModelIconPath = null;
+		}
+	}
+
+	function dispatchChange(): void {
+		gradio.dispatch("select", {
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+			prompt_value: prompt_value,
+		});
+	}
+
 	function handle_option_selected(index: number): void {
-		console.log("handle_option_selected");
 		if (index !== null && choices && choices.length > index) {
-			// value = choices[selected_index].value;
-			// value.mode = choices[selected_index].value;
-
 			mode = choices[index].value;
-			if (mode != value["mode"]) {
+			if (mode !== value["mode"]) {
 				value["mode"] = mode;
-				// Don't tell backend to switch to custom if no custom_models_selection yet
 				if (
-					!(mode == "custom" && custom_models_selection.length == 0)
+					!(mode === "custom" && custom_models_selection.length === 0)
 				) {
-					gradio.dispatch("select", {
-						mode: mode,
-						custom_models_selection: custom_models_selection,
-						prompt_value: prompt_value,
-					});
-
-					// Save to cookies
+					dispatchChange();
 					setCookie("customdropdown_mode", mode);
 					setCookie(
 						"customdropdown_models",
@@ -214,61 +202,24 @@
 				choice = choices.find((item) => item.value === mode);
 			}
 		}
-		if (mode == "custom") {
-			show_custom_models_selection = true;
-		}
+		show_custom_models_selection = mode === "custom";
 	}
 
-	function toggle_model_selection(id) {
-		// Toggle if already added or to add/delete
+	function toggle_model_selection(id: string): void {
 		if (!custom_models_selection.includes(id)) {
 			if (custom_models_selection.length < 2) {
-				console.log("adding " + id);
 				custom_models_selection.push(id);
 			}
 		} else {
-			console.log("removing " + id);
-			var index = custom_models_selection.indexOf(id);
-			custom_models_selection.splice(index, 1);
+			custom_models_selection = custom_models_selection.filter(
+				(item) => item !== id,
+			);
 		}
-
 		value["custom_models_selection"] = custom_models_selection;
-		first_model_name =
-			custom_models_selection[0] !== undefined
-				? models.find(
-						(model) => model["id"] === custom_models_selection[0],
-					).simple_name
-				: "Aléatoire";
-
-		first_model_icon_path =
-			custom_models_selection[0] !== undefined
-				? models.find(
-						(model) => model["id"] === custom_models_selection[0],
-					).icon_path
-				: null;
-
-		second_model_name =
-			custom_models_selection[1] !== undefined
-				? models.find(
-						(model) => model["id"] === custom_models_selection[1],
-					).simple_name
-				: "Aléatoire";
-
-		second_model_icon_path =
-			custom_models_selection[1] !== undefined
-				? models.find(
-						(model) => model["id"] === custom_models_selection[1],
-					).icon_path
-				: null;
-
-		gradio.dispatch("select", {
-			mode: mode,
-			custom_models_selection: custom_models_selection,
-			prompt_value: prompt_value,
-		});
+		dispatchChange();
 
 		// If clicked on second model, close model selection modal
-		if (custom_models_selection.length == 2) {
+		if (custom_models_selection.length === 2) {
 			const modeSelectionModal = document.getElementById(
 				"modal-mode-selection",
 			);
@@ -281,7 +232,15 @@
 		}
 	}
 
-	// Handle prompt value update from backend
+	// Dispatch change from cookie
+	if (browser && (initialMode !== "random" || initialModels.length > 0)) {
+		dispatchChange();
+	}
+
+	function get_choice(modeValue: Mode): Choice | undefined {
+		return choices.find((c) => c.value === modeValue);
+	}
+
 	$: {
 		if (value_is_output) {
 			prompt_value = value["prompt_value"];
@@ -390,22 +349,22 @@
 					aria-controls="modal-mode-selection"
 				>
 					<img
-						src="../assets/orgs/{first_model_icon_path}"
-						alt={first_model_name}
+						src="../assets/orgs/{firstModelIconPath}"
+						alt={firstModelName}
 						width="20"
 						class="inline fr-mr-1v"
 					/>&thinsp;
-					{first_model_name}
+					{firstModelName}
 					<strong class="versus">&nbsp;vs.&nbsp;</strong>
-					{#if second_model_icon_path != null}
+					{#if secondModelIconPath != null}
 						<img
-							src="../assets/orgs/{second_model_icon_path}"
-							alt={second_model_name}
+							src="../assets/orgs/{secondModelIconPath}"
+							alt={secondModelName}
 							width="20"
 							class="inline fr-mr-1v"
 						/>&thinsp;
 					{/if}
-					{second_model_name}</button
+					{secondModelName}</button
 				>
 			{/if}
 		</div>
