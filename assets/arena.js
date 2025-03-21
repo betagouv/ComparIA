@@ -10,9 +10,14 @@ function() {
       return;
     }
   
-    const firstHeaderHeight = firstHeader.offsetHeight;
-    const secondHeaderHeight = secondHeader.offsetHeight;
+    let firstHeaderHeight = firstHeader.offsetHeight;
+    let secondHeaderHeight = secondHeader.offsetHeight;
   
+    function recalculateHeights() {
+      firstHeaderHeight = firstHeader.offsetHeight;
+      secondHeaderHeight = secondHeader.offsetHeight;
+    }
+
     function handleScroll() {
       const scrollY = window.scrollY;
   
@@ -31,8 +36,15 @@ function() {
       }
     }
   
-    window.addEventListener('scroll', handleScroll);
-  
+    function handleResize() {
+      recalculateHeights();
+      handleScroll(); // Re-evaluate scroll position after resize
+    }
+
+    window.addEventListener('scroll', handleScroll); // Extra initial calculation
+    window.addEventListener('resize', handleResize);
+
+    recalculateHeights();
     handleScroll();
   }
   
