@@ -117,7 +117,7 @@
 		if (!browser) return;
 		const date = new Date();
 		date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-		document.cookie = `<span class="math-inline">\{name\}\=</span>{value};expires=${date.toUTCString()};path=/`;
+		document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
 	}
 
 	let initialMode: Mode =
@@ -176,8 +176,40 @@
 		}
 	}
 
-	function dispatchChange(): void {
+	function dispatchSelect(): void {
+		// console.log("selecting")
+		// console.log(mode)
+		// console.log(custom_models_selection)
+		// console.log("not sending value")
+		// console.log(value)
+		
+		// Save to cookies
+		setCookie("customdropdown_mode", mode);
+		setCookie(
+			"customdropdown_models",
+			JSON.stringify(custom_models_selection),
+		);
 		gradio.dispatch("select", {
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+			prompt_value: prompt_value,
+		});
+	}
+
+	function dispatchSubmit(): void {
+		// console.log("submitting")
+		// console.log(mode)
+		// console.log(custom_models_selection)
+		// console.log("not sending value")
+		// console.log(value)
+		
+		// Save to cookies
+		setCookie("customdropdown_mode", mode);
+		setCookie(
+			"customdropdown_models",
+			JSON.stringify(custom_models_selection),
+		);
+		gradio.dispatch("submit", {
 			mode: mode,
 			custom_models_selection: custom_models_selection,
 			prompt_value: prompt_value,
@@ -189,15 +221,11 @@
 			mode = choices[index].value;
 			if (mode !== value["mode"]) {
 				value["mode"] = mode;
+				// Don't tell backend to switch to custom if no custom_models_selection yet
 				if (
 					!(mode === "custom" && custom_models_selection.length === 0)
 				) {
-					dispatchChange();
-					setCookie("customdropdown_mode", mode);
-					setCookie(
-						"customdropdown_models",
-						JSON.stringify(custom_models_selection),
-					);
+					dispatchSelect();
 				}
 				choice = choices.find((item) => item.value === mode);
 			}
@@ -216,7 +244,7 @@
 			);
 		}
 		value["custom_models_selection"] = custom_models_selection;
-		dispatchChange();
+		dispatchSelect();
 
 		// If clicked on second model, close model selection modal
 		if (custom_models_selection.length === 2) {
@@ -234,13 +262,16 @@
 
 	// Dispatch change from cookie
 	if (browser && (initialMode !== "random" || initialModels.length > 0)) {
-		dispatchChange();
+		value["mode"] = mode;
+		value["custom_models_selection"] = custom_models_selection;
+		dispatchSelect();
 	}
 
 	function get_choice(modeValue: Mode): Choice | undefined {
 		return choices.find((c) => c.value === modeValue);
 	}
 
+	// Handle prompt value update from backend
 	$: {
 		if (value_is_output) {
 			prompt_value = value["prompt_value"];
@@ -297,19 +328,9 @@
 					});
 				}}
 				on:submit={() => {
-					gradio.dispatch("submit", {
-						prompt_value: prompt_value,
-						mode: mode,
-						custom_models_selection: custom_models_selection,
-					});
+					dispatchSubmit();
 					disabled = true;
 
-					// Save to cookies
-					setCookie("customdropdown_mode", mode);
-					setCookie(
-						"customdropdown_models",
-						JSON.stringify(custom_models_selection),
-					);
 				}}
 			/>
 		</div>
@@ -373,11 +394,7 @@
 			class="submit-btn purple-btn btn"
 			disabled={prompt_value == "" || disabled}
 			on:click={() => {
-				gradio.dispatch("submit", {
-					prompt_value: prompt_value,
-					mode: mode,
-					custom_models_selection: custom_models_selection,
-				});
+				dispatchSubmit();
 				disabled = true;
 			}}
 			value="Envoyer"
