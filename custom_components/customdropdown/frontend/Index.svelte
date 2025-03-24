@@ -182,7 +182,7 @@
 		// console.log(custom_models_selection)
 		// console.log("not sending value")
 		// console.log(value)
-		
+
 		// Save to cookies
 		setCookie("customdropdown_mode", mode);
 		setCookie(
@@ -202,7 +202,7 @@
 		// console.log(custom_models_selection)
 		// console.log("not sending value")
 		// console.log(value)
-		
+
 		// Save to cookies
 		setCookie("customdropdown_mode", mode);
 		setCookie(
@@ -330,7 +330,6 @@
 				on:submit={() => {
 					dispatchSubmit();
 					disabled = true;
-
 				}}
 			/>
 		</div>
