@@ -253,11 +253,11 @@ AND contains_pii = FALSE
 
             # TODO: refacto in a drop_useless_cols func
 
-            if "archived" in df.columns:
-                df = df.drop(columns=["archived"])
+            if "archived" in conversations_pii_removed.columns:
+                conversations_pii_removed = conversations_pii_removed.drop(columns=["archived"])
                 
-            if "pii_analyzed" in df.columns:
-                df = df.drop(columns=["pii_analyzed"])
+            if "pii_analyzed" in conversations_pii_removed.columns:
+                conversations_pii_removed = conversations_pii_removed.drop(columns=["pii_analyzed"])
                 
 
             export_data(conversations_pii_removed, "conversations")
