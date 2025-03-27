@@ -1,4 +1,10 @@
 <div>
+    <div class="text-center">
+        <span class="step-badge">Étape 2/2</span>
+    </div>
+
+    <h4 class="text-center fr-mt-2w fr-mb-3w">Les IA sont démasquées !</h4>
+
     <div id="reveal-grid" class="grid grid-cols-md-2 grid-cols-1 fr-mx-md-12w">
         {% for model, side, kwh, co2, tokens, lightbulb, lightbulb_unit, streaming, streaming_unit in [(model_a,
         'model-a', model_a_kwh, model_a_co2, model_a_tokens, lightbulb_a, lightbulb_a_unit, streaming_a,
@@ -143,7 +149,7 @@
                         {% if (co2 * 1000) < 2 %} <p><strong><span class="fr-text--xxl">{{
                                     '{:0.2f}'.format(co2 * 1000) }}</span>g</strong></p>
                             {% else %}
-                            <p><strong><span class="fr-text--xxl">{{ '{:.0f}'.format(co2 * 1000) 
+                            <p><strong><span class="fr-text--xxl">{{ '{:.0f}'.format(co2 * 1000)
                                         }}</span>g</strong></p>
                             {% endif %}
                             </p>
