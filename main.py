@@ -63,7 +63,7 @@ app = gr.mount_gradio_app(
 
 from languia.utils import get_gauge_count
 
-objective = 100_000
+objective = config.objective
 
 
 favicon_path="assets/favicon/favicon.ico"

@@ -72,6 +72,8 @@ logger = build_logger(log_filename)
 num_sides = 2
 enable_moderation = False
 
+objective = 100_000
+
 if os.getenv("GIT_COMMIT"):
     git_commit = os.getenv("GIT_COMMIT")
 else:

@@ -549,8 +549,7 @@ AS total_approx;
 def second_header_html(step=1, mode_str="random"):
 
     from languia.utils import get_gauge_count
-
-    objective = 70000
+    from languia.config import objective
 
     gauge_count = get_gauge_count()
     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
