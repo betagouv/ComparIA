@@ -144,6 +144,7 @@ def get_user_info(request):
         user_id = None
     return user_id, session_id
 
+
 def get_endpoint(model_id):
     from languia.config import api_endpoint_info
 
@@ -397,18 +398,16 @@ def get_model_extra_info(name: str, models_extra_info: list):
     return {"id": name}
 
 
+def get_model_names_list(controller_url):
 
-def get_model_names_list(api_endpoint_info):
-
-    models = [model_dict.get("model_name") for model_dict in api_endpoint_info]
     logger = logging.getLogger("languia")
-    response = requests.get("http://0.0.0.0:4000/models")
+    response = requests.get(controller_url + "/models?return_wildcard_routes=true")
+    import json5
 
-    parsed_data = json.loads(response.content)
+    parsed_data = json5.loads(response.content)
+    model_ids = [model_dict.get("id") for model_dict in parsed_data["data"]]
 
-    model_ids = [model["id"] for model in parsed_data["data"]]
-
-    logger.debug(f"All models: {model_ids}")
+    logger.info(f"All models: {model_ids}")
     return model_ids
 
 

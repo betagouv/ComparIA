@@ -218,14 +218,9 @@ if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
 else:
     controller_url = "http://localhost:4000"
 
-import requests
 
-api_endpoint_info = json5.load(
-    requests.get(controller_url + "/models?return_wildcard_routes=true").text
-)
-
-models = get_model_names_list(api_endpoint_info)
-
+models = get_model_names_list(controller_url)
+# print(models)
 all_models_extra_info_toml = {
     (k.lower()): v
     for k, v in tomli.load(open("./models-extra-info.toml", "rb")).items()
