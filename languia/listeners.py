@@ -672,11 +672,13 @@ def register_listeners():
 setTimeout(() => {
   console.log("scrolling to bot responses");
   var botRows = document.querySelectorAll('.bot-row');
+  if (botRows.length > 0) {
     var lastBotRow = botRows.item(botRows.length - 1);
     lastBotRow.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
+    }
   }
 , 500);
 }""",
@@ -731,11 +733,13 @@ setTimeout(() => {
 setTimeout(() => {
   console.log("scrolling to bot responses");
   var botRows = document.querySelectorAll('.bot-row');
+  if (botRows.length > 0) {
     var lastBotRow = botRows.item(botRows.length - 1);
     lastBotRow.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
+    }
   }
 , 500);
 }""",
