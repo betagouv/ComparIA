@@ -80,7 +80,6 @@
 		selectable={_selectable}
 		{likeable}
 		disabled={!interactive}
-		{show_share_button}
 		{show_copy_all_button}
 		value={_value}
 		{latex_delimiters}
@@ -111,7 +110,6 @@
 		{_retryable}
 		{_undoable}
 		_fetch={(...args) => gradio.client.fetch(...args)}
-		load_component={gradio.load_component}
 		root={gradio.root}
 	/>
 </div>

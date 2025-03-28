@@ -41,7 +41,7 @@
 	// import { Retry } from "@gradio/icons";
 
 	export let value: NormalisedMessage[] | null = [];
-	let old_value: NormalisedMessage[] | null = null;
+	let old_value: NormalisedMessage[] | null = [];
 
 	import CopyAll from "./CopyAll.svelte";
 
@@ -192,7 +192,8 @@
 			dispatch("change");
 		}
 	}
-	$: groupedMessages = value && group_messages(value, "messages");
+	// $: groupedMessages = value && group_messages(value, "messages");
+	$: groupedMessages = value && group_messages(value);
 
 	var comment: string = "";
 	var commenting_model: "A" | "B" | "" = "";
@@ -225,7 +226,7 @@
 
 		dispatch("retry", {
 			index: lastMessage.index,
-			value: lastMessage.error,
+			value: lastMessage.error.toString(),
 			// lastMessage.metadata?.error ||
 			//  ||
 			// lastMessage.content,
@@ -251,7 +252,7 @@
 
 			dispatch("retry", {
 				index: msg.index,
-				value: msg.error
+				value: msg.error.toString()
 				// value: msg.error || msg.content,
 				// value: msg.content,
 				// error: msg.metadata?.error || msg.error
