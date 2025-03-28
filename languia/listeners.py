@@ -652,6 +652,9 @@ document.getElementById("fr-modal-welcome-close").blur();
     def enable_conclude(
         app_state_scoped, textbox_scoped, conv_a_scoped, request: gr.Request
     ):
+        if not conv_a_scoped:
+            # raise
+            return [gr.skip()] * 3
         # If last msg is from user, don't show send_btn and textbox
         if conv_a_scoped.messages[-1].role != "user":
             show_send_btn_and_textbox = True
