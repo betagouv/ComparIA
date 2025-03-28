@@ -4,14 +4,14 @@ The gradio utilities for chatting with a single model.
 
 import gradio as gr
 
-from languia.litellm import litellm_stream_iter
+from languia.langfuse import langfuse_stream
 
 import time
 from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
     ChatMessage,
 )
 
-from languia.utils import ContextTooLongError, EmptyResponseError, get_endpoint, messages_to_dict_list
+from languia.utils import messages_to_dict_list
 from languia import config
 
 import logging
@@ -36,7 +36,6 @@ class Conversation:
         self.output_tokens = None
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = get_endpoint(model_name)
 
 
 logger = logging.getLogger("languia")
@@ -82,7 +81,7 @@ def update_last_message(
 
 def bot_response(
     position,
-    state,
+    state: Conversation,
     request: gr.Request,
     temperature=0.7,
     # top_p=1.0,
@@ -97,51 +96,21 @@ def bot_response(
 
     # TODO: apply rate limit by ip
 
-    if not state.endpoint:
-        logger.critical(
-            "No endpoint for model name: " + str(state.model_name),
-            extra={"request": request},
-        )
-        raise Exception("No endpoint for model name: " + str(state.model_name))
+    # FIXME: add default max_new_tokens + temperature
 
-    endpoint = state.endpoint
-
-    endpoint_name = endpoint["api_id"]
-    logger.info(
-        f"using endpoint {endpoint_name} for {state.model_name}",
-        extra={"request": request},
-    )
-
-    if use_recommended_config:
-        recommended_config = endpoint.get("recommended_config", None)
-        if recommended_config is not None:
-            temperature = recommended_config.get("temperature", float(temperature))
-            # top_p = recommended_config.get("top_p", float(top_p))
-            max_new_tokens = recommended_config.get(
-                "max_new_tokens", int(max_new_tokens)
-            )
-            include_reasoning = recommended_config.get("include_reasoning", False)
-
+    # TODO: ask litellm for call duration?
     start_tstamp = time.time()
     # print("start: " + str(start_tstamp))
-
     messages_dict = messages_to_dict_list(state.messages)
-    litellm_model_name = (
-        endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
-    )
 
-    stream_iter = litellm_stream_iter(
-        model_name=litellm_model_name,
+    stream_iter = langfuse_stream(
+        model_name=state.model_name,
         messages=messages_dict,
         temperature=temperature,
-        api_key=endpoint.get("api_key", "F4K3-4P1-K3Y"),
-        api_base=endpoint.get("api_base", None),
-        api_version=endpoint.get("api_version", None),
         # stream=model_api_dict.get("stream", True),
         # top_p=top_p,
         max_new_tokens=max_new_tokens,
         request=request,
-        vertex_ai_location=endpoint.get("vertex_ai_location", None),
         include_reasoning=include_reasoning,
     )
 

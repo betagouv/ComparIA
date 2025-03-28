@@ -45,7 +45,6 @@ from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
-    refresh_unavailable_models,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
@@ -87,9 +86,6 @@ def register_listeners():
 
     def enter_arena(request: gr.Request):
         # Refresh on picking model? Do it async? Should do it globally and async...
-        config.unavailable_models = refresh_unavailable_models(
-            config.unavailable_models, controller_url=config.controller_url
-        )
 
         # TODO: actually check for it
         # tos_accepted = request...
@@ -596,8 +592,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             openai.BadRequestError,
             EmptyResponseError,
         ) as e:
-            conversations = [conv_a_scoped, conv_b_scoped]
-            error_with_endpoint = conversations[i].endpoint.get("api_id")
             error_with_model = conversations[i].model_name
 
             if os.getenv("SENTRY_DSN"):
@@ -608,7 +602,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 sentry_sdk.capture_exception(e)
 
             logger.exception(
-                f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
+                f"erreur_modele: {error_with_model}, '{e}'\n{traceback.format_exc()}",
                 extra={
                     "request": request,
                     "error": str(e),

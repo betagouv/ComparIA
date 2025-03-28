@@ -1,5 +1,5 @@
 """
-Utilities to communicate with different APIs
+Use langfuse + litellm
 """
 
 import os
@@ -11,6 +11,8 @@ from gradio import Error
 
 from languia.config import GLOBAL_TIMEOUT
 import litellm
+from langfuse.openai import openai
+
 import json
 
 from languia.utils import get_matomo_tracker_from_cookies, get_ip, get_user_info
@@ -28,13 +30,13 @@ else:
 
 
 @observe(as_type="generation")
-def litellm_stream_iter(
+def langfuse_stream(
     model_name,
     messages,
     temperature,
     max_new_tokens,
     api_base=None,
-    api_key=None,
+    api_key="dummy",
     request=None,
     api_version=None,
     vertex_ai_location=None,
@@ -73,9 +75,29 @@ def litellm_stream_iter(
     
     user_id, session_id = get_user_info(request)
     # note: doesn't seem to have an effect?
-    langfuse_context.update_current_trace(
-            user_id=user_id,
-            session_id=session_id,metadata={
+
+    openai.api_key = "dummy"
+    openai.base_url="http://0.0.0.0:4000"
+    # langfuse_context.update_current_trace(
+    #         user_id=user_id,
+    #         session_id=session_id,metadata={
+    res = openai.chat.completions.create(
+        timeout=GLOBAL_TIMEOUT,
+        # stream_timeout=30,
+        # max_retries=
+        model=model_name,
+        messages=messages,
+        temperature=temperature,
+        max_tokens=max_new_tokens,
+        stream=True,
+        stream_options={"include_usage": True},
+        # vertex_credentials=vertex_credentials_json,
+        # vertex_ai_location=litellm.vertex_location,
+        metadata={
+            "session_hash": request.session_hash,
+            # "conversation_id
+            # Is that useful?
+            "existing_trace_id": langfuse_context.get_current_trace_id(),  # set langfuse trace ID
             "parent_observation_id": langfuse_context.get_current_observation_id(),
             "trace_user_id": user_id,
             "session_id": session_id,      
@@ -159,16 +181,14 @@ def litellm_stream_iter(
                     data["text"] = text
                     break
                 elif chunk.choices[0].finish_reason == "length":
-                    # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
-                    # raise ContextTooLongError
+
                     logger.warning(
                         "context_too_long: " + str(chunk), extra={request: request}
                     )
 
-                    if os.getenv("SENTRY_DSN"):
-                        sentry_sdk.capture_message(f"context_too_long: {chunk}")
+                    # if os.getenv("SENTRY_DSN"):
+                    #     sentry_sdk.capture_message(f"context_too_long: {chunk}")
                     break
-            # Special handling for certain models
-            # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
+                
             yield data
     yield data

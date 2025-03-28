@@ -402,9 +402,14 @@ def get_model_names_list(api_endpoint_info):
 
     models = [model_dict.get("model_name") for model_dict in api_endpoint_info]
     logger = logging.getLogger("languia")
-    
-    logger.debug(f"All models: {models}")
-    return models
+    response = requests.get("http://0.0.0.0:4000/models")
+
+    parsed_data = json.loads(response.content)
+
+    model_ids = [model["id"] for model in parsed_data["data"]]
+
+    logger.debug(f"All models: {model_ids}")
+    return model_ids
 
 
 def is_limit_reached(model_name, ip):
