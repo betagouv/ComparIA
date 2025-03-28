@@ -89,6 +89,7 @@ with gr.Blocks(
     with gr.Group(
         elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
     ) as chat_area:
+        stop_btn = gr.Button("Stop!")
 
         chatbot = CustomChatbot(
             elem_id="main-chatbot",
@@ -103,7 +104,7 @@ with gr.Blocks(
             show_copy_button=True,
             # autoscroll=True
         )
-
+        
         with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w") as send_area:
 
             with gr.Row(
