@@ -494,6 +494,9 @@ li.fr-nav__item {
   color: #929292 !important;
 
 }
+.purple {
+  color: var(--blue-france-main-525);
+}
 
 .purple-btn {
   background-color: var(--blue-france-main-525);
