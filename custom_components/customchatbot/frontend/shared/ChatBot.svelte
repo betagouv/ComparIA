@@ -181,13 +181,9 @@
 	export let hasError: boolean = false;
 
 	$: {
-		hasError = groupedMessages.some((messages) =>
+		hasError = groupedMessages?.some((messages) =>
 			messages.some((message) => message?.error),
-		);
-		// console.log("hasError:");
-		// console.log(hasError);
-		// console.log("messages:");
-		// console.log(groupedMessages);
+		) ?? false;
 	}
 
 	$: {
