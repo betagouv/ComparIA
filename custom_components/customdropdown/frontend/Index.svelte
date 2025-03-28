@@ -290,6 +290,20 @@
 	} else {
 		alt_label = choice.alt_label;
 	}
+
+	setTimeout(() => {
+		const cookieExists = document.cookie.includes(
+			"comparia_already_visited",
+		);
+		document.cookie =
+			"comparia_already_visited=true; SameSite=Strict; Secure; Path=/;";
+		if (!cookieExists) {
+			const modal = document.getElementById("fr-modal-welcome");
+			// @ts-ignore - DSFR is globally available
+			window.dsfr(modal).modal.disclose();
+		}
+		document.getElementById("fr-modal-welcome-close").blur();
+	}, 500);
 </script>
 
 <Block
