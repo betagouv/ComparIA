@@ -408,6 +408,9 @@ def get_model_names_list(controller_url):
     model_ids = [model_dict.get("id") for model_dict in parsed_data["data"]]
 
     logger.info(f"All models: {model_ids}")
+    if not model_ids or model_ids == []:
+        raise IndexError("No model ID loaded.")
+    
     return model_ids
 
 
