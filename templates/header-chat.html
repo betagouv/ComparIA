@@ -24,7 +24,7 @@
         <div class=" fr-header__tools fr-col-12 fr-col-lg-6 fr-p-md-2w">
 
 
-          <div class="fr-container--fluid counter"><span class="legende">Total des votes&nbsp;<a
+          <div class="fr-container--fluid counter"><span class="fr-mt-1w legende">Total des votes&nbsp;<a
                 class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
             <div class="linear-gauge">
               <span class="votes">{{ gauge_count }}</span>
@@ -115,6 +115,18 @@
             .align-center {
               align-items: center;
             }
+
+            .column {
+              flex-direction: "column";
+            }
+            
+            
+@media (min-width: 48em) {
+            .md-row {
+              flex-direction: "row";
+              
+            }
+          }
           </style>
 
         </div>
@@ -125,7 +137,7 @@
 
 <div id="second-header" class="fr-container--fluid fr-py-1w">
   <div class="fr-mb-0 fr-container fr-grid-row">
-    <div class="flex fr-col-12 fr-col-md-8 align-center grid">
+    <div class="flex fr-col-12 fr-col-md-8 align-center column md-row">
       <div><span class="step-badge">Étape {{ step }}/2</span></div>
       <p class="fr-ml-1w">
         <strong class="text-dark-grey">
