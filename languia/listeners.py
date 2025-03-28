@@ -2,7 +2,7 @@ from languia.block_arena import (
     app_state,
     buttons_footer,
     chat_area,
-    CustomDropdown,
+    FirstPromptForm,
     CustomChatbot,
     chatbot,
     comments_a,
@@ -12,7 +12,6 @@ from languia.block_arena import (
     conv_a,
     conv_b,
     demo,
-    guided_cards,
     header,
     mode_screen,
     negative_a,
@@ -23,7 +22,6 @@ from languia.block_arena import (
     reveal_screen,
     send_area,
     send_btn,
-    shuffle_link,
     supervote_area,
     supervote_send_btn,
     # first_textbox,
@@ -45,7 +43,6 @@ from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
-    gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
     second_header_html,
@@ -95,107 +92,16 @@ def register_listeners():
             extra={"request": request},
         )
 
-    gr.on(
-        triggers=[demo.load],
-        fn=enter_arena,
-        inputs=None,
-        outputs=None,
-        api_name=False,
-        show_progress="hidden",
-        # concurrency_limit=None
-        js="""(args) => {
-setTimeout(() => {
-
-const cookieExists = document.cookie.includes('comparia_already_visited');
-document.cookie = 'comparia_already_visited=true; SameSite=Strict; Secure; Path=/;'
-if (!cookieExists) {
-    const modal = document.getElementById("fr-modal-welcome");
-    dsfr(modal).modal.disclose();
-}
-document.getElementById("fr-modal-welcome-close").blur();
-}, 500);
-
-}""",
-    )
-
     # Step 1
-
-    # Step 1.1
-    @guided_cards.input(
-        inputs=[app_state, guided_cards, model_dropdown],
-        outputs=[app_state, model_dropdown, shuffle_link],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def set_guided_prompt(
-        app_state_scoped,
-        guided_cards,
-        model_dropdown_scoped,
-        event: gr.EventData,
-        request: gr.Request,
-    ):
-
-        # chosen_prompts_pool = guided_cards
-        category = guided_cards
-        prompt = gen_prompt(category)
-        app_state_scoped.category = category
-
-        logger.info(
-            f"categorie_{category}: {prompt}",
-            extra={"request": request},
-        )
-        new_value = prompt
-
-        model_dropdown_scoped["prompt_value"] = new_value
-
-        return {
-            app_state: app_state_scoped,
-            # first_send_btn: gr.update(interactive=True),
-            model_dropdown: model_dropdown_scoped,
-            shuffle_link: gr.update(visible=True),
-        }
-
-    @shuffle_link.click(
-        inputs=[guided_cards, model_dropdown],
-        outputs=[model_dropdown],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def shuffle_prompt(guided_cards, model_dropdown_scoped, request: gr.Request):
-        prompt = gen_prompt(guided_cards)
-        model_dropdown_scoped["prompt_value"] = prompt
-        logger.info(
-            f"shuffle: {prompt}",
-            extra={"request": request},
-        )
-        return model_dropdown_scoped
-
-    @textbox.change(
-        inputs=[app_state, textbox],
-        outputs=[send_btn],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def change_send_btn_state(app_state_scoped, textbox):
-        if textbox == "" or (
-            hasattr(app_state_scoped, "awaiting_responses")
-            and app_state_scoped.awaiting_responses
-        ):
-            return gr.update(interactive=False)
-        else:
-            return gr.update(interactive=True)
 
     def add_first_text(
         app_state_scoped: AppState,
-        model_dropdown_scoped: CustomDropdown,
+        model_dropdown_scoped: FirstPromptForm,
         request: gr.Request,
         # event: gr.EventData,
     ):
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
-        config.unavailable_models = refresh_unavailable_models(
-            config.unavailable_models, controller_url=config.controller_url
-        )
         didnt_reset_prompt = True
         text = model_dropdown_scoped.get("prompt_value", "")
         mode = model_dropdown_scoped.get("mode", "random")
@@ -214,7 +120,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
         first_model_name, second_model_name = pick_models(
-            mode, custom_models_selection, unavailable_models=config.unavailable_models
+            mode, custom_models_selection
         )
 
         # Important: to avoid sharing object references between Gradio sessions
@@ -329,8 +235,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                     gr.update(visible=True),
                     # send_btn
                     gr.update(interactive=False),
-                    # shuffle_link
-                    gr.update(visible=False),
                     # conclude_btn
                     gr.update(visible=True, interactive=False),
                 ]
@@ -362,66 +266,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                 exc_info=True,
             )
 
-            # Remove last message if it's an assistant message (failed during generation)
-            if conv_a_scoped.messages[-1].role == "assistant":
-                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-            if conv_b_scoped.messages[-1].role == "assistant":
-                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+            conv_a_scoped.messages[-1].error = str(e)
+            conv_b_scoped.messages[-1].error = str(e)
 
-            conv_a_scoped.messages[-1].error = True
-            conv_b_scoped.messages[-1].error = True
-
-            # If it's the first message in conversation, re-roll
-            if len(conv_a_scoped.messages) == 1 or (
-                len(conv_a_scoped.messages) == 2
-                and conv_a_scoped.messages[0].role == "system"
-            ):
-                if len(conv_a_scoped.messages) == 1:
-                    original_user_prompt = conv_a_scoped.messages[0].content
-                else:
-                    original_user_prompt = conv_a_scoped.messages[1].content
-
-                config.unavailable_models = refresh_unavailable_models(
-                    config.unavailable_models, controller_url=config.controller_url
-                )
-
-                logger.debug(
-                    "refreshed outage models:" + str(config.unavailable_models)
-                )  # Simpler to repick 2 models
-
-                if app_state_scoped.mode == "custom":
-                    gr.Warning(
-                        duration=20,
-                        title="",
-                        message="""<div class="visible fr-p-2w">Le comparateur n'a pas pu piocher parmi les modèles sélectionnés car ils ne sont temporairement pas disponibles. Si vous réessayez, le comparateur piochera parmi d'autres modèles.</div>""",
-                    )
-
-                model_left, model_right = pick_models(
-                    app_state_scoped.mode,
-                    # Doesn't make sense to keep custom model options here
-                    # FIXME: if error with model wasn't the one chosen (case where you select only one model) just reroll the other one
-                    [],
-                    # temporarily exclude the buggy model here
-                    config.unavailable_models + [error_with_model],
-                )
-                logger.info(
-                    f"reinitializing convs w/ two new models: {model_left} and {model_right}",
-                    extra={"request": request},
-                )
-                conv_a_scoped = copy.deepcopy(Conversation(model_name=model_left))
-                conv_b_scoped = copy.deepcopy(Conversation(model_name=model_right))
-                logger.info(
-                    f"new conv ids: {conv_a_scoped.conv_id} and {conv_b_scoped.conv_id}",
-                    extra={"request": request},
-                )
-
-                # Don't reuse same conversation ID, is that good?
-                conv_a_scoped.messages.append(
-                    ChatMessage(role="user", content=original_user_prompt, error=True)
-                )
-                conv_b_scoped.messages.append(
-                    ChatMessage(role="user", content=original_user_prompt, error=True)
-                )
         finally:
 
             # Got answer at this point (or error?)
@@ -460,8 +307,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 gr.update(visible=True),
                 # send_btn
                 gr.update(interactive=False),
-                # shuffle_link
-                gr.update(visible=False),
                 # conclude_btn
                 gr.update(visible=True, interactive=False),
             ]
@@ -680,7 +525,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [mode_screen]
         + [chat_area]
         + [send_btn]
-        + [shuffle_link]
         + [conclude_btn],
         show_progress="hidden",
         # TODO: refacto possible with .success() and more explicit error state
