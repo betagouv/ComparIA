@@ -546,7 +546,7 @@ AS total_approx;
         return result
 
 
-def second_header_html(step=1, mode_str="random"):
+def second_header_html(step=1, mode_str="random", text=""):
 
     from languia.utils import get_gauge_count
     from languia.config import objective
@@ -595,5 +595,14 @@ def second_header_html(step=1, mode_str="random"):
             "gauge_count": gauge_count,
             "objective": objective,
             "mode": mode,
+            "text": text
         }
     )
+
+def get_first_user_msg(messages):
+    for msg in messages:
+        if hasattr(msg,'role') and msg.role == "user":
+            return msg.content
+        if msg.get('role', '') and msg['role'] == "user":
+            return msg['content']
+    return "" 

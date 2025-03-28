@@ -50,6 +50,7 @@ from languia.utils import (
     to_threeway_chatbot,
     EmptyResponseError,
     second_header_html,
+    get_first_user_msg
 )
 
 from languia.reveal import build_reveal_html, determine_choice_badge
@@ -233,7 +234,7 @@ def register_listeners():
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-        banner = second_header_html(1, mode)
+        banner = second_header_html(step=1, mode_str=mode)
 
         text = gr.update(visible=True)
         app_state_scoped.awaiting_responses = True
@@ -778,7 +779,7 @@ setTimeout(() => {
         else:
             your_choice_badge = None
 
-        banner = second_header_html(2)
+        banner = second_header_html(step=2, text=get_first_user_msg(conv_a_scoped.messages))
 
         reveal_html = build_reveal_html(
             conv_a_scoped,
@@ -929,7 +930,7 @@ nextScreen.scrollIntoView({
             details,
             request,
         )
-        banner = second_header_html(2)
+        banner = second_header_html(step=2,text=get_first_user_msg(conv_a_scoped.messages))
 
         reveal_html = build_reveal_html(
             conv_a=conv_a_scoped,
