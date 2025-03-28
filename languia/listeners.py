@@ -94,13 +94,13 @@ def register_listeners():
 
     # Step 1
 
-    def add_first_text(
+    def submit_first_prompt(
         app_state_scoped: AppState,
         model_dropdown_scoped: FirstPromptForm,
         request: gr.Request,
         # event: gr.EventData,
     ):
-        # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
+        # Already refreshed in enter_arena, but not refreshed if submit_first_prompt accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         didnt_reset_prompt = True
         text = model_dropdown_scoped.get("prompt_value", "")
@@ -512,8 +512,8 @@ def register_listeners():
         triggers=[
             model_dropdown.submit,
         ],
-        fn=add_first_text,
-        api_name=False,
+        fn=submit_first_prompt,
+        api_name="submit_first_prompt",
         inputs=[app_state, model_dropdown],
         outputs=[app_state]
         + [conv_a]
