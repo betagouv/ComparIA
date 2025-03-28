@@ -397,13 +397,12 @@ def get_model_extra_info(name: str, models_extra_info: list):
     return {"id": name}
 
 
-import json
-
 
 def get_model_names_list(api_endpoint_info):
-    logger = logging.getLogger("languia")
 
-    models = [model_dict.get("model_id") for model_dict in api_endpoint_info]
+    models = [model_dict.get("model_name") for model_dict in api_endpoint_info]
+    logger = logging.getLogger("languia")
+    
     logger.debug(f"All models: {models}")
     return models
 

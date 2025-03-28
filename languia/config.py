@@ -33,6 +33,7 @@ GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
 db = os.getenv("COMPARIA_DB_URI", None)
 
+
 def build_logger(logger_filename):
     # TODO: log "funcName"
     logger = logging.getLogger("languia")
@@ -129,12 +130,6 @@ if os.getenv("SENTRY_FRONT_DSN"):
 else:
     sentry_head_js = ""
 
-
-if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
-    register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
-else:
-    register_api_endpoint_file = "register-api-endpoint-file.json"
-
 enable_moderation = False
 use_remote_storage = False
 
@@ -218,8 +213,16 @@ with open("./assets/dark.css", encoding="utf-8") as css_file:
 
 css = css_dsfr + custom_css + darkfixes_css
 
+if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
+    controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
+else:
+    controller_url = "http://localhost:4000"
 
-api_endpoint_info = json5.load(open(register_api_endpoint_file))
+import requests
+
+api_endpoint_info = json5.load(
+    requests.get(controller_url + "/models?return_wildcard_routes=true").text
+)
 
 models = get_model_names_list(api_endpoint_info)
 
@@ -237,11 +240,6 @@ models_extra_info = [
 models_extra_info.sort(key=lambda x: x["simple_name"])
 
 headers = {"User-Agent": "FastChat Client"}
-
-if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
-    controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
-else:
-    controller_url = "http://localhost:21001"
 
 enable_moderation = False
 use_remote_storage = False
