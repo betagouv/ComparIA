@@ -77,50 +77,9 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from numpy import random
-
 
 # Register listeners
 def register_listeners():
-
-    # Step 0
-
-    def enter_arena(request: gr.Request):
-        # Refresh on picking model? Do it async? Should do it globally and async...
-        config.unavailable_models = refresh_unavailable_models(
-            config.unavailable_models, controller_url=config.controller_url
-        )
-
-        # TODO: actually check for it
-        # tos_accepted = request...
-        # if tos_accepted:
-        logger.info(
-            f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
-            extra={"request": request},
-        )
-
-    gr.on(
-        triggers=[demo.load],
-        fn=enter_arena,
-        inputs=None,
-        outputs=None,
-        api_name=False,
-        show_progress="hidden",
-        # concurrency_limit=None
-        js="""(args) => {
-setTimeout(() => {
-
-const cookieExists = document.cookie.includes('comparia_already_visited');
-document.cookie = 'comparia_already_visited=true; SameSite=Strict; Secure; Path=/;'
-if (!cookieExists) {
-    const modal = document.getElementById("fr-modal-welcome");
-    dsfr(modal).modal.disclose();
-}
-document.getElementById("fr-modal-welcome-close").blur();
-}, 500);
-
-}""",
-    )
 
     # Step 1
 
@@ -195,7 +154,15 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         # event: gr.EventData,
     ):
-        # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
+
+        # TODO: actually check for it
+        # tos_accepted = request...
+        # if tos_accepted:
+        logger.info(
+            f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
+            extra={"request": request},
+        )
+
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         config.unavailable_models = refresh_unavailable_models(
             config.unavailable_models, controller_url=config.controller_url
@@ -240,7 +207,6 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
-
 
         # Could be added in Converstation.__init__?
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
@@ -675,6 +641,7 @@ document.getElementById("fr-modal-welcome-close").blur();
     gr.on(
         triggers=[
             model_dropdown.submit,
+            demo.load,
         ],
         fn=add_first_text,
         api_name=False,
@@ -1003,7 +970,7 @@ nextScreen.scrollIntoView({
             reveal_screen,
             results_area,
             buttons_footer,
-            which_model_radio
+            which_model_radio,
         ],
         # outputs=[quiz_modal],
         api_name=False,
