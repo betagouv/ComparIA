@@ -175,15 +175,19 @@ def register_listeners():
             "custom_models_selection", []
         )
 
+        if text == "" and "t" in request.query_params and request.query_params["t"]:
+            text = request.query_params["t"]
+
+        # Check if "Enter" pressed and no text or still awaiting response and return early
+        if text == "":
+            return {}
+            # raise (gr.Error("Veuillez entrer votre texte.", duration=10))
+
         logger.info("chose mode: " + mode, extra={"request": request})
         logger.info(
             "custom_models_selection: " + str(custom_models_selection),
             extra={"request": request},
         )
-        # Check if "Enter" pressed and no text or still awaiting response and return early
-        if text == "":
-            raise (gr.Error("Veuillez entrer votre texte.", duration=10))
-
         first_model_name, second_model_name = pick_models(
             mode, custom_models_selection, unavailable_models=config.unavailable_models
         )
