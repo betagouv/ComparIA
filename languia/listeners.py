@@ -2,8 +2,7 @@ from languia.block_arena import (
     app_state,
     buttons_footer,
     chat_area,
-    FirstPromptForm,
-    CustomChatbot,
+    # CustomChatbot,
     chatbot,
     comments_a,
     comments_b,
@@ -13,7 +12,7 @@ from languia.block_arena import (
     conv_b,
     demo,
     header,
-    mode_screen,
+    # mode_screen,
     negative_a,
     negative_b,
     positive_a,
@@ -28,7 +27,7 @@ from languia.block_arena import (
     textbox,
     vote_area,
     which_model_radio,
-    model_dropdown,
+    # model_dropdown,
 )
 import traceback
 import os
@@ -96,10 +95,11 @@ def register_listeners():
 
     def submit_first_prompt(
         app_state_scoped: AppState,
-        model_dropdown_scoped: FirstPromptForm,
         request: gr.Request,
         # event: gr.EventData,
     ):
+        
+        # GET PARAMS FROM REQUEST, NO MORE model_dropdown_scoped
         # Already refreshed in enter_arena, but not refreshed if submit_first_prompt accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         didnt_reset_prompt = True
@@ -510,11 +510,11 @@ def register_listeners():
 
     gr.on(
         triggers=[
-            model_dropdown.submit,
+            demo.load,
         ],
         fn=submit_first_prompt,
         api_name="submit_first_prompt",
-        inputs=[app_state, model_dropdown],
+        inputs=[app_state],
         outputs=[app_state]
         + [conv_a]
         + [conv_b]
@@ -522,7 +522,7 @@ def register_listeners():
         + [textbox]
         + [header]
         + [textbox]
-        + [mode_screen]
+        # + [mode_screen]
         + [chat_area]
         + [send_btn]
         + [conclude_btn],

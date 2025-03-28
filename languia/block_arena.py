@@ -19,9 +19,7 @@ from languia.utils import (
 
 
 from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
-from custom_components.customdropdown.backend.gradio_customdropdown import (
-    CustomDropdown,
-)
+
 from custom_components.customradiocard.backend.gradio_customradiocard import (
     CustomRadioCard,
 )
