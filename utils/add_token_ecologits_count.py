@@ -47,6 +47,18 @@ def get_model_metadata(model_name):
     return MODELS.get(model_name, {})
 
 
+def get_model_params(model_meta):
+    """Extract params from model metadata, preferring params or summing total+active if available."""
+    params = model_meta.get("params")
+    if params is not None:
+        return params
+    total_params = model_meta.get("total_params")
+    active_params = model_meta.get("active_params")
+    if total_params is not None and active_params is not None:
+        return total_params, active_params
+    return None  # Return None if no params information found
+
+
 def process_unprocessed_conversations(dsn, batch_size=10):
     """Process conversations in batches that don't have token counts."""
     conn = None
@@ -100,6 +112,13 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             conv_b
                         )
 
+                        model_a_meta = get_model_metadata(conv["model_a_name"])
+                        model_b_meta = get_model_metadata(conv["model_b_name"])
+
+                        # Get model parameters
+                        model_a_params = get_model_params(model_a_meta)
+                        model_b_params = get_model_params(model_b_meta)
+
                         # Update conversation with token counts and model metadata
                         cursor.execute(
                             """
@@ -123,11 +142,16 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     #                                 conv_b = %s,
                     #                                 total_conv_a_output_tokens = %s,
                     #                                 total_conv_b_output_tokens = %s,
+
+                    # model_a_params = %s,
+                    # model_b_params = %s
                     #                             WHERE id = %s
                     #                             """,
                     #                             (
                     #                                 Json(enriched_conv_a),
                     #                                 Json(enriched_conv_b),
+                    # model_a_params,
+                    # model_b_params,
                     #                                 total_conv_a_tokens,
                     #                                 total_conv_b_tokens,
                     #                                 conv["id"],
