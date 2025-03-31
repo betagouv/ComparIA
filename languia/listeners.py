@@ -669,7 +669,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             send_btn: gr.update(visible=show_send_btn_and_textbox),
         }
 
-    chaussette = gr.on(
+    first_text_event = gr.on(
         triggers=[
             model_dropdown.submit,
         ],
@@ -690,7 +690,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [conclude_btn],
         show_progress="hidden",
         # TODO: refacto possible with .success() and more explicit error state
-    ).then(
+    )
+    
+    conclude_event = first_text_event.then(
         fn=enable_conclude,
         inputs=[app_state, textbox, conv_a],
         outputs=[textbox, conclude_btn, send_btn],
@@ -709,7 +711,7 @@ setTimeout(() => {
         show_progress="hidden",
     )
 
-    chaussure = gr.on(
+    more_questions = gr.on(
         triggers=[
             textbox.submit,
             send_btn.click,
@@ -739,7 +741,9 @@ setTimeout(() => {
 }, 500);
 }""",
         show_progress="hidden",
-    ).then(
+    )
+    
+    more_responses = more_questions.then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
@@ -749,7 +753,9 @@ setTimeout(() => {
         show_progress="hidden",
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
-    ).then(
+    )
+    
+    more_scroll = more_responses.then(
         fn=enable_conclude,
         inputs=[app_state, textbox, conv_a],
         outputs=[textbox, conclude_btn, send_btn],
@@ -857,7 +863,7 @@ nextScreen.scrollIntoView({
     def coucou():
         print("coucou")
     from languia.block_arena import stop_btn
-    stop_btn.click(fn=coucou,cancels=[chaussure, chaussette])
+    stop_btn.click(fn=coucou,cancels=[more_responses, more_scroll, more_questions, first_text_event, conclude_event])
 
     @chatbot.like(
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
