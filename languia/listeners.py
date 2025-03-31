@@ -669,7 +669,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             send_btn: gr.update(visible=show_send_btn_and_textbox),
         }
 
-    gr.on(
+    chaussette = gr.on(
         triggers=[
             model_dropdown.submit,
         ],
@@ -709,7 +709,7 @@ setTimeout(() => {
         show_progress="hidden",
     )
 
-    gr.on(
+    chaussure = gr.on(
         triggers=[
             textbox.submit,
             send_btn.click,
@@ -854,6 +854,10 @@ nextScreen.scrollIntoView({
 }""",
         show_progress="hidden",
     )
+    def coucou():
+        print("coucou")
+    from languia.block_arena import stop_btn
+    stop_btn.click(fn=coucou,cancels=[chaussure, chaussette])
 
     @chatbot.like(
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
