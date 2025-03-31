@@ -331,18 +331,6 @@
 			});
 		}
 	}
-
-	function stop_generating(): void {
-		// 		undo: UndoRetryData;
-// stop?
-// retry?
-		dispatch("like", {
-				index: msg.index,
-				value: msg.content,
-				liked: msg.liked,
-				prefs: selected,
-			});
-	}
 </script>
 
 {#if value !== null && value.length > 0}
@@ -452,9 +440,7 @@
 			{/if}
 		</div>
 	{/if}
-	{#if generating}
-	<button class="stop-generation" on:click={() => stop_generating()} >Stop ?</button>
-	{/if}
+
 	{#if hasError}
 		<div class="fr-py-4w fr-mb-4w error rounded-tile fr-container">
 			<h3>
