@@ -6,7 +6,7 @@ from psycopg2 import sql
 from psycopg2.extras import Json, DictCursor
 
 # Load model metadata from file (assuming TOML format)
-with open("models-extra-info.toml", "r") as f:
+with open("models-extra-info.toml", "rb") as f:
     MODELS = tomli.load(f)
 
 
@@ -27,8 +27,8 @@ def process_conversation(conversation):
         output_tokens = 0
 
         if content:
-            if metadata.get('output_tokens', 0) != 0:
-                output_tokens = metadata.get('output_tokens', 0)
+            if metadata.get("output_tokens", 0) != 0:
+                output_tokens = metadata.get("output_tokens", 0)
             else:
                 output_tokens = count_tokens(content)
 
@@ -61,7 +61,7 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                 # Get batch of unprocessed conversations with model_a_name
                 cursor.execute(
                     """
-                    SELECT id, conv_a, conv_b, model_a_name
+                    SELECT id, conversation_a, conversation_b, model_a_name, model_b_name
                     FROM conversations
                     WHERE total_conv_a_output_tokens IS NULL
                     OR total_conv_b_output_tokens IS NULL
@@ -83,14 +83,14 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 
                         # Process conversations
                         conv_a = (
-                            json.loads(conv["conv_a"])
-                            if isinstance(conv["conv_a"], str)
-                            else conv["conv_a"]
+                            json.loads(conv["conversation_a"])
+                            if isinstance(conv["conversation_a"], str)
+                            else conv["conversation_a"]
                         )
                         conv_b = (
                             json.loads(conv["conv_b"])
-                            if isinstance(conv["conv_b"], str)
-                            else conv["conv_b"]
+                            if isinstance(conv["conversation_b"], str)
+                            else conv["conversation_b"]
                         )
 
                         enriched_conv_a, total_conv_a_tokens = process_conversation(
@@ -106,7 +106,7 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             UPDATE conversations
                             SET 
                                 total_conv_a_output_tokens = %s,
-                                total_conv_b_output_tokens = %s,
+                                total_conv_b_output_tokens = %s
                             WHERE id = %s
                             """,
                             (
@@ -115,24 +115,24 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                                 conv["id"],
                             ),
                         )
-# cursor.execute(
-#                             """
-#                             UPDATE conversations
-#                             SET 
-#                                 conv_a = %s,
-#                                 conv_b = %s,
-#                                 total_conv_a_output_tokens = %s,
-#                                 total_conv_b_output_tokens = %s,
-#                             WHERE id = %s
-#                             """,
-#                             (
-#                                 Json(enriched_conv_a),
-#                                 Json(enriched_conv_b),
-#                                 total_conv_a_tokens,
-#                                 total_conv_b_tokens,
-#                                 conv["id"],
-#                             ),
-#                         )
+                    # cursor.execute(
+                    #                             """
+                    #                             UPDATE conversations
+                    #                             SET
+                    #                                 conv_a = %s,
+                    #                                 conv_b = %s,
+                    #                                 total_conv_a_output_tokens = %s,
+                    #                                 total_conv_b_output_tokens = %s,
+                    #                             WHERE id = %s
+                    #                             """,
+                    #                             (
+                    #                                 Json(enriched_conv_a),
+                    #                                 Json(enriched_conv_b),
+                    #                                 total_conv_a_tokens,
+                    #                                 total_conv_b_tokens,
+                    #                                 conv["id"],
+                    #                             ),
+                    #                         )
                     except Exception as e:
                         print(f"Error processing conversation {conv['id']}: {e}")
                         conn.rollback()
