@@ -117,14 +117,17 @@
             }
 
             .column {
-              flex-direction: "column";
+              flex-direction: column;
             }
             
             
 @media (min-width: 48em) {
             .md-row {
-              flex-direction: "row";
+              flex-direction: row;
               
+            }
+            .md-text-left {
+              text-align: left;
             }
           }
           </style>
@@ -138,8 +141,8 @@
 <div id="second-header" class="fr-container--fluid fr-py-1w">
   <div class="fr-mb-0 fr-container fr-grid-row">
     <div class="flex fr-col-12 fr-col-md-8 align-center column md-row">
-      <div><span class="step-badge">Étape {{ step }}/2</span></div>
-      <p class="fr-ml-1w">
+      <div><span class="step-badge fr-mt-md-0 fr-mb-md-0 fr-mt-1w fr-mb-3v">Étape {{ step }}/2</span></div>
+      <p class="fr-ml-1w fr-mb-md-0 fr-mb-md-1v text-center md-text-left">
         <strong class="text-dark-grey">
           {% if step == 1 %}
           Que pensez-vous des réponses ?
