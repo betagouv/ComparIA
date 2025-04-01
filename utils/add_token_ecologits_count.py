@@ -23,24 +23,28 @@ def count_tokens(text):
 
 
 def process_conversation(conversation):
-    """Processes a conversation, counts tokens, and returns enriched conversation and total tokens."""
+    """Processes a conversation, counts tokens for assistant messages, and returns enriched conversation and total assistant tokens."""
     print("Processing conversation...")
     if not conversation:
         print("DEBUG: process_conversation received an empty conversation.")
         return [], 0
 
-    total_conv_output_tokens = 0
+    total_assistant_output_tokens = 0
     enriched_conversation = []
+
+    # Filter only assistant messages for metadata checks
+    assistant_messages = [msg for msg in conversation if msg.get("role") == "assistant"]
+
     metadata_filled = any(
-        "output_tokens" in msg.get("metadata", {}) for msg in conversation
+        "output_tokens" in msg.get("metadata", {}) for msg in assistant_messages
     )
     metadata_not_filled = any(
-        "output_tokens" not in msg.get("metadata", {}) for msg in conversation
+        "output_tokens" not in msg.get("metadata", {}) for msg in assistant_messages
     )
 
     if metadata_filled and metadata_not_filled:
         print(
-            "WARNING: Some messages in the conversation have 'output_tokens' in metadata, while others don't."
+            "WARNING: Some assistant messages have 'output_tokens' in metadata, while others don't."
         )
 
     for message in conversation:
@@ -51,38 +55,45 @@ def process_conversation(conversation):
         existing_output_tokens = metadata.get("output_tokens")
 
         if content:
-            if existing_output_tokens is not None and existing_output_tokens != 0:
+            if role == "assistant":
+                if existing_output_tokens is not None and existing_output_tokens != 0:
+                    output_tokens = existing_output_tokens
+                    computed_tokens = count_tokens(content)
+                    if computed_tokens != output_tokens:
+                        print(
+                            f"WARNING: Computed output tokens ({computed_tokens}) differ from existing metadata output tokens ({output_tokens}) for assistant message."
+                        )
+                else:
+                    output_tokens = count_tokens(content)
+
+                total_assistant_output_tokens += output_tokens
+
+            elif existing_output_tokens is not None and existing_output_tokens != 0:
                 output_tokens = existing_output_tokens
                 computed_tokens = count_tokens(content)
                 if computed_tokens != output_tokens:
                     print(
-                        f"WARNING: Computed output tokens ({computed_tokens}) differ from existing metadata output tokens ({output_tokens}) for a message with role '{role}'."
+                        f"WARNING: Computed output tokens ({computed_tokens}) differ from existing metadata output tokens ({output_tokens}) for a non-assistant message with role '{role}'."
                     )
-                # print(f"  Message with role '{role}' already has output_tokens: {output_tokens}")
             else:
                 output_tokens = count_tokens(content)
-                # print(f"  Message with role '{role}' - Token count: {output_tokens}")
-
-            if role == "assistant":
-                total_conv_output_tokens += output_tokens
-                # print(f"  Assistant message - Total output tokens so far: {total_conv_output_tokens}")
 
             metadata["output_tokens"] = output_tokens
             message["metadata"] = metadata
             enriched_conversation.append(message)
 
     print(
-        f"Conversation processed. Total assistant output tokens: {total_conv_output_tokens}"
+        f"Conversation processed. Total assistant output tokens: {total_assistant_output_tokens}"
     )
-    if total_conv_output_tokens == 0 and conversation:
+    if total_assistant_output_tokens == 0 and assistant_messages:
         print(
-            "DEBUG: process_conversation returned 0 total tokens for a non-empty conversation."
+            "WARNING: process_conversation returned 0 total assistant tokens for an assistant-answered conversation."
         )
-    elif total_conv_output_tokens == 0 and not conversation:
+    elif total_assistant_output_tokens == 0 and not assistant_messages:
         print(
-            "DEBUG: process_conversation returned 0 total tokens for an empty conversation."
+            "DEBUG: process_conversation returned 0 total assistant tokens for an unanswered."
         )
-    return enriched_conversation, total_conv_output_tokens
+    return enriched_conversation, total_assistant_output_tokens
 
 
 def get_model_metadata(model_name):
