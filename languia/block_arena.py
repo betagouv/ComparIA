@@ -177,6 +177,7 @@ with gr.Blocks(
         with gr.Row(
             visible=False,
             elem_id="supervote-area",
+            # FIXME: bottom margin too imprecise
             elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
         ) as supervote_area:
 

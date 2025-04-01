@@ -5,7 +5,7 @@ from litellm import token_counter
 
 from jinja2 import Environment, FileSystemLoader
 
-from ecologits.tracers.utils import llm_impacts, compute_llm_impacts, electricity_mixes
+from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
 size_desc = {
     "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
