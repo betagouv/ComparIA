@@ -171,6 +171,64 @@ def process_unprocessed_conversations(dsn, batch_size=10):
         if conn:
             conn.close()
 
+from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
+
+def get_llm_impact(
+    model_extra_info, token_count: int, request_latency: float):
+    
+    
+    if "active_params" in model_extra_info and "total_params" in model_extra_info:
+        # TODO: add request latency
+        model_active_parameter_count = int(model_extra_info["active_params"])
+        model_total_parameter_count = int(model_extra_info["total_params"])
+        if (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q8"
+        ):
+            model_active_parameter_count = int(model_extra_info["active_params"]) // 2
+            model_total_parameter_count = int(model_extra_info["total_params"]) // 2
+    else:
+        if "params" in model_extra_info:
+            if (
+                "quantization" in model_extra_info
+                and model_extra_info.get("quantization", None) == "q8"
+            ):
+                model_active_parameter_count = int(model_extra_info["params"]) // 2
+                model_total_parameter_count = int(model_extra_info["params"]) // 2
+            else:
+                # TODO: add request latency
+                model_active_parameter_count = int(model_extra_info["params"])
+                model_total_parameter_count = int(model_extra_info["params"])
+        else:
+            return None
+
+    # TODO: move to config.py
+    electricity_mix_zone = "WOR"
+    electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
+    if_electricity_mix_adpe = electricity_mix.adpe
+    if_electricity_mix_pe = electricity_mix.pe
+    if_electricity_mix_gwp = electricity_mix.gwp
+
+    impact = compute_llm_impacts(
+        model_active_parameter_count=model_active_parameter_count,
+        model_total_parameter_count=model_total_parameter_count,
+        output_token_count=token_count,
+        if_electricity_mix_adpe=if_electricity_mix_adpe,
+        if_electricity_mix_pe=if_electricity_mix_pe,
+        if_electricity_mix_gwp=if_electricity_mix_gwp,
+        request_latency=request_latency,
+    )
+    kwh = convert_range_to_value(impact.energy.value)
+    # co2 = convert_range_to_value(model_a_impact.gwp.value)
+
+
+def convert_range_to_value(value_or_range):
+
+    if hasattr(value_or_range, "min"):
+        return (value_or_range.min + value_or_range.max) / 2
+    else:
+        return value_or_range
+
 
 if __name__ == "__main__":
     import os
