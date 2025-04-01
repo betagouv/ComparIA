@@ -105,58 +105,53 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             else conv["conversation_b"]
                         )
 
-                        enriched_conv_a, total_conv_a_tokens = process_conversation(
+                        # Don't overwrite convs yet
+                        _enriched_conv_a, total_conv_a_tokens = process_conversation(
                             conv_a
                         )
-                        enriched_conv_b, total_conv_b_tokens = process_conversation(
+                        _enriched_conv_b, total_conv_b_tokens = process_conversation(
                             conv_b
                         )
 
                         model_a_meta = get_model_metadata(conv["model_a_name"])
                         model_b_meta = get_model_metadata(conv["model_b_name"])
-
                         # Get model parameters
                         model_a_params = get_model_params(model_a_meta)
                         model_b_params = get_model_params(model_b_meta)
 
+                        total_conv_a_kwh = get_llm_impact(
+                            model_a_meta, total_conv_a_tokens
+                        )
+                        total_conv_b_kwh = get_llm_impact(
+                            model_b_meta, total_conv_b_tokens
+                        )
                         # Update conversation with token counts and model metadata
                         cursor.execute(
                             """
                             UPDATE conversations
                             SET 
                                 total_conv_a_output_tokens = %s,
-                                total_conv_b_output_tokens = %s
+                                total_conv_b_output_tokens = %s,
+                    model_a_params = %s,
+                    model_b_params = %s,
+                    total_conv_a_kwh = %s
+                    total_conv_b_kwh = %s
                             WHERE id = %s
                             """,
                             (
                                 total_conv_a_tokens,
                                 total_conv_b_tokens,
+                                model_a_params,
+                                model_b_params,
+                                total_conv_a_kwh,
+                                total_conv_b_kwh,
                                 conv["id"],
                             ),
                         )
-                    # cursor.execute(
-                    #                             """
-                    #                             UPDATE conversations
-                    #                             SET
                     #                                 conv_a = %s,
                     #                                 conv_b = %s,
-                    #                                 total_conv_a_output_tokens = %s,
-                    #                                 total_conv_b_output_tokens = %s,
 
-                    # model_a_params = %s,
-                    # model_b_params = %s
-                    #                             WHERE id = %s
-                    #                             """,
-                    #                             (
                     #                                 Json(enriched_conv_a),
-                    #                                 Json(enriched_conv_b),
-                    # model_a_params,
-                    # model_b_params,
-                    #                                 total_conv_a_tokens,
-                    #                                 total_conv_b_tokens,
-                    #                                 conv["id"],
-                    #                             ),
-                    #                         )
                     except Exception as e:
                         print(f"Error processing conversation {conv['id']}: {e}")
                         conn.rollback()
@@ -171,12 +166,12 @@ def process_unprocessed_conversations(dsn, batch_size=10):
         if conn:
             conn.close()
 
+
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
-def get_llm_impact(
-    model_extra_info, token_count: int, request_latency: float):
-    
-    
+
+def get_llm_impact(model_extra_info, token_count: int):
+
     if "active_params" in model_extra_info and "total_params" in model_extra_info:
         # TODO: add request latency
         model_active_parameter_count = int(model_extra_info["active_params"])
@@ -216,9 +211,10 @@ def get_llm_impact(
         if_electricity_mix_adpe=if_electricity_mix_adpe,
         if_electricity_mix_pe=if_electricity_mix_pe,
         if_electricity_mix_gwp=if_electricity_mix_gwp,
-        request_latency=request_latency,
+        request_latency=None,
     )
     kwh = convert_range_to_value(impact.energy.value)
+    return kwh
     # co2 = convert_range_to_value(model_a_impact.gwp.value)
 
 
