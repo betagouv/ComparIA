@@ -119,17 +119,18 @@
             .column {
               flex-direction: column;
             }
-            
-            
-@media (min-width: 48em) {
-            .md-row {
-              flex-direction: row;
-              
+
+
+            @media (min-width: 48em) {
+              .md-row {
+                flex-direction: row;
+
+              }
+
+              .md-text-left {
+                text-align: left !important;
+              }
             }
-            .md-text-left {
-              text-align: left !important;
-            }
-          }
           </style>
 
         </div>
@@ -168,13 +169,13 @@
         &nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="mode-desc"></a>
       </div>
       {% else %}
-
+      <div class="text-center">
         <!--<a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank"><svg width="21" height="20" viewBox="0 0 21 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
                 
             </svg>&nbsp;Reposer ma question</a>-->
         <a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank">Nouvelle discussion</a>
-       
+      </div>
       {% endif %}
     </div>
   </div>
