@@ -14,27 +14,50 @@ print(f"Model metadata loaded successfully. Found {len(MODELS)} model entries.")
 
 def count_tokens(text):
     """Counts the number of tokens in a given text using tiktoken."""
-    # text = text.replace("\n", " ")
     num_tokens = len(tiktoken.get_encoding("cl100k_base").encode(text))
-    # print(f"Counting tokens for text: '{text[:50]}...' - Token count: {num_tokens}") # Could be too verbose
+    if num_tokens == 0 and text:
+        print(f"DEBUG: count_tokens returned 0 for non-empty text: '{text[:100]}...'")
+    elif num_tokens == 0 and not text:
+        print("DEBUG: count_tokens returned 0 for empty text.")
     return num_tokens
 
 
 def process_conversation(conversation):
     """Processes a conversation, counts tokens, and returns enriched conversation and total tokens."""
     print("Processing conversation...")
+    if not conversation:
+        print("DEBUG: process_conversation received an empty conversation.")
+        return [], 0
+
     total_conv_output_tokens = 0
     enriched_conversation = []
+    metadata_filled = any(
+        "output_tokens" in msg.get("metadata", {}) for msg in conversation
+    )
+    metadata_not_filled = any(
+        "output_tokens" not in msg.get("metadata", {}) for msg in conversation
+    )
+
+    if metadata_filled and metadata_not_filled:
+        print(
+            "WARNING: Some messages in the conversation have 'output_tokens' in metadata, while others don't."
+        )
 
     for message in conversation:
         content = message.get("content")
         metadata = message.get("metadata", {})
         output_tokens = 0
         role = message.get("role")
+        existing_output_tokens = metadata.get("output_tokens")
 
         if content:
-            if metadata.get("output_tokens", 0) != 0:
-                output_tokens = metadata.get("output_tokens", 0)
+            if existing_output_tokens is not None and existing_output_tokens != 0:
+                output_tokens = existing_output_tokens
+                computed_tokens = count_tokens(content)
+                if computed_tokens != output_tokens:
+                    print(
+                        f"WARNING: Computed output tokens ({computed_tokens}) differ from existing metadata output tokens ({output_tokens}) for a message with role '{role}'."
+                    )
                 # print(f"  Message with role '{role}' already has output_tokens: {output_tokens}")
             else:
                 output_tokens = count_tokens(content)
@@ -51,6 +74,14 @@ def process_conversation(conversation):
     print(
         f"Conversation processed. Total assistant output tokens: {total_conv_output_tokens}"
     )
+    if total_conv_output_tokens == 0 and conversation:
+        print(
+            "DEBUG: process_conversation returned 0 total tokens for a non-empty conversation."
+        )
+    elif total_conv_output_tokens == 0 and not conversation:
+        print(
+            "DEBUG: process_conversation returned 0 total tokens for an empty conversation."
+        )
     return enriched_conversation, total_conv_output_tokens
 
 
@@ -66,14 +97,17 @@ def get_model_params(model_meta):
     params = model_meta.get("params")
     if params is not None:
         print(f"  Model metadata contains 'params': {params}")
-        return params
+        return float(params)
     total_params = model_meta.get("total_params")
     active_params = model_meta.get("active_params")
     if total_params is not None and active_params is not None:
         print(
             f"  Model metadata contains 'total_params': {total_params} and 'active_params': {active_params}"
         )
-        return total_params, active_params
+        return {
+            "total_params": float(total_params),
+            "active_params": float(active_params),
+        }
     print(
         f"  No 'params' or 'total_params' and 'active_params' found in model metadata."
     )
@@ -84,6 +118,8 @@ def process_unprocessed_conversations(dsn, batch_size=10):
     """Process conversations in batches that don't have token counts."""
     print("Starting process_unprocessed_conversations...")
     conn = None
+    processed_count = 0
+    error_count = 0
     try:
         print(f"Connecting to the database using DSN: '{dsn}'")
         conn = psycopg2.connect(dsn)
@@ -119,9 +155,12 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     print("No more unprocessed conversations found. Exiting loop.")
                     break  # No more conversations to process
 
+                num_conversations_in_batch = len(conversations)
                 print(
-                    f"Fetched {len(conversations)} conversations for processing in this batch."
+                    f"Fetched {num_conversations_in_batch} conversations for processing in this batch."
                 )
+                batch_processed_count = 0
+                batch_error_count = 0
 
                 for conv in conversations:
                     conversation_id = conv["id"]
@@ -165,11 +204,21 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 
                         # Get model parameters
                         print(f"  Getting parameters for model A: '{model_a_name}'")
-                        model_a_params = get_model_params(model_a_meta)
+                        model_a_params_raw = get_model_params(model_a_meta)
+                        model_a_params = (
+                            json.dumps(model_a_params_raw)
+                            if model_a_params_raw is not None
+                            else None
+                        )
                         print(f"  Getting parameters for model B: '{model_b_name}'")
-                        model_b_params = get_model_params(model_b_meta)
-                        print(f"  Model A parameters: {model_a_params}")
-                        print(f"  Model B parameters: {model_b_params}")
+                        model_b_params_raw = get_model_params(model_b_meta)
+                        model_b_params = (
+                            json.dumps(model_b_params_raw)
+                            if model_b_params_raw is not None
+                            else None
+                        )
+                        print(f"  Model A parameters (JSON): {model_a_params}")
+                        print(f"  Model B parameters (JSON): {model_b_params}")
 
                         print(
                             f"  Calculating LLM impact for conversation A (ID: {conversation_id})..."
@@ -218,6 +267,7 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                                 conversation_id,
                             ),
                         )
+                        batch_processed_count += 1
                         #                                 conv_a = %s,
                         #                                 conv_b = %s,
 
@@ -228,13 +278,19 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                         print(
                             f"Transaction rolled back for conversation ID {conversation_id}."
                         )
+                        batch_error_count += 1
                         continue
 
                 print(
-                    f"Committing transaction for the processed batch of {len(conversations)} conversations."
+                    f"Committing transaction for the processed batch of {num_conversations_in_batch} conversations."
                 )
                 conn.commit()
-                print(f"Processed {len(conversations)} conversations in this batch.")
+                print(
+                    f"Processed {batch_processed_count} conversations successfully in this batch."
+                )
+                print(f"Encountered {batch_error_count} errors in this batch.")
+                processed_count += batch_processed_count
+                error_count += batch_error_count
 
     except psycopg2.Error as e:
         print(f"Database error: {e}")
@@ -245,6 +301,9 @@ def process_unprocessed_conversations(dsn, batch_size=10):
             print("Database connection closed.")
 
     print("Finished process_unprocessed_conversations.")
+    print(f"\n--- Batch Processing Summary ---")
+    print(f"Total conversations processed: {processed_count}")
+    print(f"Total errors encountered: {error_count}")
 
 
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
