@@ -5,10 +5,13 @@ import tomli
 from psycopg2 import sql
 from psycopg2.extras import Json, DictCursor
 
+
 # Load model metadata from file (assuming TOML format)
 print("Loading model metadata from models-extra-info.toml...")
 with open("models-extra-info.toml", "rb") as f:
-    MODELS = tomli.load(f)
+    MODELS_RAW = tomli.load(f)
+    MODELS = dict((k.lower(), v) for k, v in MODELS_RAW.items())
+
 print(f"Model metadata loaded successfully. Found {len(MODELS)} model entries.")
 
 
@@ -43,7 +46,7 @@ def process_conversation(conversation):
     )
 
     if metadata_filled and metadata_not_filled:
-        print(
+        input(
             "WARNING: Some assistant messages have 'output_tokens' in metadata, while others don't."
         )
 
@@ -60,7 +63,7 @@ def process_conversation(conversation):
                     output_tokens = existing_output_tokens
                     computed_tokens = count_tokens(content)
                     if computed_tokens != output_tokens:
-                        print(
+                        input(
                             f"WARNING: Computed output tokens ({computed_tokens}) differ from existing metadata output tokens ({output_tokens}) for assistant message."
                         )
                 else:
@@ -68,18 +71,10 @@ def process_conversation(conversation):
 
                 total_assistant_output_tokens += output_tokens
 
-            elif existing_output_tokens is not None and existing_output_tokens != 0:
-                output_tokens = existing_output_tokens
-                computed_tokens = count_tokens(content)
-                if computed_tokens != output_tokens:
-                    print(
-                        f"WARNING: Computed output tokens ({computed_tokens}) differ from existing metadata output tokens ({output_tokens}) for a non-assistant message with role '{role}'."
-                    )
-            else:
-                output_tokens = count_tokens(content)
-
-            metadata["output_tokens"] = output_tokens
-            message["metadata"] = metadata
+           
+            
+                metadata["output_tokens"] = output_tokens
+                message["metadata"] = metadata
             enriched_conversation.append(message)
 
     print(
@@ -115,13 +110,18 @@ def get_model_params(model_meta):
         print(
             f"  Model metadata contains 'total_params': {total_params} and 'active_params': {active_params}"
         )
-        return {
-            "total_params": float(total_params),
-            "active_params": float(active_params),
-        }
+        return [
+            float(active_params),
+            float(total_params),
+        ]
     print(
         f"  No 'params' or 'total_params' and 'active_params' found in model metadata."
     )
+    friendly_size = model_meta.get("friendly_size")
+    PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
+    if friendly_size and friendly_size in PARAMS_SIZE_MAP:
+        return PARAMS_SIZE_MAP[friendly_size]
+
     return None  # Return None if no params information found
 
 
@@ -175,10 +175,10 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 
                 for conv in conversations:
                     conversation_id = conv["id"]
-                    model_a_name = conv["model_a_name"]
-                    model_b_name = conv["model_b_name"]
                     print(f"Processing conversation with ID: {conversation_id}")
                     try:
+                        model_a_name = conv["model_a_name"].lower()
+                        model_b_name = conv["model_b_name"].lower()
                         print(f"  Getting metadata for model A: '{model_a_name}'")
                         model_a_meta = get_model_metadata(model_a_name)
                         print(f"  Getting metadata for model B: '{model_b_name}'")
@@ -334,6 +334,13 @@ def get_llm_impact(model_extra_info, token_count: int):
             print("  Applying q8 quantization.")
             model_active_parameter_count = int(model_extra_info["active_params"]) // 2
             model_total_parameter_count = int(model_extra_info["total_params"]) // 2
+        elif (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q4"
+        ):
+            print("  Applying q4 quantization.")
+            model_active_parameter_count = int(model_extra_info["active_params"]) / 4
+            model_total_parameter_count = int(model_extra_info["total_params"]) / 4
     else:
         if "params" in model_extra_info:
             print("  Using 'params' from model info.")
@@ -348,10 +355,18 @@ def get_llm_impact(model_extra_info, token_count: int):
                 # TODO: add request latency
                 model_active_parameter_count = int(model_extra_info["params"])
                 model_total_parameter_count = int(model_extra_info["params"])
-        else:
+        elif "friendly_size" in model_extra_info:
             print(
-                "  No parameter information found in model info. Returning None for LLM impact."
+                "  No parameter information found in model info. Friendly size used."
             )
+            friendly_size = model_extra_info.get("friendly_size")
+            PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
+            if friendly_size and friendly_size in PARAMS_SIZE_MAP:
+                model_total_parameter_count = PARAMS_SIZE_MAP[friendly_size]
+                model_active_parameter_count = PARAMS_SIZE_MAP[friendly_size]
+
+        else:
+            input("WARNING: Missing ecological impact")
             return None
 
     # TODO: move to config.py
