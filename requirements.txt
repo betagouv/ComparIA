@@ -15,3 +15,4 @@ pandas
 psycopg2-binary
 tiktoken
 langfuse
+pyarrow

@@ -5,7 +5,11 @@ import os
 import subprocess
 import os
 import shutil
+import hashlib
 from datetime import datetime
+import time
+from sqlalchemy import create_engine
+from sqlalchemy.exc import OperationalError
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -14,34 +18,112 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Check database configuration
-if not os.getenv("DATABASE_URI"):
-    logger.error("Cannot connect to the database: no configuration provided")
-    exit(1)
+# Define datasets and their corresponding queries and repository paths
+DATASET_CONFIG = {
+    "votes": {
+        # id	timestamp	model_a_name	model_b_name	model_pair_name	chosen_model_name	opening_msg	both_equal	conversation_a	conversation_b	conv_turns	selected_category	is_unedited_prompt	conversation_pair_id	session_hash	visitor_id	conv_comments_a	conv_comments_b	conv_useful_a	conv_useful_b	conv_creative_a	conv_creative_b	conv_clear_formatting_a	conv_clear_formatting_b	conv_incorrect_a	conv_incorrect_b	conv_superficial_a	conv_superficial_b	conv_instructions_not_followed_a	conv_instructions_not_followed_b	system_prompt_b	system_prompt_a	conv_complete_a	conv_complete_b
+        "query": """SELECT v.*
+FROM votes v
+WHERE v.archived = FALSE
+AND EXISTS (
+    SELECT 1
+    FROM conversations c
+    WHERE c.conversation_pair_id = v.conversation_pair_id
+    AND c.contains_pii = FALSE
+    AND c.pii_analyzed = TRUE
+)
+;""",
+        "repo": "comparia-votes",
+    },
+    "reactions": {
+        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, country, city, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, chatbot_index, question_id, system_prompt
+FROM reactions r
+WHERE r.archived = FALSE
+AND EXISTS (
+    SELECT 1
+    FROM conversations c
+    WHERE c.conversation_pair_id = r.conversation_pair_id
+    AND c.contains_pii = FALSE
+    AND c.pii_analyzed = TRUE
+)
+;""",
+        "repo": "comparia-reactions",
+    },
+    "conversations_raw": {
+        "query": """SELECT *
+FROM conversations
+WHERE archived = FALSE
+;""",
+        "repo": "comparia-conversations_raw",
+    },
+    "conversations": {
+        "query": """SELECT
+    id,
+    timestamp,
+    model_a_name,
+    model_b_name,
+    conversation_a,
+    conversation_b,
+    conv_turns,
+    conversation_pair_id,
+    conv_a_id,
+    conv_b_id,
+    session_hash,
+    visitor_id,
+    country,
+    city,
+    model_pair_name,
+    opening_msg,
+    system_prompt_a,
+    system_prompt_b,
+    selected_category,
+    is_unedited_prompt,
+    mode,
+    custom_models_selection,
+    short_summary,
+    keywords,
+    categories,
+    languages,
+    total_conv_a_output_tokens,
+    total_conv_b_output_tokens,
+    model_a_params,
+    model_b_params,
+    total_conv_a_kwh,
+    total_conv_b_kwh,
+    ip
+FROM conversations
+WHERE archived = FALSE
+AND pii_analyzed = TRUE
+AND contains_pii = FALSE;""",
+        "repo": "comparia-conversations",
+    },
+}
+
+# Global variable to store the IP to number mapping
+ip_to_number_mapping = {}
 
 
-from sqlalchemy import create_engine
-
-DATABASE_URI = os.getenv("DATABASE_URI")
-
-try:
-    conn = create_engine(DATABASE_URI, execution_options={"stream_results": True})
-    logger.info("Database connection established successfully.")
-except Exception as e:
-    logger.error(f"Failed to connect to the database: {e}")
-    exit(1)
-
-
-ip_map = pd.read_sql_query("SELECT * FROM ip_map", conn)
-
-ip_to_number_mapping = dict(zip(ip_map["ip_address"], (ip_map["id"])))
+def load_ip_mapping():
+    """Loads the IP to number mapping from the database."""
+    global ip_to_number_mapping
+    DATABASE_URI = os.getenv("DATABASE_URI")
+    if not DATABASE_URI:
+        logger.error("Cannot connect to the database: no configuration provided")
+        return False
+    try:
+        engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
+        with engine.connect() as conn:
+            ip_map = pd.read_sql_query("SELECT * FROM ip_map", conn)
+            ip_to_number_mapping = dict(zip(ip_map["ip_address"], (ip_map["id"])))
+        logger.info("IP mapping loaded successfully.")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to load IP mapping: {e}")
+        return False
 
 
 def ip_to_number(ip):
     return ip_to_number_mapping.get(ip, None)
-
-
-import hashlib
 
 
 def hash_md5(value):
@@ -50,15 +132,14 @@ def hash_md5(value):
     return hashlib.md5(value.encode("utf-8")).hexdigest()
 
 
-# Generic fetch function
-def fetch_and_transform_data(table_name, query=None):
+def fetch_and_transform_data(conn, table_name, query=None):
     """
     Fetch data from a database table and apply transformations.
     Optionally process visitor_id (hash and fallback to ip_map).
     """
-    query = query or f"SELECT * FROM {table_name} WHERE archived = FALSE"
+
     try:
-        logger.info(f"Fetching data from table: {table_name}")
+        logger.info(f"Fetching data for table: {table_name}")
         df = pd.read_sql_query(query, conn)
 
         if "visitor_id" in df.columns:
@@ -77,7 +158,7 @@ def fetch_and_transform_data(table_name, query=None):
                 axis=1,
             )
 
-        columns_to_drop = ["archived", "pii_analyzed", "ip", "ip_id"]
+        columns_to_drop = ["archived", "pii_analyzed", "ip", "ip_id", "chatbot_index"]
         df = df.drop(
             columns=[col for col in columns_to_drop if col in df.columns],
             errors="ignore",
@@ -95,12 +176,12 @@ def export_data(df, table_name):
         return
     export_dir = "datasets"
     if not os.path.exists(export_dir):
-        os.mkdir(export_dir)
+        os.makedirs(export_dir, exist_ok=True)
         logger.info(f"Created export directory: {export_dir}")
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
-        df.to_csv(f"{export_dir}/{table_name}.tsv", sep="\t", index=False)
+        df.to_parquet(f"{export_dir}/{table_name}.parquet")
         df.to_json(f"{export_dir}/{table_name}.jsonl", orient="records", lines=True)
 
         sample_df = df.sample(n=min(len(df), 1000), random_state=42)
@@ -116,182 +197,153 @@ def export_data(df, table_name):
         logger.error(f"Failed to export data for table {table_name}: {e}")
 
 
-def main():
-    repos = [
-        "comparia-conversations",
-        "comparia-reactions",
-        "comparia-votes",
-        "comparia-conversations_raw",
-    ]
-    for repo in repos:
-        repo_path = os.path.join("../", repo)
-        if not os.path.exists(repo_path):
-            logger.error(f"Repository directory not found: {repo_path}")
-            continue
-        result = subprocess.run(
-            ["git", "-C", repo_path, "pull"], capture_output=True, text=True
+def update_repository(repo_path):
+    """Pulls the latest changes for a given repository."""
+    if not os.path.exists(repo_path):
+        logger.error(f"Repository directory not found: {repo_path}")
+        return False
+    result = subprocess.run(
+        ["git", "-C", repo_path, "pull"], capture_output=True, text=True
+    )
+    if result.returncode == 0:
+        logger.info(f"Successfully pulled latest changes for {repo_path}")
+        return True
+    else:
+        logger.error(f"Failed to pull changes for {repo_path}: {result.stderr}")
+        return False
+
+
+def commit_and_push(repo_path):
+    """Commits and pushes changes for a given repository."""
+    if not os.path.exists(repo_path):
+        logger.error(f"Repository directory not found: {repo_path}")
+        return False
+
+    # Check for changes
+    status_result = subprocess.run(
+        ["git", "-C", repo_path, "status", "--porcelain"],
+        capture_output=True,
+        text=True,
+    )
+    if status_result.returncode != 0:
+        logger.error(f"Failed to check status for {repo_path}: {status_result.stderr}")
+        return False
+
+    if status_result.stdout.strip():
+        # Add all changes
+        add_result = subprocess.run(["git", "-C", repo_path, "add", "."])
+        if add_result.returncode != 0:
+            logger.error(f"Failed to add changes in {repo_path}")
+            return False
+
+        # Commit
+        commit_message = (
+            f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
         )
-        if result.returncode == 0:
-            logger.info(f"Successfully pulled latest changes for {repo}")
-        else:
-            logger.error(f"Failed to pull changes for {repo}: {result.stderr}")
+        commit_result = subprocess.run(
+            ["git", "-C", repo_path, "commit", "-m", commit_message]
+        )
+        if commit_result.returncode != 0:
+            logger.error(
+                f"Failed to commit changes in {repo_path}: {commit_result.stderr}"
+            )
+            return False
 
-    queries = {
-        "votes": """SELECT v.*
-FROM votes v
-WHERE v.archived = FALSE
-AND EXISTS (
-    SELECT 1
-    FROM conversations c
-    WHERE c.conversation_pair_id = v.conversation_pair_id
-    AND c.contains_pii = FALSE
-    AND c.pii_analyzed = TRUE
-);""",
-        "reactions": """SELECT r.*
-FROM reactions r
-WHERE r.archived = FALSE
-AND EXISTS (
-    SELECT 1
-    FROM conversations c
-    WHERE c.conversation_pair_id = r.conversation_pair_id
-    AND c.contains_pii = FALSE
-    AND c.pii_analyzed = TRUE
-);""",
-        "conversations_raw": """SELECT *
-FROM conversations
-WHERE archived = FALSE;""",
-        "conversations": """SELECT
-    id,
-    timestamp,
-    model_a_name,
-    model_b_name,
-    conversation_a,
-    conversation_b,
-    conv_turns,
-    system_prompt_a,
-    system_prompt_b,
-    conversation_pair_id,
-    conv_a_id,
-    conv_b_id,
-    session_hash,
-    visitor_id,
-    country,
-    city,
-    model_pair_name,
-    opening_msg,
-    selected_category,
-    is_unedited_prompt,
-    mode,
-    custom_models_selection,
-    short_summary,
-    keywords,
-    categories,
-    languages,
-    total_conv_a_output_tokens,
-    total_conv_b_output_tokens,
-    model_a_params,
-    model_b_params,
-    total_conv_a_kwh,
-    total_conv_b_kwh
-FROM conversations
-WHERE archived = FALSE
-AND pii_analyzed = TRUE
-AND contains_pii = FALSE;""",
-    }
+        # Push
+        # push_result = subprocess.run(["git", "-C", repo_path, "push", "--dry-run"])
+        return True
+        # if push_result.returncode == 0:
+        #     logger.info(f"Successfully pushed changes for {repo_path}")
+        #     return True
+        # else:
+        #     logger.error(
+        #         f"Failed to push changes for {repo_path}: {push_result.stderr}"
+        #     )
+        #     return False
+    else:
+        logger.info(f"No changes to commit in {repo_path}")
+        return True
 
-    for table, query in queries.items():
-        logger.info(f"Processing table: {table}")
-        data = fetch_and_transform_data(table, query=query)
-        export_data(data, table)
 
-    table_repos = {
-        "votes": "../comparia-votes",
-        "reactions": "../comparia-reactions",
-        "conversations": "../comparia-conversations",
-        "conversations_raw": "../comparia-conversations_raw",
-    }
-
-    dataset_dir = "datasets"
-    if not os.path.exists(dataset_dir):
+def process_dataset(dataset_name, dataset_config):
+    """Processes a single dataset."""
+    logger.info(f"Starting processing for dataset: {dataset_name}")
+    DATABASE_URI = os.getenv("DATABASE_URI")
+    if not DATABASE_URI:
         logger.error(
-            f"Dataset directory {dataset_dir} does not exist. No files to copy."
+            f"Cannot process {dataset_name}: no database configuration provided"
         )
         return
 
-    # Copy exported files to respective repositories
-    for filename in os.listdir(dataset_dir):
-        src_path = os.path.join(dataset_dir, filename)
-        if not os.path.isfile(src_path):
-            continue
+    repo_name = dataset_config.get("repo")
+    query = dataset_config.get("query")
 
-        base_name = os.path.splitext(filename)[0]
+    if not repo_name:
+        logger.error(f"No repository defined for dataset: {dataset_name}")
+        return
 
-        main_repo = table_repos.get(base_name)
-        destinations = []
+    repo_path = os.path.join("../", repo_name)
 
-        if main_repo is not None:
-            destinations.append(main_repo)
-
-            for dest_repo in destinations:
-                dest_path = os.path.join(os.getcwd(), dest_repo, filename)
-                try:
-                    shutil.copy(src_path, dest_path)
-                    logger.info(f"Copied {filename} to {dest_repo}")
-                except Exception as e:
-                    logger.error(f"Failed to copy {filename} to {dest_repo}: {e}")
-        else:
-            logger.warning(f"No destination repository found for {filename}")
-
-    # Commit and push changes for each repository
-    for repo in repos:
-        repo_path = os.path.join(os.getcwd(), repo)
-        if not os.path.exists(repo_path):
-            continue
-
-        # Check for changes
-        status_result = subprocess.run(
-            ["git", "-C", repo_path, "status", "--porcelain"],
-            capture_output=True,
-            text=True,
+    # Pull latest changes for the repository
+    if not update_repository(repo_path):
+        logger.error(
+            f"Failed to update repository for {dataset_name}. Skipping dataset."
         )
-        if status_result.returncode != 0:
-            logger.error(f"Failed to check status for {repo}: {status_result.stderr}")
-            continue
+        return
 
-        if status_result.stdout.strip():
-            # Add all changes
-            add_result = subprocess.run(["git", "-C", repo_path, "add", "."])
-            if add_result.returncode != 0:
-                logger.error(f"Failed to add changes in {repo}")
-                continue
+    engine = None
+    conn = None
+    try:
+        engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
+        with engine.connect() as conn:
+            logger.info(f"Database connection established for dataset: {dataset_name}")
 
-            # Commit
-            commit_message = (
-                f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-            )
-            commit_result = subprocess.run(
-                ["git", "-C", repo_path, "commit", "-m", commit_message]
-            )
-            if commit_result.returncode != 0:
-                logger.error(
-                    f"Failed to commit changes in {repo}: {commit_result.stderr}"
-                )
-                continue
+            # Fetch and transform data
+            data = fetch_and_transform_data(conn, dataset_name, query)
 
-            # Push
-            push_result = subprocess.run(["git", "-C", repo_path, "push", "--dry-run"])
-            if push_result.returncode == 0:
-                logger.info(f"Successfully pushed changes for {repo}")
-            else:
-                logger.error(f"Failed to push changes for {repo}: {push_result.stderr}")
-        else:
-            logger.info(f"No changes to commit in {repo}")
+            # Export data
+            export_data(data, dataset_name)
+
+            # Copy exported files to the repository
+            dataset_dir = "datasets"
+            filename_base = dataset_name
+            extensions = [".parquet", ".jsonl", "_samples.tsv", "_samples.jsonl"]
+            for ext in extensions:
+                filename = filename_base + ext
+                src_path = os.path.join(dataset_dir, filename)
+                dest_path = os.path.join(os.getcwd(), repo_path, filename)
+                if os.path.exists(src_path):
+                    try:
+                        shutil.copy(src_path, dest_path)
+                        logger.info(f"Copied {filename} to {repo_name}")
+                    except Exception as e:
+                        logger.error(f"Failed to copy {filename} to {repo_name}: {e}")
+                else:
+                    logger.warning(f"Source file not found: {src_path}")
+
+            # Commit and push changes for the repository
+            commit_and_push(repo_path)
+
+    except OperationalError as e:
+        logger.error(f"Database connection error for dataset {dataset_name}: {e}")
+    except Exception as e:
+        logger.error(f"An error occurred while processing dataset {dataset_name}: {e}")
+    finally:
+        if engine:
+            engine.dispose()
+            logger.info(f"Database connection closed for dataset: {dataset_name}")
+
+
+def main():
+    if not load_ip_mapping():
+        logger.error("Failed to load IP mapping. Exiting.")
+        sys.exit(1)
+
+    for dataset_name, config in DATASET_CONFIG.items():
+        process_dataset(dataset_name, config)
+
+    logger.info("Finished processing all datasets.")
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    finally:
-        if "conn" in locals() and conn:
-            conn.dispose()
-            logger.info("Database connection closed.")
+    main()
