@@ -1,5 +1,4 @@
-
-
+-- Init
 CREATE TABLE IF NOT EXISTS conversations (
     id SERIAL PRIMARY KEY,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -65,3 +64,12 @@ SELECT
 GRANT SELECT ON TABLE conversations TO "languia-ro-stg";
 
 GRANT ALL PRIVILEGES ON TABLE conversations TO "languia-stg";
+
+
+-- 02/04/2025
+ALTER TABLE conversations ADD COLUMN total_conv_a_output_tokens INT;
+ALTER TABLE conversations ADD COLUMN total_conv_b_output_tokens INT;
+ALTER TABLE conversations ADD COLUMN model_a_params JSON;
+ALTER TABLE conversations ADD COLUMN model_b_params JSON;
+ALTER TABLE conversations ADD COLUMN total_conv_a_kwh FLOAT;
+ALTER TABLE conversations ADD COLUMN total_conv_b_kwh FLOAT;
