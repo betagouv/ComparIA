@@ -7,8 +7,8 @@ import os
 import shutil
 import hashlib
 from datetime import datetime
-import time
-from sqlalchemy import create_engine
+import json
+from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -111,6 +111,11 @@ def load_ip_mapping():
         logger.error("Cannot connect to the database: no configuration provided")
         return False
     try:
+        engine = create_engine(DATABASE_URI)
+        with engine.connect() as conn:
+            conn.execute(text("INSERT INTO ip_map (ip_address) SELECT DISTINCT ip FROM conversations WHERE ip IS NOT NULL ON CONFLICT (ip_address) DO NOTHING;"))
+            conn.commit()
+
         engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
         with engine.connect() as conn:
             ip_map = pd.read_sql_query("SELECT * FROM ip_map", conn)
@@ -159,10 +164,18 @@ def fetch_and_transform_data(conn, table_name, query=None):
             )
 
         columns_to_drop = ["archived", "pii_analyzed", "ip", "ip_id", "chatbot_index"]
+        
+        # We could drop 
+        # conversation_a_pii_removed	conversation_b_pii_removed	opening_msg_pii_removed
+        # from conversations_raw : out of date	
         df = df.drop(
             columns=[col for col in columns_to_drop if col in df.columns],
             errors="ignore",
         )
+        for col in ["model_a_params", "model_b_params"]:
+            if col in df.columns:
+                # df[col] = df[col].apply(lambda x: json.loads(x) if isinstance(x, list) else x)
+                df[col] = df[col].apply(lambda x: json.dumps(x))
 
         return df
     except Exception as e:
