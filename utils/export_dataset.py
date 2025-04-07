@@ -36,7 +36,7 @@ AND EXISTS (
         "repo": "comparia-votes",
     },
     "reactions": {
-        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, country, city, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, chatbot_index, question_id, system_prompt
+        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, country, city, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
 FROM reactions r
 WHERE r.archived = FALSE
 AND EXISTS (
@@ -127,6 +127,23 @@ def load_ip_mapping():
         return False
 
 
+
+def load_session_hash_ip():
+
+    global session_hash_to_ip
+    DATABASE_URI = os.getenv("DATABASE_URI")
+    if not DATABASE_URI:
+        logger.error("Cannot connect to the database: no configuration provided")
+        return False
+    engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
+    with engine.connect() as conn:
+        session_hash_to_ip = pd.read_sql_query("SELECT ip, session_hash FROM conversations", conn)
+    return True
+
+def session_hash_to_ip_mapping(session_hash):
+    ip = session_hash_to_ip.get(session_hash, None)
+    return ip_to_number(ip)
+
 def ip_to_number(ip):
     return ip_to_number_mapping.get(ip, None)
 
@@ -152,22 +169,18 @@ def fetch_and_transform_data(conn, table_name, query=None):
             df["visitor_id"] = df["visitor_id"].apply(
                 lambda x: hash_md5(x) if pd.notnull(x) else None
             )
-
             logger.info("Replacing missing visitor_id with hashed IP map ID...")
             df["visitor_id"] = df.apply(
                 lambda row: (
-                    hash_md5(f"ip-{ip_to_number(row['ip'])}")
-                    if pd.isnull(row["visitor_id"]) and pd.notnull(row["ip"])
+                    hash_md5(f"ip-{session_hash_to_ip_mapping(row['session_hash'])}")
+                    if pd.isnull(row["visitor_id"]) and pd.notnull(row["session_hash"])
                     else row["visitor_id"]
                 ),
                 axis=1,
             )
 
-        columns_to_drop = ["archived", "pii_analyzed", "ip", "ip_id", "chatbot_index"]
+        columns_to_drop = ["archived", "pii_analyzed", "ip", "chatbot_index", "conversation_a_pii_removed","conversation_b_pii_removed", "opening_msg_pii_removed"]
         
-        # We could drop 
-        # conversation_a_pii_removed	conversation_b_pii_removed	opening_msg_pii_removed
-        # from conversations_raw : out of date	
         df = df.drop(
             columns=[col for col in columns_to_drop if col in df.columns],
             errors="ignore",
@@ -351,6 +364,8 @@ def main():
     if not load_ip_mapping():
         logger.error("Failed to load IP mapping. Exiting.")
         sys.exit(1)
+
+    load_session_hash_ip()
 
     for dataset_name, config in DATASET_CONFIG.items():
         process_dataset(dataset_name, config)
