@@ -54,7 +54,7 @@ def hash_md5(value):
 def fetch_and_transform_data(table_name, query=None):
     """
     Fetch data from a database table and apply transformations.
-    Prioritize visitor_id and fallback to ip_map if no visitor_id.
+    Optionally process visitor_id (hash and fallback to ip_map).
     """
     query = query or f"SELECT * FROM {table_name} WHERE archived = FALSE"
     try:
@@ -67,8 +67,6 @@ def fetch_and_transform_data(table_name, query=None):
                 lambda x: hash_md5(x) if pd.notnull(x) else None
             )
 
-        # If there are missing visitor_ids, replace them with the MD5 of the ip_map id
-        if "visitor_id" in df.columns:
             logger.info("Replacing missing visitor_id with hashed IP map ID...")
             df["visitor_id"] = df.apply(
                 lambda row: (
@@ -79,29 +77,11 @@ def fetch_and_transform_data(table_name, query=None):
                 axis=1,
             )
 
-        if "archived" in df.columns:
-            df = df.drop(columns=["archived"])
-
-        if "pii_analyzed" in df.columns:
-            df = df.drop(columns=["pii_analyzed"])
-
-        # TODO: move 'complete' column from reactions dataset after 'clear_formatting'
-        # clear_formatting	incorrect
-        # if "complete" in df.columns:
-        #   old_cols = df.columns.values
-        #   new_cols= ['a', 'y', 'b', 'x']
-        #   df = df.reindex(columns=new_cols)
-
-        # Unused
-        # if "country" in df.columns:
-        #     df = df.drop(columns=["country"])
-        # if "city" in df.columns:
-        #     df = df.drop(columns=["city"])
-
-        if "ip" in df.columns:
-            df = df.drop(columns=["ip"])
-        if "ip_id" in df.columns:
-            df = df.drop(columns=["ip_id"])
+        columns_to_drop = ["archived", "pii_analyzed", "ip", "ip_id"]
+        df = df.drop(
+            columns=[col for col in columns_to_drop if col in df.columns],
+            errors="ignore",
+        )
 
         return df
     except Exception as e:
@@ -156,121 +136,79 @@ def main():
         else:
             logger.error(f"Failed to pull changes for {repo}: {result.stderr}")
 
-    # TODO: could use LEFT JOIN
-    # LEFT JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id AND c.contains_pii = TRUE
-    # WHERE v.archived = FALSE AND c.conversation_pair_id IS NULL;
-
     queries = {
-        "votes": """SELECT * FROM votes WHERE archived = FALSE AND EXISTS (
-SELECT 1
+        "votes": """SELECT v.*
+FROM votes v
+WHERE v.archived = FALSE
+AND EXISTS (
+    SELECT 1
+    FROM conversations c
+    WHERE c.conversation_pair_id = v.conversation_pair_id
+    AND c.contains_pii = FALSE
+    AND c.pii_analyzed = TRUE
+);""",
+        "reactions": """SELECT r.*
+FROM reactions r
+WHERE r.archived = FALSE
+AND EXISTS (
+    SELECT 1
+    FROM conversations c
+    WHERE c.conversation_pair_id = r.conversation_pair_id
+    AND c.contains_pii = FALSE
+    AND c.pii_analyzed = TRUE
+);""",
+        "conversations_raw": """SELECT *
 FROM conversations
-WHERE conversations.conversation_pair_id = votes.conversation_pair_id
-AND contains_pii = FALSE
-);
-""",
-        "reactions": """SELECT * FROM reactions WHERE archived = FALSE AND EXISTS (
-SELECT 1
+WHERE archived = FALSE;""",
+        "conversations": """SELECT
+    id,
+    timestamp,
+    model_a_name,
+    model_b_name,
+    conversation_a,
+    conversation_b,
+    conv_turns,
+    system_prompt_a,
+    system_prompt_b,
+    conversation_pair_id,
+    conv_a_id,
+    conv_b_id,
+    session_hash,
+    visitor_id,
+    country,
+    city,
+    model_pair_name,
+    opening_msg,
+    selected_category,
+    is_unedited_prompt,
+    mode,
+    custom_models_selection,
+    short_summary,
+    keywords,
+    categories,
+    languages,
+    total_conv_a_output_tokens,
+    total_conv_b_output_tokens,
+    model_a_params,
+    model_b_params,
+    total_conv_a_kwh,
+    total_conv_b_kwh
 FROM conversations
-WHERE conversations.conversation_pair_id = reactions.conversation_pair_id
-AND contains_pii = FALSE
-);
-""",
-        "conversations": "SELECT * FROM conversations WHERE archived = FALSE and pii_analyzed = TRUE",
+WHERE archived = FALSE
+AND pii_analyzed = TRUE
+AND contains_pii = FALSE;""",
     }
 
     for table, query in queries.items():
         logger.info(f"Processing table: {table}")
-
-        if table == "conversations":
-
-            logger.info("Processing conversations_raw (no PII scrubbing)...")
-
-            data = fetch_and_transform_data("conversations", query=query)
-            export_data(data, "conversations_raw")
-
-            logger.info("Processing conversations with PII scrubbing...")
-            conversations_pii_removed = pd.read_sql_query(
-                "SELECT * FROM conversations WHERE archived = FALSE and pii_analyzed=TRUE",
-                conn,
-            )
-            conversations_pii_removed["visitor_id"] = conversations_pii_removed[
-                "visitor_id"
-            ].apply(lambda x: hash_md5(x) if pd.notnull(x) else None)
-            conversations_pii_removed["visitor_id"] = conversations_pii_removed.apply(
-                lambda row: (
-                    hash_md5(f"ip-{ip_to_number(row['ip'])}")
-                    if pd.isnull(row["visitor_id"]) and pd.notnull(row["ip"])
-                    else row["visitor_id"]
-                ),
-                axis=1,
-            )
-
-            conversations_pii_removed["conversation_a"] = (
-                conversations_pii_removed.apply(
-                    lambda row: (
-                        row["conversation_a_pii_removed"]
-                        if row["contains_pii"]
-                        else row["conversation_a"]
-                    ),
-                    axis=1,
-                )
-            )
-            conversations_pii_removed["conversation_b"] = (
-                conversations_pii_removed.apply(
-                    lambda row: (
-                        row["conversation_b_pii_removed"]
-                        if row["contains_pii"]
-                        else row["conversation_b"]
-                    ),
-                    axis=1,
-                )
-            )
-            conversations_pii_removed["opening_msg"] = conversations_pii_removed.apply(
-                lambda row: (
-                    row["opening_msg_pii_removed"]
-                    if row["contains_pii"]
-                    else row["opening_msg"]
-                ),
-                axis=1,
-            )
-            conversations_pii_removed = conversations_pii_removed.drop(
-                columns=[
-                    "conversation_a_pii_removed",
-                    "conversation_b_pii_removed",
-                    "opening_msg_pii_removed",
-                ]
-            )
-
-            conversations_pii_removed.rename(columns={"contains_pii": "pii_removed"})
-            if "ip" in conversations_pii_removed.columns:
-                conversations_pii_removed = conversations_pii_removed.drop(
-                    columns=["ip"]
-                )
-            if "ip_id" in conversations_pii_removed.columns:
-                conversations_pii_removed = conversations_pii_removed.drop(
-                    columns=["ip_id"]
-                )
-
-            # TODO: refacto in a drop_useless_cols func
-
-            if "archived" in conversations_pii_removed.columns:
-                conversations_pii_removed = conversations_pii_removed.drop(columns=["archived"])
-                
-            if "pii_analyzed" in conversations_pii_removed.columns:
-                conversations_pii_removed = conversations_pii_removed.drop(columns=["pii_analyzed"])
-                
-
-            export_data(conversations_pii_removed, "conversations")
-
-        else:
-            data = fetch_and_transform_data(table, query=query)
-            export_data(data, table)
+        data = fetch_and_transform_data(table, query=query)
+        export_data(data, table)
 
     table_repos = {
         "votes": "../comparia-votes",
         "reactions": "../comparia-reactions",
-        "conversations": "../comparia-conversations_raw",
-        "conversations_pii_removed": "../comparia-conversations",
+        "conversations": "../comparia-conversations",
+        "conversations_raw": "../comparia-conversations_raw",
     }
 
     dataset_dir = "datasets"
@@ -354,5 +292,6 @@ if __name__ == "__main__":
     try:
         main()
     finally:
-        conn.dispose()
-        logger.info("Database connection closed.")
+        if "conn" in locals() and conn:
+            conn.dispose()
+            logger.info("Database connection closed.")
