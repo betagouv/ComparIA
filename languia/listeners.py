@@ -419,7 +419,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     extra={"request": request},
                 )
 
-                # Don't reuse same conversation ID, is that good?
+                # Don't reuse same conversation ID
                 conv_a_scoped.messages.append(
                     ChatMessage(role="user", content=original_user_prompt, error=str(e))
                 )
@@ -482,12 +482,15 @@ document.getElementById("fr-modal-welcome-close").blur();
         # if retry, resend last user errored message
         # TODO: check if it's a retry event more robustly, with listener specifically on Event.retry
         if event._data is not None:
-            last_message_a = conv_a_scoped.messages[-1]
-            last_message_b = conv_b_scoped.messages[-1]
-
             app_state_scoped.awaiting_responses = False
-            if last_message_a.role == "user" and last_message_b.role == "user":
-                text = last_message_a.content
+
+            if conv_a_scoped.messages[-1].role == "assistant" and conv_b_scoped.messages[-1].role == "assistant":
+                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+
+
+            if conv_a_scoped.messages[-1].role == "user" and conv_b_scoped.messages[-1].role == "user":
+                text = conv_a_scoped.messages[-1].content
                 conv_a_scoped.messages = conv_a_scoped.messages[:-1]
                 conv_b_scoped.messages = conv_b_scoped.messages[:-1]
             else:
