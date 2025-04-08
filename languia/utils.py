@@ -146,9 +146,8 @@ def get_user_info(request):
 
 def get_endpoint(model_id):
     from languia.config import api_endpoint_info
-
     for endpoint in api_endpoint_info:
-        if endpoint.get("model_id") == model_id:
+        if endpoint.get("model_id", "").lower() == model_id.lower():
             return endpoint
 
     return None
