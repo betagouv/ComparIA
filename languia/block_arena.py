@@ -87,7 +87,9 @@ with gr.Blocks(
         )
 
     with gr.Group(
-        elem_id="chat-area", elem_classes="fr-pb-10w fr-pb-md-0", visible=False
+        elem_id="chat-area",
+        visible=False,
+        #  elem_classes="fr-pb-10w fr-pb-md-4w", visible=False
     ) as chat_area:
 
         chatbot = CustomChatbot(
