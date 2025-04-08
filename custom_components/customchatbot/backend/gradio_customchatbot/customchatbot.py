@@ -52,7 +52,7 @@ class MessageDict(TypedDict):
     content: str | FileDataDict | tuple | Component
     role: Literal["user", "assistant", "system"]
     metadata: NotRequired[MetadataDict]
-    error: NotRequired[bool]
+    error: NotRequired[Optional[str]]
     
     reasoning: NotRequired[str]
 
@@ -72,7 +72,7 @@ class Metadata(GradioModel):
 
 class Message(GradioModel):
     role: str
-    error: bool = False
+    error: Optional[str] = None
     metadata: Metadata = Field(default_factory=Metadata)
     content: str
     reasoning: Optional[str] = None
@@ -95,7 +95,7 @@ class ExampleMessage(TypedDict):
 class ChatMessage:
     role: Literal["user", "assistant", "system"]
     content: str | FileData | Component | FileDataDict | tuple | list
-    error: bool = False
+    error: Optional[str] = None
     reasoning: str | None = None
     metadata: MetadataDict | Metadata = field(default_factory=Metadata)
 

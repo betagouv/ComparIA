@@ -36,8 +36,6 @@
 	import type { FileData, Client } from "@gradio/client";
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import Pending from "./Pending.svelte";
-	import { ShareError } from "@gradio/utils";
-	import { Gradio } from "@gradio/utils";
 	// import { Retry } from "@gradio/icons";
 
 	export let value: NormalisedMessage[] | null = [];
@@ -179,15 +177,13 @@
 	});
 
 	export let hasError: boolean = false;
+	export let errorString: string = "";
 
 	$: {
 		hasError = groupedMessages.some((messages) =>
 			messages.some((message) => message?.error),
 		);
-		// console.log("hasError:");
-		// console.log(hasError);
-		// console.log("messages:");
-		// console.log(groupedMessages);
+		errorString = message.error;
 	}
 
 	$: {
@@ -448,11 +444,10 @@
 				erreur temporaire
 			</h3>
 			<p>
-				Une erreur temporaire est survenue.<br />
+				Une erreur temporaire est survenue : {errorString}<br />
 				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou bien
 				conclure votre expérience en donnant votre avis sur les modèles{/if}.
 			</p>
-			<!-- error: {hasError} -->
 			<p class="text-center">
 				<button
 					class="fr-btn purple-btn"
