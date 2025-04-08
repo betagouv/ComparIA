@@ -849,11 +849,16 @@ setTimeout(() => {
 console.log("scrolling to .next-screen");
 const chatArea = document.getElementById('chat-area');
 chatArea.style.paddingBottom = `0px`;
-const nextScreen = document.querySelector('.next-screen');
-nextScreen.scrollIntoView({
+
+let secondHeader = document.getElementById('second-header');
+const secondHeaderHeight = secondHeader.offsetHeight;
+
+// const nextScreen = document.querySelector('.next-screen');
+window.scrollTo({
+  top: secondHeaderHeight + chatArea.offsetHeight,
+  left: 0,
   behavior: 'smooth',
-  block: 'start'
-});}, 500);
+  });}, 500);
 }""",
         show_progress="hidden",
     )
