@@ -123,25 +123,63 @@
 	let initialMode: Mode =
 		(getCookie("customdropdown_mode") as Mode) || "random";
 
-	function getInitialModels(): string[] {
-		if (browser && getCookie("customdropdown_models")) {
+	function getInitialModels(availableModels: Model[]): string[] {
+		if (!Array.isArray(availableModels)) {
+			console.error(
+				"getInitialModels called without a valid availableModels array.",
+			);
+			return [];
+		}
+
+		if (
+			typeof window !== "undefined" &&
+			getCookie("customdropdown_models")
+		) {
 			try {
 				const parsed = JSON.parse(getCookie("customdropdown_models")!);
-				return Array.isArray(parsed) &&
+
+				if (
+					Array.isArray(parsed) &&
 					parsed.every((item) => typeof item === "string")
-					? parsed
-					: [];
-			} catch {
+				) {
+					const availableModelIds = new Set(
+						availableModels.map((m) => m.id),
+					);
+
+					const validModels = parsed.filter((id) =>
+						availableModelIds.has(id),
+					);
+					return validModels;
+				} else {
+					return [];
+				}
+			} catch (error) {
+				console.error("Failed to parse models from cookie:", error);
 				return [];
 			}
 		}
+		return [];
 	}
-	let initialModels: string[] = getInitialModels();
+
+	const findModelDetails = (id: string | null, modelsList: Model[]) => {
+		if (!id || !modelsList || !Array.isArray(modelsList)) {
+			return { name: "Aléatoire", iconPath: null };
+		}
+		const model = modelsList.find((m) => m.id === id);
+		return {
+			name: model?.simple_name ?? "Aléatoire",
+			iconPath: model?.icon_path ?? null,
+		};
+	};
+
+	let initialModels: string[] = getInitialModels(models); // Pass the populated models array
 
 	let initialPrompt = "";
 
-	export let mode: Mode = initialMode;
+	// Export the necessary variables
+	export let mode: Mode = initialMode; // Assuming initialMode is defined
 	export let custom_models_selection: string[] = initialModels;
+
 	export let prompt_value: string = initialPrompt;
 
 	let choice: Choice = get_choice(initialMode) || choices[0];
@@ -149,26 +187,17 @@
 	let secondModelName = "Aléatoire";
 	let firstModelIconPath: string | null = null;
 	let secondModelIconPath: string | null = null;
-	const findModelDetails = (id) => {
-		// Ensure models is available and the id is valid before searching
-		if (!id || !models || !Array.isArray(models)) {
-			return { name: "Aléatoire", iconPath: null }; // Return defaults if prerequisites fail
-		}
-		const model = models.find((m) => m.id === id);
-		return {
-			name: model?.simple_name ?? "Aléatoire", // Use optional chaining and nullish coalescing
-			iconPath: model?.icon_path ?? null, // Use optional chaining and nullish coalescing
-		};
-	};
 
 	$: {
 		if (models && Array.isArray(models)) {
 			if (mode === "custom") {
 				let firstDetails = findModelDetails(
 					custom_models_selection?.[0],
+					models,
 				);
 				let secondDetails = findModelDetails(
 					custom_models_selection?.[1],
+					models,
 				);
 
 				firstModelName = firstDetails.name;
