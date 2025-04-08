@@ -122,10 +122,22 @@
 
 	let initialMode: Mode =
 		(getCookie("customdropdown_mode") as Mode) || "random";
-	let initialModels: string[] =
-		browser && getCookie("customdropdown_models")
-			? JSON.parse(getCookie("customdropdown_models")!)
-			: [];
+
+	function getInitialModels(): string[] {
+		if (browser && getCookie("customdropdown_models")) {
+			try {
+				const parsed = JSON.parse(getCookie("customdropdown_models")!);
+				return Array.isArray(parsed) &&
+					parsed.every((item) => typeof item === "string")
+					? parsed
+					: [];
+			} catch {
+				return [];
+			}
+		}
+	}
+	let initialModels: string[] = getInitialModels();
+
 	let initialPrompt = "";
 
 	export let mode: Mode = initialMode;
@@ -137,42 +149,40 @@
 	let secondModelName = "Aléatoire";
 	let firstModelIconPath: string | null = null;
 	let secondModelIconPath: string | null = null;
+	const findModelDetails = (id) => {
+		// Ensure models is available and the id is valid before searching
+		if (!id || !models || !Array.isArray(models)) {
+			return { name: "Aléatoire", iconPath: null }; // Return defaults if prerequisites fail
+		}
+		const model = models.find((m) => m.id === id);
+		return {
+			name: model?.simple_name ?? "Aléatoire", // Use optional chaining and nullish coalescing
+			iconPath: model?.icon_path ?? null, // Use optional chaining and nullish coalescing
+		};
+	};
 
 	$: {
-		if (mode === "custom") {
-			firstModelName =
-				custom_models_selection[0] !== undefined
-					? models.find(
-							(model) =>
-								model["id"] === custom_models_selection[0],
-						).simple_name
-					: "Aléatoire";
-			secondModelName =
-				custom_models_selection[1] !== undefined
-					? models.find(
-							(model) =>
-								model["id"] === custom_models_selection[1],
-						).simple_name
-					: "Aléatoire";
-			firstModelIconPath =
-				custom_models_selection[0] !== undefined
-					? models.find(
-							(model) =>
-								model["id"] === custom_models_selection[0],
-						).icon_path
-					: null;
-			secondModelIconPath =
-				custom_models_selection[1] !== undefined
-					? models.find(
-							(model) =>
-								model["id"] === custom_models_selection[1],
-						).icon_path
-					: null;
+		if (models && Array.isArray(models)) {
+			if (mode === "custom") {
+				let firstDetails = findModelDetails(
+					custom_models_selection?.[0],
+				);
+				let secondDetails = findModelDetails(
+					custom_models_selection?.[1],
+				);
+
+				firstModelName = firstDetails.name;
+				firstModelIconPath = firstDetails.iconPath;
+
+				secondModelName = secondDetails.name;
+				secondModelIconPath = secondDetails.iconPath;
+			}
 		} else {
-			firstModelName = "Aléatoire";
-			secondModelName = "Aléatoire";
-			firstModelIconPath = null;
-			secondModelIconPath = null;
+			if (mode === "custom") {
+				console.error(
+					"Error: models is not a valid array, cannot apply custom selection.",
+				);
+			}
 		}
 	}
 
