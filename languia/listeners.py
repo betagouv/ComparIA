@@ -337,6 +337,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     gr.update(visible=False),
                     # conclude_btn
                     gr.update(visible=True, interactive=False),
+                    gr.update(visible=True)
                 ]
 
         except (
@@ -468,6 +469,9 @@ document.getElementById("fr-modal-welcome-close").blur();
                 gr.update(visible=False),
                 # conclude_btn
                 gr.update(visible=True, interactive=False),
+                # send_area
+                gr.update(visible=True)
+
             ]
 
     def add_text(
@@ -690,7 +694,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [chat_area]
         + [send_btn]
         + [shuffle_link]
-        + [conclude_btn],
+        + [conclude_btn]
+        + [send_area]
+        ,
         show_progress="hidden",
         # TODO: refacto possible with .success() and more explicit error state
     ).then(

@@ -105,159 +105,160 @@ with gr.Blocks(
             show_copy_button=True,
             # autoscroll=True
         )
+        
+        with gr.Column(
+            # h-screen
+            visible=False,
+            elem_classes="fr-container min-h-screen fr-pt-4w",
+            elem_id="vote-area",
+        ) as vote_area:
+            gr.HTML(
+                elem_classes="text-center",
+                value="""
+                <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
+                <p class="text-grey fr-text--sm">Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.<br />Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français</p>""",
+            )
 
-        with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w") as send_area:
+            which_model_radio = CustomRadioCard(
+                min_columns=1,
+                elem_id="vote-cards",
+                elem_classes="justify-center fr-mx-auto fr-col-12 fr-col-md-8",
+                choices=[
+                    (
+                        """<div class="self-center justify-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <span class="">Modèle A</span>
+                    </div>""",
+                        "model-a",
+                    ),
+                    (
+                        """<span class="self-center text-center justify-center">Les deux se valent</span>""",
+                        "both-equal",
+                    ),
+                    (
+                        """<div class="self-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg><span class=""> Modèle B</span>
+                    </div>""",
+                        "model-b",
+                    ),
+                ],
+                show_label=False,
+            )
 
             with gr.Row(
-                elem_classes="flex-md-row flex-col items-start",
-                visible=True,
-            ) as send_row:
-                textbox = FrInput(
-                    elem_id="main-textbox",
-                    show_label=False,
-                    lines=1,
-                    placeholder="Continuer à discuter avec les deux modèles d'IA",
-                    max_lines=7,
-                    elem_classes="w-full",
-                    container=True,
-                    autofocus=True,
-                )
-                send_btn = gr.Button(
-                    interactive=False,
-                    # scale=1,
-                    value="Envoyer",
-                    # icon="assets/dsfr/icons/system/arrow-up-line.svg",
-                    elem_id="send-btn",
-                    elem_classes="grow-0 purple-btn w-full fr-ml-md-1w",
+                visible=False,
+                elem_id="supervote-area",
+                # FIXME: bottom margin too imprecise
+                elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
+            ) as supervote_area:
+
+                with gr.Column(
+                    elem_classes="fr-col-12 fr-col-md-6 fr-mr-md-n1w fr-mb-1w bg-white rounded-tile"
+                ):
+
+                    gr.HTML(
+                        value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <strong>Modèle A</strong></p>
+        <p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+                    )
+
+                    positive_a = gr.CheckboxGroup(
+                        elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
+                        show_label=False,
+                        choices=[
+                            ("Utiles", "useful"),
+                            ("Complètes", "complete"),
+                            ("Créatives", "creative"),
+                            ("Mise en forme claire", "clear-formatting"),
+                        ],
+                    )
+
+                    negative_a = gr.CheckboxGroup(
+                        elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
+                        show_label=False,
+                        choices=[
+                            ("Incorrectes", "incorrect"),
+                            ("Superficielles", "superficial"),
+                            ("Instructions non respectées", "instructions-not-followed"),
+                        ],
+                    )
+
+                    comments_a = FrInput(
+                        show_label=False,
+                        visible=False,
+                        lines=3,
+                        placeholder="Les réponses du modèle A sont...",
+                    )
+
+                with gr.Column(
+                    elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w fr-mb-1w bg-white rounded-tile"
+                ):
+
+                    gr.HTML(
+                        value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> <strong>Modèle B</strong></p>
+        <p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
+                    )
+
+                    positive_b = gr.CheckboxGroup(
+                        elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
+                        show_label=False,
+                        choices=[
+                            ("Utiles", "useful"),
+                            ("Complètes", "complete"),
+                            ("Créatives", "creative"),
+                            ("Mise en forme claire", "clear-formatting"),
+                        ],
+                    )
+
+                    negative_b = gr.CheckboxGroup(
+                        elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
+                        show_label=False,
+                        choices=[
+                            ("Incorrectes", "incorrect"),
+                            ("Superficielles", "superficial"),
+                            ("Instructions non respectées", "instructions-not-followed"),
+                        ],
+                    )
+                    comments_b = FrInput(
+                        show_label=False,
+                        visible=False,
+                        lines=3,
+                        placeholder="Les réponses du modèle B sont...",
+                    )
+                comments_link = gr.Button(
+                    elem_classes="link fr-mt-1w", value="Ajouter des détails"
                 )
 
-            with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
-                conclude_btn = gr.Button(
-                    size="lg",
-                    value="Passer à la révélation des modèles",
-                    elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
-                    visible=False,
-                    interactive=False,
-                )
-
-    with gr.Column(
-        # h-screen
-        visible=False,
-        elem_classes="fr-container min-h-screen fr-pt-4w",
-        elem_id="vote-area",
-    ) as vote_area:
-        gr.HTML(
-            elem_classes="text-center",
-            value="""
-            <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
-            <p class="text-grey fr-text--sm">Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.<br />Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français</p>""",
-        )
-
-        which_model_radio = CustomRadioCard(
-            min_columns=1,
-            elem_id="vote-cards",
-            elem_classes="justify-center fr-mx-auto fr-col-12 fr-col-md-8",
-            choices=[
-                (
-                    """<div class="self-center justify-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <span class="">Modèle A</span>
-                </div>""",
-                    "model-a",
-                ),
-                (
-                    """<span class="self-center text-center justify-center">Les deux se valent</span>""",
-                    "both-equal",
-                ),
-                (
-                    """<div class="self-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg><span class=""> Modèle B</span>
-                </div>""",
-                    "model-b",
-                ),
-            ],
-            show_label=False,
-        )
+    with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w", visible=False) as send_area:
 
         with gr.Row(
-            visible=False,
-            elem_id="supervote-area",
-            # FIXME: bottom margin too imprecise
-            elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
-        ) as supervote_area:
-
-            with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 fr-mr-md-n1w fr-mb-1w bg-white rounded-tile"
-            ):
-
-                gr.HTML(
-                    value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <strong>Modèle A</strong></p>
-    <p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
-                )
-
-                positive_a = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-                    show_label=False,
-                    choices=[
-                        ("Utiles", "useful"),
-                        ("Complètes", "complete"),
-                        ("Créatives", "creative"),
-                        ("Mise en forme claire", "clear-formatting"),
-                    ],
-                )
-
-                negative_a = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-                    show_label=False,
-                    choices=[
-                        ("Incorrectes", "incorrect"),
-                        ("Superficielles", "superficial"),
-                        ("Instructions non respectées", "instructions-not-followed"),
-                    ],
-                )
-
-                comments_a = FrInput(
-                    show_label=False,
-                    visible=False,
-                    lines=3,
-                    placeholder="Les réponses du modèle A sont...",
-                )
-
-            with gr.Column(
-                elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w fr-mb-1w bg-white rounded-tile"
-            ):
-
-                gr.HTML(
-                    value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> <strong>Modèle B</strong></p>
-    <p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
-                )
-
-                positive_b = gr.CheckboxGroup(
-                    elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-                    show_label=False,
-                    choices=[
-                        ("Utiles", "useful"),
-                        ("Complètes", "complete"),
-                        ("Créatives", "creative"),
-                        ("Mise en forme claire", "clear-formatting"),
-                    ],
-                )
-
-                negative_b = gr.CheckboxGroup(
-                    elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-                    show_label=False,
-                    choices=[
-                        ("Incorrectes", "incorrect"),
-                        ("Superficielles", "superficial"),
-                        ("Instructions non respectées", "instructions-not-followed"),
-                    ],
-                )
-                comments_b = FrInput(
-                    show_label=False,
-                    visible=False,
-                    lines=3,
-                    placeholder="Les réponses du modèle B sont...",
-                )
-            comments_link = gr.Button(
-                elem_classes="link fr-mt-1w", value="Ajouter des détails"
+            elem_classes="flex-md-row flex-col items-start",
+            visible=True,
+        ) as send_row:
+            textbox = FrInput(
+                elem_id="main-textbox",
+                show_label=False,
+                lines=1,
+                placeholder="Continuer à discuter avec les deux modèles d'IA",
+                max_lines=7,
+                elem_classes="w-full",
+                container=True,
+                autofocus=True,
             )
+            send_btn = gr.Button(
+                interactive=False,
+                # scale=1,
+                value="Envoyer",
+                # icon="assets/dsfr/icons/system/arrow-up-line.svg",
+                elem_id="send-btn",
+                elem_classes="grow-0 purple-btn w-full fr-ml-md-1w",
+            )
+
+        with gr.Row(elem_classes="fr-grid-row fr-grid-row--center"):
+            conclude_btn = gr.Button(
+                size="lg",
+                value="Passer à la révélation des modèles",
+                elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
+                visible=False,
+                interactive=False,
+            )
+
 
     with gr.Column(
         elem_classes="fr-container--fluid fr-py-2w fr-grid-row",
