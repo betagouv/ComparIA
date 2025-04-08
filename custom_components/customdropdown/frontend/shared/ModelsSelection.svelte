@@ -150,6 +150,7 @@
 		display: none !important;
 	}
 	.organisation {
+		color: rgb(36, 36, 36);
 		display: none;
 		font-size: 0.875em;
 	}
