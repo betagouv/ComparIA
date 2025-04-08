@@ -131,6 +131,17 @@ excerpt = "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architec
 description = "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 release_date = "12/2024"
 
+# ["eurollm-1.7b"]
+# url = "https://huggingface.co/utter-project/eurollm-1.7b"
+# simple_name = "EuroLLM 1.7B"
+# organisation = "Utter"
+# params = 1.7
+# # icon_path = "deepseek.webp"
+# license = "Apache 2.0"
+# # excerpt = "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+# # description = "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+# # release_date = "12/2024"
+
 ["gemini-1.5-pro-001"]
 url = "https://ai.google.dev/gemini-api"
 active_params = 220
