@@ -21,12 +21,7 @@
 	import Message from "./Message.svelte";
 
 	import { dequal } from "dequal/lite";
-	import {
-		afterUpdate,
-		createEventDispatcher,
-		tick,
-		onMount,
-	} from "svelte";
+	import { afterUpdate, createEventDispatcher, tick, onMount } from "svelte";
 
 	import { Trash, Community, ScrollDownArrow } from "@gradio/icons";
 	import IconButton from "./IconButton.svelte";
@@ -44,7 +39,6 @@
 	import CopyAll from "./CopyAll.svelte";
 
 	export let _fetch: typeof fetch;
-
 
 	const is_browser = typeof window !== "undefined";
 
@@ -177,13 +171,23 @@
 	});
 
 	export let hasError: boolean = false;
-	export let errorString: string = "";
-
+	export let errorString: string = null;
 	$: {
-		hasError = groupedMessages.some((messages) =>
-			messages.some((message) => message?.error),
-		);
-		errorString = message.error;
+		errorString = null;
+
+		for (const messages of groupedMessages) {
+			for (const message of messages) {
+				if (message?.error) {
+					errorString = message.error;
+					break;
+				}
+			}
+			if (errorString !== null) {
+				break;
+			}
+		}
+
+		hasError = errorString !== null;
 	}
 
 	$: {
@@ -192,7 +196,7 @@
 			dispatch("change");
 		}
 	}
-	$: groupedMessages = value && group_messages(value, "messages");
+	$: groupedMessages = value && group_messages(value);
 
 	var comment: string = "";
 	var commenting_model: "A" | "B" | "" = "";
@@ -251,7 +255,7 @@
 
 			dispatch("retry", {
 				index: msg.index,
-				value: msg.error
+				value: msg.error,
 				// value: msg.error || msg.content,
 				// value: msg.content,
 				// error: msg.metadata?.error || msg.error
@@ -331,7 +335,6 @@
 
 {#if value !== null && value.length > 0}
 	<div>
-		
 		{#if show_copy_all_button}
 			<CopyAll {value} />
 		{/if}
@@ -421,7 +424,6 @@
 						</div>
 					{/each}
 				</div>
-
 			{/each}
 			{#if pending_message}
 				<Pending {layout} />
@@ -444,9 +446,10 @@
 				erreur temporaire
 			</h3>
 			<p>
-				Une erreur temporaire est survenue : {errorString}<br />
-				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou bien
-				conclure votre expérience en donnant votre avis sur les modèles{/if}.
+				Une erreur temporaire est survenue.<br />
+				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou
+					bien conclure votre expérience en donnant votre avis sur les
+					modèles{/if}.
 			</p>
 			<p class="text-center">
 				<button
@@ -612,7 +615,6 @@
 		max-width: 600px;
 	}
 
-
 	/* KaTeX */
 	/* .message-wrap :global(span.katex) {
 		font-size: var(--text-lg);
@@ -731,6 +733,5 @@
 		background-color: #b34000;
 		-webkit-mask-image: url("../assets/dsfr/icons/system/fr--warning-fill.svg");
 		mask-image: url("../assets/dsfr/icons/system/fr--warning-fill.svg");
-
 	}
 </style>
