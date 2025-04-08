@@ -375,7 +375,7 @@
 
 		<div class="selections">
 			<button
-				class="mode-selection-btn fr-mb-md-0 fr-mb-1w fr-mr-3v"
+				class="mode-selection-btn fr-py-1w fr-py-md-0 fr-mb-md-0 fr-mb-1w fr-mr-3v"
 				data-fr-opened="false"
 				{disabled}
 				aria-controls="modal-mode-selection"
