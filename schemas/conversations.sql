@@ -73,3 +73,13 @@ ALTER TABLE conversations ADD COLUMN model_a_params JSON;
 ALTER TABLE conversations ADD COLUMN model_b_params JSON;
 ALTER TABLE conversations ADD COLUMN total_conv_a_kwh FLOAT;
 ALTER TABLE conversations ADD COLUMN total_conv_b_kwh FLOAT;
+
+-- 14/04/2025
+ALTER TABLE conversations ADD COLUMN ip_map VARCHAR(255);
+ALTER TABLE conversations DROP COLUMN model_a_params;
+ALTER TABLE conversations DROP COLUMN model_b_params;
+ALTER TABLE conversations ADD COLUMN model_a_total_params FLOAT;
+ALTER TABLE conversations ADD COLUMN model_a_active_params FLOAT;
+ALTER TABLE conversations ADD COLUMN model_b_active_params FLOAT;
+ALTER TABLE conversations ADD COLUMN model_b_total_params FLOAT;
+ALTER TABLE conversations ADD COLUMN postprocess_failed BOOLEAN DEFAULT FALSE;

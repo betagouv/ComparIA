@@ -97,30 +97,36 @@ def get_model_metadata(model_name):
 
 
 def get_model_params(model_meta):
-    """Extract params from model metadata, preferring params or summing total+active if available."""
-    params = model_meta.get("params")
-    if params is not None:
-        print(f"  Model metadata contains 'params': {params}")
-        return float(params)
+    """Extract params from model metadata, returning total and active params."""
     total_params = model_meta.get("total_params")
     active_params = model_meta.get("active_params")
+
     if total_params is not None and active_params is not None:
         print(
             f"  Model metadata contains 'total_params': {total_params} and 'active_params': {active_params}"
         )
-        return [
-            float(active_params),
-            float(total_params),
-        ]
-    print(
-        f"  No 'params' or 'total_params' and 'active_params' found in model metadata."
-    )
-    friendly_size = model_meta.get("friendly_size")
-    PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-    if friendly_size and friendly_size in PARAMS_SIZE_MAP:
-        return PARAMS_SIZE_MAP[friendly_size]
-
-    return None  # Return None if no params information found
+        return float(total_params), float(active_params)
+    elif total_params is not None:
+        print(
+            f"  Model metadata contains 'total_params': {total_params}. Assuming active_params = total_params for non-MoE."
+        )
+        return float(total_params), float(total_params)
+    elif "params" in model_meta:
+        params = model_meta.get("params")
+        print(
+            f"  Model metadata contains 'params': {params}. Assuming total_params = active_params = params."
+        )
+        return float(params), float(params)
+    else:
+        print(
+            f"  No 'params', 'total_params', or 'active_params' found in model metadata."
+        )
+        friendly_size = model_meta.get("friendly_size")
+        PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
+        if friendly_size and friendly_size in PARAMS_SIZE_MAP:
+            params = PARAMS_SIZE_MAP[friendly_size]
+            return float(params), float(params)
+        return None, None  # Return None for both if no params information found
 
 
 def process_unprocessed_conversations(dsn, batch_size=10):
@@ -146,7 +152,7 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     SELECT id, conversation_a, conversation_b, model_a_name, model_b_name
                     FROM conversations
                     WHERE (total_conv_a_output_tokens IS NULL OR total_conv_b_output_tokens IS NULL)
-                    AND postprocess_failed IS FALSE 
+                    AND postprocess_failed IS FALSE
                     ORDER BY id
                     LIMIT %s
                     FOR UPDATE SKIP LOCKED
@@ -216,21 +222,19 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 
                         # Get model parameters
                         print(f"  Getting parameters for model A: '{model_a_name}'")
-                        model_a_params_raw = get_model_params(model_a_meta)
-                        model_a_params = (
-                            json.dumps(model_a_params_raw)
-                            if model_a_params_raw is not None
-                            else None
+                        model_a_total_params, model_a_active_params = get_model_params(
+                            model_a_meta
                         )
                         print(f"  Getting parameters for model B: '{model_b_name}'")
-                        model_b_params_raw = get_model_params(model_b_meta)
-                        model_b_params = (
-                            json.dumps(model_b_params_raw)
-                            if model_b_params_raw is not None
-                            else None
+                        model_b_total_params, model_b_active_params = get_model_params(
+                            model_b_meta
                         )
-                        print(f"  Model A parameters (JSON): {model_a_params}")
-                        print(f"  Model B parameters (JSON): {model_b_params}")
+                        print(
+                            f"  Model A total parameters: {model_a_total_params}, active parameters: {model_a_active_params}"
+                        )
+                        print(
+                            f"  Model B total parameters: {model_b_total_params}, active parameters: {model_b_active_params}"
+                        )
 
                         print(
                             f"  Calculating LLM impact for conversation A (ID: {conversation_id})..."
@@ -258,22 +262,26 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             SET
                                 total_conv_a_output_tokens = %s,
                                 total_conv_b_output_tokens = %s,
-                                model_a_params = %s,
-                                model_b_params = %s,
+                                model_a_total_params = %s,
+                                model_a_active_params = %s,
+                                model_b_total_params = %s,
+                                model_b_active_params = %s,
                                 total_conv_a_kwh = %s,
                                 total_conv_b_kwh = %s
                             WHERE id = %s
                             """
                         print(
-                            f"  Executing update query for conversation ID {conversation_id}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, model_a_params, model_b_params, total_conv_a_kwh, total_conv_b_kwh, conversation_id)).decode()}'"
+                            f"  Executing update query for conversation ID {conversation_id}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, model_a_total_params, model_a_active_params, model_b_total_params, model_b_active_params, total_conv_a_kwh, total_conv_b_kwh, conversation_id)).decode()}'"
                         )
                         cursor.execute(
                             update_query,
                             (
                                 total_conv_a_tokens,
                                 total_conv_b_tokens,
-                                model_a_params,
-                                model_b_params,
+                                model_a_total_params,
+                                model_a_active_params,
+                                model_b_total_params,
+                                model_b_active_params,
                                 total_conv_a_kwh,
                                 total_conv_b_kwh,
                                 conversation_id,
@@ -332,9 +340,11 @@ from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
 def get_llm_impact(model_extra_info, token_count: int):
     print("Calculating LLM impact...")
+    model_active_parameter_count = None
+    model_total_parameter_count = None
+
     if "active_params" in model_extra_info and "total_params" in model_extra_info:
         print("  Using 'active_params' and 'total_params' from model info.")
-        # TODO: add request latency
         model_active_parameter_count = int(model_extra_info["active_params"])
         model_total_parameter_count = int(model_extra_info["total_params"])
         if (
@@ -351,31 +361,37 @@ def get_llm_impact(model_extra_info, token_count: int):
             print("  Applying q4 quantization.")
             model_active_parameter_count = int(model_extra_info["active_params"]) / 4
             model_total_parameter_count = int(model_extra_info["total_params"]) / 4
-    else:
-        if "params" in model_extra_info:
-            print("  Using 'params' from model info.")
-            if (
-                "quantization" in model_extra_info
-                and model_extra_info.get("quantization", None) == "q8"
-            ):
-                print("  Applying q8 quantization.")
-                model_active_parameter_count = int(model_extra_info["params"]) // 2
-                model_total_parameter_count = int(model_extra_info["params"]) // 2
-            else:
-                # TODO: add request latency
-                model_active_parameter_count = int(model_extra_info["params"])
-                model_total_parameter_count = int(model_extra_info["params"])
-        elif "friendly_size" in model_extra_info:
-            print("  No parameter information found in model info. Friendly size used.")
-            friendly_size = model_extra_info.get("friendly_size")
-            PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-            if friendly_size and friendly_size in PARAMS_SIZE_MAP:
-                model_total_parameter_count = PARAMS_SIZE_MAP[friendly_size]
-                model_active_parameter_count = PARAMS_SIZE_MAP[friendly_size]
+    elif "params" in model_extra_info:
+        print("  Using 'params' from model info.")
+        params = int(model_extra_info["params"])
+        model_active_parameter_count = params
+        model_total_parameter_count = params
+        if (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q8"
+        ):
+            print("  Applying q8 quantization.")
+            model_active_parameter_count //= 2
+            model_total_parameter_count //= 2
+        elif (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q4"
+        ):
+            print("  Applying q4 quantization.")
+            model_active_parameter_count //= 4
+            model_total_parameter_count //= 4
+    elif "friendly_size" in model_extra_info:
+        print("  No parameter information found in model info. Friendly size used.")
+        friendly_size = model_extra_info.get("friendly_size")
+        PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
+        if friendly_size and friendly_size in PARAMS_SIZE_MAP:
+            params = PARAMS_SIZE_MAP[friendly_size]
+            model_total_parameter_count = params
+            model_active_parameter_count = params
 
-        else:
-            input("WARNING: Missing ecological impact")
-            return None
+    if model_active_parameter_count is None or model_total_parameter_count is None:
+        input("WARNING: Missing ecological impact due to missing parameter information")
+        return None
 
     # TODO: move to config.py
     electricity_mix_zone = "WOR"
