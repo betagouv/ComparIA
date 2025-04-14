@@ -338,12 +338,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     gr.update(visible=True),
                 ]
 
-        except (
-            BaseException,
-            openai.APIError,
-            openai.BadRequestError,
-            EmptyResponseError,
-        ) as e:
+        except Exception as e:
 
             conv_a_scoped.messages[-1].error = str(e)
             conv_b_scoped.messages[-1].error = str(e)
@@ -592,12 +587,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     chatbot,
                     gr.skip(),
                 ]
-        except (
-            BaseException,
-            openai.APIError,
-            openai.BadRequestError,
-            EmptyResponseError,
-        ) as e:
+        except Exception as e:
 
             conv_a_scoped.messages[-1].error = str(e)
             conv_b_scoped.messages[-1].error = str(e)
