@@ -99,6 +99,11 @@ def metadata_to_dict(metadata):
         metadata_dict.pop("generation_id", None)
     return metadata_dict
 
+# TODO: factorize w/ messages_to_dict_list?
+def strip_metadata(messages):
+    return[
+        {"role": message['role'], "content": message['content']} for message in messages
+    ]
 
 def messages_to_dict_list(messages):
     return [

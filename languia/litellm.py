@@ -7,13 +7,11 @@ import logging
 
 import sentry_sdk
 
-from gradio import Error
-
 from languia.config import GLOBAL_TIMEOUT
 import litellm
 import json
 
-from languia.utils import get_matomo_tracker_from_cookies, get_ip, get_user_info
+from languia.utils import strip_metadata, get_user_info
 
 from langfuse.decorators import langfuse_context, observe
 
@@ -83,7 +81,10 @@ def litellm_stream_iter(
         #     "existing_trace_id": langfuse_context.get_current_trace_id(),
         # },
         )
-    
+    if model_name == "openrouter/mistralai/mistral-small-3.1-24b-instruct-2503":
+        messages = strip_metadata(messages)
+        print("stripping metadata")
+        
     kwargs = {
         "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
