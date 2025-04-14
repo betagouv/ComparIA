@@ -86,66 +86,36 @@ WHERE archived = FALSE
     languages,
     total_conv_a_output_tokens,
     total_conv_b_output_tokens,
-    model_a_params,
-    model_b_params,
+    model_a_total_params,
+    model_a_active_params,
+    model_b_active_params,
+    model_b_total_params,
     total_conv_a_kwh,
     total_conv_b_kwh,
-    ip
+    ip,
+    ip_map
 FROM conversations
 WHERE archived = FALSE
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE;""",
+# AND postprocess_failed = FALSE
         "repo": "comparia-conversations",
     },
 }
 
-# Global variable to store the IP to number mapping
-ip_to_number_mapping = {}
-
-
-def load_ip_mapping():
-    """Loads the IP to number mapping from the database."""
-    global ip_to_number_mapping
-    DATABASE_URI = os.getenv("DATABASE_URI")
-    if not DATABASE_URI:
-        logger.error("Cannot connect to the database: no configuration provided")
-        return False
-    try:
-        engine = create_engine(DATABASE_URI)
-        with engine.connect() as conn:
-            conn.execute(text("INSERT INTO ip_map (ip_address) SELECT DISTINCT ip FROM conversations WHERE ip IS NOT NULL ON CONFLICT (ip_address) DO NOTHING;"))
-            conn.commit()
-
-        engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
-        with engine.connect() as conn:
-            ip_map = pd.read_sql_query("SELECT * FROM ip_map", conn)
-            ip_to_number_mapping = dict(zip(ip_map["ip_address"], (ip_map["id"])))
-        logger.info("IP mapping loaded successfully.")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to load IP mapping: {e}")
-        return False
-
-
 
 def load_session_hash_ip():
 
-    global session_hash_to_ip
+    global session_hash_to_ip_map
     DATABASE_URI = os.getenv("DATABASE_URI")
     if not DATABASE_URI:
         logger.error("Cannot connect to the database: no configuration provided")
         return False
     engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
     with engine.connect() as conn:
-        session_hash_to_ip = pd.read_sql_query("SELECT ip, session_hash FROM conversations", conn)
+        session_hash_to_ip_map = pd.read_sql_query("SELECT ip_map, session_hash FROM conversations", conn)
     return True
 
-def session_hash_to_ip_mapping(session_hash):
-    ip = session_hash_to_ip.get(session_hash, None)
-    return ip_to_number(ip)
-
-def ip_to_number(ip):
-    return ip_to_number_mapping.get(ip, None)
 
 
 def hash_md5(value):
@@ -172,24 +142,19 @@ def fetch_and_transform_data(conn, table_name, query=None):
             logger.info("Replacing missing visitor_id with hashed IP map ID...")
             df["visitor_id"] = df.apply(
                 lambda row: (
-                    hash_md5(f"ip-{session_hash_to_ip_mapping(row['session_hash'])}")
-                    if pd.isnull(row["visitor_id"]) and pd.notnull(row["session_hash"])
+                    hash_md5(f"ip-{session_hash_to_ip_map.get(row['session_hash'])}")
+                    if pd.isnull(row["visitor_id"]) and session_hash_to_ip_map.get(row['session_hash'])
                     else row["visitor_id"]
                 ),
                 axis=1,
             )
 
-        columns_to_drop = ["archived", "pii_analyzed", "ip", "chatbot_index", "conversation_a_pii_removed","conversation_b_pii_removed", "opening_msg_pii_removed"]
+        columns_to_drop = ["archived", "pii_analyzed", "ip", "chatbot_index", "conversation_a_pii_removed","conversation_b_pii_removed", "opening_msg_pii_removed", "ip_map"]
         
         df = df.drop(
             columns=[col for col in columns_to_drop if col in df.columns],
             errors="ignore",
         )
-        for col in ["model_a_params", "model_b_params"]:
-            if col in df.columns:
-                # df[col] = df[col].apply(lambda x: json.loads(x) if isinstance(x, list) else x)
-                df[col] = df[col].apply(lambda x: json.dumps(x))
-
         return df
     except Exception as e:
         logger.error(f"Failed to fetch data from {table_name}: {e}")
@@ -361,9 +326,6 @@ def process_dataset(dataset_name, dataset_config):
 
 
 def main():
-    if not load_ip_mapping():
-        logger.error("Failed to load IP mapping. Exiting.")
-        sys.exit(1)
 
     load_session_hash_ip()
 
