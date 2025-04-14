@@ -8,7 +8,6 @@ from enum import Enum
 from concurrent.futures import ThreadPoolExecutor
 import time
 
-# TODO: add postprocess_failed field handling to avoid infinite reprocessing of failed entries
 
 class Config:
     PROJECT_ID = "languia-430909"

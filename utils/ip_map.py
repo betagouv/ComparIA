@@ -231,7 +231,7 @@ class DataProcessor:
             logger.debug(f"Session hash '{session_hash}' not found in the loaded Session Hash-to-IP ID map.")
         return ip_id
 
-    def fetch_and_transform_data(self, table_name: str, query: str | None = None) -> pd.DataFrame | None:
+    def fetch_and_transform_data(self, query: str | None = None) -> pd.DataFrame | None:
         """
         Fetches data from a specified database table using a query and applies
         transformations, specifically hashing 'visitor_id' and filling missing
@@ -240,7 +240,6 @@ class DataProcessor:
         Requires mappings to be loaded first via `load_mappings()`.
 
         Args:
-            table_name: The name of the table (used primarily for logging).
             query: The SQL query string to fetch data. If None, an error is raised.
 
         Returns:
@@ -249,14 +248,14 @@ class DataProcessor:
         """
         self._ensure_engine()
         if not query:
-            logger.error(f"No query provided for fetching data from table '{table_name}'.")
+            logger.error(f"No query provided for fetching data from table.")
             return None
 
         if not self.ip_to_id_map or not self.session_hash_to_ip_id_map:
              logger.error("Identifier mappings are not loaded. Cannot proceed with data transformation.")
              return None
 
-        logger.info(f"Fetching and transforming data for table: {table_name}...")
+        logger.info(f"Fetching and transforming data for table...")
 
         try:
             # Use stream_results for potentially large datasets read into pandas
@@ -264,7 +263,7 @@ class DataProcessor:
             with query_engine.connect() as conn:
                  logger.info(f"Executing query: {query[:200]}...") # Log start of query
                  df = pd.read_sql_query(sql=text(query), con=conn)
-                 logger.info(f"Successfully fetched {len(df)} rows from table '{table_name}'.")
+                 logger.info(f"Successfully fetched {len(df)} rows from table.")
 
             # --- Transformations ---
             if "visitor_id" in df.columns:
@@ -327,17 +326,51 @@ class DataProcessor:
             return df
 
         except exc.SQLAlchemyError as e:
-            logger.exception(f"Database error during data fetch/transform for table '{table_name}': {e}")
+            logger.exception(f"Database error during data fetch/transform for table: {e}")
             return None
         except pd.errors.DatabaseError as e: # Catch pandas specific DB errors too
-            logger.exception(f"Pandas database error during data fetch/transform for table '{table_name}': {e}")
+            logger.exception(f"Pandas database error during data fetch/transform for table: {e}")
             return None
         except KeyError as e:
-             logger.exception(f"Missing expected column during transformation for table '{table_name}': {e}")
+             logger.exception(f"Missing expected column during transformation for table: {e}")
              return None
         except Exception as e:
-            logger.exception(f"An unexpected error occurred during data fetch/transform for table '{table_name}': {e}")
+            logger.exception(f"An unexpected error occurred during data fetch/transform for table: {e}")
             return None
+
+    def insert_ip_map_result_to_conversations(self):
+        """
+        Inserts the 'id' from the 'ip_map' table into a new column
+        named 'ip_map' in the 'conversations' table, based on matching IP addresses.
+        """
+        self._ensure_engine()
+        logger.info("Starting to insert ip_map result into conversations table...")
+
+        try:
+            with self.engine.connect() as conn:
+                with conn.begin():
+                    # Check if the 'ip_map' column already exists in the 'conversations' table
+                    inspector = self.engine.dialect.inspector.from_engine(self.engine)
+
+                    # Update the 'conversations' table with the 'id' from 'ip_map'
+                    update_sql = text("""
+                        UPDATE conversations AS c
+                        SET ip_map = im.id
+                        FROM ip_map AS im
+                        WHERE c.ip = im.ip_address;
+                    """)
+                    result = conn.execute(update_sql)
+                    logger.info(f"Successfully updated {result.rowcount} rows in 'conversations' with 'ip_map' ID.")
+
+            logger.info("Finished inserting ip_map result into conversations table.")
+            return True
+
+        except exc.SQLAlchemyError as e:
+            logger.exception(f"Database error during insertion of ip_map result: {e}")
+            return False
+        except Exception as e:
+            logger.exception(f"An unexpected error occurred during insertion of ip_map result: {e}")
+            return False
 
 # --- Example Usage ---
 if __name__ == "__main__":
@@ -357,18 +390,22 @@ if __name__ == "__main__":
             logger.error("Failed to load necessary mappings. Cannot proceed.")
             exit(1)
 
-        # 3. Define the query and fetch/transform data for a specific table
+        # 3. Insert the ip_map result into the conversations table
+        if data_processor.insert_ip_map_result_to_conversations():
+            logger.info("Successfully inserted ip_map result into the ip_map column of conversations.")
+        else:
+            logger.error("Failed to insert ip_map result into the ip_map column of conversations.")
+
+        # 4. Define the query and fetch/transform data for a specific table (optional, for demonstration)
         # Example: Fetch data from 'conversations' table itself or another table
         # Make sure the query selects 'visitor_id' and 'session_hash' if needed
-        data_query = "SELECT id, visitor_id, session_hash, ip, timestamp FROM conversations LIMIT 10000;" # Example query
-        table_identifier = "conversations_sample" # Just a name for logging
+        data_query = "SELECT id, visitor_id, session_hash, ip, ip_map, timestamp FROM conversations;" 
 
         transformed_df = data_processor.fetch_and_transform_data(
-            table_name=table_identifier,
             query=data_query
         )
 
-        # 4. Use the transformed data
+        # 5. Use the transformed data
         if transformed_df is not None:
             logger.info(f"Successfully processed data for '{table_identifier}'. Shape: {transformed_df.shape}")
             # print(transformed_df.head())
