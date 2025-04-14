@@ -77,8 +77,6 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from numpy import random
-
 
 # Register listeners
 def register_listeners():
@@ -241,7 +239,6 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
 
-
         # Could be added in Converstation.__init__?
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
@@ -288,6 +285,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     i = 0
                     response_a = next(gen_a)
                     conv_a_scoped = response_a
+
                 except StopIteration:
                     response_a = None
                 try:
@@ -337,7 +335,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     gr.update(visible=False),
                     # conclude_btn
                     gr.update(visible=True, interactive=False),
-                    gr.update(visible=True)
+                    gr.update(visible=True),
                 ]
 
         except (
@@ -346,6 +344,10 @@ document.getElementById("fr-modal-welcome-close").blur();
             openai.BadRequestError,
             EmptyResponseError,
         ) as e:
+
+            conv_a_scoped.messages[-1].error = str(e)
+            conv_b_scoped.messages[-1].error = str(e)
+
             conversations = [conv_a_scoped, conv_b_scoped]
             error_with_endpoint = conversations[i].endpoint.get("api_id")
             error_with_model = conversations[i].model_name
@@ -366,16 +368,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 },
                 exc_info=True,
             )
-
-            # Remove last message if it's an assistant message (failed during generation)
-            # if conv_a_scoped.messages[-1].role == "assistant":
-            #     conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-            # if conv_b_scoped.messages[-1].role == "assistant":
-            #     conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-
-            conv_a_scoped.messages[-1].error = str(e)
-            conv_b_scoped.messages[-1].error = str(e)
-
             # If it's the first message in conversation, re-roll
             if len(conv_a_scoped.messages) == 1 or (
                 len(conv_a_scoped.messages) == 2
@@ -470,8 +462,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # conclude_btn
                 gr.update(visible=True, interactive=False),
                 # send_area
-                gr.update(visible=True)
-
+                gr.update(visible=True),
             ]
 
     def add_text(
@@ -488,12 +479,17 @@ document.getElementById("fr-modal-welcome-close").blur();
         if event._data is not None:
             app_state_scoped.awaiting_responses = False
 
-            if conv_a_scoped.messages[-1].role == "assistant" and conv_b_scoped.messages[-1].role == "assistant":
+            if (
+                conv_a_scoped.messages[-1].role == "assistant"
+                and conv_b_scoped.messages[-1].role == "assistant"
+            ):
                 conv_a_scoped.messages = conv_a_scoped.messages[:-1]
                 conv_b_scoped.messages = conv_b_scoped.messages[:-1]
 
-
-            if conv_a_scoped.messages[-1].role == "user" and conv_b_scoped.messages[-1].role == "user":
+            if (
+                conv_a_scoped.messages[-1].role == "user"
+                and conv_b_scoped.messages[-1].role == "user"
+            ):
                 text = conv_a_scoped.messages[-1].content
                 conv_a_scoped.messages = conv_a_scoped.messages[:-1]
                 conv_b_scoped.messages = conv_b_scoped.messages[:-1]
@@ -557,7 +553,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         textbox,
         request: gr.Request,
     ):
-
         try:
             gen_a = bot_response(
                 "a",
@@ -603,6 +598,10 @@ document.getElementById("fr-modal-welcome-close").blur();
             openai.BadRequestError,
             EmptyResponseError,
         ) as e:
+
+            conv_a_scoped.messages[-1].error = str(e)
+            conv_b_scoped.messages[-1].error = str(e)
+
             conversations = [conv_a_scoped, conv_b_scoped]
             error_with_endpoint = conversations[i].endpoint.get("api_id")
             error_with_model = conversations[i].model_name
@@ -623,15 +622,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 },
                 exc_info=True,
             )
-
-            # Remove last message if it's an assistant message (failed during generation)
-            # if conv_a_scoped.messages[-1].role == "assistant":
-            #     conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-            # if conv_b_scoped.messages[-1].role == "assistant":
-            #     conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-
-            conv_a_scoped.messages[-1].error = str(e)
-            conv_b_scoped.messages[-1].error = str(e)
 
         finally:
 
@@ -695,8 +685,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [send_btn]
         + [shuffle_link]
         + [conclude_btn]
-        + [send_area]
-        ,
+        + [send_area],
         show_progress="hidden",
         # TODO: refacto possible with .success() and more explicit error state
     ).then(
@@ -1014,7 +1003,7 @@ window.scrollTo({
             reveal_screen,
             results_area,
             buttons_footer,
-            which_model_radio
+            which_model_radio,
         ],
         # outputs=[quiz_modal],
         api_name=False,

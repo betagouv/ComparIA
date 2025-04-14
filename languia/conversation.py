@@ -11,7 +11,12 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-from languia.utils import ContextTooLongError, EmptyResponseError, get_endpoint, messages_to_dict_list
+from languia.utils import (
+    ContextTooLongError,
+    EmptyResponseError,
+    get_endpoint,
+    messages_to_dict_list,
+)
 from languia import config
 
 import logging
@@ -89,7 +94,7 @@ def bot_response(
     max_new_tokens=4096,
     apply_rate_limit=True,
     use_recommended_config=True,
-    include_reasoning=False
+    include_reasoning=False,
 ):
     # temperature = float(temperature)
     # top_p = float(top_p)
@@ -149,6 +154,7 @@ def bot_response(
     generation_id = None
 
     for i, data in enumerate(stream_iter):
+
         if "output_tokens" in data:
             output_tokens = data["output_tokens"]
         if "generation_id" in data:
