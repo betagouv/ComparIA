@@ -148,7 +148,7 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     SELECT id, conversation_a, conversation_b, model_a_name, model_b_name
                     FROM conversations
                     WHERE total_conv_a_output_tokens IS NULL
-                    OR total_conv_b_output_tokens IS NULL
+                    OR total_conv_b_output_tokens IS NULL AND (model_a_name IS NOT NULL AND model_b_name IS NOT NULL)
                     ORDER BY id
                     LIMIT %s
                     FOR UPDATE SKIP LOCKED
@@ -177,6 +177,9 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     conversation_id = conv["id"]
                     print(f"Processing conversation with ID: {conversation_id}")
                     try:
+                        # if not conv.get("model_a_name") or not conv.get("model_b_name"):
+                        #     print(f"No model name for {conversation_id}, skipping...")
+                        #     continue
                         model_a_name = conv["model_a_name"].lower()
                         model_b_name = conv["model_b_name"].lower()
                         print(f"  Getting metadata for model A: '{model_a_name}'")
@@ -285,10 +288,10 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                         #                                 Json(enriched_conv_a),
                     except Exception as e:
                         print(f"Error processing conversation {conversation_id}: {e}")
-                        conn.rollback()
-                        print(
-                            f"Transaction rolled back for conversation ID {conversation_id}."
-                        )
+                        # conn.rollback()
+                        # print(
+                        #     f"Transaction rolled back for conversation ID {conversation_id}."
+                        # )
                         batch_error_count += 1
                         continue
 
