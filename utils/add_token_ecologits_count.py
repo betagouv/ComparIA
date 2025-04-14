@@ -71,8 +71,6 @@ def process_conversation(conversation):
 
                 total_assistant_output_tokens += output_tokens
 
-           
-            
                 metadata["output_tokens"] = output_tokens
                 message["metadata"] = metadata
             enriched_conversation.append(message)
@@ -147,8 +145,8 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                 query = """
                     SELECT id, conversation_a, conversation_b, model_a_name, model_b_name
                     FROM conversations
-                    WHERE total_conv_a_output_tokens IS NULL
-                    OR total_conv_b_output_tokens IS NULL AND (model_a_name IS NOT NULL AND model_b_name IS NOT NULL)
+                    WHERE (total_conv_a_output_tokens IS NULL OR total_conv_b_output_tokens IS NULL)
+                    AND postprocess_failed IS FALSE 
                     ORDER BY id
                     LIMIT %s
                     FOR UPDATE SKIP LOCKED
@@ -288,11 +286,17 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                         #                                 Json(enriched_conv_a),
                     except Exception as e:
                         print(f"Error processing conversation {conversation_id}: {e}")
-                        # conn.rollback()
-                        # print(
-                        #     f"Transaction rolled back for conversation ID {conversation_id}."
-                        # )
                         batch_error_count += 1
+                        # Mark the conversation as failed
+                        mark_failed_query = """
+                            UPDATE conversations
+                            SET postprocess_failed = TRUE
+                            WHERE id = %s
+                        """
+                        print(
+                            f"  Marking conversation ID {conversation_id} as failed: '{cursor.mogrify(mark_failed_query, (conversation_id,)).decode()}'"
+                        )
+                        cursor.execute(mark_failed_query, (conversation_id,))
                         continue
 
                 print(
@@ -308,6 +312,9 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 
     except psycopg2.Error as e:
         print(f"Database error: {e}")
+        if conn:
+            conn.rollback()
+            print("Transaction rolled back due to database error.")
     finally:
         if conn:
             print("Closing the database connection.")
@@ -359,9 +366,7 @@ def get_llm_impact(model_extra_info, token_count: int):
                 model_active_parameter_count = int(model_extra_info["params"])
                 model_total_parameter_count = int(model_extra_info["params"])
         elif "friendly_size" in model_extra_info:
-            print(
-                "  No parameter information found in model info. Friendly size used."
-            )
+            print("  No parameter information found in model info. Friendly size used.")
             friendly_size = model_extra_info.get("friendly_size")
             PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
             if friendly_size and friendly_size in PARAMS_SIZE_MAP:
