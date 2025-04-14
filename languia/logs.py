@@ -1,23 +1,12 @@
 import gradio as gr
 
-
-# from languia.config import logger
 import os
 
 
-# from languia import config
-
-
 import json
-
-# from fastchat.utils import (
-#     moderation_filter,
-# )
-
 import logging
 
 import datetime
-import traceback
 
 
 from languia.utils import (
@@ -41,33 +30,21 @@ class JSONFormatter(logging.Formatter):
 
         msg = super().format(record)
 
-        # Parse the message as JSON
-        # try:
-        #     log_data = json.loads(msg)
-        # except json.JSONDecodeError:
-        # Handle cases where the message isn't valid JSON
         log_data = {"message": msg}
 
-        # if 'request' in record.args:
         if hasattr(record, "request"):
             try:
-                # log_data = record.request
-                # request_dict = record.request.kwargs
                 log_data["query_params"] = dict(record.request.query_params)
                 log_data["path_params"] = dict(record.request.path_params)
                 # TODO: remove IP?
                 log_data["ip"] = get_ip(record.request)
                 log_data["session_hash"] = record.request.session_hash
-                # if isinstance(request_dict, dict):
-                #     request_json = json.dumps(request_dict)
-                # delattr(record, 'request')
+            
             except:
                 pass
         if hasattr(record, "extra"):
             log_data["extra"] = record.extra
-        # Add the args dictionary to the JSON payload
-        # log_data.update(record.args)
-        # Convert the updated dictionary back to JSON
+            
         return json.dumps(log_data)
 
 
@@ -299,12 +276,6 @@ def vote_last_response(
         in details["prefs_b"],
         "conv_comments_a": details["comments_a"],
         "conv_comments_b": details["comments_b"],
-        # For redundance
-        # "extra": {
-        #     "cookies": dict(request.cookies),
-        #     "query_params": dict(request.query_params),
-        #     "path_params": dict(request.path_params),
-        # },
     }
     vote_string = chosen_model_name or "both_equal"
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
