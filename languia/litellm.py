@@ -72,16 +72,17 @@ def litellm_stream_iter(
     
     
     user_id, session_id = get_user_info(request)
-    # note: doesn't seem to have an effect?
     langfuse_context.update_current_trace(
             user_id=user_id,
-            session_id=session_id,metadata={
-            "parent_observation_id": langfuse_context.get_current_observation_id(),
-            "trace_user_id": user_id,
-            "session_id": session_id,      
-            # Creates nested traces for convos A and B
-            "existing_trace_id": langfuse_context.get_current_trace_id(),
-        },)
+            session_id=session_id,
+        #     metadata={
+        #     "parent_observation_id": langfuse_context.get_current_observation_id(),
+        #     "trace_user_id": user_id,
+        #     "session_id": session_id,      
+        #     # Creates nested traces for convos A and B
+        #     "existing_trace_id": langfuse_context.get_current_trace_id(),
+        # },
+        )
     
     kwargs = {
         "api_version": api_version,
@@ -98,13 +99,13 @@ def litellm_stream_iter(
         "stream_options": {"include_usage": True},
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
-        "metadata": {
-            "parent_observation_id": langfuse_context.get_current_observation_id(),
-            "trace_user_id": user_id,
-            "session_id": session_id,      
-            # Creates nested traces for convos A and B
-            "existing_trace_id": langfuse_context.get_current_trace_id(),
-        },
+        # "metadata": {
+        #     "parent_observation_id": langfuse_context.get_current_observation_id(),
+        #     "trace_user_id": user_id,
+        #     "session_id": session_id,      
+        #     # Creates nested traces for convos A and B
+        #     "existing_trace_id": langfuse_context.get_current_trace_id(),
+        # },
     }
 
     if include_reasoning:
