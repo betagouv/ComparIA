@@ -188,6 +188,12 @@
 	let firstModelIconPath: string | null = null;
 	let secondModelIconPath: string | null = null;
 
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		setCookie("customdropdown_models", "");
+	});
+
 	$: {
 		if (models && Array.isArray(models)) {
 			if (mode === "custom") {
@@ -226,7 +232,8 @@
 		setCookie("customdropdown_mode", mode);
 		setCookie(
 			"customdropdown_models",
-			JSON.stringify(custom_models_selection),
+			"",
+			// JSON.stringify(custom_models_selection),
 		);
 		gradio.dispatch("select", {
 			mode: mode,
@@ -246,7 +253,8 @@
 		setCookie("customdropdown_mode", mode);
 		setCookie(
 			"customdropdown_models",
-			JSON.stringify(custom_models_selection),
+			"",
+			// JSON.stringify(custom_models_selection),
 		);
 		gradio.dispatch("submit", {
 			mode: mode,
