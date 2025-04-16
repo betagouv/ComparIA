@@ -181,9 +181,6 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     conversation_id = conv["id"]
                     print(f"Processing conversation with ID: {conversation_id}")
                     try:
-                        if not conv.get("model_a_name") or not conv.get("model_b_name"):
-                            print(f"No model name for {conversation_id}, skipping...")
-                            continue
                         model_a_name = conv["model_a_name"].lower()
                         model_b_name = conv["model_b_name"].lower()
                         print(f"  Getting metadata for model A: '{model_a_name}'")
