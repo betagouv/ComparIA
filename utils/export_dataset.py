@@ -11,6 +11,9 @@ import json
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 
+
+# TODO: apply add token ecologits + topics pii + ip_map just before export
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 
