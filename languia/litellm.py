@@ -81,7 +81,7 @@ def litellm_stream_iter(
         #     "existing_trace_id": langfuse_context.get_current_trace_id(),
         # },
         )
-    if model_name == "openrouter/mistralai/mistral-small-3.1-24b-instruct-2503":
+    if "mistralai" in model_name:
         messages = strip_metadata(messages)
         print("stripping metadata")
         
