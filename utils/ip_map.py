@@ -407,11 +407,11 @@ if __name__ == "__main__":
 
         # 5. Use the transformed data
         if transformed_df is not None:
-            logger.info(f"Successfully processed data for '{table_identifier}'. Shape: {transformed_df.shape}")
+            logger.info(f"Successfully processed data. Shape: {transformed_df.shape}")
             # print(transformed_df.head())
             # Further processing...
         else:
-            logger.error(f"Failed to process data for '{table_identifier}'.")
+            logger.error(f"Failed to process data.")
 
     except (ValueError, ConnectionError) as e:
          logger.error(f"Initialization failed: {e}")
