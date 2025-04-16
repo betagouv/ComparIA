@@ -323,7 +323,7 @@ def params_to_friendly_size(params):
     sizes = ["XS", "S", "M", "L", "XL"]
 
     for i, (lower, upper) in enumerate(intervals):
-        if lower <= params <= upper:
+        if lower <= params < upper:
             return sizes[i]
 
     return "M"
