@@ -266,6 +266,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         app_state_scoped.awaiting_responses = True
 
         try:
+            i = 0
             gen_a = bot_response(
                 "a",
                 conv_a_scoped,
@@ -273,6 +274,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 apply_rate_limit=True,
                 use_recommended_config=True,
             )
+            i = 1
             gen_b = bot_response(
                 "b",
                 conv_b_scoped,
@@ -364,14 +366,19 @@ document.getElementById("fr-modal-welcome-close").blur();
                 exc_info=True,
             )
             # If it's the first message in conversation, re-roll
-            if len(conv_a_scoped.messages) == 1 or (
-                len(conv_a_scoped.messages) == 2
-                and conv_a_scoped.messages[0].role == "system"
+            if i == 0:
+                conv_error = conv_a_scoped
+            else:
+                conv_error = conv_b_scoped
+
+            if len(conv_error.messages) == 1 or (
+                len(conv_error.messages) == 2
+                and conv_error.messages[0].role == "system"
             ):
-                if len(conv_a_scoped.messages) == 1:
-                    original_user_prompt = conv_a_scoped.messages[0].content
+                if len(conv_error.messages) == 1:
+                    original_user_prompt = conv_error.messages[0].content
                 else:
-                    original_user_prompt = conv_a_scoped.messages[1].content
+                    original_user_prompt = conv_error.messages[1].content
 
                 config.unavailable_models = refresh_unavailable_models(
                     config.unavailable_models, controller_url=config.controller_url
@@ -423,11 +430,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                 app_state_scoped, [conv_a_scoped, conv_b_scoped], request
             )
 
-            if not conv_a_scoped.messages[-1].role == "user":
+            if conv_a_scoped.messages[-1].role != "user":
                 logger.info(
                     f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
                     extra={"request": request},
                 )
+            if conv_b_scoped.messages[-1].role != "user":
                 logger.info(
                     f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
                     extra={"request": request},
