@@ -29,10 +29,22 @@ icon_path = "anthropic.png"
 friendly_size = "XL"
 active_params = 100
 params = 300
-description = "Meilleur modèle de la famille Claude, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel. La version v2 est sortie en octobre 2024."
+description = "Meilleur modèle de la famille Claude 3.5, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel. La version v2 est sortie en octobre 2024."
 license = "propriétaire Anthropic"
 url = "https://www.anthropic.com/news/3-5-models-and-computer-use"
 release_date = "10/2024"
+
+["claude-3-7-sonnet"]
+simple_name = "Claude 3.7 Sonnet"
+organisation = "Anthropic"
+icon_path = "anthropic.png"
+friendly_size = "XL"
+active_params = 100
+params = 300
+description = "Meilleur modèle de la famille Claude, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel."
+license = "propriétaire Anthropic"
+url = "https://www.anthropic.com/news/claude-3-7-sonnet"
+release_date = "02/2025"
 
 [command-r-plus]
 simple_name = "Command R+"
@@ -130,6 +142,18 @@ license = "MIT"
 excerpt = "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 description = "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
 release_date = "12/2024"
+
+["deepseek-v3-0324"]
+url = "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324"
+simple_name = "DeepSeek V3 (0324)"
+organisation = "DeepSeek"
+total_params = 685
+active_params = 37
+icon_path = "deepseek.webp"
+license = "MIT"
+excerpt = "Mis à jour en mars 2025, cette version du modèle DeepSeek V3 est la plus aboutie à ce jour."
+description = "Sorti en décembre 2024 et mis à jour en mars 2025, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+release_date = "03/2025"
 
 # ["eurollm-1.7b"]
 # url = "https://huggingface.co/utter-project/eurollm-1.7b"
@@ -256,6 +280,17 @@ excerpt = "Mistral Small 3.1 24B Instruct est une variante améliorée du Mistra
 description = "Mistral Small 3.1 24B Instruct est un modèle multimodal qui offre des performances de pointe dans les tâches de raisonnement basées sur le texte et la vision, y compris l'analyse d'images, la programmation, le raisonnement mathématique et le soutien multilingue pour des dizaines de langues."
 release_date = "03/2025"
 
+["mistral-saba"]
+url = "https://mistral.ai/news/mistral-saba"
+simple_name = "Mistral Saba"
+organisation = "Mistral AI"
+icon_path = "mistral.png"
+license = "propriétaire Mistral"
+params = 24
+excerpt = "Mistral Saba est un modèle de 24 milliards de paramètres conçu pour le Moyen-Orient et l'Asie du Sud. Il comprend l'arabe et plusieurs langues d'origine indienne (tamoul, malayalam)."
+description = "Mistral Saba est un modèle propriétaire de 24 milliards de paramètres conçu pour le Moyen-Orient et l'Asie du Sud. Il comprend l'arabe et plusieurs langues d'origine indienne (tamoul, malayalam)."
+release_date = "02/2025"
+
 ["command-a"]
 url = "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025"
 simple_name = "Command A"
@@ -289,6 +324,28 @@ description = "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'
 excerpt = "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel."
 release_date = "03/2023"
 
+["gpt-4.1-mini"]
+url = "https://openai.com/index/gpt-4-1/"
+simple_name = "GPT-4.1 Mini"
+organisation = "OpenAI"
+icon_path = "openai.svg"
+friendly_size = "L"
+license = "propriétaire OpenAI"
+description = "GPT-4.1 Mini est le modèle de taille intermédiaire de la série GPT-4.1, remplaçant la série GPT-4o, et disponible via l'application ChatGPT de l'entreprise américaine OpenAI."
+excerpt = "GPT-4.1 Mini est le modèle de taille intermédiaire de la série GPT-4.1 lancée en avril 2025, remplaçant la série GPT-4o, et disponible via l'application ChatGPT de l'entreprise américaine OpenAI."
+release_date = "04/2025"
+
+["gpt-4.1-nano"]
+url = "https://openai.com/index/gpt-4-1/"
+simple_name = "GPT-4.1 Nano"
+organisation = "OpenAI"
+icon_path = "openai.svg"
+friendly_size = "M"
+license = "propriétaire OpenAI"
+description = "GPT-4.1 Nano est le modèle de plus petite taille de la série GPT-4.1, remplaçant la série GPT-4o, et disponible via l'application ChatGPT de l'entreprise américaine OpenAI."
+excerpt = "GPT-4.1 Nano est le modèle de plus petite taille de la série GPT-4.1 lancée en avril 2025, remplaçant la série GPT-4o, et disponible via l'application ChatGPT de l'entreprise américaine OpenAI."
+release_date = "04/2025"
+
 ["gpt-4o-mini-2024-07-18"]
 url = "https://platform.openai.com/docs/models/gp#gpt-4o-mini"
 simple_name = "GPT-4o mini"
@@ -310,6 +367,18 @@ license = "propriétaire OpenAI"
 description = "Modèle lancé en août 2024 et successeur de GPT-4, GPT-4o est une version améliorée de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA."
 excerpt = "Le plus grand des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en août 2024."
 release_date = "08/2024"
+
+["grok-3-mini-beta"]
+url = "https://x.ai/news/grok-3"
+simple_name = "Grok 3 Mini"
+organisation = "xAI"
+icon_path = "xai.svg"
+friendly_size = "XL"
+reasoning = true
+license = "propriétaire xAI"
+description = "Grok 3 Mini est doté de capacités de raisonnement. Il est moins coûteux que le modèle Grok 3 de xAI, aussi doté de raisonnement. C'est le modèle de base qui est ici interrogé, donc non connecté à Internet, à l'inverse du bot Grok présent sur le réseau X."
+excerpt = "Grok 3 Mini est doté de capacités de raisonnement. Il est moins coûteux que le modèle Grok 3 de xAI, aussi doté de raisonnement."
+release_date = "04/2025"
 
 ["hermes-3-llama-3.1-405b"]
 url = "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B"
@@ -352,11 +421,23 @@ url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct"
 simple_name = "Llama 3.1 405B"
 organisation = "Meta"
 icon_path = "meta.svg"
-excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la série Llama de Meta, optimisé pour des tâches complexes de programmation, de mathématique et de raisonnement."
-description = "Doté de 405 milliards de paramètres, ce modèle est le plus gros modèle de langage entraîné à ce jour par l'entreprise Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation. Le modèle a été entraîné sur un corpus de 15 milliards de tokens dont la limite de connaissances est fixée au mois de décembre 2023."
+excerpt = "Sorti en juillet 2024, ce modèle est le plus grand modèle de la série Llama 3.1 de Meta, optimisé pour des tâches complexes de programmation, de mathématique et de raisonnement."
+description = "Doté de 405 milliards de paramètres, ce modèle est le plus gros modèle de la série Llama 3.1 de Meta. Sa taille et son coût élevé en inférence le réservent à des applications exigeantes de raisonnement et de programmation. Le modèle a été entraîné sur un corpus de 15 milliards de tokens dont la limite de connaissances est fixée au mois de décembre 2023."
 params = 405
 license = "Llama 3.1"
 release_date = "07/2024"
+
+["llama-4-scout"]
+url = "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct"
+simple_name = "Llama 4 Scout"
+organisation = "Meta"
+icon_path = "meta.svg"
+excerpt = "Sorti en avril 2025, ce modèle de la série Llama 4 représente la gamme la plus petite. Il possède une architecture de 128 experts et un contexte de 10 milliards de tokens."
+description = "Sorti en avril 2025, ce modèle de la série Llama 4 est de la gamme la plus petite (par rapport à Maverick et Behemoth). Il possède une architecture Mixture-of-Experts avec 128 experts et un contexte étendu à 10 milliards de tokens"
+total_params = 109
+active_params = 17
+license = "Llama 4"
+release_date = "04/2025"
 
 ["llama-3.1-8b"]
 url = "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct"
@@ -489,6 +570,7 @@ license = "Mistral AI Research"
 release_date = "11/2024"
 
 ["o3-mini"]
+url = "https://openai.com/index/openai-o3-mini/"
 simple_name = "o3-mini"
 organisation = "OpenAI"
 icon_path = "openai.svg"
@@ -498,6 +580,18 @@ license = "propriétaire OpenAI"
 description = "Modèle optimisé pour les tâches de raisonnement STEM (science, technologie, ingénierie, mathématiques) et l'écriture de code. Il se démarque dans les domaines scientifiques, mathématiques et de la programmation."
 excerpt = "o3-mini est fait pour le raisonnement et le code. Il offre un bon équilibre entre performance, coût et latence, tout en étant plus petit que d'autres modèles de chez OpenAI."
 release_date = "11/2024"
+
+["o4-mini"]
+url = "https://openai.com/index/introducing-o3-and-o4-mini/"
+simple_name = "o4-mini"
+organisation = "OpenAI"
+icon_path = "openai.svg"
+friendly_size = "XL"
+reasoning = true
+license = "propriétaire OpenAI"
+description = "o4-mini est doté de capacités de raisonnement, et est optimisé pour les tâches de STEM (science, technologie, ingénierie, mathématiques). Il est moins coûteux que le modèle o3 d'OpenAI, aussi doté de raisonnement."
+excerpt = "Modèle avec capacités de raisonnement, optimisé pour les tâches de STEM (science, technologie, ingénierie, mathématiques) et l'écriture de code."
+release_date = "04/2025"
 
 [phi-3-mini-4k]
 url = "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct"
