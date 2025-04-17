@@ -99,11 +99,13 @@ def metadata_to_dict(metadata):
         metadata_dict.pop("generation_id", None)
     return metadata_dict
 
+
 # TODO: factorize w/ messages_to_dict_list?
 def strip_metadata(messages):
-    return[
-        {"role": message['role'], "content": message['content']} for message in messages
+    return [
+        {"role": message["role"], "content": message["content"]} for message in messages
     ]
+
 
 def messages_to_dict_list(messages):
     return [
@@ -149,8 +151,10 @@ def get_user_info(request):
         user_id = None
     return user_id, session_id
 
+
 def get_endpoint(model_id):
     from languia.config import api_endpoint_info
+
     for endpoint in api_endpoint_info:
         if endpoint.get("model_id", "").lower() == model_id.lower():
             return endpoint
@@ -212,22 +216,31 @@ def choose_among(
 
 def pick_models(mode, custom_models_selection, unavailable_models):
     from languia.config import models_extra_info
-    from languia.config import models as models_names
+
+    reasoning_models = [
+        model["id"] for model in models_extra_info if model.get("reasoning", False)
+    ]
+
+    random_pool = [
+        model["id"]
+        for model in models_extra_info
+        if model["id"] not in reasoning_models
+    ]
 
     small_models = [
         model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["XS", "S", "M"]
         and model["id"] not in unavailable_models
+        and model["id"] not in reasoning_models
     ]
+    
     big_models = [
         model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["L", "XL"]
         and model["id"] not in unavailable_models
-    ]
-    reasoning_models = [
-        model["id"] for model in models_extra_info if model.get("reasoning", False)
+        and model["id"] not in reasoning_models
     ]
 
     import random
@@ -260,7 +273,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         if len(custom_models_selection) == 1:
             model_left_name = custom_models_selection[0]
             model_right_name = choose_among(
-                models=models_names,
+                models=random_pool,
                 excluded=[custom_models_selection[0]] + unavailable_models,
             )
 
@@ -270,9 +283,9 @@ def pick_models(mode, custom_models_selection, unavailable_models):
             model_right_name = custom_models_selection[1]
 
     else:  # assume random mode
-        model_left_name = choose_among(models=models_names, excluded=unavailable_models)
+        model_left_name = choose_among(models=random_pool, excluded=unavailable_models)
         model_right_name = choose_among(
-            models=models_names, excluded=[model_left_name] + unavailable_models
+            models=random_pool, excluded=[model_left_name] + unavailable_models
         )
 
     swap = random.randint(0, 1)
