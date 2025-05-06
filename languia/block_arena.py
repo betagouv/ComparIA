@@ -14,7 +14,6 @@ from languia.utils import (
     welcome_modal_html,
     footer_html,
     AppState,
-    second_header_html,
 )
 
 
