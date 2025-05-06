@@ -21,7 +21,7 @@
           </div>
         </div>
 
-        <div class=" fr-header__tools fr-col-12 fr-col-lg-6 fr-p-md-2w">
+        <div class=" fr-header__tools fr-col-12 fr-col-lg-6 fr-p-md-2w hidden md-visible">
 
 
           <div class="fr-container--fluid counter"><span class="fr-ml-1w legende">Total des votes&nbsp;<a
@@ -37,103 +37,104 @@
             librement pour affiner les prochains modèles sur le français.<br />
             Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des
               futurs modèles de langue.</strong></span>
-          <style>
-            #main-header {
-              z-index: 800;
-              --shadow-color: rgba(0, 0, 18, 0.16);
-              --raised-shadow: 0 1px 3px var(--shadow-color);
-              filter: drop-shadow(0 1px 3px var(--shadow-color));
-            }
-
-            .legende {
-              font-size: 0.875em;
-              color: #161616 !important;
-              font-weight: bold;
-
-            }
-
-            .votes {
-              font-size: 0.75em;
-              font-weight: bold;
-              color: #695240 !important;
-              margin-left: 5px;
-              height: inherit;
-              float: left;
-            }
-
-            .objectif {
-              font-weight: 500;
-              font-size: 0.75em;
-              color: #7F7F7F !important;
-            }
-
-
-            .linear-gauge {
-              width: 200px;
-              height: 20px;
-              background: linear-gradient(to right, var(--yellow-tournesol-925-125) {{gauge_count_ratio}}%, white 0);
-              background-size: 100% 100%;
-              border-radius: 3px;
-              border: 1px solid #CCCCCC;
-              overflow: hidden;
-            }
-
-            .counter {
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              gap: 1em;
-              padding-top: 0;
-              padding-bottom: 1em;
-              height: auto;
-            }
-
-
-            .objectif {
-              display: block;
-            }
-
-            #second-header {
-              width: 100%;
-              z-index: 750;
-              background-color: #F3F5F9;
-              --shadow-color: rgba(0, 0, 18, 0.16);
-              --raised-shadow: 0 1px 3px var(--shadow-color);
-              filter: drop-shadow(0 1px 3px var(--shadow-color));
-            }
-
-            .text-dark-grey {
-              color: #3A3A3A;
-            }
-
-            .mode-sticker {
-              z-index: 750;
-              border-radius: 0.5em;
-              border: #E5E5E5 dashed 1px;
-            }
-
-            .align-center {
-              align-items: center;
-            }
-
-            .column {
-              flex-direction: column;
-            }
-
-
-            @media (min-width: 48em) {
-              .md-row {
-                flex-direction: row;
-
-              }
-
-              .md-text-left {
-                text-align: left !important;
-              }
-            }
-          </style>
+          
 
         </div>
+        <style>
+          #main-header {
+            z-index: 800;
+            --shadow-color: rgba(0, 0, 18, 0.16);
+            --raised-shadow: 0 1px 3px var(--shadow-color);
+            filter: drop-shadow(0 1px 3px var(--shadow-color));
+          }
+
+          .legende {
+            font-size: 0.875em;
+            color: #161616 !important;
+            font-weight: bold;
+
+          }
+
+          .votes {
+            font-size: 0.75em;
+            font-weight: bold;
+            color: #695240 !important;
+            margin-left: 5px;
+            height: inherit;
+            float: left;
+          }
+
+          .objectif {
+            font-weight: 500;
+            font-size: 0.75em;
+            color: #7F7F7F !important;
+          }
+
+
+          .linear-gauge {
+            width: 200px;
+            height: 20px;
+            background: linear-gradient(to right, var(--yellow-tournesol-925-125) {{gauge_count_ratio}}%, white 0);
+            background-size: 100% 100%;
+            border-radius: 3px;
+            border: 1px solid #CCCCCC;
+            overflow: hidden;
+          }
+
+          .counter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1em;
+            padding-top: 0;
+            padding-bottom: 1em;
+            height: auto;
+          }
+
+
+          .objectif {
+            display: block;
+          }
+
+          #second-header {
+            width: 100%;
+            z-index: 750;
+            background-color: #F3F5F9;
+            --shadow-color: rgba(0, 0, 18, 0.16);
+            --raised-shadow: 0 1px 3px var(--shadow-color);
+            filter: drop-shadow(0 1px 3px var(--shadow-color));
+          }
+
+          .text-dark-grey {
+            color: #3A3A3A;
+          }
+
+          .mode-sticker {
+            z-index: 750;
+            border-radius: 0.5em;
+            border: #E5E5E5 dashed 1px;
+          }
+
+          .align-center {
+            align-items: center;
+          }
+
+          .column {
+            flex-direction: column;
+          }
+
+
+          @media (min-width: 48em) {
+            .md-row {
+              flex-direction: row;
+
+            }
+
+            .md-text-left {
+              text-align: left !important;
+            }
+          }
+        </style>
       </div>
     </div>
   </div>
@@ -152,7 +153,7 @@
           {% endif %}
         </strong>
         <br />
-        <span class="text-grey fr-text--sm">
+        <span class="text-grey fr-text--xs">
           {% if step == 1 %}
           Prêtez attention au fond et à la forme puis évaluez chaque réponse
           {% else %}
@@ -163,7 +164,7 @@
     </div>
     <div class="fr-col-12 fr-col-md-4 grid align-center">
       {% if step == 1 %}
-      <div class="bg-white mode-sticker fr-py-1v text-center">
+      <div class="bg-white mode-sticker fr-pt-1w fr-pb-1v text-center fr-text--xs">
         <img class="inline" height="20" src="../assets/extra-icons/{{ mode[2] }}" />
         &nbsp;<strong>{{ mode[0] }}</strong>
         &nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="mode-desc"></a>
