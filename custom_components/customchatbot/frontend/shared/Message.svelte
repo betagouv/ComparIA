@@ -203,7 +203,7 @@
 
 	.message {
 		position: relative;
-		/* width: 100%; */
+		max-width: 100%;
 	}
 
 	.prose {
@@ -214,6 +214,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+		overflow: auto;
+		max-width: 100%;
 	}
 
 	.message.bot button {

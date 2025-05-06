@@ -611,10 +611,6 @@
 		border: 1px solid var(--border-color-accent);
 	}
 
-	.message-wrap :global(pre) {
-		max-width: 600px;
-	}
-
 	/* KaTeX */
 	/* .message-wrap :global(span.katex) {
 		font-size: var(--text-lg);
@@ -625,10 +621,11 @@
 		margin-top: 0;
 	} */
 
-	/* .message-wrap :global(pre) {
-		position: relative;
+	 .message-wrap :global(pre) {
+		overflow-x: auto;
+		max-width: 100%;
 	}
-
+/*
 	.message-wrap :global(.grid-wrap) {
 		max-height: 80% !important;
 		max-width: 600px;
