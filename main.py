@@ -59,6 +59,7 @@ app = gr.mount_gradio_app(
         "custom_components",
     ],
     show_error=config.debug,
+    ssr_mode=True,
 )
 
 from languia.utils import get_gauge_count

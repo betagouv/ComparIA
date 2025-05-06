@@ -60,24 +60,24 @@ with gr.Blocks(
     ) as mode_screen:
 
         # TODO: rename component, it includes textbox
-        model_dropdown = CustomDropdown(
-            models=config.models_extra_info,
+        model_dropdown = gr.Textbox(
+            # models=config.models_extra_info,
             # ignored, hardcoded in custom component
-            choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
+            # choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
             # ignored, hardcoded in custom component
-            interactive=True,
+            # interactive=True,
         )
 
         prompts_suggestions = gr.HTML(
             elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-0 fr-pb-0 fr-px-0",
             value="""<strong>Suggestions de prompts</strong>""",
         )
-        guided_cards = CustomRadioCard(
+        guided_cards = gr.Radio(
             show_label=False,
             elem_id="guided-cards",
             elem_classes="fr-container fr-px-0",
             choices=config.guided_cards_choices,
-            min_columns=1,
+            # min_columns=1,
         )
         shuffle_link = gr.Button(
             scale=0,
