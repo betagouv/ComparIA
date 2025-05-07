@@ -1,7 +1,7 @@
 gradio==5.25.0
 ecologits==0.6.1
 
-litellm
+litellm==1.68.1
 
 google-cloud-aiplatform
 huggingface-hub
