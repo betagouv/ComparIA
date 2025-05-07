@@ -441,24 +441,41 @@
 
 	{#if hasError}
 		<div class="fr-py-4w fr-mb-4w error rounded-tile fr-container">
-			<h3>
-				<span class="fr-icon-warning-fill" aria-hidden="true"></span> Oups,
-				erreur temporaire
-			</h3>
-			<p>
-				Une erreur temporaire est survenue.<br />
-				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou
-					bien conclure votre expérience en donnant votre avis sur les
-					modèles{/if}.
+			{#if errorString == "Context too long."}
+				<h5>
+					<span class="fr-icon-warning-fill" aria-hidden="true"
+					></span> Oups, la conversation est trop longue pour un des modèles
+				</h5>
+				<p>
+					Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.{#if groupedMessages.length > 1}&nbsp;Vous pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation avec deux nouveaux.{:else}
+					&nbsp;Vous pouvez recommencer une conversation avec deux nouveaux modèles.
+					{/if}
+				</p>
+				<p class="text-center">
+					<!-- TODO: icone Recommencer -->
+					<a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank">Recommencer</a>
+						<!-- TODO: Bouton "donner son avis" -->
+				</p>
+			{:else}
+				<h3>
+					<span class="fr-icon-warning-fill" aria-hidden="true"
+					></span> Oups, erreur temporaire
+				</h3>
+				<p>
+					Une erreur temporaire est survenue.<br />
+					Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou
+						bien conclure votre expérience en donnant votre avis sur
+						les modèles{/if}.
 					<span class="hidden">{errorString}</span>
-			</p>
-			<p class="text-center">
-				<button
-					class="fr-btn purple-btn"
-					on:click={() => handle_retry_last()}
-					disabled={generating || disabled}>Réessayer</button
-				>
-			</p>
+				</p>
+				<p class="text-center">
+					<button
+						class="fr-btn purple-btn"
+						on:click={() => handle_retry_last()}
+						disabled={generating || disabled}>Réessayer</button
+					>
+				</p>
+			{/if}
 		</div>
 	{/if}
 </div>
@@ -622,11 +639,11 @@
 		margin-top: 0;
 	} */
 
-	 .message-wrap :global(pre) {
+	.message-wrap :global(pre) {
 		overflow-x: auto;
 		max-width: 100%;
 	}
-/*
+	/*
 	.message-wrap :global(.grid-wrap) {
 		max-height: 80% !important;
 		max-width: 600px;
