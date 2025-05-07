@@ -97,7 +97,6 @@ def litellm_stream_iter(
         "temperature": temperature,
         "max_tokens": max_new_tokens,
         "stream": True,
-        "stream_options": {"include_usage": True},
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
         # "metadata": {
@@ -108,6 +107,9 @@ def litellm_stream_iter(
         #     "existing_trace_id": langfuse_context.get_current_trace_id(),
         # },
     }
+
+    if "c4ai-aya-expanse-32b" not in model_name:
+        kwargs["stream_options"] = {"include_usage": True}
 
     if include_reasoning:
         kwargs["include_reasoning"] = True
