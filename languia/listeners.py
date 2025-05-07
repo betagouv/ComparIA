@@ -855,15 +855,23 @@ setTimeout(() => {
         console.log(args)
 setTimeout(() => {
 console.log("scrolling to .next-screen");
+const chatbotArea = document.getElementById('main-chatbot');
 const chatArea = document.getElementById('chat-area');
 chatArea.style.paddingBottom = `0px`;
 
 let secondHeader = document.getElementById('second-header');
 const secondHeaderHeight = secondHeader.offsetHeight;
+console.log("secondHeader.offsetHeight");
+console.log(secondHeader.offsetHeight);
+
+
+console.log("chatbotArea.offsetHeight");
+console.log(chatbotArea.offsetHeight);
+
 
 // const nextScreen = document.querySelector('.next-screen');
 window.scrollTo({
-  top: secondHeaderHeight + chatArea.offsetHeight,
+  top: chatbotArea.offsetHeight + secondHeaderHeight,
   left: 0,
   behavior: 'smooth',
   });}, 500);
