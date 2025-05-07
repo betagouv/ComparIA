@@ -161,7 +161,7 @@
 					{/if}
 				</div>
 				{#if thought != ""}
-					<div class="thought">
+					<div class="fr-highlight thought fr-mb-2w">
 						{@html sanitize(thought.split('\n').join('<br>'), root)}
 
 					</div>
