@@ -692,6 +692,21 @@ document.getElementById("fr-modal-welcome-close").blur();
         outputs=[textbox, conclude_btn, send_btn],
         js="""(args) => {
 setTimeout(() => {
+
+  function adjustFooter() {
+    const footer = document.getElementById('send-area');
+    const chatArea = document.getElementById('chat-area');
+
+    const footerHeight = footer.offsetHeight;
+    // Add bottom padding to the chatArea equal to footer height so it's not hidden
+    chatArea.style.paddingBottom = `${footerHeight}px`;
+  }
+  window.addEventListener('load', adjustFooter);
+  window.addEventListener('resize', adjustFooter);
+  window.addEventListener('click', adjustFooter);
+  adjustFooter();
+
+  
   console.log("scrolling to bot responses");
   var botRows = document.querySelectorAll('.bot-row');
     var lastBotRow = botRows.item(botRows.length - 1);
