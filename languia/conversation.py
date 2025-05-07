@@ -12,7 +12,6 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
 )
 
 from languia.utils import (
-    ContextTooLongError,
     EmptyResponseError,
     get_endpoint,
     messages_to_dict_list,
