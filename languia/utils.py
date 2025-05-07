@@ -100,22 +100,31 @@ def metadata_to_dict(metadata):
     return metadata_dict
 
 
-# TODO: factorize w/ messages_to_dict_list?
 def strip_metadata(messages):
     return [
         {"role": message["role"], "content": message["content"]} for message in messages
     ]
 
 
-def messages_to_dict_list(messages):
+def messages_to_dict_list(
+    messages, strip_metadata=False, concat_reasoning_with_content=False
+):
     return [
         {
             "role": message.role,
-            "content": message.content,
-            **({"reasoning": message.reasoning} if message.reasoning else {}),
+            "content": (
+                (message.reasoning + " ")
+                if message.reasoning and concat_reasoning_with_content
+                else "" + message.content
+            ),
+            **(
+                {"reasoning": message.reasoning}
+                if message.reasoning and not concat_reasoning_with_content
+                else {}
+            ),
             **(
                 {"metadata": metadata_to_dict(message.metadata)}
-                if metadata_to_dict(message.metadata)
+                if metadata_to_dict(message.metadata) and not strip_metadata
                 else {}
             ),
         }
@@ -234,7 +243,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         and model["id"] not in unavailable_models
         and model["id"] not in reasoning_models
     ]
-    
+
     big_models = [
         model["id"]
         for model in models_extra_info

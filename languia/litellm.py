@@ -81,6 +81,7 @@ def litellm_stream_iter(
         #     "existing_trace_id": langfuse_context.get_current_trace_id(),
         # },
         )
+        # TODO: do it in all cases?
     if "mistralai" in model_name:
         messages = strip_metadata(messages)
         print("stripping metadata")
