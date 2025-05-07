@@ -5,13 +5,11 @@ Utilities to communicate with different APIs
 import os
 import logging
 
-import sentry_sdk
-
 from languia.config import GLOBAL_TIMEOUT
 import litellm
 import json
 
-from languia.utils import strip_metadata, get_user_info
+from languia.utils import strip_metadata, get_user_info, ContextTooLongError
 
 from langfuse.decorators import langfuse_context, observe
 
@@ -127,7 +125,7 @@ def litellm_stream_iter(
 
     data = dict()
 
-    for chunk in res:
+    for i, chunk in enumerate(res):
         if hasattr(chunk, "id"):
             data["generation_id"] = chunk.id
             logger.debug(
@@ -164,16 +162,10 @@ def litellm_stream_iter(
                     data["text"] = text
                     break
                 elif chunk.choices[0].finish_reason == "length":
-                    # cannot raise ContextTooLong because sometimes the model stops only because of current answer's (output) length limit, e.g. HuggingFace free API w/ Phi
-                    # raise ContextTooLongError
-                    logger.warning(
+                    logger.error(
                         "context_too_long: " + str(chunk), extra={request: request}
                     )
-
-                    if os.getenv("SENTRY_DSN"):
-                        sentry_sdk.capture_message(f"context_too_long: {chunk}")
-                    break
-            # Special handling for certain models
-            # if model_name == "meta/llama3-405b-instruct-maas" or model_name == "google/gemini-1.5-pro-001":
+                    raise ContextTooLongError
+                
             yield data
     yield data

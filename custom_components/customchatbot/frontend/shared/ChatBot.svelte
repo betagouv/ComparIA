@@ -450,6 +450,7 @@
 				Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou
 					bien conclure votre expérience en donnant votre avis sur les
 					modèles{/if}.
+					<span class="hidden">{errorString}</span>
 			</p>
 			<p class="text-center">
 				<button
