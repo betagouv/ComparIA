@@ -434,20 +434,6 @@ def get_model_names_list(api_endpoint_info):
     return models
 
 
-def is_limit_reached(model_name, ip):
-    # FIXME:
-    # monitor_url = "http://localhost:9090"
-    # try:
-    #     ret = requests.get(
-    #         f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
-    #     )
-    #     obj = ret.json()
-    #     return obj
-    # except Exception as e:
-    #     logging.info(f"monitor error: {e}")
-    return None
-
-
 def count_output_tokens(messages) -> int:
     """Count output tokens (assuming 4 letters per token)."""
 
@@ -455,27 +441,6 @@ def count_output_tokens(messages) -> int:
         len(msg.content) for msg in messages if msg.role == "assistant"
     )
     return int(total_messages / 4)
-
-
-def refresh_available_models(previous_exclude_models, controller_url):
-    logger = logging.getLogger("languia")
-    try:
-        response = requests.get(controller_url + "/exclude_models/", timeout=1)
-    except Exception as e:
-        logger.warning("controller_inaccessible: " + str(e))
-        return previous_exclude_models
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Parse the JSON response
-        data = response.json()
-        logger.debug("refreshed outage models:" + str(data))
-        return data
-    else:
-        logger.warning(
-            f"Failed to retrieve outage data. Status code: {response.status_code}"
-        )
-        return previous_exclude_models
-
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
