@@ -8,9 +8,7 @@ from fastapi.templating import Jinja2Templates
 import traceback
 
 
-from languia.utils import (
-    EmptyResponseError,
-)
+from languia.utils import EmptyResponseError, ContextTooLongError
 
 from languia.litellm import litellm_stream_iter
 
@@ -36,7 +34,9 @@ tests: List = []
 scheduled_tasks = set()
 
 import litellm
+
 litellm._turn_on_debug()
+
 
 @app.get("/unavailable_models/{model_id}/create", status_code=201)
 @app.post("/unavailable_models/{model_id}/create", status_code=201)
@@ -116,7 +116,7 @@ def test_model(model_id):
             temperature=temperature,
             max_new_tokens=max_new_tokens,
             vertex_ai_location=endpoint.get("vertex_ai_location", None),
-            include_reasoning=include_reasoning
+            include_reasoning=include_reasoning,
         )
 
         # Verify the response
@@ -142,7 +142,11 @@ def test_model(model_id):
             test.update(output_tokens=output_tokens)
 
         # FIXME: Add ugly bypass for reasoning models...
-        if text or include_reasoning or model_id in ["o3-mini", "o4-mini", "grok-3-mini-beta"]:
+        if (
+            text
+            or include_reasoning
+            or model_id in ["o3-mini", "o4-mini", "grok-3-mini-beta"]
+        ):
             logging.info(f"Test successful: {model_id}")
             if remove_unavailable_models(model_id):
                 test.update({"info": "Removed model from unavailable_models list."})
@@ -165,6 +169,24 @@ def test_model(model_id):
             # disable_endpoint(model_name, reason)
         return test
     except Exception as e:
+        if e == ContextTooLongError:
+
+            test = {
+                "model_id": model_id,
+                "timestamp": int(time.time()),
+            }
+            logging.info(f"Test successful: {model_id}")
+            if remove_unavailable_models(model_id):
+                test.update({"info": "Removed model from unavailable_models list."})
+
+            test.update(
+                {
+                    "success": True,
+                    "message": "Model responded: " + str(text),
+                }
+            )
+            return test
+        
         reason = str(e)
         logging.error(f"Error: {reason}. Model: {model_id}")
         stacktrace = traceback.print_exc()
