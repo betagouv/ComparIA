@@ -1,4 +1,14 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, HTTPException, Query
+from fastapi.responses import JSONResponse
+from typing import List, Optional
+
+# Import database utility functions
+from utils.db_utils import (
+    
+    fetch_conversation_detail,
+    
+    ConversationData
+)
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -45,6 +55,18 @@ demo = demo.queue(
 # Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
 demo.run_startup_events()
 
+@app.get("/api/v1/conversations/{conversation_pair_id}", response_model=ConversationData)
+async def get_conversation_details(conversation_pair_id: str):
+    """
+    Retrieve detailed information for a specific conversation pair.
+    """
+    try:
+        conversation = fetch_conversation_detail(conversation_pair_id)
+        if not conversation:
+            raise HTTPException(status_code=404, detail="Conversation not found.")
+        return conversation
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch conversation details: {str(e)}")
 
 app = gr.mount_gradio_app(
     app,

@@ -1,8 +1,5 @@
 <script lang="ts">
-	import { sanitize } from "@gradio/sanitize";
-
 	import type { NormalisedMessage } from "../types";
-	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
@@ -162,32 +159,15 @@
 				</div>
 				{#if thought != ""}
 					<div class="fr-highlight thought fr-mb-2w">
-						{@html sanitize(thought.split('\n').join('<br>'), root)}
-
+						{@html (thought.split("\n").join("<br>"), root)}
 					</div>
 				{/if}
-				<Markdown
-					message={content}
-					{latex_delimiters}
-					{sanitize_html}
-					{render_markdown}
-					{line_breaks}
-					on:load={scroll}
-					{root}
-				/>
+				{@html content}
 				{#if generating}
 					<Pending />
 				{/if}
 			{:else}
-				<Markdown
-					message={message.content}
-					{latex_delimiters}
-					{sanitize_html}
-					{render_markdown}
-					{line_breaks}
-					on:load={scroll}
-					{root}
-				/>
+				{@html content}
 			{/if}
 		</div>
 		{#if message.role === "assistant"}
