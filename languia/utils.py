@@ -223,7 +223,7 @@ def choose_among(
     return chosen_model_name
 
 
-def pick_models(mode, custom_models_selection, unavailable_models):
+def pick_models(mode, custom_models_selection, exclude_models=[]):
     from languia.config import models_extra_info
 
     reasoning_models = [
@@ -255,22 +255,22 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     import random
 
     if mode == "big-vs-small":
-        model_left_name = choose_among(models=big_models, excluded=unavailable_models)
+        model_left_name = choose_among(models=big_models, excluded=exclude_models)
         model_right_name = choose_among(
-            models=small_models, excluded=unavailable_models
+            models=small_models, excluded=exclude_models
         )
 
     elif mode == "small-models":
-        model_left_name = choose_among(models=small_models, excluded=unavailable_models)
+        model_left_name = choose_among(models=small_models, excluded=exclude_models)
         model_right_name = choose_among(
-            models=small_models, excluded=unavailable_models + [model_left_name]
+            models=small_models, excluded=exclude_models + [model_left_name]
         )
     elif mode == "reasoning":
         model_left_name = choose_among(
-            models=reasoning_models, excluded=unavailable_models
+            models=reasoning_models, excluded=exclude_models
         )
         model_right_name = choose_among(
-            models=reasoning_models, excluded=unavailable_models + [model_left_name]
+            models=reasoning_models, excluded=exclude_models + [model_left_name]
         )
         # Custom mode
     elif mode == "custom" and len(custom_models_selection) > 0:
@@ -457,33 +457,13 @@ def count_output_tokens(messages) -> int:
     return int(total_messages / 4)
 
 
-def shuffle_prompt(guided_cards, request):
-    logger = logging.getLogger("languia")
-    prompt = gen_prompt(guided_cards)
-    logger.info(
-        f"shuffle: {prompt}",
-        extra={"request": request},
-    )
-    return prompt
-
-
-def gen_prompt(category):
-    from languia.config import prompts_table
-
-    prompts = prompts_table[category]
-    # [category]
-    # for category in get_categories(prompts_pool):
-    # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
-    return prompts[np.random.randint(len(prompts))]
-
-
-def refresh_unavailable_models(previous_unavailable_models, controller_url):
+def refresh_available_models(previous_exclude_models, controller_url):
     logger = logging.getLogger("languia")
     try:
-        response = requests.get(controller_url + "/unavailable_models/", timeout=1)
+        response = requests.get(controller_url + "/exclude_models/", timeout=1)
     except Exception as e:
         logger.warning("controller_inaccessible: " + str(e))
-        return previous_unavailable_models
+        return previous_exclude_models
     # Check if the request was successful
     if response.status_code == 200:
         # Parse the JSON response
@@ -494,7 +474,7 @@ def refresh_unavailable_models(previous_unavailable_models, controller_url):
         logger.warning(
             f"Failed to retrieve outage data. Status code: {response.status_code}"
         )
-        return previous_unavailable_models
+        return previous_exclude_models
 
 
 def to_threeway_chatbot(conversations):
