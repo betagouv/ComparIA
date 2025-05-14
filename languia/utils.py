@@ -8,10 +8,7 @@ import logging
 
 import requests
 
-from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
-    ChatMessage,
-)
-
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 class ContextTooLongError(ValueError):
     def __str__(self):
@@ -223,7 +220,7 @@ def choose_among(
     return chosen_model_name
 
 
-def pick_models(mode, custom_models_selection, unavailable_models):
+def pick_models(mode, custom_models_selection, exclude_models=[]):
     from languia.config import models_extra_info
 
     reasoning_models = [
@@ -240,7 +237,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["XS", "S", "M"]
-        and model["id"] not in unavailable_models
+        and model["id"] not in exclude_models
         and model["id"] not in reasoning_models
     ]
 
@@ -248,29 +245,29 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["L", "XL"]
-        and model["id"] not in unavailable_models
+        and model["id"] not in exclude_models
         and model["id"] not in reasoning_models
     ]
 
     import random
 
     if mode == "big-vs-small":
-        model_left_name = choose_among(models=big_models, excluded=unavailable_models)
+        model_left_name = choose_among(models=big_models, excluded=exclude_models)
         model_right_name = choose_among(
-            models=small_models, excluded=unavailable_models
+            models=small_models, excluded=exclude_models
         )
 
     elif mode == "small-models":
-        model_left_name = choose_among(models=small_models, excluded=unavailable_models)
+        model_left_name = choose_among(models=small_models, excluded=exclude_models)
         model_right_name = choose_among(
-            models=small_models, excluded=unavailable_models + [model_left_name]
+            models=small_models, excluded=exclude_models + [model_left_name]
         )
     elif mode == "reasoning":
         model_left_name = choose_among(
-            models=reasoning_models, excluded=unavailable_models
+            models=reasoning_models, excluded=exclude_models
         )
         model_right_name = choose_among(
-            models=reasoning_models, excluded=unavailable_models + [model_left_name]
+            models=reasoning_models, excluded=exclude_models + [model_left_name]
         )
         # Custom mode
     elif mode == "custom" and len(custom_models_selection) > 0:
@@ -283,7 +280,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
             model_left_name = custom_models_selection[0]
             model_right_name = choose_among(
                 models=random_pool,
-                excluded=[custom_models_selection[0]] + unavailable_models,
+                excluded=[custom_models_selection[0]] + exclude_models,
             )
 
         elif len(custom_models_selection) == 2:
@@ -292,9 +289,9 @@ def pick_models(mode, custom_models_selection, unavailable_models):
             model_right_name = custom_models_selection[1]
 
     else:  # assume random mode
-        model_left_name = choose_among(models=random_pool, excluded=unavailable_models)
+        model_left_name = choose_among(models=random_pool, excluded=exclude_models)
         model_right_name = choose_among(
-            models=random_pool, excluded=[model_left_name] + unavailable_models
+            models=random_pool, excluded=[model_left_name] + exclude_models
         )
 
     swap = random.randint(0, 1)
@@ -434,20 +431,6 @@ def get_model_names_list(api_endpoint_info):
     return models
 
 
-def is_limit_reached(model_name, ip):
-    # FIXME:
-    # monitor_url = "http://localhost:9090"
-    # try:
-    #     ret = requests.get(
-    #         f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
-    #     )
-    #     obj = ret.json()
-    #     return obj
-    # except Exception as e:
-    #     logging.info(f"monitor error: {e}")
-    return None
-
-
 def count_output_tokens(messages) -> int:
     """Count output tokens (assuming 4 letters per token)."""
 
@@ -455,47 +438,6 @@ def count_output_tokens(messages) -> int:
         len(msg.content) for msg in messages if msg.role == "assistant"
     )
     return int(total_messages / 4)
-
-
-def shuffle_prompt(guided_cards, request):
-    logger = logging.getLogger("languia")
-    prompt = gen_prompt(guided_cards)
-    logger.info(
-        f"shuffle: {prompt}",
-        extra={"request": request},
-    )
-    return prompt
-
-
-def gen_prompt(category):
-    from languia.config import prompts_table
-
-    prompts = prompts_table[category]
-    # [category]
-    # for category in get_categories(prompts_pool):
-    # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
-    return prompts[np.random.randint(len(prompts))]
-
-
-def refresh_unavailable_models(previous_unavailable_models, controller_url):
-    logger = logging.getLogger("languia")
-    try:
-        response = requests.get(controller_url + "/unavailable_models/", timeout=1)
-    except Exception as e:
-        logger.warning("controller_inaccessible: " + str(e))
-        return previous_unavailable_models
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Parse the JSON response
-        data = response.json()
-        logger.debug("refreshed outage models:" + str(data))
-        return data
-    else:
-        logger.warning(
-            f"Failed to retrieve outage data. Status code: {response.status_code}"
-        )
-        return previous_unavailable_models
-
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
