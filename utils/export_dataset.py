@@ -276,7 +276,10 @@ def process_dataset(dataset_name, dataset_config):
         logger.error(f"No repository defined for dataset: {dataset_name}")
         return
 
-    repo_path = os.path.join("../", repo_name)
+    repo_prefix = sys.argv[-1] or "/app/datasets"
+    logger.info(f"Folder defined for dataset: {repo_prefix}")
+
+    repo_path = os.path.join(repo_prefix, repo_name)
 
     # Pull latest changes for the repository
     if not update_repository(repo_path):
