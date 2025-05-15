@@ -54,9 +54,7 @@ from languia.config import logger
 
 from languia import config
 
-from gradio import (
-    ChatMessage,
-)
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 
 # Register listeners
@@ -86,6 +84,7 @@ def register_listeners():
         app_state_scoped.mode = mode
         # custom_models_selection = request.kwargs.get("custom_models_selection", [])
         custom_models_selection = []
+        app_state_scoped.custom_models_selection = custom_models_selection
 
         # Check if "Enter" pressed and no text or still awaiting response and return early
 
@@ -102,7 +101,7 @@ def register_listeners():
                 model_name=second_model_name,
             )
         )
-        return conv_a_scoped, conv_b_scoped
+        return app_state_scoped, conv_a_scoped, conv_b_scoped
 
     # Step 1
 

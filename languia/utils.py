@@ -8,10 +8,7 @@ import logging
 
 import requests
 
-from gradio import (
-    ChatMessage,
-)
-
+from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import ChatMessage
 
 class ContextTooLongError(ValueError):
     def __str__(self):
