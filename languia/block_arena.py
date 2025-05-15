@@ -22,13 +22,8 @@ from custom_components.customchatbot.backend.gradio_customchatbot import CustomC
 from languia import config
 
 with gr.Blocks(
-    title="Discussion - compar:IA, le comparateur d'IA conversationnelles",
-    theme=DSFR(),
-    css=config.css,
-    head=config.arena_head_js,
     analytics_enabled=False,
     # scroll_to_output = True,
-    js=config.arena_js,
     # Doesn't work with uvicorn
     # delete_cache=(1, 1) if config.debug else None,
 ) as demo:

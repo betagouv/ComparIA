@@ -7,6 +7,13 @@ from languia.block_arena import (
     conv_b,
     demo,
     textbox,
+    which_model_radio,
+    positive_a,
+    positive_b,
+    negative_a,
+    negative_b,
+    comments_a,
+    comments_b,
 )
 import traceback
 import os
@@ -57,35 +64,30 @@ def register_listeners():
 
     # Step 0
 
-    @app_state.change
-    def enter_arena(request: gr.Request):
+    # @app_state.change
+    def enter_arena(app_state_scoped: AppState):
         # Refresh on picking model? Do it async? Should do it globally and async...
 
         # TODO: actually check for it
         # tos_accepted = request...
         # if tos_accepted:
-        logger.info(
-            f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
-            extra={"request": request},
-        )
+        # logger.info(
+        #     f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
+        #     extra={"request": request},
+        # )
 
         # GET PARAMS FROM REQUEST, NO MORE model_dropdown_scoped
         # Already refreshed in enter_arena, but not refreshed if submit_first_prompt accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
-        didnt_reset_prompt = True
-        text = request.kwargs.get("prompt_value", "")
-        mode = request.kwargs.get("mode", "random")
+        # didnt_reset_prompt = True
+        # text = request.kwargs.get("prompt_value", "")
+        # mode = request.kwargs.get("mode", "random")
+        mode = "random"
         app_state_scoped.mode = mode
-        custom_models_selection = request.kwargs.get("custom_models_selection", [])
+        # custom_models_selection = request.kwargs.get("custom_models_selection", [])
+        custom_models_selection = []
 
-        logger.info("chose mode: " + mode, extra={"request": request})
-        logger.info(
-            "custom_models_selection: " + str(custom_models_selection),
-            extra={"request": request},
-        )
         # Check if "Enter" pressed and no text or still awaiting response and return early
-        if text == "":
-            raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
         first_model_name, second_model_name = pick_models(mode, custom_models_selection)
 
@@ -100,6 +102,7 @@ def register_listeners():
                 model_name=second_model_name,
             )
         )
+        return conv_a_scoped, conv_b_scoped
 
     # Step 1
 
@@ -261,7 +264,7 @@ def register_listeners():
     )
 
     @chatbot.like(
-        inputs=[app_state] + [conv_a] + [conv_b],
+        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
         outputs=[app_state],
         api_name="react",
         show_progress="hidden",
@@ -338,13 +341,13 @@ def register_listeners():
             [app_state]
             + [conv_a]
             + [conv_b]
-            # + [which_model_radio]
-            # + [positive_a]
-            # + [positive_b]
-            # + [negative_a]
-            # + [negative_b]
-            # + [comments_a]
-            # + [comments_b]
+            + [which_model_radio]
+            + [positive_a]
+            + [positive_b]
+            + [negative_a]
+            + [negative_b]
+            + [comments_a]
+            + [comments_b]
         ),
         outputs=[],
         # outputs=[quiz_modal],
