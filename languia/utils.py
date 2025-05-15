@@ -240,7 +240,7 @@ def pick_models(mode, custom_models_selection, exclude_models=[]):
         model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["XS", "S", "M"]
-        and model["id"] not in unavailable_models
+        and model["id"] not in exclude_models
         and model["id"] not in reasoning_models
     ]
 
@@ -248,7 +248,7 @@ def pick_models(mode, custom_models_selection, exclude_models=[]):
         model["id"]
         for model in models_extra_info
         if model["friendly_size"] in ["L", "XL"]
-        and model["id"] not in unavailable_models
+        and model["id"] not in exclude_models
         and model["id"] not in reasoning_models
     ]
 
@@ -283,7 +283,7 @@ def pick_models(mode, custom_models_selection, exclude_models=[]):
             model_left_name = custom_models_selection[0]
             model_right_name = choose_among(
                 models=random_pool,
-                excluded=[custom_models_selection[0]] + unavailable_models,
+                excluded=[custom_models_selection[0]] + exclude_models,
             )
 
         elif len(custom_models_selection) == 2:
@@ -292,9 +292,9 @@ def pick_models(mode, custom_models_selection, exclude_models=[]):
             model_right_name = custom_models_selection[1]
 
     else:  # assume random mode
-        model_left_name = choose_among(models=random_pool, excluded=unavailable_models)
+        model_left_name = choose_among(models=random_pool, excluded=exclude_models)
         model_right_name = choose_among(
-            models=random_pool, excluded=[model_left_name] + unavailable_models
+            models=random_pool, excluded=[model_left_name] + exclude_models
         )
 
     swap = random.randint(0, 1)
