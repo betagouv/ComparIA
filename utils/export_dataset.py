@@ -353,7 +353,10 @@ def process_dataset(dataset_name, dataset_config):
 def main():
 
     load_session_hash_ip()
-
+    # logger.info("")
+    # subprocess.run(args=
+    #         ["git", "--global" "config","credential.helper", "store"]
+    #     )
     logger.info("huggingface-cli login --token $HF_TOKEN --add-to-git-credential")
 
     _login_result = subprocess.run(args=
