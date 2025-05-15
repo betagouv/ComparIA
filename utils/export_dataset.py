@@ -293,10 +293,10 @@ def main():
     # subprocess.run(args=
     #         ["git", "--global" "config","credential.helper", "store"]
     #     )
-    logger.info("huggingface-cli login --token $HF_TOKEN --add-to-git-credential")
+    logger.info("huggingface-cli login --token $HF_TOKEN")
 
     _login_result = subprocess.run(args=
-        ["huggingface-cli","login", "--token", os.getenv("HF_PUSH_DATASET_KEY", ""), "--add-to-git-credential"]
+        ["huggingface-cli","login", "--token", os.getenv("HF_PUSH_DATASET_KEY", "")]
     )
     
     if _login_result.returncode == 0:
