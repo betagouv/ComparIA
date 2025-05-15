@@ -107,7 +107,7 @@ def register_listeners():
         app_state_scoped,
         conv_a_scoped: gr.State,
         conv_b_scoped: gr.State,
-        text: gr.Text,
+        text: gr.Textbox,
         request: gr.Request,
         event: gr.EventData,
     ):
@@ -250,7 +250,7 @@ def register_listeners():
 
     gr.on(
         triggers=[textbox.submit],
-        inputs=[app_state, textbox],
+        inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
         # inputs=[app_state] + [conv_a] + [conv_b],
         # inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
         fn=add_text,
