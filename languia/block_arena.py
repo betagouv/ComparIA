@@ -19,12 +19,6 @@ from languia.utils import (
 
 from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
 
-from custom_components.customradiocard.backend.gradio_customradiocard import (
-    CustomRadioCard,
-)
-
-from custom_components.frinput.backend.gradio_frinput import FrInput
-
 from languia import config
 
 with gr.Blocks(
@@ -59,8 +53,8 @@ with gr.Blocks(
         show_copy_button=True,
         # autoscroll=True
     )
-    which_model_radio = CustomRadioCard(
-            min_columns=1,
+    which_model_radio = gr.Radio(
+            # min_columns=1,
             elem_id="vote-cards",
             elem_classes="justify-center fr-mx-auto fr-col-12 fr-col-md-8",
             choices=[
@@ -103,7 +97,7 @@ with gr.Blocks(
             ],
         )
 
-    comments_a = FrInput(
+    comments_a = gr.TextArea(
             show_label=False,
             visible=False,
             lines=3,
@@ -131,17 +125,14 @@ with gr.Blocks(
                 ("Instructions non respectées", "instructions-not-followed"),
             ],
         )
-    comments_b = FrInput(
+    comments_b = gr.TextArea(
             show_label=False,
             visible=False,
             lines=3,
             placeholder="Les réponses du modèle B sont...",
         )
-    comments_link = gr.Button(
-        elem_classes="link fr-mt-1w", value="Ajouter des détails"
-    )
 
-    textbox = FrInput(
+    textbox = gr.Textbox(
             elem_id="main-textbox",
             show_label=False,
             lines=1,
