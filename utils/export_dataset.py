@@ -355,6 +355,18 @@ def main():
 
     load_session_hash_ip()
 
+    logger.info("huggingface-cli login --token $HF_TOKEN --add-to-git-credential")
+
+    _login_result = subprocess.run(args=
+        ["huggingface-cli","login", "--token", os.getenv("HF_PUSH_DATASET_KEY", ""), "--add-to-git-credential"]
+    )
+    
+    if _login_result.returncode == 0:
+        logger.info("Logged in")
+    else:
+        logger.error(f"Failed to login: {_login_result.stderr}")
+        return False
+    
     for dataset_name, config in DATASET_CONFIG.items():
         process_dataset(dataset_name, config)
 
