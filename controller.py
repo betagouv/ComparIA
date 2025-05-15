@@ -26,8 +26,7 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 unavailable_models = {}
 
-always_available_models = ["o3-mini", "o4-mini", "grok-3-mini-beta"]
-        
+always_available_models = set(["o3-mini", "o4-mini", "grok-3-mini-beta"])
 
 
 stream_logs = logging.StreamHandler()
@@ -41,6 +40,15 @@ import litellm
 
 litellm._turn_on_debug()
 
+@app.get("/always_available_models/{model_id}/create", status_code=201)
+@app.post("/always_available_models/{model_id}/create", status_code=201)
+def create_always_available_models(model_id: str, test: dict = None):
+    global always_available_models
+    if model_id not in always_available_models:
+        print("always_available_models " + model_id)
+        always_available_models.add("model_id")
+    else:
+        return False
 
 @app.get("/unavailable_models/{model_id}/create", status_code=201)
 @app.post("/unavailable_models/{model_id}/create", status_code=201)
@@ -71,6 +79,16 @@ def get_unavailable_models():
 def remove_unavailable_models(model_id: str):
     if model_id in unavailable_models:
         del unavailable_models[model_id]
+        return True
+    else:
+        return False
+
+
+@app.get("/always_available_models/{model_id}/delete", status_code=204)
+@app.delete("/always_available_models/{model_id}", status_code=204)
+def remove_always_available_models(model_id: str):
+    if model_id in always_available_models:
+        always_available_models.remove(model_id)
         return True
     else:
         return False
@@ -164,7 +182,7 @@ def test_model(model_id):
                     "message": "Model responded: " + str(text),
                 }
             )
-            if  model_id in always_available_models:
+            if model_id in always_available_models:
 
                 test.update(
                     {
@@ -201,7 +219,7 @@ def test_model(model_id):
                 }
             )
             return test
-        
+
         reason = str(e)
         logging.error(f"Error: {reason}. Model: {model_id}")
         stacktrace = traceback.print_exc()
@@ -231,6 +249,7 @@ def index(request: Request, scheduled_tests: bool = False):
         {
             "tests": tests,
             "unavailable_models": unavailable_models,
+            "always_available_models":always_available_models,
             "endpoints": endpoints,
             "request": request,
             "scheduled_tests": scheduled_tests,
@@ -245,10 +264,11 @@ def test_all_endpoints(background_tasks: BackgroundTasks):
     Initiates background tasks to test all models asynchronously.
     """
     for endpoint in endpoints:
-        try:
-            background_tasks.add_task(test_model, endpoint.get("model_id"))
-        except Exception:
-            pass
+        if endpoint.get("model_id") not in always_available_models:
+            try:
+                background_tasks.add_task(test_model, endpoint.get("model_id"))
+            except Exception:
+                pass
     return RedirectResponse(url="/?scheduled_tests=true", status_code=302)
 
 

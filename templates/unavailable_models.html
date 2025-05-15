@@ -57,6 +57,7 @@
                 <th>Modèle</th>
                 <th>Tester ?</th>
                 <th>Désactiver ?</th>
+                <th>Toujours forcer en activé ?</th>
                 <th>API</th>
                 <!-- <th>Stats</th> -->
             </tr>
@@ -67,6 +68,7 @@
                 <td>{{ endpoint['model_id'] }}</td>
                 <td><a href="/unavailable_models/{{ endpoint['model_id'] }}">Tester ?</a></td>
                 <td><a href="/unavailable_models/{{ endpoint['model_id'] }}/create">Désactiver ?</a></td>
+                <td><a href="/always_available_models/{{ endpoint['model_id'] }}/create">oujours forcer en activé ?</a></td>
                 <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
             </tr>
             {% endif %}
@@ -95,6 +97,28 @@
             {% endfor %}
         </table>
 
+        <h4 class="fr-h4">Endpoints toujours disponibles</h4>
+        <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
+            <tr>
+                <th>Nom</th>
+                <th>Modèle</th>
+                <th>Tester ?</th>
+                <th>Arrêter de forcer la disponibilité ?</th>
+                <th>API</th>
+                <!-- <th>Stats</th> -->
+            </tr>
+            {% for endpoint in endpoints %}
+            {% if endpoint['model_id'] in always_available_models %}
+            <tr>
+                <td>{{ endpoint['api_id'] }}</td>
+                <td>{{ endpoint['model_id'] }}</td>
+                <td><a href="/always_available_models/{{ endpoint['model_id'] }}">Tester ?</a></td>
+                <td><a href="/always_available_models/{{ endpoint['model_id'] }}/delete">Arrêter de forcer la disponibilité ?</a></td>
+                <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
         <h3 class="fr-h3">Tests récents</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
