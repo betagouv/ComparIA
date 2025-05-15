@@ -23,42 +23,6 @@ logger = logging.getLogger(__name__)
 
 # Define datasets and their corresponding queries and repository paths
 DATASET_CONFIG = {
-    "votes": {
-        # id	timestamp	model_a_name	model_b_name	model_pair_name	chosen_model_name	opening_msg	both_equal	conversation_a	conversation_b	conv_turns	selected_category	is_unedited_prompt	conversation_pair_id	session_hash	visitor_id	conv_comments_a	conv_comments_b	conv_useful_a	conv_useful_b	conv_creative_a	conv_creative_b	conv_clear_formatting_a	conv_clear_formatting_b	conv_incorrect_a	conv_incorrect_b	conv_superficial_a	conv_superficial_b	conv_instructions_not_followed_a	conv_instructions_not_followed_b	system_prompt_b	system_prompt_a	conv_complete_a	conv_complete_b
-        "query": """SELECT v.*
-FROM votes v
-WHERE v.archived = FALSE
-AND EXISTS (
-    SELECT 1
-    FROM conversations c
-    WHERE c.conversation_pair_id = v.conversation_pair_id
-    AND c.contains_pii = FALSE
-    AND c.pii_analyzed = TRUE
-)
-;""",
-        "repo": "comparia-votes",
-    },
-    "reactions": {
-        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, country, city, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
-FROM reactions r
-WHERE r.archived = FALSE
-AND EXISTS (
-    SELECT 1
-    FROM conversations c
-    WHERE c.conversation_pair_id = r.conversation_pair_id
-    AND c.contains_pii = FALSE
-    AND c.pii_analyzed = TRUE
-)
-;""",
-        "repo": "comparia-reactions",
-    },
-    "conversations_raw": {
-        "query": """SELECT *
-FROM conversations
-WHERE archived = FALSE
-;""",
-        "repo": "comparia-conversations_raw",
-    },
     "conversations": {
         "query": """SELECT
     id,
@@ -103,6 +67,42 @@ AND pii_analyzed = TRUE
 AND contains_pii = FALSE;""",
 # AND postprocess_failed = FALSE
         "repo": "comparia-conversations",
+    },
+    "votes": {
+        # id	timestamp	model_a_name	model_b_name	model_pair_name	chosen_model_name	opening_msg	both_equal	conversation_a	conversation_b	conv_turns	selected_category	is_unedited_prompt	conversation_pair_id	session_hash	visitor_id	conv_comments_a	conv_comments_b	conv_useful_a	conv_useful_b	conv_creative_a	conv_creative_b	conv_clear_formatting_a	conv_clear_formatting_b	conv_incorrect_a	conv_incorrect_b	conv_superficial_a	conv_superficial_b	conv_instructions_not_followed_a	conv_instructions_not_followed_b	system_prompt_b	system_prompt_a	conv_complete_a	conv_complete_b
+        "query": """SELECT v.*
+FROM votes v
+WHERE v.archived = FALSE
+AND EXISTS (
+    SELECT 1
+    FROM conversations c
+    WHERE c.conversation_pair_id = v.conversation_pair_id
+    AND c.contains_pii = FALSE
+    AND c.pii_analyzed = TRUE
+)
+;""",
+        "repo": "comparia-votes",
+    },
+    "reactions": {
+        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, country, city, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
+FROM reactions r
+WHERE r.archived = FALSE
+AND EXISTS (
+    SELECT 1
+    FROM conversations c
+    WHERE c.conversation_pair_id = r.conversation_pair_id
+    AND c.contains_pii = FALSE
+    AND c.pii_analyzed = TRUE
+)
+;""",
+        "repo": "comparia-reactions",
+    },
+    "conversations_raw": {
+        "query": """SELECT *
+FROM conversations
+WHERE archived = FALSE
+;""",
+        "repo": "comparia-conversations_raw",
     },
 }
 
@@ -278,20 +278,28 @@ def process_dataset(dataset_name, dataset_config):
 
     repo_prefix = sys.argv[-1] or "/app/datasets"
 
-    repo_org = os.get_env("REPO_ORG", "https://huggingface.co/datasets/ministere-culture")
+    repo_org = os.getenv("REPO_ORG", "https://huggingface.co/datasets/ministere-culture")
 
     logger.info(f"Folder defined for dataset: {repo_prefix}")
 
     repo_path = os.path.join(repo_prefix, repo_name)
 
     if not os.path.exists(repo_path):
-        logger.info("Cloning into "+ repo_prefix + " from " repo_org + "/" + repo_name)
+        # TODO: refacto
+        # TODO: use hf-cli upload/download?
+        logger.info("Cloning into "+ repo_prefix + " from " + repo_org + "/" + repo_name)
 
         _clone_result = subprocess.run(cwd=repo_prefix,
                                        args=
             ["git", "-C", repo_prefix, "clone", repo_org + "/" + repo_name]
         )
-        logger.info("Cloned")
+
+        if _clone_result.returncode == 0:
+            logger.info("Cloned")
+            return True
+        else:
+            logger.error(f"Failed to clone for {repo_path}: {_clone_result.stderr}")
+            return False
 
     # Pull latest changes for the repository
     if not update_repository(repo_path):
