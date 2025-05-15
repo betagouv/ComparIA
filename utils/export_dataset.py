@@ -194,9 +194,10 @@ def commit_and_push(repo_org, repo_name, repo_path):
     commit_message = (
         f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
     )
+#  huggingface-cli upload ministere-culture/comparia-votes comparia-votes  --repo-type=dataset
+    logger.info(f"huggingface-cli upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'")
 
-# huggingface-cli upload Wauplin/space-example --repo-type=space --exclude="/logs/*" --delete="*" --commit-message="Sync local Space with Hub"
-    push_result = subprocess.run(["huggingface-cli", "upload",    (repo_org + "/" + repo_name), repo_path,  "--commit-message", commit_message])
+    push_result = subprocess.run(["huggingface-cli", "upload",    (repo_org + "/" + repo_name), repo_path, "--token", os.getenv("HF_PUSH_DATASET_KEY", ""), "--repo-type","dataset", "--commit-message", commit_message])
 
     # push_result = subprocess.run(["git", "pull", "-C", repo_path, "push", "--dry-run"])
     if push_result.returncode == 0:
@@ -209,7 +210,7 @@ def commit_and_push(repo_org, repo_name, repo_path):
         return False
 
 
-def process_dataset(dataset_name, dataset_config):
+def process_dataset(dataset_name, dataset_config, repo_prefix):
     """Processes a single dataset."""
     logger.info(f"Starting processing for dataset: {dataset_name}")
     DATABASE_URI = os.getenv("DATABASE_URI")
@@ -226,7 +227,6 @@ def process_dataset(dataset_name, dataset_config):
         logger.error(f"No repository defined for dataset: {dataset_name}")
         return
 
-    repo_prefix = sys.argv[-1] or "/app/datasets"
 
     repo_org = os.getenv("REPO_ORG", "https://huggingface.co/datasets/ministere-culture")
 
@@ -305,8 +305,14 @@ def main():
         logger.error(f"Failed to login: {_login_result.stderr}")
         return False
     
+    repo_prefix = sys.argv[1] or "/app/datasets"
+
+    only_dataset = sys.argv[2] or None
+    if only_dataset:
+        logger.warning(f"only processing dataset: {only_dataset}")
     for dataset_name, config in DATASET_CONFIG.items():
-        process_dataset(dataset_name, config)
+        if not only_dataset or only_dataset == dataset_name:
+            process_dataset(dataset_name, config, repo_prefix)
 
     logger.info("Finished processing all datasets.")
 
