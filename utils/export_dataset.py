@@ -163,14 +163,10 @@ def fetch_and_transform_data(conn, table_name, query=None):
         return pd.DataFrame()
 
 
-def export_data(df, table_name):
+def export_data(df, table_name, export_dir):
     if df.empty:
         logger.warning(f"No data to export for table: {table_name}")
         return
-    export_dir = "datasets"
-    if not os.path.exists(export_dir):
-        os.makedirs(export_dir, exist_ok=True)
-        logger.info(f"Created export directory: {export_dir}")
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
@@ -190,72 +186,27 @@ def export_data(df, table_name):
         logger.error(f"Failed to export data for table {table_name}: {e}")
 
 
-def update_repository(repo_path):
-    """Pulls the latest changes for a given repository."""
-    if not os.path.exists(repo_path):
-        logger.error(f"Repository directory not found: {repo_path}")
-        return False
-    result = subprocess.run(
-        ["git", "-C", repo_path, "pull"], capture_output=True, text=True
-    )
-    if result.returncode == 0:
-        logger.info(f"Successfully pulled latest changes for {repo_path}")
-        return True
-    else:
-        logger.error(f"Failed to pull changes for {repo_path}: {result.stderr}")
-        return False
-
-
-def commit_and_push(repo_path):
+def commit_and_push(repo_org, repo_name, repo_path):
     """Commits and pushes changes for a given repository."""
-    if not os.path.exists(repo_path):
-        logger.error(f"Repository directory not found: {repo_path}")
-        return False
-
     # Check for changes
-    status_result = subprocess.run(
-        ["git", "-C", repo_path, "status", "--porcelain"],
-        capture_output=True,
-        text=True,
-    )
-    if status_result.returncode != 0:
-        logger.error(f"Failed to check status for {repo_path}: {status_result.stderr}")
-        return False
-
-    if status_result.stdout.strip():
-        # Add all changes
-        add_result = subprocess.run(["git", "-C", repo_path, "add", "."])
-        if add_result.returncode != 0:
-            logger.error(f"Failed to add changes in {repo_path}")
-            return False
-
+    
         # Commit
-        commit_message = (
-            f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-        )
-        commit_result = subprocess.run(
-            ["git", "-C", repo_path, "commit", "-m", commit_message]
-        )
-        if commit_result.returncode != 0:
-            logger.error(
-                f"Failed to commit changes in {repo_path}: {commit_result.stderr}"
-            )
-            return False
+    commit_message = (
+        f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    )
 
-        # Push
-        # push_result = subprocess.run(["git", "-C", repo_path, "push", "--dry-run"])
+# huggingface-cli upload Wauplin/space-example --repo-type=space --exclude="/logs/*" --delete="*" --commit-message="Sync local Space with Hub"
+    push_result = subprocess.run(["huggingface-cli", "upload",    (repo_org + "/" + repo_name), repo_path,  "--commit-message", commit_message])
+
+    # push_result = subprocess.run(["git", "pull", "-C", repo_path, "push", "--dry-run"])
+    if push_result.returncode == 0:
+        logger.info(f"Successfully pushed changes for {repo_path}")
         return True
-        # if push_result.returncode == 0:
-        #     logger.info(f"Successfully pushed changes for {repo_path}")
-        #     return True
-        # else:
-        #     logger.error(
-        #         f"Failed to push changes for {repo_path}: {push_result.stderr}"
-        #     )
-        #     return False
     else:
-        logger.info(f"No changes to commit in {repo_path}")
-        return True
+        logger.error(
+            f"Failed to push changes for {repo_path}: {push_result.stderr}"
+        )
+        return False
 
 
 def process_dataset(dataset_name, dataset_config):
@@ -283,29 +234,30 @@ def process_dataset(dataset_name, dataset_config):
 
     repo_path = os.path.join(repo_prefix, repo_name)
 
-    if not os.path.exists(repo_path):
-        # TODO: refacto
-        # TODO: use hf-cli upload/download?
-        logger.info("Cloning into "+ repo_prefix + " from " + repo_org + "/" + repo_name)
 
-        _clone_result = subprocess.run(cwd=repo_prefix,
-                                       args=
-            ["git", "-C", repo_prefix, "clone", repo_org + "/" + repo_name]
-        )
+    # if not os.path.exists(repo_path):
+    #     # TODO: refacto
+    #     # TODO: use hf-cli upload/download?
 
-        if _clone_result.returncode == 0:
-            logger.info("Cloned")
-            return True
-        else:
-            logger.error(f"Failed to clone for {repo_path}: {_clone_result.stderr}")
-            return False
+    #     logger.info("Cloning into "+ repo_prefix + " from " + repo_org + "/" + repo_name)
+    #     _clone_result = subprocess.run(cwd=repo_prefix,
+    #                                    args=
+    #         ["git", "-C", repo_prefix, "clone", repo_org + "/" + repo_name]
+    #     )
+
+    #     if _clone_result.returncode == 0:
+    #         logger.info("Cloned")
+    #         return True
+    #     else:
+    #         logger.error(f"Failed to clone for {repo_path}: {_clone_result.stderr}")
+    #         return False
 
     # Pull latest changes for the repository
-    if not update_repository(repo_path):
-        logger.error(
-            f"Failed to update repository for {dataset_name}. Skipping dataset."
-        )
-        return
+    # if not update_repository(repo_path):
+    #     logger.error(
+    #         f"Failed to update repository for {dataset_name}. Skipping dataset."
+    #     )
+    #     return
 
     engine = None
     conn = None
@@ -317,28 +269,12 @@ def process_dataset(dataset_name, dataset_config):
             # Fetch and transform data
             data = fetch_and_transform_data(conn, dataset_name, query)
 
-            # Export data
-            export_data(data, dataset_name)
 
-            # Copy exported files to the repository
-            dataset_dir = "datasets"
-            filename_base = dataset_name
-            extensions = [".parquet", ".jsonl", "_samples.tsv", "_samples.jsonl"]
-            for ext in extensions:
-                filename = filename_base + ext
-                src_path = os.path.join(dataset_dir, filename)
-                dest_path = os.path.join(os.getcwd(), repo_path, filename)
-                if os.path.exists(src_path):
-                    try:
-                        shutil.copy(src_path, dest_path)
-                        logger.info(f"Copied {filename} to {repo_name}")
-                    except Exception as e:
-                        logger.error(f"Failed to copy {filename} to {repo_name}: {e}")
-                else:
-                    logger.warning(f"Source file not found: {src_path}")
+            # Export data
+            export_data(data, dataset_name, repo_path)
 
             # Commit and push changes for the repository
-            commit_and_push(repo_path)
+            commit_and_push(repo_org, repo_name, repo_path)
 
     except OperationalError as e:
         logger.error(f"Database connection error for dataset {dataset_name}: {e}")
