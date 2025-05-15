@@ -1,32 +1,10 @@
 from languia.block_arena import (
     app_state,
-    buttons_footer,
-    chat_area,
-    # CustomChatbot,
     chatbot,
-    comments_a,
-    comments_b,
-    comments_link,
-    conclude_btn,
+    vote_btn,
     conv_a,
     conv_b,
     demo,
-    header,
-    # mode_screen,
-    negative_a,
-    negative_b,
-    positive_a,
-    positive_b,
-    results_area,
-    reveal_screen,
-    send_area,
-    send_btn,
-    supervote_area,
-    supervote_send_btn,
-    # first_textbox,
-    textbox,
-    vote_area,
-    which_model_radio,
     # model_dropdown,
 )
 import traceback
@@ -42,8 +20,6 @@ from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
-    refresh_unavailable_models,
-    gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
     second_header_html,
@@ -70,7 +46,7 @@ from languia.config import logger
 
 from languia import config
 
-from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+from gradio import (
     ChatMessage,
 )
 
@@ -82,9 +58,6 @@ def register_listeners():
 
     def enter_arena(request: gr.Request):
         # Refresh on picking model? Do it async? Should do it globally and async...
-        config.unavailable_models = refresh_unavailable_models(
-            config.unavailable_models, controller_url=config.controller_url
-        )
 
         # TODO: actually check for it
         # tos_accepted = request...
@@ -106,10 +79,10 @@ def register_listeners():
         # Already refreshed in enter_arena, but not refreshed if submit_first_prompt accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         didnt_reset_prompt = True
-        text = model_dropdown_scoped.get("prompt_value", "")
-        mode = model_dropdown_scoped.get("mode", "random")
+        text = request.kwargs.get("prompt_value", "")
+        mode = request.kwargs.get("mode", "random")
         app_state_scoped.mode = mode
-        custom_models_selection = model_dropdown_scoped.get(
+        custom_models_selection = request.kwargs.get(
             "custom_models_selection", []
         )
 
@@ -228,21 +201,6 @@ def register_listeners():
                     # 2 conversations
                     conv_a_scoped,
                     conv_b_scoped,
-                    # 1 chatbot
-                    chatbot,
-                    text,
-                    banner,
-                    # textbox
-                    new_textbox,
-                    # mode_screen
-                    gr.update(visible=False),
-                    # chat_area
-                    gr.update(visible=True),
-                    # send_btn
-                    gr.update(interactive=False),
-                    # conclude_btn
-                    gr.update(visible=True, interactive=False),
-                    gr.update(visible=True),
                 ]
 
         except Exception as e:
@@ -389,24 +347,7 @@ def register_listeners():
 
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
-        return [
-            app_state_scoped,
-            # 2 conversations
-            conv_a_scoped,
-            conv_b_scoped,
-            # 1 chatbot
-            chatbot,
-            text,
-        ]
-
-    def bot_response_multi(
-        app_state_scoped,
-        conv_a_scoped,
-        conv_b_scoped,
-        chatbot,
-        textbox,
-        request: gr.Request,
-    ):
+        
         try:
             gen_a = bot_response(
                 "a",
@@ -493,27 +434,7 @@ def register_listeners():
 
             chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
 
-            yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
-
-    def enable_conclude(
-        app_state_scoped, textbox_scoped, conv_a_scoped, request: gr.Request
-    ):
-        # If last msg is from user, don't show send_btn and textbox
-        if conv_a_scoped.messages[-1].role != "user":
-            show_send_btn_and_textbox = True
-        else:
-            show_send_btn_and_textbox = False
-
-        # don't enable conclude if only one user msg
-        if len(conv_a_scoped.messages) in [0, 1]:
-            enable_conclude_btn = False
-        else:
-            enable_conclude_btn = True
-        return {
-            textbox: gr.update(visible=show_send_btn_and_textbox),
-            conclude_btn: gr.update(interactive=enable_conclude_btn),
-            send_btn: gr.update(visible=show_send_btn_and_textbox),
-        }
+            yield [app_state_scoped, conv_a_scoped, conv_b_scoped]
 
     gr.on(
         triggers=[
@@ -524,214 +445,24 @@ def register_listeners():
         inputs=[app_state],
         outputs=[app_state]
         + [conv_a]
-        + [conv_b]
-        + [chatbot]
-        + [textbox]
-        + [header]
-        + [textbox]
-        # + [mode_screen]
-        + [chat_area]
-        + [send_btn]
-        + [conclude_btn],
-        show_progress="hidden",
-        # TODO: refacto possible with .success() and more explicit error state
-    ).then(
-        fn=enable_conclude,
-        inputs=[app_state, textbox, conv_a],
-        outputs=[textbox, conclude_btn, send_btn],
-        js="""(args) => {
-setTimeout(() => {
-
-  function adjustFooter() {
-    const footer = document.getElementById('send-area');
-    const chatArea = document.getElementById('chat-area');
-
-    const footerHeight = footer.offsetHeight;
-    // Add bottom padding to the chatArea equal to footer height so it's not hidden
-    chatArea.style.paddingBottom = `${footerHeight}px`;
-  }
-  window.addEventListener('load', adjustFooter);
-  window.addEventListener('resize', adjustFooter);
-  window.addEventListener('click', adjustFooter);
-  adjustFooter();
-
-  
-  console.log("scrolling to bot responses");
-  var botRows = document.querySelectorAll('.bot-row');
-    var lastBotRow = botRows.item(botRows.length - 1);
-    lastBotRow.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-, 500);
-}""",
+        + [conv_b],
         show_progress="hidden",
     )
 
     gr.on(
-        triggers=[
-            textbox.submit,
-            send_btn.click,
-            chatbot.retry,
-        ],
         fn=add_text,
-        api_name=False,
-        inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
-        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
+        api_name="submit_response",
+        inputs=[app_state] + [conv_a] + [conv_b],
+        outputs=[app_state] + [conv_a] + [conv_b],
         # scroll_to_output=True,
-        show_progress="hidden",
-    ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
-        js="""(args) => {
-setTimeout(() => {
-  console.log("scrolling to last user row if there are at least 2 user rows");
-  var userRows = document.querySelectorAll('.user-row');
-  if (userRows.length >= 2) {
-    var lastUserRow = userRows.item(userRows.length - 1);
-    lastUserRow.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-}, 500);
-}""",
-        show_progress="hidden",
-    ).then(
-        # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
-        fn=bot_response_multi,
-        # inputs=conversations + [temperature, top_p, max_output_tokens],
-        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
-        outputs=[app_state, conv_a, conv_b, chatbot, textbox],
-        api_name=False,
-        show_progress="hidden",
-        # scroll_to_output=True,
-        # TODO: refacto possible with .success() and more explicit error state
-    ).then(
-        fn=enable_conclude,
-        inputs=[app_state, textbox, conv_a],
-        outputs=[textbox, conclude_btn, send_btn],
-        js="""(args) => {
-setTimeout(() => {
-  console.log("scrolling to bot responses");
-  var botRows = document.querySelectorAll('.bot-row');
-    var lastBotRow = botRows.item(botRows.length - 1);
-    lastBotRow.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-, 500);
-}""",
         show_progress="hidden",
     )
-
-    def force_vote_or_reveal(
-        app_state_scoped, conv_a_scoped, conv_b_scoped, request: gr.Request
-    ):
-
-        for reaction in app_state_scoped.reactions:
-            if reaction:
-                if reaction["liked"] != None:
-                    logger.info("meaningful_reaction")
-                    logger.debug(reaction)
-                    break
-        # If no break found
-        else:
-            logger.debug("no meaningful reaction found, inflicting vote screen")
-            logger.info(
-                "ecran_vote",
-                extra={"request": request},
-            )
-            return {
-                chatbot: gr.update(interactive=False),
-                send_area: gr.update(visible=False),
-                vote_area: gr.update(
-                    elem_classes="fr-container min-h-screen fr-pt-4w next-screen",
-                    visible=True,
-                ),
-                buttons_footer: gr.update(visible=True),
-            }
-
-        if len(conv_a_scoped.messages) == 2:
-            your_choice_badge = determine_choice_badge(app_state_scoped.reactions)
-        else:
-            your_choice_badge = None
-
-        banner = second_header_html(2)
-
-        reveal_html = build_reveal_html(
-            conv_a_scoped,
-            conv_b_scoped,
-            which_model_radio=your_choice_badge,
-        )
-        return {
-            header: gr.update(value=banner),
-            chatbot: gr.update(interactive=False),
-            send_area: gr.update(visible=False),
-            reveal_screen: gr.update(
-                elem_classes="min-h-screen fr-pt-4w  next-screen", visible=True
-            ),
-            results_area: gr.update(value=reveal_html),
-            # buttons_footer: gr.update(visible=False),
-        }
-
-    gr.on(
-        triggers=[conclude_btn.click],
-        inputs=[app_state, conv_a, conv_b],
-        outputs=[
-            chatbot,
-            header,
-            send_area,
-            vote_area,
-            buttons_footer,
-            reveal_screen,
-            results_area,
-            buttons_footer,
-        ],
-        api_name=False,
-        fn=force_vote_or_reveal,
-        # scroll_to_output=True,
-        show_progress="hidden",
-    ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
-        js="""(args) => {
-        console.log("args:")
-        console.log(args)
-setTimeout(() => {
-console.log("scrolling to .next-screen");
-const chatbotArea = document.getElementById('main-chatbot');
-const chatArea = document.getElementById('chat-area');
-chatArea.style.paddingBottom = `0px`;
-
-let secondHeader = document.getElementById('second-header');
-const secondHeaderHeight = secondHeader.offsetHeight;
-console.log("secondHeader.offsetHeight");
-console.log(secondHeader.offsetHeight);
-
-
-console.log("chatbotArea.offsetHeight");
-console.log(chatbotArea.offsetHeight);
-
-
-// const nextScreen = document.querySelector('.next-screen');
-window.scrollTo({
-  top: chatbotArea.offsetHeight + secondHeaderHeight,
-  left: 0,
-  behavior: 'smooth',
-  });}, 500);
-}""",
-        show_progress="hidden",
-    )
+    
 
     @chatbot.like(
-        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
+        inputs=[app_state] + [conv_a] + [conv_b],
         outputs=[app_state],
-        api_name=False,
+        api_name="react",
         show_progress="hidden",
     )
     def record_like(
@@ -761,37 +492,6 @@ window.scrollTo({
             request=request,
         )
         return app_state_scoped
-
-    @which_model_radio.select(
-        inputs=[which_model_radio],
-        outputs=[supervote_area, supervote_send_btn],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def build_supervote_area(vote_radio, request: gr.Request):
-        logger.info(
-            "vote_selection_temp:" + str(vote_radio),
-            extra={"request": request},
-        )
-
-        # outputs=[supervote_area, supervote_send_btn, why_vote] +
-        # relevance_slider: gr.update(interactive=False),
-        # form_slider: gr.update(interactive=False),
-        # style_slider: gr.update(interactive=False),
-        # comments_text: gr.update(interactive=False),
-        return [
-            gr.update(visible=True),
-            gr.update(interactive=True),
-        ]
-
-    # Step 3
-    @comments_link.click(
-        outputs=[comments_a, comments_b, comments_link],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def show_comments():
-        return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
         app_state_scoped,
@@ -824,77 +524,31 @@ window.scrollTo({
             details,
             request,
         )
-        banner = second_header_html(2)
-
-        reveal_html = build_reveal_html(
+        return build_reveal_html(
             conv_a=conv_a_scoped,
             conv_b=conv_b_scoped,
             which_model_radio=which_model_radio_output,
         )
-        return {
-            header: gr.update(value=banner),
-            positive_a: gr.update(interactive=False),
-            positive_b: gr.update(interactive=False),
-            negative_a: gr.update(interactive=False),
-            negative_b: gr.update(interactive=False),
-            comments_a: gr.update(interactive=False),
-            comments_b: gr.update(interactive=False),
-            comments_link: gr.update(interactive=False),
-            which_model_radio: gr.update(interactive=False),
-            reveal_screen: gr.update(visible=True),
-            results_area: gr.update(value=reveal_html),
-            buttons_footer: gr.update(visible=False),
-        }
 
     gr.on(
-        triggers=[supervote_send_btn.click],
+        triggers=[vote_btn.click],
         fn=vote_preferences,
         inputs=(
             [app_state]
             + [conv_a]
             + [conv_b]
-            + [which_model_radio]
-            + [positive_a]
-            + [positive_b]
-            + [negative_a]
-            + [negative_b]
-            + [comments_a]
-            + [comments_b]
+            # + [which_model_radio]
+            # + [positive_a]
+            # + [positive_b]
+            # + [negative_a]
+            # + [negative_b]
+            # + [comments_a]
+            # + [comments_b]
         ),
         outputs=[
-            header,
-            positive_a,
-            positive_b,
-            negative_a,
-            negative_b,
-            comments_a,
-            comments_b,
-            comments_link,
-            reveal_screen,
-            results_area,
-            buttons_footer,
-            which_model_radio,
         ],
         # outputs=[quiz_modal],
-        api_name=False,
+        api_name="vote",
         # scroll_to_output=True,
-        show_progress="hidden",
-    ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
-        js="""(args) => {
-setTimeout(() => {
-console.log("scrolling to #reveal-screen");
-
-const voteArea = document.getElementById('vote-area');
-voteArea.classList.remove("min-h-screen");
-
-const revealScreen = document.getElementById('reveal-screen');
-revealScreen.scrollIntoView({
-  behavior: 'smooth',
-  block: 'start'
-});}, 500);
-}""",
         show_progress="hidden",
     )

@@ -3,12 +3,6 @@ from fastapi.responses import JSONResponse
 from typing import List, Optional
 
 # Import database utility functions
-from utils.db_utils import (
-    
-    fetch_conversation_detail,
-    
-    ConversationData
-)
 from fastapi.responses import HTMLResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates

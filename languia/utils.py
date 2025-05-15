@@ -8,7 +8,7 @@ import logging
 
 import requests
 
-from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
+from gradio import (
     ChatMessage,
 )
 
