@@ -277,9 +277,21 @@ def process_dataset(dataset_name, dataset_config):
         return
 
     repo_prefix = sys.argv[-1] or "/app/datasets"
+
+    repo_org = os.get_env("REPO_ORG", "https://huggingface.co/datasets/ministere-culture")
+
     logger.info(f"Folder defined for dataset: {repo_prefix}")
 
     repo_path = os.path.join(repo_prefix, repo_name)
+
+    if not os.path.exists(repo_path):
+        logger.info("Cloning into "+ repo_prefix + " from " repo_org + "/" + repo_name)
+
+        _clone_result = subprocess.run(cwd=repo_prefix,
+                                       args=
+            ["git", "-C", repo_prefix, "clone", repo_org + "/" + repo_name]
+        )
+        logger.info("Cloned")
 
     # Pull latest changes for the repository
     if not update_repository(repo_path):
