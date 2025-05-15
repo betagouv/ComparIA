@@ -7,7 +7,6 @@ import os
 import shutil
 import hashlib
 from datetime import datetime
-import json
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import OperationalError
 

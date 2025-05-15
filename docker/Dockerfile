@@ -1,7 +1,7 @@
 FROM public.ecr.aws/docker/library/python:3.11-slim AS base
 
 # Debug tools
-RUN apt-get update -y && apt-get install -y curl postgresql-client
+RUN apt-get update -y && apt-get install -y curl postgresql-client git
 COPY ./requirements.txt /requirements.txt
 RUN pip3 install -r requirements.txt
 WORKDIR /app
