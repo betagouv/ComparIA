@@ -26,6 +26,10 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 unavailable_models = {}
 
+always_available_models = ["o3-mini", "o4-mini", "grok-3-mini-beta"]
+        
+
+
 stream_logs = logging.StreamHandler()
 stream_logs.setLevel(logging.INFO)
 
@@ -42,16 +46,19 @@ litellm._turn_on_debug()
 @app.post("/unavailable_models/{model_id}/create", status_code=201)
 def disable_model(model_id: str, test: dict = None):
     global unavailable_models
-    print("disabling " + model_id)
-    outage = {
-        "detection_time": datetime.now().isoformat(),
-        "model_id": model_id,
-    }
-    if test:
-        outage.update(test)
-    unavailable_models[outage["model_id"]] = outage
+    if model_id not in always_available_models:
+        print("disabling " + model_id)
+        outage = {
+            "detection_time": datetime.now().isoformat(),
+            "model_id": model_id,
+        }
+        if test:
+            outage.update(test)
+        unavailable_models[outage["model_id"]] = outage
 
-    return outage
+        return outage
+    else:
+        return False
 
 
 @app.get("/unavailable_models/")
@@ -141,12 +148,12 @@ def test_model(model_id):
         if output_tokens:
             test.update(output_tokens=output_tokens)
 
+
         # FIXME: Add ugly bypass for reasoning models...
         if (
             text
             or include_reasoning
-            or model_id in ["o3-mini", "o4-mini", "grok-3-mini-beta"]
-        ):
+            or model_id in always_available_models):
             logging.info(f"Test successful: {model_id}")
             if remove_unavailable_models(model_id):
                 test.update({"info": "Removed model from unavailable_models list."})
@@ -157,6 +164,14 @@ def test_model(model_id):
                     "message": "Model responded: " + str(text),
                 }
             )
+            if  model_id in always_available_models:
+
+                test.update(
+                    {
+                        "success": True,
+                        "message": "Model in list of always_available_models",
+                    }
+                )
         else:
             reason = f"No content from model {model_id}"
             # logging.error(f"Test failed: {model_name}")
