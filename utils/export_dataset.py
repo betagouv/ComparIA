@@ -308,9 +308,15 @@ def main():
         logger.error(f"Failed to login: {_login_result.stderr}")
         return False
     
-    repo_prefix = sys.argv[1] or "/app/datasets"
+    if len(sys.argv) > 1:
+        repo_prefix = sys.argv[1] or "/app/datasets"
+    else:
+        repo_prefix = "/app/datasets"
 
-    only_dataset = sys.argv[2] or None
+    if len(sys.argv) > 2:
+        only_dataset = sys.argv[2] or None
+    else:
+        only_dataset = None
     if only_dataset:
         logger.warning(f"only processing dataset: {only_dataset}")
     for dataset_name, config in DATASET_CONFIG.items():
