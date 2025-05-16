@@ -313,6 +313,18 @@ excerpt = "Aya Expanse 32B est un modèle de l'entreprise canadienne Cohere, qui
 description = "Aya Expanse 32B est un modèle de l'entreprise canadienne Cohere, qui est spécialisé dans le multilinguisme. Plus de 23 langues sont supportées : arabe, chinois, tchèque, néerlandais, anglais, français, allemand, grec, hébreu, hindi, indonésien, italien, japonais, coreéen, persan, polonais, portugais, roumain, russe, espagnol, turc, ukrainien et vietnamien."
 release_date = "12/2024"
 
+["olmo-2-0325-32B"]
+url = "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct"
+simple_name = "OLMo-2 32B"
+organisation = "Ai2"
+icon_path = "ai2.svg"
+license = "Apache 2.0"
+params = 32
+excerpt = "OLMo 2 32B est un modèle entièrement open source (corpus et code d'entraînement inclus) créé par l'Allen AI Institute (Ai2), publié en mars 2025. "
+description = "OLMo 2 32B est un modèle entièrement open source : le corpus et le code d'entraînement sont entièrement accessibles. Cette famille de modèle OLMo a été conçue par l'Allen Institute for AI (Ai2)."
+release_date = "03/2025"
+fully_open_source = true
+
 ["gemma-3-27b"]
 url = "https://huggingface.co/google/gemma-3-27b-it"
 simple_name = "Gemma 3 27B"
@@ -708,8 +720,19 @@ url = "https://huggingface.co/Qwen/QwQ-32B"
 simple_name = "QwQ-32B"
 organisation = "Alibaba"
 icon_path = "qwen.jpg"
-description = "QwQ-32B est le modèle de raisonnement de taille moyenne de la série Qwen. Il est capable d'atteindre des performances compétitives par rapport aux modèles de raisonnement de pointe comme DeepSeek-R1 et o1-mini."
+description = "QwQ-32B est un modèle de raisonnement de taille moyenne de la série Qwen 2.5. Il est capable d'atteindre des performances compétitives par rapport aux modèles de raisonnement de pointe comme DeepSeek-R1 et o1-mini."
 excerpt = "Modèle de raisonnement de taille moyenne, QwQ-32B atteint des performances compétitives par rapport aux modèles de raisonnement de pointe comme DeepSeek-R1 et o1-mini."
+params = 32
+license = "Apache 2.0"
+reasoning = true
+
+["qwen3-32b"]
+url = "https://huggingface.co/Qwen/Qwen3-32B"
+simple_name = "Qwen3-32B"
+organisation = "Alibaba"
+icon_path = "qwen.jpg"
+description = "Qwen 3 32B est un modèle de la série Qwen 3 de l'entreprise Alibaba. Il peut fonctionner avec mode de raisonnement ou classiquement."
+excerpt = "Qwen 3 32B est un modèle de la série Qwen 3 de l'entreprise Alibaba. Il intègre un mode de raisonnement activable."
 params = 32
 license = "Apache 2.0"
 reasoning = true
