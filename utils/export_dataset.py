@@ -168,7 +168,7 @@ def export_data(df, table_name, export_dir):
         logger.warning(f"No data to export for table: {table_name}")
         return
 
-    os.mkdir(export_dir,exist_ok=True)
+    os.makedirs(export_dir,exist_ok=True)
 
 
     logger.info(f"Exporting data for table: {table_name}")
