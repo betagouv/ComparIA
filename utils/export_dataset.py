@@ -231,7 +231,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
         return
 
 
-    repo_org = os.getenv("REPO_ORG", "https://huggingface.co/datasets/ministere-culture")
+    repo_org = os.getenv("REPO_ORG", "ministere-culture")
 
     logger.info(f"Folder defined for dataset: {repo_prefix}")
 
