@@ -68,7 +68,10 @@
                 <td>{{ endpoint['model_id'] }}</td>
                 <td><a href="/unavailable_models/{{ endpoint['model_id'] }}">Tester ?</a></td>
                 <td><a href="/unavailable_models/{{ endpoint['model_id'] }}/create">Désactiver ?</a></td>
-                <td><a href="/always_available_models/{{ endpoint['model_id'] }}/create">oujours forcer en activé ?</a></td>
+                <td>{% if endpoint['model_id'] not in always_available_models %}
+                    <a href="/always_available_models/{{ endpoint['model_id'] }}/create">Toujours forcer en activé ?</a>
+                    {% endif %}
+                </td>
                 <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
             </tr>
             {% endif %}
