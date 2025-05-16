@@ -93,7 +93,6 @@ def bot_response(
     max_new_tokens=4096,
     apply_rate_limit=True,
     use_recommended_config=True,
-    include_reasoning=False,
 ):
     # temperature = float(temperature)
     # top_p = float(top_p)
@@ -115,7 +114,7 @@ def bot_response(
         f"using endpoint {endpoint_name} for {state.model_name}",
         extra={"request": request},
     )
-
+    include_reasoning = False
     if use_recommended_config:
         recommended_config = endpoint.get("recommended_config", None)
         if recommended_config is not None:

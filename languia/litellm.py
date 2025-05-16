@@ -19,7 +19,7 @@ if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
         vertex_credentials_json = json.dumps(vertex_credentials)
 else:
     logger = logging.getLogger("languia")
-    logger.warn("No Google creds detected!")
+    logger.warning("No Google creds detected!")
     vertex_credentials_json = None
 
 
@@ -35,6 +35,8 @@ def litellm_stream_iter(
     api_version=None,
     vertex_ai_location=None,
     include_reasoning=False,
+    enable_reasoning=False,
+
 ):
 
     # Too verbose:
@@ -112,6 +114,9 @@ def litellm_stream_iter(
 
     if include_reasoning:
         kwargs["include_reasoning"] = True
+
+    if enable_reasoning:
+        kwargs["enable_reasoning"] = True
 
     res = litellm.completion(**kwargs)
 
