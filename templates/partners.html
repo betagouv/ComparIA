@@ -25,6 +25,14 @@
 
         /* color: var(--text-action-high-blue-france) !important; */
     }
+
+    @media (prefers-color-scheme: dark) {
+
+        .dark-invert {
+            filter: invert(1);
+        }
+
+    }
 </style>
 {% endblock %}
 {% block content %}
@@ -54,15 +62,21 @@
                 de
                 formation.</p>
             <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
+
                 <div class="">
-                    <!-- <img src="assets/orgs/cnnum.png" alt="Conseil national du numérique" width="112px" height="55px"
-                        title="Conseil national du numérique"> -->
                     <img src="assets/orgs/cafe-ia.png" alt="Cafés de l'IA" width="205px" height="132px"
                         title="Cafés IA">
                 </div>
+
                 <div class="fr-mr-2w">
-                    <img src="assets/orgs/latitudes.png" alt="Latitudes" width="200px" height="47px" title="Latitudes">
-                </div><div class="fr-mx-2w">
+                    <img src="assets/orgs/fresque-de-lia.png" alt="Fresques de l'IA" width="200px" height="200px"
+                        title="Fresques de l'IA">
+                </div>
+                <div class="fr-mr-2w">
+                    <img src="assets/orgs/latitudes.png" class="dark-invert" alt="Latitudes" width="200px" height="47px"
+                        title="Latitudes">
+                </div>
+                <div class="fr-mx-2w">
                     <img src="assets/orgs/pix.svg" alt="Pix" width="90px" height="75px" title="Pix">
                 </div>
             </div>
