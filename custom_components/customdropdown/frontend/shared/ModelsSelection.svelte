@@ -1,11 +1,10 @@
 <script lang="ts">
-	import type {  Model } from "./utils.js";
+	import type { Model } from "./utils.js";
 	export let custom_models_selection: string[] = []; // Default to an empty list
 	export let models: Model[] = [];
-	
+
 	export let disabled = false;
 
-	
 	export let toggle_model_selection: (id: string) => void;
 
 	function handleKeyDown(id, event: KeyboardEvent) {
@@ -17,7 +16,7 @@
 </script>
 
 <div class="models-grid">
-	{#each models as { id, simple_name, icon_path, organisation, params, total_params, friendly_size, distribution, release_date}, index}
+	{#each models as { id, simple_name, icon_path, organisation, params, total_params, friendly_size, distribution, release_date, fully_open_source }, index}
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
@@ -59,29 +58,34 @@
 				><strong>{simple_name}</strong>
 			</div>
 			<div>
-
 				<span
 					class:fr-badge--yellow-tournesol={distribution ==
-						"open-weights"} 
+						"open-weights" && !fully_open_source}
 					class:fr-badge--orange-terre-battue={distribution ==
-						"api-only"} 
+						"api-only"}
+					class:fr-badge--green-emeraude={distribution ==
+						"open-weights" && fully_open_source}
 					class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
 				>
 					{distribution == "api-only"
 						? "Propriétaire"
-						: "Semi-ouvert"}
+						: fully_open_source
+							? "Open source"
+							: "Semi-ouvert"}
 				</span>
-				{#if release_date }<span
-				class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">Sortie&nbsp;{
-				release_date }
-			</span>{/if}
+				{#if release_date}<span
+						class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v"
+						>Sortie&nbsp;{release_date}
+					</span>{/if}
 				<span
 					class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v"
 				>
 					{#if distribution === "api-only"}
 						Taille&nbsp;estimée&nbsp;({friendly_size})
 					{:else}
-						{typeof params === "number" ? params : total_params}&nbsp;mds&nbsp;paramètres
+						{typeof params === "number"
+							? params
+							: total_params}&nbsp;mds&nbsp;paramètres
 					{/if}</span
 				>
 			</div>
@@ -102,7 +106,9 @@
 			gap: 1em;
 		}
 	}
-	label.selected, label.selected:active, label.selected:focus {
+	label.selected,
+	label.selected:active,
+	label.selected:focus {
 		outline: 2px solid #6a6af4 !important;
 	}
 
@@ -111,7 +117,7 @@
 	label:focus {
 		outline: 2px solid #ccc !important;
 	}
-	
+
 	label.disabled,
 	label.disabled:active,
 	label.disabled:focus {

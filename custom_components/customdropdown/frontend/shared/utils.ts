@@ -32,6 +32,7 @@ export interface Model {
 	distribution: "open-weights" | "api-only";
 	icon_path: string;
 	release_date: string | null;
+	fully_open_source: boolean;
 }
 
 // export function handle_change(

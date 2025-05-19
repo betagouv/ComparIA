@@ -313,7 +313,7 @@ excerpt = "Aya Expanse 32B est un modèle de l'entreprise canadienne Cohere, qui
 description = "Aya Expanse 32B est un modèle de l'entreprise canadienne Cohere, qui est spécialisé dans le multilinguisme. Plus de 23 langues sont supportées : arabe, chinois, tchèque, néerlandais, anglais, français, allemand, grec, hébreu, hindi, indonésien, italien, japonais, coreéen, persan, polonais, portugais, roumain, russe, espagnol, turc, ukrainien et vietnamien."
 release_date = "12/2024"
 
-["olmo-2-0325-32B"]
+["olmo-2-0325-32b"]
 url = "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct"
 simple_name = "OLMo-2 32B"
 organisation = "Ai2"

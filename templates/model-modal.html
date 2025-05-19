@@ -22,8 +22,13 @@
                                 model["simple_name"] }}</strong>
                         </h6>
                         <p class="fr-mb-4w">
-
-                            {% if model['distribution'] ==
+                            {% if model.get('fully_open_source', False) %}
+                            <span class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                Open source&nbsp;
+                                <a class="fr-icon fr-icon--xs fr-icon--question-line"
+                                    aria-describedby="license-{{ model['id'] }}"></a>
+                            </span>
+                            {% elif model['distribution'] ==
                             "open-weights"
                             %}
                             <span class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v">
@@ -168,12 +173,19 @@
     </div>
 
     {% if model['distribution'] == "open-weights" %}
+  
 
-    <span class="fr-tooltip fr-placement" id="license-{{ model['id'] }}" role="tooltip" aria-hidden="true">Modèle dit
+    <span class="fr-tooltip fr-placement" id="license-{{ model['id'] }}" role="tooltip" aria-hidden="true">
+        {% if model.get('fully_open_source') %}
+        Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit "open source" est plus contraignant qu'"open weights", notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares
+        sont les modèles qui sont considérés "open source".
+        {% else %}
+        Modèle dit
         "open weights" dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables
         par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit "open
         source" est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares
         sont les modèles qui sont considérés "open source".
+        {% endif %}
     </span>
 
     <span class="fr-tooltip fr-placement" id="params-{{ model['id'] }}" role="tooltip" aria-hidden="true">Les paramètres
