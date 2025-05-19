@@ -39,27 +39,27 @@ The comparator is based on [Gradio](https://www.gradio.app/) and [FastChat](http
 
 1. Rename `register-api-endpoint-file.json.dist` to `register-api-endpoint-file.json` and add valid API keys
 
-### With Docker
-
-`cd docker/; docker compose up -d`
-
 ### Without Docker
 
 Due to how Gradio's Custom Components work and because they haven't been published as Python packages, building them manually is a bit tedious. At the moment we use 4 custom components: 
 
 ```bash
 pip install -r requirements.txt
-cd custom_components/frinput
-gradio cc install;gradio cc build --no-generate-docs
-cd ../../custom_components/customradiocard
-gradio cc install;gradio cc build --no-generate-docs
-cd ../../custom_components/customdropdown
-gradio cc install;gradio cc build --no-generate-docs
-cd ../../custom_components/customchatbot
-gradio cc install; npm install @gouvfr/dsfr;gradio cc build --no-generate-docs
-cd ../..
+gradio cc install custom_components/frinput
+gradio cc build --no-generate-docs custom_components/frinput
+gradio cc install custom_components/customradiocard;gradio cc build --no-generate-docs custom_components/customradiocard
+gradio cc install custom_components/customdropdown;gradio cc build --no-generate-docs custom_components/customdropdown
+gradio cc install custom_components/customchatbot; npm install @gouvfr/dsfr;
+gradio cc build --no-generate-docs custom_components/customchatbot
 ```
-then `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` or simpy `uvicorn main:app`
+then `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` or simply `uvicorn main:app`
+For arena only, you can also launch: `gradio demo.py`
+
+### With Docker
+
+`cd docker/; docker compose up -d`
+
+For image building only you can use: `docker build -t comparia . -f docker/Dockerfile`
 
 ## Project architecture and rationale
 
