@@ -113,6 +113,16 @@
 		return null;
 	}
 
+	function base64Encode(str: string): string {
+		if (!browser) return str;
+		return btoa(encodeURIComponent(str));
+	}
+
+	function base64Decode(str: string): string {
+		if (!browser) return str;
+		return decodeURIComponent(atob(str));
+	}
+
 	function setCookie(name: string, value: string, days = 7): void {
 		if (!browser) return;
 		const date = new Date();
@@ -161,6 +171,7 @@
 		return [];
 	}
 
+
 	const findModelDetails = (id: string | null, modelsList: Model[]) => {
 		if (!id || !modelsList || !Array.isArray(modelsList)) {
 			return { name: "Aléatoire", iconPath: null };
@@ -174,7 +185,16 @@
 
 	let initialModels: string[] = getInitialModels(models); // Pass the populated models array
 
-	let initialPrompt = "";
+	let initialPrompt = browser && getCookie("comparia_initialprompt")
+		? (() => {
+			try {
+				return base64Decode(getCookie("comparia_initialprompt")!);
+			} catch (error) {
+				console.error("Failed to decode prompt from cookie:", error);
+				return "";
+			}
+		})()
+		: "";
 
 	// Export the necessary variables
 	export let mode: Mode = initialMode; // Assuming initialMode is defined
@@ -248,6 +268,7 @@
 			"customdropdown_models",
 			JSON.stringify(custom_models_selection),
 		);
+		setCookie("comparia_initialprompt", base64Encode(prompt_value));
 		gradio.dispatch("submit", {
 			mode: mode,
 			custom_models_selection: custom_models_selection,
