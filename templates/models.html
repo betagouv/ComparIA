@@ -367,7 +367,11 @@
                                     model["simple_name"] }}</strong>
                             </h6>
                             <p class="fr-mb-4w">
-                                {% if model['distribution'] ==
+                                {% if model.get('fully_open_source', False) %}
+                                <span class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                    Open source
+                                </span>
+                                {% elif model['distribution'] ==
                                 "open-weights"
                                 %}
                                 <span
