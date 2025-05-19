@@ -18,24 +18,15 @@ FROM base AS cc
 RUN apt update && apt install -y nodejs npm
 COPY custom_components /app/custom_components
 
-# TODO: factorize this
-WORKDIR /app/custom_components/customradiocard
-RUN gradio cc install
-RUN gradio cc build --no-generate-docs --bump-version
+RUN gradio cc install custom_components/customradiocard
+RUN gradio cc install custom_components/frinput
+RUN gradio cc install custom_components/customchatbot
+RUN gradio cc install custom_components/customdropdown
 
-WORKDIR /app/custom_components/frinput
-RUN gradio cc install
-RUN gradio cc build --no-generate-docs --bump-version
-
-WORKDIR /app/custom_components/customchatbot
-RUN gradio cc install
-# workaround
-RUN npm install @gouvfr/dsfr
-RUN gradio cc build --no-generate-docs --bump-version
-
-WORKDIR /app/custom_components/customdropdown
-RUN gradio cc install
-RUN gradio cc build --no-generate-docs --bump-version
+RUN gradio cc build custom_components/customradiocard --no-generate-docs --bump-version
+RUN gradio cc build custom_components/frinput --no-generate-docs --bump-version
+RUN gradio cc build custom_components/customchatbot --no-generate-docs --bump-version
+RUN gradio cc build custom_components/customdropdown --no-generate-docs --bump-version
 
 # Comment this line if you want an image with node
 FROM base AS app
