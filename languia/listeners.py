@@ -271,16 +271,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                 "a",
                 conv_a_scoped,
                 request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                mode=app_state_scoped.mode
             )
             i = 1
             gen_b = bot_response(
                 "b",
                 conv_b_scoped,
                 request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                mode=app_state_scoped.mode
+
             )
             while True:
                 try:
@@ -561,15 +560,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                 "a",
                 conv_a_scoped,
                 request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                mode=app_state_scoped.get("mode", "random")
+
             )
             gen_b = bot_response(
                 "b",
                 conv_b_scoped,
                 request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                mode=app_state_scoped.get("mode", "random")
+
             )
             while True:
                 try:

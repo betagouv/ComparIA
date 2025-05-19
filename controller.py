@@ -133,7 +133,6 @@ def test_model(model_id):
         recommended_config = endpoint.get("recommended_config", None)
         if recommended_config is not None:
             include_reasoning = recommended_config.get("include_reasoning", False)
-            enable_reasoning = recommended_config.get("enable_reasoning", False)
 
         stream_iter = litellm_stream_iter(
             model_name=model_name,
@@ -146,6 +145,7 @@ def test_model(model_id):
             vertex_ai_location=endpoint.get("vertex_ai_location", None),
             include_reasoning=include_reasoning,
             enable_reasoning=enable_reasoning,
+
         )
 
         # Verify the response

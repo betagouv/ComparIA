@@ -89,10 +89,8 @@ def bot_response(
     state,
     request: gr.Request,
     temperature=0.7,
-    # top_p=1.0,
     max_new_tokens=4096,
-    apply_rate_limit=True,
-    use_recommended_config=True,
+    mode="random"
 ):
     # temperature = float(temperature)
     # top_p = float(top_p)
@@ -115,15 +113,17 @@ def bot_response(
         extra={"request": request},
     )
     include_reasoning = False
-    if use_recommended_config:
-        recommended_config = endpoint.get("recommended_config", None)
-        if recommended_config is not None:
-            temperature = recommended_config.get("temperature", float(temperature))
-            # top_p = recommended_config.get("top_p", float(top_p))
-            max_new_tokens = recommended_config.get(
-                "max_new_tokens", int(max_new_tokens)
-            )
-            include_reasoning = recommended_config.get("include_reasoning", False)
+    recommended_config = endpoint.get("recommended_config", None)
+    if recommended_config is not None:
+        temperature = recommended_config.get("temperature", float(temperature))
+        # top_p = recommended_config.get("top_p", float(top_p))
+        max_new_tokens = recommended_config.get(
+            "max_new_tokens", int(max_new_tokens)
+        )
+        include_reasoning = recommended_config.get("include_reasoning", False)
+
+# Doesn't even work for Qwen3 in openrouter, maybe it'll be inside a `reasoning` key, or with `enable_thinking`.
+    enable_reasoning = (mode == "reasoning" and config.models[state.model_name].get("reasoning", False) == "option")
 
     start_tstamp = time.time()
     # print("start: " + str(start_tstamp))
@@ -146,6 +146,7 @@ def bot_response(
         request=request,
         vertex_ai_location=endpoint.get("vertex_ai_location", None),
         include_reasoning=include_reasoning,
+        enable_reasoning=enable_reasoning
     )
 
     output_tokens = None

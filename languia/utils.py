@@ -227,13 +227,17 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     from languia.config import models_extra_info
 
     reasoning_models = [
-        model["id"] for model in models_extra_info if model.get("reasoning", False)
+        # gets reasoning == "option"
+        model["id"] for model in models_extra_info if (model.get("reasoning", False))
+    ]
+    reasoning_only_models = [
+        model["id"] for model in models_extra_info if (model.get("reasoning", False) == True)
     ]
 
     random_pool = [
         model["id"]
         for model in models_extra_info
-        if model["id"] not in reasoning_models
+        if model["id"] not in reasoning_only_models
     ]
 
     small_models = [
@@ -241,7 +245,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         for model in models_extra_info
         if model["friendly_size"] in ["XS", "S", "M"]
         and model["id"] not in unavailable_models
-        and model["id"] not in reasoning_models
+        and model["id"] not in reasoning_only_models
     ]
 
     big_models = [
@@ -249,7 +253,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
         for model in models_extra_info
         if model["friendly_size"] in ["L", "XL"]
         and model["id"] not in unavailable_models
-        and model["id"] not in reasoning_models
+        and model["id"] not in reasoning_only_models
     ]
 
     import random
@@ -423,29 +427,12 @@ def get_model_extra_info(name: str, models_extra_info: list):
     return {"id": name}
 
 
-import json
-
-
 def get_model_names_list(api_endpoint_info):
     logger = logging.getLogger("languia")
 
     models = [model_dict.get("model_id") for model_dict in api_endpoint_info]
     logger.debug(f"All models: {models}")
     return models
-
-
-def is_limit_reached(model_name, ip):
-    # FIXME:
-    # monitor_url = "http://localhost:9090"
-    # try:
-    #     ret = requests.get(
-    #         f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
-    #     )
-    #     obj = ret.json()
-    #     return obj
-    # except Exception as e:
-    #     logging.info(f"monitor error: {e}")
-    return None
 
 
 def count_output_tokens(messages) -> int:
