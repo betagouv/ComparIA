@@ -15,8 +15,17 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 
 # Specific to compar:IA: install required Gradio Custom Components
 # Comment the next line if you want a main image with node
-FROM node:22 AS cc
+# FROM node:22 AS cc
+FROM base AS cc
+RUN apt update && apt install -y nodejs npm
+
 COPY custom_components /app/custom_components
+
+# # Install dependencies, including @gouvfr/dsfr (if needed globally)
+# COPY custom_components/customchatbot/frontend/package.json ./
+# RUN npm install
+
+RUN pip install gradio
 
 RUN gradio cc install custom_components/customradiocard
 RUN gradio cc install custom_components/frinput
