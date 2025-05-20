@@ -26,7 +26,7 @@ app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 unavailable_models = {}
 
-always_available_models = set(["o3-mini", "o4-mini", "grok-3-mini-beta"])
+always_available_models = set(["o3-mini", "o4-mini", "grok-3-mini-beta", "qwen3-32b"])
 
 
 stream_logs = logging.StreamHandler()
