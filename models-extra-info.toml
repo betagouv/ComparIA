@@ -735,7 +735,7 @@ description = "Qwen 3 32B est un modèle de la série Qwen 3 de l'entreprise Ali
 excerpt = "Qwen 3 32B est un modèle de la série Qwen 3 de l'entreprise Alibaba. Il intègre un mode de raisonnement activable."
 params = 32
 license = "Apache 2.0"
-reasoning = "option"
+reasoning = true
 
 ["Yi-1.5-9B-Chat"]
 url = "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
