@@ -17,6 +17,8 @@
 	import Ruler from "./shared/ruler.svelte";
 	import Brain from "./shared/brain.svelte";
 	import Dice from "./shared/dice.svelte";
+	import { onMount } from "svelte";
+	import type TextBoxComponent from "./shared/Textbox.svelte";
 
 	type Mode =
 		| "random"
@@ -201,6 +203,8 @@
 	export let custom_models_selection: string[] = initialModels;
 
 	export let prompt_value: string = initialPrompt;
+	export let initially_select_prompt: boolean = (initialPrompt !== "");
+	let textbox: TextBoxComponent;
 
 	let choice: Choice = get_choice(initialMode) || choices[0];
 	let firstModelName = "Aléatoire";
@@ -350,6 +354,16 @@
 	} else {
 		alt_label = choice.alt_label;
 	}
+
+	onMount(() => {
+		if (initially_select_prompt && textbox?.element) {
+			// Use setTimeout to ensure the textbox is fully rendered
+			setTimeout(() => {
+				textbox.element?.select();
+				textbox.element?.focus();
+			}, 0);
+		}
+	});
 </script>
 
 <Block

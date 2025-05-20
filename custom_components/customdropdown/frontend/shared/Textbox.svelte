@@ -5,6 +5,10 @@
 		createEventDispatcher,
 		tick,
 	} from "svelte";
+	
+	export let element: HTMLTextAreaElement | HTMLInputElement | undefined = undefined;
+	
+	type Timeout = ReturnType<typeof setTimeout>;
 	import { BlockTitle } from "@gradio/atoms";
 	import { Copy, Check } from "@gradio/icons";
 	import { fade } from "svelte/transition";
@@ -35,7 +39,7 @@
 
 	let el: HTMLTextAreaElement | HTMLInputElement;
 	let copied = false;
-	let timer: NodeJS.Timeout;
+	let timer: Timeout;
 	let can_scroll: boolean;
 	let previous_scroll_top = 0;
 	let user_has_scrolled_up = false;
@@ -191,7 +195,7 @@
 			class="scroll-hide fr-input"
 			dir={rtl ? "rtl" : "ltr"}
 			bind:value
-			bind:this={el}
+			bind:this={element}
 			{placeholder}
 			{disabled}
 			{autofocus}
@@ -209,7 +213,7 @@
 			class="scroll-hide fr-input"
 			dir={rtl ? "rtl" : "ltr"}
 			bind:value
-			bind:this={el}
+			bind:this={element}
 			{placeholder}
 			rows={lines}
 			{disabled}
