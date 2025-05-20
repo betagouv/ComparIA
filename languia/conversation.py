@@ -123,6 +123,7 @@ def bot_response(
         include_reasoning = recommended_config.get("include_reasoning", False)
 
 # Doesn't even work for Qwen3 in openrouter, maybe it'll be inside a `reasoning` key, or with `enable_thinking`.
+# FIXME: list indices must be integers or slices, not str (probably config.models)
     enable_reasoning = (mode == "reasoning" and config.models[state.model_name].get("reasoning", False) == "option")
 
     start_tstamp = time.time()
