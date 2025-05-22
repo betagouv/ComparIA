@@ -85,6 +85,9 @@ function() {
   } else {
     console.log("Not loading front-end Sentry.");
   }
+
+  // Disable landscape mode because it's unusable in chatbot view for now
+  screen.orientation.lock("portrait");
 }
 
 
