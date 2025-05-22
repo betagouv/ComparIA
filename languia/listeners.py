@@ -193,6 +193,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         # event: gr.EventData,
     ):
+        print(model_dropdown_scoped)
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         config.unavailable_models = refresh_unavailable_models(
@@ -669,7 +670,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             model_dropdown.submit,
         ],
         fn=add_first_text,
-        api_name=False,
+        api_name="add_first_text",
         inputs=[app_state, model_dropdown],
         outputs=[app_state]
         + [conv_a]
