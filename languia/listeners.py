@@ -260,7 +260,7 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
-        chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+        chatbot = [conv_a_scoped.messages, conv_b_scoped.messages]
         banner = second_header_html(1, mode)
 
         text = gr.update(visible=True)
@@ -300,7 +300,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 if response_a is None and response_b is None:
                     break
 
-                chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+                chatbot = [conv_a_scoped.messages, conv_b_scoped.messages]
                 # yield [
                 #     app_state_scoped,
                 #     conv_a_scoped,
