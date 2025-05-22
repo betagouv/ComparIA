@@ -100,6 +100,7 @@ def litellm_stream_iter(
         "stream": True,
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
+        "mock_response": "Hello"
         # "metadata": {
         #     "parent_observation_id": langfuse_context.get_current_observation_id(),
         #     "trace_user_id": user_id,
