@@ -48,13 +48,7 @@ class CustomDropdown(FormComponent):
         choices: Sequence[str | int | float | tuple[str, str | int | float]]
         | None = None,
         *,
-        value: str
-        | int
-        | float
-        | Sequence[str | int | float]
-        | Callable
-        | DefaultValue
-        | None = DEFAULT_VALUE,
+        value: dict | Callable | DefaultValue | None = DEFAULT_VALUE,
         type: Literal["value", "index"] = "value",
         multiselect: bool | None = None,
         max_choices: int | None = None,
@@ -114,8 +108,11 @@ class CustomDropdown(FormComponent):
         self.multiselect = multiselect
 
         if value == DEFAULT_VALUE:
-            value = {"prompt_value": "random", "mode":"random", "custom_models_selection":[]}
-        self.models = models
+            value = {
+                "prompt_value": "random",
+                "mode": "random",
+                "custom_models_selection": []
+            }
         self.max_choices = max_choices
         self.filterable = filterable
         super().__init__(
@@ -137,79 +134,61 @@ class CustomDropdown(FormComponent):
         )
 
     def api_info(self) -> dict[str, Any]:
-        if self.multiselect:
-            json_type = {
-                "type": "array",
-                "items": {"type": "string", "enum": [c[1] for c in self.choices]},
+        return {
+            "type": "object",
+            "properties": {
+                "prompt_value": {"type": "string"},
+                "mode": {"type": "string"},
+                "custom_models_selection": {
+                    "type": "array",
+                    "items": {"type": "string"}
+                }
             }
-        else:
-            json_type = {
-                "type": "string",
-                "enum": [c[1] for c in self.choices],
-            }
-        return json_type
+        }
 
     def example_payload(self) -> Any:
-        if self.multiselect:
-            return [self.choices[0][1]] if self.choices else []
-        else:
-            return self.choices[0][1] if self.choices else None
+        return {
+            "prompt_value": "example prompt",
+            "mode": "random",
+            "custom_models_selection": []
+        }
 
     def example_value(self) -> Any:
-        if self.multiselect:
-            return [self.choices[0][1]] if self.choices else []
-        else:
-            return self.choices[0][1] if self.choices else None
+        return {
+            "prompt_value": "example value",
+            "mode": "random",
+            "custom_models_selection": []
+        }
 
     def preprocess(
-        self, payload: dict | list[str | int | float | dict] | None
+        self, payload: dict | None
     ) -> dict | None:
-        # if payload is None:
-        #     return None
+        if payload is None:
+            return None
 
-        # print(f"preprocess payload: {str(payload)}")
-        value = dict()
+        if not isinstance(payload, dict):
+            raise Error(f"CustomDropdown expects a dictionary payload, got {type(payload)}")
+
         try:
-            value['prompt_value'] = payload['prompt_value']
-            value['mode'] = payload['mode']
-            value['custom_models_selection'] = payload['custom_models_selection']
-            return value
-            # return payload["prompt_value"]
-        # if self.type == "value":
-        #     return payload
-        # elif self.type == "index":
-        #     if isinstance(payload, list):
-        #         return [
-        #             choice_values.index(choice) if choice in choice_values else None
-        #             for choice in payload
-        #         ]
-        #     else:
-        #         return (
-        #             choice_values.index(payload) if payload in choice_values else None
-        #         )
-        except:
-            # raise ValueError(
-            #     f"Unknown payload: {payload}."
-            # )
-            return payload
+            return {
+                "prompt_value": str(payload.get("prompt_value", "")),
+                "mode": str(payload.get("mode", "random")),
+                "custom_models_selection": list(payload.get("custom_models_selection", []))
+            }
+        except Exception as e:
+            raise Error(f"Error processing dropdown payload: {str(e)}")
 
     def postprocess(
         self, value: dict | None
-    ) -> str | int | float | list[str | int | float] | None:
-        # print(f"postprocess value: {str(value)}")
+    ) -> dict | None:
         if value is None:
             return None
-        # FIXME: delete
-        elif isinstance(value, str):
-            # return value
-            return {
-            "prompt_value": value, 
-            "mode": value, 
-            }
-        elif isinstance(value, dict):
-        # else:
-            return value
-            # return {"prompt_value": value.prompt_value,
-            # "mode": value.mode,
-            # "custom_models_selection": value.custom_models_selection
-            # }
+
+        if not isinstance(value, dict):
+            raise Error("CustomDropdown expects a dictionary from backend")
+
+        return {
+            "prompt_value": str(value.get("prompt_value", "")),
+            "mode": str(value.get("mode", "random")),
+            "custom_models_selection": list(value.get("custom_models_selection", []))
+        }
