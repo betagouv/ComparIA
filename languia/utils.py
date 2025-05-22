@@ -497,46 +497,6 @@ def refresh_unavailable_models(previous_unavailable_models, controller_url):
         return previous_unavailable_models
 
 
-def to_threeway_chatbot(conversations):
-    threeway_chatbot = []
-    conv_a_messages = [
-        message for message in conversations[0].messages if message.role != "system"
-    ]
-    conv_b_messages = [
-        message for message in conversations[1].messages if message.role != "system"
-    ]
-    for msg_a, msg_b in zip(conv_a_messages, conv_b_messages):
-        if msg_a.role == "user":
-            # Could even test if msg_a == msg_b
-            if msg_b.role != "user":
-                raise IndexError
-            threeway_chatbot.append(msg_a)
-        else:
-            if msg_a:
-                msg_a.metadata["bot"] = "a"
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_a.content,
-                        "error": msg_a.error,
-                        "reasoning": msg_a.reasoning,
-                        "metadata": msg_a.metadata,
-                    }
-                )
-            if msg_b:
-
-                msg_b.metadata["bot"] = "b"
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_b.content,
-                        "error": msg_a.error,
-                        "reasoning": msg_b.reasoning,
-                        "metadata": msg_b.metadata,
-                    }
-                )
-    return threeway_chatbot
-
 
 def get_gauge_count():
     import psycopg2

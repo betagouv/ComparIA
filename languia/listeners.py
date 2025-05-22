@@ -47,7 +47,6 @@ from languia.utils import (
     pick_models,
     refresh_unavailable_models,
     gen_prompt,
-    to_threeway_chatbot,
     EmptyResponseError,
     second_header_html,
 )
@@ -442,7 +441,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     extra={"request": request},
                 )
 
-            chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+            chatbot = ([conv_a_scoped.messages, conv_b_scoped.messages])
 
             yield [
                 app_state_scoped,
@@ -537,7 +536,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
-        chatbot = to_threeway_chatbot(conversations)
+        chatbot = (conversations)
         text = gr.update(visible=True, value="")
         return [
             app_state_scoped,
@@ -588,7 +587,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 if response_a is None and response_b is None:
                     break
 
-                chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+                chatbot = ([conv_a_scoped.messages, conv_b_scoped.messages])
                 yield [
                     app_state_scoped,
                     conv_a_scoped,
@@ -641,7 +640,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     extra={"request": request},
                 )
 
-            chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+            chatbot = ([conv_a_scoped.messages, conv_b_scoped.messages])
 
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
