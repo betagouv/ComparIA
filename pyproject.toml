@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "ecologits==0.6.1",
-    "gradio==5.25.0",
+    "gradio==5.30.0",
     "litellm==1.68.1",
     # [dev] necessary?
     "gradio-customchatbot",
