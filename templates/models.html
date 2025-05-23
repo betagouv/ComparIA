@@ -279,6 +279,26 @@
                     <form id="model-filter-form">
 
                         <fieldset class="fr-fieldset">
+                            <legend class="fr-pt-2w fr-mb-1w">Éditeur</legend>
+                            <div class="fr-checkbox-group fr-checkbox-group--sm">
+                                {% set orgs = [] %}
+                                {% for model in models %}
+                                    {% if model.get('organisation') and model.organisation not in orgs %}
+                                        {% set _ = orgs.append(model.organisation) %}
+                                    {% endif %}
+                                {% endfor %}
+                                {% for org in orgs | sort %}
+                                <div class="fr-checkbox">
+                                    <input type="checkbox" id="org-{{ org }}" name="org-filter" value="{{ org }}" />
+                                    <label for="org-{{ org }}"><strong>{{ org }}</strong>
+                                        <span class="filter-number">{{ models | selectattr('organisation', '==', org) | list | length }}</span>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="fr-fieldset">
                             <legend class="fr-pt-2w fr-mb-1w">Taille (paramètres)</legend>
                             <div class="fr-checkbox-group fr-checkbox-group--sm">
                                 {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
@@ -347,6 +367,7 @@
                 <option value="name-asc">Nom du modèle (A à Z)</option>
                 <option value="date-desc">Date de sortie (du plus au moins récent)</option>
                 <option value="params-asc">Taille (du plus petit au plus grand)</option>
+                <option value="org-asc">Éditeur (A à Z)</option>
             </select>
         </div>
         <!-- Put sort here -->
@@ -354,7 +375,8 @@
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
                 data-license="{{ model['license'] }}" data-release-date="{{ model['release_date'] }}"
-                data-params="{{ model['params']|round|int }}" data-name="{{ model['simple_name'] }}">
+                data-params="{{ model['params']|round|int }}" data-name="{{ model['simple_name'] }}"
+                {% if model.get('organisation') %}data-org="{{ model['organisation'] }}"{% endif %}>
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
@@ -427,6 +449,7 @@
         const paramFilters = document.querySelectorAll('input[name="param-filter"]');
         const licenseFilters = document.querySelectorAll('input[name="license-filter"]');
         const yearFilters = document.querySelectorAll('input[name="year-filter"]');
+        const orgFilters = document.querySelectorAll('input[name="org-filter"]');
         const modelItems = document.querySelectorAll('.model-item');
         const modelsCountElement = document.getElementById('models-count');
         const resultsCountElement = document.getElementById('results-count');
@@ -438,7 +461,7 @@
         }
         // Update the reset filters link state
         function updateResetFiltersLink() {
-            const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0 || getSelectedFilters(yearFilters).length > 0;
+            const hasFilters = getSelectedFilters(paramFilters).length > 0 || getSelectedFilters(licenseFilters).length > 0 || getSelectedFilters(yearFilters).length > 0 || getSelectedFilters(orgFilters).length > 0;
             resetFiltersLink.disabled = !hasFilters;
             resetFiltersLink.classList.toggle('disabled', !hasFilters);
         }
@@ -453,12 +476,14 @@
             const activeParamFilters = getSelectedFilters(paramFilters).length;
             const activeLicenseFilters = getSelectedFilters(licenseFilters).length;
             const activeYearFilters = getSelectedFilters(yearFilters).length;
+            const activeOrgFilters = getSelectedFilters(orgFilters).length;
             const filtersIndicator = document.querySelector('.filters-indicator');
             if (filtersIndicator) {
                 let totalActiveFilters = 0;
                 if (activeParamFilters > 0) totalActiveFilters++;
                 if (activeLicenseFilters > 0) totalActiveFilters++;
                 if (activeYearFilters > 0) totalActiveFilters++;
+                if (activeOrgFilters > 0) totalActiveFilters++;
                 if (totalActiveFilters > 0) {
                     filtersIndicator.textContent = totalActiveFilters.toString();
                     filtersIndicator.style.display = 'inline-block';
@@ -472,6 +497,7 @@
             const selectedParamFilters = getSelectedFilters(paramFilters);
             const selectedLicenseFilters = getSelectedFilters(licenseFilters);
             const selectedYearFilters = getSelectedFilters(yearFilters);
+            const selectedOrgFilters = getSelectedFilters(orgFilters);
             // Fade out all items
             modelItems.forEach(model => {
                 model.classList.add('fading');
@@ -487,7 +513,9 @@
                         selectedLicenseFilters.includes(modelLicense) ||
                         (selectedLicenseFilters.includes("Propriétaire") && isProprietaire);
                     const paramMatch = selectedParamFilters.length === 0 || selectedParamFilters.includes(modelParams);
-                    if (paramMatch && licenseMatch) {
+                    const orgMatch = selectedOrgFilters.length === 0 ||
+                        (model.hasAttribute('data-org') && selectedOrgFilters.includes(model.getAttribute('data-org')));
+                    if (paramMatch && licenseMatch && orgMatch) {
                         model.classList.remove('fading', 'hidden');
                     } else {
                         model.classList.add('hidden');
@@ -533,6 +561,9 @@
                     case 'params-asc':
                         comparison = parseInt(a.dataset.params) - parseInt(b.dataset.params);
                         break;
+                    case 'org-asc':
+                        comparison = naturalSort(a.dataset.org, b.dataset.org);
+                        break;
                     default:
                         break;
                 }
@@ -546,11 +577,13 @@
             paramFilters.forEach(input => (input.checked = false));
             licenseFilters.forEach(input => (input.checked = false));
             yearFilters.forEach(input => (input.checked = false));
+            orgFilters.forEach(input => (input.checked = false));
             applyFilter();
         }
         // Initialize event listeners
         function initEventListeners() {
-            [...paramFilters, ...licenseFilters, ...yearFilters].forEach(input => {
+            const orgFilters = document.querySelectorAll('input[name="org-filter"]');
+            [...paramFilters, ...licenseFilters, ...yearFilters, ...orgFilters].forEach(input => {
                 input.addEventListener('change', applyFilter);
             });
             resetFiltersLink.addEventListener('click', resetFilters);
