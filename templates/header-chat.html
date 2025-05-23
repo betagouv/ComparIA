@@ -27,8 +27,8 @@
           <div class="fr-container--fluid counter"><span class="fr-ml-1w legende">Total des votes&nbsp;<a
                 class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="gauge"></a></span>
             <div class="linear-gauge">
-              <span class="votes">{{ gauge_count }}</span>
-            </div><span class="objectif">Objectif : {{ objective }}</span>
+              <span class="votes">{{  "{:,}".format(gauge_count).replace(",", " ") }}</span>
+            </div><span class="objectif">Objectif : {{ "{:,}".format(objective).replace(",", " ") }}</span>
 
           </div>
           <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">Discutez, votez et
