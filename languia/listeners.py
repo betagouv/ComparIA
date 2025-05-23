@@ -728,7 +728,7 @@ setTimeout(() => {
             chatbot.retry,
         ],
         fn=add_text,
-        api_name=False,
+        api_name="add_text",
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         # scroll_to_output=True,
