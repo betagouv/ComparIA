@@ -7,6 +7,7 @@
         margin: 0 0 1em 0;
         padding: 0;
     }
+
     legend {
         color: var(--text-default-grey) !important;
         font-weight: 700 !important;
@@ -150,6 +151,12 @@
     }
 
     @media (min-width: 48em) {
+
+        .md-hidden {
+            display: none;
+        }
+
+
         aside .fr-container--fluid {
             border-right: #E5E5E5 1px solid !important;
 
@@ -286,15 +293,16 @@
                             <div class="fr-checkbox-group fr-checkbox-group--sm">
                                 {% set orgs = [] %}
                                 {% for model in models %}
-                                    {% if model.get('organisation') and model.organisation not in orgs %}
-                                        {% set _ = orgs.append(model.organisation) %}
-                                    {% endif %}
+                                {% if model.get('organisation') and model.organisation not in orgs %}
+                                {% set _ = orgs.append(model.organisation) %}
+                                {% endif %}
                                 {% endfor %}
                                 {% for org in orgs | sort %}
                                 <div class="fr-checkbox">
                                     <input type="checkbox" id="org-{{ org }}" name="org-filter" value="{{ org }}" />
                                     <label for="org-{{ org }}"><strong>{{ org }}</strong>
-                                        <span class="filter-number">{{ models | selectattr('organisation', '==', org) | list | length }}</span>
+                                        <span class="filter-number">{{ models | selectattr('organisation', '==', org) |
+                                            list | length }}</span>
                                     </label>
                                 </div>
                                 {% endfor %}
@@ -373,13 +381,14 @@
                 <option value="org-asc">Éditeur (A à Z)</option>
             </select>
         </div>
-        <!-- Put sort here -->
+        <h4 id="models-count-mobile" class="md-hidden fr-mt-4w" aria-live="polite">{{ models | list | length }} modèles</h4>
+
         <div class="fr-grid-row fr-grid-row--gutters" id="model-container">
             {% for model in models %}
             <div class="fr-col-12 fr-col-sm-6 fr-col-md-4 model-item" data-friendly-size="{{ model['friendly_size'] }}"
                 data-license="{{ model['license'] }}" data-release-date="{{ model['release_date'] }}"
-                data-params="{{ model['params']|round|int }}" data-name="{{ model['simple_name'] }}"
-                {% if model.get('organisation') %}data-org="{{ model['organisation'] }}"{% endif %}>
+                data-params="{{ model['params']|round|int }}" data-name="{{ model['simple_name'] }}" {% if
+                model.get('organisation') %}data-org="{{ model['organisation'] }}" {% endif %}>
                 <div class="fr-card fr-enlarge-link">
                     <div class="fr-card__body">
                         <div class="fr-card__content">
@@ -393,7 +402,8 @@
                             </h6>
                             <p class="fr-mb-4w">
                                 {% if model.get('fully_open_source', False) %}
-                                <span class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v">
+                                <span
+                                    class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v">
                                     Open source
                                 </span>
                                 {% elif model['distribution'] ==
@@ -455,6 +465,7 @@
         const orgFilters = document.querySelectorAll('input[name="org-filter"]');
         const modelItems = document.querySelectorAll('.model-item');
         const modelsCountElement = document.getElementById('models-count');
+        const modelsCountSecondElement = document.getElementById('models-count-mobile');
         const resultsCountElement = document.getElementById('results-count');
         const sortSelect = document.getElementById('sort-by');
         const modelContainer = document.getElementById('model-container');
@@ -471,6 +482,7 @@
         function updateModelsCount() {
             const visibleModels = Array.from(modelItems).filter(model => !model.classList.contains('hidden'));
             modelsCountElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
+            modelsCountSecondElement.textContent = `${visibleModels.length} ${visibleModels.length <= 1 ? 'modèle' : 'modèles'}`;
             resultsCountElement.textContent = `Voir ${visibleModels.length === 0 ? 'zéro résultat' :
                 visibleModels.length === 1 ? 'le résultat' :
                     `les ${visibleModels.length} résultats`}`;
