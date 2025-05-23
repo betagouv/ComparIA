@@ -718,6 +718,7 @@ setTimeout(() => {
 , 500);
 }""",
         show_progress="hidden",
+        api_name=False
     )
 
     gr.on(
@@ -882,7 +883,7 @@ window.scrollTo({
     @chatbot.like(
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
         outputs=[app_state],
-        api_name=False,
+        api_name="chatbot_react",
         show_progress="hidden",
     )
     def record_like(
@@ -1027,7 +1028,7 @@ window.scrollTo({
             which_model_radio,
         ],
         # outputs=[quiz_modal],
-        api_name=False,
+        api_name="chatbot_vote",
         # scroll_to_output=True,
         show_progress="hidden",
     ).then(
