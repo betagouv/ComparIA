@@ -6,6 +6,7 @@
 	// import type { I18nFormatter } from "js/core/src/gradio_helper";
 	import type { ComponentType, SvelteComponent } from "svelte";
 	import ButtonPanel from "./ButtonPanel.svelte";
+	import Copy from "./Copy.svelte";
 
 	import Pending from "./Pending.svelte";
 
@@ -192,11 +193,23 @@
 		</div>
 		{#if message.role === "assistant"}
 			<ButtonPanel {...button_panel_props} />
-		{/if}
+			{:else}
+
+			<div class="message-buttons-right">
+					<Copy value={message.content} />
+			</div>
+			{/if}
 	</button>
 </div>
 
 <style>
+
+	.message-buttons-right {
+		display: flex;
+		float: right;
+		gap: 0.5em;
+	}
+
 	.model-title {
 		margin-bottom: 0.5em;
 	}
