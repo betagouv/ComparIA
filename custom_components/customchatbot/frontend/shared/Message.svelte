@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { sanitize } from "@gradio/sanitize";
+	import Brain from "./brain.svelte";
 
 	import type { NormalisedMessage } from "../types";
 	import { MarkdownCode as Markdown } from "@gradio/markdown-code";
@@ -40,6 +41,9 @@
 	export let i: number;
 	export let show_copy_button: boolean;
 	export let generating: boolean;
+	export let thinking: boolean;
+	export let expand_reasoning: boolean = false;
+	export let show_reasoning: boolean;
 	export let show_like: boolean;
 	export let show_retry: boolean;
 	export let show_undo: boolean;
@@ -95,14 +99,20 @@
 		layout,
 	};
 	$: {
-		thought = message.reasoning || "";
-		console.log("thought");
-		console.log(thought);
+		thought = message.reasoning || "Coucou";
 	}
 	$: {
 		content = message.content;
-		console.log("content");
-		console.log(content);
+	}
+	$: {
+		thinking = message.content == "" && generating;
+	}
+	$: {
+		show_reasoning = thinking || expand_reasoning;
+	}
+
+	function toggleReasoning() {
+		expand_reasoning = !expand_reasoning;
 	}
 </script>
 
@@ -162,10 +172,33 @@
 					{/if}
 				</div>
 				{#if thought != ""}
-					<div class="fr-highlight thought fr-mb-2w">
-						{@html sanitize(thought.split('\n').join('<br>'), root)}
-
+					<hr />
+					<div class="fr-highlight fr-py-1w">
+						<div
+							class="text-purple fr-text--bold"
+							on:click={toggleReasoning}
+						>
+							<svelte:component
+								this={Brain}
+							/>&nbsp;{#if thinking}Raisonnement en cours...{:else}Raisonnement
+								terminé{/if}
+								<svg class="inline float-right" class:rotate={show_reasoning} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+									<path fill-rule="evenodd" clip-rule="evenodd" d="M9.99865 10.9766L14.1236 6.85156L15.302 8.0299L9.99865 13.3332L4.69531 8.0299L5.87365 6.85156L9.99865 10.9766Z" fill="#6A6AF4"/>
+									</svg>
+						</div>
+						{#if show_reasoning}
+							<div
+								class="thought fr-mt-2w fr-mb-1w"
+								on:click={toggleReasoning}
+							>
+								{@html sanitize(
+									thought.split("\n").join("<br>"),
+									root,
+								)}
+							</div>
+						{/if}
 					</div>
+					<hr />
 				{/if}
 				<Markdown
 					message={content}
@@ -193,16 +226,27 @@
 		</div>
 		{#if message.role === "assistant"}
 			<ButtonPanel {...button_panel_props} />
-			{:else}
-
+		{:else}
 			<div class="message-buttons-right">
-					<Copy value={message.content} />
+				<Copy value={message.content} />
 			</div>
-			{/if}
+		{/if}
 	</button>
 </div>
 
 <style>
+	.fr-highlight {
+		padding-left: 1.25rem !important;
+		margin-left: 0rem !important;
+	}
+
+	.float-right {
+		float: right;
+	}
+
+	hr {
+		padding: 1px !important;
+	}
 
 	.message-buttons-right {
 		display: flex;
@@ -332,6 +376,10 @@
 		border-color: var(--border-color-accent-subdued);
 		background-color: var(--color-accent-soft);
 	} */
+	 .rotate {
+		transform: rotate(180deg);
+		transition: transform 0.5s;
+	 }
 
 	.thought {
 		color: #666;
@@ -374,6 +422,10 @@
 		order: 1;
 	}
 
+	.text-purple {
+		color: #6a6af4 !important;
+	}
+
 	@media (min-width: 48em) {
 		.bot.right {
 			order: inherit !important;
@@ -403,5 +455,9 @@
 	ul {
 		font-size: initial !important;
 		color: var(--text-active-grey);
+	}
+
+	.align-self-center {
+		align-self: center;
 	}
 </style>
