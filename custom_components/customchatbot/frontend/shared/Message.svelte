@@ -99,7 +99,7 @@
 		layout,
 	};
 	$: {
-		thought = message.reasoning || "Coucou";
+		thought = message.reasoning || "";
 	}
 	$: {
 		content = message.content;
