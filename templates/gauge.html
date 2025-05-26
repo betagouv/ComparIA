@@ -40,18 +40,31 @@
   }
 
   .linear-gauge-fill {
-    width: {{
-        gauge_count_ratio
-      }}%;
+    width: 0%; /* Start at 0% for the animation */
     height: 100%;
+    border-radius: 4px;
     background-color: #fde39c !important;
+    /* Add the transition property */
+    transition: width 1s ease-out 0.5s; /* 1s duration, ease-out timing, 0.5s delay */
+  }
+
+  /* This keyframe animation sets the final width after the delay */
+  @keyframes fillGauge {
+    to {
+      width: {{ gauge_count_ratio}}%;
+    }
+  }
+
+  /* Apply the animation to the linear-gauge-fill */
+  .linear-gauge-fill {
+    animation: fillGauge 1s ease-out 0.5s forwards; /* Same duration, timing, and delay */
   }
 
   .linear-gauge {
     width: 300px;
     height: 20px;
     background: #FFF;
-    border-radius: 3px;
+    border-radius: 4px;
     border: 1px solid #CCCCCC;
     overflow: hidden;
   }
