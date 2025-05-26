@@ -426,7 +426,7 @@
 				</div>
 			{/each}
 			{#if pending_message}
-				<Pending {layout} />
+				<Pending />
 			{/if}
 		</div>
 	{:else}

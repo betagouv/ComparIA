@@ -390,18 +390,6 @@
 		cursor: default;
 	}
 
-	@keyframes dot-flashing {
-		0% {
-			opacity: 0.8;
-		}
-		50% {
-			opacity: 0.5;
-		}
-		100% {
-			opacity: 0.8;
-		}
-	}
-
 	.message > button {
 		width: 100%;
 		padding: 1.25rem;
@@ -457,7 +445,4 @@
 		color: var(--text-active-grey);
 	}
 
-	.align-self-center {
-		align-self: center;
-	}
 </style>
