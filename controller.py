@@ -135,7 +135,7 @@ def remove_always_available_models(model_id: str) -> Union[None, bool]:
         logging.info(f"Model {model_id} removed from always_available_models.")
         return True
     else:
-        # return False
+        return False
 
 
 if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
