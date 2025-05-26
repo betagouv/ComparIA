@@ -114,16 +114,12 @@ async def share(i: str, request: Request):
         import base64, json
 
         decoded = base64.b64decode(i)
-        print(decoded)
+    
         data = json.loads(decoded)
-        print(data)
-        print(all_models_extra_info_toml)
         assert data.get("a") in all_models_extra_info_toml
         model_a_name = data.get("a")
-        print(model_a_name)
         assert data.get("b") in all_models_extra_info_toml
         model_b_name = data.get("b")
-        print(model_b_name)
         assert isinstance(data.get("ta"), int)
         model_a_tokens = data.get("ta")
         assert isinstance(data.get("tb"), int)
@@ -138,11 +134,10 @@ async def share(i: str, request: Request):
     except:
         return FileResponse("templates/50x.html", status_code=500)
 
-    from languia.utils import get_model_extra_info
-    from languia.config import models_extra_info
+    from languia.utils import build_model_extra_info
 
-    model_a = get_model_extra_info(model_a_name, models_extra_info)
-    model_b = get_model_extra_info(model_b_name, models_extra_info)
+    model_a = build_model_extra_info(model_a_name, all_models_extra_info_toml)
+    model_b = build_model_extra_info(model_b_name, all_models_extra_info_toml)
 
     from languia.reveal import (
         get_llm_impact,
