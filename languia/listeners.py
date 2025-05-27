@@ -22,7 +22,6 @@ from languia.block_arena import (
     reveal_screen,
     send_area,
     send_btn,
-    shuffle_link,
     supervote_area,
     supervote_send_btn,
     # first_textbox,
@@ -282,8 +281,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                     gr.update(visible=True),
                     # send_btn
                     gr.update(interactive=False),
-                    # shuffle_link
-                    gr.update(visible=False),
                     # conclude_btn
                     gr.update(visible=True, interactive=False),
                     gr.update(visible=True),
@@ -409,8 +406,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                 gr.update(visible=True),
                 # send_btn
                 gr.update(interactive=False),
-                # shuffle_link
-                gr.update(visible=False),
                 # conclude_btn
                 gr.update(visible=True, interactive=False),
                 # send_area
@@ -630,7 +625,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [mode_screen]
         + [chat_area]
         + [send_btn]
-        + [shuffle_link]
         + [conclude_btn]
         + [send_area],
         show_progress="hidden",
