@@ -348,7 +348,7 @@
                         <div class="fr-checkbox">
                             <input type="checkbox" id="license-{{ license }}" name="license-filter"
                                 value="{{ license }}" />
-                            <label for="license-{{ license }}"><strong>{{ license }}</strong>
+                            <label for="license-{{ license }}">{{ license }}
                                 <span class="filter-number">{{ models | selectattr('license', '==', license) | list |
                                     length
                                     }}</span>
