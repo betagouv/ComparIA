@@ -79,7 +79,7 @@
     let displayedCards: GuidedCard[] = [];
     const dispatch = createEventDispatcher();
 
-    import promptsTable from "./promptsTable.ts";
+    import promptsTable from "./promptsTable";
 
     function shuffleArray<T>(array: T[]): T[] {
         const newArray = [...array];
