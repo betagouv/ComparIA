@@ -312,3 +312,5 @@
             "Quels outils d'IA pourrions-nous développer afin de prédire et prévenir les crises humanitaires et les catastrophes naturelles ?",
         ],
     };
+
+export default promptsTable;
