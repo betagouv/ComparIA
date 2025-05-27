@@ -248,85 +248,85 @@ def get_model_system_prompt(model_name):
         return None
 
 
-total_guided_cards_choices = [
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/lightbulb.svg" width=20 alt="Idées" />
-            <span id="ideas-description">Générer de nouvelles idées</span>
-        </div>""",
-        "ideas",
-    ),
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/chat-3.svg" width=19 alt="Explications" />
-            <span id="explanations-description">Expliquer simplement un concept</span>
-        </div>""",
-        "explanations",
-    ),
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/translate-2.svg" width=20 alt="Traduction" />
-            <span id="languages-description">M’exprimer dans une autre langue</span>
-        </div>""",
-        "languages",
-    ),
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/draft.svg" width=20 alt="Administratif" />
-            <span id="administrative-description">Rédiger un document administratif</span>
-        </div>""",
-        "administrative",
-    ),
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/bowl.svg" width=20 alt="Recettes" />
-            <span id="recipes-description">Découvrir une nouvelle recette de cuisine</span>
-        </div>""",
-        "recipes",
-    ),
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/clipboard.svg" width=20 alt="Conseils" />
-            <span id="coach-description">Obtenir des conseils sur l’alimentation et le sport</span>
-        </div>""",
-        "coach",
-    ),
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/book-open-line.svg" width=20 alt="Histoires" />
-            <span id="stories-description">Raconter une histoire</span>
-        </div>""",
-        "stories",
-    ),
-    (
-        """<div class="mobile-flex">
-            <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/music-2.svg" width=20 alt="Recommandations" />
-            <span id="recommendations-description">Proposer des idées de films, livres, musiques</span>
-        </div>""",
-        "recommendations",
-    ),
-]
+# total_guided_cards_choices = [
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/lightbulb.svg" width=20 alt="Idées" />
+#             <span id="ideas-description">Générer de nouvelles idées</span>
+#         </div>""",
+# 		"ideas",
+# 	),
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/chat-3.svg" width=19 alt="Explications" />
+#             <span id="explanations-description">Expliquer simplement un concept</span>
+#         </div>""",
+# 		"explanations",
+# 	),
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/translate-2.svg" width=20 alt="Traduction" />
+#             <span id="languages-description">M’exprimer dans une autre langue</span>
+#         </div>""",
+# 		"languages",
+# 	),
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/draft.svg" width=20 alt="Administratif" />
+#             <span id="administrative-description">Rédiger un document administratif</span>
+#         </div>""",
+# 		"administrative",
+# 	),
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/bowl.svg" width=20 alt="Recettes" />
+#             <span id="recipes-description">Découvrir une nouvelle recette de cuisine</span>
+#         </div>""",
+# 		"recipes",
+# 	),
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/clipboard.svg" width=20 alt="Conseils" />
+#             <span id="coach-description">Obtenir des conseils sur l’alimentation et le sport</span>
+#         </div>""",
+# 		"coach",
+# 	),
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/book-open-line.svg" width=20 alt="Histoires" />
+#             <span id="stories-description">Raconter une histoire</span>
+#         </div>""",
+# 		"stories",
+# 	),
+# 	(
+# 		"""<div class="mobile-flex">
+#             <img class="fr-mb-md-2w fr-mr-1w" src="../assets/extra-icons/music-2.svg" width=20 alt="Recommandations" />
+#             <span id="recommendations-description">Proposer des idées de films, livres, musiques</span>
+#         </div>""",
+# 		"recommendations",
+# 	),
+# ]
 
-# Shuffle only at each reload of app to get some randomness, and keep the first four/three
-random.shuffle(total_guided_cards_choices)
-guided_cards_choices = total_guided_cards_choices[0:3]
+# # Shuffle only at each reload of app to get some randomness, and keep the first four/three
+# random.shuffle(total_guided_cards_choices)
+# guided_cards_choices = total_guided_cards_choices[0:3]
 
-ia_summit_choice = (
-    """<div class="mobile-flex degrade">
-            <img class="md-visible fr-mb-md-3w fr-mr-1w" width=110 height=35 src="../assets/iasummit.png" alt="Sommet pour l'action sur l'IA" />
-            <img class="md-hidden fr-mb-md-3w fr-mr-1w" width=35 height=35 src="../assets/iasummit-small.png" alt="Sommet pour l'action sur l'IA" />
-            <span class="sommet-description">Prompts issus de la consultation citoyenne sur l’IA&nbsp; <a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="sommetia"></a>
-        </span>                      
-        </div>
-        <span class="fr-tooltip fr-placement" id="sommetia" role="tooltip" aria-hidden="true">Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies.</span>""",
-    "iasummit",
-)
+# ia_summit_choice = (
+# 	"""<div class="mobile-flex degrade">
+#             <img class="md-visible fr-mb-md-3w fr-mr-1w" width=110 height=35 src="../assets/iasummit.png" alt="Sommet pour l'action sur l'IA" />
+#             <img class="md-hidden fr-mb-md-3w fr-mr-1w" width=35 height=35 src="../assets/iasummit-small.png" alt="Sommet pour l'action sur l'IA" />
+#             <span class="sommet-description">Prompts issus de la consultation citoyenne sur l’IA&nbsp; <a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="sommetia"></a>
+#         </span>
+#         </div>
+#         <span class="fr-tooltip fr-placement" id="sommetia" role="tooltip" aria-hidden="true">Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies.</span>""",
+# 	"iasummit",
+# )
 
 
-guided_cards_choices.insert(0, ia_summit_choice)
+# guided_cards_choices.insert(0, ia_summit_choice)
 
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
-    os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 60_000)
+	os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 60_000)
 )
 
 
