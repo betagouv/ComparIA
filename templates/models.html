@@ -300,7 +300,7 @@
                                 {% for org in orgs | sort %}
                                 <div class="fr-checkbox">
                                     <input type="checkbox" id="org-{{ org }}" name="org-filter" value="{{ org }}" />
-                                    <label for="org-{{ org }}"><strong>{{ org }}</strong>
+                                    <label for="org-{{ org }}">{{ org }}
                                         <span class="filter-number">{{ models | selectattr('organisation', '==', org) |
                                             list | length }}</span>
                                     </label>
