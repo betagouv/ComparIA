@@ -3,7 +3,6 @@ from languia.block_arena import (
     buttons_footer,
     chat_area,
     CustomDropdown,
-    CustomChatbot,
     chatbot,
     comments_a,
     comments_b,
@@ -13,7 +12,6 @@ from languia.block_arena import (
     conv_b,
     demo,
     header,
-    mode_screen,
     negative_a,
     negative_b,
     positive_a,
@@ -275,7 +273,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     banner,
                     # textbox
                     new_textbox,
-                    # mode_screen
+                    # custom_dropdown
                     gr.update(visible=False),
                     # chat_area
                     gr.update(visible=True),
@@ -400,7 +398,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 banner,
                 # textbox
                 gr.skip(),
-                # mode_screen
+                # model_dropdown
                 gr.update(visible=False),
                 # chat_area
                 gr.update(visible=True),
@@ -622,7 +620,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [textbox]
         + [header]
         + [textbox]
-        + [mode_screen]
+        + [model_dropdown]
         + [chat_area]
         + [send_btn]
         + [conclude_btn]
