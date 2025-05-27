@@ -66,25 +66,7 @@ with gr.Blocks(
             # ignored, hardcoded in custom component
             interactive=True,
         )
-
-        prompts_suggestions = gr.HTML(
-            elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-0 fr-pb-0 fr-px-0",
-            value="""<strong>Suggestions de prompts</strong>""",
-        )
-        guided_cards = CustomRadioCard(
-            show_label=False,
-            elem_id="guided-cards",
-            elem_classes="fr-container fr-px-0",
-            choices=config.guided_cards_choices,
-            min_columns=1,
-        )
-        shuffle_link = gr.Button(
-            scale=0,
-            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto mobile-w-full",
-            visible=False,
-            value="Générer un autre message",
-        )
-
+      
     with gr.Group(
         elem_id="chat-area",
         visible=False,

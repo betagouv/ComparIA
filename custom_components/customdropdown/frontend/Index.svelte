@@ -6,6 +6,7 @@
 	import type { Gradio, KeyUpData, SelectData } from "@gradio/utils";
 	import Dropdown from "./shared/Dropdown.svelte";
 	import ModelsSelection from "./shared/ModelsSelection.svelte";
+	import GuidedPromptSuggestions from "./shared/GuidedPromptSuggestions.svelte"; // Importation du nouveau composant
 	import { Block } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import TextBox from "./shared/Textbox.svelte";
@@ -341,6 +342,20 @@
 			}
 		}
 	}
+
+	function handlePromptSelected(event: CustomEvent<{ text: string }>): void {
+		prompt_value = event.detail.text;
+		// Déclencher un événement de changement pour que Gradio soit informé
+		gradio.dispatch("change", {
+			prompt_value: prompt_value,
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+		});
+		// Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
+		// dispatchSubmit();
+		// disabled = true;
+	}
+
 	var alt_label: string = "Sélection des modèles";
 	$: if (
 		(mode == "custom" && custom_models_selection.length < 1) ||
@@ -392,6 +407,11 @@
 					disabled = true;
 				}}
 			/>
+		</div>
+
+		<!-- Intégration du nouveau composant pour les suggestions de prompts -->
+		<div class="fr-mb-3v">
+			<GuidedPromptSuggestions on:promptselected={handlePromptSelected} />
 		</div>
 
 		<div class="selections">
