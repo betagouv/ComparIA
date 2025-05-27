@@ -9,16 +9,15 @@
         "allowSyntheticDefaultImports": true,
         "skipLibCheck": true,
         "resolveJsonModule": true,
-        "types": [
-            "svelte"
-        ],
+        "types": ["svelte"],
         "baseUrl": "."
     },
     "include": [
-        "src/**/*",
-        "*.svelte"
+        "./**/*.svelte",
+        "./**/*.ts"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "dist"
     ]
 }
