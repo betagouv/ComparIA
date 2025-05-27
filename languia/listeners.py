@@ -12,7 +12,6 @@ from languia.block_arena import (
     conv_a,
     conv_b,
     demo,
-    guided_cards,
     header,
     mode_screen,
     negative_a,
@@ -121,56 +120,6 @@ document.getElementById("fr-modal-welcome-close").blur();
     )
 
     # Step 1
-
-    # Step 1.1
-    @guided_cards.input(
-        inputs=[app_state, guided_cards, model_dropdown],
-        outputs=[app_state, model_dropdown, shuffle_link],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def set_guided_prompt(
-        app_state_scoped,
-        guided_cards,
-        model_dropdown_scoped,
-        event: gr.EventData,
-        request: gr.Request,
-    ):
-
-        # chosen_prompts_pool = guided_cards
-        category = guided_cards
-        prompt = gen_prompt(category)
-        app_state_scoped.category = category
-
-        logger.info(
-            f"categorie_{category}: {prompt}",
-            extra={"request": request},
-        )
-        new_value = prompt
-
-        model_dropdown_scoped["prompt_value"] = new_value
-
-        return {
-            app_state: app_state_scoped,
-            # first_send_btn: gr.update(interactive=True),
-            model_dropdown: model_dropdown_scoped,
-            shuffle_link: gr.update(visible=True),
-        }
-
-    @shuffle_link.click(
-        inputs=[guided_cards, model_dropdown],
-        outputs=[model_dropdown],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def shuffle_prompt(guided_cards, model_dropdown_scoped, request: gr.Request):
-        prompt = gen_prompt(guided_cards)
-        model_dropdown_scoped["prompt_value"] = prompt
-        logger.info(
-            f"shuffle: {prompt}",
-            extra={"request": request},
-        )
-        return model_dropdown_scoped
 
     @textbox.change(
         inputs=[app_state, textbox],
