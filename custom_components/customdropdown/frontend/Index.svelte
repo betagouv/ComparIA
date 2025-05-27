@@ -13,26 +13,12 @@
 	import ChevronBas from "./shared/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
 	import { tick } from "svelte";
-	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
+	import type { ModeAndPromptData, Model, Mode, Choice } from "./shared/utils.ts";
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
 	import Brain from "./shared/brain.svelte";
 	import Dice from "./shared/dice.svelte";
-
-	type Mode =
-		| "random"
-		| "custom"
-		| "big-vs-small"
-		| "small-models"
-		| "reasoning";
-	type Choice = {
-		value: Mode;
-		label: string;
-		alt_label: string;
-		icon: any;
-		description: string;
-	};
 
 	export let never_clicked: boolean = true;
 	export let models: Model[] = [];
@@ -306,7 +292,7 @@
 				) {
 					dispatchSelect();
 				}
-				choice = choices.find((item) => item.value === mode);
+				choice = choices[index];
 			}
 		}
 		show_custom_models_selection = mode === "custom";
@@ -385,14 +371,11 @@
 	}
 </script>
 
-<Block
-	{visible}
-	{elem_id}
-	{elem_classes}
-	padding={container}
-	allow_overflow={false}
-	{scale}
-	{min_width}
+<div
+	class:hidden={!visible}
+	id={elem_id}
+	class={elem_classes.join(" ")}
+
 >
 	<h3 class="text-center text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w">
 		Comment puis-je vous aider aujourd'hui ?
@@ -426,11 +409,6 @@
 					disabled = true;
 				}}
 			/>
-		</div>
-
-		<!-- Intégration du nouveau composant pour les suggestions de prompts -->
-		<div class="fr-mb-3v">
-			<GuidedPromptSuggestions on:promptselected={handlePromptSelected} />
 		</div>
 
 		<div class="selections">
@@ -498,7 +476,10 @@
 			value="Envoyer"
 		/>
 	</div>
-</Block>
+	<div class="fr-mb-3v">
+		<GuidedPromptSuggestions on:promptselected={handlePromptSelected} />
+	</div>
+</div>
 <dialog
 	aria-labelledby="modal-mode-selection"
 	id="modal-mode-selection"

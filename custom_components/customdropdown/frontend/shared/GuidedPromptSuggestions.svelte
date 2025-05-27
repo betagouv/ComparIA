@@ -166,6 +166,7 @@
         {#each displayedCards as card (card.value)}
             <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-mb-2w">
                 <GuidedCardComponent
+                    selected={currentSelectedCategoryValue==card.value}
                     iconSrc={card.iconSrc}
                     iconAlt={card.iconAlt}
                     title={card.title}
@@ -200,19 +201,6 @@
         ); /* Utiliser une variable DSFR si disponible */
     }
 
-    .guided-card {
-        width: 100%;
-        height: 100%; /* Pour que toutes les cartes aient la même hauteur */
-        text-align: left;
-        display: flex; /* Pour mieux contrôler l'alignement interne si besoin */
-        padding: 0.75rem; /* fr-p-3v */
-        --hover-tint: var(--background-action-low-blue-france-hover);
-        --active-tint: var(--background-action-low-blue-france-active);
-    }
-    .guided-card .fr-tile__content {
-        width: 100%; /* S'assurer que le contenu prend toute la largeur */
-    }
-
     /* .mobile-flex {
         display: flex;
         align-items: center;
@@ -222,15 +210,6 @@
         margin-bottom: 0; 
     } */
 
-    .sommet-description {
-        color: #051f43;
-    }
-
-    .guided-card span {
-        font-weight: 500;
-        align-self: center;
-        font-size: 0.75em;
-    }
 
     /* S'assurer que les icônes DSFR pour les boutons sont bien chargées/stylées */
     .fr-btn.fr-icon-shuffle-line::before {
@@ -238,5 +217,18 @@
         mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z'%3E%3C/path%3E%3C/svg%3E");
     }
 
+	/* .grid {
+		display: grid;
+		grid-template-columns: repeat(var(--min-columns), 1fr);
+		gap: 0.625rem; 
+		padding: 0.75rem; 
+		margin: 0.75rem; 
+	}
+	@media (min-width: 48em) {
+		.grid {
+			gap: 1.5rem; 
+			grid-template-columns: repeat(var(--columns), 1fr);
+		}
+	} */
     /* FIXME: .fr-tooltip  */
 </style>
