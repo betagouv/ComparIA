@@ -55,7 +55,6 @@ with gr.Blocks(
 
         # TODO: rename component, it includes textbox
     model_dropdown = CustomDropdown(
-                    elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-7 fr-col-md-8",
 
             models=config.models_extra_info,
             # ignored, hardcoded in custom component

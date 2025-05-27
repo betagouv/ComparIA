@@ -26,9 +26,7 @@
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let disabled = false;
-	export let container = true;
-	export let scale: number | null = null;
-	export let min_width: number | undefined = undefined;
+
 	export let gradio: Gradio<{
 		change: ModeAndPromptData;
 		input: never;
@@ -374,9 +372,9 @@
 <div
 	class:hidden={!visible}
 	id={elem_id}
-	class={elem_classes.join(" ")}
-
+	class={elem_classes.join(" ") + " fr-container"}
 >
+
 	<h3 class="text-center text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w">
 		Comment puis-je vous aider aujourd'hui ?
 	</h3>
@@ -652,6 +650,9 @@
 		font-size: 1.125em;
 	}
 
+	.column {
+		flex-direction: column;
+	}
 	.grid {
 		display: grid;
 		/* grid-template-columns: 1fr 1fr auto; */
