@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from "svelte";
+	import { Splide, SplideSlide } from "@splidejs/svelte-splide";
+	import "@splidejs/svelte-splide/css/core"; // Utilisation du thème core, plus minimaliste. Ou '@splidejs/svelte-splide/css' pour le thème par défaut.
 
 	interface GuidedCard {
 		html: string;
@@ -133,8 +135,26 @@
 
 	function updateDisplayedCards() {
 		const shuffled = shuffleArray(totalGuidedCardsChoices);
-		displayedCards = [iaSummitChoice, ...shuffled.slice(0, 3)];
+		// displayedCards contiendra uniquement les cartes pour le carrousel
+		displayedCards = shuffled.slice(0, 4); // Prenons 4 cartes pour le carrousel par exemple
 	}
+
+	const splideOptions = {
+		perPage: 3,
+		arrows: true,
+		pagination: false,
+		rewind: true, // Permet de revenir au début/fin
+		gap: "1rem", // Espace entre les slides, à ajuster
+		breakpoints: {
+			// Exemples de breakpoints, à ajuster selon les besoins du DSFR
+			1024: { // Pour tablettes et petits écrans desktop
+				perPage: 2,
+			},
+			768: { // Pour mobile
+				perPage: 1,
+			},
+		},
+	};
 
 	onMount(() => {
 		updateDisplayedCards();
@@ -168,20 +188,49 @@
 	</h4>
 
 	<div class="fr-grid-row fr-grid-row--gutters">
-		{#each displayedCards as card (card.value)}
-			<div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-mb-2w">
-				<button
-					class="guided-card fr-tile fr-tile--horizontal fr-enlarge-link"
-					on:click={() => selectPrompt(card.value)}
-				>
-					<div class="fr-tile__body">
-						<div class="fr-tile__content">
-							{@html card.html}
-						</div>
+		<!-- Carte iasummit toujours visible et épinglée -->
+		<div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-mb-2w">
+			<button
+				class="guided-card fr-tile fr-tile--horizontal fr-enlarge-link"
+				on:click={() => selectPrompt(iaSummitChoice.value)}
+			>
+				<div class="fr-tile__body">
+					<div class="fr-tile__content">
+						{@html iaSummitChoice.html}
 					</div>
-				</button>
-			</div>
-		{/each}
+				</div>
+			</button>
+		</div>
+
+		<!-- Carrousel pour les autres cartes -->
+		<div class="fr-col-12">
+			<Splide options={splideOptions} aria-label="Suggestions de prompts guidés">
+				{#each displayedCards as card (card.value)}
+					{#if card.value !== "iasummit"}
+						<!--
+							La div fr-col-12 n'est plus nécessaire ici car SplideSlide gère la largeur du slide.
+							Le padding peut être géré par l'option 'gap' de Splide ou des styles sur .guided-card si besoin.
+						-->
+						<SplideSlide>
+							<div class="fr-mb-2w" style="height: 100%; display: flex;"> <!-- Assurer que le bouton prend toute la hauteur -->
+								<!-- S'assurer que le bouton prend toute la largeur du slide -->
+								<button
+									class="guided-card fr-tile fr-tile--horizontal fr-enlarge-link"
+									on:click={() => selectPrompt(card.value)}
+									style="width: 100%;"
+								>
+									<div class="fr-tile__body">
+										<div class="fr-tile__content">
+											{@html card.html}
+										</div>
+									</div>
+								</button>
+							</div>
+						</SplideSlide>
+					{/if}
+				{/each}
+			</Splide>
+		</div>
 	</div>
 
 	<button
@@ -209,6 +258,22 @@
     .guided-card .fr-tile__content {
         width: 100%; /* S'assurer que le contenu prend toute la largeur */
     }
+   
+ /* Les styles spécifiques à svelte-carousel ont été supprimés. */
+ /* Splide a ses propres styles, importés via CSS. */
+ /* Vous pouvez ajouter des styles globaux pour surcharger Splide si nécessaire, par exemple : */
+ /*
+ :global(.splide__arrow) {
+  background-color: var(--background-action-low-blue-france) !important;
+  opacity: 1 !important;
+ }
+ :global(.splide__arrow svg) {
+  fill: var(--text-action-high-blue-france) !important;
+ }
+ :global(.splide__slide) {
+  padding: 0 0.5rem; // Pour simuler un 'gap' si l'option 'gap' n'est pas suffisante ou pour un contrôle fin
+ }
+ */
 
 	.mobile-flex {
 		display: flex;
