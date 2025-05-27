@@ -1,5 +1,5 @@
 <div
-    class="message pending"
+    class="pending"
     role="status"
     aria-label="Loading response"
     aria-live="polite"
@@ -7,10 +7,16 @@
     <span class="sr-only">Loading content</span>
     <div class="disc left"></div>
     <div class="disc right"></div>
+    <div class="message-pending"><strong>Chargement des réponses</strong></div>
 </div>
 
 <style>
+    .message-pending {
+        position: absolute;
+        margin-top: 60px;
+    }
     .pending {
+        margin-bottom: 30px;
         display: flex;
         flex-direction: row;
         justify-content: center;

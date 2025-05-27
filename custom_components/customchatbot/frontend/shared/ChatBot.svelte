@@ -350,6 +350,9 @@
 >
 	{#if value !== null && value.length > 0 && groupedMessages !== null}
 		<div class="message-wrap" use:copy>
+			{#if pending_message}
+			<Pending />
+			{/if}
 			{#each groupedMessages as messages, i}
 				{@const role = messages[0].role === "user" ? "user" : "bot"}
 				<div class="message-row {layout} {role}-row">
@@ -425,11 +428,9 @@
 					{/each}
 				</div>
 			{/each}
-			{#if pending_message}
-				<Pending />
-			{/if}
 		</div>
 	{:else}
+		<!-- TODO: remove this placeholder, if it appears it should be an error instead -->
 		<div class="placeholder-content">
 			{#if placeholder !== null}
 				<div class="placeholder">
@@ -447,14 +448,22 @@
 					></span> Oups, la conversation est trop longue pour un des modèles
 				</h5>
 				<p>
-					Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.{#if groupedMessages.length > 1}&nbsp;Vous pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation avec deux nouveaux.{:else}
-					&nbsp;Vous pouvez recommencer une conversation avec deux nouveaux modèles.
+					Chaque modèle est limité dans la taille des conversations
+					qu'il est capable de traiter.{#if groupedMessages.length > 1}&nbsp;Vous
+						pouvez tout de même donner votre avis sur ces modèles ou
+						recommencer une conversation avec deux nouveaux.{:else}
+						&nbsp;Vous pouvez recommencer une conversation avec deux
+						nouveaux modèles.
 					{/if}
 				</p>
 				<p class="text-center">
 					<!-- TODO: icone Recommencer -->
-					<a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank">Recommencer</a>
-						<!-- TODO: Bouton "donner son avis" -->
+					<a
+						class="btn purple-btn"
+						href="../arene/?cgu_acceptees"
+						target="_blank">Recommencer</a
+					>
+					<!-- TODO: Bouton "donner son avis" -->
 				</p>
 			{:else}
 				<h3>
