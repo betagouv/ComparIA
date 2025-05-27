@@ -1,13 +1,5 @@
 
 
-.sommet-description {
-  color: #051F43;
-}
-
-.custom-card:has(.degrade) {
-  background: linear-gradient(45deg, #E8E9FE 0%, #F2F5FE 36%, #FFF 100%);
-}
-
 /* BUGFIXES */
 
 /* Hide all warning messages from Gradio to hide the "Warning: this connection might break on mobile" */
@@ -292,9 +284,7 @@ h6.text-blue {
     display: block !important;
   }
 
-  #guided-cards span {
-    font-size: 0.875em !important;
-  }
+
 }
 
 .fr-btn--secondary {
@@ -310,15 +300,6 @@ h6.text-blue {
   background-color: #6a6af4 !important;
 }
 
-#guided-cards span {
-  font-weight: 500;
-  align-self: center;
-  font-size: 0.75em;
-}
-
-#guided-cards .fr-tooltip {
-  font-weight: 400 !important;
-}
 
 /* General */
 body {
