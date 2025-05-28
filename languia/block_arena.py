@@ -121,20 +121,17 @@ with gr.Blocks(
             which_model_radio = CustomRadioCard(
                 min_columns=1,
                 elem_id="vote-cards",
-                elem_classes="justify-center fr-mx-auto fr-col-12 fr-col-md-8",
                 choices=[
                     (
-                        """<div class="self-center justify-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <span class="">Modèle A</span>
-                    </div>""",
+                        """Modèle A""",
                         "model-a",
                     ),
                     (
-                        """<span class="self-center text-center justify-center">Les deux se valent</span>""",
+                        """Les deux se valent""",
                         "both-equal",
                     ),
                     (
-                        """<div class="self-center"><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg><span class=""> Modèle B</span>
-                    </div>""",
+                        """Modèle B""",
                         "model-b",
                     ),
                 ],
