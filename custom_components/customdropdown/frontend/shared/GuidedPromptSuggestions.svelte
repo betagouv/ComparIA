@@ -115,47 +115,65 @@
     displayedCards = [iaSummitChoice, ...shuffled.slice(0, 3)];
 
     let currentSelectedCategoryValue: string | null = null;
-
+   
+    // Helper function to dispatch prompt with or without selection
+    function dispatchPromptWithSelection(promptText: string, origin: string) {
+    	let selectionStart: number | undefined = undefined;
+    	let selectionEnd: number | undefined = undefined;
+    	const startIndex = promptText.indexOf('[');
+    	const endIndex = promptText.indexOf(']');
+   
+    	if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
+    		selectionStart = startIndex; // Include the opening bracket
+    		selectionEnd = endIndex + 1; // Include the closing bracket
+    	}
+   
+    	if (selectionStart !== undefined && selectionEnd !== undefined) {
+    		console.log(`[GuidedPromptSuggestions] ${origin}: dispatching promptselected with selection. Text: "${promptText}", Start: ${selectionStart}, End: ${selectionEnd}`);
+    		dispatch("promptselected", { text: promptText, selectionStart, selectionEnd });
+    	} else {
+    		console.log(`[GuidedPromptSuggestions] ${origin}: dispatching promptselected without selection. Text: "${promptText}"`);
+    		dispatch("promptselected", { text: promptText });
+    	}
+    }
+   
     function shufflePrompts() {
-        if (currentSelectedCategoryValue) {
-            const promptsForCategory =
-                promptsTable[currentSelectedCategoryValue];
-            const randomPromptText = selectRandomFromArray(promptsForCategory);
-
-            if (randomPromptText) {
-                dispatch("promptselected", { text: randomPromptText });
-            } else {
-                console.warn(
-                    `No prompts found for the current category: ${currentSelectedCategoryValue}.`,
-                );
-                // Optionally, dispatch a fallback or do nothing if the current category has no prompts
-            }
-        } else {
-            // This case should ideally not be reached if the button is hidden
-            console.warn(
-                "No category currently selected. Cannot shuffle prompts.",
-            );
-        }
+    	if (currentSelectedCategoryValue) {
+    		const promptsForCategory = promptsTable[currentSelectedCategoryValue];
+    		const randomPromptText = selectRandomFromArray(promptsForCategory);
+   
+    		if (randomPromptText) {
+    			dispatchPromptWithSelection(randomPromptText, "shufflePrompts");
+    		} else {
+    			console.warn(
+    				`[GuidedPromptSuggestions] No prompts found for the current category: ${currentSelectedCategoryValue}.`,
+    			);
+    		}
+    	} else {
+    		console.warn(
+    			"No category currently selected. Cannot shuffle prompts.",
+    		);
+    	}
     }
-
+   
     function handleCardSelect(event: CustomEvent<{ value: string }>) {
-        const categoryValue = event.detail.value;
-        currentSelectedCategoryValue = categoryValue; // Set the current category
-
-        const promptsForCategory = promptsTable[categoryValue];
-        const randomPromptText = selectRandomFromArray(promptsForCategory);
-
-        if (randomPromptText) {
-            dispatch("promptselected", { text: randomPromptText });
-        } else {
-            const fallbackText = `Explorer la catégorie : ${categoryValue}`;
-            console.warn(
-                `No prompts found for category: ${categoryValue}. Using fallback: "${fallbackText}"`,
-            );
-            dispatch("promptselected", { text: fallbackText });
-        }
+    	const categoryValue = event.detail.value;
+    	currentSelectedCategoryValue = categoryValue;
+   
+    	const promptsForCategory = promptsTable[categoryValue];
+    	const randomPromptText = selectRandomFromArray(promptsForCategory);
+   
+    	if (randomPromptText) {
+    		dispatchPromptWithSelection(randomPromptText, "handleCardSelect");
+    	} else {
+    		const fallbackText = `Explorer la catégorie : ${categoryValue}`;
+    		console.warn(
+    			`[GuidedPromptSuggestions] No prompts found for category: ${categoryValue}. Using fallback: "${fallbackText}"`,
+    		);
+    		dispatch("promptselected", { text: fallbackText }); // No selection for fallback
+    	}
     }
-</script>
+   </script>
 
 <div class="fr-container fr-px-0">
     <h4

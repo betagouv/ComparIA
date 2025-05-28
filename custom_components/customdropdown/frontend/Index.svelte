@@ -53,6 +53,9 @@
 	export let interactive: boolean;
 	export let value: ModeAndPromptData;
 
+	// Reference to the TextBox element
+	let textboxElement: TextBox; // Changed type to TextBox component instance
+
 	export const choices: Choice[] = [
 		{
 			value: "random",
@@ -354,21 +357,56 @@
 		}
 	}
 
-	function handlePromptSelected(event: CustomEvent<{ text: string }>): void {
+	function handlePromptSelected(event: CustomEvent<{ text: string; selectionStart?: number; selectionEnd?: number }>): void {
 		prompt_value = event.detail.text;
+		console.log(`[Index] handlePromptSelected: Received promptselected. Text: "${prompt_value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`);
 		// Déclencher un événement de changement pour que Gradio soit informé
 		gradio.dispatch("change", {
 			prompt_value: prompt_value,
 			mode: mode,
 			custom_models_selection: custom_models_selection,
 		});
+
+		if (textboxElement && event.detail.selectionStart !== undefined && event.detail.selectionEnd !== undefined) {
+			const sStart = event.detail.selectionStart;
+			const sEnd = event.detail.selectionEnd;
+
+			const performSelection = () => {
+				if (textboxElement && typeof textboxElement.selectText === 'function') {
+					console.log(`[Index] Performing selection. Start: ${sStart}, End: ${sEnd}`);
+					textboxElement.selectText(sStart, sEnd);
+				} else {
+					console.warn(`[Index] Textbox element or selectText method not available when trying to perform selection.`);
+				}
+			};
+
+			// Initial attempt: After Svelte tick and browser paint
+			tick().then(() => {
+				requestAnimationFrame(() => {
+					performSelection();
+				});
+			});
+
+			// // Second attempt: With a short delay
+			// setTimeout(() => {
+			// 	performSelection();
+			// }, 100); // 100ms delay
+
+			// // Third attempt: With a slightly longer delay
+			// setTimeout(() => {
+			// 	performSelection();
+			// }, 250); // 250ms delay
+
+		} else { // No valid selection range provided
+			console.log("[Index] handlePromptSelected: No specific selection range provided, or textboxElement not ready. No text will be selected.", event.detail);
+		}
 		// Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
 		// dispatchSubmit();
 		// disabled = true;
 	}
 
 	var alt_label: string = "Sélection des modèles";
-	$: if (
+	$: if ( // eslint-disable-next-line
 		(mode == "custom" && custom_models_selection.length < 1) ||
 		(mode == "random" && never_clicked)
 	) {
@@ -389,6 +427,7 @@
 	<div class="grid">
 		<div class="first-textbox fr-mb-3v">
 			<TextBox
+				bind:this={textboxElement}
 				{disabled}
 				bind:value={prompt_value}
 				bind:value_is_output
