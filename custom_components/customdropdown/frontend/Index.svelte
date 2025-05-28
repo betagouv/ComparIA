@@ -11,6 +11,7 @@
 	import TextBox from "./shared/Textbox.svelte";
 	import ChevronBas from "./shared/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
+	import { tick } from "svelte";
 	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
@@ -197,6 +198,13 @@
 			try {
 				initialPrompt = base64Decode(cookieValue);
 				deleteCookie("comparia_initialprompt");
+				if (initialPrompt && typeof window !== "undefined") { // Ensure browser context for tick
+					tick().then(() => {
+						if (textboxElement && typeof textboxElement.select === 'function') {
+							textboxElement.select();
+						}
+					});
+				}
 			} catch (error) {
 				console.error("Failed to decode prompt from cookie:", error);
 				// initialPrompt remains ""
@@ -209,6 +217,8 @@
 	export let custom_models_selection: string[] = initialModels;
 
 	export let prompt_value: string = initialPrompt;
+
+	let textboxElement: HTMLTextAreaElement | HTMLInputElement;
 
 	let choice: Choice = get_choice(initialMode) || choices[0];
 	let firstModelName = "Aléatoire";
@@ -378,6 +388,7 @@
 				{disabled}
 				bind:value={prompt_value}
 				bind:value_is_output
+				bind:el={textboxElement}
 				{elem_id}
 				{elem_classes}
 				{visible}
