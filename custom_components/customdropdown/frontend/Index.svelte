@@ -130,9 +130,14 @@
 		document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
 	}
 
+	function deleteCookie(name: string): void {
+		if (!browser) return;
+		document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+	}
+	
 	let initialMode: Mode =
 		(getCookie("customdropdown_mode") as Mode) || "random";
-
+	
 	function getInitialModels(availableModels: Model[]): string[] {
 		if (!Array.isArray(availableModels)) {
 			console.error(
@@ -184,18 +189,21 @@
 	};
 
 	let initialModels: string[] = getInitialModels(models); // Pass the populated models array
-
-	let initialPrompt = browser && getCookie("comparia_initialprompt")
-		? (() => {
+	
+	let initialPrompt = "";
+	if (browser) {
+		const cookieValue = getCookie("comparia_initialprompt");
+		if (cookieValue) {
 			try {
-				return base64Decode(getCookie("comparia_initialprompt")!);
+				initialPrompt = base64Decode(cookieValue);
+				deleteCookie("comparia_initialprompt");
 			} catch (error) {
 				console.error("Failed to decode prompt from cookie:", error);
-				return "";
+				// initialPrompt remains ""
 			}
-		})()
-		: "";
-
+		}
+	}
+	
 	// Export the necessary variables
 	export let mode: Mode = initialMode; // Assuming initialMode is defined
 	export let custom_models_selection: string[] = initialModels;
