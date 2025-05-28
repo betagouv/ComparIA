@@ -5,9 +5,7 @@
 		createEventDispatcher,
 		tick,
 	} from "svelte";
-	import { BlockTitle } from "@gradio/atoms";
-	import { Copy, Check } from "@gradio/icons";
-	import { fade } from "svelte/transition";
+	
 	import type { SelectData } from "@gradio/utils";
 
 	// import "@gouvfr/dsfr/dist/scheme/scheme.css";
@@ -33,9 +31,7 @@
 	export let elem_id = "";
 	export let elem_classes: string[] = [];
 
-	let el: HTMLTextAreaElement | HTMLInputElement;
-	let copied = false;
-	let timer: NodeJS.Timeout;
+	export let el: HTMLTextAreaElement | HTMLInputElement;
 	let can_scroll: boolean;
 	let previous_scroll_top = 0;
 	let user_has_scrolled_up = false;
@@ -81,20 +77,6 @@
 	});
 	$: value, handle_input();
 
-	async function handle_copy(): Promise<void> {
-		if ("clipboard" in navigator) {
-			await navigator.clipboard.writeText(value);
-			copy_feedback();
-		}
-	}
-
-	function copy_feedback(): void {
-		copied = true;
-		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => {
-			copied = false;
-		}, 1000);
-	}
 
 	function handle_select(event: Event): void {
 		const target: HTMLTextAreaElement | HTMLInputElement = event.target as
