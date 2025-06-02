@@ -59,6 +59,8 @@ def get_docs_content_for_user_prompt(request):
         if not selected_docs:
             return None
             
+        logger.info(f"Processing {len(selected_docs)} selected documents: {selected_docs}")
+            
         # Import here to avoid circular imports
         from languia.docs_auth import DocsAPIClient
         import os
@@ -70,32 +72,40 @@ def get_docs_content_for_user_prompt(request):
             
         docs_content_parts = []
         for doc_id in selected_docs:
+            logger.info(f"Processing document ID: {doc_id}")
             try:
                 # Get document details (handle async call from sync context)
                 import asyncio
+                import concurrent.futures
+                
+                async def fetch_document():
+                    return await docs_client.get_document(doc_id)
+                
                 try:
                     # Try to get existing loop
                     loop = asyncio.get_event_loop()
                     if loop.is_running():
-                        # If loop is running, we need to use asyncio.run_coroutine_threadsafe or skip
-                        logger.warning("Event loop already running, skipping document content extraction")
-                        continue
+                        # If loop is running, use thread executor
+                        logger.info(f"Event loop running, using thread executor for document {doc_id}")
+                        with concurrent.futures.ThreadPoolExecutor() as executor:
+                            future = executor.submit(asyncio.run, fetch_document())
+                            doc = future.result(timeout=10)  # 10 second timeout
                     else:
-                        doc = loop.run_until_complete(docs_client.get_document(doc_id))
+                        doc = loop.run_until_complete(fetch_document())
                 except RuntimeError:
                     # No event loop, create one
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
-                    try:
-                        doc = loop.run_until_complete(docs_client.get_document(doc_id))
-                    finally:
-                        loop.close()
+                    logger.info(f"No event loop found, creating new one for document {doc_id}")
+                    doc = asyncio.run(fetch_document())
                 
                 if doc and doc.get('content'):
                     # Extract readable text from Yjs content
                     extracted_text = docs_client.extract_text_from_yjs(doc['content'])
+                    logger.info(f"Extracted text for {doc.get('title', 'Sans titre')}: {extracted_text[:50]}...")
                     if extracted_text and extracted_text != "[Contenu non lisible]" and extracted_text != "[Erreur de décodage du contenu]":
                         docs_content_parts.append(f"**{doc.get('title', 'Sans titre')}**\n{extracted_text}")
+                        logger.info(f"Added document {doc.get('title', 'Sans titre')} to content parts")
+                else:
+                    logger.warning(f"Document {doc_id} has no content or failed to load")
             except Exception as e:
                 logger.error(f"Failed to get content for document {doc_id}: {e}")
                 continue
