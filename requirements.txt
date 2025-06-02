@@ -20,10 +20,10 @@ psycopg2-binary
 tiktoken
 langfuse
 pyarrow
-
 # Docs authentication dependencies (same as Drive)
 httpx
 python-jose[cryptography]
-
 # YJS document parsing
 pycrdt
+itsdangerous
+authlib

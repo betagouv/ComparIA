@@ -1,25 +1,33 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, FileResponse
+# Standard library imports
+import json
+import logging
+import os
+import secrets
+from datetime import datetime, timedelta
+from urllib.parse import urlencode
+
+# Third-party imports
+import gradio as gr
+import httpx
+from authlib.integrations.starlette_client import OAuth
+from authlib.jose import jwt, JsonWebKey
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request, Response, HTTPException
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-
-from starlette.exceptions import HTTPException as StarletteHTTPException
-
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware.sessions import SessionMiddleware
 
+# Local imports
+from languia import config
 from languia.block_arena import demo
-
-import logging
-import gradio as gr
-import os
-from dotenv import load_dotenv
+from languia.reveal import size_desc, license_desc, license_attrs
+from languia.utils import get_gauge_count
 
 # Load environment variables
 load_dotenv()
-
-from languia import config
-
-from languia.reveal import size_desc, license_desc, license_attrs
 
 # Log application startup info
 logging.info("🚀 Starting ComparIA application")
@@ -34,7 +42,29 @@ try:
 except ImportError:
     docs_auth_available = False
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 app = FastAPI()
+
+# Add session middleware
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SESSION_SECRET_KEY", "your-session-secret"))
+
+# Initialize OAuth
+oauth = OAuth()
+
+# Register the OpenID Connect provider
+oauth.register(
+    name='oidc',
+    client_id=os.getenv("OIDC_CLIENT_ID"),
+    client_secret=os.getenv("OIDC_CLIENT_SECRET"),
+    server_metadata_url=os.getenv("OIDC_DISCOVERY_URL"),
+    client_kwargs={'scope': os.getenv("OIDC_SCOPES")},
+)
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 # app.mount("/arene/custom_components", StaticFiles(directory="custom_components"), name="custom_components")
@@ -63,6 +93,70 @@ demo = demo.queue(
 # Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
 demo.run_startup_events()
 
+objective = config.objective
+
+@app.get('/login')
+async def login(request: Request):
+    logger.info("Redirecting to OIDC provider for user login... ")
+    # Redirect to the OIDC provider for authentication
+    redirect_uri = request.url_for('callback')
+    logger.info(f"/login Redirect URI: {redirect_uri}")
+    logger.info(f"Request base URL: {request.base_url}")
+    logger.info(f"Request headers: {request.headers}")
+    return await oauth.oidc.authorize_redirect(request, redirect_uri)
+
+async def parse_jwt_userinfo(token):
+    metadata= await oauth.oidc.load_server_metadata()
+    logger.info("Fetching user info from OIDC provider...")
+    resp = await oauth.oidc.get(metadata['userinfo_endpoint'], token=token)
+    if resp.status_code != 200:
+        raise Exception("Failed to fetch user info from OIDC provider")
+    logger.info("User info fetched successfully from OIDC provider.")
+    user_info_jwt  = resp.text
+    logger.info(f"User info JWT: {user_info_jwt}")
+
+    # get keys
+    keys = await oauth.oidc.get(metadata['jwks_uri'], token=token)
+    if keys.status_code != 200:
+        raise Exception("Failed to fetch JWKS from OIDC provider")
+    keys_set = JsonWebKey.import_key_set(keys.json())
+    logger.info("JWKS keys fetched successfully from OIDC provider.")
+
+    #Decode the JWT
+    logger.info("Decoding JWT user information...")
+    claims = jwt.decode(
+        user_info_jwt,
+        keys_set
+    )
+    claims.validate()
+    return claims
+
+@app.get('/callback')
+async def callback(request: Request):
+    logger.info("/auth Handling OIDC authentication response...")
+    try:
+        logger.info("Request query params: %s", request.query_params)
+        logger.info("Request URL: %s", request.url)
+        token = await oauth.oidc.authorize_access_token(request)
+        logger.info("/auth Get token...")
+        logger.info("Token type: %s", token.get('token_type'))
+        logger.info("Token expires in: %s", token.get('expires_in'))
+        user = await parse_jwt_userinfo(token)
+        logger.info("/auth User info: %s", user)
+        request.session['user'] = dict(user)
+        return RedirectResponse(url='/arene')
+    except Exception as e:
+        logger.error("Error in callback: %s", str(e))
+        logger.error("Error type: %s", type(e))
+        import traceback
+        logger.error("Full traceback:\n%s", traceback.format_exc())
+        raise
+
+@app.get('/logout')
+def logout(request: Request):
+    logger.info("Logging out user and clearing session...")
+    request.session.pop('user', None)
+    return RedirectResponse(url='/')
 
 app = gr.mount_gradio_app(
     app,
@@ -78,11 +172,6 @@ app = gr.mount_gradio_app(
     ],
     show_error=config.debug,
 )
-
-from languia.utils import get_gauge_count
-
-objective = config.objective
-
 
 favicon_path="assets/favicon/favicon.ico"
 
@@ -277,7 +366,7 @@ async def tos(request: Request):
     return templates.TemplateResponse(
         "tos.html",
         {
-            "title": "Modalités d’utilisation",
+            "title": "Modalités d'utilisation",
             "request": request,
             "config": config,
             "models": config.models_extra_info,
@@ -290,7 +379,7 @@ async def accessibility(request: Request):
     return templates.TemplateResponse(
         "accessibility.html",
         {
-            "title": "Déclaration d’accessibilité",
+            "title": "Déclaration d'accessibilité",
             "request": request,
             "config": config,
         },
@@ -460,6 +549,3 @@ async def not_found_handler(request, exc):
         {"title": "Page non trouvée", "request": request, "config": config},
         status_code=404,
     )
-
-
-app = SentryAsgiMiddleware(app)
