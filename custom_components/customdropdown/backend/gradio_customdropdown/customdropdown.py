@@ -113,6 +113,7 @@ class CustomDropdown(FormComponent):
                 "mode": "random",
                 "custom_models_selection": []
             }
+        self.models = models
         self.max_choices = max_choices
         self.filterable = filterable
         super().__init__(
