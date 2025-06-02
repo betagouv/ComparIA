@@ -6,19 +6,19 @@
     <meta charset="utf-8">
     <meta name="format-detection" content="telephone=no,date=no,address=no,email=no,url=no">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="stylesheet" href="assets/dsfr/dsfr.min.css">
+    <link rel="stylesheet" href="/assets/dsfr/dsfr.min.css">
     <meta name="theme-color" content="#6a6af4"><!-- Défini la couleur de thème du navigateur (Safari/Android) -->
-    <link rel="apple-touch-icon" href="assets/favicon/apple-touch-icon.png"><!-- 180×180 -->
-    <link rel="icon" href="assets/favicon/favicon.svg" type="image/svg+xml">
-    <link rel="icon" type="image/png" href="assets/favicon/favicon.png" sizes="96x96" />
-    <link rel="shortcut icon" href="assets/favicon/favicon.ico" type="image/x-icon"><!-- 32×32 -->
-    <link rel="manifest" href="assets/favicon/manifest.webmanifest" crossorigin="use-credentials">
+    <link rel="apple-touch-icon" href="/assets/favicon/apple-touch-icon.png"><!-- 180×180 -->
+    <link rel="icon" href="/assets/favicon/favicon.svg" type="image/svg+xml">
+    <link rel="icon" type="image/png" href="/assets/favicon/favicon.png" sizes="96x96" />
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico" type="image/x-icon"><!-- 32×32 -->
+    <link rel="manifest" href="/assets/favicon/manifest.webmanifest" crossorigin="use-credentials">
     <!-- Dans le fichier manifest.webmanifest aussi, modifier les chemins vers les images -->
     <title>{{ title|default("") }}{% if title %} - {% endif %}compar:IA, le comparateur d'IA conversationnelles</title>
     {{ config.site_head_js | safe }}
-    <link rel="stylesheet" href="assets/custom-site.css">
+    <link rel="stylesheet" href="/assets/custom-site.css">
 
-    <link rel="stylesheet" href="assets/dsfr/utility/icons/icons-design/icons-design.css">
+    <link rel="stylesheet" href="/assets/dsfr/utility/icons/icons-design/icons-design.css">
     {% block extra_styles %}
     {% endblock %}
     <meta name="google-site-verification" content="1xrdIzQy45wIoAeeNvpRb9l8s_k5DjzMtrvbOzx6wMQ" />
@@ -39,6 +39,9 @@
     {% endblock %}
 
     {% include 'footer.html' %}
+    
+    <script src="/assets/dsfr/dsfr.module.min.js" type="module"></script>
+    <script src="/assets/dsfr/dsfr.nomodule.min.js" nomodule></script>
 </body>
 
 </html>

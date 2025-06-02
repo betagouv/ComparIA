@@ -166,7 +166,7 @@ class DocsAPIClient:
     def extract_text_from_yjs(self, raw_content: str) -> str:
         """
         Attempt to extract readable text from Yjs base64 content
-        This is a basic extraction that may not work for all cases
+        Uses pattern matching to find meaningful text content
         """
         if not raw_content:
             return ""
@@ -175,31 +175,73 @@ class DocsAPIClient:
             # Try to decode base64
             decoded = base64.b64decode(raw_content)
             
-            # Try to extract text using simple heuristics
-            # Yjs stores text in a binary format, we'll try to find readable strings
-            text_parts = []
+            # Extract all printable strings
+            all_strings = []
             current_text = ""
             
             for byte in decoded:
                 if 32 <= byte <= 126:  # Printable ASCII
                     current_text += chr(byte)
                 else:
-                    if len(current_text) > 2:  # Only add strings longer than 2 chars
-                        text_parts.append(current_text)
+                    if len(current_text) > 2:
+                        all_strings.append(current_text)
                     current_text = ""
             
             if len(current_text) > 2:
-                text_parts.append(current_text)
+                all_strings.append(current_text)
             
-            # Join with spaces and clean up
-            extracted = " ".join(text_parts)
+            # Filter for meaningful content
+            meaningful_parts = []
             
-            # Remove common Yjs artifacts
-            extracted = extracted.replace("paragraph", "").replace("text", "")
-            extracted = " ".join(extracted.split())  # Normalize whitespace
+            for text in all_strings:
+                text = text.strip()
+                
+                # Skip if too short
+                if len(text) < 3:
+                    continue
+                    
+                # Skip technical artifacts
+                skip_patterns = [
+                    'doc-', 'w3broadcast', 'document-store', 'blockGroup', 'blockContainer',
+                    'Alignment', 'initialBlockId', 'backgroundColor', 'w$', 'Color',
+                    'paragraph', 'heading', 'italic', 'bold', 'underline', 'left(',
+                    'right(', 'center(', 'default(', 'strikethrough', 'default'
+                ]
+                
+                # Skip if it's just "default" or similar common artifacts
+                if text.lower() in ['default', 'color', 'text', 'paragraph', 'heading']:
+                    continue
+                
+                if any(pattern in text for pattern in skip_patterns):
+                    continue
+                    
+                # Skip UUIDs and technical IDs
+                if '-' in text and text.count('-') > 2 and len(text) > 15:
+                    continue
+                    
+                # Skip if only punctuation or numbers
+                if text.replace('(', '').replace(')', '').replace(':', '').isdigit():
+                    continue
+                    
+                # Clean up
+                cleaned = text.strip('(),:;')
+                
+                # Look for actual text content (contains letters)
+                if any(c.isalpha() for c in cleaned) and len(cleaned) > 2:
+                    meaningful_parts.append(cleaned)
             
-            return extracted[:1000] if extracted else "[Contenu non lisible]"
-            
+            # Join meaningful parts
+            if meaningful_parts:
+                # Look for the longest meaningful strings (likely actual content)
+                content_parts = [part for part in meaningful_parts if len(part) > 4]
+                if not content_parts:
+                    content_parts = meaningful_parts
+                    
+                extracted = " ".join(content_parts)
+                return extracted[:500] if extracted else "[Contenu non lisible]"
+            else:
+                return "[Contenu non lisible]"
+                
         except Exception as e:
             logger.error(f"Failed to extract text from Yjs: {e}")
             return "[Erreur de décodage du contenu]"

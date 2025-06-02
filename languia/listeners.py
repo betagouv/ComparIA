@@ -95,13 +95,13 @@ def get_docs_content_for_user_prompt(request):
                     # Extract readable text from Yjs content
                     extracted_text = docs_client.extract_text_from_yjs(doc['content'])
                     if extracted_text and extracted_text != "[Contenu non lisible]" and extracted_text != "[Erreur de décodage du contenu]":
-                        docs_content_parts.append(f"Document '{doc.get('title', 'Sans titre')}': {extracted_text}")
+                        docs_content_parts.append(f"**{doc.get('title', 'Sans titre')}**\n{extracted_text}")
             except Exception as e:
                 logger.error(f"Failed to get content for document {doc_id}: {e}")
                 continue
         
         if docs_content_parts:
-            return "Documents de référence:\n" + "\n\n".join(docs_content_parts)
+            return "Documents de référence :\n\n" + "\n\n---\n\n".join(docs_content_parts)
         
     except Exception as e:
         logger.error(f"Failed to get docs content for user prompt: {e}")
