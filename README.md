@@ -55,6 +55,11 @@ gradio cc build --no-generate-docs custom_components/customchatbot
 then `export LANGUIA_DEBUG=True; uvicorn main:app --reload --timeout-graceful-shutdown 1` or simply `uvicorn main:app`
 For arena only, you can also launch: `gradio demo.py`
 
+#### To dev for a custom component
+
+You can launch this to work on the first custom component (first screen):
+`gradio cc dev --component-directory custom_components/customdropdown demo.py`
+
 ### With Docker
 
 `cd docker/; docker compose up -d`
@@ -78,6 +83,8 @@ We currently use 4 distinct (and sometimes poorly named) Custom Components:
 - `CustomDropdown`: encompasses most of the first screen, with mode selection, models selection, and initial textarea
 - `CustomRadioCard`: used in the first screen for suggestions and later for voting
 - `CustomChatbot`: a component crafted for the specific compar:IA experience, allowing you to compare two chatbots' response to one user message, and receive user's feedback
+
+
 
 ### Mounted `gradio.Blocks` within a FastAPI app
 
