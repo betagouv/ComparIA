@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+    {% include "header-main.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+            <h1>Connecter Docs</h1>
+            
+            <div class="fr-callout">
+                <h3 class="fr-callout__title">Comment obtenir votre token API ?</h3>
+                <p class="fr-callout__text">
+                    1. Connectez-vous à <a href="https://docs-ia.beta.numerique.gouv.fr/" target="_blank">Docs</a><br>
+                    2. Cliquez sur votre avatar en haut à droite<br>
+                    3. Sélectionnez "API Tokens"<br>
+                    4. Générez un nouveau token<br>
+                    5. Copiez le token et collez-le ci-dessous
+                </p>
+            </div>
+
+            <form method="get" action="/docs/connect" class="fr-mt-4w">
+                <div class="fr-input-group">
+                    <label class="fr-label" for="token">
+                        Token API Docs
+                        <span class="fr-hint-text">Le token commence généralement par plusieurs caractères alphanumériques</span>
+                    </label>
+                    <input class="fr-input" type="password" id="token" name="token" required>
+                </div>
+                
+                <div class="fr-mt-3w">
+                    <button class="fr-btn" type="submit">
+                        Se connecter
+                    </button>
+                    <a href="/arene" class="fr-btn fr-btn--secondary">
+                        Annuler
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

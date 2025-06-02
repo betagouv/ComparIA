@@ -11,10 +11,22 @@ from languia.block_arena import demo
 
 import logging
 import gradio as gr
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from languia import config
 
 from languia.reveal import size_desc, license_desc, license_attrs
+
+# Import Docs authentication module if available
+try:
+    from languia.docs_auth import DocsAPIClient
+    docs_auth_available = True
+except ImportError:
+    docs_auth_available = False
 
 app = FastAPI()
 
@@ -289,6 +301,110 @@ async def bnf(request: Request):
             "config": config,
         },
     )
+
+
+# Docs integration endpoints (if docs_auth module is available)
+if docs_auth_available:
+    from fastapi.responses import RedirectResponse
+    
+    @app.get("/docs/connect")
+    async def docs_connect(request: Request, token: str = None):
+        """Connect to Docs with API token"""
+        if not token:
+            # Show the connection form
+            return templates.TemplateResponse(
+                "docs_connect.html",
+                {
+                    "title": "Connecter Docs",
+                    "request": request,
+                    "config": config,
+                },
+            )
+        
+        # Just store the token and redirect
+        # Validation will happen on the documents page
+        response = RedirectResponse(url="/docs/documents")
+        response.set_cookie(
+            key="docs_token",
+            value=token,
+            max_age=3600,  # 1 hour
+            httponly=True,
+            secure=True,
+            samesite="lax"
+        )
+        return response
+    
+    @app.get("/docs/documents", response_class=HTMLResponse)
+    async def docs_documents(request: Request):
+        """Docs documents page"""
+        import os
+        
+        # Get token from cookie or environment
+        docs_token = None
+        if hasattr(request, 'cookies') and 'docs_token' in request.cookies:
+            docs_token = request.cookies['docs_token']
+        elif os.getenv("DOCS_API_TOKEN"):
+            docs_token = os.getenv("DOCS_API_TOKEN")
+        
+        if not docs_token:
+            return templates.TemplateResponse(
+                "docs_connect.html",
+                {
+                    "title": "Connecter Docs",
+                    "request": request,
+                    "config": config,
+                },
+            )
+        
+        # Get Docs API client
+        docs_client = DocsAPIClient(api_token=docs_token)
+        
+        try:
+            # Fetch documents from Docs
+            documents = await docs_client.list_documents()
+        except Exception as e:
+            documents = []
+            error = str(e)
+        else:
+            error = None
+        
+        return templates.TemplateResponse(
+            "docs_documents.html",
+            {
+                "title": "Documents Docs",
+                "request": request,
+                "config": config,
+                "documents": documents,
+                "error": error,
+            },
+        )
+    
+    @app.get("/docs/logout")
+    async def docs_logout(request: Request):
+        """Logout from Docs"""
+        response = RedirectResponse(url="/")
+        response.delete_cookie("docs_token")
+        return response
+    
+    @app.get("/docs/api/documents")
+    async def api_list_docs(request: Request):
+        """API endpoint to list Docs documents"""
+        import os
+        from fastapi import HTTPException
+        
+        # Get token from cookie or environment
+        docs_token = None
+        if hasattr(request, 'cookies') and 'docs_token' in request.cookies:
+            docs_token = request.cookies['docs_token']
+        elif os.getenv("DOCS_API_TOKEN"):
+            docs_token = os.getenv("DOCS_API_TOKEN")
+            
+        if not docs_token:
+            raise HTTPException(status_code=401, detail="Not authenticated")
+        
+        docs_client = DocsAPIClient(api_token=docs_token)
+        documents = await docs_client.list_documents()
+        return {"documents": documents}
 
 
 @app.exception_handler(500)

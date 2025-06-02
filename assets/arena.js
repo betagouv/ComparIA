@@ -88,6 +88,72 @@ function() {
 
   // Disable landscape mode because it's unusable in chatbot view for now
   screen.orientation.lock("portrait");
+
+  // Check for Docs documents in session storage
+  function checkDocsDocuments() {
+    const docsDocuments = sessionStorage.getItem('docs_documents');
+    const docsStatus = document.getElementById('docs-status');
+    const docsDocumentsInfo = document.getElementById('docs-documents-info');
+    
+    if (docsDocuments && docsStatus && docsDocumentsInfo) {
+      try {
+        const documents = JSON.parse(docsDocuments);
+        if (documents.length > 0) {
+          // Store document IDs in cookie for backend access
+          const documentIds = documents.map(d => d.id);
+          document.cookie = `selected_docs=${JSON.stringify(documentIds)}; SameSite=Strict; Path=/; Max-Age=3600`;
+          
+          // Hide the connect button
+          docsStatus.style.display = 'none';
+          
+          // Show selected documents info
+          const docTitles = documents.map(d => d.title).join(', ');
+          docsDocumentsInfo.innerHTML = `
+            <div class="fr-callout fr-callout--green-emeraude">
+              <h3 class="fr-callout__title">Documents Docs sélectionnés</h3>
+              <p class="fr-callout__text">
+                ${documents.length} document(s): ${docTitles.length > 100 ? docTitles.substring(0, 100) + '...' : docTitles}
+              </p>
+              <a href="/docs/documents" class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm">
+                Modifier la sélection
+              </a>
+              <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" onclick="clearDocsSelection();">
+                Effacer la sélection
+              </button>
+            </div>
+          `;
+          docsDocumentsInfo.style.display = 'block';
+        } else {
+          // Clear cookie and show the original button if no documents selected
+          document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
+          docsStatus.style.display = 'block';
+          docsDocumentsInfo.style.display = 'none';
+        }
+      } catch (e) {
+        console.error('Error parsing docs documents:', e);
+      }
+    }
+  }
+  
+  // Function to clear docs selection
+  function clearDocsSelection() {
+    sessionStorage.removeItem('docs_documents');
+    document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
+    location.reload();
+  }
+  
+  // Make clearDocsSelection globally available
+  window.clearDocsSelection = clearDocsSelection;
+
+  // Check on page load
+  checkDocsDocuments();
+  
+  // Also check when the mode screen becomes visible
+  const observer = new MutationObserver(checkDocsDocuments);
+  const modeScreen = document.getElementById('mode-screen');
+  if (modeScreen) {
+    observer.observe(modeScreen, { attributes: true, attributeFilter: ['style'] });
+  }
 }
 
 

@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+    {% include "header-main.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
+            <!-- Status info -->
+            <div class="fr-callout">
+                <h3 class="fr-callout__title">Connecté à Docs</h3>
+                <p class="fr-callout__text">
+                    Vos documents sont accessibles. Sélectionnez ceux que vous souhaitez référencer dans vos conversations.
+                </p>
+            </div>
+
+            <!-- Error message if any -->
+            {% if error %}
+            <div class="fr-alert fr-alert--error fr-mt-4w">
+                <p>{{ error }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Documents section -->
+            <div class="fr-mt-6w">
+                <h2>Documents disponibles</h2>
+                <p>Sélectionnez des documents pour les référencer dans les conversations avec les modèles d'IA.</p>
+                
+                <!-- Document selection for arena -->
+                <div class="fr-mt-4w">
+                    <form id="document-selection-form" action="/arene" method="get">
+                        <fieldset class="fr-fieldset">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Choisir des documents pour l'arène
+                            </legend>
+                            <div class="fr-fieldset__content">
+                                {% if documents %}
+                                    {% for doc in documents %}
+                                    <div class="fr-checkbox-group">
+                                        <input type="checkbox" id="doc-{{ loop.index }}" name="document_ids" value="{{ doc.id }}">
+                                        <label class="fr-label" for="doc-{{ loop.index }}">
+                                            {{ doc.title or doc.name or "Document sans titre" }}
+                                            <span class="fr-hint-text">
+                                                {% if doc.created_at %}Créé le {{ doc.created_at }}{% endif %}
+                                                {% if doc.updated_at %} - Modifié le {{ doc.updated_at }}{% endif %}
+                                            </span>
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                {% else %}
+                                    <p class="fr-text--sm">Aucun document trouvé dans votre Docs.</p>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        
+                        {% if documents %}
+                        <div class="fr-mt-4w">
+                            <button class="fr-btn" type="submit">
+                                Utiliser ces documents dans l'arène
+                            </button>
+                        </div>
+                        {% endif %}
+                    </form>
+                </div>
+
+                <!-- Documents list -->
+                <div class="fr-mt-6w">
+                    <h3>Liste complète des documents</h3>
+                    <div class="fr-table">
+                        <table>
+                            <caption>Documents dans votre Docs</caption>
+                            <thead>
+                                <tr>
+                                    <th scope="col">Titre</th>
+                                    <th scope="col">Date de création</th>
+                                    <th scope="col">Dernière modification</th>
+                                    <th scope="col">ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if documents %}
+                                    {% for doc in documents %}
+                                    <tr>
+                                        <td>{{ doc.title or doc.name or "Sans titre" }}</td>
+                                        <td>{{ doc.created_at or '-' }}</td>
+                                        <td>{{ doc.updated_at or '-' }}</td>
+                                        <td><small>{{ doc.id[:8] }}...</small></td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="fr-text--sm">Aucun document trouvé</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Note about content -->
+                <div class="fr-alert fr-alert--info fr-mt-4w">
+                    <p class="fr-alert__title">Note sur le contenu des documents</p>
+                    <p>Les documents Docs sont référencés par leur titre. Le contenu complet n'est pas directement accessible via l'API car il est stocké dans un format spécial (Yjs) nécessitant un traitement particulier.</p>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="fr-mt-8w">
+                <a href="/docs/logout" class="fr-btn fr-btn--secondary">
+                    Se déconnecter de Docs
+                </a>
+                <a href="/arene" class="fr-btn fr-btn--tertiary-no-outline fr-ml-2w">
+                    Retour à l'arène
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Handle document selection for arena
+document.getElementById('document-selection-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const selectedDocs = [];
+    const checkboxes = document.querySelectorAll('input[name="document_ids"]:checked');
+    
+    checkboxes.forEach(cb => {
+        const label = document.querySelector(`label[for="${cb.id}"]`);
+        const title = label ? label.textContent.trim().split('\n')[0] : 'Document';
+        selectedDocs.push({
+            id: cb.value,
+            title: title
+        });
+    });
+    
+    if (selectedDocs.length === 0) {
+        alert('Veuillez sélectionner au moins un document.');
+        return;
+    }
+    
+    // Store selected documents in session storage
+    sessionStorage.setItem('docs_documents', JSON.stringify(selectedDocs));
+    
+    // Redirect to arena
+    window.location.href = '/arene';
+});
+</script>
+{% endblock %}

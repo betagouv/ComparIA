@@ -67,6 +67,28 @@ with gr.Blocks(
             interactive=True,
         )
 
+        # Docs integration section (only in debug mode)
+        if config.debug:
+            with gr.Group(elem_classes="fr-mt-3w"):
+                docs_status = gr.HTML(
+                    value="""<div class="fr-callout fr-callout--brown-caramel">
+                        <h3 class="fr-callout__title">Documents Docs (Beta)</h3>
+                        <p class="fr-callout__text">Connectez vos documents Docs pour référencer vos notes dans la conversation.</p>
+                        <a href="/docs/documents" class="fr-btn fr-btn--secondary fr-btn--sm">
+                            <span class="fr-icon-file-text-line fr-mr-1w"></span>
+                            Gérer mes documents Docs
+                        </a>
+                    </div>""",
+                    elem_id="docs-status",
+                    visible=True
+                )
+                
+                docs_documents_info = gr.HTML(
+                    value="",
+                    elem_id="docs-documents-info",
+                    visible=False
+                )
+
         prompts_suggestions = gr.HTML(
             elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-0 fr-pb-0 fr-px-0",
             value="""<strong>Suggestions de prompts</strong>""",

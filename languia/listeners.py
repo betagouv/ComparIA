@@ -1,37 +1,4 @@
-from languia.block_arena import (
-    app_state,
-    buttons_footer,
-    chat_area,
-    CustomDropdown,
-    CustomChatbot,
-    chatbot,
-    comments_a,
-    comments_b,
-    comments_link,
-    conclude_btn,
-    conv_a,
-    conv_b,
-    demo,
-    guided_cards,
-    header,
-    mode_screen,
-    negative_a,
-    negative_b,
-    positive_a,
-    positive_b,
-    results_area,
-    reveal_screen,
-    send_area,
-    send_btn,
-    shuffle_link,
-    supervote_area,
-    supervote_send_btn,
-    # first_textbox,
-    textbox,
-    vote_area,
-    which_model_radio,
-    model_dropdown,
-)
+# Import will be done inside register_listeners to avoid circular import
 import traceback
 import os
 import sentry_sdk
@@ -77,9 +44,107 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
+def get_docs_content_for_user_prompt(request):
+    """Extract content from selected Docs documents to include in user prompt"""
+    try:
+        # Get selected document IDs from cookies/session
+        selected_docs = []
+        if hasattr(request, 'cookies'):
+            for cookie in request.cookies:
+                if cookie[0] == 'selected_docs':
+                    import json
+                    selected_docs = json.loads(cookie[1])
+                    break
+        
+        if not selected_docs:
+            return None
+            
+        # Import here to avoid circular imports
+        from languia.docs_auth import DocsAPIClient
+        import os
+        
+        docs_client = DocsAPIClient(api_token=os.getenv("DOCS_API_TOKEN"))
+        
+        if not docs_client.api_token:
+            return None
+            
+        docs_content_parts = []
+        for doc_id in selected_docs:
+            try:
+                # Get document details (handle async call from sync context)
+                import asyncio
+                try:
+                    # Try to get existing loop
+                    loop = asyncio.get_event_loop()
+                    if loop.is_running():
+                        # If loop is running, we need to use asyncio.run_coroutine_threadsafe or skip
+                        logger.warning("Event loop already running, skipping document content extraction")
+                        continue
+                    else:
+                        doc = loop.run_until_complete(docs_client.get_document(doc_id))
+                except RuntimeError:
+                    # No event loop, create one
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                    try:
+                        doc = loop.run_until_complete(docs_client.get_document(doc_id))
+                    finally:
+                        loop.close()
+                
+                if doc and doc.get('content'):
+                    # Extract readable text from Yjs content
+                    extracted_text = docs_client.extract_text_from_yjs(doc['content'])
+                    if extracted_text and extracted_text != "[Contenu non lisible]" and extracted_text != "[Erreur de décodage du contenu]":
+                        docs_content_parts.append(f"Document '{doc.get('title', 'Sans titre')}': {extracted_text}")
+            except Exception as e:
+                logger.error(f"Failed to get content for document {doc_id}: {e}")
+                continue
+        
+        if docs_content_parts:
+            return "Documents de référence:\n" + "\n\n".join(docs_content_parts)
+        
+    except Exception as e:
+        logger.error(f"Failed to get docs content for user prompt: {e}")
+    
+    return None
+
 
 # Register listeners
 def register_listeners():
+    # Import arena components here to avoid circular import
+    from languia.block_arena import (
+        app_state,
+        buttons_footer,
+        chat_area,
+        CustomDropdown,
+        CustomChatbot,
+        chatbot,
+        comments_a,
+        comments_b,
+        comments_link,
+        conclude_btn,
+        conv_a,
+        conv_b,
+        demo,
+        guided_cards,
+        header,
+        mode_screen,
+        negative_a,
+        negative_b,
+        positive_a,
+        positive_b,
+        results_area,
+        reveal_screen,
+        send_area,
+        send_btn,
+        shuffle_link,
+        supervote_area,
+        supervote_send_btn,
+        textbox,
+        vote_area,
+        which_model_radio,
+        model_dropdown,
+    )
 
     # Step 0
 
@@ -240,8 +305,15 @@ document.getElementById("fr-modal-welcome-close").blur();
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
 
         # Could be added in Converstation.__init__?
-        conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
-        conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
+        # Check for selected documents and append their content
+        docs_content = get_docs_content_for_user_prompt(request)
+        if docs_content:
+            text_with_docs = f"{text}\n\n---\n\n{docs_content}"
+        else:
+            text_with_docs = text
+            
+        conv_a_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
+        conv_b_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
         logger.info(
             f"selection_modeles: {first_model_name}, {second_model_name}",
             extra={"request": request},
@@ -527,8 +599,16 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
+        
+        # Check for selected documents and append their content
+        docs_content = get_docs_content_for_user_prompt(request)
+        if docs_content:
+            text_with_docs = f"{text}\n\n---\n\n{docs_content}"
+        else:
+            text_with_docs = text
+        
         for i in range(config.num_sides):
-            conversations[i].messages.append(ChatMessage(role="user", content=text))
+            conversations[i].messages.append(ChatMessage(role="user", content=text_with_docs))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
         app_state_scoped.awaiting_responses = True
