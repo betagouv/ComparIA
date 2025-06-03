@@ -6,6 +6,33 @@
     {% include "header-main.html" %}
 {% endblock %}
 
+{% block head %}
+<style>
+    /* Style for checkboxes when checked */
+    input[type="checkbox"]:checked {
+        background-color: #6a6af4;
+        border-color: #6a6af4;
+    }
+    
+    /* Style for checkbox labels when checked */
+    input[type="checkbox"]:checked + label {
+        color: #6a6af4;
+    }
+    
+    /* Style for buttons */
+    .fr-btn {
+        background-color: #6a6af4;
+        color: white;
+        border-color: #6a6af4;
+    }
+    
+    .fr-btn:hover {
+        background-color: #5858d6;
+        border-color: #5858d6;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="fr-container fr-container--fluid fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
