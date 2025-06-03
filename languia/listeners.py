@@ -111,24 +111,22 @@ def get_docs_content_for_user_prompt(request):
                 
                 doc = asyncio.run(fetch_document())
                 
-                if doc and doc.get('content'):
-                    extracted_text = docs_client.extract_text_from_yjs(doc['content'])
-                    if extracted_text and extracted_text not in ["[Contenu non lisible]", "[Erreur de décodage du contenu]", ""]:
-                        title = doc.get('title', 'Sans titre')
-                        # Format document with better visual hierarchy
-                        formatted_doc = f"📄 **{title}**\n\n{extracted_text}"
-                        docs_content_parts.append(formatted_doc)
+                if doc:
+                    title = doc.get('title', 'Sans titre')
+                    # Only show document title/reference, not content
+                    formatted_doc = f"📄 {title}"
+                    docs_content_parts.append(formatted_doc)
                         
             except Exception as e:
                 logger.error(f"Failed to process document {doc_id}: {e}")
                 continue
         
         if docs_content_parts:
-            # Create a well-formatted header with document count
+            # Create a compact list of document references
             doc_count = len(docs_content_parts)
-            header = f"📚 **Documents de référence** ({doc_count} document{'s' if doc_count > 1 else ''})\n"
-            separator = "\n\n" + "─" * 40 + "\n\n"
-            return header + separator.join(docs_content_parts)
+            header = f"📚 **Documents de référence** ({doc_count} document{'s' if doc_count > 1 else ''}):\n"
+            # Join documents with simple line breaks for a compact list
+            return header + "\n".join(docs_content_parts)
         
     except Exception as e:
         logger.error(f"Failed to get docs content: {e}")
@@ -334,7 +332,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Include Docs content if user has selected documents
         docs_content = get_docs_content_for_user_prompt(request)
         if docs_content:
-            text_with_docs = f"{text}\n\n{'═' * 50}\n\n{docs_content}"
+            text_with_docs = f"{text}\n\n{docs_content}"
         else:
             text_with_docs = text
             
@@ -630,7 +628,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Check for selected documents and append their content
         docs_content = get_docs_content_for_user_prompt(request)
         if docs_content:
-            text_with_docs = f"{text}\n\n{'═' * 50}\n\n{docs_content}"
+            text_with_docs = f"{text}\n\n{docs_content}"
         else:
             text_with_docs = text
         
