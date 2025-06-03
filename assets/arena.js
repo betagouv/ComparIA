@@ -94,20 +94,16 @@ function() {
     const docsDocuments = sessionStorage.getItem('docs_documents');
     const docsDocumentsInfo = document.getElementById('docs-documents-info');
     
-    console.log('checkDocsDocuments called', {docsDocuments, docsDocumentsInfoExists: !!docsDocumentsInfo});
-    
     if (docsDocumentsInfo) {
       if (docsDocuments) {
         try {
           const documents = JSON.parse(docsDocuments);
-          console.log('Found documents:', documents);
           if (documents.length > 0) {
             // Store document IDs in cookie for backend access
             const documentIds = documents.map(d => d.id);
             // URL encode the JSON to ensure it's properly transmitted
             const encodedIds = encodeURIComponent(JSON.stringify(documentIds));
             document.cookie = `selected_docs=${encodedIds}; SameSite=Strict; Path=/; Max-Age=3600`;
-            console.log('Set cookie with document IDs:', documentIds);
             
             // Show selected documents info as a clean list
             const documentList = documents.map(d => `
@@ -130,7 +126,6 @@ function() {
             `;
             docsDocumentsInfo.style.display = 'block';
             docsDocumentsInfo.style.visibility = 'visible';
-            console.log('Documents list should now be visible');
           } else {
             // Clear cookie if no documents selected
             document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
@@ -152,7 +147,6 @@ function() {
   function clearDocsSelection() {
     sessionStorage.removeItem('docs_documents');
     document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
-    console.log('Cleared docs selection');
     location.reload();
   }
   

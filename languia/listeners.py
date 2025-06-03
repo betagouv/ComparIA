@@ -321,18 +321,12 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Could be added in Converstation.__init__?
         # Check for selected documents and append their content
         docs_content = get_docs_content_for_user_prompt(request)
-        
-        # Create the display text with a visual indicator when docs are included
         if docs_content:
-            # Add the full content for the models
             text_with_docs = f"{text}\n\n---\n\n{docs_content}"
-            # For display, show a compact version with indicator
-            display_text = f"{text}\n\n📎 *Documents Docs inclus dans cette requête*"
         else:
             text_with_docs = text
-            display_text = text
             
-        # Add the full content for the models
+        # Add the full content for the models (display will be handled by to_threeway_chatbot)
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
         logger.info(

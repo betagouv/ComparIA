@@ -498,6 +498,31 @@ def refresh_unavailable_models(previous_unavailable_models, controller_url):
 
 
 def to_threeway_chatbot(conversations):
+    def create_display_content(content):
+        """Create a display-friendly version of content that may include docs references"""
+        if not isinstance(content, str):
+            return content
+            
+        # Check if this message contains docs content
+        if "Documents de référence :" in content:
+            # Split the content to separate user message from docs
+            parts = content.split("\n\n---\n\n", 1)
+            if len(parts) == 2:
+                user_message = parts[0]
+                docs_section = parts[1]
+                
+                # Extract document titles from the docs section
+                import re
+                # Find all document titles (text between ** and **)
+                doc_titles = re.findall(r'\*\*(.*?)\*\*', docs_section)
+                
+                if doc_titles:
+                    # Create a compact display showing just the document list
+                    doc_list = ", ".join(doc_titles)
+                    return f"{user_message}\n\n📎 *Documents inclus : {doc_list}*"
+            
+        return content
+    
     threeway_chatbot = []
     conv_a_messages = [
         message for message in conversations[0].messages if message.role != "system"
@@ -510,7 +535,16 @@ def to_threeway_chatbot(conversations):
             # Could even test if msg_a == msg_b
             if msg_b.role != "user":
                 raise IndexError
-            threeway_chatbot.append(msg_a)
+            
+            # Create a display version of the user message
+            display_msg = ChatMessage(
+                role=msg_a.role,
+                content=create_display_content(msg_a.content),
+                error=msg_a.error,
+                reasoning=msg_a.reasoning,
+                metadata=msg_a.metadata
+            )
+            threeway_chatbot.append(display_msg)
         else:
             if msg_a:
                 msg_a.metadata["bot"] = "a"
