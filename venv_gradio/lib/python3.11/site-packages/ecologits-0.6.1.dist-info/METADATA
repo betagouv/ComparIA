@@ -1,0 +1,113 @@
+Metadata-Version: 2.3
+Name: ecologits
+Version: 0.6.1
+Summary: EcoLogits tracks and estimates the energy consumption and environmental impacts of using generative AI models through APIs.
+License: MPL-2.0
+Author: GenAI Impact
+Maintainer: GenAI Impact
+Requires-Python: >=3.9,<4
+Classifier: License :: OSI Approved :: Mozilla Public License 2.0 (MPL 2.0)
+Classifier: Topic :: Internet
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Information Technology
+Classifier: Intended Audience :: Science/Research
+Classifier: Intended Audience :: System Administrators
+Classifier: Operating System :: MacOS
+Classifier: Operating System :: Microsoft :: Windows
+Classifier: Operating System :: OS Independent
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: POSIX :: Linux
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Programming Language :: Python :: 3.13
+Provides-Extra: anthropic
+Provides-Extra: cohere
+Provides-Extra: google-generativeai
+Provides-Extra: huggingface-hub
+Provides-Extra: litellm
+Provides-Extra: mistralai
+Provides-Extra: openai
+Requires-Dist: aiohttp (>=3.11.12,<4.0.0) ; extra == "huggingface-hub"
+Requires-Dist: anthropic (>=0.45.2,<0.46.0) ; extra == "anthropic"
+Requires-Dist: cohere (>=5.13.12,<6.0.0) ; extra == "cohere"
+Requires-Dist: google-generativeai (>=0.8.4,<0.9.0) ; extra == "google-generativeai"
+Requires-Dist: httpx (>=0.23.0,<1)
+Requires-Dist: huggingface-hub (>=0.28.1,<0.29.0) ; extra == "huggingface-hub"
+Requires-Dist: litellm (>=1.60.6,<2.0.0) ; extra == "litellm"
+Requires-Dist: minijinja (>=2.7.0,<3.0.0) ; extra == "huggingface-hub"
+Requires-Dist: mistralai (>=1.5.0,<2.0.0) ; extra == "mistralai"
+Requires-Dist: openai (>=1.61.1,<2.0.0) ; extra == "openai"
+Requires-Dist: packaging (>=24.2,<25.0)
+Requires-Dist: pydantic (>=1.9.0,<3)
+Requires-Dist: rapidfuzz (>=3.12.1,<4.0.0) ; extra == "litellm"
+Requires-Dist: requests (>=2.26.0)
+Requires-Dist: tiktoken (>=0.8.0,<0.9.0) ; extra == "huggingface-hub"
+Requires-Dist: tqdm (>4)
+Requires-Dist: wrapt (>=1.14.1,<2.0.0)
+Description-Content-Type: text/markdown
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/genai-impact/ecologits/main/docs/assets/logo_dark.png">
+    <img alt="EcoLogits" src="https://raw.githubusercontent.com/genai-impact/ecologits/main/docs/assets/logo_light.png">
+  </picture>
+</p>
+
+🌱 **EcoLogits** tracks the energy consumption and environmental impacts of using generative AI models through APIs.
+
+[![PyPI version](https://img.shields.io/pypi/v/ecologits?color=00bf63)](https://pypi.org/project/ecologits/)
+[![PyPI downloads](https://static.pepy.tech/badge/ecologits/month)](https://pepy.tech/projects/ecologits)
+[![Python version](https://img.shields.io/pypi/pyversions/ecologits)](https://pypi.org/project/ecologits/)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1VxrpJ5xuWZKQLsSN12kdqUqkppHRct3G?usp=sharing)
+
+EcoLogits was created and is actively maintained by the **[GenAI Impact](https://genai-impact.org/) non-profit**. 
+
+Read the full **documentation on [ecologits.ai](https://ecologits.ai/)**.
+
+
+## ⚙️ Installation
+
+```shell
+pip install ecologits
+```
+
+For integration with a specific provider, use `pip install ecologits[openai]`. We are currently supporting the following providers: `anthropic`, `cohere`, `google-generativeai`, `huggingface-hub`, `mistralai` and `openai`. See the full [list of providers](https://ecologits.ai/latest/tutorial/providers/).
+
+## 🚀 Usage
+
+```python
+from ecologits import EcoLogits
+from openai import OpenAI
+
+# Initialize EcoLogits
+EcoLogits.init()
+
+client = OpenAI(api_key="<OPENAI_API_KEY>")
+
+response = client.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=[
+        {"role": "user", "content": "Tell me a funny joke!"}
+    ]
+)
+
+# Get estimated environmental impacts of the inference
+print(f"Energy consumption: {response.impacts.energy.value} kWh")
+print(f"GHG emissions: {response.impacts.gwp.value} kgCO2eq")
+```
+
+See package documentation on [EcoLogits](https://ecologits.ai/)
+
+## 💪 Contributing
+
+To get started with setting up a development environment and making a contribution to EcoLogits, see [Contributing to EcoLogits](https://ecologits.ai/latest/contributing/).
+
+## ⚖️ License
+
+This project is licensed under the terms of the [Mozilla Public License Version 2.0 (MPL-2.0)](https://www.mozilla.org/en-US/MPL/2.0/).
+

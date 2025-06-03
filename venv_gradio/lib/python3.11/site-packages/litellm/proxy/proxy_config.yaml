@@ -1,0 +1,9 @@
+model_list:
+  - model_name: openai/gpt-4o
+    litellm_params:
+      model: openai/gpt-4o
+      api_key: os.environ/OPENAI_API_KEY
+
+
+litellm_settings:
+    json_logs: true
