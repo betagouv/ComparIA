@@ -55,41 +55,6 @@
 	on:click={handleSelection}
 	on:keydown={handleKeyDown}
 >
-	{#if internal_value === "model-a"}
-		<svg class="inline" width="26" height="26"
-			><circle cx="13" cy="13" r="12" fill="#a96AFE" stroke="none" /></svg
-		>
-	{:else if internal_value === "model-b"}
-		<svg class="inline" width="26" height="26"
-			><circle cx="13" cy="13" r="12" fill="#ff9575" stroke="none" /></svg
-		>
-	{:else if internal_value === "both-equal"}
-		<svg
-			width="26"
-			height="26"
-			viewBox="0 0 26 26"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-		>
-			<rect
-				x="0.5"
-				y="0.5"
-				width="25"
-				height="25"
-				rx="12.5"
-				fill="white"
-			/>
-			<rect
-				x="0.5"
-				y="0.5"
-				width="25"
-				height="25"
-				rx="12.5"
-				stroke="#E5E5E5"
-			/>
-			<path d="M20 9H6V11H20V9ZM20 15H6V17H20V15Z" fill="#1A1A1A" />
-		</svg>
-	{/if}
 	<input
 		{disabled}
 		type="radio"
@@ -99,19 +64,14 @@
 		bind:group={selected}
 		aria-hidden="true"
 	/>
-	<span>{display_value}</span>
+	{@html display_value}
 </label>
 
 <style>
 	label {
-		row-gap: 1rem;
-		padding: 1rem;
-		margin: 0.75rem;
+		padding: 1rem 1rem 1rem 1rem !important;
 		display: flex;
-		flex-direction: column;
-		text-align: center;
-		align-items: center;
-		justify-content: center;
+		align-items: left;
 		transition: var(--button-transition);
 		cursor: pointer;
 		box-shadow: var(--checkbox-label-shadow);
@@ -120,35 +80,19 @@
 		background-color: white;
 		color: var(--grey-200-850);
 		font-weight: var(--checkbox-label-text-weight);
-		line-height: var(--line-md);
-		font-weight: 500;
 		font-size: 1rem;
-		/* font-size: 0.875em; */
-		border-radius: 1.5rem;
+		line-height: var(--line-md);
 	}
 
-	@media (min-width: 48em) {
-		label {
-			padding-right: 1.5rem;
-			column-gap: 0.5rem;
-			flex-direction: row;
-		}
-	}
 	label.selected,
 	label:active {
-		/* color: #606367; */
-		/* border: 1px #DADCE0 solid; */
-
-		background: var(--blue-france-975-75);
-		color: var(--blue-france-main-525);
-		/* border: 1px var(--blue-france-main-525) solid; */
 		outline-offset: 0 !important;
 		outline: 2px solid var(--blue-france-main-525) !important;
 	}
-	/* 
+
 	label > * + * {
 		margin-left: var(--size-2);
-	} */
+	}
 
 	input[type="radio"] {
 		display: none; /* Hide the actual radio button */
@@ -157,5 +101,9 @@
 	input[disabled],
 	.disabled {
 		cursor: not-allowed;
+	}
+	
+	label img {
+		height: fit-content;
 	}
 </style>
