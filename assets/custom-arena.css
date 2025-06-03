@@ -1,4 +1,36 @@
+/* TODO: "what model do you prefer" buttons css */
 
+#vote-cards label.custom-card div {
+  height: 100%;
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
+}
+
+
+#vote-cards label.custom-card {
+  padding: 0 !important;
+  min-height: 100px;
+}
+
+#vote-cards label.custom-card span {
+  margin-left: 20px;
+  /* height: 100%;
+  border-left: 1px #CCC solid;
+  display: flex;
+  align-items: center; */
+}
+
+#vote-cards label.custom-card svg {
+  height: 100%;
+  border-right: 1px #CCC solid;
+  display: flex;
+  padding-top: 35px;
+  margin-left: 10px;
+  width: 37px;
+  align-items: center;
+}
 
 .sommet-description {
   color: #051F43;
