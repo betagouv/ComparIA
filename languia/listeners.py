@@ -83,18 +83,31 @@ def get_docs_content_for_user_prompt(request):
         if not selected_docs:
             return None
             
+        # Get authentication information
+        docs_token = os.getenv("DOCS_API_TOKEN")
+        use_cookies = not docs_token and hasattr(request, 'cookies')
+        
         # Initialize Docs API client
-        docs_client = DocsAPIClient(api_token=os.getenv("DOCS_API_TOKEN"))
-        if not docs_client.api_token:
-            logger.warning("No Docs API token available")
+        docs_client = DocsAPIClient(api_token=docs_token, use_cookies=use_cookies)
+        if not docs_client.api_token and not use_cookies:
+            logger.warning("No Docs API token available and no cookies for authentication")
             return None
             
+        # Prepare cookies for requests if using cookie-based auth
+        cookies = None
+        if use_cookies and hasattr(request, 'cookies'):
+            if hasattr(request.cookies, 'get'):
+                cookies = dict(request.cookies)
+            else:
+                # Handle cookies as list of tuples
+                cookies = {cookie[0]: cookie[1] for cookie in request.cookies}
+        
         # Fetch and process each document
         docs_content_parts = []
         for doc_id in selected_docs:
             try:
                 async def fetch_document():
-                    return await docs_client.get_document(doc_id)
+                    return await docs_client.get_document(doc_id, cookies=cookies)
                 
                 doc = asyncio.run(fetch_document())
                 

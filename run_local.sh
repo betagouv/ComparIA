@@ -8,6 +8,9 @@ echo "🚀 Starting compar:IA in local mode..."
 export LANGUIA_DEBUG=True
 export LOGDIR="./data"
 
+# Unset DOCS_API_TOKEN to test cookie-based authentication
+unset DOCS_API_TOKEN
+
 # Load .env file if it exists
 if [ -f .env ]; then
     echo "📄 Loading environment variables from .env..."

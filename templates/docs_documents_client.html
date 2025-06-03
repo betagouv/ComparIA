@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block header %}
+    {% include "header-main.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="fr-container fr-container--fluid fr-mb-md-14v">
+    <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
+            <!-- Loading indicator -->
+            <div id="loading-indicator" class="fr-mt-4w">
+                <div class="fr-spinner" aria-label="Chargement en cours">
+                    <span class="fr-sr-only">Chargement en cours</span>
+                </div>
+            </div>
+
+            <!-- Error message container -->
+            <div id="error-container" class="fr-alert fr-alert--error fr-mt-4w" style="display: none;">
+                <p id="error-message"></p>
+            </div>
+
+            <!-- Documents section (hidden initially) -->
+            <div id="documents-section" class="fr-mt-6w" style="display: none;">
+                <h2>Importer depuis Docs</h2>
+                <p>Sélectionnez le ou les documents que vous voulez utiliser dans votre conversation</p>
+                
+                <!-- Document selection for arena -->
+                <div class="fr-mt-4w">
+                    <form id="document-selection-form" action="/arene" method="get">
+                        <fieldset class="fr-fieldset">
+                            <legend class="fr-fieldset__legend fr-text--regular">
+                                Choisir des documents pour l'arène
+                            </legend>
+                            <div class="fr-fieldset__content" id="documents-list">
+                                <!-- Documents will be inserted here by JavaScript -->
+                            </div>
+                        </fieldset>
+                        
+                        <!-- Privacy notice -->
+                        <div class="fr-callout fr-mt-4w" id="privacy-notice-container" style="display: none;">
+                            <p class="fr-text--sm">Le contenu importé intègre par défaut le dataset public Comparia (licence Etalab 2.0). Évitez d'importer des données sensibles ou confidentielles</p>
+                            
+                            <!-- Privacy checkbox -->
+                            <div class="fr-checkbox-group fr-mt-2w">
+                                <input type="checkbox" id="no-public-dataset" name="no_public_dataset">
+                                <label class="fr-label fr-text--sm" for="no-public-dataset">
+                                    Ne pas intégrer mes fichiers dans le jeu de données public
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="fr-mt-4w" id="submit-button-container" style="display: none;">
+                            <button class="fr-btn" type="submit">
+                                Importer mes documents
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Docs API configuration
+const DOCS_API_BASE_URL = "{{ config.DOCS_API_BASE_URL | default('https://docs-ia.beta.numerique.gouv.fr/api/v1.0') }}";
+
+// Function to fetch documents from Docs API
+async function fetchDocuments() {
+    try {
+        console.log('Fetching documents from:', `${DOCS_API_BASE_URL}/documents/`);
+        
+        // Make request directly from browser (will include Docs cookies)
+        const response = await fetch(`${DOCS_API_BASE_URL}/documents/`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+            credentials: 'include' // Important: this includes cookies for the Docs domain
+        });
+
+        console.log('Response status:', response.status);
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                throw new Error('Non authentifié. Veuillez vous connecter à Docs dans ce navigateur.');
+            }
+            throw new Error(`Erreur HTTP: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Documents data:', data);
+        
+        // Handle paginated response
+        const documents = data.results || data;
+        return Array.isArray(documents) ? documents : [];
+        
+    } catch (error) {
+        console.error('Error fetching documents:', error);
+        throw error;
+    }
+}
+
+// Function to display documents
+function displayDocuments(documents) {
+    const listContainer = document.getElementById('documents-list');
+    const tableBody = document.getElementById('documents-table-body');
+    const submitButton = document.getElementById('submit-button-container');
+    
+    if (documents.length === 0) {
+        listContainer.innerHTML = '<p class="fr-text--sm">Aucun document trouvé dans votre Docs.</p>';
+        tableBody.innerHTML = '<tr><td colspan="4" class="fr-text--sm">Aucun document trouvé</td></tr>';
+        return;
+    }
+
+    // Show submit button and privacy callout
+    submitButton.style.display = 'block';
+    document.getElementById('privacy-notice-container').style.display = 'block';
+
+    // Populate checkbox list
+    listContainer.innerHTML = documents.map((doc, index) => {
+        const title = doc.title || doc.name || "Document sans titre";
+        const created = doc.created_at ? new Date(doc.created_at).toLocaleDateString('fr-FR') : '';
+        const updated = doc.updated_at ? new Date(doc.updated_at).toLocaleDateString('fr-FR') : '';
+        
+        return `
+            <div class="fr-checkbox-group">
+                <input type="checkbox" id="doc-${index}" name="document_ids" value="${doc.id}">
+                <label class="fr-label" for="doc-${index}">
+                    ${title}
+                    <span class="fr-hint-text">
+                        ${created ? `Créé le ${created}` : ''}
+                        ${updated ? ` - Modifié le ${updated}` : ''}
+                    </span>
+                </label>
+            </div>
+        `;
+    }).join('');
+
+    // Populate table
+    tableBody.innerHTML = documents.map(doc => {
+        const title = doc.title || doc.name || "Sans titre";
+        const created = doc.created_at ? new Date(doc.created_at).toLocaleDateString('fr-FR') : '-';
+        const updated = doc.updated_at ? new Date(doc.updated_at).toLocaleDateString('fr-FR') : '-';
+        const shortId = doc.id ? doc.id.substring(0, 8) + '...' : '-';
+        
+        return `
+            <tr>
+                <td>${title}</td>
+                <td>${created}</td>
+                <td>${updated}</td>
+                <td><small>${shortId}</small></td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// Function to show error
+function showError(message) {
+    document.getElementById('error-message').textContent = message;
+    document.getElementById('error-container').style.display = 'block';
+    document.getElementById('loading-indicator').style.display = 'none';
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        const documents = await fetchDocuments();
+        
+        // Hide loading, show documents
+        document.getElementById('loading-indicator').style.display = 'none';
+        document.getElementById('documents-section').style.display = 'block';
+        
+        displayDocuments(documents);
+        
+    } catch (error) {
+        showError(error.message);
+        document.getElementById('documents-section').style.display = 'block';
+    }
+});
+
+// Handle document selection for arena
+document.getElementById('document-selection-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const selectedDocs = [];
+    const checkboxes = document.querySelectorAll('input[name="document_ids"]:checked');
+    
+    checkboxes.forEach(cb => {
+        const label = document.querySelector(`label[for="${cb.id}"]`);
+        const title = label ? label.textContent.trim().split('\n')[0] : 'Document';
+        selectedDocs.push({
+            id: cb.value,
+            title: title
+        });
+    });
+    
+    if (selectedDocs.length === 0) {
+        alert('Veuillez sélectionner au moins un document.');
+        return;
+    }
+    
+    // Store selected documents in session storage
+    sessionStorage.setItem('docs_documents', JSON.stringify(selectedDocs));
+    
+    // Also store in a cookie for server-side access
+    document.cookie = `selected_docs=${encodeURIComponent(JSON.stringify(selectedDocs.map(d => d.id)))}; path=/; max-age=3600`;
+    
+    // Redirect to arena
+    window.location.href = '/arene';
+});
+</script>
+{% endblock %}

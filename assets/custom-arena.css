@@ -17,6 +17,11 @@
   font-weight: 500;
 }
 
+/* Specific width for Gradio container */
+.gradio-container.gradio-container-5-25-0 .contain .docs-btn {
+  width: 150px;
+}
+
 .custom-card:has(.degrade) {
   background: linear-gradient(45deg, #E8E9FE 0%, #F2F5FE 36%, #FFF 100%);
 }

@@ -65,40 +65,57 @@ class DocsAPIClient:
     with proper error handling and timeout management.
     """
     
-    def __init__(self, api_token: str = None):
+    def __init__(self, api_token: str = None, use_cookies: bool = False, proconnect_token: str = None):
         """
         Initialize the Docs API client.
         
         Args:
             api_token (str, optional): API token for authentication.
                                      Falls back to DOCS_API_TOKEN environment variable.
+            use_cookies (bool): Whether to use cookie-based authentication (ProConnect)
+                               instead of API token.
+            proconnect_token (str, optional): ProConnect access token for OAuth2 authentication
                                      
         Raises:
-            DocsAuthError: If no API token is provided.
+            DocsAuthError: If no API token is provided and use_cookies is False.
         """
         self.api_token = api_token or DOCS_API_TOKEN
+        self.use_cookies = use_cookies
+        self.proconnect_token = proconnect_token
         
-        if not self.api_token:
-            logger.error("❌ No Docs API token provided in initialization")
-            raise DocsAuthError("No API token provided")
+        if not self.api_token and not use_cookies and not proconnect_token:
+            logger.warning("⚠️ No Docs API token provided, will try cookie-based authentication")
+            self.use_cookies = True
         
-        # Log token info (masked for security)
-        token_preview = f"{self.api_token[:8]}..." if len(self.api_token) > 8 else "short_token"
-        logger.info(f"🔑 Docs API client initialized with token: {token_preview}")
+        if self.api_token and not use_cookies:
+            # Log token info (masked for security)
+            token_preview = f"{self.api_token[:8]}..." if len(self.api_token) > 8 else "short_token"
+            logger.info(f"🔑 Docs API client initialized with token: {token_preview}")
+        elif self.proconnect_token:
+            logger.info("🔐 Docs API client initialized with ProConnect OAuth2 token")
+        else:
+            logger.info("🍪 Docs API client initialized for cookie-based authentication (ProConnect)")
+            
         logger.info(f"🌐 Using Docs API base URL: {DOCS_API_BASE_URL}")
             
         self.headers = {
-            "Authorization": f"Token {self.api_token}",
             "Accept": "application/json",
             "Content-Type": "application/json"
         }
+        
+        if self.api_token and not use_cookies:
+            self.headers["Authorization"] = f"Token {self.api_token}"
+        elif self.proconnect_token:
+            # Try Bearer token for OAuth2
+            self.headers["Authorization"] = f"Bearer {self.proconnect_token}"
     
-    async def list_documents(self, limit: int = 100) -> List[Dict]:
+    async def list_documents(self, limit: int = 100, cookies: dict = None) -> List[Dict]:
         """
         Retrieve a list of documents from the Docs API.
         
         Args:
             limit (int): Maximum number of documents to retrieve (default: 100)
+            cookies (dict, optional): Cookies for ProConnect authentication
             
         Returns:
             List[Dict]: List of document objects with metadata
@@ -107,10 +124,22 @@ class DocsAPIClient:
             DocsAuthError: If API request fails or times out
         """
         try:
-            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+            client_config = {"timeout": httpx.Timeout(30.0)}
+            if self.use_cookies and cookies:
+                client_config["cookies"] = cookies
+                
+            async with httpx.AsyncClient(**client_config) as client:
                 url = f"{DOCS_API_BASE_URL}/documents/"
                 
                 logger.info(f"Fetching documents from: {url}")
+                if self.use_cookies:
+                    logger.info("Using cookie-based authentication (ProConnect)")
+                    if cookies:
+                        # Log cookie names (not values for security)
+                        cookie_names = list(cookies.keys())
+                        logger.info(f"Sending cookies: {cookie_names}")
+                    else:
+                        logger.warning("No cookies available for authentication")
                 
                 response = await client.get(
                     url,
@@ -118,11 +147,29 @@ class DocsAPIClient:
                     params={"limit": limit}
                 )
                 
-                if response.status_code != 200:
+                logger.info(f"API Response status: {response.status_code}")
+                
+                if response.status_code == 401:
+                    logger.error("Authentication failed - Docs API requires proper authentication")
                     logger.error(f"API Response: {response.status_code} - {response.text}")
+                    logger.error(f"Response headers: {dict(response.headers)}")
+                    raise DocsAuthError("Authentication failed - API token or valid session required")
+                elif response.status_code == 500:
+                    logger.error("Server error - this might indicate unsupported authentication method")
+                    logger.error(f"API Response: {response.status_code} - {response.text}")
+                    logger.error(f"Response headers: {dict(response.headers)}")
+                    if self.proconnect_token:
+                        logger.warning("ProConnect OAuth2 token not supported by Docs API")
+                    raise DocsAuthError(f"Server error: {response.status_code}")
+                elif response.status_code != 200:
+                    logger.error(f"API Response: {response.status_code} - {response.text}")
+                    # Log response headers for debugging
+                    logger.error(f"Response headers: {dict(response.headers)}")
                     raise DocsAuthError(f"Failed to list documents: {response.status_code}")
                 
                 data = response.json()
+                logger.info(f"Documents found: {len(data.get('results', data)) if isinstance(data, dict) and 'results' in data else len(data) if isinstance(data, list) else 'unknown'}")
+                
                 # Handle paginated response
                 if isinstance(data, dict) and "results" in data:
                     return data["results"]
@@ -137,12 +184,13 @@ class DocsAPIClient:
             logger.error(f"Unexpected error while fetching documents: {e}")
             raise DocsAuthError(f"Unexpected error: {e}")
     
-    async def get_document(self, document_id: str) -> Dict:
+    async def get_document(self, document_id: str, cookies: dict = None) -> Dict:
         """
         Retrieve detailed information for a specific document.
         
         Args:
             document_id (str): Unique identifier for the document
+            cookies (dict, optional): Cookies for ProConnect authentication
             
         Returns:
             Dict: Document object with content and metadata
@@ -151,7 +199,11 @@ class DocsAPIClient:
             DocsAuthError: If API request fails or document not found
         """
         try:
-            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+            client_config = {"timeout": httpx.Timeout(30.0)}
+            if self.use_cookies and cookies:
+                client_config["cookies"] = cookies
+                
+            async with httpx.AsyncClient(**client_config) as client:
                 url = f"{DOCS_API_BASE_URL}/documents/{document_id}/"
                 
                 response = await client.get(
@@ -174,9 +226,13 @@ class DocsAPIClient:
             logger.error(f"Unexpected error while fetching document {document_id}: {e}")
             raise DocsAuthError(f"Unexpected error: {e}")
     
-    async def create_document_for_owner(self, title: str, content: str) -> Dict:
+    async def create_document_for_owner(self, title: str, content: str, cookies: dict = None) -> Dict:
         """Create a new document with markdown content"""
-        async with httpx.AsyncClient() as client:
+        client_config = {}
+        if self.use_cookies and cookies:
+            client_config["cookies"] = cookies
+            
+        async with httpx.AsyncClient(**client_config) as client:
             url = f"{DOCS_API_BASE_URL}/documents/create-for-owner/"
             
             data = {
@@ -207,9 +263,13 @@ class DocsAPIClient:
         # The content might be in a specific field depending on the API
         return doc.get("content", "") or doc.get("raw_content", "") or doc.get("body", "")
     
-    async def search_documents(self, query: str) -> List[Dict]:
+    async def search_documents(self, query: str, cookies: dict = None) -> List[Dict]:
         """Search documents in Docs"""
-        async with httpx.AsyncClient() as client:
+        client_config = {}
+        if self.use_cookies and cookies:
+            client_config["cookies"] = cookies
+            
+        async with httpx.AsyncClient(**client_config) as client:
             url = f"{DOCS_API_BASE_URL}/documents/"
             
             response = await client.get(
@@ -495,9 +555,9 @@ class DocsAPIClient:
             logger.error(f"Failed to extract text from Yjs: {e}")
             return "[Erreur de décodage du contenu]"
 
-    async def get_document_with_content(self, document_id: str) -> Dict:
+    async def get_document_with_content(self, document_id: str, cookies: dict = None) -> Dict:
         """Get document with extracted text content"""
-        doc = await self.get_document(document_id)
+        doc = await self.get_document(document_id, cookies)
         raw_content = self.get_document_content_raw_sync(doc)
         
         if raw_content:

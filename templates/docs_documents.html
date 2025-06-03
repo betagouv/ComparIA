@@ -10,14 +10,6 @@
 <div class="fr-container fr-container--fluid fr-mb-md-14v">
     <div class="fr-grid-row fr-grid-row-gutters fr-grid-row--center">
         <div class="fr-col-12 fr-col-md-10 fr-col-lg-8">
-            <!-- Status info -->
-            <div class="fr-callout">
-                <h3 class="fr-callout__title">Connecté à Docs</h3>
-                <p class="fr-callout__text">
-                    Vos documents sont accessibles. Sélectionnez ceux que vous souhaitez référencer dans vos conversations.
-                </p>
-            </div>
-
             <!-- Error message if any -->
             {% if error %}
             <div class="fr-alert fr-alert--error fr-mt-4w">
@@ -27,7 +19,7 @@
 
             <!-- Documents section -->
             <div class="fr-mt-6w">
-                <h2>Documents disponibles</h2>
+                <h2>Importer depuis Docs</h2>
                 <p>Sélectionnez des documents pour les référencer dans les conversations avec les modèles d'IA.</p>
                 
                 <!-- Document selection for arena -->
@@ -58,6 +50,19 @@
                         </fieldset>
                         
                         {% if documents %}
+                        <!-- Privacy notice -->
+                        <div class="fr-callout fr-mt-4w">
+                            <p class="fr-text--sm">Le contenu importé intègre par défaut le dataset public Comparia (licence Etalab 2.0). Évitez d'importer des données sensibles ou confidentielles</p>
+                            
+                            <!-- Privacy checkbox -->
+                            <div class="fr-checkbox-group fr-mt-2w">
+                                <input type="checkbox" id="no-public-dataset" name="no_public_dataset">
+                                <label class="fr-label fr-text--sm" for="no-public-dataset">
+                                    Ne pas intégrer mes fichiers dans le jeu de données public
+                                </label>
+                            </div>
+                        </div>
+                        
                         <div class="fr-mt-4w">
                             <button class="fr-btn" type="submit">
                                 Utiliser ces documents dans l'arène
@@ -66,56 +71,6 @@
                         {% endif %}
                     </form>
                 </div>
-
-                <!-- Documents list -->
-                <div class="fr-mt-6w">
-                    <h3>Liste complète des documents</h3>
-                    <div class="fr-table">
-                        <table>
-                            <caption>Documents dans votre Docs</caption>
-                            <thead>
-                                <tr>
-                                    <th scope="col">Titre</th>
-                                    <th scope="col">Date de création</th>
-                                    <th scope="col">Dernière modification</th>
-                                    <th scope="col">ID</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% if documents %}
-                                    {% for doc in documents %}
-                                    <tr>
-                                        <td>{{ doc.title or doc.name or "Sans titre" }}</td>
-                                        <td>{{ doc.created_at or '-' }}</td>
-                                        <td>{{ doc.updated_at or '-' }}</td>
-                                        <td><small>{{ doc.id[:8] }}...</small></td>
-                                    </tr>
-                                    {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="4" class="fr-text--sm">Aucun document trouvé</td>
-                                    </tr>
-                                {% endif %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Note about content -->
-                <div class="fr-alert fr-alert--info fr-mt-4w">
-                    <p class="fr-alert__title">Note sur le contenu des documents</p>
-                    <p>Les documents Docs sont référencés par leur titre. Le contenu complet n'est pas directement accessible via l'API car il est stocké dans un format spécial (Yjs) nécessitant un traitement particulier.</p>
-                </div>
-            </div>
-
-            <!-- Actions -->
-            <div class="fr-mt-8w">
-                <a href="/docs/logout" class="fr-btn fr-btn--secondary">
-                    Se déconnecter de Docs
-                </a>
-                <a href="/arene" class="fr-btn fr-btn--tertiary-no-outline fr-ml-2w">
-                    Retour à l'arène
-                </a>
             </div>
         </div>
     </div>

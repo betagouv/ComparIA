@@ -144,6 +144,9 @@ async def callback(request: Request):
         user = await parse_jwt_userinfo(token)
         logger.info("/auth User info: %s", user)
         request.session['user'] = dict(user)
+        # Store the access token for potential use with other services
+        request.session['access_token'] = token.get('access_token')
+        request.session['token_type'] = token.get('token_type', 'Bearer')
         return RedirectResponse(url='/arene')
     except Exception as e:
         logger.error("Error in callback: %s", str(e))
@@ -406,7 +409,7 @@ if docs_auth_available:
     if os.getenv("DOCS_API_TOKEN"):
         logging.info("🔑 Docs API token is configured")
     else:
-        logging.warning("⚠️  Docs API token is NOT configured - Docs integration will not work")
+        logging.warning("⚠️  Docs API token is NOT configured - will try cookie-based authentication with ProConnect")
 else:
     logging.warning("❌ Docs integration module not available - check dependencies")
     
@@ -467,7 +470,25 @@ if docs_auth_available:
             docs_token = os.getenv("DOCS_API_TOKEN")
             logging.info("🔧 Using Docs token from environment variable")
         
-        if not docs_token:
+        # Check if ProConnect is available (could be used for cookie-based auth)
+        use_cookies = not docs_token and hasattr(request, 'cookies')
+        
+        # Check if user is authenticated via ProConnect
+        user_session = request.session.get('user') if hasattr(request, 'session') else None
+        proconnect_token = request.session.get('access_token') if hasattr(request, 'session') else None
+        
+        if use_cookies:
+            # Log available cookies for debugging (names only, not values)
+            available_cookies = list(request.cookies.keys()) if request.cookies else []
+            logging.info(f"Available cookies for authentication: {available_cookies}")
+            if user_session:
+                logging.info(f"ProConnect user authenticated: {user_session.get('email', 'unknown')}")
+                if proconnect_token:
+                    logging.info("ProConnect access token available")
+            else:
+                logging.warning("No ProConnect user session found")
+        
+        if not docs_token and not use_cookies:
             logging.warning("❌ No Docs token available - redirecting to connect page")
             return templates.TemplateResponse(
                 "docs_connect.html",
@@ -480,8 +501,13 @@ if docs_auth_available:
         
         # Get Docs API client
         try:
-            docs_client = DocsAPIClient(api_token=docs_token)
-            logging.info("✅ Docs API client initialized successfully")
+            # Try ProConnect token first if available
+            if proconnect_token and not docs_token:
+                docs_client = DocsAPIClient(proconnect_token=proconnect_token)
+                logging.info("✅ Docs API client initialized with ProConnect token")
+            else:
+                docs_client = DocsAPIClient(api_token=docs_token, use_cookies=use_cookies)
+                logging.info("✅ Docs API client initialized successfully")
         except Exception as e:
             logging.error(f"❌ Failed to initialize Docs API client: {e}")
             error = f"Configuration error: {e}"
@@ -490,7 +516,8 @@ if docs_auth_available:
             try:
                 logging.info("🔄 Fetching documents from Docs API...")
                 # Fetch documents from Docs
-                documents = await docs_client.list_documents()
+                cookies = dict(request.cookies) if use_cookies else None
+                documents = await docs_client.list_documents(cookies=cookies)
                 logging.info(f"✅ Successfully fetched {len(documents)} documents")
                 error = None
             except Exception as e:
@@ -498,16 +525,35 @@ if docs_auth_available:
                 documents = []
                 error = str(e)
         
-        return templates.TemplateResponse(
-            "docs_documents.html",
-            {
-                "title": "Documents Docs",
-                "request": request,
-                "config": config,
-                "documents": documents,
-                "error": error,
-            },
-        )
+        # If using cookie-based auth and no documents found, or if ProConnect token failed with 500 error
+        if (use_cookies and len(documents) == 0 and not error) or (proconnect_token and error and "500" in str(error)):
+            if proconnect_token and error and "500" in str(error):
+                logging.info("ProConnect token not supported by Docs API, falling back to client-side authentication")
+            else:
+                logging.info("Using client-side document fetching for better cookie handling")
+            # Create a config dict with the necessary values
+            config_dict = {
+                "DOCS_API_BASE_URL": os.getenv("DOCS_API_BASE_URL", "https://docs-ia.beta.numerique.gouv.fr/api/v1.0")
+            }
+            return templates.TemplateResponse(
+                "docs_documents_client.html",
+                {
+                    "title": "Documents Docs",
+                    "request": request,
+                    "config": config_dict,
+                },
+            )
+        else:
+            return templates.TemplateResponse(
+                "docs_documents.html",
+                {
+                    "title": "Documents Docs",
+                    "request": request,
+                    "config": config,
+                    "documents": documents,
+                    "error": error,
+                },
+            )
     
     @app.get("/docs/logout")
     async def docs_logout(request: Request):
@@ -528,12 +574,16 @@ if docs_auth_available:
             docs_token = request.cookies['docs_token']
         elif os.getenv("DOCS_API_TOKEN"):
             docs_token = os.getenv("DOCS_API_TOKEN")
+        
+        # Check if ProConnect is available (could be used for cookie-based auth)
+        use_cookies = not docs_token and hasattr(request, 'cookies')
             
-        if not docs_token:
+        if not docs_token and not use_cookies:
             raise HTTPException(status_code=401, detail="Not authenticated")
         
-        docs_client = DocsAPIClient(api_token=docs_token)
-        documents = await docs_client.list_documents()
+        docs_client = DocsAPIClient(api_token=docs_token, use_cookies=use_cookies)
+        cookies = dict(request.cookies) if use_cookies else None
+        documents = await docs_client.list_documents(cookies=cookies)
         return {"documents": documents}
 
 
