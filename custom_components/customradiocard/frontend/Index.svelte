@@ -43,7 +43,8 @@
 
 <div
 	id={elem_id}
-	class="flex justify-center {elem_classes} {visible ? '' : 'hide'}"
+	class="grid {elem_classes} {visible ? '' : 'hide'}"
+	style="--columns: {columns};--min-columns: {min_columns}"
 >
 	<StatusTracker
 		autoscroll={gradio.autoscroll}
@@ -66,98 +67,20 @@
 	{/each}
 </div>
 
-<!-- TODO: this in svelte based on what's in customchatbot  -->
-<!-- with gr.Column(
-	# h-screen
-	visible=True,
-	elem_classes="fr-container min-h-screen fr-pt-4w",
-	elem_id="vote-area",
-) as vote_area:
-	
-	with gr.Row(
-		visible=False,
-		elem_id="supervote-area",
-		# FIXME: bottom margin too imprecise
-		elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
-	) as supervote_area:
-
-		with gr.Column(
-			elem_classes="fr-col-12 fr-col-md-6 fr-mr-md-n1w fr-mb-1w bg-white rounded-tile"
-		):
-
-			gr.HTML(
-				value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <strong>Modèle A</strong></p>
-<p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
-			)
-
-			positive_a = gr.CheckboxGroup(
-				elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Utiles", "useful"),
-					("Complètes", "complete"),
-					("Créatives", "creative"),
-					("Mise en forme claire", "clear-formatting"),
-				],
-			)
-
-			negative_a = gr.CheckboxGroup(
-				elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Incorrectes", "incorrect"),
-					("Superficielles", "superficial"),
-					("Instructions non respectées", "instructions-not-followed"),
-				],
-			)
-
-			comments_a = FrInput(
-				show_label=False,
-				visible=False,
-				lines=3,
-				placeholder="Les réponses du modèle A sont...",
-			)
-
-		with gr.Column(
-			elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w fr-mb-1w bg-white rounded-tile"
-		):
-
-			gr.HTML(
-				value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> <strong>Modèle B</strong></p>
-<p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
-			)
-
-			positive_b = gr.CheckboxGroup(
-				elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Utiles", "useful"),
-					("Complètes", "complete"),
-					("Créatives", "creative"),
-					("Mise en forme claire", "clear-formatting"),
-				],
-			)
-
-			negative_b = gr.CheckboxGroup(
-				elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Incorrectes", "incorrect"),
-					("Superficielles", "superficial"),
-					("Instructions non respectées", "instructions-not-followed"),
-				],
-			)
-			comments_b = FrInput(
-				show_label=False,
-				visible=False,
-				lines=3,
-				placeholder="Les réponses du modèle B sont...",
-			)
-		comments_link = gr.Button(
-			elem_classes="link fr-mt-1w", value="Ajouter des détails"
-		) -->
-
 <style>
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(var(--min-columns), 1fr);
+		gap: 0.625rem; 
+		padding: 0.75rem; 
+		margin: 0.75rem; 
+	}
+	@media (min-width: 48em) {
+		.grid {
+			gap: 1.5rem; 
+			grid-template-columns: repeat(var(--columns), 1fr);
+		}
+	}
 	/* .wrap {
 		display: flex;
 		flex-wrap: wrap;
