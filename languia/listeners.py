@@ -212,56 +212,6 @@ document.getElementById("fr-modal-welcome-close").blur();
 
     # Step 1
 
-    # Step 1.1
-    @guided_cards.input(
-        inputs=[app_state, guided_cards, model_dropdown],
-        outputs=[app_state, model_dropdown, shuffle_link],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def set_guided_prompt(
-        app_state_scoped,
-        guided_cards,
-        model_dropdown_scoped,
-        event: gr.EventData,
-        request: gr.Request,
-    ):
-
-        # chosen_prompts_pool = guided_cards
-        category = guided_cards
-        prompt = gen_prompt(category)
-        app_state_scoped.category = category
-
-        logger.info(
-            f"categorie_{category}: {prompt}",
-            extra={"request": request},
-        )
-        new_value = prompt
-
-        model_dropdown_scoped["prompt_value"] = new_value
-
-        return {
-            app_state: app_state_scoped,
-            # first_send_btn: gr.update(interactive=True),
-            model_dropdown: model_dropdown_scoped,
-            shuffle_link: gr.update(visible=True),
-        }
-
-    @shuffle_link.click(
-        inputs=[guided_cards, model_dropdown],
-        outputs=[model_dropdown],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def shuffle_prompt(guided_cards, model_dropdown_scoped, request: gr.Request):
-        prompt = gen_prompt(guided_cards)
-        model_dropdown_scoped["prompt_value"] = prompt
-        logger.info(
-            f"shuffle: {prompt}",
-            extra={"request": request},
-        )
-        return model_dropdown_scoped
-
     @textbox.change(
         inputs=[app_state, textbox],
         outputs=[send_btn],
@@ -424,14 +374,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                     banner,
                     # textbox
                     new_textbox,
-                    # mode_screen
+                    # custom_dropdown
                     gr.update(visible=False),
                     # chat_area
                     gr.update(visible=True),
                     # send_btn
                     gr.update(interactive=False),
-                    # shuffle_link
-                    gr.update(visible=False),
                     # conclude_btn
                     gr.update(visible=True, interactive=False),
                     gr.update(visible=True),
@@ -551,14 +499,12 @@ document.getElementById("fr-modal-welcome-close").blur();
                 banner,
                 # textbox
                 gr.skip(),
-                # mode_screen
+                # model_dropdown
                 gr.update(visible=False),
                 # chat_area
                 gr.update(visible=True),
                 # send_btn
                 gr.update(interactive=False),
-                # shuffle_link
-                gr.update(visible=False),
                 # conclude_btn
                 gr.update(visible=True, interactive=False),
                 # send_area
@@ -783,10 +729,9 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [textbox]
         + [header]
         + [textbox]
-        + [mode_screen]
+        + [model_dropdown]
         + [chat_area]
         + [send_btn]
-        + [shuffle_link]
         + [conclude_btn]
         + [send_area],
         show_progress="hidden",

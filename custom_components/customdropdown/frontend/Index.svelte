@@ -6,32 +6,19 @@
 	import type { Gradio, KeyUpData, SelectData } from "@gradio/utils";
 	import Dropdown from "./shared/Dropdown.svelte";
 	import ModelsSelection from "./shared/ModelsSelection.svelte";
+	import GuidedPromptSuggestions from "./shared/GuidedPromptSuggestions.svelte"; // Importation du nouveau composant
 	import { Block } from "@gradio/atoms";
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import TextBox from "./shared/Textbox.svelte";
 	import ChevronBas from "./shared/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
 	import { tick } from "svelte";
-	import type { ModeAndPromptData, Model } from "./shared/utils.ts";
+	import type { ModeAndPromptData, Model, Mode, Choice } from "./shared/utils.ts";
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
 	import Brain from "./shared/brain.svelte";
 	import Dice from "./shared/dice.svelte";
-
-	type Mode =
-		| "random"
-		| "custom"
-		| "big-vs-small"
-		| "small-models"
-		| "reasoning";
-	type Choice = {
-		value: Mode;
-		label: string;
-		alt_label: string;
-		icon: any;
-		description: string;
-	};
 
 	export let never_clicked: boolean = true;
 	export let models: Model[] = [];
@@ -39,9 +26,7 @@
 	export let elem_classes: string[] = [];
 	export let visible = true;
 	export let disabled = false;
-	export let container = true;
-	export let scale: number | null = null;
-	export let min_width: number | undefined = undefined;
+
 	export let gradio: Gradio<{
 		change: ModeAndPromptData;
 		input: never;
@@ -62,6 +47,9 @@
 	export let autoscroll = true;
 	export let interactive: boolean;
 	export let value: ModeAndPromptData;
+
+	// Reference to the TextBox element
+	let textboxElement: TextBox; // Changed type to TextBox component instance
 
 	export const choices: Choice[] = [
 		{
@@ -305,7 +293,7 @@
 				) {
 					dispatchSelect();
 				}
-				choice = choices.find((item) => item.value === mode);
+				choice = choices[index];
 			}
 		}
 		show_custom_models_selection = mode === "custom";
@@ -359,8 +347,57 @@
 			}
 		}
 	}
+
+	function handlePromptSelected(event: CustomEvent<{ text: string; selectionStart?: number; selectionEnd?: number }>): void {
+		prompt_value = event.detail.text;
+		console.log(`[Index] handlePromptSelected: Received promptselected. Text: "${prompt_value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`);
+		// Déclencher un événement de changement pour que Gradio soit informé
+		gradio.dispatch("change", {
+			prompt_value: prompt_value,
+			mode: mode,
+			custom_models_selection: custom_models_selection,
+		});
+
+		if (textboxElement && event.detail.selectionStart !== undefined && event.detail.selectionEnd !== undefined) {
+			const sStart = event.detail.selectionStart;
+			const sEnd = event.detail.selectionEnd;
+
+			const performSelection = () => {
+				if (textboxElement && typeof textboxElement.selectText === 'function') {
+					console.log(`[Index] Performing selection. Start: ${sStart}, End: ${sEnd}`);
+					textboxElement.selectText(sStart, sEnd);
+				} else {
+					console.warn(`[Index] Textbox element or selectText method not available when trying to perform selection.`);
+				}
+			};
+
+			// Initial attempt: After Svelte tick and browser paint
+			tick().then(() => {
+				requestAnimationFrame(() => {
+					performSelection();
+				});
+			});
+
+			// // Second attempt: With a short delay
+			// setTimeout(() => {
+			// 	performSelection();
+			// }, 100); // 100ms delay
+
+			// // Third attempt: With a slightly longer delay
+			// setTimeout(() => {
+			// 	performSelection();
+			// }, 250); // 250ms delay
+
+		} else { // No valid selection range provided
+			console.log("[Index] handlePromptSelected: No specific selection range provided, or textboxElement not ready. No text will be selected.", event.detail);
+		}
+		// Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
+		// dispatchSubmit();
+		// disabled = true;
+	}
+
 	var alt_label: string = "Sélection des modèles";
-	$: if (
+	$: if ( // eslint-disable-next-line
 		(mode == "custom" && custom_models_selection.length < 1) ||
 		(mode == "random" && never_clicked)
 	) {
@@ -370,21 +407,19 @@
 	}
 </script>
 
-<Block
-	{visible}
-	{elem_id}
-	{elem_classes}
-	padding={container}
-	allow_overflow={false}
-	{scale}
-	{min_width}
+<div
+	class:hidden={!visible}
+	id={elem_id}
+	class={elem_classes.join(" ") + " fr-container"}
 >
+
 	<h3 class="text-center text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w">
 		Comment puis-je vous aider aujourd'hui ?
 	</h3>
 	<div class="grid">
 		<div class="first-textbox fr-mb-3v">
 			<TextBox
+				bind:this={textboxElement}
 				{disabled}
 				bind:value={prompt_value}
 				bind:value_is_output
@@ -478,7 +513,10 @@
 			value="Envoyer"
 		/>
 	</div>
-</Block>
+	<div class="fr-mb-3v">
+		<GuidedPromptSuggestions on:promptselected={handlePromptSelected} />
+	</div>
+</div>
 <dialog
 	aria-labelledby="modal-mode-selection"
 	id="modal-mode-selection"
@@ -651,6 +689,9 @@
 		font-size: 1.125em;
 	}
 
+	.column {
+		flex-direction: column;
+	}
 	.grid {
 		display: grid;
 		/* grid-template-columns: 1fr 1fr auto; */
