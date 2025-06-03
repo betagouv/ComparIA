@@ -115,14 +115,20 @@ def get_docs_content_for_user_prompt(request):
                     extracted_text = docs_client.extract_text_from_yjs(doc['content'])
                     if extracted_text and extracted_text not in ["[Contenu non lisible]", "[Erreur de décodage du contenu]", ""]:
                         title = doc.get('title', 'Sans titre')
-                        docs_content_parts.append(f"**{title}**\n{extracted_text}")
+                        # Format document with better visual hierarchy
+                        formatted_doc = f"📄 **{title}**\n\n{extracted_text}"
+                        docs_content_parts.append(formatted_doc)
                         
             except Exception as e:
                 logger.error(f"Failed to process document {doc_id}: {e}")
                 continue
         
         if docs_content_parts:
-            return "Documents de référence :\n\n" + "\n\n---\n\n".join(docs_content_parts)
+            # Create a well-formatted header with document count
+            doc_count = len(docs_content_parts)
+            header = f"📚 **Documents de référence** ({doc_count} document{'s' if doc_count > 1 else ''})\n"
+            separator = "\n\n" + "─" * 40 + "\n\n"
+            return header + separator.join(docs_content_parts)
         
     except Exception as e:
         logger.error(f"Failed to get docs content: {e}")
@@ -328,7 +334,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Include Docs content if user has selected documents
         docs_content = get_docs_content_for_user_prompt(request)
         if docs_content:
-            text_with_docs = f"{text}\n\n---\n\n{docs_content}"
+            text_with_docs = f"{text}\n\n{'═' * 50}\n\n{docs_content}"
         else:
             text_with_docs = text
             
@@ -624,7 +630,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Check for selected documents and append their content
         docs_content = get_docs_content_for_user_prompt(request)
         if docs_content:
-            text_with_docs = f"{text}\n\n---\n\n{docs_content}"
+            text_with_docs = f"{text}\n\n{'═' * 50}\n\n{docs_content}"
         else:
             text_with_docs = text
         
