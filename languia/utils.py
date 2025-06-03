@@ -537,10 +537,13 @@ def to_threeway_chatbot(conversations):
                 
                 # Extract document titles (text between ** markers)
                 import re
-                doc_titles = re.findall(r'\*\*(.*?)\*\*', docs_section)
+                # Look for titles at the beginning of lines after "Documents de référence :"
+                doc_titles = re.findall(r'^\*\*(.*?)\*\*', docs_section, re.MULTILINE)
                 
                 if doc_titles:
-                    doc_list = ", ".join(doc_titles)
+                    # Clean up titles and create display list
+                    cleaned_titles = [title.strip() for title in doc_titles if title.strip()]
+                    doc_list = ", ".join(cleaned_titles)
                     return f"{user_message}\n\n📎 *Documents inclus : {doc_list}*"
             
         return content
