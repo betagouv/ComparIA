@@ -50,12 +50,7 @@ def get_docs_content_for_user_prompt(request):
         # Get selected document IDs from cookies/session
         selected_docs = []
         
-        # Debug logging
-        logger.info(f"Request type: {type(request)}")
-        logger.info(f"Has cookies attribute: {hasattr(request, 'cookies')}")
-        
         if hasattr(request, 'cookies'):
-            logger.info(f"Cookies: {request.cookies}")
             # Try different ways to access cookies
             if hasattr(request.cookies, 'get'):
                 # If cookies is a dict-like object
@@ -66,18 +61,17 @@ def get_docs_content_for_user_prompt(request):
                     # URL decode the cookie value
                     decoded_cookie = unquote(selected_docs_cookie)
                     selected_docs = json.loads(decoded_cookie)
-                    logger.info(f"Found selected_docs via get(): {selected_docs}")
+                    logger.info(f"Found {len(selected_docs)} selected documents")
             else:
                 # If cookies is a list of tuples
                 for cookie in request.cookies:
-                    logger.info(f"Cookie: {cookie}")
                     if cookie[0] == 'selected_docs':
                         import json
                         from urllib.parse import unquote
                         # URL decode the cookie value
                         decoded_cookie = unquote(cookie[1])
                         selected_docs = json.loads(decoded_cookie)
-                        logger.info(f"Found selected_docs in cookie list: {selected_docs}")
+                        logger.info(f"Found {len(selected_docs)} selected documents")
                         break
         
         if not selected_docs:
@@ -98,34 +92,20 @@ def get_docs_content_for_user_prompt(request):
         for doc_id in selected_docs:
             logger.info(f"Processing document ID: {doc_id}")
             try:
-                # Get document details (handle async call from sync context)
+                # Simplified async handling - just use asyncio.run
                 import asyncio
-                import concurrent.futures
                 
                 async def fetch_document():
                     return await docs_client.get_document(doc_id)
                 
-                try:
-                    # Try to get existing loop
-                    loop = asyncio.get_event_loop()
-                    if loop.is_running():
-                        # If loop is running, use thread executor
-                        logger.info(f"Event loop running, using thread executor for document {doc_id}")
-                        with concurrent.futures.ThreadPoolExecutor() as executor:
-                            future = executor.submit(asyncio.run, fetch_document())
-                            doc = future.result(timeout=10)  # 10 second timeout
-                    else:
-                        doc = loop.run_until_complete(fetch_document())
-                except RuntimeError:
-                    # No event loop, create one
-                    logger.info(f"No event loop found, creating new one for document {doc_id}")
-                    doc = asyncio.run(fetch_document())
+                # Use asyncio.run for cleaner async handling
+                doc = asyncio.run(fetch_document())
                 
                 if doc and doc.get('content'):
                     # Extract readable text from Yjs content
                     extracted_text = docs_client.extract_text_from_yjs(doc['content'])
                     logger.info(f"Extracted text for {doc.get('title', 'Sans titre')}: {extracted_text[:50]}...")
-                    if extracted_text and extracted_text != "[Contenu non lisible]" and extracted_text != "[Erreur de décodage du contenu]":
+                    if extracted_text and extracted_text not in ["[Contenu non lisible]", "[Erreur de décodage du contenu]", ""]:
                         docs_content_parts.append(f"**{doc.get('title', 'Sans titre')}**\n{extracted_text}")
                         logger.info(f"Added document {doc.get('title', 'Sans titre')} to content parts")
                 else:
@@ -341,11 +321,18 @@ document.getElementById("fr-modal-welcome-close").blur();
         # Could be added in Converstation.__init__?
         # Check for selected documents and append their content
         docs_content = get_docs_content_for_user_prompt(request)
+        
+        # Create the display text with a visual indicator when docs are included
         if docs_content:
+            # Add the full content for the models
             text_with_docs = f"{text}\n\n---\n\n{docs_content}"
+            # For display, show a compact version with indicator
+            display_text = f"{text}\n\n📎 *Documents Docs inclus dans cette requête*"
         else:
             text_with_docs = text
+            display_text = text
             
+        # Add the full content for the models
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
         logger.info(

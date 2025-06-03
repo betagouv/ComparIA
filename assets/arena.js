@@ -92,51 +92,58 @@ function() {
   // Check for Docs documents in session storage
   function checkDocsDocuments() {
     const docsDocuments = sessionStorage.getItem('docs_documents');
-    const docsStatus = document.getElementById('docs-status');
     const docsDocumentsInfo = document.getElementById('docs-documents-info');
     
-    if (docsDocuments && docsStatus && docsDocumentsInfo) {
-      try {
-        const documents = JSON.parse(docsDocuments);
-        if (documents.length > 0) {
-          // Store document IDs in cookie for backend access
-          const documentIds = documents.map(d => d.id);
-          // URL encode the JSON to ensure it's properly transmitted
-          const encodedIds = encodeURIComponent(JSON.stringify(documentIds));
-          document.cookie = `selected_docs=${encodedIds}; SameSite=Strict; Path=/; Max-Age=3600`;
-          console.log('Set cookie with document IDs:', documentIds);
-          
-          // Hide the connect button
-          docsStatus.style.display = 'none';
-          
-          // Show selected documents info as a clean list
-          const documentList = documents.map(d => `
-            <div class="docs-document-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0.5rem; background: #f9f9f9;">
-              <span style="font-size: 0.9rem;">${d.title}</span>
-              <button class="docs-remove-btn" onclick="removeDocsDocument('${d.id}')" style="background: none; border: none; color: #666; cursor: pointer; font-size: 1.2rem; padding: 0.25rem;" title="Supprimer ce document">×</button>
-            </div>
-          `).join('');
-          
-          docsDocumentsInfo.innerHTML = `
-            <div style="margin-bottom: 1rem;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
-                <span style="font-weight: 500; color: #666; font-size: 0.9rem;">${documents.length} document(s) sélectionné(s)</span>
-                <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" onclick="clearDocsSelection();" style="font-size: 0.8rem;">
-                  Tout effacer
-                </button>
+    console.log('checkDocsDocuments called', {docsDocuments, docsDocumentsInfoExists: !!docsDocumentsInfo});
+    
+    if (docsDocumentsInfo) {
+      if (docsDocuments) {
+        try {
+          const documents = JSON.parse(docsDocuments);
+          console.log('Found documents:', documents);
+          if (documents.length > 0) {
+            // Store document IDs in cookie for backend access
+            const documentIds = documents.map(d => d.id);
+            // URL encode the JSON to ensure it's properly transmitted
+            const encodedIds = encodeURIComponent(JSON.stringify(documentIds));
+            document.cookie = `selected_docs=${encodedIds}; SameSite=Strict; Path=/; Max-Age=3600`;
+            console.log('Set cookie with document IDs:', documentIds);
+            
+            // Show selected documents info as a clean list
+            const documentList = documents.map(d => `
+              <div class="docs-document-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0.5rem; background: #f9f9f9;">
+                <span style="font-size: 0.9rem;">${d.title}</span>
+                <button class="docs-remove-btn" onclick="removeDocsDocument('${d.id}')" style="background: none; border: none; color: #666; cursor: pointer; font-size: 1.2rem; padding: 0.25rem;" title="Supprimer ce document">×</button>
               </div>
-              ${documentList}
-            </div>
-          `;
-          docsDocumentsInfo.style.display = 'block';
-        } else {
-          // Clear cookie and show the original button if no documents selected
-          document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
-          docsStatus.style.display = 'block';
-          docsDocumentsInfo.style.display = 'none';
+            `).join('');
+            
+            docsDocumentsInfo.innerHTML = `
+              <div style="margin-bottom: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                  <span style="font-weight: 500; color: #666; font-size: 0.9rem;">${documents.length} document(s) sélectionné(s)</span>
+                  <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" onclick="clearDocsSelection();" style="font-size: 0.8rem;">
+                    Tout effacer
+                  </button>
+                </div>
+                ${documentList}
+              </div>
+            `;
+            docsDocumentsInfo.style.display = 'block';
+            docsDocumentsInfo.style.visibility = 'visible';
+            console.log('Documents list should now be visible');
+          } else {
+            // Clear cookie if no documents selected
+            document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
+            docsDocumentsInfo.innerHTML = '';
+            docsDocumentsInfo.style.display = 'none';
+          }
+        } catch (e) {
+          console.error('Error parsing docs documents:', e);
         }
-      } catch (e) {
-        console.error('Error parsing docs documents:', e);
+      } else {
+        // No documents in session storage, hide the info
+        docsDocumentsInfo.innerHTML = '';
+        docsDocumentsInfo.style.display = 'none';
       }
     }
   }

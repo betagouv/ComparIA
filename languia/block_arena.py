@@ -67,12 +67,12 @@ with gr.Blocks(
             interactive=True,
         )
 
-        # Keep docs_documents_info for JavaScript integration (only in debug mode)
-        if config.debug:
+        # Docs integration section - only for showing selected documents
+        with gr.Group(elem_classes="fr-mt-3w"):
             docs_documents_info = gr.HTML(
                 value="",
                 elem_id="docs-documents-info",
-                visible=False
+                visible=True
             )
 
         prompts_suggestions = gr.HTML(

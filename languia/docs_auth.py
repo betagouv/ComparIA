@@ -75,41 +75,62 @@ class DocsAPIClient:
     
     async def list_documents(self, limit: int = 100) -> List[Dict]:
         """List documents from Docs"""
-        async with httpx.AsyncClient() as client:
-            url = f"{DOCS_API_BASE_URL}/documents/"
-            
-            logger.info(f"Fetching documents from: {url}")
-            
-            response = await client.get(
-                url,
-                headers=self.headers,
-                params={"limit": limit}
-            )
-            
-            if response.status_code != 200:
-                logger.error(f"API Response: {response.status_code} - {response.text}")
-                raise DocsAuthError(f"Failed to list documents: {response.status_code}")
-            
-            data = response.json()
-            # Handle paginated response
-            if isinstance(data, dict) and "results" in data:
-                return data["results"]
-            return data
+        try:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+                url = f"{DOCS_API_BASE_URL}/documents/"
+                
+                logger.info(f"Fetching documents from: {url}")
+                
+                response = await client.get(
+                    url,
+                    headers=self.headers,
+                    params={"limit": limit}
+                )
+                
+                if response.status_code != 200:
+                    logger.error(f"API Response: {response.status_code} - {response.text}")
+                    raise DocsAuthError(f"Failed to list documents: {response.status_code}")
+                
+                data = response.json()
+                # Handle paginated response
+                if isinstance(data, dict) and "results" in data:
+                    return data["results"]
+                return data
+        except httpx.TimeoutException:
+            logger.error("Timeout while fetching documents from Docs API")
+            raise DocsAuthError("Timeout while fetching documents")
+        except httpx.RequestError as e:
+            logger.error(f"Request error while fetching documents: {e}")
+            raise DocsAuthError(f"Network error: {e}")
+        except Exception as e:
+            logger.error(f"Unexpected error while fetching documents: {e}")
+            raise DocsAuthError(f"Unexpected error: {e}")
     
     async def get_document(self, document_id: str) -> Dict:
         """Get document details"""
-        async with httpx.AsyncClient() as client:
-            url = f"{DOCS_API_BASE_URL}/documents/{document_id}/"
-            
-            response = await client.get(
-                url,
-                headers=self.headers
-            )
-            
-            if response.status_code != 200:
-                raise DocsAuthError(f"Failed to get document: {response.status_code}")
-            
-            return response.json()
+        try:
+            async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
+                url = f"{DOCS_API_BASE_URL}/documents/{document_id}/"
+                
+                response = await client.get(
+                    url,
+                    headers=self.headers
+                )
+                
+                if response.status_code != 200:
+                    logger.error(f"Failed to get document {document_id}: {response.status_code} - {response.text}")
+                    raise DocsAuthError(f"Failed to get document: {response.status_code}")
+                
+                return response.json()
+        except httpx.TimeoutException:
+            logger.error(f"Timeout while fetching document {document_id}")
+            raise DocsAuthError("Timeout while fetching document")
+        except httpx.RequestError as e:
+            logger.error(f"Request error while fetching document {document_id}: {e}")
+            raise DocsAuthError(f"Network error: {e}")
+        except Exception as e:
+            logger.error(f"Unexpected error while fetching document {document_id}: {e}")
+            raise DocsAuthError(f"Unexpected error: {e}")
     
     async def create_document_for_owner(self, title: str, content: str) -> Dict:
         """Create a new document with markdown content"""
