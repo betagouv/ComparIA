@@ -1,3 +1,75 @@
+[echo-model]
+simple_name = "Echo Test Model"
+organisation = "ComparIA"
+icon_path = "comparia.svg"
+params = 1
+friendly_size = "XS"
+license = "MIT"
+description = "Modèle de test qui répète votre message - utile pour déboguer l'interface."
+
+[demo-model] 
+simple_name = "Demo Test Model"
+organisation = "ComparIA"
+icon_path = "comparia.svg"
+params = 1
+friendly_size = "XS"
+license = "MIT"
+description = "Modèle de démonstration qui génère des réponses pré-définies pour tester l'interface."
+
+[gpt-4o-mini]
+simple_name = "GPT-4o Mini"
+organisation = "OpenAI"
+icon_path = "openai.svg"
+params = 8
+friendly_size = "S"
+license = "Propriétaire (OpenAI)"
+description = "Version compacte et rapide de GPT-4o d'OpenAI, optimisée pour les tâches courantes avec un excellent rapport qualité/prix."
+
+[claude-3-haiku-20240307]
+simple_name = "Claude 3 Haiku"
+organisation = "Anthropic"
+icon_path = "anthropic.png"
+params = 9
+friendly_size = "S"
+license = "Propriétaire (Anthropic)"
+description = "Le modèle le plus rapide de la famille Claude 3, conçu pour des réponses instantanées et des tâches simples."
+
+[mistral-small-latest]
+simple_name = "Mistral Small"
+organisation = "Mistral AI"
+icon_path = "mistral.png"
+params = 7
+friendly_size = "S"
+license = "Propriétaire (Mistral AI)"
+description = "Modèle compact de Mistral AI, entreprise française, optimisé pour l'efficacité et les coûts réduits."
+
+[mistral-large-latest]
+simple_name = "Mistral Large"
+organisation = "Mistral AI"
+icon_path = "mistral.png"
+params = 123
+friendly_size = "XL"
+license = "Propriétaire (Mistral AI)"
+description = "Le modèle le plus puissant de Mistral AI, entreprise française, conçu pour les tâches complexes et le raisonnement avancé."
+
+[pixtral-large-latest]
+simple_name = "Pixtral Large"
+organisation = "Mistral AI"
+icon_path = "mistral.png"
+params = 123
+friendly_size = "XL"
+license = "Propriétaire (Mistral AI)"
+description = "Modèle multimodal de Mistral AI capable de traiter texte et images, excellent pour l'analyse visuelle."
+
+[codestral-latest]
+simple_name = "Codestral"
+organisation = "Mistral AI"
+icon_path = "mistral.png"
+params = 22
+friendly_size = "M"
+license = "Propriétaire (Mistral AI)"
+description = "Modèle spécialisé de Mistral AI pour la génération et l'analyse de code, optimisé pour la programmation."
+
 [Aya23-35B]
 simple_name = "Aya23-35B"
 organisation = "Cohere"

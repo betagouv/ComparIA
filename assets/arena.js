@@ -106,20 +106,23 @@ function() {
           // Hide the connect button
           docsStatus.style.display = 'none';
           
-          // Show selected documents info
-          const docTitles = documents.map(d => d.title).join(', ');
+          // Show selected documents info as a clean list
+          const documentList = documents.map(d => `
+            <div class="docs-document-item" style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 0.5rem; background: #f9f9f9;">
+              <span style="font-size: 0.9rem;">${d.title}</span>
+              <button class="docs-remove-btn" onclick="removeDocsDocument('${d.id}')" style="background: none; border: none; color: #666; cursor: pointer; font-size: 1.2rem; padding: 0.25rem;" title="Supprimer ce document">×</button>
+            </div>
+          `).join('');
+          
           docsDocumentsInfo.innerHTML = `
-            <div class="fr-callout fr-callout--green-emeraude">
-              <h3 class="fr-callout__title">Documents Docs sélectionnés</h3>
-              <p class="fr-callout__text">
-                ${documents.length} document(s): ${docTitles.length > 100 ? docTitles.substring(0, 100) + '...' : docTitles}
-              </p>
-              <a href="/docs/documents" class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm">
-                Modifier la sélection
-              </a>
-              <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" onclick="clearDocsSelection();">
-                Effacer la sélection
-              </button>
+            <div style="margin-bottom: 1rem;">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+                <span style="font-weight: 500; color: #666; font-size: 0.9rem;">${documents.length} document(s) sélectionné(s)</span>
+                <button class="fr-btn fr-btn--tertiary-no-outline fr-btn--sm" onclick="clearDocsSelection();" style="font-size: 0.8rem;">
+                  Tout effacer
+                </button>
+              </div>
+              ${documentList}
             </div>
           `;
           docsDocumentsInfo.style.display = 'block';
@@ -142,8 +145,30 @@ function() {
     location.reload();
   }
   
-  // Make clearDocsSelection globally available
+  // Function to remove individual document
+  function removeDocsDocument(documentId) {
+    const docsDocuments = sessionStorage.getItem('docs_documents');
+    if (docsDocuments) {
+      try {
+        const documents = JSON.parse(docsDocuments);
+        const updatedDocuments = documents.filter(d => d.id !== documentId);
+        
+        if (updatedDocuments.length > 0) {
+          sessionStorage.setItem('docs_documents', JSON.stringify(updatedDocuments));
+        } else {
+          sessionStorage.removeItem('docs_documents');
+        }
+        
+        checkDocsDocuments(); // Refresh the display
+      } catch (e) {
+        console.error('Error removing document:', e);
+      }
+    }
+  }
+  
+  // Make functions globally available
   window.clearDocsSelection = clearDocsSelection;
+  window.removeDocsDocument = removeDocsDocument;
 
   // Check on page load
   checkDocsDocuments();
@@ -154,6 +179,51 @@ function() {
   if (modeScreen) {
     observer.observe(modeScreen, { attributes: true, attributeFilter: ['style'] });
   }
+
+  // Add Docs button next to mode selection button
+  function addDocsButton() {
+    // Wait for the selections div to be available
+    const selectionsDiv = document.querySelector('.selections');
+    if (selectionsDiv && !document.querySelector('.docs-btn')) {
+      const docsButton = document.createElement('button');
+      docsButton.className = 'mode-selection-btn fr-py-1w fr-py-md-0 fr-mb-md-0 fr-mb-1w fr-mr-3v svelte-6bard9 docs-btn';
+      docsButton.setAttribute('data-fr-opened', 'false');
+      docsButton.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="svelte-6bard9">
+          <path d="M9 2.003V2H19.998C20.55 2 21 2.455 21 2.992V21.008C21 21.556 20.555 22 19.993 22H4.007C3.451 22 3 21.545 3 21.008V2.992C3 2.444 3.445 2 4.007 2H7V2.003C7.001 2.003 7.002 2.003 7.003 2.003H9ZM7 4H5V20H19V4H17V6H7V4ZM9 4V6H15V4H9Z" fill="#6A6AF4"/>
+        </svg>
+        <span class="label svelte-6bard9">ajouter un document depuis Docs</span>
+      `;
+      
+      // Add click handler to navigate to docs
+      docsButton.addEventListener('click', function() {
+        window.location.href = '/docs/documents';
+      });
+      
+      selectionsDiv.appendChild(docsButton);
+    }
+  }
+
+  // Try to add the button immediately
+  addDocsButton();
+  
+  // Also try after a delay in case the component loads later
+  setTimeout(addDocsButton, 1000);
+  setTimeout(addDocsButton, 2000);
+  
+  // Use a mutation observer to watch for when the component loads
+  const componentObserver = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.addedNodes.length > 0) {
+        addDocsButton();
+      }
+    });
+  });
+  
+  componentObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
 }
 
 

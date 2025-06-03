@@ -4,6 +4,19 @@
   color: #051F43;
 }
 
+/* Docs button styling */
+.docs-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.docs-btn .label {
+  font-size: 16px;
+  font-weight: 500;
+}
+
 .custom-card:has(.degrade) {
   background: linear-gradient(45deg, #E8E9FE 0%, #F2F5FE 36%, #FFF 100%);
 }

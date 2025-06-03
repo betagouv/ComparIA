@@ -165,82 +165,112 @@ class DocsAPIClient:
 
     def extract_text_from_yjs(self, raw_content: str) -> str:
         """
-        Attempt to extract readable text from Yjs base64 content
-        Uses pattern matching to find meaningful text content
+        Extract readable text from Yjs base64 content using a smarter approach
+        Focuses on finding complete sentences and paragraphs
         """
         if not raw_content:
             return ""
         
         try:
+            import re
+            
             # Try to decode base64
             decoded = base64.b64decode(raw_content)
             
-            # Extract all printable strings
-            all_strings = []
-            current_text = ""
+            # Convert to string and handle UTF-8
+            try:
+                content_str = decoded.decode('utf-8', errors='ignore')
+            except:
+                content_str = decoded.decode('latin-1', errors='ignore')
             
-            for byte in decoded:
-                if 32 <= byte <= 126:  # Printable ASCII
-                    current_text += chr(byte)
-                else:
-                    if len(current_text) > 2:
-                        all_strings.append(current_text)
-                    current_text = ""
+            # Look for meaningful text patterns - complete sentences and paragraphs
+            # Use regex to find text blocks that look like real content
             
-            if len(current_text) > 2:
-                all_strings.append(current_text)
+            # Find text that looks like sentences (contains letters, spaces, punctuation)
+            sentence_pattern = r'[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s\',\.\?\!\:\;]{20,200}[\.!\?]'
+            sentences = re.findall(sentence_pattern, content_str)
             
-            # Filter for meaningful content
-            meaningful_parts = []
+            # Also look for longer text blocks that might be paragraphs
+            paragraph_pattern = r'[A-Za-zÀ-ÿ][A-Za-zÀ-ÿ\s\',\.\?\!\:\;\(\)]{50,500}'
+            paragraphs = re.findall(paragraph_pattern, content_str)
             
-            for text in all_strings:
-                text = text.strip()
-                
-                # Skip if too short
-                if len(text) < 3:
-                    continue
-                    
-                # Skip technical artifacts
-                skip_patterns = [
-                    'doc-', 'w3broadcast', 'document-store', 'blockGroup', 'blockContainer',
-                    'Alignment', 'initialBlockId', 'backgroundColor', 'w$', 'Color',
-                    'paragraph', 'heading', 'italic', 'bold', 'underline', 'left(',
-                    'right(', 'center(', 'default(', 'strikethrough', 'default'
-                ]
-                
-                # Skip if it's just "default" or similar common artifacts
-                if text.lower() in ['default', 'color', 'text', 'paragraph', 'heading']:
-                    continue
-                
-                if any(pattern in text for pattern in skip_patterns):
-                    continue
-                    
-                # Skip UUIDs and technical IDs
-                if '-' in text and text.count('-') > 2 and len(text) > 15:
-                    continue
-                    
-                # Skip if only punctuation or numbers
-                if text.replace('(', '').replace(')', '').replace(':', '').isdigit():
-                    continue
-                    
-                # Clean up
-                cleaned = text.strip('(),:;')
-                
-                # Look for actual text content (contains letters)
-                if any(c.isalpha() for c in cleaned) and len(cleaned) > 2:
-                    meaningful_parts.append(cleaned)
+            # Combine all found text
+            all_text_blocks = sentences + paragraphs
             
-            # Join meaningful parts
-            if meaningful_parts:
-                # Look for the longest meaningful strings (likely actual content)
-                content_parts = [part for part in meaningful_parts if len(part) > 4]
-                if not content_parts:
-                    content_parts = meaningful_parts
-                    
-                extracted = " ".join(content_parts)
-                return extracted[:500] if extracted else "[Contenu non lisible]"
-            else:
+            if not all_text_blocks:
+                # Fallback: extract any text that looks meaningful
+                word_pattern = r'[A-Za-zÀ-ÿ]{3,}(?:\s+[A-Za-zÀ-ÿ]{2,}){2,}'
+                words_blocks = re.findall(word_pattern, content_str)
+                all_text_blocks = words_blocks
+            
+            if not all_text_blocks:
                 return "[Contenu non lisible]"
+            
+            # Filter and clean the text blocks
+            cleaned_blocks = []
+            
+            for block in all_text_blocks:
+                # Skip blocks with too many technical patterns
+                if any(pattern in block.lower() for pattern in [
+                    'doc-', 'blockgroup', 'blockcontainer', 'href', 'target', 'class',
+                    'bullet', 'hardbreak', 'paragraph', 'heading', 'w3broadcast',
+                    'initialblockid', 'backgroundcolor', 'alignment', 'default('
+                ]):
+                    continue
+                
+                # Skip blocks that are mostly non-alphabetic
+                alpha_count = sum(1 for c in block if c.isalpha())
+                if alpha_count < len(block) * 0.5:  # At least 50% letters
+                    continue
+                
+                # Skip very short blocks
+                if len(block.strip()) < 20:
+                    continue
+                
+                # Clean the block
+                cleaned = block.strip()
+                
+                # Fix common encoding issues in French
+                encoding_fixes = {
+                    ' à ': ' à ',
+                    ' è ': ' è ',
+                    ' é ': ' é ',
+                    ' ê ': ' ê ',
+                    ' ç ': ' ç ',
+                    ' ù ': ' ù ',
+                    ' û ': ' û ',
+                    ' ô ': ' ô ',
+                    ' î ': ' î ',
+                    ' modèles ': ' modèles ',
+                    ' problème ': ' problème ',
+                    ' résultats ': ' résultats ',
+                    ' créé ': ' créé ',
+                    ' données ': ' données ',
+                    ' entraînés ': ' entraînés ',
+                    ' génèrent ': ' génèrent ',
+                    ' stéréotypés ': ' stéréotypés ',
+                    'd\'IA': 'd\'IA',
+                    ' sûrs ': ' sûrs '
+                }
+                
+                for wrong, correct in encoding_fixes.items():
+                    cleaned = cleaned.replace(wrong, correct)
+                
+                cleaned_blocks.append(cleaned)
+            
+            if not cleaned_blocks:
+                return "[Contenu non lisible]"
+            
+            # Sort by length (longer blocks are likely more meaningful content)
+            cleaned_blocks.sort(key=len, reverse=True)
+            
+            # Take all cleaned blocks (no limit)
+            result = " ".join(cleaned_blocks)
+            
+            # Final cleanup
+            result = re.sub(r'\s+', ' ', result).strip()
+            
+            return result if result else "[Contenu non lisible]"
                 
         except Exception as e:
             logger.error(f"Failed to extract text from Yjs: {e}")
