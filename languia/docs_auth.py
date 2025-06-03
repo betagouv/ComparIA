@@ -79,7 +79,13 @@ class DocsAPIClient:
         self.api_token = api_token or DOCS_API_TOKEN
         
         if not self.api_token:
+            logger.error("❌ No Docs API token provided in initialization")
             raise DocsAuthError("No API token provided")
+        
+        # Log token info (masked for security)
+        token_preview = f"{self.api_token[:8]}..." if len(self.api_token) > 8 else "short_token"
+        logger.info(f"🔑 Docs API client initialized with token: {token_preview}")
+        logger.info(f"🌐 Using Docs API base URL: {DOCS_API_BASE_URL}")
             
         self.headers = {
             "Authorization": f"Token {self.api_token}",

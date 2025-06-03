@@ -21,6 +21,12 @@ from languia import config
 
 from languia.reveal import size_desc, license_desc, license_attrs
 
+# Log application startup info
+logging.info("🚀 Starting ComparIA application")
+logging.info(f"🐛 Debug mode: {config.debug}")
+logging.info(f"🗄️  Database configured: {'Yes' if os.getenv('COMPARIA_DB_URI') else 'No'}")
+logging.info(f"📁 Log directory: {os.getenv('LOGDIR', 'Not configured')}")
+
 # Import Docs authentication module if available
 try:
     from languia.docs_auth import DocsAPIClient
@@ -306,11 +312,33 @@ async def bnf(request: Request):
 # Docs integration endpoints (if docs_auth module is available)
 if docs_auth_available:
     from fastapi.responses import RedirectResponse
+    logging.info("✅ Docs integration module loaded successfully")
+    logging.info(f"📋 Docs API Base URL: {os.getenv('DOCS_API_BASE_URL', 'Not configured')}")
+    if os.getenv("DOCS_API_TOKEN"):
+        logging.info("🔑 Docs API token is configured")
+    else:
+        logging.warning("⚠️  Docs API token is NOT configured - Docs integration will not work")
+else:
+    logging.warning("❌ Docs integration module not available - check dependencies")
     
+    # Provide fallback routes when docs_auth is not available
+    @app.get("/docs/connect")
+    @app.get("/docs/documents") 
+    async def docs_not_available(request: Request):
+        logging.error("🚫 Docs integration accessed but module not available")
+        return templates.TemplateResponse(
+            "50x.html", 
+            {"request": request, "config": config}, 
+            status_code=503
+        )
+
+if docs_auth_available:
     @app.get("/docs/connect")
     async def docs_connect(request: Request, token: str = None):
         """Connect to Docs with API token"""
+        logging.info(f"📥 Docs connect request from IP: {request.client.host}")
         if not token:
+            logging.info("🔐 Showing Docs connection form")
             # Show the connection form
             return templates.TemplateResponse(
                 "docs_connect.html",
@@ -322,7 +350,7 @@ if docs_auth_available:
             )
         
         # Just store the token and redirect
-        # Validation will happen on the documents page
+        logging.info(f"🔑 Storing Docs token and redirecting to documents page")
         response = RedirectResponse(url="/docs/documents")
         response.set_cookie(
             key="docs_token",
@@ -339,14 +367,19 @@ if docs_auth_available:
         """Docs documents page"""
         import os
         
+        logging.info(f"📄 Docs documents request from IP: {request.client.host}")
+        
         # Get token from cookie or environment
         docs_token = None
         if hasattr(request, 'cookies') and 'docs_token' in request.cookies:
             docs_token = request.cookies['docs_token']
+            logging.info("🍪 Using Docs token from cookie")
         elif os.getenv("DOCS_API_TOKEN"):
             docs_token = os.getenv("DOCS_API_TOKEN")
+            logging.info("🔧 Using Docs token from environment variable")
         
         if not docs_token:
+            logging.warning("❌ No Docs token available - redirecting to connect page")
             return templates.TemplateResponse(
                 "docs_connect.html",
                 {
@@ -357,16 +390,24 @@ if docs_auth_available:
             )
         
         # Get Docs API client
-        docs_client = DocsAPIClient(api_token=docs_token)
-        
         try:
-            # Fetch documents from Docs
-            documents = await docs_client.list_documents()
+            docs_client = DocsAPIClient(api_token=docs_token)
+            logging.info("✅ Docs API client initialized successfully")
         except Exception as e:
+            logging.error(f"❌ Failed to initialize Docs API client: {e}")
+            error = f"Configuration error: {e}"
             documents = []
-            error = str(e)
         else:
-            error = None
+            try:
+                logging.info("🔄 Fetching documents from Docs API...")
+                # Fetch documents from Docs
+                documents = await docs_client.list_documents()
+                logging.info(f"✅ Successfully fetched {len(documents)} documents")
+                error = None
+            except Exception as e:
+                logging.error(f"❌ Failed to fetch documents from Docs API: {e}")
+                documents = []
+                error = str(e)
         
         return templates.TemplateResponse(
             "docs_documents.html",
