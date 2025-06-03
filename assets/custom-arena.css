@@ -32,15 +32,12 @@
 .toast-body.warning:not(.visible) {
   display: none;
 }
-
 .toast-body.warning:has(.visible) {
   display: block;
 }
-
 .toast-close.warning {
   display: none;
-}
-
+} 
 /* Gradio overrides */
 :root {
   --block-background-fill: transparent !important;
@@ -67,20 +64,20 @@
 
 @media (min-width: 48em) {
 
-  .fr-header__body-row {
-    padding: 0.5rem;
-  }
-/*
-  .fr-header__logo {
-    padding: 1rem 0.75rem 0 0.75rem !important;
-  }
-  */
+.fr-header__body-row {
+  padding: 0 !important;
 }
+
 .fr-header__logo {
-  padding: 0 0.5rem;
+  padding: 1rem 0.75rem 0 0.75rem !important;
+}
+}
+
+.fr-header__logo {
+  padding: 0 0.75rem;
   scale: 80%;
 
-} 
+}
 
 /* label, */
 fieldset {
@@ -142,7 +139,6 @@ footer:has(.built-with) {
   mask-image: url("../assets/dsfr/icons/system/fr--warning-fill.svg");
 
 }
-
 /* UTILITY CLASSES */
 .grow-0 {
   flex-grow: 0;
@@ -266,17 +262,15 @@ h6.text-blue {
 .w-full {
   width: 100%;
 }
-
 .mobile-w-full {
   width: 100%;
 }
 
 @media (min-width: 48em) {
 
-  .mobile-w-full {
-    width: inherit;
-  }
-
+.mobile-w-full {
+  width: inherit;
+}
   .flex-md-row {
     flex-direction: row !important;
   }
@@ -316,7 +310,9 @@ h6.text-blue {
     display: block !important;
   }
 
-
+  #guided-cards span {
+    font-size: 0.875em !important;
+  }
 }
 
 .fr-btn--secondary {
@@ -332,6 +328,15 @@ h6.text-blue {
   background-color: #6a6af4 !important;
 }
 
+#guided-cards span {
+  font-weight: 500;
+  align-self: center;
+  font-size: 0.75em;
+}
+
+#guided-cards .fr-tooltip {
+  font-weight: 400 !important;
+}
 
 /* General */
 body {
@@ -356,7 +361,6 @@ body {
     max-width: calc(50%);
   }
 }
-
 /* Screen by screen */
 
 /* Screen 0 */
@@ -381,11 +385,9 @@ li.fr-nav__item {
 .hidden {
   display: none;
 }
-
 .md-visible {
   display: none !important;
 }
-
 @media (min-width: 48em) {
   .md-visible {
     display: block !important;

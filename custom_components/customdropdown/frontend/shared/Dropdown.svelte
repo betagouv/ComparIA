@@ -1,16 +1,15 @@
 <script lang="ts">
-	import type { Choice, Mode } from "./utils";
-	export let handle_option_selected: (index: number) => void;
+	export let handle_option_selected;
 	// TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
-	export let mode: Mode;
+	export let mode;
 		
 	export let disabled = false;
 
-	export var choices: Choice[];
+	export var choices;
 
 	import ChevronDroite from "./chevron-droite.svelte";
 
-	function handleKeyDown(index: number, event: KeyboardEvent) {
+	function handleKeyDown(index, event: KeyboardEvent) {
 		if (event.key === " " || event.key === "Enter") {
 			event.preventDefault();
 			handle_option_selected(index);
@@ -19,7 +18,7 @@
 </script>
 
 <div>
-	{#each choices as { value, label, alt_label, icon, description }, index}
+	{#each choices as { value, label, _alt_label, icon, description }, index}
 		<!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
 		<!-- svelte-ignore a11y-click-events-have-key-events -->
 		<label
