@@ -49,12 +49,36 @@ def get_docs_content_for_user_prompt(request):
     try:
         # Get selected document IDs from cookies/session
         selected_docs = []
+        
+        # Debug logging
+        logger.info(f"Request type: {type(request)}")
+        logger.info(f"Has cookies attribute: {hasattr(request, 'cookies')}")
+        
         if hasattr(request, 'cookies'):
-            for cookie in request.cookies:
-                if cookie[0] == 'selected_docs':
+            logger.info(f"Cookies: {request.cookies}")
+            # Try different ways to access cookies
+            if hasattr(request.cookies, 'get'):
+                # If cookies is a dict-like object
+                selected_docs_cookie = request.cookies.get('selected_docs')
+                if selected_docs_cookie:
                     import json
-                    selected_docs = json.loads(cookie[1])
-                    break
+                    from urllib.parse import unquote
+                    # URL decode the cookie value
+                    decoded_cookie = unquote(selected_docs_cookie)
+                    selected_docs = json.loads(decoded_cookie)
+                    logger.info(f"Found selected_docs via get(): {selected_docs}")
+            else:
+                # If cookies is a list of tuples
+                for cookie in request.cookies:
+                    logger.info(f"Cookie: {cookie}")
+                    if cookie[0] == 'selected_docs':
+                        import json
+                        from urllib.parse import unquote
+                        # URL decode the cookie value
+                        decoded_cookie = unquote(cookie[1])
+                        selected_docs = json.loads(decoded_cookie)
+                        logger.info(f"Found selected_docs in cookie list: {selected_docs}")
+                        break
         
         if not selected_docs:
             return None

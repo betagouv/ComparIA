@@ -101,7 +101,10 @@ function() {
         if (documents.length > 0) {
           // Store document IDs in cookie for backend access
           const documentIds = documents.map(d => d.id);
-          document.cookie = `selected_docs=${JSON.stringify(documentIds)}; SameSite=Strict; Path=/; Max-Age=3600`;
+          // URL encode the JSON to ensure it's properly transmitted
+          const encodedIds = encodeURIComponent(JSON.stringify(documentIds));
+          document.cookie = `selected_docs=${encodedIds}; SameSite=Strict; Path=/; Max-Age=3600`;
+          console.log('Set cookie with document IDs:', documentIds);
           
           // Hide the connect button
           docsStatus.style.display = 'none';
@@ -142,6 +145,7 @@ function() {
   function clearDocsSelection() {
     sessionStorage.removeItem('docs_documents');
     document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
+    console.log('Cleared docs selection');
     location.reload();
   }
   
@@ -157,6 +161,8 @@ function() {
           sessionStorage.setItem('docs_documents', JSON.stringify(updatedDocuments));
         } else {
           sessionStorage.removeItem('docs_documents');
+          // Also clear the cookie when no documents remain
+          document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
         }
         
         checkDocsDocuments(); // Refresh the display
