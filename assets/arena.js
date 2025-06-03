@@ -201,11 +201,11 @@ function() {
       docsButton.className = 'mode-selection-btn fr-py-1w fr-py-md-0 fr-mb-md-0 fr-mb-1w fr-mr-3v svelte-6bard9 docs-btn';
       docsButton.setAttribute('data-fr-opened', 'false');
       docsButton.innerHTML = `
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="svelte-6bard9">
-          <path d="M9 2.003V2H19.998C20.55 2 21 2.455 21 2.992V21.008C21 21.556 20.555 22 19.993 22H4.007C3.451 22 3 21.545 3 21.008V2.992C3 2.444 3.445 2 4.007 2H7V2.003C7.001 2.003 7.002 2.003 7.003 2.003H9ZM7 4H5V20H19V4H17V6H7V4ZM9 4V6H15V4H9Z" fill="#6A6AF4"/>
-        </svg>
-        <span class="label svelte-6bard9">ajouter un document depuis Docs</span>
+        <img src="/assets/logotype-docs.svg" alt="Document fromn Docs" class="label svelte-6bard9" style="height: 18px; width: auto;">
       `;
+      // <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="svelte-6bard9">
+      //   <path d="M9 2.003V2H19.998C20.55 2 21 2.455 21 2.992V21.008C21 21.556 20.555 22 19.993 22H4.007C3.451 22 3 21.545 3 21.008V2.992C3 2.444 3.445 2 4.007 2H7V2.003C7.001 2.003 7.002 2.003 7.003 2.003H9ZM7 4H5V20H19V4H17V6H7V4ZM9 4V6H15V4H9Z" fill="#6A6AF4"/>
+      // </svg>
       
       // Add click handler to navigate to docs
       docsButton.addEventListener('click', function() {
