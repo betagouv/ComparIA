@@ -24,3 +24,6 @@ pyarrow
 # Docs authentication dependencies (same as Drive)
 httpx
 python-jose[cryptography]
+
+# YJS document parsing
+pycrdt

@@ -165,17 +165,173 @@ class DocsAPIClient:
 
     def extract_text_from_yjs(self, raw_content: str) -> str:
         """
-        Extract readable text from Yjs base64 content using a smarter approach
-        Focuses on finding complete sentences and paragraphs
+        Extract readable text from Yjs base64 content using pycrdt with regex fallback
         """
         if not raw_content:
             return ""
         
+        # First, try to use pycrdt for proper YJS parsing
+        try:
+            from pycrdt import Doc, Text, Map, Array
+            
+            # Decode base64 to binary
+            decoded = base64.b64decode(raw_content)
+            
+            # Create a new document and apply the update
+            doc = Doc()
+            
+            # Wrap in try-except as apply_update can panic on invalid data
+            try:
+                doc.apply_update(decoded)
+            except:
+                # Not valid YJS data, fall back to regex
+                raise ValueError("Not a valid YJS document")
+            
+            # Function to recursively extract text from YJS structures
+            def extract_text_from_item(item):
+                """Recursively extract text from different YJS types"""
+                texts = []
+                
+                if isinstance(item, Text):
+                    text_content = item.to_py()
+                    if text_content and len(text_content.strip()) > 10:
+                        texts.append(text_content)
+                
+                elif isinstance(item, Array):
+                    for element in item.to_py():
+                        if isinstance(element, str) and len(element.strip()) > 10:
+                            texts.append(element)
+                        elif isinstance(element, (dict, list)):
+                            # Recursively process nested structures
+                            texts.extend(extract_text_from_nested(element))
+                
+                elif isinstance(item, Map):
+                    map_data = item.to_py()
+                    for key, value in map_data.items():
+                        if isinstance(value, str) and len(value.strip()) > 10:
+                            texts.append(value)
+                        elif isinstance(value, (dict, list)):
+                            texts.extend(extract_text_from_nested(value))
+                
+                return texts
+            
+            def extract_text_from_nested(data):
+                """Extract text from nested Python structures"""
+                texts = []
+                
+                if isinstance(data, dict):
+                    for value in data.values():
+                        if isinstance(value, str) and len(value.strip()) > 10:
+                            texts.append(value)
+                        elif isinstance(value, (dict, list)):
+                            texts.extend(extract_text_from_nested(value))
+                
+                elif isinstance(data, list):
+                    for item in data:
+                        if isinstance(item, str) and len(item.strip()) > 10:
+                            texts.append(item)
+                        elif isinstance(item, (dict, list)):
+                            texts.extend(extract_text_from_nested(item))
+                
+                return texts
+            
+            # Extract all text content
+            all_texts = []
+            
+            # Try different approaches to access the document content
+            # Approach 1: Try common field names with different types
+            common_fields = ['content', 'text', 'body', 'data', 'document', 'value', 
+                           'title', 'description', 'sections', 'metadata']
+            
+            for field_name in common_fields:
+                # Try as Text
+                try:
+                    text_obj = doc.get(field_name, type=Text)
+                    if text_obj:
+                        text_content = str(text_obj)
+                        if text_content and len(text_content.strip()) > 10:
+                            all_texts.append(text_content)
+                except:
+                    pass
+                
+                # Try as Array
+                try:
+                    array_obj = doc.get(field_name, type=Array)
+                    if array_obj:
+                        all_texts.extend(extract_text_from_item(array_obj))
+                except:
+                    pass
+                
+                # Try as Map
+                try:
+                    map_obj = doc.get(field_name, type=Map)
+                    if map_obj:
+                        all_texts.extend(extract_text_from_item(map_obj))
+                except:
+                    pass
+            
+            # Approach 2: Try to get the root map and iterate
+            try:
+                # Some YJS documents store everything in a root map
+                root_map = doc.get("", type=Map)
+                if root_map:
+                    for key in root_map:
+                        try:
+                            value = root_map[key]
+                            if isinstance(value, str) and len(value.strip()) > 10:
+                                all_texts.append(value)
+                            elif hasattr(value, 'to_py'):
+                                py_value = value.to_py()
+                                all_texts.extend(extract_text_from_nested(py_value))
+                        except:
+                            pass
+            except:
+                pass
+            
+            # Remove duplicates while preserving order
+            seen = set()
+            unique_texts = []
+            for text in all_texts:
+                if text not in seen:
+                    seen.add(text)
+                    unique_texts.append(text)
+            
+            # If we found content, join and return it
+            if unique_texts:
+                result = "\n\n".join(unique_texts)
+                # Clean up the result
+                import re
+                result = re.sub(r'\n{3,}', '\n\n', result).strip()
+                
+                # Remove technical artifacts
+                lines = result.split('\n')
+                cleaned_lines = []
+                for line in lines:
+                    # Skip lines that look like technical metadata
+                    if not any(pattern in line.lower() for pattern in [
+                        'blockid', 'blockgroup', 'w3broadcast', 'initialblock',
+                        'backgroundcolor', 'alignment', 'fontfamily'
+                    ]):
+                        cleaned_lines.append(line)
+                
+                result = '\n'.join(cleaned_lines)
+                
+                if len(result) > 50:  # Only return if we found substantial content
+                    return result
+        
+        except ImportError:
+            logger.warning("pycrdt not installed, falling back to regex extraction")
+        except Exception as e:
+            # pycrdt can throw various exceptions including PanicException
+            logger.debug(f"pycrdt parsing failed: {type(e).__name__}: {e}, falling back to regex extraction")
+        
+        # Fallback to regex-based extraction
         try:
             import re
             
-            # Try to decode base64
-            decoded = base64.b64decode(raw_content)
+            # Decode base64 (already done if pycrdt was tried)
+            if 'decoded' not in locals():
+                decoded = base64.b64decode(raw_content)
             
             # Convert to string and handle UTF-8
             try:
