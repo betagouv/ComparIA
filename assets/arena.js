@@ -89,7 +89,12 @@ function() {
   // Disable landscape mode because it's unusable in chatbot view for now
   screen.orientation.lock("portrait");
 
-  // Check for Docs documents in session storage
+  /**
+   * Docs Integration
+   * Manages document selection from Docs and displays selected documents
+   */
+  
+  // Check for Docs documents in session storage and update UI
   function checkDocsDocuments() {
     const docsDocuments = sessionStorage.getItem('docs_documents');
     const docsDocumentsInfo = document.getElementById('docs-documents-info');
@@ -143,14 +148,14 @@ function() {
     }
   }
   
-  // Function to clear docs selection
+  // Clear all selected documents
   function clearDocsSelection() {
     sessionStorage.removeItem('docs_documents');
     document.cookie = 'selected_docs=; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Strict; Path=/';
     location.reload();
   }
   
-  // Function to remove individual document
+  // Remove a specific document from selection
   function removeDocsDocument(documentId) {
     const docsDocuments = sessionStorage.getItem('docs_documents');
     if (docsDocuments) {
@@ -187,7 +192,7 @@ function() {
     observer.observe(modeScreen, { attributes: true, attributeFilter: ['style'] });
   }
 
-  // Add Docs button next to mode selection button
+  // Add Docs integration button to the interface
   function addDocsButton() {
     // Wait for the selections div to be available
     const selectionsDiv = document.querySelector('.selections');

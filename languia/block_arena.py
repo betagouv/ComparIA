@@ -67,7 +67,7 @@ with gr.Blocks(
             interactive=True,
         )
 
-        # Docs integration section - only for showing selected documents
+        # Docs integration: display area for selected documents
         with gr.Group(elem_classes="fr-mt-3w"):
             docs_documents_info = gr.HTML(
                 value="",

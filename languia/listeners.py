@@ -45,80 +45,74 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
 )
 
 def get_docs_content_for_user_prompt(request):
-    """Extract content from selected Docs documents to include in user prompt"""
-    try:
-        # Get selected document IDs from cookies/session
-        selected_docs = []
+    """
+    Extract content from selected Docs documents to include in user prompt.
+    
+    This function retrieves document IDs from cookies, fetches the full content
+    from the Docs API, and formats it for inclusion in AI model prompts.
+    
+    Args:
+        request (gr.Request): Gradio request object containing cookies
         
+    Returns:
+        str | None: Formatted document content with titles and text, or None if no documents
+    """
+    try:
+        import json
+        import os
+        import asyncio
+        from urllib.parse import unquote
+        from languia.docs_auth import DocsAPIClient
+        
+        # Extract selected document IDs from cookies
+        selected_docs = []
         if hasattr(request, 'cookies'):
-            # Try different ways to access cookies
             if hasattr(request.cookies, 'get'):
-                # If cookies is a dict-like object
                 selected_docs_cookie = request.cookies.get('selected_docs')
                 if selected_docs_cookie:
-                    import json
-                    from urllib.parse import unquote
-                    # URL decode the cookie value
                     decoded_cookie = unquote(selected_docs_cookie)
                     selected_docs = json.loads(decoded_cookie)
-                    logger.info(f"Found {len(selected_docs)} selected documents")
             else:
-                # If cookies is a list of tuples
+                # Handle cookies as list of tuples
                 for cookie in request.cookies:
                     if cookie[0] == 'selected_docs':
-                        import json
-                        from urllib.parse import unquote
-                        # URL decode the cookie value
                         decoded_cookie = unquote(cookie[1])
                         selected_docs = json.loads(decoded_cookie)
-                        logger.info(f"Found {len(selected_docs)} selected documents")
                         break
         
         if not selected_docs:
             return None
             
-        logger.info(f"Processing {len(selected_docs)} selected documents: {selected_docs}")
-            
-        # Import here to avoid circular imports
-        from languia.docs_auth import DocsAPIClient
-        import os
-        
+        # Initialize Docs API client
         docs_client = DocsAPIClient(api_token=os.getenv("DOCS_API_TOKEN"))
-        
         if not docs_client.api_token:
+            logger.warning("No Docs API token available")
             return None
             
+        # Fetch and process each document
         docs_content_parts = []
         for doc_id in selected_docs:
-            logger.info(f"Processing document ID: {doc_id}")
             try:
-                # Simplified async handling - just use asyncio.run
-                import asyncio
-                
                 async def fetch_document():
                     return await docs_client.get_document(doc_id)
                 
-                # Use asyncio.run for cleaner async handling
                 doc = asyncio.run(fetch_document())
                 
                 if doc and doc.get('content'):
-                    # Extract readable text from Yjs content
                     extracted_text = docs_client.extract_text_from_yjs(doc['content'])
-                    logger.info(f"Extracted text for {doc.get('title', 'Sans titre')}: {extracted_text[:50]}...")
                     if extracted_text and extracted_text not in ["[Contenu non lisible]", "[Erreur de décodage du contenu]", ""]:
-                        docs_content_parts.append(f"**{doc.get('title', 'Sans titre')}**\n{extracted_text}")
-                        logger.info(f"Added document {doc.get('title', 'Sans titre')} to content parts")
-                else:
-                    logger.warning(f"Document {doc_id} has no content or failed to load")
+                        title = doc.get('title', 'Sans titre')
+                        docs_content_parts.append(f"**{title}**\n{extracted_text}")
+                        
             except Exception as e:
-                logger.error(f"Failed to get content for document {doc_id}: {e}")
+                logger.error(f"Failed to process document {doc_id}: {e}")
                 continue
         
         if docs_content_parts:
             return "Documents de référence :\n\n" + "\n\n---\n\n".join(docs_content_parts)
         
     except Exception as e:
-        logger.error(f"Failed to get docs content for user prompt: {e}")
+        logger.error(f"Failed to get docs content: {e}")
     
     return None
 
@@ -318,15 +312,14 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
 
-        # Could be added in Converstation.__init__?
-        # Check for selected documents and append their content
+        # Include Docs content if user has selected documents
         docs_content = get_docs_content_for_user_prompt(request)
         if docs_content:
             text_with_docs = f"{text}\n\n---\n\n{docs_content}"
         else:
             text_with_docs = text
             
-        # Add the full content for the models (display will be handled by to_threeway_chatbot)
+        # Add user message to both conversations (UI display handled by to_threeway_chatbot)
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text_with_docs))
         logger.info(

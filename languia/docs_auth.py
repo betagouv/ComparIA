@@ -58,10 +58,24 @@ def get_current_docs_session(request: Request) -> Optional[Dict]:
 
 
 class DocsAPIClient:
-    """Client for interacting with Docs API"""
+    """
+    Client for interacting with the Docs API.
+    
+    Provides methods to fetch documents and extract content from Docs,
+    with proper error handling and timeout management.
+    """
     
     def __init__(self, api_token: str = None):
-        # Use provided token or fall back to environment token
+        """
+        Initialize the Docs API client.
+        
+        Args:
+            api_token (str, optional): API token for authentication.
+                                     Falls back to DOCS_API_TOKEN environment variable.
+                                     
+        Raises:
+            DocsAuthError: If no API token is provided.
+        """
         self.api_token = api_token or DOCS_API_TOKEN
         
         if not self.api_token:
@@ -74,7 +88,18 @@ class DocsAPIClient:
         }
     
     async def list_documents(self, limit: int = 100) -> List[Dict]:
-        """List documents from Docs"""
+        """
+        Retrieve a list of documents from the Docs API.
+        
+        Args:
+            limit (int): Maximum number of documents to retrieve (default: 100)
+            
+        Returns:
+            List[Dict]: List of document objects with metadata
+            
+        Raises:
+            DocsAuthError: If API request fails or times out
+        """
         try:
             async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
                 url = f"{DOCS_API_BASE_URL}/documents/"
@@ -107,7 +132,18 @@ class DocsAPIClient:
             raise DocsAuthError(f"Unexpected error: {e}")
     
     async def get_document(self, document_id: str) -> Dict:
-        """Get document details"""
+        """
+        Retrieve detailed information for a specific document.
+        
+        Args:
+            document_id (str): Unique identifier for the document
+            
+        Returns:
+            Dict: Document object with content and metadata
+            
+        Raises:
+            DocsAuthError: If API request fails or document not found
+        """
         try:
             async with httpx.AsyncClient(timeout=httpx.Timeout(30.0)) as client:
                 url = f"{DOCS_API_BASE_URL}/documents/{document_id}/"

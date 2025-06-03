@@ -498,31 +498,54 @@ def refresh_unavailable_models(previous_unavailable_models, controller_url):
 
 
 def to_threeway_chatbot(conversations):
+    """
+    Convert two separate conversations into a unified chatbot display format.
+    
+    This function processes conversation messages and creates a display-friendly
+    version that shows user messages with compact document references while
+    preserving the full content for AI model processing.
+    
+    Args:
+        conversations (list): List of two Conversation objects (A and B)
+        
+    Returns:
+        list: Unified chatbot messages with display-optimized user content
+    """
+    
     def create_display_content(content):
-        """Create a display-friendly version of content that may include docs references"""
+        """
+        Create a user-friendly display version of message content.
+        
+        For messages containing document references, this function replaces
+        the full document content with a compact list of document titles.
+        
+        Args:
+            content (str): Original message content
+            
+        Returns:
+            str: Display-optimized content
+        """
         if not isinstance(content, str):
             return content
             
-        # Check if this message contains docs content
+        # Check if message contains document references
         if "Documents de référence :" in content:
-            # Split the content to separate user message from docs
             parts = content.split("\n\n---\n\n", 1)
             if len(parts) == 2:
                 user_message = parts[0]
                 docs_section = parts[1]
                 
-                # Extract document titles from the docs section
+                # Extract document titles (text between ** markers)
                 import re
-                # Find all document titles (text between ** and **)
                 doc_titles = re.findall(r'\*\*(.*?)\*\*', docs_section)
                 
                 if doc_titles:
-                    # Create a compact display showing just the document list
                     doc_list = ", ".join(doc_titles)
                     return f"{user_message}\n\n📎 *Documents inclus : {doc_list}*"
             
         return content
     
+    # Build unified chatbot conversation
     threeway_chatbot = []
     conv_a_messages = [
         message for message in conversations[0].messages if message.role != "system"
@@ -530,13 +553,14 @@ def to_threeway_chatbot(conversations):
     conv_b_messages = [
         message for message in conversations[1].messages if message.role != "system"
     ]
+    
     for msg_a, msg_b in zip(conv_a_messages, conv_b_messages):
         if msg_a.role == "user":
-            # Could even test if msg_a == msg_b
+            # Ensure both conversations have matching user messages
             if msg_b.role != "user":
-                raise IndexError
+                raise IndexError("Conversation messages are not synchronized")
             
-            # Create a display version of the user message
+            # Create display-optimized user message
             display_msg = ChatMessage(
                 role=msg_a.role,
                 content=create_display_content(msg_a.content),
@@ -546,29 +570,26 @@ def to_threeway_chatbot(conversations):
             )
             threeway_chatbot.append(display_msg)
         else:
+            # Add assistant messages from both conversations
             if msg_a:
                 msg_a.metadata["bot"] = "a"
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_a.content,
-                        "error": msg_a.error,
-                        "reasoning": msg_a.reasoning,
-                        "metadata": msg_a.metadata,
-                    }
-                )
+                threeway_chatbot.append({
+                    "role": "assistant",
+                    "content": msg_a.content,
+                    "error": msg_a.error,
+                    "reasoning": msg_a.reasoning,
+                    "metadata": msg_a.metadata,
+                })
             if msg_b:
-
                 msg_b.metadata["bot"] = "b"
-                threeway_chatbot.append(
-                    {
-                        "role": "assistant",
-                        "content": msg_b.content,
-                        "error": msg_a.error,
-                        "reasoning": msg_b.reasoning,
-                        "metadata": msg_b.metadata,
-                    }
-                )
+                threeway_chatbot.append({
+                    "role": "assistant",
+                    "content": msg_b.content,
+                    "error": msg_a.error,
+                    "reasoning": msg_b.reasoning,
+                    "metadata": msg_b.metadata,
+                })
+                
     return threeway_chatbot
 
 
