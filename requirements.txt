@@ -1,7 +1,7 @@
-gradio==5.25.0
+gradio==5.34.1
 ecologits==0.6.1
 
-litellm==1.68.1
+litellm==1.72.1
 
 # For db export, could be in dev image
 SQLAlchemy==2.0.38
