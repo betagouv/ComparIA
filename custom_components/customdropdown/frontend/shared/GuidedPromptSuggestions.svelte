@@ -16,6 +16,8 @@
     import bookOpenLineIcon from "./book-open-line.svg";
     import music2Icon from "./music-2.svg";
 
+    import shuffleIcon from "./shuffle.svg";
+
     // Interface pour les données des cartes, utilisant des props au lieu de HTML brut
     interface GuidedCardData {
         iconSrc: string;
@@ -166,7 +168,7 @@
         {#each displayedCards as card (card.value)}
             <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-mb-2w">
                 <GuidedCardComponent
-                    selected={currentSelectedCategoryValue==card.value}
+                    selected={currentSelectedCategoryValue == card.value}
                     iconSrc={card.iconSrc}
                     iconAlt={card.iconAlt}
                     title={card.title}
@@ -181,20 +183,28 @@
     </div>
 
     {#if currentSelectedCategoryValue}
-        <button
-            class="fr-btn fr-btn--tertiary fr-icon-shuffle-line fr-btn--icon-left fr-mx-auto mobile-w-full fr-mt-2w"
+        <div class="text-center"><button
+            class="fr-btn fr-btn--tertiary mobile-w-full fr-mt-2w"
             on:click={shufflePrompts}
         >
-            Générer d'autres suggestions (dans "{promptsTable[
-                currentSelectedCategoryValue
-            ]?.[0]
-                ? currentSelectedCategoryValue
-                : "cette catégorie"}")
+            <!-- <svelte:component this={shuffleIcon} /> -->
+            <img class="fr-mr-1v" src={shuffleIcon} alt="Regénérer" title="Générer un autre message" /> Générer un autre message
         </button>
+        </div>
     {/if}
 </div>
 
 <style>
+    /* .icon-shuffle {
+  -webkit-mask-image: url("../assets/extra-icons/shuffle.svg");
+  mask-image: url("../assets/extra-icons/shuffle.svg");
+
+  mask-size: 16px 16px;
+  mask-position: 0 50%;
+  mask-repeat: no-repeat;
+
+} */
+
     .text-grey-200 {
         color: var(
             --text-mention-grey
@@ -210,14 +220,7 @@
         margin-bottom: 0; 
     } */
 
-
-    /* S'assurer que les icônes DSFR pour les boutons sont bien chargées/stylées */
-    .fr-btn.fr-icon-shuffle-line::before {
-        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z'%3E%3C/path%3E%3C/svg%3E");
-        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23000000'%3E%3Cpath d='M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z'%3E%3C/path%3E%3C/svg%3E");
-    }
-
-	/* .grid {
+    /* .grid {
 		display: grid;
 		grid-template-columns: repeat(var(--min-columns), 1fr);
 		gap: 0.625rem; 
@@ -230,5 +233,5 @@
 			grid-template-columns: repeat(var(--columns), 1fr);
 		}
 	} */
-    /* FIXME: .fr-tooltip  */
+
 </style>

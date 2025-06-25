@@ -13,7 +13,12 @@
 	import ChevronBas from "./shared/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
 	import { tick } from "svelte";
-	import type { ModeAndPromptData, Model, Mode, Choice } from "./shared/utils.ts";
+	import type {
+		ModeAndPromptData,
+		Model,
+		Mode,
+		Choice,
+	} from "./shared/utils.ts";
 	import Glass from "./shared/glass.svelte";
 	import Leaf from "./shared/leaf.svelte";
 	import Ruler from "./shared/ruler.svelte";
@@ -118,12 +123,13 @@
 
 	function deleteCookie(name: string): void {
 		if (!browser) return;
-		document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+		document.cookie =
+			name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
 	}
-	
+
 	let initialMode: Mode =
 		(getCookie("customdropdown_mode") as Mode) || "random";
-	
+
 	function getInitialModels(availableModels: Model[]): string[] {
 		if (!Array.isArray(availableModels)) {
 			console.error(
@@ -162,7 +168,6 @@
 		return [];
 	}
 
-
 	const findModelDetails = (id: string | null, modelsList: Model[]) => {
 		if (!id || !modelsList || !Array.isArray(modelsList)) {
 			return { name: "Aléatoire", iconPath: null };
@@ -175,7 +180,7 @@
 	};
 
 	let initialModels: string[] = getInitialModels(models); // Pass the populated models array
-	
+
 	let initialPrompt = "";
 	if (browser) {
 		const cookieValue = getCookie("comparia_initialprompt");
@@ -183,9 +188,13 @@
 			try {
 				initialPrompt = base64Decode(cookieValue);
 				deleteCookie("comparia_initialprompt");
-				if (initialPrompt && typeof window !== "undefined") { // Ensure browser context for tick
+				if (initialPrompt && typeof window !== "undefined") {
+					// Ensure browser context for tick
 					tick().then(() => {
-						if (textboxElement && typeof textboxElement.select === 'function') {
+						if (
+							textboxElement &&
+							typeof textboxElement.select === "function"
+						) {
 							textboxElement.select();
 						}
 					});
@@ -196,7 +205,7 @@
 			}
 		}
 	}
-	
+
 	// Export the necessary variables
 	export let mode: Mode = initialMode; // Assuming initialMode is defined
 	export let custom_models_selection: string[] = initialModels;
@@ -374,7 +383,6 @@
 	id={elem_id}
 	class={elem_classes.join(" ") + " fr-container"}
 >
-
 	<h3 class="text-center text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w">
 		Comment puis-je vous aider aujourd'hui ?
 	</h3>
@@ -702,5 +710,12 @@
 			grid-area: right;
 			justify-self: right;
 		}
+	}
+
+	input[disabled] {
+		cursor: not-allowed;
+		/* background-color: var(--background-disabled-grey);
+		color: var(--text-disabled-grey); */
+		pointer-events: none;
 	}
 </style>

@@ -237,7 +237,6 @@
 		display: none;
 	       */
 
-    input[disabled],
     .guided-card.disabled {
         cursor: not-allowed;
         background-color: var(--background-disabled-grey);
