@@ -43,13 +43,6 @@ def litellm_stream_iter(
     # if debug:
     #     litellm._turn_on_debug()
 
-    # if (
-    #     os.getenv("LANGFUSE_PUBLIC_KEY")
-    #     and os.getenv("LANGFUSE_SECRET_KEY")
-    #     # os.getenv("LANGFUSE_HOST") is optional (sent to SaaS if unset)
-    # ):
-    #     litellm.success_callback = ["langfuse_otel"]
-    #     litellm.failure_callback.append("langfuse_otel")
     if os.getenv("SENTRY_DSN"):
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
         litellm.failure_callback.append("sentry")
@@ -66,14 +59,23 @@ def litellm_stream_iter(
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
 
+    # Not ready yet, see https://github.com/BerriAI/litellm/issues/11742
+    # if (
+    #     os.getenv("LANGFUSE_PUBLIC_KEY")
+    #     and os.getenv("LANGFUSE_SECRET_KEY")
+    #     # os.getenv("LANGFUSE_HOST") is optional (sent to SaaS if unset)
+    # ):
+    #     litellm.success_callback = ["langfuse_otel"]
+    #     litellm.failure_callback.append("langfuse_otel")
+
+    # Update langfuse trace explicitly
     # user_id, session_id = get_user_info(request)
     # langfuse = get_client()
-
-    # Update trace explicitly
     # langfuse.update_current_trace(
     #     user_id=user_id,
     #     session_id=session_id,
     # )
+
     # TODO: do it in all cases?
     if "mistralai" in model_name:
         messages = strip_metadata(messages)
@@ -93,6 +95,18 @@ def litellm_stream_iter(
         "stream": True,
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
+        # manually add langfuse span/trace metadata, see https://github.com/langfuse/langfuse/issues/2238
+        # "metadata": {
+        # "trace_user_id": user_id,
+        # "session_id": session_id,
+        # "langfuse_parent_observation_id": span.id,
+        # "langfuse_trace_id": span.trace_id,
+        # "trace_id": span.trace_id,
+        # "parent_span_id": span.id,
+        # "existing_trace_id": span.trace_id,
+        # "parent_observation_id": span.id,
+        # "generation_id": span.id
+        # },
         # "mock_response": "Here's the answer: print('Hello')"
     }
 
