@@ -11,7 +11,7 @@ import json
 
 from languia.utils import strip_metadata, get_user_info, ContextTooLongError
 
-from langfuse.decorators import langfuse_context, observe
+from langfuse import get_client, observe
 
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "r") as file:
@@ -36,7 +36,6 @@ def litellm_stream_iter(
     vertex_ai_location=None,
     include_reasoning=False,
     enable_reasoning=False,
-
 ):
 
     # Too verbose:
@@ -67,21 +66,23 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-    
-    
+
     user_id, session_id = get_user_info(request)
-    langfuse_context.update_current_trace(
-            user_id=user_id,
-            session_id=session_id,
+    langfuse = get_client()
+
+    # Update trace explicitly
+    langfuse.update_current_trace(
+        user_id=user_id,
+        session_id=session_id,
         #     metadata={
         #     "parent_observation_id": langfuse_context.get_current_observation_id(),
         #     "trace_user_id": user_id,
-        #     "session_id": session_id,      
+        #     "session_id": session_id,
         #     # Creates nested traces for convos A and B
         #     "existing_trace_id": langfuse_context.get_current_trace_id(),
         # },
-        )
-        # TODO: do it in all cases?
+    )
+    # TODO: do it in all cases?
     if "mistralai" in model_name:
         messages = strip_metadata(messages)
         print("stripping metadata")
@@ -103,7 +104,7 @@ def litellm_stream_iter(
         # "metadata": {
         #     "parent_observation_id": langfuse_context.get_current_observation_id(),
         #     "trace_user_id": user_id,
-        #     "session_id": session_id,      
+        #     "session_id": session_id,
         #     # Creates nested traces for convos A and B
         #     "existing_trace_id": langfuse_context.get_current_trace_id(),
         # },
@@ -172,6 +173,6 @@ def litellm_stream_iter(
                         "context_too_long: " + str(chunk), extra={request: request}
                     )
                     raise ContextTooLongError
-                
+
             yield data
     yield data
