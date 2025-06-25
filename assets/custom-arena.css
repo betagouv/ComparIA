@@ -889,16 +889,6 @@ li.fr-nav__item {
   mask-image: url("../assets/dsfr/icons/business/briefcase-line.svg");
 }
 
-.fr-icon-shuffle::before {
-  -webkit-mask-image: url("../assets/extra-icons/shuffle.svg");
-  mask-image: url("../assets/extra-icons/shuffle.svg");
-
-  mask-size: 16px 16px;
-  mask-position: 0 50%;
-  mask-repeat: no-repeat;
-
-}
-
 /*
 .fr-icon-back::before {
   -webkit-mask-image: url("../assets/extra-icons/back.svg");
