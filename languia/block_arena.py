@@ -53,38 +53,16 @@ with gr.Blocks(
 
     header = gr.HTML(header_html, elem_id="header-html")
 
-    with gr.Column(
-        elem_id="mode-screen",
-        elem_classes="fr-mb-8w fr-container fr-grid-row fr-col-12 fr-col-lg-7 fr-col-md-8",
-    ) as mode_screen:
-
         # TODO: rename component, it includes textbox
-        model_dropdown = CustomDropdown(
+    model_dropdown = CustomDropdown(
+
             models=config.models_extra_info,
             # ignored, hardcoded in custom component
             choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
             # ignored, hardcoded in custom component
             interactive=True,
         )
-
-        prompts_suggestions = gr.HTML(
-            elem_classes="text-grey-200 fr-container fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-0 fr-pb-0 fr-px-0",
-            value="""<strong>Suggestions de prompts</strong>""",
-        )
-        guided_cards = CustomRadioCard(
-            show_label=False,
-            elem_id="guided-cards",
-            elem_classes="fr-container fr-px-0",
-            choices=config.guided_cards_choices,
-            min_columns=1,
-        )
-        shuffle_link = gr.Button(
-            scale=0,
-            elem_classes="fr-icon-shuffle fr-btn--tertiary fr-mx-auto mobile-w-full",
-            visible=False,
-            value="Générer un autre message",
-        )
-
+      
     with gr.Group(
         elem_id="chat-area",
         visible=False,

@@ -70,3 +70,18 @@ export interface Model {
 // 	}
 // 	return [true, active_index];
 // }
+
+export type Mode =
+	| "random"
+	| "custom"
+	| "big-vs-small"
+	| "small-models"
+	| "reasoning";
+
+export type Choice = {
+	value: Mode;
+	label: string;
+	alt_label: string;
+	icon: any;
+	description: string;
+};
