@@ -43,14 +43,13 @@ def litellm_stream_iter(
     # if debug:
     #     litellm._turn_on_debug()
 
-    if (
-        os.getenv("LANGFUSE_PUBLIC_KEY")
-        and os.getenv("LANGFUSE_SECRET_KEY")
-        # os.getenv("LANGFUSE_HOST") is optional (sent to SaaS if unset)
-    ):
-        print("loading langfuse")
-        litellm.success_callback = ["langfuse"]
-        litellm.failure_callback.append("langfuse")
+    # if (
+    #     os.getenv("LANGFUSE_PUBLIC_KEY")
+    #     and os.getenv("LANGFUSE_SECRET_KEY")
+    #     # os.getenv("LANGFUSE_HOST") is optional (sent to SaaS if unset)
+    # ):
+    #     litellm.success_callback = ["langfuse_otel"]
+    #     litellm.failure_callback.append("langfuse_otel")
     if os.getenv("SENTRY_DSN"):
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
         litellm.failure_callback.append("sentry")
@@ -67,21 +66,14 @@ def litellm_stream_iter(
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
 
-    user_id, session_id = get_user_info(request)
-    langfuse = get_client()
+    # user_id, session_id = get_user_info(request)
+    # langfuse = get_client()
 
     # Update trace explicitly
-    langfuse.update_current_trace(
-        user_id=user_id,
-        session_id=session_id,
-        #     metadata={
-        #     "parent_observation_id": langfuse_context.get_current_observation_id(),
-        #     "trace_user_id": user_id,
-        #     "session_id": session_id,
-        #     # Creates nested traces for convos A and B
-        #     "existing_trace_id": langfuse_context.get_current_trace_id(),
-        # },
-    )
+    # langfuse.update_current_trace(
+    #     user_id=user_id,
+    #     session_id=session_id,
+    # )
     # TODO: do it in all cases?
     if "mistralai" in model_name:
         messages = strip_metadata(messages)
@@ -101,13 +93,6 @@ def litellm_stream_iter(
         "stream": True,
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
-        # "metadata": {
-        #     "parent_observation_id": langfuse_context.get_current_observation_id(),
-        #     "trace_user_id": user_id,
-        #     "session_id": session_id,
-        #     # Creates nested traces for convos A and B
-        #     "existing_trace_id": langfuse_context.get_current_trace_id(),
-        # },
         # "mock_response": "Here's the answer: print('Hello')"
     }
 
