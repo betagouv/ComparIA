@@ -521,10 +521,6 @@ li.fr-nav__item {
 
 /* VOTE AREA */
 
-#vote-cards .custom-card {
-  border-radius: 0 !important;
-}
-
 #supervote-area input[type="checkbox"] {
   display: none;
 }
