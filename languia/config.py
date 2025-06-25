@@ -210,6 +210,7 @@ with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
 with open("./assets/dark.css", encoding="utf-8") as css_file:
     darkfixes_css = css_file.read()
 
+# css = custom_css + darkfixes_css
 css = css_dsfr + custom_css + darkfixes_css
 
 

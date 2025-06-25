@@ -1052,7 +1052,7 @@ button {
   appearance: none;
   border: none;
   margin: 0;
-  color: inherit;
+  /* color: inherit; */
   background-color: transparent;
   font-family: inherit;
   font-size: inherit;
