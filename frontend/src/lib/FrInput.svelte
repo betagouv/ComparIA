@@ -1,13 +1,13 @@
 <svelte:options accessors={true} />
 
 <script context="module" lang="ts">
-	export { default as BaseTextbox } from "./shared/Textbox.svelte";
-	export { default as BaseExample } from "./Example.svelte";
+	export { default as BaseTextbox } from "$lib/components/Textbox.svelte";
+	// export { default as BaseExample } from "./Example.svelte";
 </script>
 
 <script lang="ts">
 	import type { Gradio, SelectData } from "@gradio/utils";
-	import TextBox from "./shared/Textbox.svelte";
+	import TextBox from "$lib/components/FrInputTextbox.svelte";
 	import { Block } from "@gradio/atoms";
 	import { StatusTracker } from "@gradio/statustracker";
 	import type { LoadingStatus } from "@gradio/statustracker";

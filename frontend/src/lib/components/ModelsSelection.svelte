@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Model } from "./utils.js";
+	import type { Model } from "$lib/utils-customdropdown.js";
 	export let custom_models_selection: string[] = []; // Default to an empty list
 	export let models: Model[] = [];
 

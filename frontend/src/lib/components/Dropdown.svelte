@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Choice, Mode } from "./utils";
+	import type { Choice, Mode } from "$lib/utils-customdropdown";
 	export let handle_option_selected: (index: number) => void;
 	// TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
 	export let mode: Mode;

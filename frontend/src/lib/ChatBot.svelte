@@ -1,18 +1,18 @@
 <script context="module" lang="ts">
-	export { default as BaseChatBot } from "./shared/ChatBot.svelte";
+	export { default as BaseChatBot } from "$lib/components/ChatBot.svelte";
 </script>
 
 <script lang="ts">
 	import type { Gradio, SelectData, LikeData } from "@gradio/utils";
 
-	import ChatBot from "./shared/ChatBot.svelte";
-	import ExtendedLikeData from "./shared/ChatBot.svelte";
-	import type { UndoRetryData } from "./shared/utils";
+	import ChatBot from "$lib/components/ChatBot.svelte";
+	import ExtendedLikeData from "$lib/components/ChatBot.svelte";
+	import type { UndoRetryData } from "$lib/utils";
 	import type { LoadingStatus } from "@gradio/statustracker";
 
 	import type { Message, NormalisedMessage } from "./types";
 
-	import { update_messages } from "./shared/utils";
+	import { update_messages } from "$lib/utils";
 
 	export let elem_id = "";
 	export let elem_classes: string[] = [];

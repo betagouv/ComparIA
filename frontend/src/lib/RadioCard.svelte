@@ -1,13 +1,13 @@
 <script context="module" lang="ts">
-	export { default as BaseRadio } from "./shared/Radio.svelte";
-	export { default as BaseExample } from "./Example.svelte";
+	export { default as BaseRadio } from "$lib/components/Radio.svelte";
+	// export { default as BaseExample } from "./Example.svelte";
 </script>
 
 <script lang="ts">
 	import type { Gradio, SelectData } from "@gradio/utils";
 	import { StatusTracker } from "@gradio/statustracker";
 	import type { LoadingStatus } from "@gradio/statustracker";
-	import BaseRadio from "./shared/Radio.svelte";
+	import BaseRadio from "$lib/components/Radio.svelte";
 
 	export let gradio: Gradio<{
 		change: never;
