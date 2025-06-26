@@ -1,9 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher, onMount } from "svelte";
     import GuidedCardComponent from "./GuidedCard.svelte";
-    import promptsTable from "./promptsTable";
-    import iasummitIcon from "./iasummit.png"; // Renamed for clarity
-    import iasummitSmallIcon from "./iasummit-small.png"; // Assuming it's also local
+    import promptsTable from "$lib/promptsTable";
 
     // Import local SVG icons (assuming they are moved to the same 'shared' directory or a subdirectory)
     // User will need to ensure these files are present at these relative paths.
@@ -81,12 +79,12 @@
     ];
 
     const iaSummitChoice: GuidedCardData = {
-        iconSrc: iasummitIcon, // Updated to use imported variable
+        iconSrc: '/iasummit.png', // Updated to use imported variable
         iconAlt: "Sommet pour l'action sur l'IA",
         title: "Prompts issus de la consultation citoyenne sur l’IA&nbsp;",
         value: "iasummit",
         isIASummit: true,
-        iaSummitSmallIconSrc: iasummitSmallIcon, // Updated to use imported variable
+        iaSummitSmallIconSrc: '/iasummit-small.png', // Updated to use imported variable
         iaSummitTooltip:
             "Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies.",
     };

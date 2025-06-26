@@ -15,7 +15,7 @@
 		type UndoRetryData,
 		is_one_of_last_two_bot_msgs,
 		group_messages,
-	} from "./utils";
+	} from "$lib/utils";
 	import type { NormalisedMessage } from "../types";
 	import { copy } from "@gradio/utils";
 	import Message from "./Message.svelte";

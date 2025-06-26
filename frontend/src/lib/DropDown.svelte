@@ -1,16 +1,16 @@
 <script context="module" lang="ts">
-	export { default as BaseDropdown } from "./shared/Dropdown.svelte";
+	export { default as BaseDropdown } from "$lib/components/Dropdown.svelte";
 </script>
 
 <script lang="ts">
 	import type { Gradio, KeyUpData, SelectData } from "@gradio/utils";
-	import Dropdown from "./shared/Dropdown.svelte";
-	import ModelsSelection from "./shared/ModelsSelection.svelte";
-	import GuidedPromptSuggestions from "./shared/GuidedPromptSuggestions.svelte"; // Importation du nouveau composant
+	import Dropdown from "$lib/components/Dropdown.svelte";
+	import ModelsSelection from "$lib/components/ModelsSelection.svelte";
+	import GuidedPromptSuggestions from "$lib/components/GuidedPromptSuggestions.svelte"; // Importation du nouveau composant
 
 	import type { LoadingStatus } from "@gradio/statustracker";
-	import TextBox from "./shared/Textbox.svelte";
-	import ChevronBas from "./shared/chevron-bas.svelte";
+	import TextBox from "$lib/components/Textbox.svelte";
+	import ChevronBas from "$lib/components/chevron-bas.svelte";
 	import { fade } from "svelte/transition";
 	import { tick } from "svelte";
 	import type {
@@ -18,12 +18,12 @@
 		Model,
 		Mode,
 		Choice,
-	} from "./shared/utils.ts";
-	import Glass from "./shared/glass.svelte";
-	import Leaf from "./shared/leaf.svelte";
-	import Ruler from "./shared/ruler.svelte";
-	import Brain from "./shared/brain.svelte";
-	import Dice from "./shared/dice.svelte";
+	} from "$lib/utils-customdropdown.ts";
+	import Glass from "$lib/components/glass.svelte";
+	import Leaf from "$lib/components/leaf.svelte";
+	import Ruler from "$lib/components/ruler.svelte";
+	import Brain from "$lib/components/brain.svelte";
+	import Dice from "$lib/components/dice.svelte";
 
 	export let never_clicked: boolean = true;
 	export let models: Model[] = [];

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onDestroy } from "svelte";
 	import { Copy, Check } from "@gradio/icons";
-	import type { NormalisedMessage } from "../types";
+	import type { NormalisedMessage } from "$lib/types";
 	import IconButton from "./IconButton.svelte";
 
 	let copied = false;
