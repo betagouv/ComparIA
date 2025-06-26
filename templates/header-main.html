@@ -50,6 +50,9 @@
               %}aria-current="true" {% endif %} href="/modeles" target="_self" aria-controls="modal-header__menu"
               class="fr-nav__link" data-fr-js-modal-button="true">Liste des
               modèles d'IA</a></li>
+              <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/datasets"
+                %}aria-current="true" {% endif %} href="/datasets" target="_self" aria-controls="modal-header__menu"
+                class="fr-nav__link" data-fr-js-modal-button="true">Jeux de données</a></li>
           <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/a-propos"
               %}aria-current="true" {% endif %} href="/a-propos" target="_self" aria-controls="modal-header__menu"
               class="fr-nav__link" data-fr-js-modal-button="true">À
@@ -70,4 +73,9 @@
       </nav>
     </div>
   </div>
+  {% if request["path"]=="/" %}
+  <div>
+    <a class="temp-banner text-center" href="/datasets" >Découvrez l’étude de Bunkai.ai qui explore les questions posées sur compar:IA !</a>
+  </div>
+  {% endif %}
 </header>
