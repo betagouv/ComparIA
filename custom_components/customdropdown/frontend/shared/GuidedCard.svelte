@@ -31,33 +31,31 @@
     aria-pressed={selected}
 >
     {#if isIASummit}
-        <div class="mobile-flex degrade-content">
+        <img
+            class="md-visible fr-mb-md-3w fr-mr-1w"
+            width="110"
+            height="35"
+            src={iconSrc}
+            alt={iconAlt}
+        />
+        {#if iaSummitSmallIconSrc}
             <img
-                class="md-visible fr-mb-md-3w fr-mr-1w"
-                width="110"
+                class="md-hidden fr-mb-md-3w fr-mr-1w"
+                width="35"
                 height="35"
-                src={iconSrc}
+                src={iaSummitSmallIconSrc}
                 alt={iconAlt}
             />
-            {#if iaSummitSmallIconSrc}
-                <img
-                    class="md-hidden fr-mb-md-3w fr-mr-1w"
-                    width="35"
-                    height="35"
-                    src={iaSummitSmallIconSrc}
-                    alt={iconAlt}
-                />
+        {/if}
+        <span class="sommet-description"
+            >{@html title}&nbsp;
+            {#if iaSummitTooltip}
+                <span
+                    class="fr-icon fr-icon--xs fr-icon--question-line"
+                    aria-describedby="sommetia-tooltip-{value}"
+                ></span>
             {/if}
-            <span class="sommet-description"
-                >{@html title}&nbsp;
-                {#if iaSummitTooltip}
-                    <span
-                        class="fr-icon fr-icon--xs fr-icon--question-line"
-                        aria-describedby="sommetia-tooltip-{value}"
-                    ></span>
-                {/if}
-            </span>
-        </div>
+        </span>
         {#if iaSummitTooltip}
             <span
                 class="fr-tooltip fr-placement"
@@ -67,73 +65,51 @@
             >
         {/if}
     {:else}
-        <div class="mobile-flex">
-            <img
-                class="fr-mb-md-2w fr-mr-1w"
-                src={iconSrc}
-                width="25"
-                alt={iconAlt}
-            />
-            <span>{title}</span>
-        </div>
+        <img
+            class="fr-mb-md-2w fr-mr-1w"
+            src={iconSrc}
+            width="25"
+            alt={iconAlt}
+        />
+        <span>{title}</span>
     {/if}
 </button>
 
 <style>
     .guided-card {
+        flex-direction: row;
+        padding: 0.75rem; /* fr-p-3v */
+        --hover-tint: var(--background-action-low-blue-france-hover);
+        --active-tint: var(--background-action-low-blue-france-active);
+        font-weight: 500;
         width: 100%;
         height: 100%;
         text-align: left;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
-        padding: 0.75rem; /* fr-p-3v */
-        --hover-tint: var(--background-action-low-blue-france-hover);
-        --active-tint: var(--background-action-low-blue-france-active);
+        justify-content: left;
         font-size: 0.75em;
         border: none;
         background-color: var(--background-default-grey);
         color: var(--text-default-grey);
+
+        padding: 1rem;
+        align-items: left;
+        transition: var(--button-transition);
+        cursor: pointer;
+        outline: 1px solid #e5e5e5;
+        border-radius: 0.5rem;
+        background-color: white;
+        color: var(--grey-200-850);
+        font-weight: 500;
+        line-height: var(--line-md);
     }
+
     .guided-card:hover {
         background-color: var(--hover-tint);
     }
+
     .guided-card:active {
         background-color: var(--active-tint);
-    }
-
-    .guided-card {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        justify-content: center;
-        height: 100%; /* Pour que toutes les cartes aient la même hauteur */
-        text-align: left;
-        display: flex; /* Pour mieux contrôler l'alignement interne si besoin */
-        padding: 0.75rem; /* fr-p-3v */
-        --hover-tint: var(--background-action-low-blue-france-hover);
-        --active-tint: var(--background-action-low-blue-france-active);
-
-        font-weight: 500;
-        align-self: center;
-        font-size: 0.75em;
-    }
-    
-
-
-    .mobile-flex {
-        display: flex;
-        align-items: center;
-    }
-
-    .mobile-flex img {
-        margin-bottom: 0;
-        margin-right: 0.5rem; /* fr-mr-1w */
-    }
-
-    .degrade-content img.fr-mr-1w {
-        margin-right: 0.5rem; /* fr-mr-1w */
     }
 
     .guided-card:has(.degrade) {
@@ -157,22 +133,18 @@
   } */
 
         .guided-card {
+            flex-direction: column;
             font-size: 0.875em !important;
         }
     }
 
+
     .sommet-description {
         color: #051f43;
         align-self: center;
-        font-weight: 500;
     }
     .sommet-description .fr-icon--question-line {
         color: #000091;
-    }
-
-    .guided-card span:not(.sommet-description):not(.fr-tooltip) {
-        font-weight: 500;
-        align-self: center;
     }
 
     .guided-card .fr-tooltip {
@@ -205,22 +177,6 @@
         .md-hidden {
             display: none !important;
         }
-    }
-
-    .guided-card {
-        padding: 1rem 1rem 1rem 1rem;
-        display: flex;
-        align-items: left;
-        transition: var(--button-transition);
-        cursor: pointer;
-        box-shadow: var(--checkbox-label-shadow);
-        outline: 1px solid #e5e5e5;
-        border-radius: 0.5rem;
-        background-color: white;
-        color: var(--grey-200-850);
-        font-weight: var(--checkbox-label-text-weight);
-        font-size: 1rem;
-        line-height: var(--line-md);
     }
 
     .guided-card.selected,
