@@ -73,4 +73,9 @@
       </nav>
     </div>
   </div>
+  {% if request["path"]=="/" %}
+  <div>
+    <a class="temp-banner text-center" href="/datasets" >Découvrez l’étude de Bunkai.ai qui explore les questions posées sur compar:IA !</a>
+  </div>
+  {% endif %}
 </header>
