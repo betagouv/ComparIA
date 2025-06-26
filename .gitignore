@@ -50,7 +50,7 @@ docker/.env
 languia-*.json
 utils/results/
 utils/results-output/
-datasets/
+/datasets/
 litellm_config.yml
 results-output/
 venv.bak
