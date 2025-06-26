@@ -1,69 +1,66 @@
 <script context="module" lang="ts">
-	export { default as BaseRadio } from "$lib/components/Radio.svelte";
-	// export { default as BaseExample } from "./Example.svelte";
+  export { default as BaseRadio } from '$lib/components/Radio.svelte';
+  // export { default as BaseExample } from "./Example.svelte";
 </script>
 
 <script lang="ts">
-	import type { Gradio, SelectData } from "@gradio/utils";
-	import { StatusTracker } from "@gradio/statustracker";
-	import type { LoadingStatus } from "@gradio/statustracker";
-	import BaseRadio from "$lib/components/Radio.svelte";
+  import type { Gradio, SelectData } from '@gradio/utils';
+  import { StatusTracker } from '@gradio/statustracker';
+  import type { LoadingStatus } from '@gradio/statustracker';
+  import BaseRadio from '$lib/components/Radio.svelte';
 
-	export let gradio: Gradio<{
-		change: never;
-		select: SelectData;
-		input: never;
-		clear_status: LoadingStatus;
-	}>;
+  export let gradio: Gradio<{
+    change: never;
+    select: SelectData;
+    input: never;
+    clear_status: LoadingStatus;
+  }>;
 
-	// export let label = gradio.i18n("radio.radio");
-	// export let info: string | undefined = undefined;
-	export let elem_id = "";
-	export let elem_classes: string[] = [];
-	export let visible = true;
-	export let value: string | null = null;
-	export let choices: string[] = [];
-	// export let show_label = true;
-	// export let container = false;
-	// export let scale: number | null = null;
-	export let min_columns: number | undefined = 2;
-	export let loading_status: LoadingStatus;
-	export let interactive = true;
+  // export let label = gradio.i18n("radio.radio");
+  // export let info: string | undefined = undefined;
+  export let elem_id = '';
+  export let elem_classes: string[] = [];
+  export let visible = true;
+  export let value: string | null = null;
+  export let choices: string[] = [];
+  // export let show_label = true;
+  // export let container = false;
+  // export let scale: number | null = null;
+  export let min_columns: number | undefined = 2;
+  export let loading_status: LoadingStatus;
+  export let interactive = true;
 
-	let columns = Math.min(choices.length, 4); // max 4 columns
+  let columns = Math.min(choices.length, 4); // max 4 columns
 
-	function handle_change(): void {
-		gradio.dispatch("change");
-	}
+  function handle_change(): void {
+    gradio.dispatch('change');
+  }
 
-	$: value, handle_change();
+  $: value, handle_change();
 
-	$: disabled = !interactive;
+  $: disabled = !interactive;
 </script>
 
-<div
-	id={elem_id}
-	class="flex justify-center {elem_classes} {visible ? '' : 'hide'}"
->
-	<StatusTracker
-		autoscroll={gradio.autoscroll}
-		i18n={gradio.i18n}
-		{...loading_status}
-		on:clear_status={() => gradio.dispatch("clear_status", loading_status)}
-	/>
+<div id={elem_id} class="flex justify-center {elem_classes} {visible ? '' : 'hide'}">
+  <StatusTracker
+    autoscroll={gradio.autoscroll}
+    i18n={gradio.i18n}
+    {...loading_status}
+    on:clear_status={() => gradio.dispatch('clear_status', loading_status)}
+  />
 
-	{#each choices as [display_value, internal_value], i (i)}
-		<BaseRadio
-			{display_value}
-			{internal_value}
-			bind:selected={value}
-			{disabled}
-			on:input={() => {
-				gradio.dispatch("select", { value: internal_value, index: i });
-				gradio.dispatch("input");
-			}}
-		/>
-	{/each}
+  {#each choices as [display_value, internal_value], i (i)}
+    <BaseRadio
+      {display_value}
+      {internal_value}
+      bind:selected={value}
+      {disabled}
+      on:input={() => {
+        gradio.dispatch('select', { value: internal_value, index: i });
+        gradio.dispatch('input');
+      }}
+    />
+  {/each}
 </div>
 
 <!-- TODO: this in svelte based on what's in customchatbot  -->
@@ -158,7 +155,7 @@
 		) -->
 
 <style>
-	/* .wrap {
+  /* .wrap {
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--checkbox-label-gap);

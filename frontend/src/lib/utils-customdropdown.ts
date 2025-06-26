@@ -3,36 +3,34 @@
 // }
 type Item = string | number;
 
-
 export interface ModeAndPromptData {
-	prompt_value: string;
-	mode: "random" | "custom" | "big-vs-small" | "small-models" | "reasoning";
-	custom_models_selection: string[];
+  prompt_value: string;
+  mode: 'random' | 'custom' | 'big-vs-small' | 'small-models' | 'reasoning';
+  custom_models_selection: string[];
 }
 
 export interface Model {
+  // [aya-expanse-8b]
+  // simple_name = "Aya Expanse 8B"
+  // organisation = "Cohere"
+  // icon_path = "cohere.png"
+  // friendly_size = "S"
+  // distribution = "open-weights"
+  // conditions = "copyleft"
+  // params = 8
+  // license = "CC-BY-NC-4.0"
+  // description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue."
 
-	// [aya-expanse-8b]
-	// simple_name = "Aya Expanse 8B"
-	// organisation = "Cohere"
-	// icon_path = "cohere.png"
-	// friendly_size = "S"
-	// distribution = "open-weights"
-	// conditions = "copyleft"
-	// params = 8
-	// license = "CC-BY-NC-4.0"
-	// description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue." 
-
-	id: string;
-	friendly_size: "XS" | "S" | "M" | "L" | "XL" | "XXL";
-	simple_name: string;
-	organisation: string;
-	params: number;
-	total_params: number;
-	distribution: "open-weights" | "api-only";
-	icon_path: string;
-	release_date: string | null;
-	fully_open_source: boolean;
+  id: string;
+  friendly_size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL';
+  simple_name: string;
+  organisation: string;
+  params: number;
+  total_params: number;
+  distribution: 'open-weights' | 'api-only';
+  icon_path: string;
+  release_date: string | null;
+  fully_open_source: boolean;
 }
 
 // export function handle_change(
@@ -71,17 +69,12 @@ export interface Model {
 // 	return [true, active_index];
 // }
 
-export type Mode =
-	| "random"
-	| "custom"
-	| "big-vs-small"
-	| "small-models"
-	| "reasoning";
+export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models' | 'reasoning';
 
 export type Choice = {
-	value: Mode;
-	label: string;
-	alt_label: string;
-	icon: any;
-	description: string;
+  value: Mode;
+  label: string;
+  alt_label: string;
+  icon: any;
+  description: string;
 };
