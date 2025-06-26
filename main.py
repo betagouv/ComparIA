@@ -104,6 +104,17 @@ async def models(request: Request):
         },
     )
 
+@app.get("/datasets", response_class=HTMLResponse)
+async def datasets(request: Request):
+    return templates.TemplateResponse(
+        "datasets.html",
+        {
+            "title": "Jeux de données",
+            "request": request,
+            "config": config,
+        },
+    )
+
 
 @app.get("/share", response_class=HTMLResponse)
 async def share(i: str, request: Request):

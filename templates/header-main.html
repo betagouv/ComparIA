@@ -50,6 +50,9 @@
               %}aria-current="true" {% endif %} href="/modeles" target="_self" aria-controls="modal-header__menu"
               class="fr-nav__link" data-fr-js-modal-button="true">Liste des
               modèles d'IA</a></li>
+              <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/datasets"
+                %}aria-current="true" {% endif %} href="/datasets" target="_self" aria-controls="modal-header__menu"
+                class="fr-nav__link" data-fr-js-modal-button="true">Jeux de données</a></li>
           <li class="fr-nav__item" data-fr-js-navigation-item="true"><a {% if request["path"]=="/a-propos"
               %}aria-current="true" {% endif %} href="/a-propos" target="_self" aria-controls="modal-header__menu"
               class="fr-nav__link" data-fr-js-modal-button="true">À
