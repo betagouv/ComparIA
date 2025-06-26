@@ -11,7 +11,7 @@ import json
 
 from languia.utils import strip_metadata, get_user_info, ContextTooLongError
 
-from langfuse import get_client, observe
+# from langfuse import get_client, observe
 
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "r") as file:
@@ -23,7 +23,7 @@ else:
     vertex_credentials_json = None
 
 
-@observe(as_type="generation")
+# @observe(as_type="generation")
 def litellm_stream_iter(
     model_name,
     messages,
