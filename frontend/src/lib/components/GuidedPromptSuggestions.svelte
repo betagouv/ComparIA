@@ -5,16 +5,15 @@
 
     // Import local SVG icons (assuming they are moved to the same 'shared' directory or a subdirectory)
     // User will need to ensure these files are present at these relative paths.
-    import lightbulbIcon from "./lightbulb.svg";
-    import chat3Icon from "./chat-3.svg";
-    import translate2Icon from "./translate-2.svg";
-    import draftIcon from "./draft.svg";
-    import bowlIcon from "./bowl.svg";
-    import clipboardIcon from "./clipboard.svg";
-    import bookOpenLineIcon from "./book-open-line.svg";
-    import music2Icon from "./music-2.svg";
-
-    import shuffleIcon from "./shuffle.svg";
+    import lightbulbIcon from "$lib/icons/lightbulb.svg";
+    import chat3Icon from "$lib/icons/chat-3.svg";
+    import translate2Icon from "$lib/icons/translate-2.svg";
+    import draftIcon from "$lib/icons/draft.svg";
+    import bowlIcon from "$lib/icons/bowl.svg";
+    import clipboardIcon from "$lib/icons/clipboard.svg";
+    import bookOpenLineIcon from "$lib/icons/book-open-line.svg";
+    import music2Icon from "$lib/icons/music-2.svg";
+    import shuffleIcon from "$lib/icons/shuffle.svg";
 
     // Interface pour les données des cartes, utilisant des props au lieu de HTML brut
     interface GuidedCardData {
