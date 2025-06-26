@@ -41,7 +41,7 @@ from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
-    refresh_unavailable_models,
+    # refresh_unavailable_models,
     gen_prompt,
     to_threeway_chatbot,
     EmptyResponseError,
@@ -81,9 +81,9 @@ def register_listeners():
 
     def enter_arena(request: gr.Request):
         # Refresh on picking model? Do it async? Should do it globally and async...
-        config.unavailable_models = refresh_unavailable_models(
-            config.unavailable_models, controller_url=config.controller_url
-        )
+        # config.unavailable_models = refresh_unavailable_models(
+        #     config.unavailable_models, controller_url=config.controller_url
+        # )
 
         # TODO: actually check for it
         # tos_accepted = request...
@@ -141,9 +141,9 @@ document.getElementById("fr-modal-welcome-close").blur();
     ):
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
-        config.unavailable_models = refresh_unavailable_models(
-            config.unavailable_models, controller_url=config.controller_url
-        )
+        # config.unavailable_models = refresh_unavailable_models(
+        #     config.unavailable_models, controller_url=config.controller_url
+        # )
         didnt_reset_prompt = True
         text = model_dropdown_scoped.get("prompt_value", "")
         mode = model_dropdown_scoped.get("mode", "random")
@@ -324,13 +324,13 @@ document.getElementById("fr-modal-welcome-close").blur();
                 else:
                     original_user_prompt = conv_error.messages[1].content
 
-                config.unavailable_models = refresh_unavailable_models(
-                    config.unavailable_models, controller_url=config.controller_url
-                )
+                # config.unavailable_models = refresh_unavailable_models(
+                #     config.unavailable_models, controller_url=config.controller_url
+                # )
 
-                logger.debug(
-                    "refreshed outage models:" + str(config.unavailable_models)
-                )  # Simpler to repick 2 models
+                # logger.debug(
+                #     "refreshed outage models:" + str(config.unavailable_models)
+                # )  # Simpler to repick 2 models
 
                 if app_state_scoped.mode == "custom":
                     gr.Warning(
