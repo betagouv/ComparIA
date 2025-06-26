@@ -8,7 +8,7 @@
 
   export var choices: Choice[];
 
-  import ChevronDroite from './chevron-droite.svelte';
+  import ChevronDroite from '$lib/icons/chevron-droite.svelte';
 
   function handleKeyDown(index: number, event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {

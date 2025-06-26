@@ -1,6 +1,6 @@
 <script lang="ts">
   import { sanitize } from '@gradio/sanitize';
-  import Brain from './brain.svelte';
+  import Brain from '$lib/icons/brain.svelte';
 
   import type { NormalisedMessage } from '../types';
   import { MarkdownCode as Markdown } from '@gradio/markdown-code';

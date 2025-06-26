@@ -1,11 +1,11 @@
 <script lang="ts">
   import IconButton from './IconButton.svelte';
-  import ThumbDownActive from './ThumbDownActive.svelte';
-  import ThumbDownDefault from './ThumbDownDefault.svelte';
-  import ThumbDownDisabled from './ThumbDownDisabled.svelte';
-  import ThumbUpActive from './ThumbUpActive.svelte';
-  import ThumbUpDefault from './ThumbUpDefault.svelte';
-  import ThumbUpDisabled from './ThumbUpDisabled.svelte';
+  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte';
+  import ThumbDownDefault from '$lib/icons/ThumbDownDefault.svelte';
+  import ThumbDownDisabled from '$lib/icons/ThumbDownDisabled.svelte';
+  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte';
+  import ThumbUpDefault from '$lib/icons/ThumbUpDefault.svelte';
+  import ThumbUpDisabled from '$lib/icons/ThumbUpDisabled.svelte';
 
   export let handle_action: (selected: string | null) => void;
   export let disabled = false;
