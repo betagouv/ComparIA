@@ -7,7 +7,7 @@
 	import Dropdown from "./shared/Dropdown.svelte";
 	import ModelsSelection from "./shared/ModelsSelection.svelte";
 	import GuidedPromptSuggestions from "./shared/GuidedPromptSuggestions.svelte"; // Importation du nouveau composant
-	import { Block } from "@gradio/atoms";
+
 	import type { LoadingStatus } from "@gradio/statustracker";
 	import TextBox from "./shared/Textbox.svelte";
 	import ChevronBas from "./shared/chevron-bas.svelte";
@@ -53,9 +53,23 @@
 	export let interactive: boolean;
 	export let value: ModeAndPromptData;
 
-	// Reference to the TextBox element
-	let textboxElement: TextBox; // Changed type to TextBox component instance
+	function selectPartialText(start?: number, end?: number): void {
+		if (textboxElement) {
+			textboxElement.focus();
+			if (start !== undefined && end !== undefined) {
+				textboxElement.setSelectionRange(start, end);
+				console.log(`[Textbox] Text selected from ${start} to ${end}`);
+			} else {
+				textboxElement.select();
+				console.log("[Textbox] All text selected");
+			}
+		} else {
+			console.error("[Textbox] Element 'el' not found for selection.");
+		}
+	}
+	let textboxElement: HTMLTextAreaElement | HTMLInputElement;
 
+	// let textboxElement: TextBox;
 	export const choices: Choice[] = [
 		{
 			value: "random",
@@ -215,8 +229,6 @@
 
 	export let prompt_value: string = initialPrompt;
 
-	let textboxElement: HTMLTextAreaElement | HTMLInputElement;
-
 	let choice: Choice = get_choice(initialMode) || choices[0];
 	let firstModelName = "Aléatoire";
 	let secondModelName = "Aléatoire";
@@ -357,9 +369,17 @@
 		}
 	}
 
-	function handlePromptSelected(event: CustomEvent<{ text: string; selectionStart?: number; selectionEnd?: number }>): void {
+	function handlePromptSelected(
+		event: CustomEvent<{
+			text: string;
+			selectionStart?: number;
+			selectionEnd?: number;
+		}>,
+	): void {
 		prompt_value = event.detail.text;
-		console.log(`[Index] handlePromptSelected: Received promptselected. Text: "${prompt_value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`);
+		console.log(
+			`[Index] handlePromptSelected: Received promptselected. Text: "${prompt_value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`,
+		);
 		// Déclencher un événement de changement pour que Gradio soit informé
 		gradio.dispatch("change", {
 			prompt_value: prompt_value,
@@ -367,16 +387,27 @@
 			custom_models_selection: custom_models_selection,
 		});
 
-		if (textboxElement && event.detail.selectionStart !== undefined && event.detail.selectionEnd !== undefined) {
+		if (
+			textboxElement &&
+			event.detail.selectionStart !== undefined &&
+			event.detail.selectionEnd !== undefined
+		) {
 			const sStart = event.detail.selectionStart;
 			const sEnd = event.detail.selectionEnd;
 
 			const performSelection = () => {
-				if (textboxElement && typeof textboxElement.selectText === 'function') {
-					console.log(`[Index] Performing selection. Start: ${sStart}, End: ${sEnd}`);
-					textboxElement.selectText(sStart, sEnd);
+				if (
+					selectPartialText &&
+					typeof selectPartialText === "function"
+				) {
+					console.log(
+						`[Index] Performing selection. Start: ${sStart}, End: ${sEnd}`,
+					);
+					selectPartialText(sStart, sEnd);
 				} else {
-					console.warn(`[Index] Textbox element or selectText method not available when trying to perform selection.`);
+					console.warn(
+						`[Index] Textbox element or selectPartialText method not available when trying to perform selection.`,
+					);
 				}
 			};
 
@@ -396,9 +427,12 @@
 			// setTimeout(() => {
 			// 	performSelection();
 			// }, 250); // 250ms delay
-
-		} else { // No valid selection range provided
-			console.log("[Index] handlePromptSelected: No specific selection range provided, or textboxElement not ready. No text will be selected.", event.detail);
+		} else {
+			// No valid selection range provided
+			console.log(
+				"[Index] handlePromptSelected: No specific selection range provided, or textboxElement not ready. No text will be selected.",
+				event.detail,
+			);
 		}
 		// Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
 		// dispatchSubmit();
@@ -406,7 +440,8 @@
 	}
 
 	var alt_label: string = "Sélection des modèles";
-	$: if ( // eslint-disable-next-line
+	$: if (
+		// eslint-disable-next-line
 		(mode == "custom" && custom_models_selection.length < 1) ||
 		(mode == "random" && never_clicked)
 	) {
@@ -427,11 +462,10 @@
 	<div class="grid">
 		<div class="first-textbox fr-mb-3v">
 			<TextBox
-				bind:this={textboxElement}
+				bind:el={textboxElement}
 				{disabled}
 				bind:value={prompt_value}
 				bind:value_is_output
-				bind:el={textboxElement}
 				{elem_id}
 				{elem_classes}
 				{visible}

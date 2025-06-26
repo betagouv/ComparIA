@@ -161,20 +161,6 @@
 		};
 	}
 
-	export function selectText(start?: number, end?: number): void {
-		if (el) {
-			el.focus();
-			if (start !== undefined && end !== undefined) {
-				el.setSelectionRange(start, end);
-				console.log(`[Textbox] Text selected from ${start} to ${end}`);
-			} else {
-				el.select();
-				console.log("[Textbox] All text selected");
-			}
-		} else {
-			console.error("[Textbox] Element 'el' not found for selection.");
-		}
-	}
 </script>
 
 <!-- svelte-ignore a11y-autofocus -->
