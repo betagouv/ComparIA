@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
-  import CopyIcon from './CopyIcon.svelte';
+  import CopyIcon from '$lib/icons/CopyIcon.svelte';
   import { Check } from '@gradio/icons';
   import IconButton from './IconButton.svelte';
 

@@ -10,15 +10,15 @@
 
   import type { LoadingStatus } from '@gradio/statustracker';
   import TextBox from '$lib/components/Textbox.svelte';
-  import ChevronBas from '$lib/components/chevron-bas.svelte';
+  import ChevronBas from '$lib/icons/chevron-bas.svelte';
   import { fade } from 'svelte/transition';
   import { tick } from 'svelte';
   import type { ModeAndPromptData, Model, Mode, Choice } from '$lib/utils-customdropdown.ts';
-  import Glass from '$lib/components/glass.svelte';
-  import Leaf from '$lib/components/leaf.svelte';
-  import Ruler from '$lib/components/ruler.svelte';
-  import Brain from '$lib/components/brain.svelte';
-  import Dice from '$lib/components/dice.svelte';
+  import Glass from '$lib/icons/glass.svelte';
+  import Leaf from '$lib/icons/leaf.svelte';
+  import Ruler from '$lib/icons/ruler.svelte';
+  import Brain from '$lib/icons/brain-customdropdown.svelte';
+  import Dice from '$lib/icons/dice.svelte';
 
   export let never_clicked: boolean = true;
   export let models: Model[] = [];

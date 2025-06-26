@@ -69,8 +69,8 @@
 
   import LikePanel from './LikePanel.svelte';
 
-  import ThumbUpActive from './ThumbUpActive.svelte';
-  import ThumbDownActive from './ThumbDownActive.svelte';
+  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte';
+  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte';
 
   export let likeValue: string[] = [];
   export const positive_choices: [string, string][] = [
