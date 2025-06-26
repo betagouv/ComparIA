@@ -71,7 +71,7 @@
             <img
                 class="fr-mb-md-2w fr-mr-1w"
                 src={iconSrc}
-                width="20"
+                width="25"
                 alt={iconAlt}
             />
             <span>{title}</span>
