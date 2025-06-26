@@ -43,7 +43,6 @@ from languia.utils import (
     pick_models,
     refresh_unavailable_models,
     gen_prompt,
-    to_threeway_chatbot,
     EmptyResponseError,
     second_header_html,
 )
@@ -139,6 +138,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         # event: gr.EventData,
     ):
+        print(model_dropdown_scoped)
         # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
         # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
         config.unavailable_models = refresh_unavailable_models(
@@ -205,7 +205,7 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
-        chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+        chatbot = [conv_a_scoped.messages, conv_b_scoped.messages]
         banner = second_header_html(1, mode)
 
         text = gr.update(visible=True)
@@ -245,7 +245,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 if response_a is None and response_b is None:
                     break
 
-                chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+                chatbot = [conv_a_scoped.messages, conv_b_scoped.messages]
                 # yield [
                 #     app_state_scoped,
                 #     conv_a_scoped,
@@ -385,7 +385,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     extra={"request": request},
                 )
 
-            chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+            chatbot = ([conv_a_scoped.messages, conv_b_scoped.messages])
 
             yield [
                 app_state_scoped,
@@ -478,7 +478,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
-        chatbot = to_threeway_chatbot(conversations)
+        chatbot = (conversations)
         text = gr.update(visible=True, value="")
         return [
             app_state_scoped,
@@ -529,7 +529,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                 if response_a is None and response_b is None:
                     break
 
-                chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+                chatbot = ([conv_a_scoped.messages, conv_b_scoped.messages])
                 yield [
                     app_state_scoped,
                     conv_a_scoped,
@@ -582,7 +582,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     extra={"request": request},
                 )
 
-            chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
+            chatbot = ([conv_a_scoped.messages, conv_b_scoped.messages])
 
             yield [app_state_scoped, conv_a_scoped, conv_b_scoped, chatbot, textbox]
 
@@ -611,7 +611,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             model_dropdown.submit,
         ],
         fn=add_first_text,
-        api_name=False,
+        api_name="add_first_text",
         inputs=[app_state, model_dropdown],
         outputs=[app_state]
         + [conv_a]
@@ -659,6 +659,7 @@ setTimeout(() => {
 , 500);
 }""",
         show_progress="hidden",
+        api_name=False
     )
 
     gr.on(
@@ -668,7 +669,7 @@ setTimeout(() => {
             chatbot.retry,
         ],
         fn=add_text,
-        api_name=False,
+        api_name="add_text",
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
         # scroll_to_output=True,
@@ -823,7 +824,7 @@ window.scrollTo({
     @chatbot.like(
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
         outputs=[app_state],
-        api_name=False,
+        api_name="chatbot_react",
         show_progress="hidden",
     )
     def record_like(
@@ -968,7 +969,7 @@ window.scrollTo({
             which_model_radio,
         ],
         # outputs=[quiz_modal],
-        api_name=False,
+        api_name="chatbot_vote",
         # scroll_to_output=True,
         show_progress="hidden",
     ).then(

@@ -101,7 +101,7 @@ class ChatMessage:
 
 
 class ChatbotDataMessages(GradioRootModel):
-    root: list[Message]
+    root: list[list[Message], list[Message]]
 
 if TYPE_CHECKING:
     from gradio.components import Timer
@@ -257,19 +257,19 @@ class CustomChatbot(Component):
 
         self.examples = examples
 
-    @staticmethod
-    def _check_format(messages: list[Any]):
-        all_valid = all(
-            isinstance(message, dict)
-            and "role" in message
-            and "content" in message
-            or isinstance(message, ChatMessage | Message)
-            for message in messages
-        )
-        if not all_valid:
-            raise Error(
-                "Data incompatible with messages format. Each message should be a dictionary with 'role' and 'content' keys or a ChatMessage object."
-            )
+    # @staticmethod
+    # def _check_format(messages: list[Any]):
+    #     all_valid = all(
+    #         isinstance(message, dict)
+    #         and "role" in message
+    #         and "content" in message
+    #         or isinstance(message, ChatMessage | Message)
+    #         for message in messages
+    #     )
+    #     if not all_valid:
+    #         raise Error(
+    #             "Data incompatible with messages format. Each message should be a dictionary with 'role' and 'content' keys or a ChatMessage object."
+    #         )
 
     def _preprocess_content(
         self,
@@ -294,14 +294,17 @@ class CustomChatbot(Component):
             return payload
         if not isinstance(payload, ChatbotDataMessages):
             raise Error("Data incompatible with the messages format")
-        message_dicts = []
-        for message in payload.root:
-            message_dict = cast(MessageDict, message.model_dump())
-            message_dict["content"] = self._preprocess_content(message.content)
-            if hasattr(message, "reasoning") and message.reasoning != "":
-                message_dict["reasoning"] = message.reasoning
-            message_dicts.append(message_dict)
-        return message_dicts
+        processed_lists = []
+        for message_list in payload.root:
+            current_list = []
+            for message in message_list:
+                message_dict = cast(MessageDict, message.model_dump())
+                message_dict["content"] = self._preprocess_content(message.content)
+                if hasattr(message, "reasoning") and message.reasoning != "":
+                    message_dict["reasoning"] = message.reasoning
+                current_list.append(message_dict)
+            processed_lists.append(current_list)
+        return processed_lists
 
     @staticmethod
     def _get_alt_text(chat_message: dict | list | tuple | GradioComponent):
@@ -369,12 +372,23 @@ class CustomChatbot(Component):
         """
         if value is None:
             return ChatbotDataMessages(root=[])
-        self._check_format(value)
-        processed_messages = [
-            self._postprocess_message_messages(cast(MessageDict, message))
-            for message in value
-        ]
-        return ChatbotDataMessages(root=processed_messages)
+        # self._check_format(value)
+        processed_lists = []
+        if value and len(value) == 2 and all(isinstance(lst, list) for lst in value):
+            # Already in the correct format
+            for lst in value:
+                processed_lists.append([
+                    self._postprocess_message_messages(cast(MessageDict, message))
+                    for message in lst
+                ])
+        else:
+            # Convert single list to dual list format
+            processed_lists.append([
+                self._postprocess_message_messages(cast(MessageDict, message))
+                for message in (value or [])
+            ])
+            processed_lists.append([])
+        return ChatbotDataMessages(root=processed_lists)
 
     def example_payload(self) -> Any:
         return [
