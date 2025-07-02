@@ -446,6 +446,7 @@ with gr.Blocks(
         )
         return app_state_scoped
 
+# FIXME: protect against duplicate voting + verify required fields
     @supervote_send_btn.click(
         inputs=(
             [app_state]
@@ -459,7 +460,6 @@ with gr.Blocks(
             + [comments_a]
             + [comments_b]
         ),
-        outputs=[],
         api_name="chatbot_vote",
     )
     def vote_preferences(
@@ -486,14 +486,15 @@ with gr.Blocks(
         else:
             category = None
 
-        vote_last_response(
+        data = vote_last_response(
             [conv_a_scoped, conv_b_scoped],
             which_model_radio_output,
             category,
             details,
             request,
         )
-        return True
+        print(f"Voted {dict(data)}")
+        return 
 
 
 # Launch the Gradio app directly
