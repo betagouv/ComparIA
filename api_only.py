@@ -22,9 +22,7 @@ from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot 
     ChatMessage,
 )
 
-
 with gr.Blocks(
-    title="Discussion - compar:IA, le comparateur d'IA conversationnelles",
     analytics_enabled=False,
 ) as demo:
 
@@ -35,32 +33,30 @@ with gr.Blocks(
     # model_selectors = [None] * num_sides
 
     mode_dropdown = gr.Dropdown(
+        label="Mode",
         # ignored, hardcoded in custom component
         choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
     )
-    models_selection = gr.CheckboxGroup(choices=[model["id"] for model in models_extra_info])
+    models_selection = gr.CheckboxGroup(
+        label="Modèles",
+         info="Deux modèles max",
+          choices=[model["id"] for model in models_extra_info]
+    )
 
     textbox = gr.Textbox(
-        elem_id="main-textbox",
-        show_label=False,
-        lines=1,
-        placeholder="Continuer à discuter avec les deux modèles d'IA",
-        max_lines=7,
-        elem_classes="w-full",
-        container=True,
-        autofocus=True,
+        autofocus=True
     )
     send_btn = gr.Button(
         value="Envoyer",
     )
 
-    chatbot1 = gr.Chatbot(type="messages")
-    chatbot2 = gr.Chatbot(type="messages")
+    chatbot1 = gr.Chatbot(label="Modèle A", type="messages")
+    chatbot2 = gr.Chatbot(label="Modèle B", type="messages")
 
     retry_btn = gr.Button("Retry")
 
     which_model_radio = gr.Radio(
-        elem_id="vote-cards",
+        label="Modèle préféré",
         choices=[
             (
                 """Modèle A""",
@@ -75,12 +71,10 @@ with gr.Blocks(
                 "model-b",
             ),
         ],
-        show_label=False,
     )
 
     positive_a = gr.CheckboxGroup(
-        elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-        show_label=False,
+        label="Qualités positives de A",
         choices=[
             ("Utiles", "useful"),
             ("Complètes", "complete"),
@@ -90,8 +84,7 @@ with gr.Blocks(
     )
 
     negative_a = gr.CheckboxGroup(
-        elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-        show_label=False,
+        label="Qualités négatives de A",
         choices=[
             ("Incorrectes", "incorrect"),
             ("Superficielles", "superficial"),
@@ -100,15 +93,11 @@ with gr.Blocks(
     )
 
     comments_a = gr.Textbox(
-        show_label=False,
-        visible=False,
-        lines=3,
-        placeholder="Les réponses du modèle A sont...",
+        label="Les réponses du modèle A sont...",
     )
 
     positive_b = gr.CheckboxGroup(
-        elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-        show_label=False,
+        label="Qualités positives de B",
         choices=[
             ("Utiles", "useful"),
             ("Complètes", "complete"),
@@ -118,8 +107,7 @@ with gr.Blocks(
     )
 
     negative_b = gr.CheckboxGroup(
-        elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-        show_label=False,
+        label="Qualités négatives de B",
         choices=[
             ("Incorrectes", "incorrect"),
             ("Superficielles", "superficial"),
@@ -127,38 +115,20 @@ with gr.Blocks(
         ],
     )
     comments_b = gr.Textbox(
-        show_label=False,
-        visible=False,
-        lines=3,
-        placeholder="Les réponses du modèle B sont...",
-    )
-    comments_link = gr.Button(elem_classes="link fr-mt-1w", value="Ajouter des détails")
-
-    conclude_btn = gr.Button(
-        size="lg",
-        value="Passer à la révélation des modèles",
-        elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
-        visible=False,
-        interactive=False,
+        label="Les réponses du modèle B sont...",
     )
 
     supervote_send_btn = gr.Button(
-        elem_classes="purple-btn fr-mx-auto fr-col-10 fr-col-md-4",
-        value="Passer à la révélation des modèles",
-        size="lg",
-        interactive=False,
+        value="Voter",
     )
 
     # Register listeners
 
     # FIXME: conv_a_scoped and conv_b_scoped as input??
     # FIXME: if app_state stage is after first msg, disable this func
-    @mode_dropdown.select(
-        inputs=[app_state] + [mode_dropdown] + [models_selection],
-        outputs=[app_state] + [conv_a] + [conv_b],
-        api_name="draw_models",
-    )
-    @models_selection.select(
+
+    @gr.on(
+        triggers=[models_selection.select, mode_dropdown.select],
         inputs=[app_state] + [mode_dropdown] + [models_selection],
         outputs=[app_state] + [conv_a] + [conv_b],
         api_name="draw_models",
@@ -193,12 +163,8 @@ with gr.Blocks(
         print(f"selection_modeles: {first_model_name}, {second_model_name}")
         return app_state_scoped, conv_a_scoped, conv_b_scoped
 
-    # @textbox.submit(
-    #     api_name="add_text",
-    #     inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
-    #     outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
-    # )
-    @send_btn.click(
+    @gr.on(
+        triggers=[send_btn.click, textbox.submit],
         api_name="add_text",
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
@@ -272,7 +238,7 @@ with gr.Blocks(
                     conv_a_scoped,
                     conv_b_scoped,
                     messages_to_dict_list(conv_a_scoped.messages),
-                    messages_to_dict_list(conv_b_scoped.messages)
+                    messages_to_dict_list(conv_b_scoped.messages),
                 ]
 
         except Exception as e:
@@ -374,8 +340,8 @@ with gr.Blocks(
                 # chatbot,
                 # chatbot1,
                 # chatbot2
-                    messages_to_dict_list(conv_a_scoped.messages),
-                    messages_to_dict_list(conv_b_scoped.messages)
+                messages_to_dict_list(conv_a_scoped.messages),
+                messages_to_dict_list(conv_b_scoped.messages),
             ]
 
     @retry_btn.click(
