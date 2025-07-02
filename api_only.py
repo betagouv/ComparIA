@@ -6,7 +6,7 @@ import sentry_sdk
 
 import copy
 
-from languia.utils import AppState, pick_models
+from languia.utils import AppState, pick_models, messages_to_dict_list
 
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
@@ -38,7 +38,7 @@ with gr.Blocks(
         # ignored, hardcoded in custom component
         choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
     )
-    models_selection = gr.CheckboxGroup(choices=models_extra_info)
+    models_selection = gr.CheckboxGroup(choices=[model["id"] for model in models_extra_info])
 
     textbox = gr.Textbox(
         elem_id="main-textbox",
@@ -152,6 +152,7 @@ with gr.Blocks(
     # Register listeners
 
     # FIXME: conv_a_scoped and conv_b_scoped as input??
+    # FIXME: if app_state stage is after first msg, disable this func
     @mode_dropdown.select(
         inputs=[app_state] + [mode_dropdown] + [models_selection],
         outputs=[app_state] + [conv_a] + [conv_b],
@@ -192,12 +193,12 @@ with gr.Blocks(
         print(f"selection_modeles: {first_model_name}, {second_model_name}")
         return app_state_scoped, conv_a_scoped, conv_b_scoped
 
+    # @textbox.submit(
+    #     api_name="add_text",
+    #     inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
+    #     outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
+    # )
     @send_btn.click(
-        api_name="add_text",
-        inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
-        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
-    )
-    @textbox.submit(
         api_name="add_text",
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
@@ -265,14 +266,13 @@ with gr.Blocks(
                     response_b = None
                 if response_a is None and response_b is None:
                     break
-
                 yield [
                     app_state_scoped,
                     # 2 conversations
                     conv_a_scoped,
                     conv_b_scoped,
-                    conv_a_scoped.messages,
-                    conv_b_scoped.messages,
+                    messages_to_dict_list(conv_a_scoped.messages),
+                    messages_to_dict_list(conv_b_scoped.messages)
                 ]
 
         except Exception as e:
@@ -284,7 +284,7 @@ with gr.Blocks(
             if os.getenv("SENTRY_DSN"):
                 sentry_sdk.capture_exception(e)
 
-            logger.exception(
+            print(
                 f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
                 extra={
                     "request": request,
@@ -374,8 +374,8 @@ with gr.Blocks(
                 # chatbot,
                 # chatbot1,
                 # chatbot2
-                conv_a_scoped.messages,
-                conv_b_scoped.messages,
+                    messages_to_dict_list(conv_a_scoped.messages),
+                    messages_to_dict_list(conv_b_scoped.messages)
             ]
 
     @retry_btn.click(
@@ -408,7 +408,7 @@ with gr.Blocks(
             text = conv_a_scoped.messages[-1].content
             conv_a_scoped.messages = conv_a_scoped.messages[:-1]
             conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-            return add_text(
+            yield from add_text(
                 app_state_scoped,
                 conv_a_scoped,
                 conv_b_scoped,
@@ -416,7 +416,6 @@ with gr.Blocks(
                 request=request,
                 event=event,
             )
-
         else:
             raise gr.Error(
                 message="Il n'est pas possible de réessayer, veuillez recharger la page.",
