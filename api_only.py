@@ -11,15 +11,12 @@ from languia.utils import AppState, pick_models
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
     models_extra_info,
-    unavailable_models
+    unavailable_models,
 )
 
 from languia.logs import vote_last_response, sync_reactions, record_conversations
 
 from languia.conversation import bot_response, Conversation
-
-from languia.config import logger
-
 
 from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
     ChatMessage,
@@ -173,11 +170,8 @@ with gr.Blocks(
     ):
         app_state_scoped.mode = mode
 
-        logger.info("chose mode: " + mode, extra={"request": request})
-        logger.info(
-            "custom_models_selection: " + str(custom_models_selection),
-            extra={"request": request},
-        )
+        print("chose mode: " + mode)
+        print("custom_models_selection: " + str(custom_models_selection))
 
         first_model_name, second_model_name = pick_models(
             mode, custom_models_selection, unavailable_models=unavailable_models
@@ -195,10 +189,7 @@ with gr.Blocks(
             )
         )
 
-        logger.info(
-            f"selection_modeles: {first_model_name}, {second_model_name}",
-            extra={"request": request},
-        )
+        print(f"selection_modeles: {first_model_name}, {second_model_name}")
         return app_state_scoped, conv_a_scoped, conv_b_scoped
 
     @send_btn.click(
@@ -224,24 +215,17 @@ with gr.Blocks(
             raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
         if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
-            logger.info(
+            print(
                 f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
-                extra={"request": request},
             )
 
             text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
 
         conv_a_scoped.messages.append(ChatMessage(role="user", content=text))
         conv_b_scoped.messages.append(ChatMessage(role="user", content=text))
-        logger.info(
-            f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}",
-            extra={"request": request},
-        )
+        print(f"conv_pair_id: {conv_a_scoped.conv_id}-{conv_b_scoped.conv_id}")
 
-        logger.info(
-            f"msg_user: {text}",
-            extra={"request": request},
-        )
+        print(f"msg_user: {text}")
 
         # record for stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
@@ -344,15 +328,13 @@ with gr.Blocks(
                     # temporarily exclude the buggy model here
                     unavailable_models + [error_with_model],
                 )
-                logger.info(
+                print(
                     f"reinitializing convs w/ two new models: {model_left} and {model_right}",
-                    extra={"request": request},
                 )
                 conv_a_scoped = copy.deepcopy(Conversation(model_name=model_left))
                 conv_b_scoped = copy.deepcopy(Conversation(model_name=model_right))
-                logger.info(
+                print(
                     f"new conv ids: {conv_a_scoped.conv_id} and {conv_b_scoped.conv_id}",
-                    extra={"request": request},
                 )
 
                 # Don't reuse same conversation ID
@@ -369,14 +351,12 @@ with gr.Blocks(
             )
 
             if conv_a_scoped.messages[-1].role != "user":
-                logger.info(
+                print(
                     f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
-                    extra={"request": request},
                 )
             if conv_b_scoped.messages[-1].role != "user":
-                logger.info(
+                print(
                     f"response_modele_b ({conv_b_scoped.model_name}): {str(conv_b_scoped.messages[-1].content)}",
-                    extra={"request": request},
                 )
 
             conversations = [conv_a_scoped, conv_b_scoped]
@@ -395,7 +375,7 @@ with gr.Blocks(
                 # chatbot1,
                 # chatbot2
                 conv_a_scoped.messages,
-                conv_b_scoped.messages
+                conv_b_scoped.messages,
             ]
 
     @retry_btn.click(
@@ -442,6 +422,7 @@ with gr.Blocks(
                 message="Il n'est pas possible de réessayer, veuillez recharger la page.",
                 duration=10,
             )
+
     # FIXME: hardening, only show model name to frontend if this function passes?
     # def is_vote_needed(
     #     app_state_scoped,request: gr.Request
@@ -458,7 +439,7 @@ with gr.Blocks(
     #         logger.debug("no meaningful reaction found, inflicting vote screen")
     #         print(
     #             "ecran_vote",
-    #             extra={"request": request},
+    #
     #         )
     #         return True
 
