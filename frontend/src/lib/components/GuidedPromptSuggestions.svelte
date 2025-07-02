@@ -1,29 +1,28 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
-  import GuidedCardComponent from './GuidedCard.svelte';
-  import promptsTable from '$lib/promptsTable';
-
+  import GuidedCardComponent from '$lib/components/GuidedCard.svelte'
+  import promptsTable from '$lib/promptsTable'
+  import { createEventDispatcher } from 'svelte'
   // Import local SVG icons (assuming they are moved to the same 'shared' directory or a subdirectory)
   // User will need to ensure these files are present at these relative paths.
-  import lightbulbIcon from '$lib/icons/lightbulb.svg';
-  import chat3Icon from '$lib/icons/chat-3.svg';
-  import translate2Icon from '$lib/icons/translate-2.svg';
-  import draftIcon from '$lib/icons/draft.svg';
-  import bowlIcon from '$lib/icons/bowl.svg';
-  import clipboardIcon from '$lib/icons/clipboard.svg';
-  import bookOpenLineIcon from '$lib/icons/book-open-line.svg';
-  import music2Icon from '$lib/icons/music-2.svg';
-  import shuffleIcon from '$lib/icons/shuffle.svg';
+  import bookOpenLineIcon from '$lib/icons/book-open-line.svg'
+  import bowlIcon from '$lib/icons/bowl.svg'
+  import chat3Icon from '$lib/icons/chat-3.svg'
+  import clipboardIcon from '$lib/icons/clipboard.svg'
+  import draftIcon from '$lib/icons/draft.svg'
+  import lightbulbIcon from '$lib/icons/lightbulb.svg'
+  import music2Icon from '$lib/icons/music-2.svg'
+  import shuffleIcon from '$lib/icons/shuffle.svg'
+  import translate2Icon from '$lib/icons/translate-2.svg'
 
   // Interface pour les données des cartes, utilisant des props au lieu de HTML brut
   interface GuidedCardData {
-    iconSrc: string;
-    iconAlt: string;
-    title: string;
-    value: string;
-    isIASummit?: boolean;
-    iaSummitSmallIconSrc?: string;
-    iaSummitTooltip?: string;
+    iconSrc: string
+    iconAlt: string
+    title: string
+    value: string
+    isIASummit?: boolean
+    iaSummitSmallIconSrc?: string
+    iaSummitTooltip?: string
   }
 
   const totalGuidedCardsChoices: GuidedCardData[] = [
@@ -75,7 +74,7 @@
       title: 'Proposer des idées de films, livres, musiques',
       value: 'recommendations'
     }
-  ];
+  ]
 
   const iaSummitChoice: GuidedCardData = {
     iconSrc: '/iasummit.png', // Updated to use imported variable
@@ -86,90 +85,90 @@
     iaSummitSmallIconSrc: '/iasummit-small.png', // Updated to use imported variable
     iaSummitTooltip:
       'Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies.'
-  };
+  }
 
-  let displayedCards: GuidedCardData[] = [];
-  const dispatch = createEventDispatcher();
+  let displayedCards: GuidedCardData[] = []
+  const dispatch = createEventDispatcher()
 
   function shuffleArray<T>(array: T[]): T[] {
-    const newArray = [...array];
+    const newArray = [...array]
     for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[newArray[i], newArray[j]] = [newArray[j], newArray[i]]
     }
-    return newArray;
+    return newArray
   }
 
   // Helper function to select a random item from an array
   function selectRandomFromArray<T>(array: T[]): T | undefined {
     if (!array || array.length === 0) {
-      return undefined;
+      return undefined
     }
-    return array[Math.floor(Math.random() * array.length)];
+    return array[Math.floor(Math.random() * array.length)]
   }
 
-  const shuffled = shuffleArray(totalGuidedCardsChoices);
-  displayedCards = [iaSummitChoice, ...shuffled.slice(0, 3)];
+  const shuffled = shuffleArray(totalGuidedCardsChoices)
+  displayedCards = [iaSummitChoice, ...shuffled.slice(0, 3)]
 
-  let currentSelectedCategoryValue: string | null = null;
+  let currentSelectedCategoryValue: string | null = null
 
   // Helper function to dispatch prompt with or without selection
   function dispatchPromptWithSelection(promptText: string, origin: string) {
-    let selectionStart: number | undefined = undefined;
-    let selectionEnd: number | undefined = undefined;
-    const startIndex = promptText.indexOf('[');
-    const endIndex = promptText.indexOf(']');
+    let selectionStart: number | undefined = undefined
+    let selectionEnd: number | undefined = undefined
+    const startIndex = promptText.indexOf('[')
+    const endIndex = promptText.indexOf(']')
 
     if (startIndex !== -1 && endIndex !== -1 && endIndex > startIndex) {
-      selectionStart = startIndex; // Include the opening bracket
-      selectionEnd = endIndex + 1; // Include the closing bracket
+      selectionStart = startIndex // Include the opening bracket
+      selectionEnd = endIndex + 1 // Include the closing bracket
     }
 
     if (selectionStart !== undefined && selectionEnd !== undefined) {
       console.log(
         `[GuidedPromptSuggestions] ${origin}: dispatching promptselected with selection. Text: "${promptText}", Start: ${selectionStart}, End: ${selectionEnd}`
-      );
-      dispatch('promptselected', { text: promptText, selectionStart, selectionEnd });
+      )
+      dispatch('promptselected', { text: promptText, selectionStart, selectionEnd })
     } else {
       console.log(
         `[GuidedPromptSuggestions] ${origin}: dispatching promptselected without selection. Text: "${promptText}"`
-      );
-      dispatch('promptselected', { text: promptText });
+      )
+      dispatch('promptselected', { text: promptText })
     }
   }
 
   function shufflePrompts() {
     if (currentSelectedCategoryValue) {
-      const promptsForCategory = promptsTable[currentSelectedCategoryValue];
-      const randomPromptText = selectRandomFromArray(promptsForCategory);
+      const promptsForCategory = promptsTable[currentSelectedCategoryValue]
+      const randomPromptText = selectRandomFromArray(promptsForCategory)
 
       if (randomPromptText) {
-        dispatchPromptWithSelection(randomPromptText, 'shufflePrompts');
+        dispatchPromptWithSelection(randomPromptText, 'shufflePrompts')
       } else {
         console.warn(
           `[GuidedPromptSuggestions] No prompts found for the current category: ${currentSelectedCategoryValue}.`
-        );
+        )
       }
     } else {
-      console.warn('No category currently selected. Cannot shuffle prompts.');
+      console.warn('No category currently selected. Cannot shuffle prompts.')
     }
   }
 
   function handleCardSelect(event: CustomEvent<{ value: string }>) {
-    const categoryValue = event.detail.value;
-    currentSelectedCategoryValue = categoryValue;
+    const categoryValue = event.detail.value
+    currentSelectedCategoryValue = categoryValue
 
-    const promptsForCategory = promptsTable[categoryValue];
-    const randomPromptText = selectRandomFromArray(promptsForCategory);
+    const promptsForCategory = promptsTable[categoryValue]
+    const randomPromptText = selectRandomFromArray(promptsForCategory)
 
     if (randomPromptText) {
-      dispatchPromptWithSelection(randomPromptText, 'handleCardSelect');
+      dispatchPromptWithSelection(randomPromptText, 'handleCardSelect')
     } else {
-      const fallbackText = `Explorer la catégorie : ${categoryValue}`;
+      const fallbackText = `Explorer la catégorie : ${categoryValue}`
       console.warn(
         `[GuidedPromptSuggestions] No prompts found for category: ${categoryValue}. Using fallback: "${fallbackText}"`
-      );
-      dispatch('promptselected', { text: fallbackText }); // No selection for fallback
+      )
+      dispatch('promptselected', { text: fallbackText }) // No selection for fallback
     }
   }
 </script>

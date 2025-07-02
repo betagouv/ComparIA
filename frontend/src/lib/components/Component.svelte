@@ -1,13 +1,13 @@
 <script lang="ts">
-  export let type: 'gallery' | 'plot' | 'audio' | 'video' | 'image' | string;
-  export let components;
-  export let value;
-  export let target;
-  export let theme_mode;
-  export let props;
-  export let i18n;
-  export let upload;
-  export let _fetch;
+  export let type: 'gallery' | 'plot' | 'audio' | 'video' | 'image' | string
+  export let components
+  export let value
+  export let target
+  export let theme_mode
+  export let props
+  export let i18n
+  export let upload
+  export let _fetch
 </script>
 
 {#if type === 'gallery'}

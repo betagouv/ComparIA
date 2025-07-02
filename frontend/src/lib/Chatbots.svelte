@@ -1,9 +1,9 @@
 <script lang="ts">
-  import { isLoading, hasError, conversation } from './stores';
-  import { sendChatMessage } from './chatService';
+  import { sendChatMessage } from './chatService'
+  import { conversation, hasError, isLoading } from './stores'
 
   async function submitRequest() {
-    await sendChatMessage();
+    await sendChatMessage()
   }
 </script>
 

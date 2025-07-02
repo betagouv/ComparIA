@@ -1,24 +1,22 @@
 <script lang="ts">
-  import LikeDislike from './LikeDislike.svelte';
-  import Copy from './Copy.svelte';
-  import DownloadIcon from '$lib/icons/Download.svelte';
-  import { DownloadLink } from '@gradio/wasm/svelte';
-  import type { NormalisedMessage, TextMessage } from '../types';
-  import { Retry, Undo } from '@gradio/icons';
-  import IconButton from './IconButton.svelte';
+  import Copy from '$lib/components/Copy.svelte'
+  import IconButton from '$lib/components/IconButton.svelte'
+  import LikeDislike from '$lib/components/LikeDislike.svelte'
+  import type { NormalisedMessage, TextMessage } from '$lib/types'
+  import { Undo } from '@gradio/icons'
 
-  export let disabled: boolean;
-  export let likeable: boolean;
-  export let show_retry: boolean;
-  export let show_undo: boolean;
-  export let show_copy_button: boolean;
-  export let show: boolean;
-  export let message: NormalisedMessage | NormalisedMessage[];
+  export let disabled: boolean
+  export let likeable: boolean
+  export let show_retry: boolean
+  export let show_undo: boolean
+  export let show_copy_button: boolean
+  export let show: boolean
+  export let message: NormalisedMessage | NormalisedMessage[]
   // export let position: "right" | "left";
-  export let generating: boolean;
+  export let generating: boolean
 
-  export let handle_action: (selected: string | null) => void;
-  export let layout: 'bubble' | 'panel';
+  export let handle_action: (selected: string | null) => void
+  export let layout: 'bubble' | 'panel'
 
   function is_all_text(
     message: NormalisedMessage[] | NormalisedMessage
@@ -26,19 +24,19 @@
     return (
       (Array.isArray(message) && message.every((m) => typeof m.content === 'string')) ||
       (!Array.isArray(message) && typeof message.content === 'string')
-    );
+    )
   }
 
   function all_text(message: TextMessage[] | TextMessage): string {
     if (Array.isArray(message)) {
-      return message.map((m) => m.content).join('\n');
+      return message.map((m) => m.content).join('\n')
     }
-    return message.content;
+    return message.content
   }
 
-  $: message_text = is_all_text(message) ? all_text(message) : '';
+  $: message_text = is_all_text(message) ? all_text(message) : ''
 
-  $: show_copy = show_copy_button && message && is_all_text(message);
+  $: show_copy = show_copy_button && message && is_all_text(message)
 </script>
 
 <div class="button-panel">

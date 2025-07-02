@@ -1,27 +1,26 @@
 <script>
-  import Textbox from '$lib/Textbox.svelte';
-  import { currentScreen, textValue, isLoading, mode, customModelsDropdown } from '$lib/stores';
-  import Chatbots from '$lib/Chatbots.svelte';
-  import { sendChatMessage } from '$lib/chatService';
+  import Textbox from '$lib/Textbox.svelte'
+  import { sendChatMessage } from '$lib/chatService'
+  import { currentScreen, customModelsDropdown, isLoading, mode, textValue } from '$lib/stores'
 
-  const availableModes = ['random', 'specific'];
-  const availableModels = ['model1', 'model2', 'model3'];
+  const availableModes = ['random', 'specific']
+  const availableModels = ['model1', 'model2', 'model3']
 
   async function handleSubmit() {
-    currentScreen.set('Chatbots');
-    await sendChatMessage();
+    currentScreen.set('Chatbots')
+    await sendChatMessage()
   }
 
   function updateMode(newMode) {
-    mode.set(newMode);
+    mode.set(newMode)
   }
 
   function toggleModel(model) {
-    const currentModels = get(customModelsDropdown);
+    const currentModels = get(customModelsDropdown)
     if (currentModels.includes(model)) {
-      customModelsDropdown.set(currentModels.filter((m) => m !== model));
+      customModelsDropdown.set(currentModels.filter((m) => m !== model))
     } else {
-      customModelsDropdown.set([...currentModels, model]);
+      customModelsDropdown.set([...currentModels, model])
     }
   }
 </script>

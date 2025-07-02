@@ -1,19 +1,19 @@
 <script lang="ts">
-  import type { Choice, Mode } from '$lib/utils-customdropdown';
-  export let handle_option_selected: (index: number) => void;
+  import ChevronDroite from '$lib/icons/chevron-droite.svelte'
+  import type { Choice, Mode } from '$lib/utils-customdropdown'
+
+  export let handle_option_selected: (index: number) => void
   // TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
-  export let mode: Mode;
+  export let mode: Mode
 
-  export let disabled = false;
+  export let disabled = false
 
-  export var choices: Choice[];
-
-  import ChevronDroite from '$lib/icons/chevron-droite.svelte';
+  export var choices: Choice[]
 
   function handleKeyDown(index: number, event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {
-      event.preventDefault();
-      handle_option_selected(index);
+      event.preventDefault()
+      handle_option_selected(index)
     }
   }
 </script>

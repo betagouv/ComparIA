@@ -1,41 +1,42 @@
 <script context="module">
-  let id = 0;
+  let id = 0
 </script>
 
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  export let display_value: string;
-  export let internal_value: string;
-  export let disabled = false;
-  export let selected: string | null = null;
+  import { createEventDispatcher } from 'svelte'
 
-  const dispatch = createEventDispatcher<{ input: string }>();
-  let is_selected = false;
+  export let display_value: string
+  export let internal_value: string
+  export let disabled = false
+  export let selected: string | null = null
+
+  const dispatch = createEventDispatcher<{ input: string }>()
+  let is_selected = false
 
   // This function will handle the update of the selected state
   async function handle_input(selected: string | null, internal_value: string): Promise<void> {
-    is_selected = selected === internal_value;
+    is_selected = selected === internal_value
     if (is_selected) {
-      dispatch('input', internal_value);
+      dispatch('input', internal_value)
     }
   }
 
-  $: handle_input(selected, internal_value);
+  $: handle_input(selected, internal_value)
 
   // Handle label click or space/enter key press to toggle selection
   function handleSelection() {
     // If we don't want to reshuffle
     // if (disabled || selected === internal_value) return;
-    if (disabled) return;
-    selected = internal_value;
-    dispatch('input', internal_value);
+    if (disabled) return
+    selected = internal_value
+    dispatch('input', internal_value)
   }
 
   // Handle keydown event (Space or Enter)
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {
-      event.preventDefault(); // Prevent page scroll with spacebar
-      handleSelection(); // Trigger selection when space or enter is pressed
+      event.preventDefault() // Prevent page scroll with spacebar
+      handleSelection() // Trigger selection when space or enter is pressed
     }
   }
 </script>

@@ -1,95 +1,85 @@
 <script lang="ts">
-  import type { Gradio, SelectData } from '@gradio/utils';
-  // import type { NormalisedMessage, TextMessage } from "../types";
-
-  import '@gouvfr/dsfr/dist/component/modal/modal.css';
-
-  import {
-    // afterUpdate,
-    type ComponentType,
-    createEventDispatcher,
-    // type SvelteComponent,
-    // tick,
-    onMount
-  } from 'svelte';
+  import '@gouvfr/dsfr/dist/component/modal/modal.css'
+  import type { SelectData } from '@gradio/utils'
+  import { type ComponentType, createEventDispatcher } from 'svelte'
 
   const dispatch = createEventDispatcher<{
-    change: undefined;
-    select: SelectData;
-    input: undefined;
-  }>();
+    change: undefined
+    select: SelectData
+    input: undefined
+  }>()
 
-  let like_panel;
-  export let show: boolean;
+  let like_panel
+  export let show: boolean
 
-  export let handle_action: (value: string | null | string[]) => void;
+  export let handle_action: (value: string | null | string[]) => void
 
   // import { type ComponentType } from "svelte";
-  export let Icon: ComponentType;
-  export let text: string;
-  export let commented: boolean = false;
-  export let disabled: boolean = false;
-  export let model: string = '';
-  export let value: string[] = [];
-  export let old_value = value.slice();
+  export let Icon: ComponentType
+  export let text: string
+  export let commented: boolean = false
+  export let disabled: boolean = false
+  export let model: string = ''
+  export let value: string[] = []
+  export let old_value = value.slice()
   export let choices: [string, string][] = [
     ['Utile', 'useful'],
     ['Complet', 'complete'],
     ['Créatif', 'creative'],
     ['Mise en forme claire', 'clear-formatting']
-  ];
+  ]
 
   function toggle_choice(choice: string): void {
     if (value.includes(choice)) {
-      value = value.filter((v) => v !== choice);
+      value = value.filter((v) => v !== choice)
     } else {
-      value = [...value, choice];
+      value = [...value, choice]
     }
   }
 
   $: if (JSON.stringify(old_value) !== JSON.stringify(value)) {
-    old_value = value;
-    handle_action(value);
+    old_value = value
+    handle_action(value)
   }
 
-  let hasBeenShown: boolean = false;
+  let hasBeenShown: boolean = false
   function scrollIntoViewWithOffset(element: HTMLElement, offset: number) {
     // For offset 0 just consider a footer of 100px (really is 114px)
-    offset = Math.max(100, offset || 0);
-    const rect = element.getBoundingClientRect();
-    const viewportHeight = window.visualViewport?.height || window.innerHeight;
+    offset = Math.max(100, offset || 0)
+    const rect = element.getBoundingClientRect()
+    const viewportHeight = window.visualViewport?.height || window.innerHeight
 
-    const isVisible = rect.bottom <= viewportHeight - offset;
+    const isVisible = rect.bottom <= viewportHeight - offset
 
     if (!isVisible) {
       // this not enough because margins so let's just add some extra
       // const scrollTop = window.scrollY + rect.height;
-      const scrollTop = window.scrollY + rect.height + offset;
-      window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+      const scrollTop = window.scrollY + rect.height + offset
+      window.scrollTo({ top: scrollTop, behavior: 'smooth' })
     }
   }
 
-  const footer = document.getElementById('send-area');
-  const footerHeight = footer ? footer.offsetHeight : 0;
+  const footer = document.getElementById('send-area')
+  const footerHeight = footer ? footer.offsetHeight : 0
 
   function checkVisibility() {
-    if (!show || hasBeenShown || !like_panel) return;
+    if (!show || hasBeenShown || !like_panel) return
 
-    const rect = like_panel.getBoundingClientRect();
-    const appeared = !like_panel.classList.contains('hidden') && rect.height > 0;
+    const rect = like_panel.getBoundingClientRect()
+    const appeared = !like_panel.classList.contains('hidden') && rect.height > 0
 
     if (appeared) {
-      scrollIntoViewWithOffset(like_panel, footerHeight);
-      hasBeenShown = true;
+      scrollIntoViewWithOffset(like_panel, footerHeight)
+      hasBeenShown = true
     } else {
-      requestAnimationFrame(checkVisibility);
+      requestAnimationFrame(checkVisibility)
     }
   }
 
   $: if (show && !hasBeenShown && like_panel) {
-    checkVisibility();
+    checkVisibility()
   } else if (!show) {
-    hasBeenShown = false;
+    hasBeenShown = false
   }
 </script>
 
@@ -109,12 +99,12 @@
       tabindex="0"
       on:keydown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
-          toggle_choice(internal_value);
+          toggle_choice(internal_value)
           dispatch('select', {
             index: i,
             value: internal_value,
             selected: !value.includes(internal_value)
-          });
+          })
         }
       }}
     >
@@ -142,8 +132,8 @@
     data-fr-opened="false"
     aria-controls="modal-prefs"
     on:click={() => {
-      commented = true;
-      handle_action('commenting');
+      commented = true
+      handle_action('commenting')
     }}>Autre…</button
   >
 </div>

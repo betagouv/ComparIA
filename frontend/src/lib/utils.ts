@@ -1,14 +1,13 @@
-import type { FileData } from '@gradio/client';
-
-import type { NormalisedMessage, Message, MessageRole } from '../types';
+import type { Message, MessageRole, NormalisedMessage } from '$lib/types'
+import type { FileData } from '@gradio/client'
 
 export interface UndoRetryData {
-  index: number | [number, number];
-  value: string | FileData;
+  index: number | [number, number]
+  value: string | FileData
 }
 
 const redirect_src_url = (src: string, root: string): string =>
-  src.replace('src="/file', `src="${root}file`);
+  src.replace('src="/file', `src="${root}file`)
 
 export function update_messages(
   new_messages: Message[] | null,
@@ -17,7 +16,7 @@ export function update_messages(
 ): NormalisedMessage[] | null {
   // console.log("new_messages", new_messages);
   // console.log("old_messages", old_messages);
-  if (new_messages === null) return new_messages;
+  if (new_messages === null) return new_messages
   if (old_messages === null) {
     // If there are no old messages, just return the new messages as is
     return new_messages.map((message, i) => {
@@ -32,12 +31,12 @@ export function update_messages(
         commented: message.commented !== undefined ? message.commented : false,
         error: message.error !== undefined ? message.error : null,
         reasoning: message.reasoning !== undefined ? message.reasoning : ''
-      };
-    });
+      }
+    })
   }
 
   return new_messages.map((message, i) => {
-    const oldMessage = old_messages[i];
+    const oldMessage = old_messages[i]
 
     return {
       ...oldMessage, // spread the old message first
@@ -54,48 +53,46 @@ export function update_messages(
         message.commented !== undefined ? message.commented : oldMessage?.commented || false,
       // prefs: message.prefs !== undefined ? message.prefs : oldMessage?.prefs || [],
       reasoning: message.reasoning !== undefined ? message.reasoning : ''
-    };
-  });
+    }
+  })
 }
 
 export function is_one_of_last_two_bot_msgs(
   messages: NormalisedMessage[],
   all_messages: NormalisedMessage[]
 ): boolean {
-  const lastMsgs = messages
-    .slice(-2)
-    .map((msg) => ({
-      ...msg,
-      isLast:
-        JSON.stringify(msg.index) === JSON.stringify(all_messages[all_messages.length - 1].index) ||
-        JSON.stringify(msg.index) === JSON.stringify(all_messages[all_messages.length - 2].index)
-    }));
-  return lastMsgs.some((msg) => msg.role === 'assistant' && msg.isLast);
+  const lastMsgs = messages.slice(-2).map((msg) => ({
+    ...msg,
+    isLast:
+      JSON.stringify(msg.index) === JSON.stringify(all_messages[all_messages.length - 1].index) ||
+      JSON.stringify(msg.index) === JSON.stringify(all_messages[all_messages.length - 2].index)
+  }))
+  return lastMsgs.some((msg) => msg.role === 'assistant' && msg.isLast)
 }
 
 export function group_messages(messages: NormalisedMessage[]): NormalisedMessage[][] {
-  const groupedMessages: NormalisedMessage[][] = [];
-  let currentGroup: NormalisedMessage[] = [];
-  let currentRole: MessageRole | null = null;
+  const groupedMessages: NormalisedMessage[][] = []
+  let currentGroup: NormalisedMessage[] = []
+  let currentRole: MessageRole | null = null
 
   for (const message of messages) {
     if (!(message.role === 'assistant' || message.role === 'user')) {
-      continue;
+      continue
     }
     if (message.role === currentRole) {
-      currentGroup.push(message);
+      currentGroup.push(message)
     } else {
       if (currentGroup.length > 0) {
-        groupedMessages.push(currentGroup);
+        groupedMessages.push(currentGroup)
       }
-      currentGroup = [message];
-      currentRole = message.role;
+      currentGroup = [message]
+      currentRole = message.role
     }
   }
 
   if (currentGroup.length > 0) {
-    groupedMessages.push(currentGroup);
+    groupedMessages.push(currentGroup)
   }
 
-  return groupedMessages;
+  return groupedMessages
 }

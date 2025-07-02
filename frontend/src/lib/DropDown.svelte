@@ -1,68 +1,63 @@
-<script context="module" lang="ts">
-  export { default as BaseDropdown } from '$lib/components/Dropdown.svelte';
-</script>
-
 <script lang="ts">
-  import type { Gradio, KeyUpData, SelectData } from '@gradio/utils';
-  import Dropdown from '$lib/components/Dropdown.svelte';
-  import ModelsSelection from '$lib/components/ModelsSelection.svelte';
-  import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'; // Importation du nouveau composant
+  import Dropdown from '$lib/components/Dropdown.svelte'
+  import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
+  import ModelsSelection from '$lib/components/ModelsSelection.svelte'
+  import TextBox from '$lib/components/Textbox.svelte'
+  import Brain from '$lib/icons/brain-customdropdown.svelte'
+  import ChevronBas from '$lib/icons/chevron-bas.svelte'
+  import Dice from '$lib/icons/dice.svelte'
+  import Glass from '$lib/icons/glass.svelte'
+  import Leaf from '$lib/icons/leaf.svelte'
+  import Ruler from '$lib/icons/ruler.svelte'
+  import type { Choice, Mode, ModeAndPromptData, Model } from '$lib/utils-customdropdown.ts'
+  import type { LoadingStatus } from '@gradio/statustracker'
+  import type { Gradio, KeyUpData } from '@gradio/utils'
+  import { tick } from 'svelte'
+  import { fade } from 'svelte/transition'
 
-  import type { LoadingStatus } from '@gradio/statustracker';
-  import TextBox from '$lib/components/Textbox.svelte';
-  import ChevronBas from '$lib/icons/chevron-bas.svelte';
-  import { fade } from 'svelte/transition';
-  import { tick } from 'svelte';
-  import type { ModeAndPromptData, Model, Mode, Choice } from '$lib/utils-customdropdown.ts';
-  import Glass from '$lib/icons/glass.svelte';
-  import Leaf from '$lib/icons/leaf.svelte';
-  import Ruler from '$lib/icons/ruler.svelte';
-  import Brain from '$lib/icons/brain-customdropdown.svelte';
-  import Dice from '$lib/icons/dice.svelte';
-
-  export let never_clicked: boolean = true;
-  export let models: Model[] = [];
-  export let elem_id = '';
-  export let elem_classes: string[] = [];
-  export let visible = true;
-  export let disabled = false;
+  export let never_clicked: boolean = true
+  export let models: Model[] = []
+  export let elem_id = ''
+  export let elem_classes: string[] = []
+  export let visible = true
+  export let disabled = false
 
   export let gradio: Gradio<{
-    change: ModeAndPromptData;
-    input: never;
-    submit: ModeAndPromptData;
-    select: ModeAndPromptData;
-    blur: never;
-    focus: never;
-    key_up: KeyUpData;
-    clear_status: LoadingStatus;
-  }>;
-  export let value_is_output = false;
-  export let lines: number = 4;
-  export let show_custom_models_selection: boolean = false;
-  export let max_lines: number = 4;
-  export let rtl = false;
-  export let text_align: 'left' | 'right' | undefined = undefined;
-  export let autofocus = false;
-  export let autoscroll = true;
-  export let interactive: boolean;
-  export let value: ModeAndPromptData;
+    change: ModeAndPromptData
+    input: never
+    submit: ModeAndPromptData
+    select: ModeAndPromptData
+    blur: never
+    focus: never
+    key_up: KeyUpData
+    clear_status: LoadingStatus
+  }>
+  export let value_is_output = false
+  export let lines: number = 4
+  export let show_custom_models_selection: boolean = false
+  export let max_lines: number = 4
+  export let rtl = false
+  export let text_align: 'left' | 'right' | undefined = undefined
+  export let autofocus = false
+  export let autoscroll = true
+  export let interactive: boolean
+  export let value: ModeAndPromptData
 
   function selectPartialText(start?: number, end?: number): void {
     if (textboxElement) {
-      textboxElement.focus();
+      textboxElement.focus()
       if (start !== undefined && end !== undefined) {
-        textboxElement.setSelectionRange(start, end);
-        console.log(`[Textbox] Text selected from ${start} to ${end}`);
+        textboxElement.setSelectionRange(start, end)
+        console.log(`[Textbox] Text selected from ${start} to ${end}`)
       } else {
-        textboxElement.select();
-        console.log('[Textbox] All text selected');
+        textboxElement.select()
+        console.log('[Textbox] All text selected')
       }
     } else {
-      console.error("[Textbox] Element 'el' not found for selection.");
+      console.error("[Textbox] Element 'el' not found for selection.")
     }
   }
-  let textboxElement: HTMLTextAreaElement | HTMLInputElement;
+  let textboxElement: HTMLTextAreaElement | HTMLInputElement
 
   // let textboxElement: TextBox;
   export const choices: Choice[] = [
@@ -101,130 +96,130 @@
       icon: Brain,
       description: 'Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes'
     }
-  ];
+  ]
 
-  const browser = typeof window !== 'undefined';
+  const browser = typeof window !== 'undefined'
 
   function getCookie(name: string): string | null {
-    if (!browser) return null;
-    const value = `; ${document.cookie}`;
-    const parts = value.split(`; ${name}=`);
-    if (parts.length === 2) return parts.pop()!.split(';').shift() || null;
-    return null;
+    if (!browser) return null
+    const value = `; ${document.cookie}`
+    const parts = value.split(`; ${name}=`)
+    if (parts.length === 2) return parts.pop()!.split(';').shift() || null
+    return null
   }
 
   function base64Encode(str: string): string {
-    if (!browser) return str;
-    return btoa(encodeURIComponent(str));
+    if (!browser) return str
+    return btoa(encodeURIComponent(str))
   }
 
   function base64Decode(str: string): string {
-    if (!browser) return str;
-    return decodeURIComponent(atob(str));
+    if (!browser) return str
+    return decodeURIComponent(atob(str))
   }
 
   function setCookie(name: string, value: string, days = 7): void {
-    if (!browser) return;
-    const date = new Date();
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`;
+    if (!browser) return
+    const date = new Date()
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
+    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`
   }
 
   function deleteCookie(name: string): void {
-    if (!browser) return;
-    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    if (!browser) return
+    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
   }
 
-  let initialMode: Mode = (getCookie('customdropdown_mode') as Mode) || 'random';
+  let initialMode: Mode = (getCookie('customdropdown_mode') as Mode) || 'random'
 
   function getInitialModels(availableModels: Model[]): string[] {
     if (!Array.isArray(availableModels)) {
-      console.error('getInitialModels called without a valid availableModels array.');
-      return [];
+      console.error('getInitialModels called without a valid availableModels array.')
+      return []
     }
 
     if (typeof window !== 'undefined' && getCookie('customdropdown_models')) {
       try {
-        const parsed = JSON.parse(getCookie('customdropdown_models')!);
+        const parsed = JSON.parse(getCookie('customdropdown_models')!)
 
         if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
-          const availableModelIds = new Set(availableModels.map((m) => m.id));
+          const availableModelIds = new Set(availableModels.map((m) => m.id))
 
-          const validModels = parsed.filter((id) => availableModelIds.has(id));
-          return validModels;
+          const validModels = parsed.filter((id) => availableModelIds.has(id))
+          return validModels
         } else {
-          return [];
+          return []
         }
       } catch (error) {
-        console.error('Failed to parse models from cookie:', error);
-        return [];
+        console.error('Failed to parse models from cookie:', error)
+        return []
       }
     }
-    return [];
+    return []
   }
 
   const findModelDetails = (id: string | null, modelsList: Model[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
-      return { name: 'Aléatoire', iconPath: null };
+      return { name: 'Aléatoire', iconPath: null }
     }
-    const model = modelsList.find((m) => m.id === id);
+    const model = modelsList.find((m) => m.id === id)
     return {
       name: model?.simple_name ?? 'Aléatoire',
       iconPath: model?.icon_path ?? null
-    };
-  };
+    }
+  }
 
-  let initialModels: string[] = getInitialModels(models); // Pass the populated models array
+  let initialModels: string[] = getInitialModels(models) // Pass the populated models array
 
-  let initialPrompt = '';
+  let initialPrompt = ''
   if (browser) {
-    const cookieValue = getCookie('comparia_initialprompt');
+    const cookieValue = getCookie('comparia_initialprompt')
     if (cookieValue) {
       try {
-        initialPrompt = base64Decode(cookieValue);
-        deleteCookie('comparia_initialprompt');
+        initialPrompt = base64Decode(cookieValue)
+        deleteCookie('comparia_initialprompt')
         if (initialPrompt && typeof window !== 'undefined') {
           // Ensure browser context for tick
           tick().then(() => {
             if (textboxElement && typeof textboxElement.select === 'function') {
-              textboxElement.select();
+              textboxElement.select()
             }
-          });
+          })
         }
       } catch (error) {
-        console.error('Failed to decode prompt from cookie:', error);
+        console.error('Failed to decode prompt from cookie:', error)
         // initialPrompt remains ""
       }
     }
   }
 
   // Export the necessary variables
-  export let mode: Mode = initialMode; // Assuming initialMode is defined
-  export let custom_models_selection: string[] = initialModels;
+  export let mode: Mode = initialMode // Assuming initialMode is defined
+  export let custom_models_selection: string[] = initialModels
 
-  export let prompt_value: string = initialPrompt;
+  export let prompt_value: string = initialPrompt
 
-  let choice: Choice = get_choice(initialMode) || choices[0];
-  let firstModelName = 'Aléatoire';
-  let secondModelName = 'Aléatoire';
-  let firstModelIconPath: string | null = null;
-  let secondModelIconPath: string | null = null;
+  let choice: Choice = get_choice(initialMode) || choices[0]
+  let firstModelName = 'Aléatoire'
+  let secondModelName = 'Aléatoire'
+  let firstModelIconPath: string | null = null
+  let secondModelIconPath: string | null = null
 
   $: {
     if (models && Array.isArray(models)) {
       if (mode === 'custom') {
-        let firstDetails = findModelDetails(custom_models_selection?.[0], models);
-        let secondDetails = findModelDetails(custom_models_selection?.[1], models);
+        let firstDetails = findModelDetails(custom_models_selection?.[0], models)
+        let secondDetails = findModelDetails(custom_models_selection?.[1], models)
 
-        firstModelName = firstDetails.name;
-        firstModelIconPath = firstDetails.iconPath;
+        firstModelName = firstDetails.name
+        firstModelIconPath = firstDetails.iconPath
 
-        secondModelName = secondDetails.name;
-        secondModelIconPath = secondDetails.iconPath;
+        secondModelName = secondDetails.name
+        secondModelIconPath = secondDetails.iconPath
       }
     } else {
       if (mode === 'custom') {
-        console.error('Error: models is not a valid array, cannot apply custom selection.');
+        console.error('Error: models is not a valid array, cannot apply custom selection.')
       }
     }
   }
@@ -237,13 +232,13 @@
     // console.log(value)
 
     // Save to cookies
-    setCookie('customdropdown_mode', mode);
-    setCookie('customdropdown_models', JSON.stringify(custom_models_selection));
+    setCookie('customdropdown_mode', mode)
+    setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
     gradio.dispatch('select', {
       mode: mode,
       custom_models_selection: custom_models_selection,
       prompt_value: prompt_value
-    });
+    })
   }
 
   function dispatchSubmit(): void {
@@ -254,119 +249,119 @@
     // console.log(value)
 
     // Save to cookies
-    setCookie('customdropdown_mode', mode);
-    setCookie('customdropdown_models', JSON.stringify(custom_models_selection));
-    setCookie('comparia_initialprompt', base64Encode(prompt_value));
+    setCookie('customdropdown_mode', mode)
+    setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
+    setCookie('comparia_initialprompt', base64Encode(prompt_value))
     gradio.dispatch('submit', {
       mode: mode,
       custom_models_selection: custom_models_selection,
       prompt_value: prompt_value
-    });
+    })
   }
 
   function handle_option_selected(index: number): void {
     if (index !== null && choices && choices.length > index) {
-      mode = choices[index].value;
+      mode = choices[index].value
       if (mode !== value['mode']) {
-        value['mode'] = mode;
+        value['mode'] = mode
         // Don't tell backend to switch to custom if no custom_models_selection yet
         if (!(mode === 'custom' && custom_models_selection.length === 0)) {
-          dispatchSelect();
+          dispatchSelect()
         }
-        choice = choices[index];
+        choice = choices[index]
       }
     }
-    show_custom_models_selection = mode === 'custom';
+    show_custom_models_selection = mode === 'custom'
   }
 
   function toggle_model_selection(id: string): void {
     if (!custom_models_selection.includes(id)) {
       if (custom_models_selection.length < 2) {
-        custom_models_selection.push(id);
+        custom_models_selection.push(id)
       }
     } else {
-      custom_models_selection = custom_models_selection.filter((item) => item !== id);
+      custom_models_selection = custom_models_selection.filter((item) => item !== id)
     }
-    value['custom_models_selection'] = custom_models_selection;
-    dispatchSelect();
+    value['custom_models_selection'] = custom_models_selection
+    dispatchSelect()
 
     // If clicked on second model, close model selection modal
     if (custom_models_selection.length === 2) {
-      const modeSelectionModal = document.getElementById('modal-mode-selection');
+      const modeSelectionModal = document.getElementById('modal-mode-selection')
       if (modeSelectionModal) {
         window.setTimeout(() => {
           // @ts-ignore - DSFR is globally available
-          window.dsfr(modeSelectionModal).modal.conceal();
-        }, 300);
+          window.dsfr(modeSelectionModal).modal.conceal()
+        }, 300)
       }
     }
   }
 
   // Dispatch change from cookie
   if (browser && (initialMode !== 'random' || initialModels.length > 0)) {
-    value['mode'] = mode;
-    value['custom_models_selection'] = custom_models_selection;
-    dispatchSelect();
+    value['mode'] = mode
+    value['custom_models_selection'] = custom_models_selection
+    dispatchSelect()
   }
 
   function get_choice(modeValue: Mode): Choice | undefined {
-    return choices.find((c) => c.value === modeValue);
+    return choices.find((c) => c.value === modeValue)
   }
 
   // Handle prompt value update from backend
   $: {
     if (value_is_output) {
-      prompt_value = value['prompt_value'];
+      prompt_value = value['prompt_value']
     } else {
       if (value['prompt_value'] != prompt_value) {
-        value['prompt_value'] = prompt_value;
+        value['prompt_value'] = prompt_value
       }
     }
   }
 
   function handlePromptSelected(
     event: CustomEvent<{
-      text: string;
-      selectionStart?: number;
-      selectionEnd?: number;
+      text: string
+      selectionStart?: number
+      selectionEnd?: number
     }>
   ): void {
-    prompt_value = event.detail.text;
+    prompt_value = event.detail.text
     console.log(
       `[Index] handlePromptSelected: Received promptselected. Text: "${prompt_value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`
-    );
+    )
     // Déclencher un événement de changement pour que Gradio soit informé
     gradio.dispatch('change', {
       prompt_value: prompt_value,
       mode: mode,
       custom_models_selection: custom_models_selection
-    });
+    })
 
     if (
       textboxElement &&
       event.detail.selectionStart !== undefined &&
       event.detail.selectionEnd !== undefined
     ) {
-      const sStart = event.detail.selectionStart;
-      const sEnd = event.detail.selectionEnd;
+      const sStart = event.detail.selectionStart
+      const sEnd = event.detail.selectionEnd
 
       const performSelection = () => {
         if (selectPartialText && typeof selectPartialText === 'function') {
-          console.log(`[Index] Performing selection. Start: ${sStart}, End: ${sEnd}`);
-          selectPartialText(sStart, sEnd);
+          console.log(`[Index] Performing selection. Start: ${sStart}, End: ${sEnd}`)
+          selectPartialText(sStart, sEnd)
         } else {
           console.warn(
             `[Index] Textbox element or selectPartialText method not available when trying to perform selection.`
-          );
+          )
         }
-      };
+      }
 
       // Initial attempt: After Svelte tick and browser paint
       tick().then(() => {
         requestAnimationFrame(() => {
-          performSelection();
-        });
-      });
+          performSelection()
+        })
+      })
 
       // // Second attempt: With a short delay
       // setTimeout(() => {
@@ -382,22 +377,22 @@
       console.log(
         '[Index] handlePromptSelected: No specific selection range provided, or textboxElement not ready. No text will be selected.',
         event.detail
-      );
+      )
     }
     // Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
     // dispatchSubmit();
     // disabled = true;
   }
 
-  var alt_label: string = 'Sélection des modèles';
+  var alt_label: string = 'Sélection des modèles'
   $: if (
     // eslint-disable-next-line
     (mode == 'custom' && custom_models_selection.length < 1) ||
     (mode == 'random' && never_clicked)
   ) {
-    alt_label = 'Sélection des modèles';
+    alt_label = 'Sélection des modèles'
   } else {
-    alt_label = choice.alt_label;
+    alt_label = choice.alt_label
   }
 </script>
 
@@ -427,11 +422,11 @@
             prompt_value: prompt_value,
             mode: mode,
             custom_models_selection: custom_models_selection
-          });
+          })
         }}
         on:submit={() => {
-          dispatchSubmit();
-          disabled = true;
+          dispatchSubmit()
+          disabled = true
         }}
       />
     </div>
@@ -443,8 +438,8 @@
         {disabled}
         aria-controls="modal-mode-selection"
         on:click={() => {
-          never_clicked = false;
-          show_custom_models_selection = false;
+          never_clicked = false
+          show_custom_models_selection = false
         }}
       >
         <svg
@@ -495,8 +490,8 @@
       class="submit-btn purple-btn btn"
       disabled={prompt_value == '' || disabled}
       on:click={() => {
-        dispatchSubmit();
-        disabled = true;
+        dispatchSubmit()
+        disabled = true
       }}
       value="Envoyer"
     />

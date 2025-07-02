@@ -1,20 +1,20 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-  import { Copy, Check } from '@gradio/icons';
-  import type { NormalisedMessage } from '$lib/types';
-  import IconButton from './IconButton.svelte';
+  import IconButton from '$lib/components/IconButton.svelte'
+  import type { NormalisedMessage } from '$lib/types'
+  import { Check, Copy } from '@gradio/icons'
+  import { onDestroy } from 'svelte'
 
-  let copied = false;
-  export let value: NormalisedMessage[] | null;
+  let copied = false
+  export let value: NormalisedMessage[] | null
 
-  let timer: NodeJS.Timeout;
+  let timer: NodeJS.Timeout
 
   function copy_feedback(): void {
-    copied = true;
-    if (timer) clearTimeout(timer);
+    copied = true
+    if (timer) clearTimeout(timer)
     timer = setTimeout(() => {
-      copied = false;
-    }, 1000);
+      copied = false
+    }, 1000)
   }
 
   const copy_conversation = (): void => {
@@ -22,28 +22,28 @@
       const conversation_value = value
         .map((message) => {
           if (message.type === 'text') {
-            return `${message.role}: ${message.content}`;
+            return `${message.role}: ${message.content}`
           }
-          return `${message.role}: ${message.content.value.url}`;
+          return `${message.role}: ${message.content.value.url}`
         })
-        .join('\n\n');
+        .join('\n\n')
 
       navigator.clipboard.writeText(conversation_value).catch((err) => {
-        console.error('Failed to copy conversation: ', err);
-      });
+        console.error('Failed to copy conversation: ', err)
+      })
     }
-  };
+  }
 
   async function handle_copy(): Promise<void> {
     if ('clipboard' in navigator) {
-      copy_conversation();
-      copy_feedback();
+      copy_conversation()
+      copy_feedback()
     }
   }
 
   onDestroy(() => {
-    if (timer) clearTimeout(timer);
-  });
+    if (timer) clearTimeout(timer)
+  })
 </script>
 
 <IconButton

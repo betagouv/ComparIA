@@ -311,6 +311,6 @@ const promptsTable: { [key: string]: string[] } = {
     "Pourquoi devrions-nous créer une école de formation à l'IA pour former les enfants aux défis de la prochaine décennie ?",
     "Quels outils d'IA pourrions-nous développer afin de prédire et prévenir les crises humanitaires et les catastrophes naturelles ?"
   ]
-};
+}
 
-export default promptsTable;
+export default promptsTable

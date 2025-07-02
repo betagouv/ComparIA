@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { type ComponentType } from 'svelte';
-  export let Icon: ComponentType;
-  export let label = '';
-  export let show_label = false;
-  export let pending = false;
-  export let size: 'small' | 'large' | 'medium' = 'medium';
-  export let padded = true;
-  export let highlight = false;
-  export let border = false;
-  export let disabled = false;
-  export let hasPopup = false;
-  export let color = 'var(--block-label-text-color)';
-  export let transparent = false;
-  $: _color = highlight ? '#6A6AF4' : color;
+  import { type ComponentType } from 'svelte'
+
+  export let Icon: ComponentType
+  export let label = ''
+  export let show_label = false
+  export let pending = false
+  export let size: 'small' | 'large' | 'medium' = 'medium'
+  export let padded = true
+  export let highlight = false
+  export let border = false
+  export let disabled = false
+  export let hasPopup = false
+  export let color = 'var(--block-label-text-color)'
+  export let transparent = false
+  $: _color = highlight ? '#6A6AF4' : color
 </script>
 
 <button

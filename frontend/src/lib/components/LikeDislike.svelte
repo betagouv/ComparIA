@@ -1,16 +1,16 @@
 <script lang="ts">
-  import IconButton from './IconButton.svelte';
-  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte';
-  import ThumbDownDefault from '$lib/icons/ThumbDownDefault.svelte';
-  import ThumbDownDisabled from '$lib/icons/ThumbDownDisabled.svelte';
-  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte';
-  import ThumbUpDefault from '$lib/icons/ThumbUpDefault.svelte';
-  import ThumbUpDisabled from '$lib/icons/ThumbUpDisabled.svelte';
+  import IconButton from '$lib/components/IconButton.svelte'
+  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
+  import ThumbDownDefault from '$lib/icons/ThumbDownDefault.svelte'
+  import ThumbDownDisabled from '$lib/icons/ThumbDownDisabled.svelte'
+  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte'
+  import ThumbUpDefault from '$lib/icons/ThumbUpDefault.svelte'
+  import ThumbUpDisabled from '$lib/icons/ThumbUpDisabled.svelte'
 
-  export let handle_action: (selected: string | null) => void;
-  export let disabled = false;
+  export let handle_action: (selected: string | null) => void
+  export let disabled = false
 
-  let selected: 'like' | 'dislike' | null = null;
+  let selected: 'like' | 'dislike' | null = null
 </script>
 
 <IconButton
@@ -21,11 +21,11 @@
   highlight={selected === 'like'}
   on:click={() => {
     if (selected === 'like') {
-      selected = null; // Unselect the "like"
-      handle_action('none'); // Notify that no action is selected
+      selected = null // Unselect the "like"
+      handle_action('none') // Notify that no action is selected
     } else {
-      selected = 'like'; // Select the "like"
-      handle_action('like'); // Notify that "like" was selected
+      selected = 'like' // Select the "like"
+      handle_action('like') // Notify that "like" was selected
     }
   }}
 />
@@ -38,11 +38,11 @@
   highlight={selected === 'dislike'}
   on:click={() => {
     if (selected === 'dislike') {
-      selected = null; // Unselect the "dislike"
-      handle_action('none'); // Notify that no action is selected
+      selected = null // Unselect the "dislike"
+      handle_action('none') // Notify that no action is selected
     } else {
-      selected = 'dislike'; // Select the "dislike"
-      handle_action('dislike'); // Notify that "dislike" was selected
+      selected = 'dislike' // Select the "dislike"
+      handle_action('dislike') // Notify that "dislike" was selected
     }
   }}
 />

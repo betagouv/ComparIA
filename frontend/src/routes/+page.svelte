@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { currentScreen } from '$lib/stores';
-  import Chatbots from '$lib/Chatbots.svelte';
-
-  import FirstScreen from '$lib/FirstScreen.svelte';
+  import Chatbots from '$lib/Chatbots.svelte'
+  import FirstScreen from '$lib/FirstScreen.svelte'
+  import { currentScreen } from '$lib/stores'
 </script>
 
 {#if $currentScreen === 'FirstScreen'}

@@ -1,87 +1,83 @@
 <script lang="ts">
-  import { sanitize } from '@gradio/sanitize';
-  import Brain from '$lib/icons/brain.svelte';
+  import ButtonPanel from '$lib/components/ButtonPanel.svelte'
+  import Copy from '$lib/components/Copy.svelte'
+  import Pending from '$lib/components/Pending.svelte'
+  import Brain from '$lib/icons/brain.svelte'
+  import type { NormalisedMessage } from '$lib/types'
+  import { MarkdownCode as Markdown } from '@gradio/markdown-code'
+  import { sanitize } from '@gradio/sanitize'
 
-  import type { NormalisedMessage } from '../types';
-  import { MarkdownCode as Markdown } from '@gradio/markdown-code';
-  // import type { I18nFormatter } from "js/core/src/gradio_helper";
-  import type { ComponentType, SvelteComponent } from 'svelte';
-  import ButtonPanel from './ButtonPanel.svelte';
-  import Copy from './Copy.svelte';
+  export let value: NormalisedMessage[]
 
-  import Pending from './Pending.svelte';
-
-  export let value: NormalisedMessage[];
-
-  export let role = 'user';
-  export let message: NormalisedMessage;
-  export let layout: 'bubble' | 'panel';
+  export let role = 'user'
+  export let message: NormalisedMessage
+  export let layout: 'bubble' | 'panel'
   // export let bubble_full_width: boolean;
-  export let render_markdown: boolean;
+  export let render_markdown: boolean
   export let latex_delimiters: {
-    left: string;
-    right: string;
-    display: boolean;
-  }[];
-  export let sanitize_html: boolean;
-  export let selectable: boolean;
-  export let _fetch: typeof fetch;
-  export let rtl: boolean;
-  export let dispatch: any;
+    left: string
+    right: string
+    display: boolean
+  }[]
+  export let sanitize_html: boolean
+  export let selectable: boolean
+  export let _fetch: typeof fetch
+  export let rtl: boolean
+  export let dispatch: any
   // export let i18n: I18nFormatter;
-  export let line_breaks: boolean;
+  export let line_breaks: boolean
   // export let upload: Client["upload"];
-  export let target: HTMLElement | null;
-  export let root: string;
-  export let disabled = false;
-  var thought = '';
-  var content = '';
+  export let target: HTMLElement | null
+  export let root: string
+  export let disabled = false
+  var thought = ''
+  var content = ''
 
-  export let theme_mode: 'light' | 'dark' | 'system';
-  export let i: number;
-  export let show_copy_button: boolean;
-  export let generating: boolean;
-  export let thinking: boolean;
-  export let expand_reasoning: boolean = false;
-  export let show_reasoning: boolean;
-  export let show_like: boolean;
-  export let show_retry: boolean;
-  export let show_undo: boolean;
-  export let liked: boolean = false;
-  export let disliked: boolean = false;
-  export let prefs: string[] = [];
-  export let comment: string | undefined;
+  export let theme_mode: 'light' | 'dark' | 'system'
+  export let i: number
+  export let show_copy_button: boolean
+  export let generating: boolean
+  export let thinking: boolean
+  export let expand_reasoning: boolean = false
+  export let show_reasoning: boolean
+  export let show_like: boolean
+  export let show_retry: boolean
+  export let show_undo: boolean
+  export let liked: boolean = false
+  export let disliked: boolean = false
+  export let prefs: string[] = []
+  export let comment: string | undefined
 
-  export let handle_action: (selected: string | null, value?: string[]) => void;
-  export let scroll: () => void;
+  export let handle_action: (selected: string | null, value?: string[]) => void
+  export let scroll: () => void
 
   function get_message_label_data(message: NormalisedMessage): string {
-    return message.content;
+    return message.content
   }
 
   function get_message_bot_position(message: NormalisedMessage): string {
     if (message.role === 'assistant') {
-      return message.metadata.bot === 'a' ? 'left' : 'right';
+      return message.metadata.bot === 'a' ? 'left' : 'right'
     } else {
-      return '';
+      return ''
     }
   }
 
   type ButtonPanelProps = {
-    disabled: boolean;
-    show: boolean;
-    handle_action: (selected: string | null) => void;
-    likeable: boolean;
-    show_retry: boolean;
-    show_undo: boolean;
-    generating: boolean;
-    show_copy_button: boolean;
-    message: NormalisedMessage[] | NormalisedMessage;
-    position: 'left' | 'right';
-    layout: 'bubble' | 'panel';
-  };
+    disabled: boolean
+    show: boolean
+    handle_action: (selected: string | null) => void
+    likeable: boolean
+    show_retry: boolean
+    show_undo: boolean
+    generating: boolean
+    show_copy_button: boolean
+    message: NormalisedMessage[] | NormalisedMessage
+    position: 'left' | 'right'
+    layout: 'bubble' | 'panel'
+  }
 
-  let button_panel_props: ButtonPanelProps;
+  let button_panel_props: ButtonPanelProps
   $: button_panel_props = {
     show: show_like || show_retry || show_undo || show_copy_button,
     handle_action,
@@ -94,22 +90,22 @@
     message: message,
     position: role === 'user' ? 'right' : 'left',
     layout
-  };
-  $: {
-    thought = message.reasoning || '';
   }
   $: {
-    content = message.content;
+    thought = message.reasoning || ''
   }
   $: {
-    thinking = message.content == '' && generating;
+    content = message.content
   }
   $: {
-    show_reasoning = thinking || expand_reasoning;
+    thinking = message.content == '' && generating
+  }
+  $: {
+    show_reasoning = thinking || expand_reasoning
   }
 
   function toggleReasoning() {
-    expand_reasoning = !expand_reasoning;
+    expand_reasoning = !expand_reasoning
   }
 </script>
 

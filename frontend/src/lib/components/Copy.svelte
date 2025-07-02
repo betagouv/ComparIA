@@ -1,49 +1,49 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
-  import CopyIcon from '$lib/icons/CopyIcon.svelte';
-  import { Check } from '@gradio/icons';
-  import IconButton from './IconButton.svelte';
+  import IconButton from '$lib/components/IconButton.svelte'
+  import CopyIcon from '$lib/icons/CopyIcon.svelte'
+  import { Check } from '@gradio/icons'
+  import { onDestroy } from 'svelte'
 
-  let copied = false;
-  export let value: string;
-  let timer: NodeJS.Timeout;
+  let copied = false
+  export let value: string
+  let timer: NodeJS.Timeout
 
   function copy_feedback(): void {
-    copied = true;
-    if (timer) clearTimeout(timer);
+    copied = true
+    if (timer) clearTimeout(timer)
     timer = setTimeout(() => {
-      copied = false;
-    }, 2000);
+      copied = false
+    }, 2000)
   }
 
   async function handle_copy(): Promise<void> {
     if ('clipboard' in navigator) {
-      await navigator.clipboard.writeText(value);
-      copy_feedback();
+      await navigator.clipboard.writeText(value)
+      copy_feedback()
     } else {
-      const textArea = document.createElement('textarea');
-      textArea.value = value;
+      const textArea = document.createElement('textarea')
+      textArea.value = value
 
-      textArea.style.position = 'absolute';
-      textArea.style.left = '-999999px';
+      textArea.style.position = 'absolute'
+      textArea.style.left = '-999999px'
 
-      document.body.prepend(textArea);
-      textArea.select();
+      document.body.prepend(textArea)
+      textArea.select()
 
       try {
-        document.execCommand('copy');
-        copy_feedback();
+        document.execCommand('copy')
+        copy_feedback()
       } catch (error) {
-        console.error(error);
+        console.error(error)
       } finally {
-        textArea.remove();
+        textArea.remove()
       }
     }
   }
 
   onDestroy(() => {
-    if (timer) clearTimeout(timer);
-  });
+    if (timer) clearTimeout(timer)
+  })
 </script>
 
 <IconButton

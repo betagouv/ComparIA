@@ -1,224 +1,206 @@
-<script context="module" lang="ts">
-  // import warningicon from "./shared/fr-warning-fill.svg";
-
-  export interface ExtendedLikeData {
-    index: number | [number, number];
-    value: any;
-    liked?: boolean;
-    prefs?: string[];
-    comment?: string;
-  }
-</script>
-
 <script lang="ts">
-  import { type UndoRetryData, is_one_of_last_two_bot_msgs, group_messages } from '$lib/utils';
-  import type { NormalisedMessage } from '../types';
-  import { copy } from '@gradio/utils';
-  import Message from './Message.svelte';
+  import CopyAll from '$lib/components/CopyAll.svelte'
+  import IconButton from '$lib/components/IconButton.svelte'
+  import LikePanel from '$lib/components/LikePanel.svelte'
+  import Message from '$lib/components/Message.svelte'
+  import Pending from '$lib/components/Pending.svelte'
+  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
+  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte'
+  import type { ExtendedLikeData, NormalisedMessage } from '$lib/types'
+  import { type UndoRetryData, group_messages, is_one_of_last_two_bot_msgs } from '$lib/utils'
+  import { ScrollDownArrow } from '@gradio/icons'
+  import { MarkdownCode as Markdown } from '@gradio/markdown-code'
+  import type { SelectData } from '@gradio/utils'
+  import { copy } from '@gradio/utils'
+  import { dequal } from 'dequal/lite'
+  import { createEventDispatcher, onMount, tick } from 'svelte'
 
-  import { dequal } from 'dequal/lite';
-  import { afterUpdate, createEventDispatcher, tick, onMount } from 'svelte';
-
-  import { Trash, Community, ScrollDownArrow } from '@gradio/icons';
-  import IconButton from './IconButton.svelte';
-  import type { SelectData, LikeData } from '@gradio/utils';
-  import type { ExampleMessage } from '../types';
-  import { MarkdownCode as Markdown } from '@gradio/markdown-code';
-  import type { FileData, Client } from '@gradio/client';
   // import type { I18nFormatter } from "js/core/src/gradio_helper";
-  import Pending from './Pending.svelte';
   // import { Retry } from "@gradio/icons";
 
-  export let value: NormalisedMessage[] | null = [];
-  let old_value: NormalisedMessage[] | null = null;
+  export let value: NormalisedMessage[] | null = []
+  let old_value: NormalisedMessage[] | null = null
 
-  import CopyAll from './CopyAll.svelte';
+  export let _fetch: typeof fetch
 
-  export let _fetch: typeof fetch;
+  const is_browser = typeof window !== 'undefined'
 
-  const is_browser = typeof window !== 'undefined';
-
-  $: value;
+  $: value
 
   export let latex_delimiters: {
-    left: string;
-    right: string;
-    display: boolean;
-  }[];
-  export let disabled = false;
-  export let pending_message = false;
-  export let generating = false;
-  export let selectable = false;
-  export let likeable = false;
-  export let show_copy_all_button = false;
-  export let rtl = false;
-  export let show_copy_button = false;
-  export let sanitize_html = true;
-  export let render_markdown = true;
-  export let line_breaks = true;
-  export let autoscroll = true;
-  export let theme_mode: 'system' | 'light' | 'dark';
+    left: string
+    right: string
+    display: boolean
+  }[]
+  export let disabled = false
+  export let pending_message = false
+  export let generating = false
+  export let selectable = false
+  export let likeable = false
+  export let show_copy_all_button = false
+  export let rtl = false
+  export let show_copy_button = false
+  export let sanitize_html = true
+  export let render_markdown = true
+  export let line_breaks = true
+  export let autoscroll = true
+  export let theme_mode: 'system' | 'light' | 'dark'
   // export let i18n: I18nFormatter;
-  export let layout: 'bubble' | 'panel' = 'bubble';
-  export let placeholder: string | null = null;
+  export let layout: 'bubble' | 'panel' = 'bubble'
+  export let placeholder: string | null = null
   // export let upload: Client["upload"];
-  export let _retryable = false;
-  export let _undoable = false;
-  export let like_user_message = false;
-  export let root: string;
+  export let _retryable = false
+  export let _undoable = false
+  export let like_user_message = false
+  export let root: string
 
-  import LikePanel from './LikePanel.svelte';
-
-  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte';
-  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte';
-
-  export let likeValue: string[] = [];
+  export let likeValue: string[] = []
   export const positive_choices: [string, string][] = [
     ['Utile', 'useful'],
     ['Complète', 'complete'],
     ['Créative', 'creative'],
     ['Mise en forme claire', 'clear-formatting']
-  ];
-  export let dislikeValue: string[] = [];
+  ]
+  export let dislikeValue: string[] = []
   export const negative_choices: [string, string][] = [
     ['Incorrecte', 'incorrect'],
     ['Superficielle', 'superficial'],
     ['Instructions non suivies', 'instructions-not-followed']
-  ];
+  ]
 
-  export const positive_prefs = positive_choices.map((choice) => choice[1]);
-  export const negative_prefs = negative_choices.map((choice) => choice[1]);
+  export const positive_prefs = positive_choices.map((choice) => choice[1])
+  export const negative_prefs = negative_choices.map((choice) => choice[1])
 
-  let target: HTMLElement | null = null;
+  let target: HTMLElement | null = null
 
   onMount(() => {
-    target = document.querySelector('div.gradio-container');
-  });
+    target = document.querySelector('div.gradio-container')
+  })
 
-  let div: HTMLDivElement;
+  let div: HTMLDivElement
 
-  let show_scroll_button = false;
+  let show_scroll_button = false
 
-  export let commenting: number | undefined = undefined;
+  export let commenting: number | undefined = undefined
 
   const dispatch = createEventDispatcher<{
-    change: undefined;
-    select: SelectData;
-    like: ExtendedLikeData;
-    undo: UndoRetryData;
-    retry: UndoRetryData;
-    share: any;
-    error: string;
-    example_select: SelectData;
-  }>();
+    change: undefined
+    select: SelectData
+    like: ExtendedLikeData
+    undo: UndoRetryData
+    retry: UndoRetryData
+    share: any
+    error: string
+    example_select: SelectData
+  }>()
 
   function is_at_bottom(): boolean {
-    return div && div.offsetHeight + div.scrollTop > div.scrollHeight - 100;
+    return div && div.offsetHeight + div.scrollTop > div.scrollHeight - 100
   }
 
   function scroll_to_bottom(): void {
-    if (!div) return;
-    div.scrollTo(0, div.scrollHeight);
-    show_scroll_button = false;
+    if (!div) return
+    div.scrollTo(0, div.scrollHeight)
+    show_scroll_button = false
   }
 
-  let scroll_after_component_load = false;
+  let scroll_after_component_load = false
   function on_child_component_load(): void {
     if (scroll_after_component_load) {
-      scroll_to_bottom();
-      scroll_after_component_load = false;
+      scroll_to_bottom()
+      scroll_after_component_load = false
     }
   }
 
   async function scroll_on_value_update(): Promise<void> {
-    if (!autoscroll) return;
+    if (!autoscroll) return
 
     if (is_at_bottom()) {
       // Child components may be loaded asynchronously,
       // so trigger the scroll again after they load.
-      scroll_after_component_load = true;
+      scroll_after_component_load = true
 
-      await tick(); // Wait for the DOM to update so that the scrollHeight is correct
-      scroll_to_bottom();
+      await tick() // Wait for the DOM to update so that the scrollHeight is correct
+      scroll_to_bottom()
     } else {
-      show_scroll_button = true;
+      show_scroll_button = true
     }
   }
   onMount(() => {
-    scroll_on_value_update();
-  });
+    scroll_on_value_update()
+  })
   $: if (value || pending_message) {
-    scroll_on_value_update();
+    scroll_on_value_update()
   }
 
   onMount(() => {
     function handle_scroll(): void {
       if (is_at_bottom()) {
-        show_scroll_button = false;
+        show_scroll_button = false
       } else {
-        scroll_after_component_load = false;
+        scroll_after_component_load = false
       }
     }
 
-    div?.addEventListener('scroll', handle_scroll);
+    div?.addEventListener('scroll', handle_scroll)
     return () => {
-      div?.removeEventListener('scroll', handle_scroll);
-    };
-  });
+      div?.removeEventListener('scroll', handle_scroll)
+    }
+  })
 
-  export let hasError: boolean = false;
-  export let errorString: string = null;
+  export let hasError: boolean = false
+  export let errorString: string = null
   $: {
-    errorString = null;
+    errorString = null
 
     for (const messages of groupedMessages) {
       for (const message of messages) {
         if (message?.error) {
-          errorString = message.error;
-          break;
+          errorString = message.error
+          break
         }
       }
       if (errorString !== null) {
-        break;
+        break
       }
     }
 
-    hasError = errorString !== null;
+    hasError = errorString !== null
   }
 
   $: {
     if (!dequal(value, old_value)) {
-      old_value = value;
-      dispatch('change');
+      old_value = value
+      dispatch('change')
     }
   }
-  $: groupedMessages = value && group_messages(value);
+  $: groupedMessages = value && group_messages(value)
 
-  var comment: string = '';
-  var commenting_model: 'A' | 'B' | '' = '';
+  var comment: string = ''
+  var commenting_model: 'A' | 'B' | '' = ''
   $: {
     if (commenting != undefined) {
-      value[commenting].comment = comment;
+      value[commenting].comment = comment
     }
   }
 
   function sendComment(chatbot_index) {
     // console.log(value[chatbot_index].comment);
     // console.log(comment);
-    value[chatbot_index].commented = value[chatbot_index].comment != '';
+    value[chatbot_index].commented = value[chatbot_index].comment != ''
     dispatch('like', {
       index: chatbot_index,
       value: '',
       comment: value[chatbot_index].comment
-    });
+    })
     // commenting = undefined;
     // comment = "";
   }
   function handle_retry_last(): void {
     // svelte custom_components/customchatbot/frontend/shared/ChatBot.svelte (237-238)
-    const lastGroup = groupedMessages[groupedMessages.length - 1];
-    const lastMessage = lastGroup && lastGroup.length > 0 ? lastGroup[lastGroup.length - 1] : null;
-    console.log('RETRYING');
+    const lastGroup = groupedMessages[groupedMessages.length - 1]
+    const lastMessage = lastGroup && lastGroup.length > 0 ? lastGroup[lastGroup.length - 1] : null
+    console.log('RETRYING')
 
     dispatch('retry', {
       index: lastMessage.index,
@@ -228,7 +210,7 @@
       // lastMessage.content,
       // value: msg.content,
       // error: msg.metadata?.error || msg.error
-    });
+    })
   }
   // TODO: rename or split this function
   function handle_action(
@@ -237,14 +219,14 @@
     message: NormalisedMessage,
     selected: string[] | string | null
   ): void {
-    if (!groupedMessages) return;
+    if (!groupedMessages) return
 
-    var user_msg_offset = Math.floor(i / 2);
-    var chatbot_index = i + j + user_msg_offset;
+    var user_msg_offset = Math.floor(i / 2)
+    var chatbot_index = i + j + user_msg_offset
 
-    const msg = groupedMessages[i][j];
+    const msg = groupedMessages[i][j]
     if (selected === 'retry') {
-      console.log('RETRYING');
+      console.log('RETRYING')
 
       dispatch('retry', {
         index: msg.index,
@@ -252,30 +234,30 @@
         // value: msg.error || msg.content,
         // value: msg.content,
         // error: msg.metadata?.error || msg.error
-      });
+      })
     }
     if (selected === 'commenting') {
-      commenting = chatbot_index;
+      commenting = chatbot_index
       if (value[chatbot_index].comment === undefined) {
-        value[chatbot_index].comment = '';
-        comment = '';
+        value[chatbot_index].comment = ''
+        comment = ''
 
-        value[chatbot_index].commented = true;
+        value[chatbot_index].commented = true
       } else {
-        comment = value[chatbot_index].comment;
-        value[chatbot_index].commented = true;
+        comment = value[chatbot_index].comment
+        value[chatbot_index].commented = true
       }
-      commenting_model = j === 0 ? 'A' : 'B';
+      commenting_model = j === 0 ? 'A' : 'B'
     }
 
     // console.log(selected);
     if (selected === 'like') {
-      value[chatbot_index].liked = true;
-      value[chatbot_index].disliked = false;
+      value[chatbot_index].liked = true
+      value[chatbot_index].disliked = false
       if (value[chatbot_index].prefs) {
         value[chatbot_index].prefs = value[chatbot_index].prefs.filter(
           (item) => !negative_prefs.includes(item)
-        );
+        )
       }
 
       dispatch('like', {
@@ -283,35 +265,35 @@
         value: msg.content,
         liked: true,
         prefs: value[chatbot_index].prefs
-      });
+      })
     } else if (selected === 'dislike') {
-      value[chatbot_index].liked = false;
-      value[chatbot_index].disliked = true;
+      value[chatbot_index].liked = false
+      value[chatbot_index].disliked = true
       if (value[chatbot_index].prefs) {
         value[chatbot_index].prefs = value[chatbot_index].prefs.filter(
           (item) => !positive_choices[1].includes(item)
-        );
+        )
       }
       dispatch('like', {
         index: msg.index,
         value: msg.content,
         liked: false,
         prefs: value[chatbot_index].prefs
-      });
+      })
     } else if (selected === 'none') {
-      value[chatbot_index].liked = false;
-      value[chatbot_index].disliked = false;
-      value[chatbot_index].prefs = [];
+      value[chatbot_index].liked = false
+      value[chatbot_index].disliked = false
+      value[chatbot_index].prefs = []
       dispatch('like', {
         index: msg.index,
         value: msg.content,
         liked: null,
         prefs: []
-      });
+      })
     }
 
     if (Array.isArray(selected)) {
-      value[chatbot_index].prefs = selected;
+      value[chatbot_index].prefs = selected
       // console.log("msg")
       // console.log(msg)
       // console.log("message")
@@ -321,7 +303,7 @@
         value: msg.content,
         liked: msg.liked,
         prefs: selected
-      });
+      })
     }
   }
 </script>
@@ -480,11 +462,11 @@
   id="modal-prefs"
   class="fr-modal"
   on:blur={() => {
-    sendComment(commenting);
+    sendComment(commenting)
   }}
   on:keydown={(e) => {
     if (e.key === 'Escape') {
-      sendComment(commenting);
+      sendComment(commenting)
     }
   }}
 >

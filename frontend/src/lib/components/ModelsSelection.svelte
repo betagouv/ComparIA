@@ -1,16 +1,17 @@
 <script lang="ts">
-  import type { Model } from '$lib/utils-customdropdown.js';
-  export let custom_models_selection: string[] = []; // Default to an empty list
-  export let models: Model[] = [];
+  import type { Model } from '$lib/utils-customdropdown.js'
 
-  export let disabled = false;
+  export let custom_models_selection: string[] = [] // Default to an empty list
+  export let models: Model[] = []
 
-  export let toggle_model_selection: (id: string) => void;
+  export let disabled = false
+
+  export let toggle_model_selection: (id: string) => void
 
   function handleKeyDown(id, event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {
-      event.preventDefault();
-      toggle_model_selection(id);
+      event.preventDefault()
+      toggle_model_selection(id)
     }
   }
 </script>
@@ -38,8 +39,8 @@
         disabled={disabled ||
           (!custom_models_selection.includes(id) && custom_models_selection.length == 2)}
         on:click={(e) => {
-          toggle_model_selection(id);
-          e.stopPropagation();
+          toggle_model_selection(id)
+          e.stopPropagation()
         }}
       />
       <div>

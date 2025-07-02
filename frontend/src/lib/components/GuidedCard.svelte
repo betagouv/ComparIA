@@ -1,22 +1,22 @@
 <script lang="ts">
-  export let iconSrc: string;
-  export let iconAlt: string;
-  export let title: string;
-  export let value: string;
-  export let isIASummit: boolean = false;
-  export let iaSummitSmallIconSrc: string | undefined = undefined;
-  export let iaSummitTooltip: string | undefined = undefined;
-  export let disabled: boolean = false;
-  export let selected: boolean = false;
+  export let iconSrc: string
+  export let iconAlt: string
+  export let title: string
+  export let value: string
+  export let isIASummit: boolean = false
+  export let iaSummitSmallIconSrc: string | undefined = undefined
+  export let iaSummitTooltip: string | undefined = undefined
+  export let disabled: boolean = false
+  export let selected: boolean = false
 
-  import { createEventDispatcher } from 'svelte';
-  const dispatch = createEventDispatcher();
+  import { createEventDispatcher } from 'svelte'
+  const dispatch = createEventDispatcher()
 
   function handleClick() {
     if (disabled) {
-      return;
+      return
     }
-    dispatch('select', { value });
+    dispatch('select', { value })
   }
 </script>
 
