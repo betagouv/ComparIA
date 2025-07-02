@@ -1,3 +1,4 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+@import '@gouvfr/dsfr/dist/dsfr.min.css';

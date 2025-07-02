@@ -12,7 +12,7 @@
   import type { Choice, Mode, ModeAndPromptData, Model } from '$lib/utils-customdropdown.ts'
   import type { LoadingStatus } from '@gradio/statustracker'
   import type { Gradio, KeyUpData } from '@gradio/utils'
-  import { tick } from 'svelte'
+  import { onMount, tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
   export let never_clicked: boolean = true
@@ -42,6 +42,12 @@
   export let autoscroll = true
   export let interactive: boolean
   export let value: ModeAndPromptData
+
+  onMount(async () => {
+    // FIXME import only modal? Or create custom component
+    // @ts-ignore - DSFR module import
+    await import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
+  })
 
   function selectPartialText(start?: number, end?: number): void {
     if (textboxElement) {

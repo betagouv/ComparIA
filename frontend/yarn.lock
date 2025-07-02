@@ -517,6 +517,11 @@
   dependencies:
     tslib "^2.1.0"
 
+"@gouvfr/dsfr@^1.14.0":
+  version "1.14.0"
+  resolved "https://registry.yarnpkg.com/@gouvfr/dsfr/-/dsfr-1.14.0.tgz#cf753fae982f5b6a746bc9d31a471eb0c66ce428"
+  integrity sha512-lF02JujHsr4J39gnC7y+qe0LLnh01cb6JwbMIKK2YcNjzvmfb26C0uW0+gyugD41wjFQQcIFWz07g6ynqxjNzA==
+
 "@gradio/atoms@^0.16.2":
   version "0.16.2"
   resolved "https://registry.yarnpkg.com/@gradio/atoms/-/atoms-0.16.2.tgz#6bb9751f837d8e37ac157a7fa554f5b2396791af"
