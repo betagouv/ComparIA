@@ -10,19 +10,21 @@ from languia.utils import AppState, pick_models
 
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    models_extra_info,
+    unavailable_models
 )
 
 from languia.logs import vote_last_response, sync_reactions, record_conversations
 
 from languia.conversation import bot_response, Conversation
 
-import logging as logger
+from languia.config import logger
+
 
 from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
     ChatMessage,
 )
 
-from languia import config
 
 with gr.Blocks(
     title="Discussion - compar:IA, le comparateur d'IA conversationnelles",
@@ -39,8 +41,7 @@ with gr.Blocks(
         # ignored, hardcoded in custom component
         choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
     )
-    models_selection = gr.CheckboxGroup(choices=config.models_extra_info)
-
+    models_selection = gr.CheckboxGroup(choices=models_extra_info)
 
     textbox = gr.Textbox(
         elem_id="main-textbox",
@@ -53,14 +54,8 @@ with gr.Blocks(
         autofocus=True,
     )
     send_btn = gr.Button(
-        interactive=False,
-        # scale=1,
         value="Envoyer",
-        # icon="assets/dsfr/icons/system/arrow-up-line.svg",
-        elem_id="send-btn",
-        elem_classes="grow-0 purple-btn w-full fr-ml-md-1w",
     )
-
 
     chatbot1 = gr.Chatbot(type="messages")
     chatbot2 = gr.Chatbot(type="messages")
@@ -159,7 +154,18 @@ with gr.Blocks(
 
     # Register listeners
 
-    def pick_models(
+    # FIXME: conv_a_scoped and conv_b_scoped as input??
+    @mode_dropdown.select(
+        inputs=[app_state] + [mode_dropdown] + [models_selection],
+        outputs=[app_state] + [conv_a] + [conv_b],
+        api_name="draw_models",
+    )
+    @models_selection.select(
+        inputs=[app_state] + [mode_dropdown] + [models_selection],
+        outputs=[app_state] + [conv_a] + [conv_b],
+        api_name="draw_models",
+    )
+    def draw_models(
         app_state_scoped: AppState,
         request: gr.Request,
         mode: gr.Radio = "random",
@@ -174,7 +180,7 @@ with gr.Blocks(
         )
 
         first_model_name, second_model_name = pick_models(
-            mode, custom_models_selection, unavailable_models=config.unavailable_models
+            mode, custom_models_selection, unavailable_models=unavailable_models
         )
 
         # Important: to avoid sharing object references between Gradio sessions
@@ -196,6 +202,11 @@ with gr.Blocks(
         return app_state_scoped, conv_a_scoped, conv_b_scoped
 
     @send_btn.click(
+        api_name="add_text",
+        inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
+    )
+    @textbox.submit(
         api_name="add_text",
         inputs=[app_state] + [conv_a] + [conv_b] + [textbox],
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
@@ -276,6 +287,8 @@ with gr.Blocks(
                     # 2 conversations
                     conv_a_scoped,
                     conv_b_scoped,
+                    conv_a_scoped.messages,
+                    conv_b_scoped.messages,
                 ]
 
         except Exception as e:
@@ -329,7 +342,7 @@ with gr.Blocks(
                     # FIXME: if error with model wasn't the one chosen (case where you select only one model) just reroll the other one
                     [],
                     # temporarily exclude the buggy model here
-                    config.unavailable_models + [error_with_model],
+                    unavailable_models + [error_with_model],
                 )
                 logger.info(
                     f"reinitializing convs w/ two new models: {model_left} and {model_right}",
@@ -381,9 +394,15 @@ with gr.Blocks(
                 # chatbot,
                 # chatbot1,
                 # chatbot2
+                conv_a_scoped.messages,
+                conv_b_scoped.messages
             ]
 
-    @retry_btn.click
+    @retry_btn.click(
+        api_name="retry",
+        inputs=[app_state] + [conv_a] + [conv_b],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot1] + [chatbot2],
+    )
     def retry(
         app_state_scoped,
         conv_a_scoped,
@@ -409,7 +428,7 @@ with gr.Blocks(
             text = conv_a_scoped.messages[-1].content
             conv_a_scoped.messages = conv_a_scoped.messages[:-1]
             conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-            add_text(
+            return add_text(
                 app_state_scoped,
                 conv_a_scoped,
                 conv_b_scoped,
@@ -423,7 +442,6 @@ with gr.Blocks(
                 message="Il n'est pas possible de réessayer, veuillez recharger la page.",
                 duration=10,
             )
-        
     # FIXME: hardening, only show model name to frontend if this function passes?
     # def is_vote_needed(
     #     app_state_scoped,request: gr.Request
@@ -432,13 +450,13 @@ with gr.Blocks(
     #     for reaction in app_state_scoped.reactions:
     #         if reaction:
     #             if reaction["liked"] != None:
-    #                 logger.info("meaningful_reaction")
+    #                 print("meaningful_reaction")
     #                 logger.debug(reaction)
     #                 return False
     #     # If no break found
     #     else:
     #         logger.debug("no meaningful reaction found, inflicting vote screen")
-    #         logger.info(
+    #         print(
     #             "ecran_vote",
     #             extra={"request": request},
     #         )
