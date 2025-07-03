@@ -10,8 +10,6 @@
   import Leaf from '$lib/icons/leaf.svelte'
   import Ruler from '$lib/icons/ruler.svelte'
   import type { Choice, Mode, ModeAndPromptData, Model } from '$lib/utils-customdropdown.ts'
-  import type { LoadingStatus } from '@gradio/statustracker'
-  import type { Gradio, KeyUpData } from '@gradio/utils'
   import { onMount, tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
@@ -21,17 +19,6 @@
   export let elem_classes: string[] = []
   export let visible = true
   export let disabled = false
-
-  export let gradio: Gradio<{
-    change: ModeAndPromptData
-    input: never
-    submit: ModeAndPromptData
-    select: ModeAndPromptData
-    blur: never
-    focus: never
-    key_up: KeyUpData
-    clear_status: LoadingStatus
-  }>
   export let value_is_output = false
   export let lines: number = 4
   export let show_custom_models_selection: boolean = false
@@ -42,6 +29,7 @@
   export let autoscroll = true
   export let interactive: boolean
   export let value: ModeAndPromptData
+  export let onSubmit: (args: ModeAndPromptData) => void
 
   onMount(async () => {
     // FIXME import only modal? Or create custom component
@@ -240,11 +228,6 @@
     // Save to cookies
     setCookie('customdropdown_mode', mode)
     setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
-    gradio.dispatch('select', {
-      mode: mode,
-      custom_models_selection: custom_models_selection,
-      prompt_value: prompt_value
-    })
   }
 
   function dispatchSubmit(): void {
@@ -258,7 +241,7 @@
     setCookie('customdropdown_mode', mode)
     setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
     setCookie('comparia_initialprompt', base64Encode(prompt_value))
-    gradio.dispatch('submit', {
+    onSubmit({
       mode: mode,
       custom_models_selection: custom_models_selection,
       prompt_value: prompt_value
@@ -336,13 +319,6 @@
     console.log(
       `[Index] handlePromptSelected: Received promptselected. Text: "${prompt_value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`
     )
-    // Déclencher un événement de changement pour que Gradio soit informé
-    gradio.dispatch('change', {
-      prompt_value: prompt_value,
-      mode: mode,
-      custom_models_selection: custom_models_selection
-    })
-
     if (
       textboxElement &&
       event.detail.selectionStart !== undefined &&
@@ -423,13 +399,6 @@
         placeholder="Écrivez votre premier message ici"
         {autofocus}
         {autoscroll}
-        on:change={() => {
-          gradio.dispatch('change', {
-            prompt_value: prompt_value,
-            mode: mode,
-            custom_models_selection: custom_models_selection
-          })
-        }}
         on:submit={() => {
           dispatchSubmit()
           disabled = true
@@ -533,7 +502,6 @@
                   {handle_option_selected}
                   {choices}
                   bind:mode
-                  on:select={(e) => gradio.dispatch('select', e.detail)}
                   disabled={!interactive}
                 />
               </div>
@@ -555,16 +523,9 @@
                       class="btn fr-mb-md-0 fr-mb-1w"
                       on:click={() => (show_custom_models_selection = false)}>Retour</button
                     >
-                    <button
-                      aria-controls="modal-mode-selection"
-                      class="btn purple-btn float-right"
-                      on:click={() =>
-                        gradio.dispatch('select', {
-                          prompt_value: prompt_value,
-                          mode: mode,
-                          custom_models_selection: custom_models_selection
-                        })}>Valider</button
-                    >
+                    <button aria-controls="modal-mode-selection" class="btn purple-btn float-right">
+                      Valider
+                    </button>
                   </div>
                 </div>
               </div>
