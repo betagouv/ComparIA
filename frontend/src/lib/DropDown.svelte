@@ -46,6 +46,13 @@
     return parsed
   })
   const mode = useLocalStorage<ModeAndPromptData['mode']>('mode', 'random')
+  const modelsSelection = useLocalStorage<string[]>('customModelsSelection', [], (parsed) => {
+    if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
+      const availableModelIds = new Set(models.map((m) => m.id))
+      return parsed.filter((id) => availableModelIds.has(id))
+    }
+    return []
+  })
 
   function selectPartialText(start?: number, end?: number): void {
     if (textboxElement) {
@@ -134,32 +141,6 @@
     document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
   }
 
-  function getInitialModels(availableModels: Model[]): string[] {
-    if (!Array.isArray(availableModels)) {
-      console.error('getInitialModels called without a valid availableModels array.')
-      return []
-    }
-
-    if (typeof window !== 'undefined' && getCookie('customdropdown_models')) {
-      try {
-        const parsed = JSON.parse(getCookie('customdropdown_models')!)
-
-        if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
-          const availableModelIds = new Set(availableModels.map((m) => m.id))
-
-          const validModels = parsed.filter((id) => availableModelIds.has(id))
-          return validModels
-        } else {
-          return []
-        }
-      } catch (error) {
-        console.error('Failed to parse models from cookie:', error)
-        return []
-      }
-    }
-    return []
-  }
-
   const findModelDetails = (id: string | null, modelsList: Model[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
       return { name: 'Aléatoire', iconPath: null }
@@ -171,11 +152,6 @@
     }
   }
 
-  let initialModels: string[] = getInitialModels(models) // Pass the populated models array
-
-  // Export the necessary variables
-  export let custom_models_selection: string[] = initialModels
-
   let choice: Choice = get_choice(mode.value) || choices[0]
   let firstModelName = 'Aléatoire'
   let secondModelName = 'Aléatoire'
@@ -185,8 +161,8 @@
   $: {
     if (models && Array.isArray(models)) {
       if (mode.value === 'custom') {
-        let firstDetails = findModelDetails(custom_models_selection?.[0], models)
-        let secondDetails = findModelDetails(custom_models_selection?.[1], models)
+        let firstDetails = findModelDetails(modelsSelection.value[0], models)
+        let secondDetails = findModelDetails(modelsSelection.value[1], models)
 
         firstModelName = firstDetails.name
         firstModelIconPath = firstDetails.iconPath
@@ -207,9 +183,7 @@
     // console.log(custom_models_selection)
     // console.log("not sending value")
     // console.log(value)
-
     // Save to cookies
-    setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
   }
 
   function dispatchSubmit(): void {
@@ -219,11 +193,9 @@
     // console.log("not sending value")
     // console.log(value)
 
-    // Save to cookies
-    setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
     onSubmit({
       mode: mode.value,
-      custom_models_selection: custom_models_selection,
+      custom_models_selection: modelsSelection.value,
       prompt_value: prompt.value
     })
   }
@@ -237,17 +209,17 @@
   }
 
   function toggle_model_selection(id: string): void {
-    if (!custom_models_selection.includes(id)) {
-      if (custom_models_selection.length < 2) {
-        custom_models_selection.push(id)
+    if (!modelsSelection.value.includes(id)) {
+      if (modelsSelection.value.length < 2) {
+        modelsSelection.value.push(id)
       }
     } else {
-      custom_models_selection = custom_models_selection.filter((item) => item !== id)
+      modelsSelection.value = modelsSelection.value.filter((item) => item !== id)
     }
     dispatchSelect()
 
     // If clicked on second model, close model selection modal
-    if (custom_models_selection.length === 2) {
+    if (modelsSelection.value.length === 2) {
       const modeSelectionModal = document.getElementById('modal-mode-selection')
       if (modeSelectionModal) {
         window.setTimeout(() => {
@@ -323,7 +295,7 @@
   var alt_label: string = 'Sélection des modèles'
   $: if (
     // eslint-disable-next-line
-    (mode.value == 'custom' && custom_models_selection.length < 1) ||
+    (mode.value == 'custom' && modelsSelection.value.length < 1) ||
     (mode.value == 'random' && never_clicked)
   ) {
     alt_label = 'Sélection des modèles'
@@ -386,7 +358,7 @@
           ><svelte:component this={ChevronBas} />
         </span></button
       >
-      {#if mode.value == 'custom' && custom_models_selection.length > 0}
+      {#if mode.value == 'custom' && modelsSelection.value.length > 0}
         <button
           {disabled}
           class="model-selection fr-mb-md-0 fr-mb-1w"
@@ -458,14 +430,19 @@
                 <h6 id="modal-mode-selection" class="modal-title">
                   Quels modèles voulez-vous comparer ?
                   <span class="text-purple fr-ml-2w">
-                    {custom_models_selection.length}/2 modèles
+                    {modelsSelection.value.length}/2 modèles
                   </span>
                 </h6>
                 <p class="fr-mb-2w">
                   Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire
                 </p>
                 <div>
-                  <ModelsSelection {models} bind:custom_models_selection {toggle_model_selection} />
+                  const selection
+                  <ModelsSelection
+                    {models}
+                    bind:custom_models_selection={modelsSelection.value}
+                    {toggle_model_selection}
+                  />
                   <div class="fr-mt-2w">
                     <button
                       class="btn fr-mb-md-0 fr-mb-1w"
