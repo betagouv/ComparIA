@@ -1,4 +1,4 @@
-import { Client } from '@gradio/client'
+import { Client, type Payload } from '@gradio/client'
 
 export async function submitFormData(text: string): Promise<boolean> {
   // Simulation d'un appel API avec délai
@@ -47,16 +47,14 @@ interface GradioMessage {
   content: string
 }
 
-interface GradioResponse {
-  type: string
-  time: Date
-  // Tuple de 10 éléments où seul le premier nous intéresse
-  data: [Array<Array<GradioMessage | any>>, ...any[]]
+export interface GradioResponse extends Payload {
+  type: 'data'
   endpoint: string
-  fn_index: number
+  // Tuple de 10 éléments où seul le premier nous intéresse
+  data: [Array<GradioMessage | any>, ...any[]]
 }
 
-export function parseGradioResponse(response: GradioResponse): Array<Array<GradioMessage>> {
+export function parseGradioResponse(response: GradioResponse): Array<GradioMessage> {
   if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
     throw new Error('Invalid Gradio response format')
   }
