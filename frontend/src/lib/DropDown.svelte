@@ -3,6 +3,7 @@
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
   import TextBox from '$lib/components/Textbox.svelte'
+  import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import Brain from '$lib/icons/brain-customdropdown.svelte'
   import ChevronBas from '$lib/icons/chevron-bas.svelte'
   import Dice from '$lib/icons/dice.svelte'
@@ -32,6 +33,17 @@
     // FIXME import only modal? Or create custom component
     // @ts-ignore - DSFR module import
     await import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
+  })
+
+  const prompt = useLocalStorage('prompt', '', (parsed) => {
+    if (parsed !== '') {
+      tick().then(() => {
+        if (textboxElement && typeof textboxElement.select === 'function') {
+          textboxElement.select()
+        }
+      })
+    }
+    return parsed
   })
 
   function selectPartialText(start?: number, end?: number): void {
@@ -162,33 +174,9 @@
 
   let initialModels: string[] = getInitialModels(models) // Pass the populated models array
 
-  let initialPrompt = ''
-  if (browser) {
-    const cookieValue = getCookie('comparia_initialprompt')
-    if (cookieValue) {
-      try {
-        initialPrompt = base64Decode(cookieValue)
-        deleteCookie('comparia_initialprompt')
-        if (initialPrompt && typeof window !== 'undefined') {
-          // Ensure browser context for tick
-          tick().then(() => {
-            if (textboxElement && typeof textboxElement.select === 'function') {
-              textboxElement.select()
-            }
-          })
-        }
-      } catch (error) {
-        console.error('Failed to decode prompt from cookie:', error)
-        // initialPrompt remains ""
-      }
-    }
-  }
-
   // Export the necessary variables
   export let mode: Mode = initialMode // Assuming initialMode is defined
   export let custom_models_selection: string[] = initialModels
-
-  export let prompt_value: string = initialPrompt
 
   let choice: Choice = get_choice(initialMode) || choices[0]
   let firstModelName = 'Aléatoire'
@@ -237,11 +225,10 @@
     // Save to cookies
     setCookie('customdropdown_mode', mode)
     setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
-    setCookie('comparia_initialprompt', base64Encode(prompt_value))
     onSubmit({
       mode: mode,
       custom_models_selection: custom_models_selection,
-      prompt_value: prompt_value
+      prompt_value: prompt.value
     })
   }
 
@@ -286,9 +273,9 @@
       selectionEnd?: number
     }>
   ): void {
-    prompt_value = event.detail.text
+    prompt.value = event.detail.text
     console.log(
-      `[Index] handlePromptSelected: Received promptselected. Text: "${prompt_value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`
+      `[Index] handlePromptSelected: Received promptselected. Text: "${prompt.value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`
     )
     if (
       textboxElement &&
@@ -358,7 +345,7 @@
       <TextBox
         bind:el={textboxElement}
         {disabled}
-        bind:value={prompt_value}
+        bind:value={prompt.value}
         {elem_id}
         {elem_classes}
         {visible}
@@ -433,7 +420,7 @@
     <input
       type="submit"
       class="submit-btn purple-btn btn"
-      disabled={prompt_value == '' || disabled}
+      disabled={prompt.value == '' || disabled}
       on:click={() => {
         dispatchSubmit()
         disabled = true
@@ -468,11 +455,7 @@
               </h6>
               <p>Sélectionnez le mode de comparaison qui vous convient</p>
               <div>
-                <Dropdown
-                  {handle_option_selected}
-                  {choices}
-                  bind:mode
-                />
+                <Dropdown {handle_option_selected} {choices} bind:mode />
               </div>
             {:else}
               <div in:fade>
