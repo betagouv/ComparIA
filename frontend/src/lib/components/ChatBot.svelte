@@ -10,18 +10,12 @@
   import { type UndoRetryData, group_messages, is_one_of_last_two_bot_msgs } from '$lib/utils'
   import { ScrollDownArrow } from '@gradio/icons'
   import { MarkdownCode as Markdown } from '@gradio/markdown-code'
-  import type { SelectData } from '@gradio/utils'
   import { copy } from '@gradio/utils'
-  import { dequal } from 'dequal/lite'
-  import { createEventDispatcher, onMount, tick } from 'svelte'
-
-  // import type { I18nFormatter } from "js/core/src/gradio_helper";
+  import { onMount, tick } from 'svelte'
   // import { Retry } from "@gradio/icons";
 
-  export let value: NormalisedMessage[] | null = []
+  export let value: NormalisedMessage[] = []
   let old_value: NormalisedMessage[] | null = null
-
-  export let _fetch: typeof fetch
 
   const is_browser = typeof window !== 'undefined'
 
@@ -44,16 +38,12 @@
   export let render_markdown = true
   export let line_breaks = true
   export let autoscroll = true
-  export let theme_mode: 'system' | 'light' | 'dark'
-  // export let i18n: I18nFormatter;
   export let layout: 'bubble' | 'panel' = 'bubble'
   export let placeholder: string | null = null
-  // export let upload: Client["upload"];
   export let _retryable = false
   export let _undoable = false
   export let like_user_message = false
   export let root: string
-
   export let likeValue: string[] = []
   export const positive_choices: [string, string][] = [
     ['Utile', 'useful'],
@@ -67,9 +57,10 @@
     ['Superficielle', 'superficial'],
     ['Instructions non suivies', 'instructions-not-followed']
   ]
-
   export const positive_prefs = positive_choices.map((choice) => choice[1])
   export const negative_prefs = negative_choices.map((choice) => choice[1])
+  export let onLike: (data: ExtendedLikeData) => void
+  export let onRetry: (data: UndoRetryData) => void
 
   let target: HTMLElement | null = null
 
@@ -82,17 +73,6 @@
   let show_scroll_button = false
 
   export let commenting: number | undefined = undefined
-
-  const dispatch = createEventDispatcher<{
-    change: undefined
-    select: SelectData
-    like: ExtendedLikeData
-    undo: UndoRetryData
-    retry: UndoRetryData
-    share: any
-    error: string
-    example_select: SelectData
-  }>()
 
   function is_at_bottom(): boolean {
     return div && div.offsetHeight + div.scrollTop > div.scrollHeight - 100
@@ -149,7 +129,7 @@
   })
 
   export let hasError: boolean = false
-  export let errorString: string = null
+  export let errorString: string | null = null
   $: {
     errorString = null
 
@@ -168,12 +148,6 @@
     hasError = errorString !== null
   }
 
-  $: {
-    if (!dequal(value, old_value)) {
-      old_value = value
-      dispatch('change')
-    }
-  }
   $: groupedMessages = value && group_messages(value)
 
   var comment: string = ''
@@ -188,7 +162,7 @@
     // console.log(value[chatbot_index].comment);
     // console.log(comment);
     value[chatbot_index].commented = value[chatbot_index].comment != ''
-    dispatch('like', {
+    onLike({
       index: chatbot_index,
       value: '',
       comment: value[chatbot_index].comment
@@ -202,7 +176,7 @@
     const lastMessage = lastGroup && lastGroup.length > 0 ? lastGroup[lastGroup.length - 1] : null
     console.log('RETRYING')
 
-    dispatch('retry', {
+    onRetry({
       index: lastMessage.index,
       value: lastMessage.error
       // lastMessage.metadata?.error ||
@@ -228,7 +202,7 @@
     if (selected === 'retry') {
       console.log('RETRYING')
 
-      dispatch('retry', {
+      onRetry({
         index: msg.index,
         value: msg.error
         // value: msg.error || msg.content,
@@ -260,7 +234,7 @@
         )
       }
 
-      dispatch('like', {
+      onLike({
         index: msg.index,
         value: msg.content,
         liked: true,
@@ -274,7 +248,7 @@
           (item) => !positive_choices[1].includes(item)
         )
       }
-      dispatch('like', {
+      onLike({
         index: msg.index,
         value: msg.content,
         liked: false,
@@ -284,7 +258,7 @@
       value[chatbot_index].liked = false
       value[chatbot_index].disliked = false
       value[chatbot_index].prefs = []
-      dispatch('like', {
+      onLike({
         index: msg.index,
         value: msg.content,
         liked: null,
@@ -298,7 +272,7 @@
       // console.log(msg)
       // console.log("message")
       // console.log(message)
-      dispatch('like', {
+      onLike({
         index: msg.index,
         value: msg.content,
         liked: msg.liked,
@@ -336,11 +310,7 @@
               {message}
               {role}
               {layout}
-              {dispatch}
-              {_fetch}
               {line_breaks}
-              {theme_mode}
-              {target}
               {root}
               {selectable}
               {sanitize_html}
@@ -357,9 +327,6 @@
               show_copy_button={role === 'user' ? false : show_copy_button}
               handle_action={(selected) => handle_action(i, j, message, selected)}
               scroll={is_browser ? scroll : () => {}}
-              liked={message.liked}
-              disliked={message.disliked}
-              comment={message.comment}
             />
           {/each}
 

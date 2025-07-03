@@ -21,32 +21,22 @@
   }[]
   export let sanitize_html: boolean
   export let selectable: boolean
-  export let _fetch: typeof fetch
   export let rtl: boolean
-  export let dispatch: any
-  // export let i18n: I18nFormatter;
   export let line_breaks: boolean
-  // export let upload: Client["upload"];
-  export let target: HTMLElement | null
   export let root: string
   export let disabled = false
   var thought = ''
   var content = ''
 
-  export let theme_mode: 'light' | 'dark' | 'system'
   export let i: number
   export let show_copy_button: boolean
   export let generating: boolean
-  export let thinking: boolean
+  export let thinking: boolean = disabled
   export let expand_reasoning: boolean = false
-  export let show_reasoning: boolean
+  export let show_reasoning: boolean = false
   export let show_like: boolean
   export let show_retry: boolean
   export let show_undo: boolean
-  export let liked: boolean = false
-  export let disliked: boolean = false
-  export let prefs: string[] = []
-  export let comment: string | undefined
 
   export let handle_action: (selected: string | null, value?: string[]) => void
   export let scroll: () => void
@@ -190,7 +180,6 @@
           {render_markdown}
           {line_breaks}
           on:load={scroll}
-          {root}
         />
         {#if generating}
           <Pending />
@@ -203,7 +192,6 @@
           {render_markdown}
           {line_breaks}
           on:load={scroll}
-          {root}
         />
       {/if}
     </div>
