@@ -11,34 +11,33 @@ export async function submitFormData(text: string): Promise<boolean> {
   })
 }
 
-export async function connectToGradio(url: string) {
-  console.log('Connecting to Gradio at:', url)
-  try {
-    const client = await Client.connect(url)
-    console.log('Successfully connected to Gradio')
-    return client
-  } catch (error) {
-    console.error('Failed to connect to Gradio:', error)
-    throw error
-  }
-}
+export const api = {
+  // FIXME connect to client only once?
+  url: 'http://localhost:7860/',
 
-export async function submitGradioJob(
-  app: any,
-  modelParams: {
-    mode: string
-    custom_models_selection: any[]
-    prompt_value: string
-  }
-) {
-  console.log('Submitting Gradio job with params:', modelParams)
-  try {
-    const result = await app.submit('/add_first_text', [modelParams])
-    console.log('Gradio job submitted successfully')
-    return result
-  } catch (error) {
-    console.error('Failed to submit Gradio job:', error)
-    throw error
+  async connect() {
+    console.debug('Connecting to Gradio at:', this.url)
+    try {
+      const client = await Client.connect(this.url)
+      console.debug('Successfully connected to Gradio')
+      return client
+    } catch (error) {
+      console.error('Failed to connect to Gradio:', error)
+      throw error
+    }
+  },
+
+  async submit(uri: string, params: any) {
+    console.debug(`Submitting Gradio job '${uri}' with params:`, params)
+    try {
+      const client = await this.connect()
+      const result = await client.submit(uri, params)
+      console.debug('Gradio job submitted successfully')
+      return result
+    } catch (error) {
+      console.error('Failed to submit Gradio job:', error)
+      throw error
+    }
   }
 }
 
