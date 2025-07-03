@@ -109,38 +109,6 @@
     }
   ]
 
-  const browser = typeof window !== 'undefined'
-
-  function getCookie(name: string): string | null {
-    if (!browser) return null
-    const value = `; ${document.cookie}`
-    const parts = value.split(`; ${name}=`)
-    if (parts.length === 2) return parts.pop()!.split(';').shift() || null
-    return null
-  }
-
-  function base64Encode(str: string): string {
-    if (!browser) return str
-    return btoa(encodeURIComponent(str))
-  }
-
-  function base64Decode(str: string): string {
-    if (!browser) return str
-    return decodeURIComponent(atob(str))
-  }
-
-  function setCookie(name: string, value: string, days = 7): void {
-    if (!browser) return
-    const date = new Date()
-    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
-    document.cookie = `${name}=${value};expires=${date.toUTCString()};path=/`
-  }
-
-  function deleteCookie(name: string): void {
-    if (!browser) return
-    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
-  }
-
   const findModelDetails = (id: string | null, modelsList: Model[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
       return { name: 'Aléatoire', iconPath: null }
@@ -177,22 +145,8 @@
     }
   }
 
-  function dispatchSelect(): void {
-    // console.log("selecting")
-    // console.log(mode)
-    // console.log(custom_models_selection)
-    // console.log("not sending value")
-    // console.log(value)
-    // Save to cookies
-  }
-
   function dispatchSubmit(): void {
-    // console.log("submitting")
-    // console.log(mode)
-    // console.log(custom_models_selection)
-    // console.log("not sending value")
-    // console.log(value)
-
+    disabled = true
     onSubmit({
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
@@ -216,7 +170,6 @@
     } else {
       modelsSelection.value = modelsSelection.value.filter((item) => item !== id)
     }
-    dispatchSelect()
 
     // If clicked on second model, close model selection modal
     if (modelsSelection.value.length === 2) {
@@ -289,12 +242,10 @@
     }
     // Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
     // dispatchSubmit();
-    // disabled = true;
   }
 
   var alt_label: string = 'Sélection des modèles'
   $: if (
-    // eslint-disable-next-line
     (mode.value == 'custom' && modelsSelection.value.length < 1) ||
     (mode.value == 'random' && never_clicked)
   ) {
@@ -324,10 +275,7 @@
         placeholder="Écrivez votre premier message ici"
         {autofocus}
         {autoscroll}
-        on:submit={() => {
-          dispatchSubmit()
-          disabled = true
-        }}
+        on:submit={() => dispatchSubmit()}
       />
     </div>
 
@@ -389,10 +337,7 @@
       type="submit"
       class="submit-btn purple-btn btn"
       disabled={prompt.value == '' || disabled}
-      on:click={() => {
-        dispatchSubmit()
-        disabled = true
-      }}
+      on:click={() => dispatchSubmit()}
       value="Envoyer"
     />
   </div>
