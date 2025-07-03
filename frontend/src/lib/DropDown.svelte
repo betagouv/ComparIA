@@ -45,6 +45,7 @@
     }
     return parsed
   })
+  const mode = useLocalStorage<ModeAndPromptData['mode']>('mode', 'random')
 
   function selectPartialText(start?: number, end?: number): void {
     if (textboxElement) {
@@ -133,8 +134,6 @@
     document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;'
   }
 
-  let initialMode: Mode = (getCookie('customdropdown_mode') as Mode) || 'random'
-
   function getInitialModels(availableModels: Model[]): string[] {
     if (!Array.isArray(availableModels)) {
       console.error('getInitialModels called without a valid availableModels array.')
@@ -175,10 +174,9 @@
   let initialModels: string[] = getInitialModels(models) // Pass the populated models array
 
   // Export the necessary variables
-  export let mode: Mode = initialMode // Assuming initialMode is defined
   export let custom_models_selection: string[] = initialModels
 
-  let choice: Choice = get_choice(initialMode) || choices[0]
+  let choice: Choice = get_choice(mode.value) || choices[0]
   let firstModelName = 'Aléatoire'
   let secondModelName = 'Aléatoire'
   let firstModelIconPath: string | null = null
@@ -186,7 +184,7 @@
 
   $: {
     if (models && Array.isArray(models)) {
-      if (mode === 'custom') {
+      if (mode.value === 'custom') {
         let firstDetails = findModelDetails(custom_models_selection?.[0], models)
         let secondDetails = findModelDetails(custom_models_selection?.[1], models)
 
@@ -197,7 +195,7 @@
         secondModelIconPath = secondDetails.iconPath
       }
     } else {
-      if (mode === 'custom') {
+      if (mode.value === 'custom') {
         console.error('Error: models is not a valid array, cannot apply custom selection.')
       }
     }
@@ -211,7 +209,6 @@
     // console.log(value)
 
     // Save to cookies
-    setCookie('customdropdown_mode', mode)
     setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
   }
 
@@ -223,10 +220,9 @@
     // console.log(value)
 
     // Save to cookies
-    setCookie('customdropdown_mode', mode)
     setCookie('customdropdown_models', JSON.stringify(custom_models_selection))
     onSubmit({
-      mode: mode,
+      mode: mode.value,
       custom_models_selection: custom_models_selection,
       prompt_value: prompt.value
     })
@@ -235,9 +231,9 @@
   function handle_option_selected(index: number): void {
     if (index !== null && choices && choices.length > index) {
       choice = choices[index]
-      mode = choice.value
+      mode.value = choice.value
     }
-    show_custom_models_selection = mode === 'custom'
+    show_custom_models_selection = mode.value === 'custom'
   }
 
   function toggle_model_selection(id: string): void {
@@ -327,8 +323,8 @@
   var alt_label: string = 'Sélection des modèles'
   $: if (
     // eslint-disable-next-line
-    (mode == 'custom' && custom_models_selection.length < 1) ||
-    (mode == 'random' && never_clicked)
+    (mode.value == 'custom' && custom_models_selection.length < 1) ||
+    (mode.value == 'random' && never_clicked)
   ) {
     alt_label = 'Sélection des modèles'
   } else {
@@ -390,7 +386,7 @@
           ><svelte:component this={ChevronBas} />
         </span></button
       >
-      {#if mode == 'custom' && custom_models_selection.length > 0}
+      {#if mode.value == 'custom' && custom_models_selection.length > 0}
         <button
           {disabled}
           class="model-selection fr-mb-md-0 fr-mb-1w"
@@ -455,7 +451,7 @@
               </h6>
               <p>Sélectionnez le mode de comparaison qui vous convient</p>
               <div>
-                <Dropdown {handle_option_selected} {choices} bind:mode />
+                <Dropdown {handle_option_selected} {choices} bind:mode={mode.value} />
               </div>
             {:else}
               <div in:fade>
