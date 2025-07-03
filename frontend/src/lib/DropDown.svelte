@@ -19,7 +19,6 @@
   export let elem_classes: string[] = []
   export let visible = true
   export let disabled = false
-  export let value_is_output = false
   export let lines: number = 4
   export let show_custom_models_selection: boolean = false
   export let max_lines: number = 4
@@ -27,8 +26,6 @@
   export let text_align: 'left' | 'right' | undefined = undefined
   export let autofocus = false
   export let autoscroll = true
-  export let interactive: boolean
-  export let value: ModeAndPromptData
   export let onSubmit: (args: ModeAndPromptData) => void
 
   onMount(async () => {
@@ -250,15 +247,8 @@
 
   function handle_option_selected(index: number): void {
     if (index !== null && choices && choices.length > index) {
-      mode = choices[index].value
-      if (mode !== value['mode']) {
-        value['mode'] = mode
-        // Don't tell backend to switch to custom if no custom_models_selection yet
-        if (!(mode === 'custom' && custom_models_selection.length === 0)) {
-          dispatchSelect()
-        }
-        choice = choices[index]
-      }
+      choice = choices[index]
+      mode = choice.value
     }
     show_custom_models_selection = mode === 'custom'
   }
@@ -271,7 +261,6 @@
     } else {
       custom_models_selection = custom_models_selection.filter((item) => item !== id)
     }
-    value['custom_models_selection'] = custom_models_selection
     dispatchSelect()
 
     // If clicked on second model, close model selection modal
@@ -286,26 +275,8 @@
     }
   }
 
-  // Dispatch change from cookie
-  if (browser && (initialMode !== 'random' || initialModels.length > 0)) {
-    value['mode'] = mode
-    value['custom_models_selection'] = custom_models_selection
-    dispatchSelect()
-  }
-
   function get_choice(modeValue: Mode): Choice | undefined {
     return choices.find((c) => c.value === modeValue)
-  }
-
-  // Handle prompt value update from backend
-  $: {
-    if (value_is_output) {
-      prompt_value = value['prompt_value']
-    } else {
-      if (value['prompt_value'] != prompt_value) {
-        value['prompt_value'] = prompt_value
-      }
-    }
   }
 
   function handlePromptSelected(
@@ -388,7 +359,6 @@
         bind:el={textboxElement}
         {disabled}
         bind:value={prompt_value}
-        bind:value_is_output
         {elem_id}
         {elem_classes}
         {visible}
@@ -502,7 +472,6 @@
                   {handle_option_selected}
                   {choices}
                   bind:mode
-                  disabled={!interactive}
                 />
               </div>
             {:else}
