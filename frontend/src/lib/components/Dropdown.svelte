@@ -1,6 +1,7 @@
 <script lang="ts">
+  import IconModel from '$lib/components/IconModel.svelte'
   import ChevronDroite from '$lib/icons/chevron-droite.svelte'
-  import type { Choice, Mode } from '$lib/utils-customdropdown'
+  import type { Mode, ModeInfos } from '$lib/state.svelte'
 
   export let handle_option_selected: (index: number) => void
   // TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
@@ -8,7 +9,7 @@
 
   export let disabled = false
 
-  export var choices: Choice[]
+  export var choices: ModeInfos[]
 
   function handleKeyDown(index: number, event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {
@@ -19,7 +20,7 @@
 </script>
 
 <div>
-  {#each choices as { value, label, alt_label, icon, description }, index}
+  {#each choices as { value, label, icon, description }, index}
     <!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <label
@@ -42,12 +43,14 @@
         {disabled}
       />
       <div class="icon">
-        <svelte:component this={icon} />
+        <IconModel {icon} />
       </div>
       <div class="description">
-        <strong>{label}</strong>{#if value != 'custom'}&nbsp;: {description}
+        {#if value != 'custom'}
+          <strong>{label}</strong>&nbsp;: {description}
         {:else}
-          <span class="chevron-droite"><svelte:component this={ChevronDroite} /></span>
+          <strong>{label}</strong>
+          <span class="chevron-droite"><ChevronDroite /></span>
         {/if}
       </div>
     </label>

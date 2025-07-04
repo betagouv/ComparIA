@@ -1,10 +1,39 @@
 import { api } from '$lib/api'
-import { state } from '$lib/state.svelte'
+import { state, type Mode } from '$lib/state.svelte'
 import type { Message, NormalisedMessage } from '$lib/types'
 import { update_messages } from '$lib/utils'
 import type { Payload } from '@gradio/client'
 import type { LoadingStatus } from '@gradio/statustracker'
-import type { ModeAndPromptData } from './utils-customdropdown'
+
+export interface ModeAndPromptData {
+  prompt_value: string
+  mode: Mode
+  custom_models_selection: string[]
+}
+
+export interface Model {
+  // [aya-expanse-8b]
+  // simple_name = "Aya Expanse 8B"
+  // organisation = "Cohere"
+  // icon_path = "cohere.png"
+  // friendly_size = "S"
+  // distribution = "open-weights"
+  // conditions = "copyleft"
+  // params = 8
+  // license = "CC-BY-NC-4.0"
+  // description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue."
+
+  id: string
+  friendly_size: 'XS' | 'S' | 'M' | 'L' | 'XL' | 'XXL'
+  simple_name: string
+  organisation: string
+  params: number
+  total_params: number
+  distribution: 'open-weights' | 'api-only'
+  icon_path: string
+  release_date: string | null
+  fully_open_source: boolean
+}
 
 export interface GradioResponse extends Payload {
   type: 'data'

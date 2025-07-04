@@ -4,7 +4,7 @@
   import '../app.css'
 
   let { children } = $props()
-  const mode = $derived(state.mode ? modeInfos[state.mode] : null)
+  const mode = $derived(state.mode ? modeInfos.find((mode) => mode.value === state.mode)! : null)
   // FIXME i18n
   const NumberFormater = new Intl.NumberFormat('fr', { maximumSignificantDigits: 3 })
   const votes = $derived(

@@ -1,16 +1,13 @@
 <script lang="ts">
+  import type { ModeAndPromptData, Model } from '$lib/chatService.svelte'
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
   import TextBox from '$lib/components/Textbox.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
-  import Brain from '$lib/icons/brain-customdropdown.svelte'
   import ChevronBas from '$lib/icons/chevron-bas.svelte'
-  import Dice from '$lib/icons/dice.svelte'
-  import Glass from '$lib/icons/glass.svelte'
-  import Leaf from '$lib/icons/leaf.svelte'
-  import Ruler from '$lib/icons/ruler.svelte'
-  import type { Choice, Mode, ModeAndPromptData, Model } from '$lib/utils-customdropdown.ts'
+  import type { Mode, ModeInfos } from '$lib/state.svelte'
+  import { modeInfos as choices } from '$lib/state.svelte'
   import { onMount, tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
@@ -70,45 +67,6 @@
   }
   let textboxElement: HTMLTextAreaElement | HTMLInputElement
 
-  // let textboxElement: TextBox;
-  export const choices: Choice[] = [
-    {
-      value: 'random',
-      label: 'Aléatoire',
-      alt_label: 'Modèles aléatoires',
-      icon: Dice,
-      description: 'Deux modèles tirés au hasard dans la liste'
-    },
-    {
-      value: 'custom',
-      label: 'Sélection manuelle',
-      alt_label: 'Sélection manuelle',
-      icon: Glass,
-      description: ''
-    },
-    {
-      value: 'small-models',
-      label: 'Frugal',
-      alt_label: 'Modèles frugaux',
-      icon: Leaf,
-      description: 'Deux modèles tirés au hasard parmi ceux de plus petite taille'
-    },
-    {
-      value: 'big-vs-small',
-      label: 'David contre Goliath',
-      alt_label: 'David contre Goliath',
-      icon: Ruler,
-      description: 'Un petit modèle contre un grand, les deux tirés au hasard'
-    },
-    {
-      value: 'reasoning',
-      label: 'Raisonnement',
-      alt_label: 'Modèles avec raisonnement',
-      icon: Brain,
-      description: 'Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes'
-    }
-  ]
-
   const findModelDetails = (id: string | null, modelsList: Model[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
       return { name: 'Aléatoire', iconPath: null }
@@ -120,7 +78,7 @@
     }
   }
 
-  let choice: Choice = get_choice(mode.value) || choices[0]
+  let choice: ModeInfos = get_choice(mode.value) || choices[0]
   let firstModelName = 'Aléatoire'
   let secondModelName = 'Aléatoire'
   let firstModelIconPath: string | null = null
@@ -183,7 +141,7 @@
     }
   }
 
-  function get_choice(modeValue: Mode): Choice | undefined {
+  function get_choice(modeValue: Mode): ModeInfos | undefined {
     return choices.find((c) => c.value === modeValue)
   }
 
