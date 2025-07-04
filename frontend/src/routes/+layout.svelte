@@ -1,4 +1,5 @@
 <script lang="ts">
+  import IconModel from '$lib/components/IconModel.svelte'
   import { modeInfos, state } from '$lib/state.svelte'
   import '../app.css'
 
@@ -121,8 +122,8 @@
       <div class="fr-col-12 fr-col-md-4 align-center grid">
         {#if state.step == 1}
           <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs bg-white text-center">
-            <img class="inline" height="20" src="../assets/extra-icons/{mode[2]}" />
-            &nbsp;<strong>{mode[0]}</strong>
+            <IconModel icon={mode.icon} size={20} inline />
+            &nbsp;<strong>{mode.title}</strong>
             &nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="mode-desc"
             ></a>
           </div>
@@ -143,7 +144,7 @@
   </div>
 
   <span class="fr-tooltip fr-placement" id="mode-desc" role="tooltip" aria-hidden="true">
-    {mode[1]}
+    {mode.description}
   </span>
 {/if}
 

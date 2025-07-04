@@ -14,25 +14,29 @@ export const state = $state<State>({
 })
 
 export const modeInfos = {
-  custom: [
-    'Mode Sélection',
-    'Reconnaîtrez-vous les deux modèles que vous avez choisis ?',
-    'glass.svg'
-  ],
-  'big-vs-small': [
-    'Mode David contre Goliath',
-    'Un petit modèle contre un grand, les deux tirés au hasard',
-    'ruler.svg'
-  ],
-  reasoning: [
-    'Mode Raisonnement',
-    'Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes',
-    'brain.svg'
-  ],
-  random: ['Mode Aléatoire', 'Deux modèles choisis au hasard parmi toute la liste', 'dice.svg'],
-  'small-models': [
-    'Mode Frugal',
-    'Deux modèles tirés au hasard parmi ceux de plus petite taille',
-    'leaf.svg'
-  ]
-}
+  custom: {
+    title: 'Mode Sélection',
+    description: 'Reconnaîtrez-vous les deux modèles que vous avez choisis ?',
+    icon: 'glass'
+  },
+  'big-vs-small': {
+    title: 'Mode David contre Goliath',
+    description: 'Un petit modèle contre un grand, les deux tirés au hasard',
+    icon: 'ruler'
+  },
+  reasoning: {
+    title: 'Mode Raisonnement',
+    description: 'Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes',
+    icon: 'brain'
+  },
+  random: {
+    title: 'Mode Aléatoire',
+    description: 'Deux modèles choisis au hasard parmi toute la liste',
+    icon: 'dice'
+  },
+  'small-models': {
+    title: 'Mode Frugal',
+    description: 'Deux modèles tirés au hasard parmi ceux de plus petite taille',
+    icon: 'leaf'
+  }
+} as const
