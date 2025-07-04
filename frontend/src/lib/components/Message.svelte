@@ -1,10 +1,10 @@
 <script lang="ts">
   import ButtonPanel from '$lib/components/ButtonPanel.svelte'
   import Copy from '$lib/components/Copy.svelte'
+  import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
   import Pending from '$lib/components/Pending.svelte'
   import Brain from '$lib/icons/brain.svelte'
   import type { NormalisedMessage } from '$lib/types'
-  import { MarkdownCode as Markdown } from '@gradio/markdown-code'
   import { sanitize } from '@gradio/sanitize'
 
   export let value: NormalisedMessage[]

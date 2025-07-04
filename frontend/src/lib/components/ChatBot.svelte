@@ -2,6 +2,7 @@
   import CopyAll from '$lib/components/CopyAll.svelte'
   import IconButton from '$lib/components/IconButton.svelte'
   import LikePanel from '$lib/components/LikePanel.svelte'
+  import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
   import Message from '$lib/components/Message.svelte'
   import Pending from '$lib/components/Pending.svelte'
   import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
@@ -9,7 +10,6 @@
   import type { ExtendedLikeData, NormalisedMessage } from '$lib/types'
   import { type UndoRetryData, group_messages, is_one_of_last_two_bot_msgs } from '$lib/utils'
   import { ScrollDownArrow } from '@gradio/icons'
-  import { MarkdownCode as Markdown } from '@gradio/markdown-code'
   import { copy } from '@gradio/utils'
   import { onMount, tick } from 'svelte'
   // import { Retry } from "@gradio/icons";
