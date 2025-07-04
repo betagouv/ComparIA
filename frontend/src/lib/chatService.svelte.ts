@@ -38,7 +38,10 @@ export async function runChatBots(args: ModeAndPromptData) {
     const job = await api.submit('/add_first_text', { model_dropdown_scoped: args })
 
     state.currentScreen = 'chatbots'
-    state.step = 0
+    state.mode = args.mode
+    // FIXME get api data
+    state.votes = { count: 1000, objective: 2000, ratio: 50 }
+    state.step = 1
     chatbot.status = 'streaming'
 
     for await (const message of job) {
