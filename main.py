@@ -1,7 +1,9 @@
-from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
+from fastapi import FastAPI, Request, Query
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+# import jinja2
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
@@ -14,6 +16,9 @@ import gradio as gr
 
 from languia import config
 
+import os
+import json
+
 from languia.reveal import size_desc, license_desc, license_attrs
 
 app = FastAPI()
@@ -21,7 +26,29 @@ app = FastAPI()
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 # app.mount("/arene/custom_components", StaticFiles(directory="custom_components"), name="custom_components")
 
-templates = Jinja2Templates(directory="templates")
+supported_locales = ["en", "fr"]
+default_locale = "fr"
+
+# Load translations dynamically based on config settings
+translations = {}
+
+for lang in supported_locales:
+    path = os.path.join("locales", f"{lang}.json")
+    with open(path, encoding="utf-8") as f:
+        translations[lang] = json.load(f)
+
+# env = jinja2.Environment(extensions=["jinja2.ext.i18n"])
+# env.install_gettext_translations(translations)
+
+# templates = Jinja2Templates(directory="templates", env=env) 
+templates = Jinja2Templates(directory="templates") 
+
+def get_translator(lang: str = default_locale):
+    current_locale = lang if lang in supported_locales else default_locale
+    
+    def _(string):
+        return translations[current_locale].get(string, string)
+    return _
 
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
 gr.set_static_paths(paths=[config.assets_absolute_path])
@@ -88,13 +115,17 @@ async def home(request: Request):
         },
     )
 
-
 @app.get("/modeles", response_class=HTMLResponse)
-async def models(request: Request):
+async def models( request: Request, lang: str = Query(
+        default_locale, title="Language", description="Language code")):
+    
+    _ = get_translator(lang)
+
     return templates.TemplateResponse(
         "models.html",
         {
-            "title": "Liste des modèles",
+            "_": _,
+            "title": _("Liste des modèles"),
             "request": request,
             "config": config,
             "models": config.models_extra_info,
