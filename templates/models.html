@@ -125,7 +125,7 @@
     }
 
     #fr-modal-filters-section {
-        background-color: transparent;
+        background-color: white;
 
     }
 
@@ -133,17 +133,13 @@
         overflow: scroll;
     }
 
-    @media (prefers-color-scheme: light) {
-        #fr-modal-filters-section .fr-container--fluid {
-            background-color: white;
-        }
-    }
 
     @media (prefers-color-scheme: dark) {
-        #fr-modal-filters-section .fr-container--fluid {
-            background-color: var(--background-default-grey);
 
-        }
+    #fr-modal-filters-section {
+        background-color: rgb(22, 22, 22);
+
+    }
     }
 
     .fr-checkbox-group--sm input[type=checkbox] {
@@ -168,9 +164,6 @@
         }
 
 
-        #fr-modal-filters-section .fr-container--fluid {
-            background-color: transparent;
-        }
 
         #fr-modal-filters-section {
             background-color: transparent;
@@ -198,10 +191,6 @@
             height: 2em !important;
         }
 
-        #reset-filters-link {
-            display: inline-block;
-            margin-bottom: 0.5em;
-        }
     }
 
     .fr-modal:after,
@@ -278,17 +267,35 @@
             class="fr-modal fr-col-md-3 fr-pl-md-2w">
             <div class="fr-container--fluid modal-filters-content">
                 <div class="fr-container fr-pl-4w">
-                    <!-- <button class="fr-btn--close fr-btn fr-pt-2w" title="Fermer la fenêtre modale"
-    aria-controls="fr-modal-filters-section">Fermer</button> -->
-                    <!-- <h5 class="md-visible hidden fr-mb-md-1w">Filtres</h5> -->
                     <h4 id="models-count" aria-live="polite">{{ models | list | length }} modèles</h4>
                     <div><button class="right fr-btn purple-btn fr-mb-4w md-hidden" title="Voir les résultats"
                             id="results-count" aria-controls="fr-modal-filters-section">Voir les {{ models | list |
                             length }}
                             résultats</button></div>
                     <form id="model-filter-form">
-                    <h3 class="fr-accordion__title">
-                        <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-orgs">Éditeur</button>
+
+                            <h3 class="fr-accordion__title">
+                                    <button type="button" class="fr-accordion__btn fr-h6" aria-expanded="true" aria-controls="accordion-size">Taille (paramètres)</button>
+                            </h3>                      
+                            <div id="accordion-size" class="fr-collapse fr-checkbox-group fr-checkbox-group--sm">
+                                {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
+                                {% set sizes_desc = {
+                                'XS': "< à 7 milliards", 'S' : 'de 7 à 20 milliards' , 'M' : 'de 20 à 70 milliards'
+                                    , 'L' : 'de 70 à 150 milliards' , 'XL' : '> 150 milliards' } %} {% for size in sizes
+                                    %} <div class="fr-checkbox">
+                                    <input type="checkbox" id="size-{{ size }}" name="param-filter"
+                                        value="{{ size }}" />
+                                    <label for="size-{{ size }}"><strong>{{ size }}&nbsp;:&nbsp;</strong>
+                                        {{sizes_desc[size]}}
+                                        <span class="filter-number">{{ models | selectattr('friendly_size',
+                                            '==', size) | list | length }}</span>
+                                    </label>
+                            </div>
+                            {% endfor %}
+                            </div>
+
+                     <h3 class="fr-accordion__title">
+                        <button type="button" class="fr-accordion__btn fr-h6" aria-expanded="false" aria-controls="accordion-orgs">Éditeur</button>
                     </h3>
                             <div id="accordion-orgs" class="fr-collapse fr-checkbox-group fr-checkbox-group--sm">
                                 {% set orgs = [] %}
@@ -308,27 +315,8 @@
                                 {% endfor %}
                             </div>
 
-                            <h3 class="fr-accordion__title">
-                                    <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-size">Taille (paramètres)</button>
-                            </h3>                      
-                            <div id="accordion-size" class="fr-collapse fr-checkbox-group fr-checkbox-group--sm">
-                                {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
-                                {% set sizes_desc = {
-                                'XS': "< à 7 milliards", 'S' : 'de 7 à 20 milliards' , 'M' : 'de 20 à 70 milliards'
-                                    , 'L' : 'de 70 à 150 milliards' , 'XL' : '> 150 milliards' } %} {% for size in sizes
-                                    %} <div class="fr-checkbox">
-                                    <input type="checkbox" id="size-{{ size }}" name="param-filter"
-                                        value="{{ size }}" />
-                                    <label for="size-{{ size }}"><strong>{{ size }}&nbsp;:&nbsp;</strong>
-                                        {{sizes_desc[size]}}
-                                        <span class="filter-number">{{ models | selectattr('friendly_size',
-                                            '==', size) | list | length }}</span>
-                                    </label>
-                            </div>
-                            {% endfor %}
-                </div>
                     <h3 class="fr-accordion__title">
-                            <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-license">Licence d'utilisation</button>
+                            <button type="button" class="fr-accordion__btn fr-h6" aria-expanded="false" aria-controls="accordion-license">Licence d'utilisation</button>
                         </h3>                      
                             <div id="accordion-license" class="fr-collapse fr-checkbox-group fr-checkbox-group--sm licenses-checkboxes">
                         {% set proprietary_licenses = [] %}
@@ -366,7 +354,7 @@
                         {% endif %}
                     </div>
                 </form>
-                <a href="#" id="reset-filters-link">Réinitialiser</a>
+                <a href="#" id="reset-filters-link" class="fr-my-2w">Réinitialiser</a>
             </div>
     </div>
     </aside>
