@@ -287,10 +287,10 @@
                             length }}
                             résultats</button></div>
                     <form id="model-filter-form">
-
-                        <fieldset class="fr-fieldset">
-                            <legend class="fr-pt-2w fr-mb-1w">Éditeur</legend>
-                            <div class="fr-checkbox-group fr-checkbox-group--sm">
+                    <h3 class="fr-accordion__title">
+                        <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-orgs">Éditeur</button>
+                    </h3>
+                            <div id="accordion-orgs" class="fr-collapse fr-checkbox-group fr-checkbox-group--sm">
                                 {% set orgs = [] %}
                                 {% for model in models %}
                                 {% if model.get('organisation') and model.organisation not in orgs %}
@@ -307,11 +307,11 @@
                                 </div>
                                 {% endfor %}
                             </div>
-                        </fieldset>
 
-                        <fieldset class="fr-fieldset">
-                            <legend class="fr-pt-2w fr-mb-1w">Taille (paramètres)</legend>
-                            <div class="fr-checkbox-group fr-checkbox-group--sm">
+                            <h3 class="fr-accordion__title">
+                                    <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-size">Taille (paramètres)</button>
+                            </h3>                      
+                            <div id="accordion-size" class="fr-collapse fr-checkbox-group fr-checkbox-group--sm">
                                 {% set sizes = ['XS', 'S', 'M', 'L', 'XL'] %}
                                 {% set sizes_desc = {
                                 'XS': "< à 7 milliards", 'S' : 'de 7 à 20 milliards' , 'M' : 'de 20 à 70 milliards'
@@ -327,10 +327,10 @@
                             </div>
                             {% endfor %}
                 </div>
-                </fieldset>
-                <fieldset class="fr-fieldset">
-                    <legend class="fr-mb-1w">Licence d'utilisation</legend>
-                    <div class="fr-checkbox-group fr-checkbox-group--sm licenses-checkboxes">
+                    <h3 class="fr-accordion__title">
+                            <button type="button" class="fr-accordion__btn" aria-expanded="false" aria-controls="accordion-license">Licence d'utilisation</button>
+                        </h3>                      
+                            <div id="accordion-license" class="fr-collapse fr-checkbox-group fr-checkbox-group--sm licenses-checkboxes">
                         {% set proprietary_licenses = [] %}
                         {% set other_licenses = [] %}
                         {% for model in models %}
@@ -365,7 +365,6 @@
                         </div>
                         {% endif %}
                     </div>
-                </fieldset>
                 </form>
                 <a href="#" id="reset-filters-link">Réinitialiser</a>
             </div>
