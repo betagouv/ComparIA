@@ -1,4 +1,8 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
-  "hello_world": "Hello, {name} from en!"
+  "how_can_i_help": "How can I help you today?",
+  "write_first_msg": "Write your first message here",
+  "models_selection": "Models selection",
+  "send": "Send",
+  "prompts_suggestions": "Prompts suggestions"
 }

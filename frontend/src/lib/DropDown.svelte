@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { setLocale } from '$lib/paraglide/runtime'
+  import { m } from '$lib/paraglide/messages.js'
+
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
@@ -244,12 +247,12 @@
     // dispatchSubmit();
   }
 
-  var alt_label: string = 'Sélection des modèles'
+  var alt_label: string = m.models_selection()
   $: if (
     (mode.value == 'custom' && modelsSelection.value.length < 1) ||
     (mode.value == 'random' && never_clicked)
   ) {
-    alt_label = 'Sélection des modèles'
+    alt_label = m.models_selection()
   } else {
     alt_label = choice.alt_label
   }
@@ -257,7 +260,7 @@
 
 <div class:hidden={!visible} id={elem_id} class={elem_classes.join(' ') + ' fr-container'}>
   <h3 class="text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w text-center">
-    Comment puis-je vous aider aujourd'hui ?
+    {m.how_can_i_help()}
   </h3>
   <div class="grid">
     <div class="first-textbox fr-mb-3v">
@@ -272,7 +275,7 @@
         {rtl}
         {text_align}
         max_lines={!max_lines ? lines + 1 : max_lines}
-        placeholder="Écrivez votre premier message ici"
+        placeholder={m.write_first_msg()}
         {autofocus}
         {autoscroll}
         on:submit={() => dispatchSubmit()}
@@ -338,12 +341,17 @@
       class="submit-btn purple-btn btn"
       disabled={prompt.value == '' || disabled}
       on:click={() => dispatchSubmit()}
-      value="Envoyer"
+      value={m.send()}
     />
   </div>
   <div class="fr-mb-3v">
     <GuidedPromptSuggestions on:promptselected={handlePromptSelected} />
   </div>
+</div>
+<div class="translate">
+  <button on:click={() => setLocale('en')}>en</button>
+  <button on:click={() => setLocale('fr')}>fr</button>
+  <button on:click={() => setLocale('lt')}>lt</button>
 </div>
 <dialog aria-labelledby="modal-mode-selection" id="modal-mode-selection" class="fr-modal">
   <div class="fr-container fr-container--fluid fr-container-md">
@@ -408,6 +416,14 @@
 </dialog>
 
 <style>
+  .translate {
+    color: #6a6af4;
+    font-weight: bold;
+    right: 1em;
+    top: 1em;
+    position: absolute;
+  }
+
   .versus {
     font-size: 1.125rem;
     margin: 0 5px;

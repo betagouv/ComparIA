@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages.js'
+
   import GuidedCardComponent from '$lib/components/GuidedCard.svelte'
   import promptsTable from '$lib/promptsTable'
   import { createEventDispatcher } from 'svelte'
@@ -175,7 +177,7 @@
 
 <div class="fr-container fr-px-0">
   <h4 class="text-grey-200 fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-3v fr-pb-0 fr-px-0">
-    <strong>Suggestions de prompts</strong>
+    <strong>{m.prompts_suggestions()}</strong>
   </h4>
 
   <div class="fr-grid-row fr-grid-row--gutters">
