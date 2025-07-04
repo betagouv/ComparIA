@@ -1,20 +1,8 @@
-<svelte:options accessors={true} />
-
 <script lang="ts">
   import TextBox from '$lib/components/FrInputTextbox.svelte'
   import type { LoadingStatus } from '@gradio/statustracker'
-  import { StatusTracker } from '@gradio/statustracker'
-  import type { Gradio, SelectData } from '@gradio/utils'
+  // import { StatusTracker } from '@gradio/statustracker'
 
-  export let gradio: Gradio<{
-    change: string
-    submit: never
-    blur: never
-    select: SelectData
-    input: never
-    focus: never
-    clear_status: LoadingStatus
-  }>
   export let label = 'Textbox'
   export let elem_id = ''
   export let elem_classes: string[] = []
@@ -34,17 +22,20 @@
   export let text_align: 'left' | 'right' | undefined = undefined
   export let autofocus = false
   export let autoscroll = true
-  export let interactive: boolean
+  export let disabled: boolean = false
+  export let onSelect: (selection: { value: string; indexes: [number, number] }) => void = () => {}
+  export let onSubmit: (value: string) => void
 </script>
 
-{#if loading_status}
+<!-- FIXME still needed? -->
+<!-- {#if loading_status}
   <StatusTracker
     autoscroll={gradio.autoscroll}
     i18n={gradio.i18n}
     {...loading_status}
     on:clear_status={() => gradio.dispatch('clear_status', loading_status)}
   />
-{/if}
+{/if} -->
 
 <TextBox
   bind:value
@@ -63,11 +54,7 @@
   {show_copy_button}
   {autofocus}
   {autoscroll}
-  on:change={() => gradio.dispatch('change', value)}
-  on:input={() => gradio.dispatch('input')}
-  on:submit={() => gradio.dispatch('submit')}
-  on:blur={() => gradio.dispatch('blur')}
-  on:select={(e) => gradio.dispatch('select', e.detail)}
-  on:focus={() => gradio.dispatch('focus')}
-  disabled={!interactive}
+  {disabled}
+  {onSelect}
+  {onSubmit}
 />

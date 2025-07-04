@@ -1,10 +1,4 @@
 <script lang="ts">
-  import '@gouvfr/dsfr/dist/component/button/button.css'
-  import '@gouvfr/dsfr/dist/component/form/form.css'
-  import '@gouvfr/dsfr/dist/component/input/input.css'
-  import '@gouvfr/dsfr/dist/component/link/link.css'
-  import '@gouvfr/dsfr/dist/core/core.css'
-  import '@gouvfr/dsfr/dist/scheme/scheme.css'
   import { Check, Copy } from '@gradio/icons'
   import type { SelectData } from '@gradio/utils'
   import { afterUpdate, beforeUpdate, createEventDispatcher, tick } from 'svelte'
@@ -29,10 +23,12 @@
   export let visible = true
   export let elem_id = ''
   export let elem_classes: string[] = []
+  export let onSelect: (selection: { value: string; indexes: [number, number] }) => void = () => {}
+  export let onSubmit: (value: string) => void
 
   let el: HTMLTextAreaElement | HTMLInputElement
   let copied = false
-  let timer: NodeJS.Timeout
+  let timer: number
   let can_scroll: boolean
   let previous_scroll_top = 0
   let user_has_scrolled_up = false
@@ -40,15 +36,6 @@
   $: value, el && lines !== max_lines && resize({ target: el })
 
   $: if (value === null) value = ''
-
-  const dispatch = createEventDispatcher<{
-    change: string
-    submit: undefined
-    blur: undefined
-    select: SelectData
-    input: undefined
-    focus: undefined
-  }>()
 
   beforeUpdate(() => {
     can_scroll = el && el.offsetHeight + el.scrollTop > el.scrollHeight - 100
@@ -60,12 +47,6 @@
     }
   }
 
-  function handle_change(): void {
-    dispatch('change', value)
-    if (!value_is_output) {
-      dispatch('input')
-    }
-  }
   afterUpdate(() => {
     if (autofocus) {
       el.focus()
@@ -75,7 +56,6 @@
     }
     value_is_output = false
   })
-  $: value, handle_change()
 
   async function handle_copy(): Promise<void> {
     if ('clipboard' in navigator) {
@@ -97,8 +77,11 @@
       | HTMLTextAreaElement
       | HTMLInputElement
     const text = target.value
-    const index: [number, number] = [target.selectionStart as number, target.selectionEnd as number]
-    dispatch('select', { value: text.substring(...index), index: index })
+    const indexes: [number, number] = [
+      target.selectionStart as number,
+      target.selectionEnd as number
+    ]
+    onSelect({ value: text.substring(...indexes), indexes })
   }
 
   async function handle_keypress(e: KeyboardEvent): Promise<void> {
@@ -106,12 +89,12 @@
     if (e.key === 'Enter' && e.shiftKey && lines > 1) {
       e.preventDefault()
       if (value != '') {
-        dispatch('submit')
+        onSubmit(value)
       }
     } else if (e.key === 'Enter' && !e.shiftKey && lines === 1 && max_lines >= 1) {
       e.preventDefault()
       if (value != '') {
-        dispatch('submit')
+        onSubmit(value)
       }
     }
   }
@@ -263,7 +246,7 @@
       on:focus
       on:scroll={handle_scroll}
       style={text_align ? 'text-align: ' + text_align : ''}
-    />
+    ></textarea>
   {/if}
 </label>
 
