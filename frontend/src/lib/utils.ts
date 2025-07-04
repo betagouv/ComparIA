@@ -10,14 +10,14 @@ const redirect_src_url = (src: string, root: string): string =>
   src.replace('src="/file', `src="${root}file`)
 
 export function update_messages(
-  new_messages: Message[] | null,
-  old_messages: Message[] | null,
+  new_messages: Message[],
+  old_messages: Message[],
   root: string
-): NormalisedMessage[] | null {
+): NormalisedMessage[] {
   // console.log("new_messages", new_messages);
   // console.log("old_messages", old_messages);
-  if (new_messages === null) return new_messages
-  if (old_messages === null) {
+  // if (new_messages === null) return new_messages
+  if (old_messages?.length === 0) {
     // If there are no old messages, just return the new messages as is
     return new_messages.map((message, i) => {
       return {

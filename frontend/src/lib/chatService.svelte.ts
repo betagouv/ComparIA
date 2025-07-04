@@ -1,47 +1,54 @@
-import { get } from 'svelte/store'
-import { connectToGradio, parseGradioResponse, submitGradioJob } from './api'
-import { conversation, customModelsDropdown, hasError, isLoading, mode, textValue } from './stores'
+import { api } from '$lib/api'
+import type { Message, NormalisedMessage } from '$lib/types'
+import type { Payload } from '@gradio/client'
+import type { LoadingStatus } from '@gradio/statustracker'
+import type { ModeAndPromptData } from './utils-customdropdown'
+import { update_messages } from '$lib/utils'
 
-type ModelParams = {
-  mode: string
-  custom_models_selection: string[]
-  prompt_value: string
+export interface GradioResponse extends Payload {
+  type: 'data'
+  endpoint: string
+  // Tuple de 10 éléments où seul le premier nous intéresse
+  data: [Array<Message | any>, ...any[]]
 }
 
-export async function sendChatMessage() {
-  isLoading.set(true)
-  hasError.set(false)
-  const currentTextValue = get(textValue)
-  const currentMode = get(mode) as string
-  const currentModels = get(customModelsDropdown) as string[]
+export const chatbot = $state<{
+  status: LoadingStatus['status']
+  messages: NormalisedMessage[]
+  root: string
+}>({
+  status: 'pending',
+  messages: [],
+  root: '/' // FIXME or '/arene'
+})
+
+export function parseGradioResponse(response: GradioResponse): Message[] {
+  if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+    throw new Error('Invalid Gradio response format')
+  }
+
+  return response.data[0]
+}
+
+export async function runChatBots(args: ModeAndPromptData) {
+  chatbot.status = 'pending'
 
   try {
-    const app = await connectToGradio('http://localhost:7860/')
-    const modelParams: ModelParams = {
-      mode: currentMode,
-      custom_models_selection: currentModels,
-      prompt_value: currentTextValue
-    }
-
-    const job = await submitGradioJob(app, modelParams)
-
+    const job = await api.submit('/add_first_text', { model_dropdown_scoped: args })
+    chatbot.status = 'streaming'
     for await (const message of job) {
+      console.log('msg', message)
       if (message.type === 'data') {
-        const messages = parseGradioResponse(message)
-        const chatbot1Messages = Array.isArray(messages[0]) ? messages[0] : []
-        const chatbot2Messages =
-          messages.length > 1 && Array.isArray(messages[1]) ? messages[1] : []
-
-        conversation.update((conv) => ({
-          chatbot1: chatbot1Messages,
-          chatbot2: chatbot2Messages
-        }))
+        chatbot.status = 'generating'
+        const messages = parseGradioResponse(message as GradioResponse)
+        chatbot.messages = update_messages(messages, chatbot.messages, chatbot.root)
       }
     }
+    chatbot.status = 'complete'
   } catch (error) {
     console.error('Error:', error)
-    hasError.set(true)
-  } finally {
-    isLoading.set(false)
+    chatbot.status = 'error'
   }
+  
+  return chatbot.status
 }
