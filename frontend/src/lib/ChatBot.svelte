@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { chatbot } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
+  import FrInput from '$lib/FrInput.svelte'
   import type { ExtendedLikeData } from '$lib/types'
   import type { UndoRetryData } from '$lib/utils'
-  import { chatbot } from '$lib/chatService.svelte'
 
   let rtl = false
   let layout: 'bubble' | 'panel' = 'bubble'
@@ -13,12 +14,22 @@
   }[] = []
   let placeholder: string | null = null
 
+  let prompt = $state('')
+
   function onLike(data: ExtendedLikeData) {
     console.log('onLike', data)
   }
 
   function onRetry(data: UndoRetryData) {
     console.log('onRetry', data)
+  }
+
+  function onPromptSubmit() {
+    console.log('onPromptSubmit', prompt)
+  }
+
+  function onRevealModels() {
+    console.log('revealModels')
   }
 </script>
 
@@ -47,6 +58,46 @@
       _undoable={false}
       root={chatbot.root}
     />
+  </div>
+</div>
+
+<div
+  id="send-area"
+  class="column fr-pt-1w svelte-vt1mxs gap"
+  style="flex-grow: 1; min-width: min(320px, 100%);"
+>
+  <div class="row flex-md-row svelte-1xp0cw7 unequal-height flex-col items-start">
+    <div class="form svelte-633qhp" style="flex-grow: 1; min-width: min(160px, 100%);">
+      <FrInput
+        elem_id="main-textbox"
+        bind:value={prompt}
+        show_label={false}
+        lines={1}
+        placeholder="Continuer à discuter avec les deux modèles d'IA"
+        max_lines={7}
+        elem_classes={['w-full']}
+        autofocus={true}
+        onSubmit={onPromptSubmit}
+      ></FrInput>
+    </div>
+
+    <button
+      id="send-btn"
+      disabled={chatbot.status !== 'complete' || prompt === ''}
+      onclick={onPromptSubmit}
+      class="lg secondary purple-btn fr-ml-md-1w svelte-1ixn6qd w-full grow-0"
+    >
+      Envoyer
+    </button>
+  </div>
+  <div class="row fr-grid-row fr-grid-row--center svelte-1xp0cw7 unequal-height">
+    <button
+      disabled={chatbot.status !== 'complete'}
+      class="lg secondary fr-col-12 fr-col-md-5 purple-btn fr-mt-1w svelte-1ixn6qd"
+      onclick={onRevealModels}
+    >
+      Passer à la révélation des modèles
+    </button>
   </div>
 </div>
 
