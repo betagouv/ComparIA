@@ -1,9 +1,10 @@
 import { api } from '$lib/api'
+import { state } from '$lib/state.svelte'
 import type { Message, NormalisedMessage } from '$lib/types'
+import { update_messages } from '$lib/utils'
 import type { Payload } from '@gradio/client'
 import type { LoadingStatus } from '@gradio/statustracker'
 import type { ModeAndPromptData } from './utils-customdropdown'
-import { update_messages } from '$lib/utils'
 
 export interface GradioResponse extends Payload {
   type: 'data'
@@ -35,7 +36,11 @@ export async function runChatBots(args: ModeAndPromptData) {
 
   try {
     const job = await api.submit('/add_first_text', { model_dropdown_scoped: args })
+
+    state.currentScreen = 'chatbots'
+    state.step = 0
     chatbot.status = 'streaming'
+
     for await (const message of job) {
       console.log('msg', message)
       if (message.type === 'data') {
@@ -49,6 +54,6 @@ export async function runChatBots(args: ModeAndPromptData) {
     console.error('Error:', error)
     chatbot.status = 'error'
   }
-  
+
   return chatbot.status
 }

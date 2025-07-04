@@ -1,3 +1,4 @@
+import { state } from '$lib/state.svelte'
 import { Client } from '@gradio/client'
 
 export const api = {
@@ -17,7 +18,9 @@ export const api = {
   },
 
   async submit(uri: string, params: any) {
+    state.loading = true
     console.debug(`Submitting Gradio job '${uri}' with params:`, params)
+
     try {
       const client = await this.connect()
       const result = await client.submit(uri, params)
@@ -26,6 +29,8 @@ export const api = {
     } catch (error) {
       console.error('Failed to submit Gradio job:', error)
       throw error
+    } finally {
+      state.loading = false
     }
   }
 }
