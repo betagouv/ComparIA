@@ -31,9 +31,9 @@
   export let i: number
   export let show_copy_button: boolean
   export let generating: boolean
-  export let thinking: boolean = disabled
+  export let thinking: boolean
   export let expand_reasoning: boolean = false
-  export let show_reasoning: boolean = false
+  export let show_reasoning: boolean
   export let show_like: boolean
   export let show_retry: boolean
   export let show_undo: boolean

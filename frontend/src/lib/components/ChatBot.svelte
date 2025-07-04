@@ -30,7 +30,6 @@
   export let pending_message = false
   export let generating = false
   export let selectable = false
-  export let likeable = false
   export let show_copy_all_button = false
   export let rtl = false
   export let show_copy_button = false
@@ -321,7 +320,7 @@
               {latex_delimiters}
               {disabled}
               generating={generating && is_one_of_last_two_bot_msgs([message], value)}
-              show_like={role === 'user' ? likeable && like_user_message : likeable}
+              show_like={role === 'user' ? like_user_message : true}
               show_retry={_retryable && is_one_of_last_two_bot_msgs([message], value)}
               show_undo={_undoable && is_one_of_last_two_bot_msgs([message], value)}
               show_copy_button={role === 'user' ? false : show_copy_button}
