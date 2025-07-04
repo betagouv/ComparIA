@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -314,6 +314,10 @@ async def not_found_handler(request, exc):
         {"title": "Page non trouvée", "request": request, "config": config},
         status_code=404,
     )
+
+@app.get("/available_models", response_class=JSONResponse)
+async def available_models():
+    return JSONResponse(config.models_extra_info)
 
 
 app = SentryAsgiMiddleware(app)

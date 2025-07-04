@@ -27,6 +27,7 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
+    available_models
 )
 import traceback
 import os
@@ -92,13 +93,14 @@ def register_listeners():
             f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
+        return config.models_extra_info
 
     gr.on(
         triggers=[demo.load],
         fn=enter_arena,
         inputs=None,
-        outputs=None,
-        api_name=False,
+        outputs=available_models,
+        api_name="enter_arena",
         show_progress="hidden",
         # concurrency_limit=None
         js="""(args) => {

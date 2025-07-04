@@ -271,6 +271,8 @@ with gr.Blocks(
     #                 scale=1,
     #             )
 
+    available_models = gr.JSON(visible=False)
+
     from languia.listeners import register_listeners
 
     register_listeners()
