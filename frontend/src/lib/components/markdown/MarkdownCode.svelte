@@ -6,7 +6,7 @@
   import { standardHtmlAndSvgTags } from './html-tags'
   import type { ThemeMode } from '@gradio/core'
 
-  export let chatbot = true
+  export let chatbot = false
   export let message: string
   export let sanitize_html = true
   export let latex_delimiters: {
