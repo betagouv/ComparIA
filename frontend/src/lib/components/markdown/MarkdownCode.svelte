@@ -229,4 +229,30 @@
   span :global(table) {
     word-break: break-word;
   }
+
+  /* link styles */
+  span :global(a) {
+    color: var(--color-text-link);
+    text-decoration: underline;
+  }
+
+  /* table styles */
+  span :global(table),
+  span :global(tr),
+  span :global(td),
+  span :global(th) {
+    border: 1px solid var(--border-color-accent);
+  }
+
+  span.chatbot :global(.bot table),
+  span.chatbot :global(.bot tr),
+  span.chatbot :global(.bot td),
+  span.chatbot :global(.bot th) {
+    border: 1px solid var(--border-color-primary);
+  }
+
+  span :global(pre) {
+    overflow-x: auto;
+    max-width: 100%;
+  }
 </style>
