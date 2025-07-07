@@ -1,5 +1,5 @@
 services:
-  languia:
+  fastapi:
     env_file: .env
     environment:
       LOGDIR: /data
@@ -7,16 +7,29 @@ services:
       LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
     build:
       context: ..
-      dockerfile: docker/Dockerfile
+      dockerfile: docker/Dockerfile-fastapi
     image: languia:latest
     ports:
-      - "8001:80"
+      - "8002:80"
     volumes:
       - ../data:/data
       - ../register-api-endpoint-file.json:/register-api-endpoint-file.json
       # Dev config
       - ../:/app
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+  sveltekit:
+    environment:
+      COMPARIA_BACKEND_URL: "https://alpha.comparia.beta.gouv.fr:8002"
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile-sveltekit
+    image: comparia-front
+    ports:
+      - "8001:80"
+    # volumes:
+    #   # Dev config
+    #   - ../:/app
+    command: ["node", "build"]
   # languia-controller:
   #   env_file: .env
   #   environment:
