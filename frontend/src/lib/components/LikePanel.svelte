@@ -1,33 +1,17 @@
 <script lang="ts">
-  import '@gouvfr/dsfr/dist/component/modal/modal.css'
-  import type { SelectData } from '@gradio/utils'
-  import { type ComponentType, createEventDispatcher } from 'svelte'
+  import { type Component } from 'svelte'
 
-  const dispatch = createEventDispatcher<{
-    change: undefined
-    select: SelectData
-    input: undefined
-  }>()
-
-  let like_panel
+  let like_panel: HTMLDivElement
   export let show: boolean
-
-  export let handle_action: (value: string | null | string[]) => void
-
-  // import { type ComponentType } from "svelte";
-  export let Icon: ComponentType
+  export let Icon: Component
   export let text: string
   export let commented: boolean = false
   export let disabled: boolean = false
   export let model: string = ''
   export let value: string[] = []
-  export let old_value = value.slice()
-  export let choices: [string, string][] = [
-    ['Utile', 'useful'],
-    ['Complet', 'complete'],
-    ['Créatif', 'creative'],
-    ['Mise en forme claire', 'clear-formatting']
-  ]
+  export let choices: [string, string][]
+  export let modalId: string
+  export let onSelection: (selection: string[]) => void
 
   function toggle_choice(choice: string): void {
     if (value.includes(choice)) {
@@ -35,11 +19,7 @@
     } else {
       value = [...value, choice]
     }
-  }
-
-  $: if (JSON.stringify(old_value) !== JSON.stringify(value)) {
-    old_value = value
-    handle_action(value)
+    onSelection(value)
   }
 
   let hasBeenShown: boolean = false
@@ -59,12 +39,11 @@
     }
   }
 
-  const footer = document.getElementById('send-area')
-  const footerHeight = footer ? footer.offsetHeight : 0
-
   function checkVisibility() {
     if (!show || hasBeenShown || !like_panel) return
 
+    const footer = document.getElementById('send-area')
+    const footerHeight = footer ? footer.offsetHeight : 0
     const rect = like_panel.getBoundingClientRect()
     const appeared = !like_panel.classList.contains('hidden') && rect.height > 0
 
@@ -100,23 +79,12 @@
       on:keydown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           toggle_choice(internal_value)
-          dispatch('select', {
-            index: i,
-            value: internal_value,
-            selected: !value.includes(internal_value)
-          })
         }
       }}
     >
       <input
         {disabled}
         on:change={() => toggle_choice(internal_value)}
-        on:input={(evt) =>
-          dispatch('select', {
-            index: i,
-            value: internal_value,
-            selected: evt.currentTarget.checked
-          })}
         checked={value.includes(internal_value)}
         type="checkbox"
         name={internal_value?.toString()}
@@ -126,16 +94,9 @@
       <span class="ml-2" title={`${display_value} pour le modèle ${model}`}>{display_value}</span>
     </label>
   {/each}
-  <button
-    {disabled}
-    class:selected={commented}
-    data-fr-opened="false"
-    aria-controls="modal-prefs"
-    on:click={() => {
-      commented = true
-      handle_action('commenting')
-    }}>Autre…</button
-  >
+  <button {disabled} class:selected={commented} data-fr-opened="false" aria-controls={modalId}>
+    Autre…
+  </button>
 </div>
 
 <style>
@@ -145,7 +106,6 @@
 
   .like-panel {
     padding: 1em 1.5em 1em;
-    margin-bottom: 1em;
     background-color: white;
     border-color: #e5e5e5;
     border-style: dashed;
