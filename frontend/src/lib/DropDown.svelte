@@ -3,7 +3,7 @@
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
-  import TextBox from '$lib/components/Textbox.svelte'
+  import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import ChevronBas from '$lib/icons/chevron-bas.svelte'
   import type { Mode, ModeInfos } from '$lib/state.svelte'
@@ -17,14 +17,10 @@
   export let elem_classes: string[] = []
   export let visible = true
   export let disabled = false
-  export let lines: number = 4
   export let show_custom_models_selection: boolean = false
-  export let max_lines: number = 4
-  export let rtl = false
-  export let text_align: 'left' | 'right' | undefined = undefined
-  export let autofocus = false
-  export let autoscroll = true
   export let onSubmit: (args: ModeAndPromptData) => void
+
+  let textboxElement: HTMLTextAreaElement
 
   onMount(async () => {
     // FIXME import only modal? Or create custom component
@@ -65,7 +61,6 @@
       console.error("[Textbox] Element 'el' not found for selection.")
     }
   }
-  let textboxElement: HTMLTextAreaElement | HTMLInputElement
 
   const findModelDetails = (id: string | null, modelsList: Model[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
@@ -219,21 +214,16 @@
   </h3>
   <div class="grid">
     <div class="first-textbox fr-mb-3v">
-      <TextBox
+      <TextPrompt
+        id="initial-prompt"
         bind:el={textboxElement}
-        {disabled}
         bind:value={prompt.value}
-        {elem_id}
-        {elem_classes}
-        {visible}
-        {lines}
-        {rtl}
-        {text_align}
-        max_lines={!max_lines ? lines + 1 : max_lines}
+        label="Écrivez votre premier message"
         placeholder="Écrivez votre premier message ici"
-        {autofocus}
-        {autoscroll}
-        on:submit={() => dispatchSubmit()}
+        {disabled}
+        hideLabel
+        rows={4}
+        onSubmit={dispatchSubmit}
       />
     </div>
 

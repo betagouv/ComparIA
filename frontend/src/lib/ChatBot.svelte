@@ -1,7 +1,7 @@
 <script lang="ts">
   import { chatbot } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
-  import FrInput from '$lib/FrInput.svelte'
+  import TextPrompt from '$lib/components/TextPrompt.svelte'
   import type { ExtendedLikeData } from '$lib/types'
   import type { UndoRetryData } from '$lib/utils'
 
@@ -68,17 +68,17 @@
 >
   <div class="row flex-md-row svelte-1xp0cw7 unequal-height flex-col items-start">
     <div class="form svelte-633qhp" style="flex-grow: 1; min-width: min(160px, 100%);">
-      <FrInput
-        elem_id="main-textbox"
+      <TextPrompt 
+        id="chatbot-prompt"
         bind:value={prompt}
-        show_label={false}
-        lines={1}
+        label="Continuer à discuter avec les deux modèles d'IA"
         placeholder="Continuer à discuter avec les deux modèles d'IA"
-        max_lines={7}
-        elem_classes={['w-full']}
-        autofocus={true}
+        hideLabel
+        maxRows={4}
+        autofocus
+        class="w-full"
         onSubmit={onPromptSubmit}
-      ></FrInput>
+      />
     </div>
 
     <button
