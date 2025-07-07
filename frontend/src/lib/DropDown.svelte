@@ -22,12 +22,6 @@
 
   let textboxElement: HTMLTextAreaElement
 
-  onMount(async () => {
-    // FIXME import only modal? Or create custom component
-    // @ts-ignore - DSFR module import
-    await import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
-  })
-
   const prompt = useLocalStorage('prompt', '', (parsed) => {
     if (parsed !== '') {
       tick().then(() => {
