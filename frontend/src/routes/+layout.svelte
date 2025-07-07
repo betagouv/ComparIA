@@ -261,4 +261,8 @@
       text-align: left !important;
     }
   }
+
+  main {
+    background-color: var(--main-background);
+  }
 </style>

@@ -254,7 +254,7 @@ li.fr-nav__item {
   font-size: 0.75em !important;
 }
 
-#header-html a[target=_blank]::after {
+#main-header a[target=_blank]::after {
   display: none;
 }
 
@@ -275,7 +275,7 @@ li.fr-nav__item {
   }
 }
 
-#header-html {
+#main-header {
   overflow: visible !important;
   /* Required < 100 to be behind modal */
   z-index: 98;
@@ -306,36 +306,6 @@ li.fr-nav__item {
 .fr-header__brand {
   filter: none !important;
 }
-
-#send-area {
-  min-height: 7rem;
-  padding: 1em;
-  position: fixed;
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  background-color: #FCFCFD;
-  /* background-color: transparent; */
-  /* background-color: var(--background-alt-grey); */
-  /* border-top: solid 1px var(--border-default-grey); */
-  z-index: 100;
-}
-
-#send-area .form {
-  width: 100%;
-}
-
-@media (min-width: 48em) {
-  #send-area {
-    padding: 0 20% 1em;
-  }
-}
-
-/* 
-#send-area .small-icon .button-icon {
-  width: 15px;
-  height: 14px;
-} */
 
 .fr-btn--tertiary {
   color: var(--blue-france-main-525) !important;
@@ -373,10 +343,10 @@ li.fr-nav__item {
 }
 
 .btn {
-  display: inline-flex;
+  /* display: inline-flex;
   flex-direction: row;
   align-items: center;
-  width: fit-content;
+  width: fit-content; */
   --underline-img: none;
   --hover-tint: var(--hover);
   font-weight: 500;
@@ -398,12 +368,6 @@ li.fr-nav__item {
 .link:active,
 .link:hover {
   background-color: inherit !important;
-}
-
-
-#chat-area {
-  background-color: #fcfcfd;
-  /* margin-bottom: 5rem; */
 }
 
 .mission {

@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-@plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
 @import './custom-arena.css';
@@ -7,6 +6,7 @@
 :root {
   --bot-a-color: #a96afe;
   --bot-b-color: #FF9575;
+  --main-background: #fcfcfd;
 }
 
 

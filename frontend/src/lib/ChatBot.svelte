@@ -34,81 +34,61 @@
 </script>
 
 <div id="chat-area">
-  <div id="main-chatbot" class="wrapper chatbot">
-    <ChatBot
-      selectable={true}
-      disabled={chatbot.status !== 'complete'}
-      show_copy_all_button={false}
-      value={chatbot.messages}
-      {latex_delimiters}
-      render_markdown={true}
-      pending_message={chatbot.status === 'pending'}
-      generating={chatbot.status === 'generating'}
-      {rtl}
-      show_copy_button={true}
-      like_user_message={false}
-      {onLike}
-      {onRetry}
-      sanitize_html={true}
-      line_breaks={true}
-      autoscroll={true}
-      {layout}
-      {placeholder}
-      _retryable={false}
-      _undoable={false}
-      root={chatbot.root}
-    />
-  </div>
+  <ChatBot
+    disabled={chatbot.status !== 'complete'}
+    show_copy_all_button={false}
+    value={chatbot.messages}
+    pending_message={chatbot.status === 'pending'}
+    generating={chatbot.status === 'generating'}
+    {onLike}
+    {onRetry}
+    autoscroll={true}
+    {layout}
+    {placeholder}
+  />
 </div>
 
-<div
-  id="send-area"
-  class="column fr-pt-1w svelte-vt1mxs gap"
-  style="flex-grow: 1; min-width: min(320px, 100%);"
->
-  <div class="row flex-md-row svelte-1xp0cw7 unequal-height flex-col items-start">
-    <div class="form svelte-633qhp" style="flex-grow: 1; min-width: min(160px, 100%);">
-      <TextPrompt 
-        id="chatbot-prompt"
-        bind:value={prompt}
-        label="Continuer à discuter avec les deux modèles d'IA"
-        placeholder="Continuer à discuter avec les deux modèles d'IA"
-        hideLabel
-        maxRows={4}
-        autofocus
-        class="w-full"
-        onSubmit={onPromptSubmit}
-      />
-    </div>
+<div id="send-area" class="flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]">
+  <div class="flex w-full flex-col gap-3 md:flex-row">
+    <TextPrompt
+      id="chatbot-prompt"
+      bind:value={prompt}
+      label="Continuer à discuter avec les deux modèles d'IA"
+      placeholder="Continuer à discuter avec les deux modèles d'IA"
+      hideLabel
+      rows={2}
+      maxRows={4}
+      autofocus
+      onSubmit={onPromptSubmit}
+      class="mb-0! w-full"
+    />
 
     <button
       id="send-btn"
       disabled={chatbot.status !== 'complete' || prompt === ''}
+      class="btn purple-btn md:self-end"
       onclick={onPromptSubmit}
-      class="lg secondary purple-btn fr-ml-md-1w svelte-1ixn6qd w-full grow-0"
     >
       Envoyer
     </button>
   </div>
-  <div class="row fr-grid-row fr-grid-row--center svelte-1xp0cw7 unequal-height">
-    <button
-      disabled={chatbot.status !== 'complete'}
-      class="lg secondary fr-col-12 fr-col-md-5 purple-btn fr-mt-1w svelte-1ixn6qd"
-      onclick={onRevealModels}
-    >
-      Passer à la révélation des modèles
-    </button>
-  </div>
+
+  <button
+    disabled={chatbot.status !== 'complete'}
+    class="btn purple-btn w-full md:w-fit"
+    onclick={onRevealModels}
+  >
+    Passer à la révélation des modèles
+  </button>
 </div>
 
 <style>
-  .wrapper {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    align-items: start;
+  #send-area {
+    position: sticky;
     width: 100%;
-    height: 100%;
-    flex-grow: 1;
+    bottom: 0;
+    left: 0;
+    background-color: var(--main-background);
+    z-index: 100;
   }
 </style>
