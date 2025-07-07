@@ -3,3 +3,13 @@
 @plugin '@tailwindcss/typography';
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
 @import './custom-arena.css';
+
+:root {
+  --bot-a-color: #a96afe;
+  --bot-b-color: #FF9575;
+}
+
+
+.c-border {
+  border: 1px solid  var(--grey-925-125)
+}

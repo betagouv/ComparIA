@@ -13,7 +13,7 @@ export interface Message {
   metadata: Metadata
   content: string
   reasoning?: string
-  index: number | [number, number]
+  index: number
   liked?: boolean
   disliked?: boolean
   prefs?: string[]

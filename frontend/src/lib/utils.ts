@@ -1,4 +1,4 @@
-import type { Message, MessageRole, NormalisedMessage } from '$lib/types'
+import type { Message, NormalisedMessage } from '$lib/types'
 import type { FileData } from '@gradio/client'
 
 export interface UndoRetryData {
@@ -70,29 +70,10 @@ export function is_one_of_last_two_bot_msgs(
   return lastMsgs.some((msg) => msg.role === 'assistant' && msg.isLast)
 }
 
-export function group_messages(messages: NormalisedMessage[]): NormalisedMessage[][] {
-  const groupedMessages: NormalisedMessage[][] = []
-  let currentGroup: NormalisedMessage[] = []
-  let currentRole: MessageRole | null = null
-
-  for (const message of messages) {
-    if (!(message.role === 'assistant' || message.role === 'user')) {
-      continue
-    }
-    if (message.role === currentRole) {
-      currentGroup.push(message)
-    } else {
-      if (currentGroup.length > 0) {
-        groupedMessages.push(currentGroup)
-      }
-      currentGroup = [message]
-      currentRole = message.role
-    }
-  }
-
-  if (currentGroup.length > 0) {
-    groupedMessages.push(currentGroup)
-  }
-
-  return groupedMessages
+export function group_messages(
+  messages: NormalisedMessage[]
+): { user: NormalisedMessage; bots: NormalisedMessage[] }[] {
+  return Array.from(new Array(Math.ceil(messages.length / 3)), (_, i) =>
+    messages.slice(i * 3, i * 3 + 3)
+  ).map(([user, ...bots]) => ({ user, bots }))
 }

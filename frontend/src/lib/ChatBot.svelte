@@ -111,8 +111,4 @@
     height: 100%;
     flex-grow: 1;
   }
-
-  :global(.progress-text) {
-    right: auto;
-  }
 </style>
