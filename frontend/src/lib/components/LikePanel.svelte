@@ -1,17 +1,34 @@
 <script lang="ts">
   import { type Component } from 'svelte'
 
+  export interface LikePanelProps {
+    show: boolean
+    Icon: Component
+    text: string
+    choices: [string, string][]
+    modalId: string
+    onSelection: (selection: string[]) => void
+    commented?: boolean
+    disabled?: boolean
+    model?: string
+    value?: string[]
+  }
+
+  let {
+    show,
+    Icon,
+    text,
+    choices,
+    modalId,
+    onSelection,
+    commented = false,
+    disabled = false,
+    model = '',
+    value = []
+  }: LikePanelProps = $props()
+
   let like_panel: HTMLDivElement
-  export let show: boolean
-  export let Icon: Component
-  export let text: string
-  export let commented: boolean = false
-  export let disabled: boolean = false
-  export let model: string = ''
-  export let value: string[] = []
-  export let choices: [string, string][]
-  export let modalId: string
-  export let onSelection: (selection: string[]) => void
+  let hasBeenShown = $state(false)
 
   function toggle_choice(choice: string): void {
     if (value.includes(choice)) {
@@ -22,7 +39,6 @@
     onSelection(value)
   }
 
-  let hasBeenShown: boolean = false
   function scrollIntoViewWithOffset(element: HTMLElement, offset: number) {
     // For offset 0 just consider a footer of 100px (really is 114px)
     offset = Math.max(100, offset || 0)
@@ -55,28 +71,30 @@
     }
   }
 
-  $: if (show && !hasBeenShown && like_panel) {
-    checkVisibility()
-  } else if (!show) {
-    hasBeenShown = false
-  }
+  $effect(() => {
+    if (show && !hasBeenShown && like_panel) {
+      checkVisibility()
+    } else if (!show) {
+      hasBeenShown = false
+    }
+  })
 </script>
 
 <div bind:this={like_panel} class="like-panel {show === false ? 'hidden' : ''}">
   <p class="thumb-icon inline-svg">
-    <svelte:component this={Icon} />
+    <Icon />
     <span>{text}</span>
   </p>
   {#each choices as [display_value, internal_value], i}
-    <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-    <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <label
       class:disabled
       class:selected={value.includes(internal_value)}
       aria-checked={value.includes(internal_value)}
       aria-disabled={disabled ? 'true' : 'false'}
       tabindex="0"
-      on:keydown={(event) => {
+      onkeydown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
           toggle_choice(internal_value)
         }
@@ -84,7 +102,7 @@
     >
       <input
         {disabled}
-        on:change={() => toggle_choice(internal_value)}
+        onchange={() => toggle_choice(internal_value)}
         checked={value.includes(internal_value)}
         type="checkbox"
         name={internal_value?.toString()}
