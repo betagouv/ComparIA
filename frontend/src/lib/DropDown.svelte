@@ -5,10 +5,11 @@
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
+  import { m } from '$lib/i18n/messages.js'
   import ChevronBas from '$lib/icons/chevron-bas.svelte'
   import type { Mode, ModeInfos } from '$lib/state.svelte'
   import { modeInfos as choices } from '$lib/state.svelte'
-  import { onMount, tick } from 'svelte'
+  import { tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
   export let never_clicked: boolean = true
@@ -58,18 +59,18 @@
 
   const findModelDetails = (id: string | null, modelsList: Model[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
-      return { name: 'Aléatoire', iconPath: null }
+      return { name: m['words.random'](), iconPath: null }
     }
     const model = modelsList.find((m) => m.id === id)
     return {
-      name: model?.simple_name ?? 'Aléatoire',
+      name: model?.simple_name ?? m['words.random'](),
       iconPath: model?.icon_path ?? null
     }
   }
 
   let choice: ModeInfos = get_choice(mode.value) || choices[0]
-  let firstModelName = 'Aléatoire'
-  let secondModelName = 'Aléatoire'
+  let firstModelName = m['words.random']()
+  let secondModelName = m['words.random']()
   let firstModelIconPath: string | null = null
   let secondModelIconPath: string | null = null
 
@@ -191,12 +192,12 @@
     // dispatchSubmit();
   }
 
-  var alt_label: string = 'Sélection des modèles'
+  var alt_label: string = m['arenaHome.modelSelection']()
   $: if (
     (mode.value == 'custom' && modelsSelection.value.length < 1) ||
     (mode.value == 'random' && never_clicked)
   ) {
-    alt_label = 'Sélection des modèles'
+    alt_label = m['arenaHome.modelSelection']()
   } else {
     alt_label = choice.alt_label
   }
@@ -204,7 +205,7 @@
 
 <div class:hidden={!visible} id={elem_id} class={elem_classes.join(' ') + ' fr-container'}>
   <h3 class="text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w text-center">
-    Comment puis-je vous aider aujourd'hui ?
+    {m['arenaHome.title']()}
   </h3>
   <div class="grid">
     <div class="first-textbox fr-mb-3v">
@@ -212,8 +213,8 @@
         id="initial-prompt"
         bind:el={textboxElement}
         bind:value={prompt.value}
-        label="Écrivez votre premier message"
-        placeholder="Écrivez votre premier message ici"
+        label={m['arenaHome.prompt.label']()}
+        placeholder={m['arenaHome.prompt.placeholder']()}
         {disabled}
         hideLabel
         rows={4}
@@ -280,7 +281,7 @@
       class="submit-btn purple-btn btn"
       disabled={prompt.value == '' || disabled}
       on:click={() => dispatchSubmit()}
-      value="Envoyer"
+      value={m['words.send']()}
     />
   </div>
   <div class="fr-mb-3v">
@@ -300,31 +301,32 @@
             <button
               class="fr-btn--close fr-btn"
               title="Fermer la fenêtre modale"
-              aria-controls="modal-mode-selection">Fermer</button
+              aria-controls="modal-mode-selection"
             >
+              {m['words.close']()}
+            </button>
           </div>
           <div class="fr-modal__content fr-pb-4w">
             {#if show_custom_models_selection == false}
               <h6 id="modal-mode-selection" class="modal-title">
-                Quels modèles voulez-vous comparer ?
+                {m['arenaHome.selectModels.question']()}
               </h6>
-              <p>Sélectionnez le mode de comparaison qui vous convient</p>
+              <p>{m['arenaHome.selectModels.help']()}</p>
               <div>
                 <Dropdown {handle_option_selected} {choices} bind:mode={mode.value} />
               </div>
             {:else}
               <div in:fade>
                 <h6 id="modal-mode-selection" class="modal-title">
-                  Quels modèles voulez-vous comparer ?
+                  {m['arenaHome.compareModels.question']()}
                   <span class="text-purple fr-ml-2w">
-                    {modelsSelection.value.length}/2 modèles
+                    {m['arenaHome.compareModels.count']({ count: modelsSelection.value.length })}
                   </span>
                 </h6>
                 <p class="fr-mb-2w">
-                  Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire
+                  {m['arenaHome.compareModels.help']()}
                 </p>
                 <div>
-                  const selection
                   <ModelsSelection
                     {models}
                     bind:custom_models_selection={modelsSelection.value}
@@ -333,10 +335,12 @@
                   <div class="fr-mt-2w">
                     <button
                       class="btn fr-mb-md-0 fr-mb-1w"
-                      on:click={() => (show_custom_models_selection = false)}>Retour</button
+                      on:click={() => (show_custom_models_selection = false)}
                     >
+                      {m['words.back']()}
+                    </button>
                     <button aria-controls="modal-mode-selection" class="btn purple-btn float-right">
-                      Valider
+                      {m['words.validate']()}
                     </button>
                   </div>
                 </div>

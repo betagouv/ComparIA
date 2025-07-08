@@ -4,6 +4,7 @@
   import { createEventDispatcher } from 'svelte'
   // Import local SVG icons (assuming they are moved to the same 'shared' directory or a subdirectory)
   // User will need to ensure these files are present at these relative paths.
+  import { m } from '$lib/i18n/messages'
   import bookOpenLineIcon from '$lib/icons/book-open-line.svg'
   import bowlIcon from '$lib/icons/bowl.svg'
   import chat3Icon from '$lib/icons/chat-3.svg'
@@ -26,65 +27,28 @@
   }
 
   const totalGuidedCardsChoices: GuidedCardData[] = [
-    {
-      iconSrc: lightbulbIcon,
-      iconAlt: 'Idées',
-      title: 'Générer de nouvelles idées',
-      value: 'ideas'
-    },
-    {
-      iconSrc: chat3Icon,
-      iconAlt: 'Explications',
-      title: 'Expliquer simplement un concept',
-      value: 'explanations'
-    },
-    {
-      iconSrc: translate2Icon,
-      iconAlt: 'Traduction',
-      title: 'M’exprimer dans une autre langue',
-      value: 'languages'
-    },
-    {
-      iconSrc: draftIcon,
-      iconAlt: 'Administratif',
-      title: 'Rédiger un document administratif',
-      value: 'administrative'
-    },
-    {
-      iconSrc: bowlIcon,
-      iconAlt: 'Recettes',
-      title: 'Découvrir une nouvelle recette de cuisine',
-      value: 'recipes'
-    },
-    {
-      iconSrc: clipboardIcon,
-      iconAlt: 'Conseils',
-      title: 'Obtenir des conseils sur l’alimentation et le sport',
-      value: 'coach'
-    },
-    {
-      iconSrc: bookOpenLineIcon,
-      iconAlt: 'Histoires',
-      title: 'Raconter une histoire',
-      value: 'stories'
-    },
-    {
-      iconSrc: music2Icon,
-      iconAlt: 'Recommandations',
-      title: 'Proposer des idées de films, livres, musiques',
-      value: 'recommendations'
-    }
-  ]
+    { value: 'ideas' as const, iconSrc: lightbulbIcon },
+    { value: 'explanations' as const, iconSrc: chat3Icon },
+    { value: 'languages' as const, iconSrc: translate2Icon },
+    { value: 'administrative' as const, iconSrc: draftIcon },
+    { value: 'recipes' as const, iconSrc: bowlIcon },
+    { value: 'coach' as const, iconSrc: clipboardIcon },
+    { value: 'stories' as const, iconSrc: bookOpenLineIcon },
+    { value: 'recommendations' as const, iconSrc: music2Icon }
+  ].map((item) => ({
+    ...item,
+    title: m[`arenaHome.suggestions.choices.${item.value}.title`](),
+    iconAlt: m[`arenaHome.suggestions.choices.${item.value}.iconAlt`]()
+  }))
 
   const iaSummitChoice: GuidedCardData = {
-    iconSrc: '/iasummit.png', // Updated to use imported variable
-    iconAlt: "Sommet pour l'action sur l'IA",
-    title: 'Prompts issus de la consultation citoyenne sur l’IA&nbsp;',
     value: 'iasummit',
+    iconSrc: '/iasummit.png', // Updated to use imported variable
+    iconAlt: m['arenaHome.suggestions.choices.iasummit.iconAlt'](),
+    title: m['arenaHome.suggestions.choices.iasummit.title'](),
     isIASummit: true,
     iaSummitSmallIconSrc: '/iasummit-small.png', // Updated to use imported variable
-    iaSummitTooltip:
-      'Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies.'
+    iaSummitTooltip: m['arenaHome.suggestions.choices.iasummit.tooltip']()
   }
 
   let displayedCards: GuidedCardData[] = []
@@ -175,7 +139,7 @@
 
 <div class="fr-container fr-px-0">
   <h4 class="text-grey-200 fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-3v fr-pb-0 fr-px-0">
-    <strong>Suggestions de prompts</strong>
+    <strong>{m['arenaHome.suggestions.title']()}</strong>
   </h4>
 
   <div class="fr-grid-row fr-grid-row--gutters">
@@ -200,8 +164,13 @@
     <div class="text-center">
       <button class="fr-btn fr-btn--tertiary mobile-w-full fr-mt-2w" on:click={shufflePrompts}>
         <!-- <svelte:component this={shuffleIcon} /> -->
-        <img class="fr-mr-1v" src={shuffleIcon} alt="Regénérer" title="Générer un autre message" /> Générer
-        un autre message
+        <img
+          class="fr-mr-1v"
+          src={shuffleIcon}
+          alt={m['words.regenerate']()}
+          title={m['arenaHome.suggestions.generateAnother']()}
+        />
+        {m['arenaHome.suggestions.generateAnother']()}
       </button>
     </div>
   {/if}

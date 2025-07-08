@@ -1,1 +1,112 @@
-{}
+{
+  "arenaHome": {
+    "title": "Comment puis-je vous aider aujourd'hui ?",
+    "modelSelection": "Sélection des modèles",
+    "prompt": {
+      "label": "Écrivez votre premier message",
+      "placeholder": "Écrivez votre premier message ici"
+    },
+    "selectModels": {
+      "question": "Quels modèles voulez-vous comparer ?",
+      "help": "Sélectionnez le mode de comparaison qui vous convient"
+    },
+    "compareModels": {
+      "question": "Quels modèles voulez-vous comparer ?",
+      "count": "{count}/2 modèles",
+      "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire"
+    },
+    "suggestions": {
+      "title": "Suggestions de prompts",
+      "generateAnother": "Générer un autre message",
+      "choices": {
+        "iasummit": {
+          "iconAlt": "Sommet pour l'action sur l'IA",
+          "title": "Prompts issus de la consultation citoyenne sur l’IA&nbsp;",
+          "tooltip": "Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies."
+        },
+        "ideas": {
+          "iconAlt": "Idées",
+          "title": "Générer de nouvelles idées"
+        },
+        "explanations": {
+          "iconAlt": "Explications",
+          "title": "Expliquer simplement un concept"
+        },
+        "languages": {
+          "iconAlt": "Traduction",
+          "title": "M’exprimer dans une autre langue"
+        },
+        "administrative": {
+          "iconAlt": "Administratif",
+          "title": "Rédiger un document administratif"
+        },
+        "recipes": {
+          "iconAlt": "Recettes",
+          "title": "Découvrir une nouvelle recette de cuisine"
+        },
+        "coach": {
+          "iconAlt": "Conseils",
+          "title": "Obtenir des conseils sur l’alimentation et le sport"
+        },
+        "stories": {
+          "iconAlt": "Histoires",
+          "title": "Raconter une histoire"
+        },
+        "recommendations": {
+          "iconAlt": "Recommandations",
+          "title": "Proposer des idées de films, livres, musiques"
+        }
+      }
+    }
+  },
+  "models": {
+    "licenses": {
+      "proprietary": "Propriétaire",
+      "openSource": "Open source",
+      "semiOpen": "Semi-ouvert"
+    },
+    "release": "Sortie&nbsp;{date}",
+    "size": "Taille&nbsp;estimée&nbsp;({size})",
+    "parameters": "{number}&nbsp;mds&nbsp;paramètres"
+  },
+  "modes": {
+    "random": {
+      "title": "Mode Aléatoire",
+      "label": "Aléatoire",
+      "altLabel": "Modèles aléatoires",
+      "description": "Deux modèles choisis au hasard parmi toute la liste"
+    },
+    "custom": {
+      "title": "Mode Sélection",
+      "label": "Sélection manuelle",
+      "altLabel": "Sélection manuelle",
+      "description": "Reconnaîtrez-vous les deux modèles que vous avez choisis ?"
+    },
+    "small-models": {
+      "title": "Mode Frugal",
+      "label": "Frugal",
+      "altLabel": "Modèles frugaux",
+      "description": "Deux modèles tirés au hasard parmi ceux de plus petite taille"
+    },
+    "big-vs-small": {
+      "title": "Mode David contre Goliath",
+      "label": "David contre Goliath",
+      "altLabel": "David contre Goliath",
+      "description": "Un petit modèle contre un grand, les deux tirés au hasard"
+    },
+    "reasoning": {
+      "title": "Mode Raisonnement",
+      "label": "Raisonnement",
+      "altLabel": "Modèles avec raisonnement",
+      "description": "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes"
+    }
+  },
+  "words": {
+    "back": "Retour",
+    "close": "Fermer",
+    "random": "Aléatoire",
+    "regenerate": "Regénérer",
+    "send": "Envoyer",
+    "validate": "Valider"
+  }
+}

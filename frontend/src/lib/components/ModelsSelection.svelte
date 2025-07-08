@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Model } from '$lib/chatService.svelte'
+  import { m } from '$lib/i18n/messages'
 
   export let custom_models_selection: string[] = [] // Default to an empty list
   export let models: Model[] = []
@@ -8,7 +9,7 @@
 
   export let toggle_model_selection: (id: string) => void
 
-  function handleKeyDown(id, event: KeyboardEvent) {
+  function handleKeyDown(id: string, event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
       toggle_model_selection(id)
@@ -56,21 +57,23 @@
           class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
         >
           {distribution == 'api-only'
-            ? 'Propriétaire'
+            ? m['models.licenses.proprietary']
             : fully_open_source
-              ? 'Open source'
-              : 'Semi-ouvert'}
+              ? m['models.licenses.openSource']
+              : m['models.licenses.semiOpen']}
         </span>
-        {#if release_date}<span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v"
-            >Sortie&nbsp;{release_date}
-          </span>{/if}
+        {#if release_date}
+          <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">
+            {m['models.release']({ date: release_date })}
+          </span>
+        {/if}
         <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
           {#if distribution === 'api-only'}
-            Taille&nbsp;estimée&nbsp;({friendly_size})
+            {m['models.size']({ size: friendly_size })}
           {:else}
-            {typeof params === 'number' ? params : total_params}&nbsp;mds&nbsp;paramètres
-          {/if}</span
-        >
+            {m['models.parameters']({ number: typeof params === 'number' ? params : total_params })}
+          {/if}
+        </span>
       </div>
     </label>
   {/each}
