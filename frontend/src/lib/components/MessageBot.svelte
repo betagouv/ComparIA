@@ -77,7 +77,7 @@
   </div>
 
   {#if selected}
-    <div class="mt-3">
+    <div class="mt-3 message-bot-like-panel">
       <LikePanel
         kind={selected}
         show={true}
@@ -92,6 +92,14 @@
 </div>
 
 <style>
+  .message-bot-like-panel {
+    padding: 1em 1.5em 1em;
+    background-color: white;
+    border-color: #e5e5e5;
+    border-style: dashed;
+    border-width: 1.5px;
+    border-radius: 0.25rem;
+  }
   .message-bot .disk {
     width: 26px;
     height: 26px;

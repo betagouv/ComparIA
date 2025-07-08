@@ -14,6 +14,7 @@
     comment?: string
     disabled?: boolean
     hideLabel?: boolean
+    inline?: boolean
   }
 
   let {
@@ -26,7 +27,8 @@
     selection = [],
     comment = '',
     disabled = false,
-    hideLabel = false
+    hideLabel = false,
+    inline = false
   }: LikePanelProps = $props()
 
   let like_panel: HTMLDivElement
@@ -105,47 +107,49 @@
   })
 </script>
 
-<div bind:this={like_panel} class="like-panel {show === false ? 'hidden' : ''}">
-  <p class="thumb-icon inline-svg">
+<div bind:this={like_panel} class="like-panel" class:hidden={show === false} class:flex={inline}>
+  <p class="thumb-icon me-3! {hideLabel ? 'mb-0! mt-1!' : 'mb-3!'}">
     <reaction.Icon />
-    <span class:sr-only={hideLabel}>{reaction.label}</span>
+    <span class="ms-2" class:sr-only={hideLabel}>{reaction.label}</span>
   </p>
-  {#each reaction.choices as { value, label } (value)}
-    <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <label
-      class:disabled
-      class:selected={selection.includes(value)}
-      class="checkbox-btn"
-      aria-checked={selection.includes(value)}
-      aria-disabled={disabled ? 'true' : 'false'}
-      tabindex="0"
-      onkeydown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          toggle_choice(value)
-        }
-      }}
-    >
-      <input
-        {disabled}
-        onchange={() => toggle_choice(value)}
-        checked={selection.includes(value)}
-        type="checkbox"
-        name={value?.toString()}
+  <div class="flex flex-wrap gap-3">
+    {#each reaction.choices as { value, label } (value)}
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+      <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+      <label
+        class:disabled
+        class:selected={selection.includes(value)}
+        class="checkbox-btn"
         aria-checked={selection.includes(value)}
-      />
-      <span class="ml-2" title={m['vote.choices.altText']({ choice: label, model })}>{label}</span>
-    </label>
-  {/each}
-  <button
-    {disabled}
-    class:selected={innerComment !== ''}
-    class="checkbox-btn"
-    data-fr-opened="false"
-    aria-controls={modalId}
-  >
-    Autre…
-  </button>
+        aria-disabled={disabled ? 'true' : 'false'}
+        tabindex="0"
+        onkeydown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            toggle_choice(value)
+          }
+        }}
+      >
+        <input
+          {disabled}
+          onchange={() => toggle_choice(value)}
+          checked={selection.includes(value)}
+          type="checkbox"
+          name={value?.toString()}
+          aria-checked={selection.includes(value)}
+        />
+        <span title={m['vote.choices.altText']({ choice: label, model })}>{label}</span>
+      </label>
+    {/each}
+    <button
+      {disabled}
+      class:selected={innerComment !== ''}
+      class="checkbox-btn"
+      data-fr-opened="false"
+      aria-controls={modalId}
+    >
+      Autre…
+    </button>
+  </div>
 </div>
 
 <!-- Weird way to catch the comment if not validated but modal closed -->
@@ -199,37 +203,28 @@
 </dialog>
 
 <style>
-  .inline-svg :global(svg) {
+  .thumb-icon {
+    font-weight: 700;
+    color: #3a3a3a;
+  }
+  .thumb-icon :global(svg) {
     display: inline;
   }
 
-  .like-panel {
-    padding: 1em 1.5em 1em;
-    background-color: white;
-    border-color: #e5e5e5;
-    border-style: dashed;
-    border-width: 1.5px;
-    border-radius: 0.25rem;
-  }
   [type='checkbox'] {
     display: none;
   }
 
-  label span {
-    margin-left: 0;
-  }
-  label {
-    line-height: 3em;
+  label.checkbox-btn {
     padding: 4px 10px;
   }
   .checkbox-btn {
-    /* font-size: 0.875em; */
+    display: inline-block;
     border-radius: 1.5rem !important;
     background: white;
     color: #606367 !important;
     border: 1px #dadce0 solid !important;
     font-weight: 500;
-    margin-right: 10px;
     cursor: pointer;
   }
   button.checkbox-btn {
@@ -245,12 +240,6 @@
 
   .checkbox-btn:hover {
     background-color: var(--hover);
-  }
-
-  .thumb-icon {
-    font-weight: 700;
-    color: #3a3a3a;
-    margin-bottom: 5px !important;
   }
 
   .checkbox-btn.disabled.selected,
