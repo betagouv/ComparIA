@@ -3,8 +3,6 @@
   import LikeDislike from '$lib/components/LikeDislike.svelte'
   import LikePanel from '$lib/components/LikePanel.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
-  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
-  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte'
   import type { NormalisedMessage } from '$lib/types'
   import { noop } from '$lib/utils/commons'
 
@@ -29,32 +27,6 @@
 
   let selected: 'like' | 'dislike' | null = $state(null)
   let selection: string[] = $state(message.prefs || [])
-
-  const reactions = {
-    like: {
-      text: "Qu'avez-vous apprécié dans la réponse ?",
-      Icon: ThumbUpActive,
-      choices: [
-        ['Utile', 'useful'],
-        ['Complète', 'complete'],
-        ['Créative', 'creative'],
-        ['Mise en forme claire', 'clear-formatting']
-      ] as [string, string][]
-    },
-    dislike: {
-      text: 'Pourquoi la réponse ne convient-elle pas ?',
-      Icon: ThumbDownActive,
-      choices: [
-        ['Incorrecte', 'incorrect'],
-        ['Superficielle', 'superficial'],
-        ['Instructions non suivies', 'instructions-not-followed']
-      ] as [string, string][]
-    }
-  }
-
-  const currentReaction = $derived<(typeof reactions)['like' | 'dislike'] | null>(
-    selected ? reactions[selected] : null
-  )
 
   const onLikeDislikeSelected = (value: 'like' | 'dislike' | null) => {
     selected = value
@@ -104,13 +76,13 @@
     </div>
   </div>
 
-  {#if selected && currentReaction}
+  {#if selected}
     <div class="mt-3">
       <LikePanel
+        kind={selected}
         show={true}
         comment={message.comment}
         {modalId}
-        {...currentReaction}
         {onSelectionChange}
         {onCommentChange}
         model={bot.toUpperCase()}

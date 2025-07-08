@@ -1,37 +1,59 @@
 <script lang="ts">
-  import { type Component } from 'svelte'
+  import { m } from '$lib/i18n/messages'
+  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
+  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte'
 
   export interface LikePanelProps {
     show: boolean
-    Icon: Component
-    text: string
-    choices: [string, string][]
+    kind: 'like' | 'dislike'
+    model: string
     modalId: string
     onSelectionChange: (selection: string[]) => void
     onCommentChange: (comment: string) => void
     selection?: string[]
     comment?: string
     disabled?: boolean
-    model?: string
+    hideLabel?: boolean
   }
 
   let {
     show,
-    Icon,
-    text,
-    choices,
+    kind,
+    model,
     modalId,
     onSelectionChange,
     onCommentChange,
     selection = [],
     comment = '',
     disabled = false,
-    model = ''
+    hideLabel = false
   }: LikePanelProps = $props()
 
   let like_panel: HTMLDivElement
   let hasBeenShown = $state(false)
   let innerComment = $state(comment)
+
+  const reactions = {
+    like: {
+      label: m['vote.choices.positive.question'](),
+      Icon: ThumbUpActive,
+      choices: (['useful', 'complete', 'creative', 'clear-formatting'] as const).map((value) => ({
+        value,
+        label: m[`vote.choices.positive.${value}`]()
+      }))
+    },
+    dislike: {
+      label: m['vote.choices.negative.question'](),
+      Icon: ThumbDownActive,
+      choices: (['incorrect', 'superficial', 'instructions-not-followed'] as const).map(
+        (value) => ({
+          value,
+          label: m[`vote.choices.negative.${value}`]()
+        })
+      )
+    }
+  }
+  const reaction = $derived(reactions[kind])
 
   function toggle_choice(choice: string): void {
     if (selection.includes(choice)) {
@@ -85,35 +107,34 @@
 
 <div bind:this={like_panel} class="like-panel {show === false ? 'hidden' : ''}">
   <p class="thumb-icon inline-svg">
-    <Icon />
-    <span>{text}</span>
+    <reaction.Icon />
+    <span class:sr-only={hideLabel}>{reaction.label}</span>
   </p>
-  {#each choices as [display_value, internal_value], i}
+  {#each reaction.choices as { value, label } (value)}
     <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <label
       class:disabled
-      class:selected={selection.includes(internal_value)}
+      class:selected={selection.includes(value)}
       class="checkbox-btn"
-      aria-checked={selection.includes(internal_value)}
+      aria-checked={selection.includes(value)}
       aria-disabled={disabled ? 'true' : 'false'}
       tabindex="0"
       onkeydown={(event) => {
         if (event.key === 'Enter' || event.key === ' ') {
-          toggle_choice(internal_value)
+          toggle_choice(value)
         }
       }}
     >
       <input
         {disabled}
-        onchange={() => toggle_choice(internal_value)}
-        checked={selection.includes(internal_value)}
+        onchange={() => toggle_choice(value)}
+        checked={selection.includes(value)}
         type="checkbox"
-        name={internal_value?.toString()}
-        title={`${display_value} pour le modèle ${model}`}
-        aria-checked={selection.includes(internal_value)}
+        name={value?.toString()}
+        aria-checked={selection.includes(value)}
       />
-      <span class="ml-2" title={`${display_value} pour le modèle ${model}`}>{display_value}</span>
+      <span class="ml-2" title={m['vote.choices.altText']({ choice: label, model })}>{label}</span>
     </label>
   {/each}
   <button
@@ -146,16 +167,18 @@
           <div class="fr-modal__header">
             <button
               class="fr-btn--close fr-btn"
-              title="Fermer la fenêtre modale"
+              title={m['closeModal']()}
               aria-controls={modalId}
-              onclick={() => onCommentChange(innerComment)}>Fermer</button
+              onclick={() => onCommentChange(innerComment)}
             >
+              {m['words.close']()}
+            </button>
           </div>
           <div class="fr-modal__content">
-            <p id="{modalId}-label" class="modal-title">Ajouter des commentaires</p>
+            <p id="{modalId}-label" class="modal-title">{m['vote.comment.add']()}</p>
             <div>
               <textarea
-                placeholder="Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
+                placeholder={m['vote.comment.placeholder']({ model })}
                 class="fr-input"
                 rows="4"
                 bind:value={innerComment}
@@ -163,8 +186,10 @@
               <button
                 aria-controls={modalId}
                 class="btn purple-btn"
-                onclick={() => onCommentChange(innerComment)}>Envoyer</button
+                onclick={() => onCommentChange(innerComment)}
               >
+                {m['words.send']()}
+              </button>
             </div>
           </div>
         </div>

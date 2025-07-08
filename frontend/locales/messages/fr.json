@@ -59,6 +59,7 @@
       }
     }
   },
+  "closeModal": "Fermer la fenêtre modale",
   "models": {
     "licenses": {
       "proprietary": "Propriétaire",
@@ -99,6 +100,28 @@
       "label": "Raisonnement",
       "altLabel": "Modèles avec raisonnement",
       "description": "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes"
+    }
+  },
+  "vote": {
+    "comment": {
+      "add": "Ajouter des commentaires",
+      "placeholder": "Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
+    },
+    "choices": {
+      "positive": {
+        "question": "Qu'avez-vous apprécié dans la réponse ?",
+        "useful": "Utile",
+        "complete": "Complète",
+        "creative": "Créative",
+        "clear-formatting": "Mise en forme claire"
+      },
+      "negative": {
+        "question": "Pourquoi la réponse ne convient-elle pas ?",
+        "incorrect": "Incorrecte",
+        "superficial": "Superficielle",
+        "instructions-not-followed": "Instructions non suivies"
+      },
+      "altText": "{choice} pour le modèle {model}"
     }
   },
   "words": {
