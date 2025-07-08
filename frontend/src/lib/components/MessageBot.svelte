@@ -56,11 +56,11 @@
   }
 </script>
 
-<div class="message-bot flex flex-col">
-  <div class="message-bot-{bot} c-border flex h-full flex-col rounded-2xl px-5 pb-3 pt-7">
+<div class="flex flex-col">
+  <div class="c-border flex h-full flex-col rounded-2xl px-5 pb-3 pt-7">
     <div>
       <div class="mb-5 flex items-center">
-        <div class="disk"></div>
+        <div class="c-bot-disk-{bot}"></div>
         <h3 class="mb-0! ms-1!">{bot === 'a' ? 'Modèle A' : 'Modèle B'}</h3>
       </div>
 
@@ -99,17 +99,5 @@
     border-style: dashed;
     border-width: 1.5px;
     border-radius: 0.25rem;
-  }
-  .message-bot .disk {
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-  }
-
-  .message-bot-a .disk {
-    background-color: var(--bot-a-color);
-  }
-  .message-bot-b .disk {
-    background-color: var(--bot-b-color);
   }
 </style>

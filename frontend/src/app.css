@@ -5,11 +5,24 @@
 
 :root {
   --bot-a-color: #a96afe;
-  --bot-b-color: #FF9575;
+  --bot-b-color: #ff9575;
   --main-background: #fcfcfd;
+  --outline-color: #0a76f6;
 }
 
-
 .c-border {
-  border: 1px solid  var(--grey-925-125)
+  border: 1px solid var(--grey-925-125);
+}
+
+.c-bot-disk-a {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--bot-a-color);
+}
+.c-bot-disk-b {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--bot-b-color);
 }

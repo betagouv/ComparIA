@@ -68,7 +68,11 @@
     },
     "release": "Sortie&nbsp;{date}",
     "size": "Taille&nbsp;estimée&nbsp;({size})",
-    "parameters": "{number}&nbsp;mds&nbsp;paramètres"
+    "parameters": "{number}&nbsp;mds&nbsp;paramètres",
+    "names": {
+      "a": "Modèle A",
+      "b": "Modèle B"
+    }
   },
   "modes": {
     "random": {
@@ -103,6 +107,8 @@
     }
   },
   "vote": {
+    "title": "Quel modèle d’IA préférez-vous ?",
+    "bothEqual": "Les deux se valent",
     "comment": {
       "add": "Ajouter des commentaires",
       "placeholder": "Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
