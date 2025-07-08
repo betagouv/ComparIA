@@ -22,3 +22,7 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# paraglide (i18n)
+locales/cache
+src/lib/i18n
