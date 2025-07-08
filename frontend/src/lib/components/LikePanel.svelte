@@ -7,11 +7,12 @@
     text: string
     choices: [string, string][]
     modalId: string
-    onSelection: (selection: string[]) => void
-    commented?: boolean
+    onSelectionChange: (selection: string[]) => void
+    onCommentChange: (comment: string) => void
+    selection?: string[]
+    comment?: string
     disabled?: boolean
     model?: string
-    value?: string[]
   }
 
   let {
@@ -20,23 +21,25 @@
     text,
     choices,
     modalId,
-    onSelection,
-    commented = false,
+    onSelectionChange,
+    onCommentChange,
+    selection = [],
+    comment = '',
     disabled = false,
-    model = '',
-    value = []
+    model = ''
   }: LikePanelProps = $props()
 
   let like_panel: HTMLDivElement
   let hasBeenShown = $state(false)
+  let innerComment = $state(comment)
 
   function toggle_choice(choice: string): void {
-    if (value.includes(choice)) {
-      value = value.filter((v) => v !== choice)
+    if (selection.includes(choice)) {
+      selection = selection.filter((v) => v !== choice)
     } else {
-      value = [...value, choice]
+      selection = [...selection, choice]
     }
-    onSelection(value)
+    onSelectionChange(selection)
   }
 
   function scrollIntoViewWithOffset(element: HTMLElement, offset: number) {
@@ -90,8 +93,9 @@
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <label
       class:disabled
-      class:selected={value.includes(internal_value)}
-      aria-checked={value.includes(internal_value)}
+      class:selected={selection.includes(internal_value)}
+      class="checkbox-btn"
+      aria-checked={selection.includes(internal_value)}
       aria-disabled={disabled ? 'true' : 'false'}
       tabindex="0"
       onkeydown={(event) => {
@@ -103,19 +107,71 @@
       <input
         {disabled}
         onchange={() => toggle_choice(internal_value)}
-        checked={value.includes(internal_value)}
+        checked={selection.includes(internal_value)}
         type="checkbox"
         name={internal_value?.toString()}
         title={`${display_value} pour le modèle ${model}`}
-        aria-checked={value.includes(internal_value)}
+        aria-checked={selection.includes(internal_value)}
       />
       <span class="ml-2" title={`${display_value} pour le modèle ${model}`}>{display_value}</span>
     </label>
   {/each}
-  <button {disabled} class:selected={commented} data-fr-opened="false" aria-controls={modalId}>
+  <button
+    {disabled}
+    class:selected={innerComment !== ''}
+    class="checkbox-btn"
+    data-fr-opened="false"
+    aria-controls={modalId}
+  >
     Autre…
   </button>
 </div>
+
+<!-- Weird way to catch the comment if not validated but modal closed -->
+<dialog
+  aria-labelledby="{modalId}-label"
+  id={modalId}
+  class="fr-modal"
+  onblur={() => onCommentChange(innerComment)}
+  onkeydown={(e) => {
+    if (e.key === 'Escape') {
+      onCommentChange(innerComment)
+    }
+  }}
+>
+  <div class="fr-container fr-container--fluid fr-container-md">
+    <div class="fr-grid-row fr-grid-row--center">
+      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+        <div class="fr-modal__body">
+          <div class="fr-modal__header">
+            <button
+              class="fr-btn--close fr-btn"
+              title="Fermer la fenêtre modale"
+              aria-controls={modalId}
+              onclick={() => onCommentChange(innerComment)}>Fermer</button
+            >
+          </div>
+          <div class="fr-modal__content">
+            <p id="{modalId}-label" class="modal-title">Ajouter des commentaires</p>
+            <div>
+              <textarea
+                placeholder="Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
+                class="fr-input"
+                rows="4"
+                bind:value={innerComment}
+              ></textarea>
+              <button
+                aria-controls={modalId}
+                class="btn purple-btn"
+                onclick={() => onCommentChange(innerComment)}>Envoyer</button
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
 
 <style>
   .inline-svg :global(svg) {
@@ -141,8 +197,7 @@
     line-height: 3em;
     padding: 4px 10px;
   }
-  label,
-  button {
+  .checkbox-btn {
     /* font-size: 0.875em; */
     border-radius: 1.5rem !important;
     background: white;
@@ -152,21 +207,18 @@
     margin-right: 10px;
     cursor: pointer;
   }
-  button {
+  button.checkbox-btn {
     padding: 3px 10px;
   }
 
-  label.selected,
-  label:active,
-  button:active,
-  button.selected {
+  .checkbox-btn.selected,
+  .checkbox-btn:active {
     background: #f5f5fe !important;
     color: #6a6af4 !important;
     border: 1px #6a6af4 solid !important;
   }
 
-  label:hover,
-  button:hover {
+  .checkbox-btn:hover {
     background-color: var(--hover);
   }
 
@@ -176,8 +228,8 @@
     margin-bottom: 5px !important;
   }
 
-  label.disabled.selected,
-  button[disabled].selected {
+  .checkbox-btn.disabled.selected,
+  button[disabled].checkbox-btn.selected {
     opacity: 0.5;
     box-shadow: none;
     background-color: #eee !important;
@@ -185,8 +237,18 @@
     color: #3a3a3a !important;
   }
 
-  label.disabled:hover,
-  button[disabled]:hover {
+  .checkbox-btn.disabled:hover,
+  button[disabled].checkbox-btn:hover {
     cursor: not-allowed;
+  }
+
+  .modal-title {
+    font-weight: 700;
+    font-size: 1.1em;
+  }
+
+  .fr-modal__content .purple-btn {
+    float: right;
+    margin: 2em 0 !important;
   }
 </style>

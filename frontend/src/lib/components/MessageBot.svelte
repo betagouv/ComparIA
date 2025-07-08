@@ -25,7 +25,6 @@
   }: MessageBotProps = $props()
 
   const bot = message.metadata.bot as 'a' | 'b'
-  let comment = $state(message.comment)
   let modalId = `modal-prefs-${message.index}`
 
   let selected: 'like' | 'dislike' | null = $state(null)
@@ -43,7 +42,7 @@
       ] as [string, string][]
     },
     dislike: {
-      text: "Qu'avez-vous apprécié dans la réponse ?",
+      text: 'Pourquoi la réponse ne convient-elle pas ?',
       Icon: ThumbDownActive,
       choices: [
         ['Incorrecte', 'incorrect'],
@@ -68,7 +67,7 @@
     })
   }
 
-  const onSelection = (value: string[]) => {
+  const onSelectionChange = (value: string[]) => {
     selection = value
     onReaction('like', {
       ...message,
@@ -76,17 +75,16 @@
     })
   }
 
-  const onComment = (value: string) => {
+  const onCommentChange = (value: string) => {
     onReaction('comment', {
       ...message,
-      commented: comment !== '',
-      comment
+      commented: value !== '',
+      comment: value
     })
   }
 </script>
 
 <div class="message-bot flex flex-col">
-  {selection}
   <div class="message-bot-{bot} c-border flex h-full flex-col rounded-2xl px-5 pb-3 pt-7">
     <div>
       <div class="mb-5 flex items-center">
@@ -110,59 +108,14 @@
     <div class="mt-3">
       <LikePanel
         show={true}
-        commented={message.commented}
+        comment={message.comment}
         {modalId}
         {...currentReaction}
-        {onSelection}
+        {onSelectionChange}
+        {onCommentChange}
         model={bot.toUpperCase()}
       />
     </div>
-
-    <!-- Weird way to catch the comment if not validated but modal closed -->
-    <dialog
-      aria-labelledby="{modalId}-label"
-      id={modalId}
-      class="fr-modal"
-      onblur={() => onComment(comment)}
-      onkeydown={(e) => {
-        if (e.key === 'Escape') {
-          onComment(comment)
-        }
-      }}
-    >
-      <div class="fr-container fr-container--fluid fr-container-md">
-        <div class="fr-grid-row fr-grid-row--center">
-          <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-            <div class="fr-modal__body">
-              <div class="fr-modal__header">
-                <button
-                  class="fr-btn--close fr-btn"
-                  title="Fermer la fenêtre modale"
-                  aria-controls={modalId}
-                  onclick={() => onComment(comment)}>Fermer</button
-                >
-              </div>
-              <div class="fr-modal__content">
-                <p id="{modalId}-label" class="modal-title">Ajouter des commentaires</p>
-                <div>
-                  <textarea
-                    placeholder="Vous pouvez ajouter des précisions sur cette réponse du modèle {bot.toUpperCase()}"
-                    class="fr-input"
-                    rows="4"
-                    bind:value={comment}
-                  ></textarea>
-                  <button
-                    aria-controls={modalId}
-                    class="btn purple-btn"
-                    onclick={() => onComment(comment)}>Envoyer</button
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </dialog>
   {/if}
 </div>
 
@@ -178,15 +131,5 @@
   }
   .message-bot-b .disk {
     background-color: var(--bot-b-color);
-  }
-
-  .modal-title {
-    font-weight: 700;
-    font-size: 1.1em;
-  }
-
-  .fr-modal__content .purple-btn {
-    float: right;
-    margin: 2em 0 !important;
   }
 </style>
