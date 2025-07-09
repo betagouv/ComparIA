@@ -1,0 +1,11 @@
+FROM public.ecr.aws/docker/library/node:24.3
+WORKDIR /app
+COPY ./package.json /app
+RUN yarn install
+COPY ./ /app
+RUN npm run build
+EXPOSE 80
+CMD ["node", "build"]
+
+ARG GIT_COMMIT
+ENV GIT_COMMIT=$GIT_COMMIT
