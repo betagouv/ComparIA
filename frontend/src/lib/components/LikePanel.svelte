@@ -2,33 +2,32 @@
   import { m } from '$lib/i18n/messages'
   import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
   import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte'
+  import { noop } from '$lib/utils/commons'
 
   export interface LikePanelProps {
     show: boolean
     kind: 'like' | 'dislike'
     model: string
-    modalId: string
     onSelectionChange: (selection: string[]) => void
-    onCommentChange: (comment: string) => void
+    onCommentChange?: (comment: string) => void
+    modalId?: string
     selection?: string[]
     comment?: string
     disabled?: boolean
-    hideLabel?: boolean
-    inline?: boolean
+    mode?: 'react' | 'vote'
   }
 
   let {
     show,
     kind,
     model,
-    modalId,
     onSelectionChange,
-    onCommentChange,
+    onCommentChange = noop,
+    modalId = undefined,
     selection = [],
     comment = '',
     disabled = false,
-    hideLabel = false,
-    inline = false
+    mode = 'react'
   }: LikePanelProps = $props()
 
   let like_panel: HTMLDivElement
@@ -107,10 +106,15 @@
   })
 </script>
 
-<div bind:this={like_panel} class="like-panel" class:hidden={show === false} class:flex={inline}>
-  <p class="thumb-icon me-3! {hideLabel ? 'mb-0! mt-1!' : 'mb-3!'}">
+<div
+  bind:this={like_panel}
+  class="like-panel"
+  class:hidden={show === false}
+  class:flex={mode === 'vote'}
+>
+  <p class="thumb-icon me-3! {mode === 'vote' ? 'mb-0! mt-1!' : 'mb-3!'}">
     <reaction.Icon />
-    <span class="ms-2" class:sr-only={hideLabel}>{reaction.label}</span>
+    <span class="ms-2" class:sr-only={mode === 'vote'}>{reaction.label}</span>
   </p>
   <div class="flex flex-wrap gap-3">
     {#each reaction.choices as { value, label } (value)}
@@ -140,67 +144,71 @@
         <span title={m['vote.choices.altText']({ choice: label, model })}>{label}</span>
       </label>
     {/each}
-    <button
-      {disabled}
-      class:selected={innerComment !== ''}
-      class="checkbox-btn"
-      data-fr-opened="false"
-      aria-controls={modalId}
-    >
-      Autre…
-    </button>
+    {#if mode === 'react'}
+      <button
+        {disabled}
+        class:selected={innerComment !== ''}
+        class="checkbox-btn"
+        data-fr-opened="false"
+        aria-controls={modalId}
+      >
+        Autre…
+      </button>
+    {/if}
   </div>
 </div>
 
 <!-- Weird way to catch the comment if not validated but modal closed -->
-<dialog
-  aria-labelledby="{modalId}-label"
-  id={modalId}
-  class="fr-modal"
-  onblur={() => onCommentChange(innerComment)}
-  onkeydown={(e) => {
-    if (e.key === 'Escape') {
-      onCommentChange(innerComment)
-    }
-  }}
->
-  <div class="fr-container fr-container--fluid fr-container-md">
-    <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-        <div class="fr-modal__body">
-          <div class="fr-modal__header">
-            <button
-              class="fr-btn--close fr-btn"
-              title={m['closeModal']()}
-              aria-controls={modalId}
-              onclick={() => onCommentChange(innerComment)}
-            >
-              {m['words.close']()}
-            </button>
-          </div>
-          <div class="fr-modal__content">
-            <p id="{modalId}-label" class="modal-title">{m['vote.comment.add']()}</p>
-            <div>
-              <textarea
-                placeholder={m['vote.comment.placeholder']({ model })}
-                class="fr-input"
-                rows="4"
-                bind:value={innerComment}
-              ></textarea>
+{#if mode === 'react'}
+  <dialog
+    aria-labelledby="{modalId}-label"
+    id={modalId}
+    class="fr-modal"
+    onblur={() => onCommentChange(innerComment)}
+    onkeydown={(e) => {
+      if (e.key === 'Escape') {
+        onCommentChange(innerComment)
+      }
+    }}
+  >
+    <div class="fr-container fr-container--fluid fr-container-md">
+      <div class="fr-grid-row fr-grid-row--center">
+        <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
+          <div class="fr-modal__body">
+            <div class="fr-modal__header">
               <button
+                class="fr-btn--close fr-btn"
+                title={m['closeModal']()}
                 aria-controls={modalId}
-                class="btn purple-btn"
                 onclick={() => onCommentChange(innerComment)}
               >
-                {m['words.send']()}
+                {m['words.close']()}
               </button>
+            </div>
+            <div class="fr-modal__content">
+              <p id="{modalId}-label" class="modal-title">{m['vote.comment.add']()}</p>
+              <div>
+                <textarea
+                  placeholder={m['vote.comment.placeholder']({ model })}
+                  class="fr-input"
+                  rows="4"
+                  bind:value={innerComment}
+                ></textarea>
+                <button
+                  aria-controls={modalId}
+                  class="btn purple-btn"
+                  onclick={() => onCommentChange(innerComment)}
+                >
+                  {m['words.send']()}
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-</dialog>
+  </dialog>
+{/if}
 
 <style>
   .thumb-icon {
