@@ -82,6 +82,7 @@ with gr.Blocks(
             show_copy_button=True,
             # autoscroll=True
         )
+        reaction_json = gr.JSON(visible=False)
         
         with gr.Column(
             # h-screen
