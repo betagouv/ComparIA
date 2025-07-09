@@ -27,7 +27,8 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
-    available_models
+    available_models,
+    reaction_json
 )
 import traceback
 import os
@@ -823,10 +824,48 @@ window.scrollTo({
         show_progress="hidden",
     )
 
+    @gr.on(
+        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [reaction_json],
+        outputs=[app_state],
+        api_name="chatbot_react",
+        show_progress="hidden",
+    )
+    def record_like_json(
+        app_state_scoped,
+        conv_a_scoped,
+        conv_b_scoped,
+        chatbot,
+        reaction_json,
+        request: gr.Request,
+    ):
+        # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
+        # TODO: or just create another event type like "Event.react"
+        if "comment" in reaction_json:
+            app_state_scoped.reactions[reaction_json["index"]]["comment"] = reaction_json[
+                "comment"
+            ]
+        else:
+            while len(app_state_scoped.reactions) <= reaction_json["index"]:
+                app_state_scoped.reactions.extend([None])
+            app_state_scoped.reactions[reaction_json["index"]] = reaction_json
+
+        sync_reactions(
+            conv_a_scoped,
+            conv_b_scoped,
+            chatbot,
+            # chatbot.messages,
+            app_state_scoped.reactions,
+            request=request,
+        )
+        return app_state_scoped
+
+
+
+
     @chatbot.like(
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
         outputs=[app_state],
-        api_name="chatbot_react",
+        api_name=False,
         show_progress="hidden",
     )
     def record_like(
