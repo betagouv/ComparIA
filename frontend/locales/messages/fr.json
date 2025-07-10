@@ -59,6 +59,26 @@
       }
     }
   },
+  "chatbot": {
+    "continuePrompt": "Continuer à discuter avec les deux modèles d'IA",
+    "revealButton": "Passer à la révélation des modèles",
+    "conversation": "Conversation",
+    "errors": {
+      "tooLong": {
+        "title": "Oups, la conversation est trop longue pour un des modèles.",
+        "message": "Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.",
+        "vote": "Vous pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation avec deux nouveaux.",
+        "retry": "Vous pouvez recommencer une conversation avec deux nouveaux modèles."
+      },
+      "other": {
+        "title": "Oups, erreur temporaire",
+        "message": "Une erreur temporaire est survenue.",
+        "vote": "Ou bien conclure votre expérience en donnant votre avis sur les modèles.",
+        "retry": "Vous pouvez tenter de réessayer de solliciter les modèles."
+      }
+    },
+    "loading": "Chargement des réponses"
+  },
   "closeModal": "Fermer la fenêtre modale",
   "models": {
     "licenses": {
@@ -135,6 +155,20 @@
       "question": "Comment qualifiez-vous ses réponses ?",
       "placeholder": "Les réponses du modèle {model} sont...",
       "addDetails": "Ajouter des détails"
+    },
+    "like": {
+      "label": "j'apprécie",
+      "selectedLabel": "j'apprécie (sélectionné)"
+    },
+    "dislike": {
+      "label": "je n'apprécie pas",
+      "selectedLabel": "je n'apprécie pas (sélectionné)"
+    }
+  },
+  "actions": {
+    "copyMessage": {
+      "do": "Copier le message",
+      "done": "Message copié"
     }
   },
   "words": {
@@ -142,6 +176,8 @@
     "close": "Fermer",
     "random": "Aléatoire",
     "regenerate": "Regénérer",
+    "restart": "Recommencer",
+    "retry": "Recommencer",
     "send": "Envoyer",
     "validate": "Valider"
   }

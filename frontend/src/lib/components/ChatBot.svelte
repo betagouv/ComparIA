@@ -9,6 +9,7 @@
   import { onMount, tick } from 'svelte'
   import MessageBot from './MessageBot.svelte'
   import MessageUser from './MessageUser.svelte'
+  import { m } from '$lib/i18n/messages'
 
   export let value: NormalisedMessage[] = []
   $: value
@@ -147,7 +148,7 @@
   class={layout === 'bubble' ? 'bubble-wrap' : 'panel-wrap'}
   bind:this={div}
   role="log"
-  aria-label="chatbot conversation"
+  aria-label={m['chatbot.conversation']()}
   aria-live="polite"
 >
   {#if value !== null && value.length > 0 && groupedMessages !== null}
@@ -183,36 +184,38 @@
     <div class="fr-py-4w fr-mb-4w error rounded-tile fr-container">
       {#if errorString == 'Context too long.'}
         <h5>
-          <span class="fr-icon-warning-fill" aria-hidden="true"></span> Oups, la conversation est trop
-          longue pour un des modèles
+          <span class="fr-icon-warning-fill" aria-hidden="true"></span>
+          {m['chatbot.errors.tooLong.title']()}
         </h5>
         <p>
-          Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.{#if groupedMessages.length > 1}&nbsp;Vous
-            pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation
-            avec deux nouveaux.{:else}
-            &nbsp;Vous pouvez recommencer une conversation avec deux nouveaux modèles.
-          {/if}
+          {m['chatbot.errors.tooLong.message']()}&nbsp;{m[
+            `chatbot.errors.tooLong.${groupedMessages.length > 1 ? 'vote' : 'retry'}`
+          ]()}
         </p>
         <p class="text-center">
           <!-- TODO: icone Recommencer -->
-          <a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank">Recommencer</a>
+          <a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank"
+            >{m['words.restart']()}</a
+          >
           <!-- TODO: Bouton "donner son avis" -->
         </p>
       {:else}
         <h3>
-          <span class="fr-icon-warning-fill" aria-hidden="true"></span> Oups, erreur temporaire
+          <span class="fr-icon-warning-fill" aria-hidden="true"></span>
+          {m['chatbot.errors.other.title']()}
         </h3>
         <p>
-          Une erreur temporaire est survenue.<br />
-          Vous pouvez tenter de réessayer de solliciter les modèles{#if groupedMessages.length > 1}&nbsp;ou
-            bien conclure votre expérience en donnant votre avis sur les modèles{/if}.
+          {m['chatbot.errors.other.message']()}<br />
+          {m['chatbot.errors.other.retry']()}{#if groupedMessages.length > 1}&nbsp;{m[
+              'chatbot.errors.other.vote'
+            ]()}{/if}.
           <span class="hidden">{errorString}</span>
         </p>
         <p class="text-center">
           <button
             class="fr-btn purple-btn"
             on:click={() => handle_retry_last()}
-            disabled={generating || disabled}>Réessayer</button
+            disabled={generating || disabled}>{m['words.retry']}</button
           >
         </p>
       {/if}

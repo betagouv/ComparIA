@@ -1,8 +1,12 @@
+<script>
+    import { m } from "$lib/i18n/messages"
+</script>
+
 <div class="pending" role="status" aria-label="Loading response" aria-live="polite">
   <span class="sr-only">Loading content</span>
   <div class="disc left"></div>
   <div class="disc right"></div>
-  <div class="message-pending"><strong>Chargement des réponses</strong></div>
+  <div class="message-pending"><strong>{m["chatbot.loading"]()}</strong></div>
 </div>
 
 <style>

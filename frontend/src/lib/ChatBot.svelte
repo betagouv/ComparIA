@@ -3,6 +3,7 @@
   import ChatBot from '$lib/components/ChatBot.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import VoteArea, { type VoteData } from '$lib/components/VoteArea.svelte'
+  import { m } from '$lib/i18n/messages'
   import type { ExtendedLikeData } from '$lib/types'
   import type { UndoRetryData } from '$lib/utils'
 
@@ -85,8 +86,8 @@
       <TextPrompt
         id="chatbot-prompt"
         bind:value={prompt}
-        label="Continuer à discuter avec les deux modèles d'IA"
-        placeholder="Continuer à discuter avec les deux modèles d'IA"
+        label={m['chatbot.continuePrompt']()}
+        placeholder={m['chatbot.continuePrompt']()}
         hideLabel
         rows={2}
         maxRows={4}
@@ -101,13 +102,13 @@
         class="btn purple-btn md:self-end"
         onclick={onPromptSubmit}
       >
-        Envoyer
+        {m['words.send']()}
       </button>
     </div>
   {/if}
 
   <button disabled={revealDisabled} class="btn purple-btn w-full md:w-fit" onclick={onRevealModels}>
-    Passer à la révélation des modèles
+    {m['chatbot.revealButton']()}
   </button>
 </div>
 

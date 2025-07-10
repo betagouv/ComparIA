@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconButton from '$lib/components/IconButton.svelte'
+  import { m } from '$lib/i18n/messages'
   import CopyIcon from '$lib/icons/CopyIcon.svelte'
   import { Check } from '@gradio/icons'
   import { onDestroy } from 'svelte'
@@ -48,6 +49,6 @@
 
 <IconButton
   on:click={handle_copy}
-  label={copied ? 'Message copié' : 'Copier le message'}
+  label={m[`actions.copyMessage.${copied ? 'done' : 'do'}`]()}
   Icon={copied ? Check : CopyIcon}
 />

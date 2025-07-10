@@ -4,6 +4,7 @@
   import LikePanel from '$lib/components/LikePanel.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
   import Pending from '$lib/components/Pending.svelte'
+  import { m } from '$lib/i18n/messages'
   import type { NormalisedMessage } from '$lib/types'
   import { noop } from '$lib/utils/commons'
 
@@ -62,7 +63,7 @@
     <div>
       <div class="mb-5 flex items-center">
         <div class="c-bot-disk-{bot}"></div>
-        <h3 class="mb-0! ms-1!">{bot === 'a' ? 'Modèle A' : 'Modèle B'}</h3>
+        <h3 class="mb-0! ms-1!">{m[`models.names.${bot}`]()}</h3>
       </div>
 
       <Markdown message={message.content} chatbot on:load={onLoad} />

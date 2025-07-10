@@ -1,5 +1,6 @@
 <script lang="ts">
   import IconButton from '$lib/components/IconButton.svelte'
+  import { m } from '$lib/i18n/messages'
   import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
   import ThumbDownDefault from '$lib/icons/ThumbDownDefault.svelte'
   import ThumbDownDisabled from '$lib/icons/ThumbDownDisabled.svelte'
@@ -20,7 +21,7 @@
   {disabled}
   border={true}
   Icon={disabled ? ThumbUpDisabled : selected === 'like' ? ThumbUpActive : ThumbUpDefault}
-  label={selected === 'like' ? "j'apprécie (sélectionné)" : "j'apprécie"}
+  label={m[`vote.like.${selected === 'like' ? 'selectedLabel': 'label'}`]()}
   highlight={selected === 'like'}
   on:click={() => {
     if (selected === 'like') {
@@ -37,7 +38,7 @@
   {disabled}
   border={true}
   Icon={disabled ? ThumbDownDisabled : selected === 'dislike' ? ThumbDownActive : ThumbDownDefault}
-  label={selected === 'dislike' ? "je n'apprécie pas (sélectionné)" : "je n'apprécie pas"}
+  label={m[`vote.dislike.${selected === 'dislike' ? 'selectedLabel': 'label'}`]()}
   highlight={selected === 'dislike'}
   on:click={() => {
     if (selected === 'dislike') {
