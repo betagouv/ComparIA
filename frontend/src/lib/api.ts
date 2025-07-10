@@ -4,7 +4,7 @@ import { Client } from '@gradio/client'
 
 export const api = {
   // FIXME connect to client only once?
-  url: PUBLIC_API_URL,
+  url: PUBLIC_API_URL || '/api',
   client: undefined as Client | undefined,
 
   async _connect() {
