@@ -7,10 +7,13 @@
   import ThumbUpDefault from '$lib/icons/ThumbUpDefault.svelte'
   import ThumbUpDisabled from '$lib/icons/ThumbUpDisabled.svelte'
 
-  export let onLikeDislikeSelected: (selected: 'like' | 'dislike' | null) => void
-  export let disabled = false
+  let {
+    onLikeDislikeSelected,
+    disabled = false
+  }: { onLikeDislikeSelected: (selected: 'like' | 'dislike' | null) => void; disabled?: boolean } =
+    $props()
 
-  let selected: 'like' | 'dislike' | null = null
+  let selected: 'like' | 'dislike' | null = $state(null)
 </script>
 
 <IconButton
