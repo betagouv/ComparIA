@@ -5,13 +5,15 @@ import { Client } from '@gradio/client'
 export const api = {
   // FIXME connect to client only once?
   url: PUBLIC_API_URL,
+  client: undefined as Client | undefined,
 
-  async connect() {
+  async _connect() {
+    if (this.client) return this.client
     console.debug('Connecting to Gradio at:', this.url)
     try {
-      const client = await Client.connect(this.url)
+      this.client = await Client.connect(this.url)
       console.debug('Successfully connected to Gradio')
-      return client
+      return this.client
     } catch (error) {
       console.error('Failed to connect to Gradio:', error)
       throw error
@@ -23,7 +25,7 @@ export const api = {
     console.debug(`Submitting Gradio job '${uri}' with params:`, params)
 
     try {
-      const client = await this.connect()
+      const client = await this._connect()
       const result = await client.submit(uri, params)
       console.debug('Gradio job submitted successfully')
       return result
@@ -40,7 +42,7 @@ export const api = {
     console.debug(`Predicting Gradio job '${uri}' with params:`, params)
 
     try {
-      const client = await this.connect()
+      const client = await this._connect()
       const result = await client.predict(uri, params)
       console.debug('Gradio job predicted successfully')
       return result
