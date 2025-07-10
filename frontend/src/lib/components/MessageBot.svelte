@@ -3,6 +3,7 @@
   import LikeDislike from '$lib/components/LikeDislike.svelte'
   import LikePanel from '$lib/components/LikePanel.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
+  import Pending from '$lib/components/Pending.svelte'
   import type { NormalisedMessage } from '$lib/types'
   import { noop } from '$lib/utils/commons'
 
@@ -65,6 +66,10 @@
       </div>
 
       <Markdown message={message.content} chatbot on:load={onLoad} />
+
+      {#if generating}
+        <Pending />
+      {/if}
     </div>
 
     <div class="mt-auto flex">
