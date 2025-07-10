@@ -5,6 +5,8 @@
   import { state } from '$lib/state.svelte'
   import { onMount } from 'svelte'
 
+  let { data } = $props()
+
   onMount(async () => {
     // FIXME import only modal? Or create custom component
     // @ts-ignore - DSFR module import
@@ -17,7 +19,7 @@
 </script>
 
 {#if state.currentScreen === 'initial'}
-  <DropDown {onSubmit} />
+  <DropDown {onSubmit} models={data.models} />
 {:else}
   <ChatBot></ChatBot>
 {/if}
