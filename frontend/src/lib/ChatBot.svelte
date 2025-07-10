@@ -2,6 +2,7 @@
   import { chatbot } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
+  import VoteArea, { type VoteData } from '$lib/components/VoteArea.svelte'
   import type { ExtendedLikeData } from '$lib/types'
   import type { UndoRetryData } from '$lib/utils'
 
@@ -14,10 +15,31 @@
   }[] = []
   let placeholder: string | null = null
 
+  let step = $state<'chat' | 'vote' | 'reveal'>('chat')
   let prompt = $state('')
+  let canVote = $state<boolean | null>(true)
+  let voteData = $state<VoteData>({
+    selected: undefined,
+    a: {
+      like: [],
+      dislike: [],
+      comment: ''
+    },
+    b: {
+      like: [],
+      dislike: [],
+      comment: ''
+    }
+  })
+
+  const chatbotDisabled = $derived(chatbot.status !== 'complete' || step !== 'chat')
+  const revealDisabled = $derived(
+    chatbot.status !== 'complete' || (step === 'vote' && voteData.selected === undefined)
+  )
 
   function onLike(data: ExtendedLikeData) {
     console.log('onLike', data)
+    canVote = false
   }
 
   function onRetry(data: UndoRetryData) {
@@ -30,12 +52,17 @@
 
   function onRevealModels() {
     console.log('revealModels')
+    if (canVote === false || step === 'vote') {
+      step = 'reveal'
+    } else {
+      step = 'vote'
+    }
   }
 </script>
 
 <div id="chat-area">
   <ChatBot
-    disabled={chatbot.status !== 'complete'}
+    disabled={chatbotDisabled}
     show_copy_all_button={false}
     value={chatbot.messages}
     pending_message={chatbot.status === 'pending'}
@@ -48,36 +75,38 @@
   />
 </div>
 
+{#if step === 'vote'}
+  <VoteArea bind:value={voteData} />
+{/if}
+
 <div id="send-area" class="flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]">
-  <div class="flex w-full flex-col gap-3 md:flex-row">
-    <TextPrompt
-      id="chatbot-prompt"
-      bind:value={prompt}
-      label="Continuer à discuter avec les deux modèles d'IA"
-      placeholder="Continuer à discuter avec les deux modèles d'IA"
-      hideLabel
-      rows={2}
-      maxRows={4}
-      autofocus
-      onSubmit={onPromptSubmit}
-      class="mb-0! w-full"
-    />
+  {#if step === 'chat'}
+    <div class="flex w-full flex-col gap-3 md:flex-row">
+      <TextPrompt
+        id="chatbot-prompt"
+        bind:value={prompt}
+        label="Continuer à discuter avec les deux modèles d'IA"
+        placeholder="Continuer à discuter avec les deux modèles d'IA"
+        hideLabel
+        rows={2}
+        maxRows={4}
+        autofocus
+        onSubmit={onPromptSubmit}
+        class="mb-0! w-full"
+      />
 
-    <button
-      id="send-btn"
-      disabled={chatbot.status !== 'complete' || prompt === ''}
-      class="btn purple-btn md:self-end"
-      onclick={onPromptSubmit}
-    >
-      Envoyer
-    </button>
-  </div>
+      <button
+        id="send-btn"
+        disabled={chatbot.status !== 'complete' || prompt === ''}
+        class="btn purple-btn md:self-end"
+        onclick={onPromptSubmit}
+      >
+        Envoyer
+      </button>
+    </div>
+  {/if}
 
-  <button
-    disabled={chatbot.status !== 'complete'}
-    class="btn purple-btn w-full md:w-fit"
-    onclick={onRevealModels}
-  >
+  <button disabled={revealDisabled} class="btn purple-btn w-full md:w-fit" onclick={onRevealModels}>
     Passer à la révélation des modèles
   </button>
 </div>
