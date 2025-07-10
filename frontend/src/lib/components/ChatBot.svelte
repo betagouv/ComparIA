@@ -215,7 +215,7 @@
           <button
             class="fr-btn purple-btn"
             on:click={() => handle_retry_last()}
-            disabled={generating || disabled}>{m['words.retry']}</button
+            disabled={generating || disabled}>{m['words.retry']()}</button
           >
         </p>
       {/if}

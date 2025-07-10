@@ -57,10 +57,10 @@
           class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
         >
           {distribution == 'api-only'
-            ? m['models.licenses.proprietary']
+            ? m['models.licenses.proprietary']()
             : fully_open_source
-              ? m['models.licenses.openSource']
-              : m['models.licenses.semiOpen']}
+              ? m['models.licenses.openSource']()
+              : m['models.licenses.semiOpen']()}
         </span>
         {#if release_date}
           <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">
