@@ -1,17 +1,20 @@
 import { env } from '$env/dynamic/public'
 import { state } from '$lib/state.svelte'
-import { Client } from '@gradio/client'
+// import { Client } from '@gradio/client'
 
 export const api = {
   // FIXME connect to client only once?
   url: env.PUBLIC_API_URL || '/api',
-  client: undefined as Client | undefined,
+  client: {
+    submit: () => {},
+    predict: () => {}
+  },
 
   async _connect() {
     if (this.client) return this.client
     console.debug('Connecting to Gradio at:', this.url)
     try {
-      this.client = await Client.connect(this.url)
+      // this.client = await Client.connect(this.url)
       console.debug('Successfully connected to Gradio')
       return this.client
     } catch (error) {
