@@ -1,9 +1,10 @@
+import { PUBLIC_API_URL } from '$env/static/public'
 import { state } from '$lib/state.svelte'
 import { Client } from '@gradio/client'
 
 export const api = {
   // FIXME connect to client only once?
-  url: 'http://localhost:7860/',
+  url: PUBLIC_API_URL,
 
   async connect() {
     console.debug('Connecting to Gradio at:', this.url)
