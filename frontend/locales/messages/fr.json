@@ -1,4 +1,35 @@
 {
+  "header": {
+    "title": {
+      "compar": "compar",
+      "ia": "IA"
+    },
+    "subtitle": "Le comparateur d’IA&nbsp;conversationnelles",
+    "help": {
+      "link": {
+        "title": "Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre",
+        "content": "Nous aider à améliorer compar:IA"
+      }
+    },
+    "chatbot": {
+      "step": "Étape",
+      "stepOne": {
+        "title": "Que pensez-vous des réponses ?",
+        "description": "Prêtez attention au fond et à la forme puis évaluez chaque réponse"
+      },
+      "stepTwo": {
+        "title": "Les modèles sont démasqués !",
+        "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle"
+      },
+      "vote": {
+        "total": "Total des votes",
+        "objective": "Objectif : ",
+        "legend": "Légende",
+        "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
+      },
+      "newDiscussion": "Nouvelle discussion"
+    }
+  },
   "arenaHome": {
     "title": "Comment puis-je vous aider aujourd'hui ?",
     "modelSelection": "Sélection des modèles",

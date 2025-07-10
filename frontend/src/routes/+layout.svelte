@@ -1,6 +1,8 @@
 <script lang="ts">
   import IconModel from '$lib/components/IconModel.svelte'
+  import { m } from '$lib/i18n/messages'
   import { modeInfos, state } from '$lib/state.svelte'
+  import { sanitize } from '@gradio/sanitize'
   import '../app.css'
 
   let { children } = $props()
@@ -32,11 +34,13 @@
           </div>
           <div class="fr-col-6 fr-col-lg-12">
             <a href="/" title="Accueil - compar:IA" target="_blank">
-              <p class="fr-header__service-title">compar:IA</p>
+              <p class="fr-header__service-title">
+                {m['header.title.compar']()}:{m['header.title.ia']()}
+              </p>
             </a>
 
             <span class="fr-header__service-tagline">
-              Le comparateur d’IA&nbsp;conversationnelles
+              {m['header.subtitle']()}
             </span>
           </div>
           <!-- <div class="fr-header__navbar fr-col-2">
@@ -48,23 +52,23 @@
         {#if state.currentScreen === 'initial'}
           <div class="md-visible fr-header__tools fr-col-12 fr-col-lg-4 fr-p-2w hidden">
             <a
-              title="Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre"
+              title={m['header.help.link.title']()}
               href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX"
               target="_blank"
               rel="noopener external"
               class="fr-link fr-icon-pencil-line fr-link--icon-left"
             >
-              Nous aider à améliorer compar:IA
+              {m['header.help.link.content']()}
             </a>
           </div>
         {:else}
           <div class=" fr-header__tools fr-col-12 fr-col-lg-6 fr-p-md-2w md-visible hidden">
             <div class="fr-container--fluid counter">
               <span class="fr-ml-1w legende">
-                Total des votes&nbsp;<a
+                {m['header.chatbot.vote.total']()}&nbsp;<a
                   aria-describedby="gauge"
                   href="#gauge"
-                  aria-label="Légende"
+                  aria-label={m['header.chatbot.vote.legend']()}
                   class="fr-icon fr-icon--xs fr-icon--question-line"
                 ></a>
               </span>
@@ -73,17 +77,10 @@
                   <span class="votes">{votes?.count}</span>
                 </div>
               </div>
-              <span class="objectif">Objectif : {votes?.objective}</span>
+              <span class="objectif">{m['header.chatbot.vote.objective']()}{votes?.objective}</span>
             </div>
             <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">
-              Discutez, votez et aidez-nous à atteindre cet objectif !<br />
-              <strong>Vos votes sont importants</strong> : ils alimentent le jeu de données
-              compar:IA mis à disposition librement pour affiner les prochains modèles sur le
-              français.<br />
-              Ce commun numérique contribue au meilleur
-              <strong>
-                respect de la diversité linguistique et culturelle des futurs modèles de langue.
-              </strong>
+              {@html sanitize(m['header.chatbot.vote.tooltip']())}
             </span>
           </div>
         {/if}
@@ -97,24 +94,25 @@
     <div class="fr-mb-0 fr-container fr-grid-row">
       <div class="fr-col-12 fr-col-md-8 align-center column md-row flex">
         <div>
-          <span class="step-badge fr-mt-md-0 fr-mb-md-0 fr-mt-1w fr-mb-3v"
-            >Étape {state.step}/2</span
-          >
+          <span class="step-badge fr-mt-md-0 fr-mb-md-0 fr-mt-1w fr-mb-3v">
+            {m['header.chatbot.step']()}
+            {state.step}/2
+          </span>
         </div>
         <p class="fr-ml-1w fr-mb-md-0 fr-mb-md-1v md-text-left text-center">
           <strong class="text-dark-grey">
             {#if state.step == 1}
-              Que pensez-vous des réponses ?
+              {m['header.chatbot.stepOne.title']()}
             {:else}
-              Les modèles sont démasqués !
+              {m['header.chatbot.stepTwo.title']()}
             {/if}
           </strong>
           <br />
           <span class="text-grey fr-text--xs">
             {#if state.step == 1}
-              Prêtez attention au fond et à la forme puis évaluez chaque réponse
+              {m['header.chatbot.stepOne.description']()}
             {:else}
-              Découvrez l’impact environnemental de vos discussions avec chaque modèle
+              {m['header.chatbot.stepTwo.description']()}
             {/if}
           </span>
         </p>
@@ -135,8 +133,10 @@
             <a
               class="btn purple-btn md-visible hidden"
               href="../arene/?cgu_acceptees"
-              target="_blank">Nouvelle discussion</a
+              target="_blank"
             >
+              {m['header.chatbot.newDiscussion']()}
+            </a>
           </div>
         {/if}
       </div>
