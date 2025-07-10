@@ -542,7 +542,8 @@ def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as dsn
-
+    cursor = None
+    conn = None
     result = 55000
     logger = logging.getLogger("languia")
     if not dsn:
