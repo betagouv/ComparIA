@@ -1,6 +1,7 @@
 <script lang="ts">
   import IconModel from '$lib/components/IconModel.svelte'
   import { m } from '$lib/i18n/messages'
+  import { setLocale } from '$lib/i18n/runtime'
   import { modeInfos, state } from '$lib/state.svelte'
   import { sanitize } from '@gradio/sanitize'
   import '../app.css'
@@ -84,6 +85,11 @@
             </span>
           </div>
         {/if}
+        
+        <div class="translate">
+          <button onclick={() => setLocale('en')}>EN</button>
+          <button onclick={() => setLocale('fr')}>FR</button>
+        </div>
       </div>
     </div>
   </div>
