@@ -84,7 +84,6 @@ export async function runChatBots(args: ModeAndPromptData) {
     chatbot.status = 'streaming'
 
     for await (const message of job) {
-      console.log('msg', message)
       if (message.type === 'data') {
         chatbot.status = 'generating'
         const messages = parseGradioResponse(message as GradioResponse)
@@ -98,4 +97,25 @@ export async function runChatBots(args: ModeAndPromptData) {
   }
 
   return chatbot.status
+}
+
+export async function askChatBots(text: string) {
+  chatbot.status = 'pending'
+
+  try {
+    const job = await api.submit('/add_text', { text })
+    chatbot.status = 'streaming'
+
+    for await (const message of job) {
+      if (message.type === 'data') {
+        chatbot.status = 'generating'
+        const messages = parseGradioResponse(message as GradioResponse)
+        chatbot.messages = update_messages(messages, chatbot.messages, chatbot.root)
+      }
+    }
+    chatbot.status = 'complete'
+  } catch (error) {
+    console.error('Error:', error)
+    chatbot.status = 'error'
+  }
 }

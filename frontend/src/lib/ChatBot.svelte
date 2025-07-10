@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { chatbot } from '$lib/chatService.svelte'
+  import { askChatBots, chatbot } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import VoteArea, { type VoteData } from '$lib/components/VoteArea.svelte'
@@ -47,8 +47,9 @@
     console.log('onRetry', data)
   }
 
-  function onPromptSubmit() {
+  async function onPromptSubmit() {
     console.log('onPromptSubmit', prompt)
+    await askChatBots(prompt)
   }
 
   function onRevealModels() {
