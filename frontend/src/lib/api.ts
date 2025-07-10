@@ -1,10 +1,10 @@
-import { PUBLIC_API_URL } from '$env/static/public'
+import { env } from '$env/dynamic/public'
 import { state } from '$lib/state.svelte'
 import { Client } from '@gradio/client'
 
 export const api = {
   // FIXME connect to client only once?
-  url: PUBLIC_API_URL || '/api',
+  url: env.PUBLIC_API_URL || '/api',
   client: undefined as Client | undefined,
 
   async _connect() {
