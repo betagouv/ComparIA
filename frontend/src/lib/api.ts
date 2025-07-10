@@ -32,5 +32,22 @@ export const api = {
     } finally {
       state.loading = false
     }
+  },
+
+  async predict(uri: string, params: any = {}) {
+    state.loading = true
+    console.debug(`Predicting Gradio job '${uri}' with params:`, params)
+
+    try {
+      const client = await this.connect()
+      const result = await client.predict(uri, params)
+      console.debug('Gradio job predicted successfully')
+      return result
+    } catch (error) {
+      console.error('Failed to predict Gradio job:', error)
+      throw error
+    } finally {
+      state.loading = false
+    }
   }
 }
