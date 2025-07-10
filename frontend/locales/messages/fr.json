@@ -4,7 +4,7 @@
       "compar": "compar",
       "ia": "IA"
     },
-    "subtitle": "Le comparateur d’IA&nbsp;conversationnelles",
+    "subtitle": "Le comparateur d’IA conversationnelles",
     "help": {
       "link": {
         "title": "Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre",
@@ -52,7 +52,7 @@
       "choices": {
         "iasummit": {
           "iconAlt": "Sommet pour l'action sur l'IA",
-          "title": "Prompts issus de la consultation citoyenne sur l’IA&nbsp;",
+          "title": "Prompts issus de la consultation citoyenne sur l’IA ",
           "tooltip": "Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies."
         },
         "ideas": {
@@ -117,9 +117,9 @@
       "openSource": "Open source",
       "semiOpen": "Semi-ouvert"
     },
-    "release": "Sortie&nbsp;{date}",
-    "size": "Taille&nbsp;estimée&nbsp;({size})",
-    "parameters": "{number}&nbsp;mds&nbsp;paramètres",
+    "release": "Sortie {date}",
+    "size": "Taille estimée ({size})",
+    "parameters": "{number} mds paramètres",
     "names": {
       "a": "Modèle A",
       "b": "Modèle B"
