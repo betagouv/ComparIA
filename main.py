@@ -49,8 +49,8 @@ demo.run_startup_events()
 app = gr.mount_gradio_app(
     app,
     demo,
-    path="/arene",
-    root_path="/arene",
+    path="/api",
+    root_path="/api",
     # allowed_paths=[config.assets_absolute_path],
     allowed_paths=[
         config.assets_absolute_path,
