@@ -1,1 +1,141 @@
-{}
+{
+  "arenaHome": {
+    "title": "How can I help you today?",
+    "modelSelection": "Model selection",
+    "prompt": {
+      "label": "Write your first message",
+      "placeholder": "Write your first message here"
+    },
+    "selectModels": {
+      "question": "Which models would you like to compare?",
+      "help": "Choose the comparison mode"
+    },
+    "compareModels": {
+      "question": "Which models would you like to compare?",
+      "count": "{count}/2 models",
+      "help": "If you only choose one, the second will be selected randomly"
+    },
+    "suggestions": {
+      "title": "Suggested prompts",
+      "generateAnother": "Generate another prompt",
+      "choices": {
+        "iasummit": {
+          "iconAlt": "AI Action Summit",
+          "title": "Prompts from a citizen consultation on AI",
+          "tooltip": "These questions are the outcomes of a citizen consultation on AI held from 09/16/2024 to 11/08/2024. It aimed to broadly involve citizens and civil society in the AI Action Summit, gathering their ideas on how to make AI an opportunity for all, while limiting misuse or abuse."
+        },
+        "ideas": {
+          "iconAlt": "Ideas",
+          "title": "Generate new ideas"
+        },
+        "explanations": {
+          "iconAlt": "Explanation",
+          "title": "Explain a concept"
+        },
+        "languages": {
+          "iconAlt": "Translation",
+          "title": "Write in another language"
+        },
+        "administrative": {
+          "iconAlt": "Administrative",
+          "title": "Write an administrative document"
+        },
+        "recipes": {
+          "iconAlt": "Cooking",
+          "title": "Show me new recipes"
+        },
+        "coach": {
+          "iconAlt": "Advice",
+          "title": "Give me advice on health and fitness"
+        },
+        "stories": {
+          "iconAlt": "Stories",
+          "title": "Tell me a story"
+        },
+        "recommendations": {
+          "iconAlt": "Recommendations",
+          "title": "Suggest films, books, music"
+        }
+      }
+    }
+  },
+  "closeModal": "Close the popup",
+  "models": {
+    "licenses": {
+      "proprietary": "Proprietary",
+      "openSource": "Open source",
+      "semiOpen": "Semi-open"
+    },
+    "release": "Released on {date}",
+    "size": "Estimated size ({size})",
+    "parameters": "{number} parameters",
+    "names": {
+      "a": "Model A",
+      "b": "Model B"
+    }
+  },
+  "modes": {
+    "random": {
+      "title": "Random mode",
+      "label": "Random",
+      "altLabel": "Random model selection",
+      "description": "Two models chosen randomly from the full list"
+    },
+    "custom": {
+      "title": "Manual selection mode",
+      "label": "Manual selection",
+      "altLabel": "Manual model selection",
+      "description": "Will you recognize the two models you chose?"
+    },
+    "small-models": {
+      "title": "Frugal mode",
+      "label": "Frugal",
+      "altLabel": "Frugal model selection",
+      "description": "Two small models chosen randomly"
+    },
+    "big-vs-small": {
+      "title": "David vs Goliath mode",
+      "label": "David vs Goliath",
+      "altLabel": "David vs Goliath model selection",
+      "description": "One small model against one big model, both chosen randomly"
+    },
+    "reasoning": {
+      "title": "Reasoning mode",
+      "label": "Reasoning",
+      "altLabel": "Reasoning model selection",
+      "description": "Two reasoning models chosen randomly"
+    }
+  },
+  "vote": {
+    "title": "Which AI model do you prefer",
+    "bothEqual": "Both are equally good",
+    "comment": {
+      "add": "Add comments",
+      "placeholder": "You can add details about model {model}'s response"
+    },
+    "choices": {
+      "positive": {
+        "question": "What did you like about the answer?",
+        "useful": "Useful",
+        "complete": "Complete",
+        "creative": "Creative",
+        "clear-formatting": "Clear formatting"
+      },
+      "negative": {
+        "question": "Why did you not like the answer",
+        "incorrect": "Incorrect",
+        "superficial": "Superficial",
+        "instructions-not-followed": "Instructions not followed"
+      },
+      "altText": "{choice} for model {model}"
+    }
+  },
+  "words": {
+    "back": "Back",
+    "close": "Close",
+    "random": "Random",
+    "regenerate": "Regenerate",
+    "send": "Send",
+    "validate": "Validate"
+  }
+}
