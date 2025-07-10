@@ -11,6 +11,16 @@ export interface ModeAndPromptData {
   custom_models_selection: string[]
 }
 
+export interface APIVoteData {
+  which_model_radio_output: 'model-a' | 'model-b' | 'both-equal'
+  positive_a_output: string[]
+  positive_b_output: string[]
+  negative_a_output: string[]
+  negative_b_output: string[]
+  comments_a_output: string
+  comments_b_output: string
+}
+
 export interface Model {
   // [aya-expanse-8b]
   // simple_name = "Aya Expanse 8B"

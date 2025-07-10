@@ -377,10 +377,6 @@ li.fr-nav__item {
 
 /* VOTE AREA */
 
-#supervote-area input[type="checkbox"] {
-  display: none;
-}
-
 .checkboxes label span {
   margin-left: 0;
 }

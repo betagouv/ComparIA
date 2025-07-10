@@ -1,8 +1,9 @@
 <script lang="ts">
+  import type { APIVoteData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
 
   export interface VoteAreaProps {
-    value?: string | undefined
+    value?: APIVoteData['which_model_radio_output']
     disabled?: boolean
   }
 
@@ -18,7 +19,7 @@
 <fieldset id="vote-cards" aria-labelledby="vote-cards-legend">
   <legend class="sr-only" id="vote-cards-legend">{m['vote.title']()}</legend>
 
-  <div class="grid grid-cols-3 auto-rows-max md:flex md:justify-center gap-5">
+  <div class="grid auto-rows-max grid-cols-3 gap-5 md:flex md:justify-center">
     {#each choices as { value, label }, i (value)}
       <div class="h-full">
         <input

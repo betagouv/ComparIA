@@ -108,6 +108,8 @@
   },
   "vote": {
     "title": "Quel modèle d’IA préférez-vous ?",
+    "introA": "Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.",
+    "introB": "Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français",
     "bothEqual": "Les deux se valent",
     "comment": {
       "add": "Ajouter des commentaires",
@@ -128,6 +130,11 @@
         "instructions-not-followed": "Instructions non suivies"
       },
       "altText": "{choice} pour le modèle {model}"
+    },
+    "qualify": {
+      "question": "Comment qualifiez-vous ses réponses ?",
+      "placeholder": "Les réponses du modèle {model} sont...",
+      "addDetails": "Ajouter des détails"
     }
   },
   "words": {

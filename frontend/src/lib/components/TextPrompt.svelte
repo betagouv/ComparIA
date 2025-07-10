@@ -13,7 +13,7 @@
     autoscroll?: boolean
     el?: HTMLTextAreaElement
     class?: string
-    onSubmit: (value: string) => void
+    onSubmit?: (value: string) => void
   } & Partial<Pick<HTMLTextAreaElement, 'disabled' | 'placeholder' | 'rows'>>
 
   let {

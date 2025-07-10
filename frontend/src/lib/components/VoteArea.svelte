@@ -1,158 +1,92 @@
 <script lang="ts">
-  import BaseRadio from '$lib/components/Radio.svelte'
-  import type { LoadingStatus } from '@gradio/statustracker'
-  import { StatusTracker } from '@gradio/statustracker'
-  import type { Gradio, SelectData } from '@gradio/utils'
+  import type { APIVoteData } from '$lib/chatService.svelte'
+  import { m } from '$lib/i18n/messages'
+  import LikePanel from './LikePanel.svelte'
+  import TextPrompt from './TextPrompt.svelte'
+  import VoteRadioGroup from './VoteRadioGroup.svelte'
 
-  export let gradio: Gradio<{
-    change: never
-    select: SelectData
-    input: never
-    clear_status: LoadingStatus
-  }>
-
-  // export let label = gradio.i18n("radio.radio");
-  // export let info: string | undefined = undefined;
-  export let elem_id = ''
-  export let elem_classes: string[] = []
-  export let visible = true
-  export let value: string | null = null
-  export let choices: string[] = []
-  // export let show_label = true;
-  // export let container = false;
-  // export let scale: number | null = null;
-  export let min_columns: number | undefined = 2
-  export let loading_status: LoadingStatus
-  export let interactive = true
-
-  let columns = Math.min(choices.length, 4) // max 4 columns
-
-  function handle_change(): void {
-    gradio.dispatch('change')
+  interface VoteDetails {
+    like: string[]
+    dislike: string[]
+    comment: string
   }
 
-  $: value, handle_change()
+  export interface VoteData {
+    selected?: APIVoteData['which_model_radio_output']
+    a: VoteDetails
+    b: VoteDetails
+  }
 
-  $: disabled = !interactive
+  let {
+    value: form = $bindable()
+  }: {
+    value: VoteData
+  } = $props()
+
+  let showComments = $state(false)
+
+  const onSelectionChange = (kind: 'like' | 'dislike', model: 'a' | 'b', selection: string[]) => {
+    form[model][kind] = selection
+  }
 </script>
 
-<div id={elem_id} class="flex justify-center {elem_classes} {visible ? '' : 'hide'}">
-  <StatusTracker
-    autoscroll={gradio.autoscroll}
-    i18n={gradio.i18n}
-    {...loading_status}
-    on:clear_status={() => gradio.dispatch('clear_status', loading_status)}
-  />
+<div id="vote-area" class="fr-container min-h-screen">
+  <div class="text-center">
+    <h4 class="mb-2!">{m['vote.title']()}</h4>
+    <p class="text-grey fr-text--sm">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
+  </div>
 
-  {#each choices as [display_value, internal_value], i (i)}
-    <BaseRadio
-      {display_value}
-      {internal_value}
-      bind:selected={value}
-      {disabled}
-      on:input={() => {
-        gradio.dispatch('select', { value: internal_value, index: i })
-        gradio.dispatch('input')
-      }}
-    />
-  {/each}
+  <VoteRadioGroup bind:value={form.selected} />
+
+  {#if form.selected}
+    <div class="mt-11 flex flex-col gap-6 md:flex-row">
+      {#each ['a', 'b'] as const as model (model)}
+        <div
+          class="c-border flex w-full flex-col gap-4 rounded-sm bg-white p-2 md:rounded-lg md:px-6 md:py-8"
+        >
+          <div class="flex items-center">
+            <div class="c-bot-disk-{model}"></div>
+            <p class="mb-0! ms-1! font-bold">{m[`models.names.${model}`]()}</p>
+          </div>
+
+          <p class="mb-0! font-bold">{m['vote.qualify.question']()}</p>
+
+          <LikePanel
+            show={true}
+            kind="like"
+            mode="vote"
+            model={model.toUpperCase()}
+            selection={form[model].like}
+            onSelectionChange={(e) => onSelectionChange('like', model, e)}
+          />
+          <LikePanel
+            show={true}
+            kind="dislike"
+            mode="vote"
+            model={model.toUpperCase()}
+            selection={form[model].dislike}
+            onSelectionChange={(e) => onSelectionChange('dislike', model, e)}
+          />
+
+          {#if showComments}
+            <TextPrompt
+              id="comment-{model}"
+              bind:value={form[model].comment}
+              label={m['vote.qualify.question']()}
+              placeholder={m['vote.qualify.placeholder']({ model: model.toUpperCase() })}
+              rows={3}
+            />
+          {/if}
+        </div>
+      {/each}
+    </div>
+
+    {#if !showComments}
+      <div class="mt-4 text-center">
+        <button class="link" onclick={() => (showComments = true)}>
+          {m['vote.qualify.addDetails']()}
+        </button>
+      </div>
+    {/if}
+  {/if}
 </div>
-
-<!-- TODO: this in svelte based on what's in customchatbot  -->
-<!-- with gr.Column(
-	# h-screen
-	visible=True,
-	elem_classes="fr-container min-h-screen fr-pt-4w",
-	elem_id="vote-area",
-) as vote_area:
-	
-	with gr.Row(
-		visible=False,
-		elem_id="supervote-area",
-		# FIXME: bottom margin too imprecise
-		elem_classes="fr-grid-row fr-grid-row--gutters gap-0 fr-mt-8w fr-mb-md-16w fr-mb-16w",
-	) as supervote_area:
-
-		with gr.Column(
-			elem_classes="fr-col-12 fr-col-md-6 fr-mr-md-n1w fr-mb-1w bg-white rounded-tile"
-		):
-
-			gr.HTML(
-				value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#A96AFE' stroke='none'/></svg> <strong>Modèle A</strong></p>
-<p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
-			)
-
-			positive_a = gr.CheckboxGroup(
-				elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Utiles", "useful"),
-					("Complètes", "complete"),
-					("Créatives", "creative"),
-					("Mise en forme claire", "clear-formatting"),
-				],
-			)
-
-			negative_a = gr.CheckboxGroup(
-				elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Incorrectes", "incorrect"),
-					("Superficielles", "superficial"),
-					("Instructions non respectées", "instructions-not-followed"),
-				],
-			)
-
-			comments_a = FrInput(
-				show_label=False,
-				visible=False,
-				lines=3,
-				placeholder="Les réponses du modèle A sont...",
-			)
-
-		with gr.Column(
-			elem_classes="fr-col-12 fr-col-md-6 fr-ml-md-3w fr-mr-md-n3w fr-mb-1w bg-white rounded-tile"
-		):
-
-			gr.HTML(
-				value="""<p><svg class="inline" width='26' height='26'><circle cx='13' cy='13' r='12' fill='#ff9575' stroke='none'/></svg> <strong>Modèle B</strong></p>
-<p class="fr-mb-2w"><strong>Comment qualifiez-vous ses réponses ?</strong></p>"""
-			)
-
-			positive_b = gr.CheckboxGroup(
-				elem_classes="thumb-up-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Utiles", "useful"),
-					("Complètes", "complete"),
-					("Créatives", "creative"),
-					("Mise en forme claire", "clear-formatting"),
-				],
-			)
-
-			negative_b = gr.CheckboxGroup(
-				elem_classes="thumb-down-icon flex-important checkboxes fr-mb-2w",
-				show_label=False,
-				choices=[
-					("Incorrectes", "incorrect"),
-					("Superficielles", "superficial"),
-					("Instructions non respectées", "instructions-not-followed"),
-				],
-			)
-			comments_b = FrInput(
-				show_label=False,
-				visible=False,
-				lines=3,
-				placeholder="Les réponses du modèle B sont...",
-			)
-		comments_link = gr.Button(
-			elem_classes="link fr-mt-1w", value="Ajouter des détails"
-		) -->
-
-<style>
-  /* .wrap {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--checkbox-label-gap);
-	} */
-</style>
