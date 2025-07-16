@@ -3,6 +3,15 @@
 @plugin '@tailwindcss/typography';
 @import './custom-arena.css';
 
+@theme {
+  --color-primary: var(--blue-france-main-525);
+  --color-info: var(--info-425-625);
+  --color-error: var(--error-425-625);
+  --color-warning: var(--warning-425-625);
+  --color-success: var(--green-emeraude-main-632);
+  --color-yellow: var(--yellow-tournesol-850-200);
+}
+
 :root {
   /* CUSTOM DSFR LIKE */
   --outline-color: #0a76f6;
@@ -20,7 +29,8 @@ body {
   flex-direction: column;
   margin: 0 !important;
 }
-#app, main {
+#app,
+main {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
