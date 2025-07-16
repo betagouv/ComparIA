@@ -1,11 +1,10 @@
 <script lang="ts">
-  import type { OnReactionFn } from '$lib/chatService.svelte'
+  import type { OnReactionFn, VoteData } from '$lib/chatService.svelte'
   import { askChatBots, chatbot } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
-  import VoteArea, { type VoteData } from '$lib/components/VoteArea.svelte'
+  import VoteArea from '$lib/components/VoteArea.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { ExtendedLikeData } from '$lib/types'
   import type { UndoRetryData } from '$lib/utils'
 
   let rtl = false
@@ -75,8 +74,8 @@
   />
 </div>
 
-{#if step === 'vote'}
-  <VoteArea bind:value={voteData} />
+{#if step === 'vote' || step === 'reveal'}
+  <VoteArea bind:value={voteData} disabled={step === 'reveal'} />
 {/if}
 
 <div id="send-area" class="flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]">

@@ -2,22 +2,6 @@ import { api } from '$lib/api'
 import { state, type Mode } from '$lib/state.svelte'
 import type { LoadingStatus } from '@gradio/statustracker'
 
-export interface ModeAndPromptData {
-  prompt_value: string
-  mode: Mode
-  custom_models_selection: string[]
-}
-
-export interface APIVoteData {
-  which_model_radio_output: 'model-a' | 'model-b' | 'both-equal'
-  positive_a_output: string[]
-  positive_b_output: string[]
-  negative_a_output: string[]
-  negative_b_output: string[]
-  comments_a_output: string
-  comments_b_output: string
-}
-
 export interface Model {
   // [aya-expanse-8b]
   // simple_name = "Aya Expanse 8B"
@@ -40,6 +24,14 @@ export interface Model {
   icon_path: string
   release_date: string | null
   fully_open_source: boolean
+}
+
+// PROMPT
+
+export interface ModeAndPromptData {
+  prompt_value: string
+  mode: Mode
+  custom_models_selection: string[]
 }
 
 // MESSAGES
@@ -88,6 +80,31 @@ export type APIReactionData = {
 }
 export type OnReactionFn = (kind: ReactionKind, reaction: Required<APIReactionData>) => void
 
+// VOTE
+
+export interface APIVoteData {
+  which_model_radio_output: 'model-a' | 'model-b' | 'both-equal'
+  positive_a_output: ReactionPref[]
+  positive_b_output: ReactionPref[]
+  negative_a_output: ReactionPref[]
+  negative_b_output: ReactionPref[]
+  comments_a_output: string
+  comments_b_output: string
+}
+
+interface VoteDetails {
+  like: ReactionPref[]
+  dislike: ReactionPref[]
+  comment: string
+}
+export interface VoteData {
+  selected?: APIVoteData['which_model_radio_output']
+  a: VoteDetails
+  b: VoteDetails
+}
+
+// DATA
+
 export const chatbot = $state<{
   status: LoadingStatus['status']
   messages: APIChatMessage[]
@@ -98,11 +115,15 @@ export const chatbot = $state<{
   root: '/' // FIXME or '/arene'
 })
 
+// API CALLS
+
 export async function runChatBots(args: ModeAndPromptData) {
   chatbot.status = 'pending'
 
   try {
-    const job = await api.submit<APIChatMessage[]>('/add_first_text', { model_dropdown_scoped: args })
+    const job = await api.submit<APIChatMessage[]>('/add_first_text', {
+      model_dropdown_scoped: args
+    })
 
     state.currentScreen = 'chatbots'
     state.mode = args.mode

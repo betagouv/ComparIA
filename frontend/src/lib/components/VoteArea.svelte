@@ -1,42 +1,28 @@
 <script lang="ts">
-  import type { APIVoteData } from '$lib/chatService.svelte'
+  import type { VoteData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import LikePanel from './LikePanel.svelte'
   import TextPrompt from './TextPrompt.svelte'
   import VoteRadioGroup from './VoteRadioGroup.svelte'
 
-  interface VoteDetails {
-    like: string[]
-    dislike: string[]
-    comment: string
-  }
-
-  export interface VoteData {
-    selected?: APIVoteData['which_model_radio_output']
-    a: VoteDetails
-    b: VoteDetails
-  }
-
   let {
-    value: form = $bindable()
+    value: form = $bindable(),
+    disabled = false
   }: {
     value: VoteData
+    disabled?: boolean
   } = $props()
 
   let showComments = $state(false)
-
-  const onSelectionChange = (kind: 'like' | 'dislike', model: 'a' | 'b', selection: string[]) => {
-    form[model][kind] = selection
-  }
 </script>
 
-<div id="vote-area" class="fr-container min-h-screen">
+<div id="vote-area" class="fr-container">
   <div class="text-center">
     <h4 class="mb-2!">{m['vote.title']()}</h4>
     <p class="text-grey fr-text--sm">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
   </div>
 
-  <VoteRadioGroup bind:value={form.selected} />
+  <VoteRadioGroup bind:value={form.selected} {disabled} />
 
   {#if form.selected}
     <div class="mt-11 flex flex-col gap-6 md:flex-row">
@@ -57,7 +43,7 @@
             mode="vote"
             model={model.toUpperCase()}
             selection={form[model].like}
-            onSelectionChange={(e) => onSelectionChange('like', model, e)}
+            {disabled}
           />
           <LikePanel
             show={true}
@@ -65,7 +51,7 @@
             mode="vote"
             model={model.toUpperCase()}
             selection={form[model].dislike}
-            onSelectionChange={(e) => onSelectionChange('dislike', model, e)}
+            {disabled}
           />
 
           {#if showComments}
@@ -75,6 +61,7 @@
               label={m['vote.qualify.question']()}
               placeholder={m['vote.qualify.placeholder']({ model: model.toUpperCase() })}
               rows={3}
+              {disabled}
             />
           {/if}
         </div>
@@ -83,7 +70,7 @@
 
     {#if !showComments}
       <div class="mt-4 text-center">
-        <button class="link" onclick={() => (showComments = true)}>
+        <button class="link" {disabled} onclick={() => (showComments = true)}>
           {m['vote.qualify.addDetails']()}
         </button>
       </div>
