@@ -34,5 +34,5 @@ export interface APIBotModel {
 }
 
 export async function getModels() {
-  return api.predict<APIBotModel[]>('/enter_arena')
+  return api.get<APIBotModel[]>('/available_models')
 }

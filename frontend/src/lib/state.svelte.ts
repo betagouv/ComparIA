@@ -1,3 +1,4 @@
+import { api } from '$lib/api'
 import { m } from '$lib/i18n/messages.js'
 
 export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models' | 'reasoning'
@@ -15,7 +16,7 @@ export type State = {
   currentScreen: 'initial' | 'chatbots'
   step?: 1 | 2
   mode?: Mode
-  votes?: { count: number; objective: number; ratio: number }
+  votes?: { count: number; objective: number }
   loading: boolean
 }
 
@@ -39,3 +40,9 @@ export const modeInfos: ModeInfos[] = (
   alt_label: m[`modes.${item.value}.altLabel`](),
   description: m[`modes.${item.value}.description`]()
 }))
+
+export function getVotes() {
+  return api.get<State['votes']>('/counter').then((data) => {
+    state.votes = data
+  })
+}

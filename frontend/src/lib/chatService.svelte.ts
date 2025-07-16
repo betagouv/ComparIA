@@ -154,8 +154,6 @@ export async function runChatBots(args: APIModeAndPromptData) {
 
     state.currentScreen = 'chatbots'
     state.mode = args.mode
-    // FIXME get api data
-    state.votes = { count: 1000, objective: 2000, ratio: 50 }
     state.step = 1
     // chatbot.status = 'streaming'
 
