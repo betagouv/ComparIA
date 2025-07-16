@@ -213,3 +213,41 @@ export async function updateReaction(kind: ReactionKind, reaction: APIReactionDa
     reaction_json: data
   })
 }
+
+export async function postVoteGetReveal(vote: Required<VoteData>) {
+  const data = {
+    which_model_radio_output: vote.selected,
+    positive_a_output: vote.a.like,
+    positive_b_output: vote.b.like,
+    negative_a_output: vote.a.like,
+    negative_b_output: vote.b.dislike,
+    comments_a_output: vote.a.comment,
+    comments_b_output: vote.b.comment
+  } satisfies APIVoteData
+  return api.predict<APIRevealData>('/chatbot_vote', data).then(parseAPIRevealData)
+}
+
+function parseAPIRevealData(data: APIRevealData): RevealData {
+  console.log('d', data)
+  return {
+    selected: data.chosen_model ?? 'both-equal',
+    modelsData: (['a', 'b'] as const).map((model) => ({
+      model: data[`model_${model}`],
+      side: `model-${model}`,
+      kwh: data[`model_${model}_kwh`],
+      co2: data[`model_${model}_co2`] * 1000,
+      tokens: data[`model_${model}_tokens`],
+      lightbulb: data[`lightbulb_${model}`],
+      lightbulbUnit: data[`lightbulb_${model}_unit`],
+      streaming: data[`streaming_${model}`],
+      streamingUnit: data[`streaming_${model}_unit`]
+    })),
+    sizeDesc: data.size_desc,
+    licenseDesc: data.license_desc,
+    licenseAttrs: data.license_attrs,
+    shareB64Data: data.b64
+  }
+}
+export async function getReveal(): Promise<RevealData> {
+  return api.predict<APIRevealData>('/reveal').then(parseAPIRevealData)
+}

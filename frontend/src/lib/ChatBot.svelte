@@ -1,7 +1,14 @@
 <script lang="ts">
-  import type { OnReactionFn, VoteData } from '$lib/chatService.svelte'
-  import { askChatBots, chatbot, updateReaction } from '$lib/chatService.svelte'
+  import type { OnReactionFn, RevealData, VoteData } from '$lib/chatService.svelte'
+  import {
+    askChatBots,
+    chatbot,
+    getReveal,
+    postVoteGetReveal,
+    updateReaction
+  } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
+  import RevealArea from '$lib/components/RevealArea.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import VoteArea from '$lib/components/VoteArea.svelte'
   import { m } from '$lib/i18n/messages'
@@ -32,6 +39,7 @@
       comment: ''
     }
   })
+  let revealData = $state<RevealData>()
 
   const chatbotDisabled = $derived(chatbot.status !== 'complete' || step !== 'chat')
   const revealDisabled = $derived(
@@ -53,9 +61,14 @@
     await askChatBots(prompt)
   }
 
-  function onRevealModels() {
-    console.log('revealModels')
-    if (canVote === false || step === 'vote') {
+  async function onRevealModels() {
+    // if chat as reactions, no need to show vote
+    if (canVote === false) {
+      revealData = await getReveal()
+      step = 'reveal'
+    } else if (step === 'vote') {
+      if (!voteData.selected) return
+      revealData = await postVoteGetReveal(voteData as Required<VoteData>)
       step = 'reveal'
     } else {
       step = 'vote'
@@ -79,37 +92,45 @@
   <VoteArea bind:value={voteData} disabled={step === 'reveal'} />
 {/if}
 
-<div id="send-area" class="flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]">
-  {#if step === 'chat'}
-    <div class="flex w-full flex-col gap-3 md:flex-row">
-      <TextPrompt
-        id="chatbot-prompt"
-        bind:value={prompt}
-        label={m['chatbot.continuePrompt']()}
-        placeholder={m['chatbot.continuePrompt']()}
-        hideLabel
-        rows={2}
-        maxRows={4}
-        autofocus
-        onSubmit={onPromptSubmit}
-        class="mb-0! w-full"
-      />
+{#if step === 'reveal' && revealData}
+  <RevealArea data={revealData} />
+{:else}
+  <div id="send-area" class="mt-auto flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]">
+    {#if step === 'chat'}
+      <div class="flex w-full flex-col gap-3 md:flex-row">
+        <TextPrompt
+          id="chatbot-prompt"
+          bind:value={prompt}
+          label={m['chatbot.continuePrompt']()}
+          placeholder={m['chatbot.continuePrompt']()}
+          hideLabel
+          rows={2}
+          maxRows={4}
+          autofocus
+          onSubmit={onPromptSubmit}
+          class="mb-0! w-full"
+        />
 
-      <button
-        id="send-btn"
-        disabled={chatbot.status !== 'complete' || prompt === ''}
-        class="btn purple-btn md:self-end"
-        onclick={onPromptSubmit}
-      >
-        {m['words.send']()}
-      </button>
-    </div>
-  {/if}
+        <button
+          id="send-btn"
+          disabled={chatbot.status !== 'complete' || prompt === ''}
+          class="btn purple-btn md:self-end"
+          onclick={onPromptSubmit}
+        >
+          {m['words.send']()}
+        </button>
+      </div>
+    {/if}
 
-  <button disabled={revealDisabled} class="btn purple-btn w-full md:w-fit" onclick={onRevealModels}>
-    {m['chatbot.revealButton']()}
-  </button>
-</div>
+    <button
+      disabled={revealDisabled}
+      class="btn purple-btn w-full md:w-fit"
+      onclick={onRevealModels}
+    >
+      {m['chatbot.revealButton']()}
+    </button>
+  </div>
+{/if}
 
 <style>
   #send-area {

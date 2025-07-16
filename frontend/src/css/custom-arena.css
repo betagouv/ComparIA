@@ -472,8 +472,8 @@ li.fr-nav__item {
   align-items: center;
 }
 
-.energy-balance-1 .fr-icon--question-line,
-.energy-balance-2 .fr-icon--question-line {
+.energy-balance-1 .fr-icon-question-line,
+.energy-balance-2 .fr-icon-question-line {
   display: inline;
   position: absolute;
   right: 0.5em;
@@ -531,6 +531,7 @@ li.fr-nav__item {
 
 .feedback-btns {
   width: 280px;
+  display: inline-flex;
   justify-content: center;
 }
 
