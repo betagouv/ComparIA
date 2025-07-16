@@ -843,7 +843,12 @@ window.scrollTo({
         else:
             while len(app_state_scoped.reactions) <= event._data["index"]:
                 app_state_scoped.reactions.extend([None])
-            # FIXME: comment disappear if select a pref after commenting
+
+            # re-add comment if select a pref after commenting
+            if "comment" in app_state_scoped.reactions[event._data["index"]]:
+                event._data["comment"] = app_state_scoped.reactions[
+                    event._data["index"]
+                ]["comment"]
 
             app_state_scoped.reactions[event._data["index"]] = event._data
 
