@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { RevealData } from '$lib/chatService.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import { m } from '$lib/i18n/messages'
   import type { APIBotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
@@ -112,24 +113,24 @@
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
                       <!-- FIXME i18n -->
                       {#if infos.licenseAttrs?.[model.license]?.warning_commercial}
-                        <img src="/extra-icons/orangecheck.svg" alt="" />
+                        <Icon icon="checkbox-circle-fill" block class="text-warning" />
                       {:else if infos.licenseAttrs?.[model.license]?.prohibit_commercial}
-                        <img src="/extra-icons/redcheck.svg" alt="" />
+                        <Icon icon="close-circle-fill" block class="text-error" />
                       {:else}
-                        <img src="/extra-icons/greencheck.svg" alt="" />
+                        <Icon icon="checkbox-circle-fill" block class="text-success" />
                       {/if}
                       <span class="text-grey-200 fr-text--xs fr-mb-0"
                         >{m['models.openWeight.use.commercial']()}</span
                       >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                      <img src="/extra-icons/greencheck.svg" alt="" />
+                      <Icon icon="checkbox-circle-fill" block class="text-success" />
                       <span class="text-grey-200 fr-text--xs fr-mb-0"
                         >{m['models.openWeight.use.modification']()}</span
                       >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                      <img src="/extra-icons/greencheck.svg" alt="" />
+                      <Icon icon="checkbox-circle-fill" block class="text-success" />
                       <span class="text-grey-200 fr-text--xs fr-mb-0"
                         >{m['models.openWeight.use.attribution']()}</span
                       >

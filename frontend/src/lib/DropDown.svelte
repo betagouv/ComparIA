@@ -2,6 +2,7 @@
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
@@ -234,19 +235,8 @@
           show_custom_models_selection = false
         }}
       >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 18 18"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M4.14161 14.0003C4.4848 13.0293 5.41083 12.3337 6.49935 12.3337C7.58785 12.3337 8.51393 13.0293 8.8571 14.0003H17.3327V15.667H8.8571C8.51393 16.638 7.58785 17.3337 6.49935 17.3337C5.41083 17.3337 4.4848 16.638 4.14161 15.667H0.666016V14.0003H4.14161ZM9.1416 8.16699C9.48477 7.196 10.4108 6.50033 11.4993 6.50033C12.5878 6.50033 13.5139 7.196 13.8571 8.16699H17.3327V9.83366H13.8571C13.5139 10.8047 12.5878 11.5003 11.4993 11.5003C10.4108 11.5003 9.48477 10.8047 9.1416 9.83366H0.666016V8.16699H9.1416ZM4.14161 2.33366C4.4848 1.36267 5.41083 0.666992 6.49935 0.666992C7.58785 0.666992 8.51393 1.36267 8.8571 2.33366H17.3327V4.00033H8.8571C8.51393 4.97132 7.58785 5.66699 6.49935 5.66699C5.41083 5.66699 4.4848 4.97132 4.14161 4.00033H0.666016V2.33366H4.14161Z"
-            fill="#6A6AF4"
-          />
-        </svg>
-        <span class="label"> {alt_label}</span><span class="chevron"
+        <Icon icon="equalizer-fill" size="sm" block class="text-primary" />
+        <span class="label">{alt_label}</span><span class="chevron"
           ><svelte:component this={ChevronBas} />
         </span></button
       >
@@ -407,9 +397,6 @@
     max-height: 40px;
   }
 
-  .mode-selection-btn svg {
-    flex-grow: 0;
-  }
   .mode-selection-btn .label {
     margin-left: 0.5em;
     flex-grow: 1;

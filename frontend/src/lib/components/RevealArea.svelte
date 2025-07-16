@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { RevealData } from '$lib/chatService.svelte'
   import Footer from '$lib/components/Footer.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
@@ -163,19 +164,7 @@
               </span>
               <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="energie-{side}"
               ></a>
-              <div class="">
-                <!-- flashlight -->
-                <svg
-                  transform="scale(1.33)"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  width="24"
-                  height="24"
-                  class=""
-                >
-                  <path fill="#0063cb" d="M13 10h7l-9 13v-9H4l9-13v9Z" />
-                </svg>
-              </div>
+              <Icon icon="flashlight-fill" size="lg" block class="text-info" />
               <div class="">
                 <!-- FIXME co2?? should be kwh? -->
                 <p>
@@ -201,25 +190,7 @@
 
               <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="co2-{side}"
               ></a>
-              <div class="">
-                <!-- cloud -->
-                <svg
-                  transform="scale(1.33)"
-                  class=""
-                  width="21"
-                  height="17"
-                  viewBox="0 0 21 17"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M15.4556 16.5001H6.36473C3.70538 16.5016 1.43245 14.7449 0.984647 12.342C0.536847 9.93905 2.04472 7.59035 4.55382 6.78255C4.44169 4.63438 5.62808 2.60391 7.64094 1.49905C9.6538 0.394196 12.1666 0.394196 14.1794 1.49905C16.1923 2.60391 17.3787 4.63438 17.2666 6.78255C19.7757 7.59035 21.2835 9.93905 20.8357 12.342C20.3879 14.7449 18.115 16.5016 15.4556 16.5001Z"
-                    fill="#CFCFCF"
-                  />
-                </svg>
-              </div>
+              <Icon icon="cloudy-2-fill" size="lg" block class="text-grey" />
               <div class="">
                 <p>
                   <strong>
@@ -240,25 +211,7 @@
               </span>
               <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="ampoule-{side}"
               ></a>
-              <div class="">
-                <!-- lightbulb -->
-                <svg
-                  transform="scale(1.33)"
-                  class=""
-                  width="14"
-                  height="19"
-                  viewBox="0 0 14 19"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    clip-rule="evenodd"
-                    d="M6.16953 14H3.62036C3.37286 12.9391 2.2562 12.0716 1.79786 11.5C-0.384161 8.77374 -0.0927751 4.82569 2.46585 2.44933C5.02447 0.0729714 8.98325 0.0736052 11.5411 2.45078C14.099 4.82796 14.3891 8.7761 12.2062 11.5016C11.7479 12.0725 10.6329 12.94 10.3854 14H7.83619V9.83331H6.16953V14ZM10.3362 15.6666V16.5C10.3362 17.4205 9.59 18.1666 8.66953 18.1666H5.33619C4.41572 18.1666 3.66953 17.4205 3.66953 16.5V15.6666H10.3362Z"
-                    fill="#EFCB3A"
-                  />
-                </svg>
-              </div>
+              <Icon icon="lightbulb-fill" size="lg" block class="text-yellow" />
               <div class="">
                 <p>
                   <strong><span class="fr-text--xxl">{lightbulb}</span>{lightbulbUnit}</strong>
@@ -283,22 +236,7 @@
                   })
                 )}
               </span>
-              <div class="">
-                <!-- youtube -->
-                <svg
-                  transform="scale(1.33)"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 20 20"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M1.66406 3.32783C1.66406 2.87063 2.04349 2.5 2.49056 2.5H17.5042C17.9607 2.5 18.3307 2.87079 18.3307 3.32783V16.6722C18.3307 17.1293 17.9513 17.5 17.5042 17.5H2.49056C2.0341 17.5 1.66406 17.1292 1.66406 16.6722V3.32783ZM8.84898 7.01216C8.79423 6.97565 8.72989 6.95617 8.66406 6.95617C8.47998 6.95617 8.33073 7.10541 8.33073 7.28951V12.7105C8.33073 12.7763 8.35023 12.8407 8.38673 12.8954C8.48881 13.0486 8.69581 13.09 8.84898 12.9878L12.9147 10.2773C12.9513 10.2529 12.9827 10.2215 13.0071 10.1849C13.1093 10.0317 13.0679 9.82475 12.9147 9.72267L8.84898 7.01216Z"
-                    fill="#F95A5C"
-                  />
-                </svg>
-              </div>
+              <Icon icon="youtube-fill" size="lg" block class="text-error" />
               <div class="">
                 <p>
                   <strong><span class="fr-text--xxl">{streaming}</span>{streamingUnit}</strong>
@@ -325,32 +263,20 @@
 
   <div class="feedback">
     <div id="feedback-row">
-      <div class="fr-container fr-mb-4w text-center">
+      <div class="fr-container fr-mb-4w flex flex-col items-center text-center">
         <a class="btn fr-btn--secondary fr-my-2w feedback-btns" href="/" target="_blank">
           {m['actions.returnHome']()}
         </a><br />
         <button
-          class="btn fr-btn--secondary fr-my-2w feedback-btns"
+          class="btn fr-icon-upload-2-line fr-btn--icon-left fr-btn--secondary fr-my-2w feedback-btns"
           data-fr-opened="false"
           aria-controls="share-modal"
         >
-          <svg
-            class="inline"
-            width="21"
-            height="20"
-            viewBox="0 0 21 20"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10.5 2.15479L15.6726 7.32737L14.4941 8.50585L11.3333 5.34513V13.3333H9.66667V5.34513L6.50592 8.50585L5.32741 7.32737L10.5 2.15479ZM3 14.9999V11.6666H4.66667V14.9999C4.66667 15.4602 5.03977 15.8333 5.5 15.8333H15.5C15.9602 15.8333 16.3333 15.4602 16.3333 14.9999V11.6666H18V14.9999C18 16.3807 16.8807 17.4999 15.5 17.4999H5.5C4.11929 17.4999 3 16.3807 3 14.9999Z"
-              fill="#6A6AF4"
-            />
-          </svg>&nbsp;{m['reveal.feedback.shareResult']()}
-        </button><br />
+          {m['reveal.feedback.shareResult']()}
+        </button>
         <!-- Remplacer par https://monitor.bunka.ai/compar:ia ? -->
         <a
-          class="fr-mx-auto fr-mb-4w link"
+          class="fr-mb-4w link"
           href="https://languia-metabase.stg.cloud.culture.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1"
           target="_blank">{m['reveal.feedback.moreOnVotes']()}</a
         >
@@ -387,20 +313,11 @@
                     class="fr-col-md-8 fr-col-12 fr-input inline"
                     value="https://www.comparia.beta.gouv.fr/share?i={shareB64Data}"
                   />
-                  <button class="fr-col-md-4 fr-col-12 btn purple-btn block" onclick={copyShareLink}
-                    ><svg
-                      width="15"
-                      height="16"
-                      viewBox="0 0 15 16"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="inline"
-                    >
-                      <path
-                        d="M8.29571 5.08317L9.35636 6.14383C11.4066 8.19412 11.4066 11.5182 9.35636 13.5685L9.09124 13.8336C7.04096 15.8839 3.71685 15.8839 1.6666 13.8336C-0.383657 11.7834 -0.383657 8.45924 1.6666 6.409L2.72726 7.46969C1.2628 8.93414 1.2628 11.3085 2.72726 12.7729C4.19173 14.2374 6.56606 14.2374 8.03059 12.7729L8.29571 12.5078C9.76016 11.0433 9.76016 8.66894 8.29571 7.20449L7.23506 6.14383L8.29571 5.08317ZM13.3338 9.59099L12.2732 8.53034C13.7376 7.06582 13.7376 4.69148 12.2732 3.22702C10.8087 1.76255 8.43439 1.76255 6.96994 3.22702L6.70474 3.49218C5.24027 4.95664 5.24027 7.33102 6.70474 8.79547L7.76539 9.85612L6.70474 10.9168L5.64407 9.85612C3.59382 7.80592 3.59382 4.48177 5.64407 2.43152L5.90924 2.16635C7.95949 0.116099 11.2836 0.116099 13.3338 2.16635C15.3841 4.2166 15.3841 7.54072 13.3338 9.59099Z"
-                        fill="white"
-                      />
-                    </svg>&nbsp;{m['actions.copyLink']()}</button
+                  <button
+                    class="fr-col-md-4 fr-icon-links-fill fr-btn--icon-left fr-col-12 btn purple-btn block"
+                    onclick={copyShareLink}
+                  >
+                    {m['actions.copyLink']()}</button
                   >
                 </div>
                 <img
@@ -418,28 +335,12 @@
 
     <div id="snackbar" bind:this={snackbar}>
       <div class="checkmark">
-        <svg
-          width="16"
-          height="15"
-          viewBox="0 0 16 15"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
-            d="M8.25477 13.7224C4.91029 13.7224 2.19922 11.0114 2.19922 7.66688C2.19922 4.3224 4.91029 1.61133 8.25477 1.61133C11.5993 1.61133 14.3103 4.3224 14.3103 7.66688C14.3103 11.0114 11.5993 13.7224 8.25477 13.7224ZM7.65104 10.0891L11.9323 5.80722L11.0761 4.95097L7.65104 8.3766L5.93792 6.66348L5.08166 7.51973L7.65104 10.0891Z"
-            fill="white"
-          />
-        </svg>
+        <Icon icon="checkbox-circle-fill" size="xs" class="text-white" />
       </div>
-      <span class="message"></span><span class="close" onclick={closeSnackbar()}
-        ><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="12" height="12">
-          <path
-            d="m12 10.6 4.95-4.96 1.4 1.4L13.42 12l4.96 4.95-1.4 1.4L12 13.42l-4.95 4.96-1.4-1.4L10.58 12 5.63 7.05l1.4-1.4z"
-          />
-        </svg></span
-      >
+      <span class="message"></span>
+      <span class="close" onclick={closeSnackbar()}>
+        <Icon icon="close-line" size="xs" />
+      </span>
     </div>
   </div>
 </div>
