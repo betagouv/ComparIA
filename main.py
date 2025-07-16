@@ -63,20 +63,20 @@ async def favicon():
     return FileResponse(favicon_path)
 
 
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request):
-    gauge_count = get_gauge_count()
-    gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "config": config,
-            "gauge_count_ratio": gauge_count_ratio,
-            "gauge_count": gauge_count,
-            "objective": objective,
-        },
-    )
+# @app.get("/", response_class=HTMLResponse)
+# async def home(request: Request):
+#     gauge_count = get_gauge_count()
+#     gauge_count_ratio = str(int(100 * get_gauge_count() / objective))
+#     return templates.TemplateResponse(
+#         "index.html",
+#         {
+#             "request": request,
+#             "config": config,
+#             "gauge_count_ratio": gauge_count_ratio,
+#             "gauge_count": gauge_count,
+#             "objective": objective,
+#         },
+#     )
 
 
 @app.get("/modeles", response_class=HTMLResponse)
@@ -315,6 +315,9 @@ async def available_models():
 @app.get("/counter", response_class=JSONResponse)
 async def counter():
     return JSONResponse({"count": get_gauge_count(), "objective": config.objective})
+
+
+app.mount("/", StaticFiles(directory="frontend/build", html=True), name="build")
 
 
 app = SentryAsgiMiddleware(app)
