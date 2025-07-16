@@ -489,7 +489,7 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
-        
+
         # FIXME running bot_response_multi directly here to receive messages on front
         bot_response_multi(
             app_state_scoped,
@@ -669,7 +669,7 @@ setTimeout(() => {
 , 500);
 }""",
         show_progress="hidden",
-        api_name=False
+        api_name=False,
     )
 
     gr.on(
@@ -828,9 +828,9 @@ window.scrollTo({
         # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
         # TODO: or just create another event type like "Event.react"
         if "comment" in reaction_json:
-            app_state_scoped.reactions[reaction_json["index"]]["comment"] = reaction_json[
-                "comment"
-            ]
+            app_state_scoped.reactions[reaction_json["index"]]["comment"] = (
+                reaction_json["comment"]
+            )
         else:
             while len(app_state_scoped.reactions) <= reaction_json["index"]:
                 app_state_scoped.reactions.extend([None])
@@ -845,9 +845,6 @@ window.scrollTo({
             request=request,
         )
         return app_state_scoped
-
-
-
 
     @chatbot.like(
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
@@ -872,6 +869,13 @@ window.scrollTo({
         else:
             while len(app_state_scoped.reactions) <= event._data["index"]:
                 app_state_scoped.reactions.extend([None])
+
+            # re-add comment if select a pref after commenting
+            if "comment" in app_state_scoped.reactions[event._data["index"]]:
+                event._data["comment"] = app_state_scoped.reactions[
+                    event._data["index"]
+                ]["comment"]
+
             app_state_scoped.reactions[event._data["index"]] = event._data
 
         sync_reactions(
@@ -948,7 +952,7 @@ window.scrollTo({
 
         chosen_model = get_chosen_model(which_model_radio_output)
         reveal_dict = build_reveal_dict(conv_a_scoped, conv_a_scoped, chosen_model)
-        
+
         return reveal_dict
 
     gr.on(
