@@ -266,13 +266,58 @@
     "dislike": {
       "label": "je n'apprécie pas",
       "selectedLabel": "je n'apprécie pas (sélectionné)"
+    },
+    "yours": "Votre vote"
+  },
+  "reveal": {
+    "impacts": {
+      "title": "Impact énergétique de la discussion",
+      "size": {
+        "label": "taille du modèle",
+        "count": "milliards param.",
+        "estimated": "(est.)",
+        "quantized": "(quantisé)"
+      },
+      "tokens": {
+        "label": "taille du texte",
+        "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand.",
+        "tokens": "tokens"
+      },
+      "energy": {
+        "label": "énergie conso.",
+        "tooltip": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
+      }
+    },
+    "equivalent": {
+      "title": "Ce qui correspond à :",
+      "co2": {
+        "label": "CO<sub>2</sub> émis",
+        "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée."
+      },
+      "lightbulb": {
+        "label": "ampoule LED",
+        "tooltip": "Donnée calculée sur la base de consommation d’une ampoule LED standard de 5W (E14)"
+      },
+      "streaming": {
+        "label": "vidéos en ligne",
+        "tooltip": "Donnée calculée selon l’impact carbone d’une heure de vidéo en ligne en haute définition, sur une télévision, en connexion wifi (source <a {linkProps}>ADEME</a>)"
+      }
+    },
+    "feedback": {
+      "shareResult": "Partager votre résultat",
+      "moreOnVotes": "En savoir plus sur les votes",
+      "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
+      "example": "Exemple de partage de résultat"
     }
   },
   "actions": {
     "copyMessage": {
       "do": "Copier le message",
       "done": "Message copié"
-    }
+    },
+    "copyLink": "Copier le lien",
+    "returnHome": "Revenir à l'accueil",
+    "seeMore": "Voir plus"
   },
   "words": {
     "back": "Retour",

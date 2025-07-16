@@ -2,6 +2,8 @@
   import type { RevealData } from '$lib/chatService.svelte'
   import Footer from '$lib/components/Footer.svelte'
   import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
+  import { m } from '$lib/i18n/messages'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   let { data }: { data: RevealData } = $props()
 
@@ -39,7 +41,7 @@
       {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
         <div class="rounded-tile fr-mb-1w fr-p-4w fr-mx-3v bg-white text-left">
           {#if selected === side}
-            <span class="your-choice fr-mb-2w fr-mb-md-0">Votre vote</span>
+            <span class="your-choice fr-mb-2w fr-mb-md-0">{m['vote.yours']()}</span>
           {/if}
           <h5 class="fr-mb-2w github-title">
             <img class="fr-mt-n2v relative inline" src="/orgs/{model.icon_path}" width="34" />
@@ -48,40 +50,41 @@
           <p class="fr-mb-2w">
             {#if model.fully_open_source}
               <span class="fr-badge fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                Open source
+                {m['models.licenses.type.openSource']()}&nbsp;
               </span>
             {:else if model.distribution === 'open-weights'}
               <span class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                Semi-ouvert
+                {m['models.licenses.type.semiOpen']()}&nbsp;
               </span>
             {:else}
               <span
                 class="fr-badge fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v"
               >
-                Propriétaire
+                {m['models.licenses.type.proprietary']()}
               </span>
             {/if}
             <span class="fr-badge fr-badge--no-icon fr-badge--info fr-mr-1v fr-mb-1v">
-              {#if model.distribution === 'open-weights'}
-                {model.params} mds de paramètres
+              {#if model.distribution === 'api-only'}
+                {m['models.size.estimated']({ size: model.friendly_size })}
               {:else}
-                Taille estimée ({model.friendly_size})
+                {m['models.parameters']({ number: model.params })}
               {/if}
             </span>
             {#if model.release_date}
               <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-                Sortie {model.release_date}
+                {m['models.release']({ date: model.release_date })}
               </span>
             {/if}
             <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-              Licence {#if model.distribution === 'open-weights'}{model.license}{:else}commerciale{/if}
+              {#if model.distribution === 'open-weights'}
+                {m['models.licenses.name']({ licence: model.license })}
+              {:else}
+                {m['models.licenses.commercial']()}
+              {/if}
             </span>
           </p>
           <p class="fr-mb-4w fr-text--sm text-grey-200">{model.excerpt}</p>
-          <h6 class="fr-mb-2w">Impact énergétique de la discussion</h6>
-          <!-- <p class="fr-mb-1v fr-text--xs text-grey">La taille du modèle et la longueur de ses réponses ont un impact
-                    sur son
-                    bilan.</p> -->
+          <h6 class="fr-mb-2w">{m['reveal.impacts.title']()}</h6>
           <div class="energy-balance-1">
             <div class="rounded-tile fr-px-1w fr-py-1w relative text-center">
               <span
@@ -90,9 +93,7 @@
                 role="tooltip"
                 aria-hidden="true"
               >
-                Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par
-                un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre
-                de paramètres est important, plus il est capable d’effectuer des tâches complexes.
+                {m['models.openWeight.tooltips.params']()}
               </span>
               <p>
                 <a
@@ -106,13 +107,17 @@
                   <strong>
                     <span class="fr-text--xxl">{model.params}</span>
                     <span class="fr-text--xs">
-                      milliards param.
-                      {#if model.distribution !== 'open-weights'}(est.){/if}
-                      {#if model.quantization === 'q8'}(quantisé){/if}
+                      {m['reveal.impacts.size.count']()}
+                      {#if model.distribution !== 'open-weights'}
+                        {m['reveal.impacts.size.estimated']()}
+                      {/if}
+                      {#if model.quantization === 'q8'}
+                        {m['reveal.impacts.size.quantized']()}
+                      {/if}
                     </span>
                   </strong>
                 </p>
-                <p class="fr-text--sm">taille du modèle</p>
+                <p class="fr-text--sm">{m['reveal.impacts.size.label']()}</p>
               </div>
             </div>
             <div class="self-center justify-self-center">
@@ -125,9 +130,7 @@
                 role="tooltip"
                 aria-hidden="true"
               >
-                L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu
-                près quatre lettres, cette unité de texte est appelée token ("jeton"). Plus un texte
-                est long, plus le nombre de tokens est grand.
+                {m['reveal.impacts.tokens.tooltip']()}
               </span>
               <p>
                 <a
@@ -139,10 +142,10 @@
                 <p class="">
                   <strong>
                     <span class="fr-text--xxl">{tokens}</span>
-                    <span class="fr-text--xs">tokens</span>
+                    <span class="fr-text--xs">{m['reveal.impacts.tokens.tokens']()}</span>
                   </strong>
                 </p>
-                <p class="fr-text--sm">taille du texte</p>
+                <p class="fr-text--sm">{m['reveal.impacts.tokens.label']()}</p>
               </div>
             </div>
 
@@ -156,10 +159,7 @@
                 role="tooltip"
                 aria-hidden="true"
               >
-                Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le
-                modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle
-                est grand (en milliards de paramètres), plus il faut d'énergie pour produire un
-                token.
+                {m['reveal.impacts.energy.tooltip']()}
               </span>
               <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="energie-{side}"
               ></a>
@@ -183,7 +183,7 @@
                     <span class="fr-text--xxl">{co2.toFixed(co2 < 2 ? 2 : 0)}</span> Wh
                   </strong>
                 </p>
-                <p class="fr-text--xs">énergie conso.</p>
+                <p class="fr-text--xs">{m['reveal.impacts.energy.label']()}</p>
               </div>
             </div>
           </div>
@@ -196,13 +196,7 @@
                 role="tooltip"
                 aria-hidden="true"
               >
-                Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par
-                l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact
-                environnemental lié à la consommation énergétique. Le calcul d’équivalence
-                Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les
-                serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France.
-                Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de
-                CO<sub>2</sub> par énergie consommée.
+                {@html sanitize(m['reveal.equivalent.co2.tooltip']())}
               </span>
 
               <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="co2-{side}"
@@ -232,7 +226,7 @@
                     <span class="fr-text--xxl">{co2.toFixed(co2 < 2 ? 2 : 0)}</span> g
                   </strong>
                 </p>
-                <p class="fr-text--xs">CO<sub>2</sub> émis</p>
+                <p class="fr-text--xs">{@html sanitize(m['reveal.equivalent.co2.label']())}</p>
               </div>
             </div>
             <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
@@ -242,7 +236,7 @@
                 role="tooltip"
                 aria-hidden="true"
               >
-                Donnée calculée sur la base de consommation d’une ampoule LED standard de 5W (E14)
+                {m['reveal.equivalent.lightbulb.tooltip']()}
               </span>
               <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="ampoule-{side}"
               ></a>
@@ -269,7 +263,7 @@
                 <p>
                   <strong><span class="fr-text--xxl">{lightbulb}</span>{lightbulbUnit}</strong>
                 </p>
-                <p class="fr-text--xs">ampoule LED</p>
+                <p class="fr-text--xs">{m['reveal.equivalent.lightbulb.label']()}</p>
               </div>
             </div>
             <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
@@ -281,12 +275,13 @@
                 role="tooltip"
                 aria-hidden="true"
               >
-                Donnée calculée selon l’impact carbone d’une heure de vidéo en ligne en haute
-                définition, sur une télévision, en connexion wifi (source <a
-                  href="https://impactco2.fr/outils/usagenumerique/streamingvideo"
-                  rel="noopener external"
-                  target="_blank">ADEME</a
-                >)
+                {@html sanitize(
+                  m['reveal.equivalent.streaming.tooltip']({
+                    linkProps: externalLinkProps(
+                      'https://impactco2.fr/outils/usagenumerique/streamingvideo'
+                    )
+                  })
+                )}
               </span>
               <div class="">
                 <!-- youtube -->
@@ -308,7 +303,7 @@
                 <p>
                   <strong><span class="fr-text--xxl">{streaming}</span>{streamingUnit}</strong>
                 </p>
-                <p class="fr-text--xs">vidéos en ligne</p>
+                <p class="fr-text--xs">{m['reveal.equivalent.streaming.label']()}</p>
               </div>
             </div>
           </div>
@@ -318,7 +313,7 @@
               data-fr-opened="false"
               aria-controls="fr-modal-{model.id}"
             >
-              Voir plus
+              {m['actions.seeMore']()}
             </button>
           </div>
         </div>
@@ -332,7 +327,7 @@
     <div id="feedback-row">
       <div class="fr-container fr-mb-4w text-center">
         <a class="btn fr-btn--secondary fr-my-2w feedback-btns" href="/" target="_blank">
-          Revenir à l'accueil
+          {m['actions.returnHome']()}
         </a><br />
         <button
           class="btn fr-btn--secondary fr-my-2w feedback-btns"
@@ -351,13 +346,13 @@
               d="M10.5 2.15479L15.6726 7.32737L14.4941 8.50585L11.3333 5.34513V13.3333H9.66667V5.34513L6.50592 8.50585L5.32741 7.32737L10.5 2.15479ZM3 14.9999V11.6666H4.66667V14.9999C4.66667 15.4602 5.03977 15.8333 5.5 15.8333H15.5C15.9602 15.8333 16.3333 15.4602 16.3333 14.9999V11.6666H18V14.9999C18 16.3807 16.8807 17.4999 15.5 17.4999H5.5C4.11929 17.4999 3 16.3807 3 14.9999Z"
               fill="#6A6AF4"
             />
-          </svg>&nbsp;Partager le résultat
+          </svg>&nbsp;{m['reveal.feedback.shareResult']()}
         </button><br />
         <!-- Remplacer par https://monitor.bunka.ai/compar:ia ? -->
         <a
           class="fr-mx-auto fr-mb-4w link"
           href="https://languia-metabase.stg.cloud.culture.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1"
-          target="_blank">En savoir plus sur les votes</a
+          target="_blank">{m['reveal.feedback.moreOnVotes']()}</a
         >
       </div>
     </div>
@@ -375,16 +370,14 @@
               <div class="fr-modal__header">
                 <button
                   class="fr-btn--close fr-btn"
-                  title="Fermer la fenêtre modale"
-                  aria-controls="share-modal">Fermer</button
+                  title={m['closeModal']()}
+                  aria-controls="share-modal">{m['words.close']()}</button
                 >
               </div>
               <div class="fr-modal__content">
-                <h6 class="fr-text--lg">Partagez votre résultat</h6>
+                <h6 class="fr-text--lg">{m['reveal.feedback.shareResult']()}</h6>
                 <p class="fr-text-md--sm fr-text--xs">
-                  Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez
-                  échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles
-                  via ce lien, sans accès aux messages échangés.
+                  {m['reveal.feedback.description']()}
                 </p>
                 <div class="fr-grid-row fr-mb-4w">
                   <input
@@ -407,14 +400,14 @@
                         d="M8.29571 5.08317L9.35636 6.14383C11.4066 8.19412 11.4066 11.5182 9.35636 13.5685L9.09124 13.8336C7.04096 15.8839 3.71685 15.8839 1.6666 13.8336C-0.383657 11.7834 -0.383657 8.45924 1.6666 6.409L2.72726 7.46969C1.2628 8.93414 1.2628 11.3085 2.72726 12.7729C4.19173 14.2374 6.56606 14.2374 8.03059 12.7729L8.29571 12.5078C9.76016 11.0433 9.76016 8.66894 8.29571 7.20449L7.23506 6.14383L8.29571 5.08317ZM13.3338 9.59099L12.2732 8.53034C13.7376 7.06582 13.7376 4.69148 12.2732 3.22702C10.8087 1.76255 8.43439 1.76255 6.96994 3.22702L6.70474 3.49218C5.24027 4.95664 5.24027 7.33102 6.70474 8.79547L7.76539 9.85612L6.70474 10.9168L5.64407 9.85612C3.59382 7.80592 3.59382 4.48177 5.64407 2.43152L5.90924 2.16635C7.95949 0.116099 11.2836 0.116099 13.3338 2.16635C15.3841 4.2166 15.3841 7.54072 13.3338 9.59099Z"
                         fill="white"
                       />
-                    </svg>&nbsp;Copier le lien</button
+                    </svg>&nbsp;{m['actions.copyLink']()}</button
                   >
                 </div>
                 <img
                   class="fr-responsive-img fr-mb-4w"
                   src="../assets/share-example.png"
-                  alt="Exemple de partage de résultat"
-                  title="Exemple de partage de résultat"
+                  alt={m['reveal.feedback.example']()}
+                  title={m['reveal.feedback.example']()}
                 />
               </div>
             </div>
