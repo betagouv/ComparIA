@@ -3,7 +3,7 @@ FROM public.ecr.aws/docker/library/node:24.3
 ARG GIT_COMMIT
 ENV PUBLIC_GIT_COMMIT=$GIT_COMMIT
 
-ENV PUBLIC_API_URL="https://alpha.comparia.beta.gouv.fr/api"
+ENV PUBLIC_API_URL="https://alpha.comparia.beta.gouv.fr"
 
 WORKDIR /app
 COPY ./package.json /app
