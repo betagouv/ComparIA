@@ -483,15 +483,16 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
-        return [
+        
+        # FIXME running bot_response_multi directly here to receive messages on front
+        bot_response_multi(
             app_state_scoped,
-            # 2 conversations
             conv_a_scoped,
             conv_b_scoped,
-            # 1 chatbot
             chatbot,
             text,
-        ]
+            request,
+        )
 
     def bot_response_multi(
         app_state_scoped,
