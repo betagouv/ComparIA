@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { OnReactionFn, VoteData } from '$lib/chatService.svelte'
-  import { askChatBots, chatbot } from '$lib/chatService.svelte'
+  import { askChatBots, chatbot, updateReaction } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import VoteArea from '$lib/components/VoteArea.svelte'
@@ -41,6 +41,7 @@
   const onReactionChange: OnReactionFn = async (kind, reaction) => {
     console.log('onReactionChanged', kind, reaction)
     canVote = false
+    await updateReaction(kind, reaction)
   }
 
   function onRetry(data: UndoRetryData) {

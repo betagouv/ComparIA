@@ -141,3 +141,25 @@ export async function askChatBots(text: string) {
     chatbot.status = 'error'
   }
 }
+
+export async function updateReaction(kind: ReactionKind, reaction: APIReactionData) {
+  const data =
+    kind === 'like'
+      ? {
+          index: reaction.index,
+          value: reaction.value,
+          liked: reaction.liked,
+          prefs: reaction.prefs
+        }
+      : {
+          index: reaction.index,
+          value: '',
+          comment: reaction.comment
+        }
+
+  return api.predict('/chatbot_react', {
+    // pass complete raw messages array
+    chatbot: chatbot.messages,
+    reaction_json: data
+  })
+}
