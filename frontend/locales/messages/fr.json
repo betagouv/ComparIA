@@ -30,6 +30,23 @@
       "newDiscussion": "Nouvelle discussion"
     }
   },
+  "footer": {
+    "backHome": "Retour à l'accueil du site - compar:IA",
+    "logoTitle": "Ministère<br />de la culture",
+    "helpUs": "Aidez-nous à améliorer ce service !",
+    "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {linkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !",
+    "links": {
+      "legal": "Mentions légales",
+      "tos": "Modalités d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "accessibility": "Accessibilité : non conforme",
+      "sources": "Code source"
+    },
+    "license": {
+      "mention": "Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de ce site sont proposés sous <a {linkProps}>licence etalab-2.0</a>",
+      "linkTitle": "Licence etalab - nouvelle fenêtre"
+    }
+  },
   "arenaHome": {
     "title": "Comment puis-je vous aider aujourd'hui ?",
     "modelSelection": "Sélection des modèles",

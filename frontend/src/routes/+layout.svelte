@@ -3,7 +3,7 @@
   import { m } from '$lib/i18n/messages'
   import { setLocale } from '$lib/i18n/runtime'
   import { modeInfos, state } from '$lib/state.svelte'
-  import { sanitize } from '@gradio/sanitize'
+  import { sanitize } from '$lib/utils/commons'
   import '../css/app.css'
 
   let { children } = $props()
@@ -85,7 +85,7 @@
             </span>
           </div>
         {/if}
-        
+
         <div class="translate">
           <button onclick={() => setLocale('en')}>EN</button>
           <button onclick={() => setLocale('fr')}>FR</button>
