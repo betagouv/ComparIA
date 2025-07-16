@@ -1,7 +1,8 @@
-import { PUBLIC_API_URL } from '$env/dynamic/public'
+
 import { state } from '$lib/state.svelte'
 import type { Payload } from '@gradio/client'
 import { Client } from '@gradio/client'
+import { env } from '$env/dynamic/public'
 
 export interface GradioPayload<T> extends Payload {
   type: 'data'
@@ -44,7 +45,7 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 }
 
 export const api = {
-  url: PUBLIC_API_URL || '/api',
+  url: env.PUBLIC_API_URL || '/api',
   client: undefined as Client | undefined,
 
   async _connect() {
