@@ -19,21 +19,11 @@ from languia.reveal import size_desc, license_desc, license_attrs
 app = FastAPI()
 
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")
-# app.mount("/arene/custom_components", StaticFiles(directory="custom_components"), name="custom_components")
 
 templates = Jinja2Templates(directory="templates")
 
 # TODO: use gr.set_static_paths(paths=["test/test_files/"])?
 gr.set_static_paths(paths=[config.assets_absolute_path])
-# broken... using path set up by fastapi instead
-logging.info("Allowing assets absolute path: " + config.assets_absolute_path)
-
-# Set authorization credentials
-auth = None
-
-# Clashes with hot reloading
-# if not config.debug:
-#     test_all_endpoints(config.controller_url)
 
 demo = demo.queue(
     max_size=None,
@@ -44,7 +34,6 @@ demo = demo.queue(
 )
 # Should enable queue w/ mount_gradio_app: https://github.com/gradio-app/gradio/issues/8839
 demo.run_startup_events()
-
 
 app = gr.mount_gradio_app(
     app,
