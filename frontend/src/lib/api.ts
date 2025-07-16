@@ -1,8 +1,7 @@
-
+import { env } from '$env/dynamic/public'
 import { state } from '$lib/state.svelte'
 import type { Payload } from '@gradio/client'
 import { Client } from '@gradio/client'
-import { env } from '$env/dynamic/public'
 
 export interface GradioPayload<T> extends Payload {
   type: 'data'
@@ -45,14 +44,14 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 }
 
 export const api = {
-  url: env.PUBLIC_API_URL || '/api',
+  url: env.PUBLIC_API_URL,
   client: undefined as Client | undefined,
 
   async _connect() {
     if (this.client) return this.client
-    console.debug('Connecting to Gradio at:', this.url)
+    console.debug('Connecting to Gradio at:', this.url + '/api')
     try {
-      this.client = await Client.connect(this.url)
+      this.client = await Client.connect(this.url + '/api')
       console.debug('Successfully connected to Gradio')
       return this.client
     } catch (error) {
@@ -93,5 +92,11 @@ export const api = {
     } finally {
       state.loading = false
     }
+  },
+
+  async get<T>(uri: string): Promise<T> {
+    return fetch(this.url + uri)
+      .then((response) => response.json())
+      .then((data) => data)
   }
 }
