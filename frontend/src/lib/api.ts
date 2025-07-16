@@ -1,4 +1,4 @@
-import { PUBLIC_API_URL } from '$env/static/public'
+import { PUBLIC_API_URL } from '$env/dynamic/public'
 import { state } from '$lib/state.svelte'
 import type { Payload } from '@gradio/client'
 import { Client } from '@gradio/client'
