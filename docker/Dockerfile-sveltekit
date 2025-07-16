@@ -1,4 +1,10 @@
 FROM public.ecr.aws/docker/library/node:24.3
+
+ARG GIT_COMMIT
+ENV GIT_COMMIT=$GIT_COMMIT
+
+ENV PUBLIC_API_URL="https://alpha.comparia.beta.gouv.fr/api"
+
 WORKDIR /app
 COPY ./package.json /app
 RUN yarn install
@@ -6,6 +12,3 @@ COPY ./ /app
 RUN npm run build
 EXPOSE 80
 CMD ["node", "build"]
-
-ARG GIT_COMMIT
-ENV GIT_COMMIT=$GIT_COMMIT
