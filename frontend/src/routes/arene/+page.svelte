@@ -1,6 +1,6 @@
 <script lang="ts">
   import ChatBot from '$lib/ChatBot.svelte'
-  import { runChatBots, type ModeAndPromptData } from '$lib/chatService.svelte'
+  import { runChatBots, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import DropDown from '$lib/DropDown.svelte'
   import { state } from '$lib/state.svelte'
   import { onMount } from 'svelte'
@@ -13,7 +13,7 @@
     await import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
   })
 
-  async function onSubmit(args: ModeAndPromptData) {
+  async function onSubmit(args: APIModeAndPromptData) {
     await runChatBots(args)
   }
 </script>

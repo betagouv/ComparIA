@@ -1,9 +1,9 @@
 <script lang="ts">
-  import type { Model } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import type { APIBotModel } from '$lib/models'
 
   export let custom_models_selection: string[] = [] // Default to an empty list
-  export let models: Model[] = []
+  export let models: APIBotModel[] = []
 
   export let disabled = false
 
@@ -71,7 +71,7 @@
           {#if distribution === 'api-only'}
             {m['models.size']({ size: friendly_size })}
           {:else}
-            {m['models.parameters']({ number: typeof params === 'number' ? params : total_params })}
+            {m['models.parameters']({ number: typeof params === 'number' ? params : total_params ?? '??' })}
           {/if}
         </span>
       </div>

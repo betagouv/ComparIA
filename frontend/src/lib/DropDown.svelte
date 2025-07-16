@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ModeAndPromptData, Model } from '$lib/chatService.svelte'
+  import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
@@ -7,19 +7,20 @@
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import ChevronBas from '$lib/icons/chevron-bas.svelte'
+  import type { APIBotModel } from '$lib/models'
   import type { Mode, ModeInfos } from '$lib/state.svelte'
   import { modeInfos as choices } from '$lib/state.svelte'
   import { tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
   export let never_clicked: boolean = true
-  export let models: Model[] = []
+  export let models: APIBotModel[] = []
   export let elem_id = ''
   export let elem_classes: string[] = []
   export let visible = true
   export let disabled = false
   export let show_custom_models_selection: boolean = false
-  export let onSubmit: (args: ModeAndPromptData) => void
+  export let onSubmit: (args: APIModeAndPromptData) => void
 
   let textboxElement: HTMLTextAreaElement
 
@@ -33,7 +34,7 @@
     }
     return parsed
   })
-  const mode = useLocalStorage<ModeAndPromptData['mode']>('mode', 'random')
+  const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
   const modelsSelection = useLocalStorage<string[]>('customModelsSelection', [], (parsed) => {
     if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
       const availableModelIds = new Set(models.map((m) => m.id))
@@ -57,7 +58,7 @@
     }
   }
 
-  const findModelDetails = (id: string | null, modelsList: Model[]) => {
+  const findModelDetails = (id: string | null, modelsList: APIBotModel[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
       return { name: m['words.random'](), iconPath: null }
     }
