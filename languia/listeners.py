@@ -28,7 +28,8 @@ from languia.block_arena import (
     which_model_radio,
     model_dropdown,
     available_models,
-    reaction_json
+    reveal_data,
+    reaction_json,
 )
 import traceback
 import os
@@ -50,7 +51,12 @@ from languia.utils import (
     second_header_html,
 )
 
-from languia.reveal import build_reveal_html, determine_choice_badge
+from languia.reveal import (
+    build_reveal_html,
+    get_chosen_model,
+    build_reveal_dict,
+    determine_choice_badge,
+)
 
 from languia.logs import vote_last_response, sync_reactions, record_conversations
 
@@ -483,15 +489,16 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
-        return [
+        
+        # FIXME running bot_response_multi directly here to receive messages on front
+        bot_response_multi(
             app_state_scoped,
-            # 2 conversations
             conv_a_scoped,
             conv_b_scoped,
-            # 1 chatbot
             chatbot,
             text,
-        ]
+            request,
+        )
 
     def bot_response_multi(
         app_state_scoped,
@@ -756,38 +763,16 @@ setTimeout(() => {
         else:
             your_choice_badge = None
 
-        banner = second_header_html(2)
+        chosen_model = get_chosen_model(your_choice_badge)
+        reveal_dict = build_reveal_dict(conv_a_scoped, conv_a_scoped, chosen_model)
 
-        reveal_html = build_reveal_html(
-            conv_a_scoped,
-            conv_b_scoped,
-            which_model_radio=your_choice_badge,
-        )
-        return {
-            header: gr.update(value=banner),
-            chatbot: gr.update(interactive=False),
-            send_area: gr.update(visible=False),
-            reveal_screen: gr.update(
-                elem_classes="min-h-screen fr-pt-4w  next-screen", visible=True
-            ),
-            results_area: gr.update(value=reveal_html),
-            # buttons_footer: gr.update(visible=False),
-        }
+        return reveal_dict
 
     gr.on(
         triggers=[conclude_btn.click],
         inputs=[app_state, conv_a, conv_b],
-        outputs=[
-            chatbot,
-            header,
-            send_area,
-            vote_area,
-            buttons_footer,
-            reveal_screen,
-            results_area,
-            buttons_footer,
-        ],
-        api_name=False,
+        outputs=reveal_data,
+        api_name="reveal",
         fn=force_vote_or_reveal,
         # scroll_to_output=True,
         show_progress="hidden",
@@ -838,6 +823,8 @@ window.scrollTo({
         reaction_json,
         request: gr.Request,
     ):
+        # FIXME comment disappear if select a pref after commenting
+
         # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
         # TODO: or just create another event type like "Event.react"
         if "comment" in reaction_json:
@@ -958,27 +945,11 @@ window.scrollTo({
             details,
             request,
         )
-        banner = second_header_html(2)
 
-        reveal_html = build_reveal_html(
-            conv_a=conv_a_scoped,
-            conv_b=conv_b_scoped,
-            which_model_radio=which_model_radio_output,
-        )
-        return {
-            header: gr.update(value=banner),
-            positive_a: gr.update(interactive=False),
-            positive_b: gr.update(interactive=False),
-            negative_a: gr.update(interactive=False),
-            negative_b: gr.update(interactive=False),
-            comments_a: gr.update(interactive=False),
-            comments_b: gr.update(interactive=False),
-            comments_link: gr.update(interactive=False),
-            which_model_radio: gr.update(interactive=False),
-            reveal_screen: gr.update(visible=True),
-            results_area: gr.update(value=reveal_html),
-            buttons_footer: gr.update(visible=False),
-        }
+        chosen_model = get_chosen_model(which_model_radio_output)
+        reveal_dict = build_reveal_dict(conv_a_scoped, conv_a_scoped, chosen_model)
+        
+        return reveal_dict
 
     gr.on(
         triggers=[supervote_send_btn.click],
@@ -995,20 +966,7 @@ window.scrollTo({
             + [comments_a]
             + [comments_b]
         ),
-        outputs=[
-            header,
-            positive_a,
-            positive_b,
-            negative_a,
-            negative_b,
-            comments_a,
-            comments_b,
-            comments_link,
-            reveal_screen,
-            results_area,
-            buttons_footer,
-            which_model_radio,
-        ],
+        outputs=reveal_data,
         # outputs=[quiz_modal],
         api_name="chatbot_vote",
         # scroll_to_output=True,

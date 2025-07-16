@@ -66,9 +66,10 @@ from languia.utils import get_gauge_count
 objective = config.objective
 
 
-favicon_path="assets/favicon/favicon.ico"
+favicon_path = "assets/favicon/favicon.ico"
 
-@app.get('/favicon.ico', include_in_schema=False)
+
+@app.get("/favicon.ico", include_in_schema=False)
 async def favicon():
     return FileResponse(favicon_path)
 
@@ -104,6 +105,7 @@ async def models(request: Request):
         },
     )
 
+
 @app.get("/datasets", response_class=HTMLResponse)
 async def datasets(request: Request):
     return templates.TemplateResponse(
@@ -125,7 +127,7 @@ async def share(i: str, request: Request):
         import base64, json
 
         decoded = base64.b64decode(i)
-    
+
         data = json.loads(decoded)
         assert data.get("a") in all_models_extra_info_toml
         model_a_name = data.get("a")
@@ -315,9 +317,15 @@ async def not_found_handler(request, exc):
         status_code=404,
     )
 
+
 @app.get("/available_models", response_class=JSONResponse)
 async def available_models():
     return JSONResponse(config.models_extra_info)
+
+
+@app.get("/counter", response_class=JSONResponse)
+async def counter():
+    return JSONResponse({"count": get_gauge_count(), "objective": config.objective})
 
 
 app = SentryAsgiMiddleware(app)

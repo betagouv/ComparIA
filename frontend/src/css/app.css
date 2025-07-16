@@ -1,0 +1,44 @@
+@import '@gouvfr/dsfr/dist/dsfr.min.css';
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+@import './custom-arena.css';
+
+:root {
+  /* CUSTOM DSFR LIKE */
+  --outline-color: #0a76f6;
+
+  /* CUSTOM */
+  --bot-a-color: #a96afe;
+  --bot-b-color: #ff9575;
+  --main-background: #fcfcfd;
+}
+
+html,
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  margin: 0 !important;
+}
+#app, main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.c-border {
+  border: 1px solid var(--grey-925-125);
+}
+
+.c-bot-disk-a {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--bot-a-color);
+}
+.c-bot-disk-b {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: var(--bot-b-color);
+}

@@ -1,0 +1,215 @@
+{
+  "header": {
+    "title": {
+      "compar": "compar",
+      "ia": "IA"
+    },
+    "subtitle": "Le comparateur d’IA conversationnelles",
+    "help": {
+      "link": {
+        "title": "Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre",
+        "content": "Nous aider à améliorer compar:IA"
+      }
+    },
+    "chatbot": {
+      "step": "Étape",
+      "stepOne": {
+        "title": "Que pensez-vous des réponses ?",
+        "description": "Prêtez attention au fond et à la forme puis évaluez chaque réponse"
+      },
+      "stepTwo": {
+        "title": "Les modèles sont démasqués !",
+        "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle"
+      },
+      "vote": {
+        "total": "Total des votes",
+        "objective": "Objectif : ",
+        "legend": "Légende",
+        "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
+      },
+      "newDiscussion": "Nouvelle discussion"
+    }
+  },
+  "arenaHome": {
+    "title": "Comment puis-je vous aider aujourd'hui ?",
+    "modelSelection": "Sélection des modèles",
+    "prompt": {
+      "label": "Écrivez votre premier message",
+      "placeholder": "Écrivez votre premier message ici"
+    },
+    "selectModels": {
+      "question": "Quels modèles voulez-vous comparer ?",
+      "help": "Sélectionnez le mode de comparaison qui vous convient"
+    },
+    "compareModels": {
+      "question": "Quels modèles voulez-vous comparer ?",
+      "count": "{count}/2 modèles",
+      "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire"
+    },
+    "suggestions": {
+      "title": "Suggestions de prompts",
+      "generateAnother": "Générer un autre message",
+      "choices": {
+        "iasummit": {
+          "iconAlt": "Sommet pour l'action sur l'IA",
+          "title": "Prompts issus de la consultation citoyenne sur l’IA ",
+          "tooltip": "Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies."
+        },
+        "ideas": {
+          "iconAlt": "Idées",
+          "title": "Générer de nouvelles idées"
+        },
+        "explanations": {
+          "iconAlt": "Explications",
+          "title": "Expliquer simplement un concept"
+        },
+        "languages": {
+          "iconAlt": "Traduction",
+          "title": "M’exprimer dans une autre langue"
+        },
+        "administrative": {
+          "iconAlt": "Administratif",
+          "title": "Rédiger un document administratif"
+        },
+        "recipes": {
+          "iconAlt": "Recettes",
+          "title": "Découvrir une nouvelle recette de cuisine"
+        },
+        "coach": {
+          "iconAlt": "Conseils",
+          "title": "Obtenir des conseils sur l’alimentation et le sport"
+        },
+        "stories": {
+          "iconAlt": "Histoires",
+          "title": "Raconter une histoire"
+        },
+        "recommendations": {
+          "iconAlt": "Recommandations",
+          "title": "Proposer des idées de films, livres, musiques"
+        }
+      }
+    }
+  },
+  "chatbot": {
+    "continuePrompt": "Continuer à discuter avec les deux modèles d'IA",
+    "revealButton": "Passer à la révélation des modèles",
+    "conversation": "Conversation",
+    "errors": {
+      "tooLong": {
+        "title": "Oups, la conversation est trop longue pour un des modèles.",
+        "message": "Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.",
+        "vote": "Vous pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation avec deux nouveaux.",
+        "retry": "Vous pouvez recommencer une conversation avec deux nouveaux modèles."
+      },
+      "other": {
+        "title": "Oups, erreur temporaire",
+        "message": "Une erreur temporaire est survenue.",
+        "vote": "Ou bien conclure votre expérience en donnant votre avis sur les modèles.",
+        "retry": "Vous pouvez tenter de réessayer de solliciter les modèles."
+      }
+    },
+    "loading": "Chargement des réponses"
+  },
+  "closeModal": "Fermer la fenêtre modale",
+  "models": {
+    "licenses": {
+      "proprietary": "Propriétaire",
+      "openSource": "Open source",
+      "semiOpen": "Semi-ouvert"
+    },
+    "release": "Sortie {date}",
+    "size": "Taille estimée ({size})",
+    "parameters": "{number} mds paramètres",
+    "names": {
+      "a": "Modèle A",
+      "b": "Modèle B"
+    }
+  },
+  "modes": {
+    "random": {
+      "title": "Mode Aléatoire",
+      "label": "Aléatoire",
+      "altLabel": "Modèles aléatoires",
+      "description": "Deux modèles choisis au hasard parmi toute la liste"
+    },
+    "custom": {
+      "title": "Mode Sélection",
+      "label": "Sélection manuelle",
+      "altLabel": "Sélection manuelle",
+      "description": "Reconnaîtrez-vous les deux modèles que vous avez choisis ?"
+    },
+    "small-models": {
+      "title": "Mode Frugal",
+      "label": "Frugal",
+      "altLabel": "Modèles frugaux",
+      "description": "Deux modèles tirés au hasard parmi ceux de plus petite taille"
+    },
+    "big-vs-small": {
+      "title": "Mode David contre Goliath",
+      "label": "David contre Goliath",
+      "altLabel": "David contre Goliath",
+      "description": "Un petit modèle contre un grand, les deux tirés au hasard"
+    },
+    "reasoning": {
+      "title": "Mode Raisonnement",
+      "label": "Raisonnement",
+      "altLabel": "Modèles avec raisonnement",
+      "description": "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes"
+    }
+  },
+  "vote": {
+    "title": "Quel modèle d’IA préférez-vous ?",
+    "introA": "Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.",
+    "introB": "Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français",
+    "bothEqual": "Les deux se valent",
+    "comment": {
+      "add": "Ajouter des commentaires",
+      "placeholder": "Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
+    },
+    "choices": {
+      "positive": {
+        "question": "Qu'avez-vous apprécié dans la réponse ?",
+        "useful": "Utile",
+        "complete": "Complète",
+        "creative": "Créative",
+        "clear-formatting": "Mise en forme claire"
+      },
+      "negative": {
+        "question": "Pourquoi la réponse ne convient-elle pas ?",
+        "incorrect": "Incorrecte",
+        "superficial": "Superficielle",
+        "instructions-not-followed": "Instructions non suivies"
+      },
+      "altText": "{choice} pour le modèle {model}"
+    },
+    "qualify": {
+      "question": "Comment qualifiez-vous ses réponses ?",
+      "placeholder": "Les réponses du modèle {model} sont...",
+      "addDetails": "Ajouter des détails"
+    },
+    "like": {
+      "label": "j'apprécie",
+      "selectedLabel": "j'apprécie (sélectionné)"
+    },
+    "dislike": {
+      "label": "je n'apprécie pas",
+      "selectedLabel": "je n'apprécie pas (sélectionné)"
+    }
+  },
+  "actions": {
+    "copyMessage": {
+      "do": "Copier le message",
+      "done": "Message copié"
+    }
+  },
+  "words": {
+    "back": "Retour",
+    "close": "Fermer",
+    "random": "Aléatoire",
+    "regenerate": "Regénérer",
+    "restart": "Recommencer",
+    "retry": "Recommencer",
+    "send": "Envoyer",
+    "validate": "Valider"
+  }
+}
