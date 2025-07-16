@@ -273,6 +273,7 @@ with gr.Blocks(
     #             )
 
     available_models = gr.JSON(visible=False)
+    reveal_data = gr.JSON(visible=False)
 
     from languia.listeners import register_listeners
 
