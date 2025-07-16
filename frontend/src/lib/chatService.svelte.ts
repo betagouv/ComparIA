@@ -80,6 +80,56 @@ export interface VoteData {
   b: VoteDetails
 }
 
+// REVEAL
+
+type DurationUnit = 'j' | 'h' | 'min' | 's'
+
+export interface APIRevealData {
+  b64: string
+  model_a: APIBotModel
+  model_b: APIBotModel
+  chosen_model: 'model-a' | 'model-b' | null
+  model_a_kwh: number
+  model_b_kwh: number
+  model_a_co2: number
+  model_b_co2: number
+  size_desc: Record<Sizes, string>
+  license_desc: Record<string, string>
+  license_attrs: Partial<
+    Record<string, { warning_commercial: boolean; prohibit_commercial: boolean }>
+  >
+  model_a_tokens: number
+  model_b_tokens: number
+  streaming_a: number
+  streaming_a_unit: DurationUnit
+  streaming_b: number
+  streaming_b_unit: DurationUnit
+  lightbulb_a: number
+  lightbulb_a_unit: DurationUnit
+  lightbulb_b: number
+  lightbulb_b_unit: DurationUnit
+}
+
+interface RevealModelData {
+  model: APIBotModel
+  side: 'model-a' | 'model-b'
+  kwh: number
+  co2: number
+  tokens: number
+  lightbulb: number
+  lightbulbUnit: string
+  streaming: number
+  streamingUnit: string
+}
+export interface RevealData {
+  selected: APIVoteData['which_model_radio_output']
+  modelsData: RevealModelData[]
+  sizeDesc: APIRevealData['size_desc']
+  licenseDesc: APIRevealData['license_desc']
+  licenseAttrs: APIRevealData['license_attrs']
+  shareB64Data: APIRevealData['b64']
+}
+
 // DATA
 
 export const chatbot = $state<{
