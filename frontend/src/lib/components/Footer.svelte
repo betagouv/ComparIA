@@ -1,0 +1,67 @@
+<footer class="fr-footer fr-pb-2w" role="contentinfo" id="main-footer">
+  <div class="fr-container">
+    <div class="fr-footer__body">
+      <div class="fr-footer__brand fr-enlarge-link">
+        <a href="/" title="Retour à l'accueil du site - compar:IA">
+          <p class="fr-logo">Ministère<br />de la culture</p>
+        </a>
+      </div>
+      <div class="fr-footer__content">
+        <p class="fr-footer__content-desc">
+          <strong>Aidez-nous à améliorer ce service !</strong><br />
+          Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez
+          pas à nous écrire
+          <a
+            href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX"
+            target="_blank"
+            rel="noopener external"
+          >
+            via ce formulaire
+          </a>, nous lisons tous vos messages.<br />
+          Merci !
+        </p>
+      </div>
+    </div>
+    <div class="fr-footer__bottom">
+      <ul class="fr-footer__bottom-list">
+        <li class="fr-footer__bottom-item">
+          <a class="fr-footer__bottom-link" href="/mentions-legales">Mentions légales</a>
+        </li>
+        <li class="fr-footer__bottom-item">
+          <a class="fr-footer__bottom-link" href="/modalites">Modalités d'utilisation</a>
+        </li>
+        <li class="fr-footer__bottom-item">
+          <a class="fr-footer__bottom-link" href="/donnees-personnelles">
+            Politique de confidentialité
+          </a>
+        </li>
+        <li class="fr-footer__bottom-item">
+          <a class="fr-footer__bottom-link" href="/accessibilite">Accessibilité : non conforme</a>
+        </li>
+        <li class="fr-footer__bottom-item">
+          <a
+            class="fr-footer__bottom-link"
+            href="https://github.com/betagouv/languia"
+            target="_blank"
+            rel="noopener external"
+          >
+            Code source
+          </a>
+        </li>
+      </ul>
+      <div class="fr-footer__bottom-copy">
+        <p>
+          Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de
+          ce site sont proposés sous <a
+            href="https://github.com/etalab/licence-ouverte/blob/master/LO.md"
+            target="_blank"
+            rel="noopener external"
+            title="Licence etalab - nouvelle fenêtre"
+          >
+            licence etalab-2.0
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
