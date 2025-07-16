@@ -1,5 +1,5 @@
 <script lang="ts">
-  import IconModel from '$lib/components/IconModel.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import { m } from '$lib/i18n/messages'
   import { setLocale } from '$lib/i18n/runtime'
   import { modeInfos, state } from '$lib/state.svelte'
@@ -126,7 +126,7 @@
       <div class="fr-col-12 fr-col-md-4 align-center grid">
         {#if state.step == 1}
           <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs bg-white text-center">
-            <IconModel icon={mode.icon} size={20} inline />
+            <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>
             &nbsp;<a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="mode-desc"
             ></a>
