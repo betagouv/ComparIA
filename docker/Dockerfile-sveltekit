@@ -6,9 +6,16 @@ ENV PUBLIC_GIT_COMMIT=$GIT_COMMIT
 ENV PUBLIC_API_URL="https://alpha.comparia.beta.gouv.fr"
 
 WORKDIR /app
+RUN npm install -g vite
 COPY ./package.json ./yarn.lock /app
 RUN yarn install
 COPY ./ /app
+
+# Manually build the browser-specific version of @gradio/client to work around build issues.
+RUN yarn --cwd /app/node_modules/@gradio/client run bundle:browser && \
+    mv /app/node_modules/@gradio/client/dist/browser.es.js /app/node_modules/@gradio/client/dist/browser.js
+
 RUN npm run build
+
 EXPOSE 80
 CMD ["node", "build"]
