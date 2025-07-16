@@ -4,7 +4,7 @@
   import { setLocale } from '$lib/i18n/runtime'
   import { modeInfos, state } from '$lib/state.svelte'
   import { sanitize } from '@gradio/sanitize'
-  import '../app.css'
+  import '../css/app.css'
 
   let { children } = $props()
   const mode = $derived(state.mode ? modeInfos.find((mode) => mode.value === state.mode)! : null)
