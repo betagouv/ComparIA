@@ -1,7 +1,9 @@
 @import '@gouvfr/dsfr/dist/dsfr.min.css';
+@import '@gouvfr/dsfr/dist/utility/icons/icons.css';
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 @import './custom-arena.css';
+@import './icons.css';
 
 @theme {
   --color-primary: var(--blue-france-main-525);

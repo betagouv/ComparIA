@@ -1,0 +1,50 @@
+@import '@gouvfr/dsfr/dist/utility/icons/icons.css';
+
+/* EXTRA ICONS */
+.fr-icon-book-open::before,
+.fr-icon-book-open::after {
+  -webkit-mask-image: url('/static/icons/book-open-line.svg');
+  mask-image: url('/static/icons/book-open-line.svg');
+}
+
+.fr-icon-bowl::before,
+.fr-icon-bowl::after {
+  -webkit-mask-image: url('/static/icons/bowl.svg');
+  mask-image: url('/static/icons/bowl.svg');
+}
+
+.fr-icon-brain::before,
+.fr-icon-brain::after {
+  -webkit-mask-image: url('/static/icons/brain.svg');
+  mask-image: url('/static/icons/brain.svg');
+}
+
+.fr-icon-copy::before,
+.fr-icon-copy::after {
+  -webkit-mask-image: url('/static/icons/copy.svg');
+  mask-image: url('/static/icons/copy.svg');
+}
+
+.fr-icon-dice::before,
+.fr-icon-dice::after {
+  -webkit-mask-image: url('/static/icons/dice.svg');
+  mask-image: url('/static/icons/dice.svg');
+}
+
+.fr-icon-glass::before,
+.fr-icon-glass::after {
+  -webkit-mask-image: url('/static/icons/glass.svg');
+  mask-image: url('/static/icons/glass.svg');
+}
+
+.fr-icon-ruler::before,
+.fr-icon-ruler::after {
+  -webkit-mask-image: url('/static/icons/ruler.svg');
+  mask-image: url('/static/icons/ruler.svg');
+}
+
+.fr-icon-shuffle::before,
+.fr-icon-shuffle::after {
+  -webkit-mask-image: url('/static/icons/shuffle.svg');
+  mask-image: url('/static/icons/shuffle.svg');
+}
