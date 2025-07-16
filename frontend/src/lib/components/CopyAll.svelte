@@ -1,13 +1,13 @@
 <script lang="ts">
+  import type { ChatMessage } from '$lib/chatService.svelte'
   import IconButton from '$lib/components/IconButton.svelte'
-  import type { NormalisedMessage } from '$lib/types'
   import { Check, Copy } from '@gradio/icons'
   import { onDestroy } from 'svelte'
 
   let copied = false
-  export let value: NormalisedMessage[] | null
+  export let value: ChatMessage[] | null
 
-  let timer: NodeJS.Timeout
+  let timer: number
 
   function copy_feedback(): void {
     copied = true
@@ -20,12 +20,7 @@
   const copy_conversation = (): void => {
     if (value) {
       const conversation_value = value
-        .map((message) => {
-          if (message.type === 'text') {
-            return `${message.role}: ${message.content}`
-          }
-          return `${message.role}: ${message.content.value.url}`
-        })
+        .map((message) => `${message.role}: ${message.content}`)
         .join('\n\n')
 
       navigator.clipboard.writeText(conversation_value).catch((err) => {

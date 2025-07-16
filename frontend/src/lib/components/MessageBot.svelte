@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
+  import type { ChatMessage, OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
   import Copy from '$lib/components/Copy.svelte'
   import LikeDislike from '$lib/components/LikeDislike.svelte'
   import LikePanel from '$lib/components/LikePanel.svelte'
@@ -9,7 +9,7 @@
   import { noop } from '$lib/utils/commons'
 
   export type MessageBotProps = {
-    message: NormalisedMessage
+    message: ChatMessage<'assistant'>
     generating?: boolean
     disabled?: boolean
     onReactionChange: OnReactionFn

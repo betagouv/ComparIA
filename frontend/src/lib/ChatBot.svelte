@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { OnReactionFn } from '$lib/chatService.svelte'
   import { askChatBots, chatbot } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
@@ -38,8 +39,8 @@
     chatbot.status !== 'complete' || (step === 'vote' && voteData.selected === undefined)
   )
 
-  function onLike(data: ExtendedLikeData) {
-    console.log('onLike', data)
+  const onReactionChange: OnReactionFn = async (kind, reaction) => {
+    console.log('onReactionChanged', kind, reaction)
     canVote = false
   }
 
@@ -65,15 +66,12 @@
 <div id="chat-area">
   <ChatBot
     disabled={chatbotDisabled}
-    show_copy_all_button={false}
-    value={chatbot.messages}
-    pending_message={chatbot.status === 'pending'}
+    pending={chatbot.status === 'pending'}
     generating={chatbot.status === 'generating'}
-    {onLike}
+    {onReactionChange}
     {onRetry}
     autoscroll={true}
     {layout}
-    {placeholder}
   />
 </div>
 

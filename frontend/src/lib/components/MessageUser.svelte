@@ -1,17 +1,17 @@
 <script lang="ts">
+  import type { ChatMessage } from '$lib/chatService.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
-  import type { NormalisedMessage } from '$lib/types'
   import { noop } from '$lib/utils/commons'
 
   export type MessageUserProps = {
-    message: NormalisedMessage
+    message: ChatMessage<'user'>
     onLoad: () => void
   }
 
   let { message, onLoad = noop }: MessageUserProps = $props()
 </script>
 
-<div class="message-user rounded-2xl px-5 py-3 mt-5 mb-4 md:mb-8">
+<div class="message-user mb-4 mt-5 rounded-2xl px-5 py-3 md:mb-8">
   <Markdown message={message.content} on:load={onLoad} />
 
   <!-- <div class="message-buttons-right">
@@ -34,5 +34,4 @@
       margin-left: auto;
     }
   }
-  
 </style>

@@ -1,32 +1,52 @@
 <script lang="ts">
   import { browser } from '$app/environment'
-  import CopyAll from '$lib/components/CopyAll.svelte'
-  import IconButton from '$lib/components/IconButton.svelte'
-  import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
-  import type { ExtendedLikeData, NormalisedMessage } from '$lib/types'
-  import { type UndoRetryData, group_messages } from '$lib/utils'
-  import { ScrollDownArrow } from '@gradio/icons'
-  import { onMount, tick } from 'svelte'
-  import MessageBot from './MessageBot.svelte'
-  import MessageUser from './MessageUser.svelte'
+  import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
+  import { chatbot } from '$lib/chatService.svelte'
+  import MessageBot from '$lib/components/MessageBot.svelte'
+  import MessageUser from '$lib/components/MessageUser.svelte'
+  import Pending from '$lib/components/Pending.svelte'
   import { m } from '$lib/i18n/messages'
+  import { type UndoRetryData } from '$lib/utils'
+  import { onMount, tick } from 'svelte'
 
-  export let value: NormalisedMessage[] = []
-  $: value
-
-  export let disabled = false
-  export let pending_message = false
-  export let generating = false
-  export let show_copy_all_button = false
-  export let autoscroll = true
-  export let layout: 'bubble' | 'panel' = 'bubble'
-  export let placeholder: string | null = null
-  export let onLike: (data: ExtendedLikeData) => void
-  export let onRetry: (data: UndoRetryData) => void
+  let {
+    pending,
+    generating,
+    disabled,
+    autoscroll = true,
+    layout = 'bubble',
+    onReactionChange,
+    onRetry
+  }: {
+    pending: boolean
+    generating: boolean
+    disabled: boolean
+    autoscroll?: boolean
+    layout: 'bubble' | 'panel'
+    onReactionChange: OnReactionFn
+    onRetry: (data: UndoRetryData) => void
+  } = $props()
 
   let div: HTMLDivElement
 
   let show_scroll_button = false
+
+  const groupedMessages = $derived.by(() => {
+    const questionCount = Math.ceil(chatbot.messages.length / 3)
+    const messages = chatbot.messages.map((message, index) => ({
+      ...message,
+      index,
+      isLast: index >= (questionCount - 1) * 3,
+      // FIXME still needed ?
+      content: message.content.replace('src="/file', `src="${chatbot}file`)
+    }))
+    // Group messages by exchange (1 user question, 2 bots answers)
+    return Array.from(new Array(questionCount), (_, i) => messages.slice(i * 3, i * 3 + 3)).map(
+      ([user, ...bots]) => ({ user, bots }) as GroupedChatMessages
+    )
+  })
+
+  const errorString = $derived(chatbot.messages.find((message) => message.error !== null)?.error)
 
   function is_at_bottom(): boolean {
     return div && div.offsetHeight + div.scrollTop > div.scrollHeight - 100
@@ -57,9 +77,11 @@
   onMount(() => {
     scroll_on_value_update()
   })
-  $: if (value || pending_message) {
-    scroll_on_value_update()
-  }
+  $effect(() => {
+    if (groupedMessages || pending) {
+      scroll_on_value_update()
+    }
+  })
 
   onMount(() => {
     function handle_scroll(): void {
@@ -75,28 +97,6 @@
       div?.removeEventListener('scroll', handle_scroll)
     }
   })
-
-  export let hasError: boolean = false
-  export let errorString: string | null = null
-  $: {
-    errorString = null
-
-    for (const messages of groupedMessages) {
-      for (const message of messages.bots) {
-        if (message?.error) {
-          errorString = message.error
-          break
-        }
-      }
-      if (errorString !== null) {
-        break
-      }
-    }
-
-    hasError = errorString !== null
-  }
-
-  $: groupedMessages = value && group_messages(value)
 
   function handle_retry_last(): void {
     // svelte custom_components/customchatbot/frontend/shared/ChatBot.svelte (237-238)
@@ -115,46 +115,28 @@
       // error: msg.metadata?.error || msg.error
     })
   }
-
-  const onReaction = (kind: 'like' | 'comment', message: NormalisedMessage) => {
-    value[message.index] = message
-
-    if (kind === 'like') {
-      onLike({
-        index: message.index,
-        value: message.content,
-        liked: message.liked ? true : message.disliked ? false : undefined,
-        prefs: message.prefs
-      })
-    } else {
-      onLike({
-        index: message.index,
-        value: '',
-        comment: message.comment
-      })
-    }
-  }
 </script>
 
-{#if value !== null && value.length > 0}
+<!-- FIXME still needed? -->
+<!-- {#if value !== null && value.length > 0}
   <div>
     {#if show_copy_all_button}
       <CopyAll {value} />
     {/if}
   </div>
-{/if}
+{/if} -->
 
 <div
-  class={layout === 'bubble' ? 'bubble-wrap' : 'panel-wrap'}
+  class={(layout === 'bubble' ? 'bubble-wrap' : 'panel-wrap') + ' min-h-full'}
   bind:this={div}
   role="log"
   aria-label={m['chatbot.conversation']()}
   aria-live="polite"
 >
-  {#if value !== null && value.length > 0 && groupedMessages !== null}
-    {#each groupedMessages as { user: userMessage, bots }, i}
+  {#if !pending}
+    {#each groupedMessages as { user, bots }, i}
       <div class="mb-15 px-4 md:px-8 xl:px-16">
-        <MessageUser message={userMessage} onLoad={browser ? scroll : () => {}} />
+        <MessageUser message={user} onLoad={browser ? scroll : () => {}} />
 
         <div class="grid gap-10 md:grid-cols-2 md:gap-6">
           {#each bots as botMessage, j}
@@ -163,24 +145,25 @@
               {generating}
               {disabled}
               onLoad={browser ? scroll : () => {}}
-              {onReaction}
+              {onReactionChange}
             />
           {/each}
         </div>
       </div>
     {/each}
   {:else}
+    <Pending />
     <!-- TODO: remove this placeholder, if it appears it should be an error instead -->
-    <div class="placeholder-content">
+    <!-- <div class="placeholder-content">
       {#if placeholder !== null}
         <div class="placeholder">
           <Markdown message={placeholder} />
         </div>
       {/if}
-    </div>
+    </div> -->
   {/if}
 
-  {#if hasError}
+  {#if errorString}
     <div class="fr-py-4w fr-mb-4w error rounded-tile fr-container">
       {#if errorString == 'Context too long.'}
         <h5>
@@ -214,7 +197,7 @@
         <p class="text-center">
           <button
             class="fr-btn purple-btn"
-            on:click={() => handle_retry_last()}
+            onclick={() => handle_retry_last()}
             disabled={generating || disabled}>{m['words.retry']()}</button
           >
         </p>
@@ -223,7 +206,8 @@
   {/if}
 </div>
 
-{#if show_scroll_button}
+<!-- FIXME still needed? -->
+<!-- {#if show_scroll_button}
   <div class="scroll-down-button-container">
     <IconButton
       Icon={ScrollDownArrow}
@@ -232,7 +216,7 @@
       on:click={scroll_to_bottom}
     />
   </div>
-{/if}
+{/if} -->
 
 <style>
   .placeholder-content {

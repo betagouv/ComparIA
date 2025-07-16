@@ -1,7 +1,5 @@
 import { api } from '$lib/api'
 import { state, type Mode } from '$lib/state.svelte'
-import type { Message, NormalisedMessage } from '$lib/types'
-import { update_messages } from '$lib/utils'
 import type { LoadingStatus } from '@gradio/statustracker'
 
 export interface ModeAndPromptData {
@@ -44,6 +42,36 @@ export interface Model {
   fully_open_source: boolean
 }
 
+// MESSAGES
+
+type APIMessageRole = 'system' | 'user' | 'assistant'
+export type Bot = 'a' | 'b'
+
+interface APIChatMessageMetadata<Role extends APIMessageRole = APIMessageRole> {
+  bot: Role extends 'assistant' ? Bot : null
+  duration: number | null
+  generation_id: Role extends 'assistant' ? string : null
+}
+
+export interface APIChatMessage<Role extends APIMessageRole = APIMessageRole> {
+  role: Role
+  error: string | null
+  metadata: APIChatMessageMetadata<Role>
+  content: string
+  reasoning: Role extends 'assistant' ? string | '' : null
+}
+
+export interface ChatMessage<Role extends APIMessageRole = APIMessageRole>
+  extends APIChatMessage<Role> {
+  index: number
+  isLast: boolean
+}
+
+export type GroupedChatMessages = {
+  user: ChatMessage<'user'>
+  bots: [ChatMessage<'assistant'>, ChatMessage<'assistant'>]
+}
+
 // REACTIONS
 
 export const positiveReactions = ['useful', 'complete', 'creative', 'clear-formatting'] as const
@@ -62,7 +90,7 @@ export type OnReactionFn = (kind: ReactionKind, reaction: Required<APIReactionDa
 
 export const chatbot = $state<{
   status: LoadingStatus['status']
-  messages: NormalisedMessage[]
+  messages: APIChatMessage[]
   root: string
 }>({
   status: 'pending',
@@ -74,7 +102,7 @@ export async function runChatBots(args: ModeAndPromptData) {
   chatbot.status = 'pending'
 
   try {
-    const job = await api.submit<Message[]>('/add_first_text', { model_dropdown_scoped: args })
+    const job = await api.submit<APIChatMessage[]>('/add_first_text', { model_dropdown_scoped: args })
 
     state.currentScreen = 'chatbots'
     state.mode = args.mode
@@ -85,7 +113,7 @@ export async function runChatBots(args: ModeAndPromptData) {
 
     for await (const messages of job) {
       chatbot.status = 'generating'
-      chatbot.messages = update_messages(messages, chatbot.messages, chatbot.root)
+      chatbot.messages = messages
     }
 
     chatbot.status = 'complete'
@@ -101,12 +129,12 @@ export async function askChatBots(text: string) {
   chatbot.status = 'pending'
 
   try {
-    const job = await api.submit<Message[]>('/add_text', { text })
+    const job = await api.submit<APIChatMessage[]>('/add_text', { text })
     // chatbot.status = 'streaming'
 
     for await (const messages of job) {
       chatbot.status = 'generating'
-      chatbot.messages = update_messages(messages, chatbot.messages, chatbot.root)
+      chatbot.messages = messages
     }
 
     chatbot.status = 'complete'
