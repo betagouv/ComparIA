@@ -5,6 +5,24 @@ import { svelteTesting } from '@testing-library/svelte/vite'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+  optimizeDeps: {
+    include: [
+      '@gradio/client',
+      '@gradio/atoms',
+      '@gradio/icons',
+      '@gradio/statustracker',
+      '@gradio/utils'
+    ]
+  },
+  ssr: {
+    noExternal: [
+      '@gradio/client',
+      '@gradio/atoms',
+      '@gradio/icons',
+      '@gradio/statustracker',
+      '@gradio/utils'
+    ]
+  },
   plugins: [
     tailwindcss(),
     sveltekit(),
