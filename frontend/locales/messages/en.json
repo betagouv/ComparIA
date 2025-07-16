@@ -62,12 +62,16 @@
   "closeModal": "Close the popup",
   "models": {
     "licenses": {
-      "proprietary": "Proprietary",
-      "openSource": "Open source",
-      "semiOpen": "Semi-open"
+      "type": {
+        "proprietary": "Proprietary",
+        "openSource": "Open source",
+        "semiOpen": "Semi-open"
+      }
     },
     "release": "Released on {date}",
-    "size": "Estimated size ({size})",
+    "size": {
+      "estimated": "Estimated size ({size})"
+    },
     "parameters": "{number} parameters",
     "names": {
       "a": "Model A",

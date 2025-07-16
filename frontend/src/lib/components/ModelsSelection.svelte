@@ -57,10 +57,10 @@
           class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
         >
           {distribution == 'api-only'
-            ? m['models.licenses.proprietary']()
+            ? m['models.licenses.type.proprietary']()
             : fully_open_source
-              ? m['models.licenses.openSource']()
-              : m['models.licenses.semiOpen']()}
+              ? m['models.licenses.type.openSource']()
+              : m['models.licenses.type.semiOpen']()}
         </span>
         {#if release_date}
           <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">
@@ -69,7 +69,7 @@
         {/if}
         <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
           {#if distribution === 'api-only'}
-            {m['models.size']({ size: friendly_size })}
+            {m['models.size.estimated']({ size: friendly_size })}
           {:else}
             {m['models.parameters']({ number: typeof params === 'number' ? params : total_params ?? '??' })}
           {/if}

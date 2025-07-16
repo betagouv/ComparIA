@@ -129,17 +129,72 @@
   },
   "closeModal": "Fermer la fenêtre modale",
   "models": {
+    "conditions": "Conditions d'utilisation",
     "licenses": {
-      "proprietary": "Propriétaire",
-      "openSource": "Open source",
-      "semiOpen": "Semi-ouvert"
+      "type": {
+        "proprietary": "Propriétaire",
+        "openSource": "Open source",
+        "semiOpen": "Semi-ouvert"
+      },
+      "name": "Licence {licence}",
+      "commercial": "Licence commerciale",
+      "noDesc": "Les informations de licence n'ont pas été remplies pour ce modèle."
     },
     "release": "Sortie {date}",
-    "size": "Taille estimée ({size})",
-    "parameters": "{number} mds paramètres",
+    "size": {
+      "title": "Taille",
+      "estimated": "Taille estimée ({size})",
+      "descriptions": {
+        "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
+        "S": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
+        "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+        "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
+        "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés."
+      }
+    },
+    "openWeight": {
+      "conditions": {
+        "free": "Permissive",
+        "copyleft": "Copyleft",
+        "restricted": "Sous conditions"
+      },
+      "tooltips": {
+        "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
+        "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source ».",
+        "params": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il est capable d’effectuer des tâches complexes.",
+        "free": "Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle source.",
+        "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
+        "ram": "La RAM (mémoire vive) stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de RAM pour fonctionner."
+      },
+
+      "descriptions": {
+        "XS": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des modèles très petits (moins de 7 milliards de paramètres).",
+        "S": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des petits modèles (entre 7 et 20 milliards de paramètres).",
+        "M": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des moyens modèles (entre 20 et 70 milliards de paramètres).",
+        "L": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des grands modèles (entre 70 et 100 milliards de paramètres).",
+        "XL": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des très grands modèles."
+      },
+      "use": {
+        "commercial": "Utilisation commerciale",
+        "modification": "Modification autorisée",
+        "attribution": "Attribution requise",
+        "licenseType": "Type de licence",
+        "requiredRam": "RAM nécessaire"
+      }
+    },
+    "parameters": "{number} mds de paramètres",
+    "ram": "{min} à {max} Go",
     "names": {
       "a": "Modèle A",
       "b": "Modèle B"
+    },
+    "extra": {
+      "title": "Pour aller plus loin",
+      "experts": {
+        "open-weights": "Pour les expert·es, consultez la <a {linkProps}>fiche du modèle sur Hugging Face</a>",
+        "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>"
+      },
+      "impacts": "Les calculs d’impacts environnementaux reposent sur les projets <a {linkProps1}>EcoLogits</a> et <a {linkProps2}>Impact CO<sub>2</sub></a>."
     }
   },
   "modes": {

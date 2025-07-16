@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { RevealData } from '$lib/chatService.svelte'
+  import { m } from '$lib/i18n/messages'
   import type { APIBotModel } from '$lib/models'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   let {
     model,
@@ -25,7 +27,7 @@
               title="Fermer la fenêtre modale"
               aria-controls="fr-modal-{model.id}"
             >
-              Fermer
+              {m['words.close']()}
             </button>
           </div>
           <div class="fr-modal__content fr-mb-4w modal-model">
@@ -38,17 +40,17 @@
                 <span
                   class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v"
                 >
-                  Open source&nbsp;
+                  {m['models.licenses.type.openSource']()}&nbsp;
                   <a
                     class="fr-icon fr-icon--xs fr-icon--question-line"
                     aria-describedby="license-{model.id}"
                   ></a>
                 </span>
-              {:else if model['distribution'] === 'open-weights'}
+              {:else if model.distribution === 'open-weights'}
                 <span
                   class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v"
                 >
-                  Semi-ouvert&nbsp;
+                  {m['models.licenses.type.semiOpen']()}&nbsp;
                   <a
                     class="fr-icon fr-icon--xs fr-icon--question-line"
                     aria-describedby="license-{model.id}"
@@ -58,63 +60,57 @@
                 <span
                   class="fr-badge fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v"
                 >
-                  Propriétaire
+                  {m['models.licenses.type.proprietary']()}
                 </span>
               {/if}
               <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                {#if model['distribution'] === 'open-weights'}
-                  {Math.round(model.params)} mds de paramètres&nbsp;<a
+                {#if model.distribution === 'api-only'}
+                  {m['models.size.estimated']({ size: model.friendly_size })}
+                {:else}
+                  {m['models.parameters']({ number: model.params })}&nbsp;<a
                     class="fr-icon fr-icon--xs fr-icon--question-line"
                     aria-describedby="params-{model.id}"
                   ></a>
-                {:else}
-                  Taille estimée ({model.friendly_size})
                 {/if}
               </span>
               {#if model.release_date}
                 <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-                  Sortie {model.release_date}
+                  {m['models.release']({ date: model.release_date })}
                 </span>
               {/if}
 
               <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-                Licence {#if model['distribution'] === 'open-weights'}{model.license}{:else}commerciale
+                {#if model.distribution === 'open-weights'}
+                  {m['models.licenses.name']({ licence: model.license })}
+                {:else}
+                  {m['models.licenses.commercial']()}
                 {/if}
               </span>
             </p>
             <p>{model.description}</p>
             <div>
-              <h6 class="fr-mb-0">Taille</h6>
+              <h6 class="fr-mb-0">{m['models.size.title']()}</h6>
               <p class="fr-mb-4w text-grey fr-text--sm">
-                {#if model['distribution'] === 'open-weights'}
-                  Doté de {Math.round(model.params)} milliards de paramètres, ce modèle fait partie de
-                  la classe des
-                  {#if model['friendly_size'] == 'XS'}
-                    modèles très petits (moins de 7 milliards de paramètres).
-                  {:else if model['friendly_size'] === 'S'}
-                    petits modèles (entre 7 et 20 milliards de paramètres).
-                  {:else if model['friendly_size'] === 'M'}
-                    moyens modèles (entre 20 et 70 milliards de paramètres).
-                  {:else if model['friendly_size'] === 'L'}
-                    grands modèles (entre 70 et 100 milliards de paramètres).
-                  {:else if model['friendly_size'] === 'XL'}
-                    très grands modèles.
-                  {/if}
+                {#if model.distribution === 'open-weights'}
+                  {m[`models.openWeight.descriptions.${model.friendly_size}`]({
+                    paramsCount: Math.round(model.params)
+                  })}
                 {/if}
-                {infos.sizeDesc[model.friendly_size]}
+                {m[`models.size.descriptions.${model.friendly_size}`]()}
               </p>
             </div>
             <div class="fr-mb-4w">
-              <h6 class="fr-mb-0">Conditions d'utilisation</h6>
+              <h6 class="fr-mb-0">{m['models.conditions']()}</h6>
               <div class="fr-mb-1w">
-                {#if model['distribution'] === 'open-weights'}
+                {#if model.distribution === 'open-weights'}
                   <p class="fr-text--sm text-grey">
-                    <strong> Licence {model.license}</strong>&nbsp;:
-                    {infos.licenseDesc[model.license] ||
-                      "Les informations de licence n'ont pas été remplies pour ce modèle."}
+                    <!-- FIXME i18n integrate licenseDesc in translations -->
+                    <strong>{m['models.licenses.name']({ licence: model.license })}</strong>&nbsp;:
+                    {infos.licenseDesc[model.license] || m['models.licenses.noDesc']()}
                   </p>
                   <div class="model-details grid">
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
+                      <!-- FIXME i18n -->
                       {#if infos.licenseAttrs?.[model.license]?.warning_commercial}
                         <img src="/extra-icons/orangecheck.svg" alt="" />
                       {:else if infos.licenseAttrs?.[model.license]?.prohibit_commercial}
@@ -122,15 +118,20 @@
                       {:else}
                         <img src="/extra-icons/greencheck.svg" alt="" />
                       {/if}
-                      <span class="text-grey-200 fr-text--xs fr-mb-0">Utilisation commerciale</span>
+                      <span class="text-grey-200 fr-text--xs fr-mb-0"
+                        >{m['models.openWeight.use.commercial']()}</span
+                      >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
                       <img src="/extra-icons/greencheck.svg" alt="" />
-                      <span class="text-grey-200 fr-text--xs fr-mb-0">Modification autorisée</span>
+                      <span class="text-grey-200 fr-text--xs fr-mb-0"
+                        >{m['models.openWeight.use.modification']()}</span
+                      >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
                       <img src="/extra-icons/greencheck.svg" alt="" />
-                      <span class="text-grey-200 fr-text--xs fr-mb-0">Attribution<br />requise</span
+                      <span class="text-grey-200 fr-text--xs fr-mb-0"
+                        >{m['models.openWeight.use.attribution']()}</span
                       >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
@@ -139,15 +140,11 @@
                         aria-describedby="license-type-{model.id}"
                       ></a>
                       <span class="fr-badge fr-badge--sm">
-                        {#if model['conditions'] === 'free'}
-                          Permissive
-                        {:else if model['conditions'] == 'copyleft'}
-                          Copyleft
-                        {:else}
-                          Sous conditions
-                        {/if}
+                        {m[`models.openWeight.conditions.${model.conditions}`]()}
                       </span>
-                      <span class="text-grey-200 fr-text--xs fr-mb-0">Type de licence</span>
+                      <span class="text-grey-200 fr-text--xs fr-mb-0"
+                        >{m['models.openWeight.use.licenseType']()}</span
+                      >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
                       <a
@@ -155,15 +152,19 @@
                         aria-describedby="ram-{model.id}"
                       ></a>
                       <span class="fr-badge fr-badge--sm">
-                        {model.required_ram / 2} à {model.required_ram * 2} Go
+                        {m['models.ram']({
+                          min: model.required_ram / 2,
+                          max: model.required_ram * 2
+                        })}
                       </span>
-                      <span class="text-grey-200 fr-text--xs fr-mb-0">RAM nécessaire </span>
+                      <span class="text-grey-200 fr-text--xs fr-mb-0"
+                        >{m['models.openWeight.use.requiredRam']()}</span
+                      >
                     </div>
                   </div>
                 {:else}
                   <p class="fr-text--sm text-grey">
-                    {infos.licenseDesc[model.license] ||
-                      "Les informations de licence n'ont pas été remplies pour ce modèle."}
+                    {infos.licenseDesc[model.license] || m['models.licenses.noDesc']()}
                   </p>
                 {/if}
               </div>
@@ -171,29 +172,20 @@
 
             <h6>Pour aller plus loin</h6>
             <p class="text-grey">
-              {#if model['distribution'] === 'open-weights'}
-                Pour les expert·es, consultez la <a
-                  href={model.url || '#'}
-                  rel="noopener external"
-                  target="_blank">fiche du modèle sur Hugging Face</a
-                >.
-              {:else}
-                Pour les expert·es, consultez le <a
-                  href={model.url || '#'}
-                  rel="noopener external"
-                  target="_blank">site officiel du modèle</a
-                >.
-              {/if}<br />
-              Les calculs d’impacts environnementaux reposent sur les projets
-              <a
-                href="https://huggingface.co/spaces/genai-impact/ecologits-calculator"
-                rel="noopener external"
-                target="_blank">EcoLogits</a
-              >
-              et
-              <a rel="noopener external" target="_blank" href="https://impactco2.fr"
-                >Impact CO<sub>2</sub>
-              </a>.
+              {@html sanitize(
+                m[`models.extra.experts.${model.distribution}`]({
+                  linkProps: externalLinkProps(model.url || '#')
+                })
+              )}
+              <br />
+              {@html sanitize(
+                m['models.extra.impacts']({
+                  linkProps1: externalLinkProps(
+                    'https://huggingface.co/spaces/genai-impact/ecologits-calculator'
+                  ),
+                  linkProps2: externalLinkProps('https://impactco2.fr')
+                })
+              )}
             </p>
           </div>
         </div>
@@ -201,28 +193,17 @@
     </div>
   </div>
 
-  {#if model['distribution'] === 'open-weights'}
+  {#if model.distribution === 'open-weights'}
     <span class="fr-tooltip fr-placement" id="license-{model.id}" role="tooltip" aria-hidden="true">
       {#if model.fully_open_source}
-        Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres
-        appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le
-        public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel.
-        Qu'un modèle soit "open source" est plus contraignant qu'"open weights", notamment à cause
-        de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont
-        considérés "open source".
+        {m['models.openWeight.tooltips.openSource']()}
       {:else}
-        Modèle dit "open weights" dont les poids, c’est-à-dire les paramètres appris pendant son
-        entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le
-        modèle sur son propre matériel. Qu'un modèle soit "open source" est plus contraignant
-        (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les
-        modèles qui sont considérés "open source".
+        {m['models.openWeight.tooltips.openWeight']()}
       {/if}
     </span>
 
     <span class="fr-tooltip fr-placement" id="params-{model.id}" role="tooltip" aria-hidden="true">
-      Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle
-      au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est
-      important, plus il est capable d’effectuer des tâches complexes.
+      {m['models.openWeight.tooltips.params']()}
     </span>
     <span
       class="fr-tooltip fr-placement"
@@ -230,17 +211,12 @@
       role="tooltip"
       aria-hidden="true"
     >
-      {#if model['conditions'] === 'free'}
-        Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle
-        source.
-      {:else if model['conditions'] === 'copyleft'}
-        Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle
-        source.
+      {#if model.conditions === 'copyleft' || model.conditions === 'free'}
+        {m[`models.openWeight.tooltips.${model.conditions}`]()}
       {/if}
     </span>
     <span class="fr-tooltip fr-placement" id="ram-{model.id}" role="tooltip" aria-hidden="true">
-      La RAM (mémoire vive) stocke les données traitées par un LLM en temps réel. Plus le modèle est
-      grand, plus il a besoin de RAM pour fonctionner.
+      {m['models.openWeight.tooltips.ram']()}
     </span>
   {/if}
 </dialog>
