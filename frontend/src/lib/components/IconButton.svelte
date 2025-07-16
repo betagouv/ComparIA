@@ -1,24 +1,40 @@
 <script lang="ts">
-  import { type ComponentType } from 'svelte'
+  import Icon from '$lib/components/Icon.svelte'
+  import type { HTMLButtonAttributes } from 'svelte/elements'
 
-  export let Icon: ComponentType
-  export let label = ''
-  export let show_label = false
-  export let pending = false
-  export let size: 'small' | 'large' | 'medium' = 'medium'
-  export let padded = true
-  export let highlight = false
-  export let border = false
-  export let disabled = false
-  export let hasPopup = false
-  export let color = 'var(--block-label-text-color)'
-  export let transparent = false
-  $: _color = highlight ? '#6A6AF4' : color
+  type IconButtonProps = Omit<HTMLButtonAttributes, 'size'> & {
+    icon: string
+    label?: string
+    show_label?: boolean
+    pending?: boolean
+    size?: 'small' | 'large' | 'medium'
+    padded?: boolean
+    highlight?: boolean
+    border?: boolean
+    disabled?: boolean
+    hasPopup?: boolean
+    color?: string
+    transparent?: boolean
+  }
+  let {
+    icon,
+    label = '',
+    show_label = false,
+    pending = false,
+    size = 'medium',
+    padded = true,
+    highlight = false,
+    border = false,
+    disabled = false,
+    hasPopup = false,
+    color = 'var(--block-label-text-color)',
+    transparent = false,
+    ...props
+  }: IconButtonProps = $props()
 </script>
 
 <button
   {disabled}
-  on:click
   aria-label={label}
   aria-haspopup={hasPopup}
   title={label}
@@ -27,6 +43,7 @@
   class:border
   class:highlight
   class:transparent
+  {...props}
 >
   {#if show_label}<span>{label}</span>{/if}
   <div
@@ -34,7 +51,7 @@
     class:large={size === 'large'}
     class:medium={size === 'medium'}
   >
-    <svelte:component this={Icon} />
+    <Icon {icon} size="sm" class="text-primary" />
   </div>
 </button>
 
@@ -50,9 +67,6 @@
     padding: 10px;
   }
 
-  /* button:hover {
-		background-color: var(--background-fill-secondary);
-	} */
   button.border {
     border: 1px solid #e5e5e5 !important;
   }
@@ -78,7 +92,9 @@
   }
 
   button:hover,
-  button.highlight {
+  button.highlight,
+  button:hover > *,
+  button.highlight > * {
     cursor: pointer;
     color: #6a6af4;
   }
