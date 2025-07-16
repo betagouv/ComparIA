@@ -640,7 +640,7 @@ def record_reaction(
         "clear_formatting": "clear-formatting" in prefs,
         "incorrect": "incorrect" in prefs,
         "superficial": "superficial" in prefs,
-        "instructions_not_followed": "instructions_not_followed" in prefs,
+        "instructions_not_followed": "instructions-not-followed" in prefs,
         # Not asked:
         "chatbot_index": chatbot_index,
         "msg_rank": msg_rank,

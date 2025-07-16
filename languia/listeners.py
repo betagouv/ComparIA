@@ -823,9 +823,7 @@ window.scrollTo({
         reaction_json,
         request: gr.Request,
     ):
-        # FIXME quick fix since at load the app exec this function and there's no 'reaction_json'
-        if not reaction_json:
-            return app_state_scoped
+        # FIXME comment disappear if select a pref after commenting
 
         # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
         # TODO: or just create another event type like "Event.react"
