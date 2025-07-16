@@ -70,7 +70,7 @@
                   aria-describedby="gauge"
                   href="#gauge"
                   aria-label={m['header.chatbot.vote.legend']()}
-                  class="fr-icon fr-icon--xs fr-icon--question-line"
+                  class="fr-icon fr-icon--xs fr-icon-question-line"
                 ></a>
               </span>
               <div class="linear-gauge" style:--gauge-ratio={votes?.ratio}>
@@ -128,7 +128,7 @@
           <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs bg-white text-center">
             <IconModel icon={mode.icon} size={20} inline />
             &nbsp;<strong>{mode.title}</strong>
-            &nbsp;<a class="fr-icon fr-icon--xs fr-icon--question-line" aria-describedby="mode-desc"
+            &nbsp;<a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="mode-desc"
             ></a>
           </div>
         {:else}

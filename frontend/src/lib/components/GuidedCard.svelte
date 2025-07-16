@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Icon from '$lib/components/Icon.svelte'
+
   export let iconSrc: string
   export let iconAlt: string
   export let title: string
@@ -51,7 +53,7 @@
       >{@html title}&nbsp;
       {#if iaSummitTooltip}
         <span
-          class="fr-icon fr-icon--xs fr-icon--question-line"
+          class="fr-icon fr-icon--xs fr-icon-question-line"
           aria-describedby="sommetia-tooltip-{value}"
         ></span>
       {/if}
@@ -65,7 +67,7 @@
       >
     {/if}
   {:else}
-    <img class="fr-mb-md-2w fr-mr-1w" src={iconSrc} width="25" alt={iconAlt} />
+    <Icon icon={iconSrc} aria-label={iconAlt} class="text-primary me-2 md:mb-4" />
     <span>{title}</span>
   {/if}
 </button>
@@ -137,7 +139,7 @@
     color: #051f43;
     align-self: center;
   }
-  .sommet-description .fr-icon--question-line {
+  .sommet-description .fr-icon-question-line {
     color: #000091;
   }
 

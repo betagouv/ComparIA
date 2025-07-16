@@ -1,6 +1,5 @@
 <script lang="ts">
-  import IconModel from '$lib/components/IconModel.svelte'
-  import ChevronDroite from '$lib/icons/chevron-droite.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import type { Mode, ModeInfos } from '$lib/state.svelte'
 
   export let handle_option_selected: (index: number) => void
@@ -43,14 +42,14 @@
         {disabled}
       />
       <div class="icon">
-        <IconModel {icon} />
+        <Icon {icon} class="text-primary" />
       </div>
       <div class="description">
         {#if value != 'custom'}
           <strong>{label}</strong>&nbsp;: {description}
         {:else}
           <strong>{label}</strong>
-          <span class="chevron-droite"><ChevronDroite /></span>
+          <Icon icon="arrow-right-s-line" size="sm" class="float-right" />
         {/if}
       </div>
     </label>
@@ -91,12 +90,5 @@
   .description {
     font-size: 0.875em;
     color: #3a3a3a;
-  }
-
-  .chevron-droite {
-    line-height: 0;
-    float: right;
-    margin-right: 0.5em;
-    position: relative;
   }
 </style>

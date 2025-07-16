@@ -2,6 +2,7 @@
   import { browser } from '$app/environment'
   import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
   import { chatbot } from '$lib/chatService.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import MessageBot from '$lib/components/MessageBot.svelte'
   import MessageUser from '$lib/components/MessageUser.svelte'
   import Pending from '$lib/components/Pending.svelte'
@@ -167,7 +168,7 @@
     <div class="fr-py-4w fr-mb-4w error rounded-tile fr-container">
       {#if errorString == 'Context too long.'}
         <h5>
-          <span class="fr-icon-warning-fill" aria-hidden="true"></span>
+          <Icon icon="warning-fill" class="text-error" />
           {m['chatbot.errors.tooLong.title']()}
         </h5>
         <p>
@@ -184,7 +185,7 @@
         </p>
       {:else}
         <h3>
-          <span class="fr-icon-warning-fill" aria-hidden="true"></span>
+          <Icon icon="warning-fill" class="text-error" />
           {m['chatbot.errors.other.title']()}
         </h3>
         <p>
@@ -271,14 +272,5 @@
       var(--shadow-drop),
       0 2px 2px rgba(0, 0, 0, 0.05);
     transform: translateY(-2px);
-  }
-
-  .fr-icon-warning-fill::before,
-  .fr-icon-warning-fill::after {
-    /* --warning-425-625 */
-    color: #b34000;
-    background-color: #b34000;
-    -webkit-mask-image: url('../assets/dsfr/icons/system/fr--warning-fill.svg');
-    mask-image: url('../assets/dsfr/icons/system/fr--warning-fill.svg');
   }
 </style>

@@ -1,19 +1,8 @@
 <script lang="ts">
   import GuidedCardComponent from '$lib/components/GuidedCard.svelte'
+  import { m } from '$lib/i18n/messages'
   import promptsTable from '$lib/promptsTable'
   import { createEventDispatcher } from 'svelte'
-  // Import local SVG icons (assuming they are moved to the same 'shared' directory or a subdirectory)
-  // User will need to ensure these files are present at these relative paths.
-  import { m } from '$lib/i18n/messages'
-  import bookOpenLineIcon from '$lib/icons/book-open-line.svg'
-  import bowlIcon from '$lib/icons/bowl.svg'
-  import chat3Icon from '$lib/icons/chat-3.svg'
-  import clipboardIcon from '$lib/icons/clipboard.svg'
-  import draftIcon from '$lib/icons/draft.svg'
-  import lightbulbIcon from '$lib/icons/lightbulb.svg'
-  import music2Icon from '$lib/icons/music-2.svg'
-  import shuffleIcon from '$lib/icons/shuffle.svg'
-  import translate2Icon from '$lib/icons/translate-2.svg'
 
   // Interface pour les données des cartes, utilisant des props au lieu de HTML brut
   interface GuidedCardData {
@@ -27,14 +16,14 @@
   }
 
   const totalGuidedCardsChoices: GuidedCardData[] = [
-    { value: 'ideas' as const, iconSrc: lightbulbIcon },
-    { value: 'explanations' as const, iconSrc: chat3Icon },
-    { value: 'languages' as const, iconSrc: translate2Icon },
-    { value: 'administrative' as const, iconSrc: draftIcon },
-    { value: 'recipes' as const, iconSrc: bowlIcon },
-    { value: 'coach' as const, iconSrc: clipboardIcon },
-    { value: 'stories' as const, iconSrc: bookOpenLineIcon },
-    { value: 'recommendations' as const, iconSrc: music2Icon }
+    { value: 'ideas' as const, iconSrc: 'lightbulb-line' },
+    { value: 'explanations' as const, iconSrc: 'chat-3-line' },
+    { value: 'languages' as const, iconSrc: 'translate-2' },
+    { value: 'administrative' as const, iconSrc: 'draft-line' },
+    { value: 'recipes' as const, iconSrc: 'bowl' },
+    { value: 'coach' as const, iconSrc: 'clipboard-line' },
+    { value: 'stories' as const, iconSrc: 'book-open' },
+    { value: 'recommendations' as const, iconSrc: 'music-2-line' }
   ].map((item) => ({
     ...item,
     title: m[`arenaHome.suggestions.choices.${item.value}.title`](),
@@ -162,14 +151,10 @@
 
   {#if currentSelectedCategoryValue}
     <div class="text-center">
-      <button class="fr-btn fr-btn--tertiary mobile-w-full fr-mt-2w" on:click={shufflePrompts}>
-        <!-- <svelte:component this={shuffleIcon} /> -->
-        <img
-          class="fr-mr-1v"
-          src={shuffleIcon}
-          alt={m['words.regenerate']()}
-          title={m['arenaHome.suggestions.generateAnother']()}
-        />
+      <button
+        class="fr-btn fr-icon-shuffle fr-btn--icon-left fr-btn--tertiary mobile-w-full fr-mt-2w"
+        on:click={shufflePrompts}
+      >
         {m['arenaHome.suggestions.generateAnother']()}
       </button>
     </div>
@@ -177,16 +162,6 @@
 </div>
 
 <style>
-  /* .icon-shuffle {
-  -webkit-mask-image: url("../assets/extra-icons/shuffle.svg");
-  mask-image: url("../assets/extra-icons/shuffle.svg");
-
-  mask-size: 16px 16px;
-  mask-position: 0 50%;
-  mask-repeat: no-repeat;
-
-} */
-
   .text-grey-200 {
     color: var(--text-mention-grey); /* Utiliser une variable DSFR si disponible */
   }

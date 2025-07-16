@@ -1,8 +1,7 @@
 <script lang="ts">
   import { negativeReactions, positiveReactions, type ReactionPref } from '$lib/chatService.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import { m } from '$lib/i18n/messages'
-  import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
-  import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte'
   import { noop } from '$lib/utils/commons'
 
   export interface LikePanelProps {
@@ -37,7 +36,7 @@
   const reactions = {
     like: {
       label: m['vote.choices.positive.question'](),
-      Icon: ThumbUpActive,
+      icon: 'thumb-up-fill',
       choices: positiveReactions.map((value) => ({
         value,
         label: m[`vote.choices.positive.${value}`]()
@@ -45,7 +44,7 @@
     },
     dislike: {
       label: m['vote.choices.negative.question'](),
-      Icon: ThumbDownActive,
+      icon: 'thumb-down-fill',
       choices: negativeReactions.map((value) => ({
         value,
         label: m[`vote.choices.negative.${value}`]()
@@ -111,7 +110,7 @@
   class:flex={mode === 'vote'}
 >
   <p class="thumb-icon me-3! {mode === 'vote' ? 'mb-0! mt-1!' : 'mb-3!'}">
-    <reaction.Icon />
+    <Icon icon={reaction.icon} class="text-primary" />
     <span class="ms-2" class:sr-only={mode === 'vote'}>{reaction.label}</span>
   </p>
   <div class="flex flex-wrap gap-3">
@@ -212,9 +211,6 @@
   .thumb-icon {
     font-weight: 700;
     color: #3a3a3a;
-  }
-  .thumb-icon :global(svg) {
-    display: inline;
   }
 
   [type='checkbox'] {

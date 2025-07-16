@@ -7,7 +7,6 @@
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
-  import ChevronBas from '$lib/icons/chevron-bas.svelte'
   import type { APIBotModel } from '$lib/models'
   import type { Mode, ModeInfos } from '$lib/state.svelte'
   import { modeInfos as choices } from '$lib/state.svelte'
@@ -236,10 +235,9 @@
         }}
       >
         <Icon icon="equalizer-fill" size="sm" block class="text-primary" />
-        <span class="label">{alt_label}</span><span class="chevron"
-          ><svelte:component this={ChevronBas} />
-        </span></button
-      >
+        <span class="label">{alt_label}</span>
+        <Icon icon="arrow-down-s-line" size="sm" />
+      </button>
       {#if mode.value == 'custom' && modelsSelection.value.length > 0}
         <button
           {disabled}
@@ -349,10 +347,6 @@
     font-size: 1.125rem;
     margin: 0 5px;
     line-height: 0 !important;
-  }
-
-  .chevron {
-    line-height: 0;
   }
 
   .text-purple {

@@ -43,7 +43,7 @@
                 >
                   {m['models.licenses.type.openSource']()}&nbsp;
                   <a
-                    class="fr-icon fr-icon--xs fr-icon--question-line"
+                    class="fr-icon fr-icon--xs fr-icon-question-line"
                     aria-describedby="license-{model.id}"
                   ></a>
                 </span>
@@ -53,7 +53,7 @@
                 >
                   {m['models.licenses.type.semiOpen']()}&nbsp;
                   <a
-                    class="fr-icon fr-icon--xs fr-icon--question-line"
+                    class="fr-icon fr-icon--xs fr-icon-question-line"
                     aria-describedby="license-{model.id}"
                   ></a>
                 </span>
@@ -69,7 +69,7 @@
                   {m['models.size.estimated']({ size: model.friendly_size })}
                 {:else}
                   {m['models.parameters']({ number: model.params })}&nbsp;<a
-                    class="fr-icon fr-icon--xs fr-icon--question-line"
+                    class="fr-icon fr-icon--xs fr-icon-question-line"
                     aria-describedby="params-{model.id}"
                   ></a>
                 {/if}
@@ -137,7 +137,7 @@
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
                       <a
-                        class="fr-icon fr-icon--xs fr-icon--question-line"
+                        class="fr-icon fr-icon--xs fr-icon-question-line"
                         aria-describedby="license-type-{model.id}"
                       ></a>
                       <span class="fr-badge fr-badge--sm">
@@ -149,7 +149,7 @@
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
                       <a
-                        class="fr-icon fr-icon--xs fr-icon--question-line"
+                        class="fr-icon fr-icon--xs fr-icon-question-line"
                         aria-describedby="ram-{model.id}"
                       ></a>
                       <span class="fr-badge fr-badge--sm">
