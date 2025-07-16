@@ -1,18 +1,18 @@
 <script lang="ts">
+  import type { OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
   import Copy from '$lib/components/Copy.svelte'
   import LikeDislike from '$lib/components/LikeDislike.svelte'
   import LikePanel from '$lib/components/LikePanel.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
   import Pending from '$lib/components/Pending.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { NormalisedMessage } from '$lib/types'
   import { noop } from '$lib/utils/commons'
 
   export type MessageBotProps = {
     message: NormalisedMessage
     generating?: boolean
     disabled?: boolean
-    onReaction: (kind: 'like' | 'comment', message: NormalisedMessage) => void
+    onReactionChange: OnReactionFn
     onLoad?: () => void
   }
 
@@ -20,40 +20,31 @@
     message,
     generating = false,
     disabled = false,
-    onReaction,
+    onReactionChange,
     onLoad = noop
   }: MessageBotProps = $props()
 
-  const bot = message.metadata.bot as 'a' | 'b'
-  let modalId = `modal-prefs-${message.index}`
+  const bot = message.metadata.bot
+  const reaction = $state<{
+    liked: boolean | null
+    prefs: ReactionPref[]
+    comment: string
+  }>({
+    liked: null,
+    prefs: [],
+    comment: ''
+  })
 
-  let selected: 'like' | 'dislike' | null = $state(null)
-  let selection: string[] = $state(message.prefs || [])
-
-  const onLikeDislikeSelected = (value: 'like' | 'dislike' | null) => {
-    selected = value
-    selection = []
-    onReaction('like', {
-      ...message,
-      liked: selected === 'like' || undefined,
-      disliked: selected === 'dislike' || undefined,
-      prefs: selection
-    })
+  function onLikedChanged() {
+    reaction.prefs = []
+    dispatchOnReactionChange('like')
   }
 
-  const onSelectionChange = (value: string[]) => {
-    selection = value
-    onReaction('like', {
-      ...message,
-      prefs: selection
-    })
-  }
-
-  const onCommentChange = (value: string) => {
-    onReaction('comment', {
-      ...message,
-      commented: value !== '',
-      comment: value
+  function dispatchOnReactionChange(kind: 'like' | 'comment') {
+    onReactionChange(kind, {
+      ...reaction,
+      index: message.index,
+      value: message.content
     })
   }
 </script>
@@ -77,20 +68,25 @@
       <Copy value={message.content} />
 
       <div class="ms-auto flex gap-2">
-        <LikeDislike disabled={generating || disabled} {onLikeDislikeSelected} />
+        <LikeDislike
+          bind:liked={reaction.liked}
+          disabled={generating || disabled}
+          onChange={onLikedChanged}
+        />
       </div>
     </div>
   </div>
 
-  {#if selected}
-    <div class="mt-3 message-bot-like-panel">
+  {#if reaction.liked !== null}
+    <div class="message-bot-like-panel mt-3">
       <LikePanel
-        kind={selected}
+        kind={reaction.liked ? 'like' : 'dislike'}
         show={true}
-        comment={message.comment}
-        {modalId}
-        {onSelectionChange}
-        {onCommentChange}
+        bind:selection={reaction.prefs}
+        bind:comment={reaction.comment}
+        modalId="modal-prefs-{message.metadata.generation_id}"
+        onSelectionChange={() => dispatchOnReactionChange('like')}
+        onCommentChange={() => dispatchOnReactionChange('comment')}
         model={bot.toUpperCase()}
       />
     </div>

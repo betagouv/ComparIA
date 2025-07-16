@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { negativeReactions, positiveReactions, type ReactionPref } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import ThumbDownActive from '$lib/icons/ThumbDownActive.svelte'
   import ThumbUpActive from '$lib/icons/ThumbUpActive.svelte'
@@ -8,37 +9,36 @@
     show: boolean
     kind: 'like' | 'dislike'
     model: string
-    onSelectionChange: (selection: string[]) => void
-    onCommentChange?: (comment: string) => void
-    modalId?: string
-    selection?: string[]
+    selection: ReactionPref[]
     comment?: string
+    modalId?: string
     disabled?: boolean
     mode?: 'react' | 'vote'
+    onSelectionChange?: (selection: ReactionPref[]) => void
+    onCommentChange?: (comment: string) => void
   }
 
   let {
     show,
     kind,
     model,
-    onSelectionChange,
-    onCommentChange = noop,
     modalId = undefined,
-    selection = [],
-    comment = '',
+    selection = $bindable([]),
+    comment = $bindable(''),
     disabled = false,
-    mode = 'react'
+    mode = 'react',
+    onSelectionChange = noop,
+    onCommentChange = noop
   }: LikePanelProps = $props()
 
   let like_panel: HTMLDivElement
   let hasBeenShown = $state(false)
-  let innerComment = $state(comment)
 
   const reactions = {
     like: {
       label: m['vote.choices.positive.question'](),
       Icon: ThumbUpActive,
-      choices: (['useful', 'complete', 'creative', 'clear-formatting'] as const).map((value) => ({
+      choices: positiveReactions.map((value) => ({
         value,
         label: m[`vote.choices.positive.${value}`]()
       }))
@@ -46,17 +46,15 @@
     dislike: {
       label: m['vote.choices.negative.question'](),
       Icon: ThumbDownActive,
-      choices: (['incorrect', 'superficial', 'instructions-not-followed'] as const).map(
-        (value) => ({
-          value,
-          label: m[`vote.choices.negative.${value}`]()
-        })
-      )
+      choices: negativeReactions.map((value) => ({
+        value,
+        label: m[`vote.choices.negative.${value}`]()
+      }))
     }
   }
   const reaction = $derived(reactions[kind])
 
-  function toggle_choice(choice: string): void {
+  function toggle_choice(choice: ReactionPref): void {
     if (selection.includes(choice)) {
       selection = selection.filter((v) => v !== choice)
     } else {
@@ -147,7 +145,7 @@
     {#if mode === 'react'}
       <button
         {disabled}
-        class:selected={innerComment !== ''}
+        class:selected={comment !== ''}
         class="checkbox-btn"
         data-fr-opened="false"
         aria-controls={modalId}
@@ -164,10 +162,10 @@
     aria-labelledby="{modalId}-label"
     id={modalId}
     class="fr-modal"
-    onblur={() => onCommentChange(innerComment)}
+    onblur={() => onCommentChange(comment)}
     onkeydown={(e) => {
       if (e.key === 'Escape') {
-        onCommentChange(innerComment)
+        onCommentChange(comment)
       }
     }}
   >
@@ -180,7 +178,7 @@
                 class="fr-btn--close fr-btn"
                 title={m['closeModal']()}
                 aria-controls={modalId}
-                onclick={() => onCommentChange(innerComment)}
+                onclick={() => onCommentChange(comment)}
               >
                 {m['words.close']()}
               </button>
@@ -192,12 +190,12 @@
                   placeholder={m['vote.comment.placeholder']({ model })}
                   class="fr-input"
                   rows="4"
-                  bind:value={innerComment}
+                  bind:value={comment}
                 ></textarea>
                 <button
                   aria-controls={modalId}
                   class="btn purple-btn"
-                  onclick={() => onCommentChange(innerComment)}
+                  onclick={() => onCommentChange(comment)}
                 >
                   {m['words.send']()}
                 </button>

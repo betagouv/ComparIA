@@ -44,6 +44,22 @@ export interface Model {
   fully_open_source: boolean
 }
 
+// REACTIONS
+
+export const positiveReactions = ['useful', 'complete', 'creative', 'clear-formatting'] as const
+export const negativeReactions = ['incorrect', 'superficial', 'instructions-not-followed'] as const
+
+export type ReactionPref = (typeof positiveReactions)[number] | (typeof negativeReactions)[number]
+export type ReactionKind = 'like' | 'comment'
+export type APIReactionData = {
+  index: number
+  value: string
+  liked?: boolean | null
+  prefs?: ReactionPref[]
+  comment?: string
+}
+export type OnReactionFn = (kind: ReactionKind, reaction: Required<APIReactionData>) => void
+
 export const chatbot = $state<{
   status: LoadingStatus['status']
   messages: NormalisedMessage[]
