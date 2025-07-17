@@ -315,7 +315,10 @@
       "do": "Copier le message",
       "done": "Message copié"
     },
-    "copyLink": "Copier le lien",
+    "copyLink": {
+      "do": "Copier le lien",
+      "done": "Lien copié dans le presse-papiers"
+    },
     "returnHome": "Revenir à l'accueil",
     "seeMore": "Voir plus"
   },

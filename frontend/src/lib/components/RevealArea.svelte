@@ -4,6 +4,7 @@
   import Icon from '$lib/components/Icon.svelte'
   import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
+  import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
@@ -12,28 +13,11 @@
   const { selected, modelsData, shareB64Data, ...infos } = data
 
   let shareInput: HTMLInputElement
-  // FIXME refactor into component
-  let snackbar: HTMLElement
 
   function copyShareLink() {
     shareInput.select()
     navigator.clipboard.writeText(shareInput.value)
-    createSnackbar('Lien copié dans le presse-papiers')
-  }
-
-  function createSnackbar(message: string) {
-    const messageText = snackbar.querySelector('.message')
-    messageText!.textContent = message
-
-    snackbar.classList.add('show')
-
-    setTimeout(() => {
-      snackbar.classList.remove('show')
-    }, 2000)
-  }
-
-  function closeSnackbar() {
-    snackbar.classList.remove('show')
+    useToast(m['actions.copyLink.done'](), 2000)
   }
 </script>
 
@@ -267,7 +251,7 @@
                     class="fr-col-md-4 fr-icon-links-fill fr-btn--icon-left fr-col-12 btn purple-btn block"
                     onclick={copyShareLink}
                   >
-                    {m['actions.copyLink']()}</button
+                    {m['actions.copyLink.do']()}</button
                   >
                 </div>
                 <img
@@ -282,68 +266,7 @@
         </div>
       </div>
     </dialog>
-
-    <div id="snackbar" bind:this={snackbar}>
-      <div class="checkmark">
-        <Icon icon="checkbox-circle-fill" size="xs" class="text-white" />
-      </div>
-      <span class="message"></span>
-      <span class="close" onclick={closeSnackbar()}>
-        <Icon icon="close-line" size="xs" />
-      </span>
-    </div>
   </div>
 </div>
 
 <Footer />
-
-<style>
-  #snackbar {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    border: 2px solid #6a6af4;
-    background-color: white;
-    color: #333;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: stretch;
-    /* just enough! */
-    z-index: 1750;
-    visibility: hidden;
-    opacity: 0;
-    transition:
-      opacity 0.3s ease-in-out,
-      visibility 0s linear 0.3s;
-  }
-
-  :global(#snackbar.show) {
-    visibility: visible;
-    opacity: 1;
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  #snackbar .checkmark {
-    display: flex;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    background-color: #6a6af4;
-  }
-
-  #snackbar .message {
-    align-items: center;
-    display: flex;
-    padding: 0 20px;
-  }
-
-  #snackbar .close {
-    margin-right: 10px;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    cursor: pointer;
-    color: #333;
-  }
-</style>
