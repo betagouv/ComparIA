@@ -7,7 +7,6 @@
   import MessageUser from '$lib/components/MessageUser.svelte'
   import Pending from '$lib/components/Pending.svelte'
   import { m } from '$lib/i18n/messages'
-  import { type UndoRetryData } from '$lib/utils'
   import { onMount, tick } from 'svelte'
 
   let {
@@ -25,7 +24,7 @@
     autoscroll?: boolean
     layout: 'bubble' | 'panel'
     onReactionChange: OnReactionFn
-    onRetry: (data: UndoRetryData) => void
+    onRetry: () => void
   } = $props()
 
   let div: HTMLDivElement
@@ -98,24 +97,6 @@
       div?.removeEventListener('scroll', handle_scroll)
     }
   })
-
-  function handle_retry_last(): void {
-    // svelte custom_components/customchatbot/frontend/shared/ChatBot.svelte (237-238)
-    const lastGroup = groupedMessages[groupedMessages.length - 1]?.bots
-    const lastMessage = lastGroup && lastGroup.length > 0 ? lastGroup[lastGroup.length - 1] : null
-    if (!lastMessage || !lastMessage.error) return
-    console.log('RETRYING')
-
-    onRetry({
-      index: lastMessage.index,
-      value: lastMessage.error
-      // lastMessage.metadata?.error ||
-      //  ||
-      // lastMessage.content,
-      // value: msg.content,
-      // error: msg.metadata?.error || msg.error
-    })
-  }
 </script>
 
 <!-- FIXME still needed? -->
@@ -198,7 +179,7 @@
         <p class="text-center">
           <button
             class="fr-btn purple-btn"
-            onclick={() => handle_retry_last()}
+            onclick={() => onRetry()}
             disabled={generating || disabled}>{m['words.retry']()}</button
           >
         </p>

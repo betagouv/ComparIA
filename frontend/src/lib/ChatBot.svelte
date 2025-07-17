@@ -5,6 +5,7 @@
     chatbot,
     getReveal,
     postVoteGetReveal,
+    retryAskChatBots,
     updateReaction
   } from '$lib/chatService.svelte'
   import ChatBot from '$lib/components/ChatBot.svelte'
@@ -12,7 +13,6 @@
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import VoteArea from '$lib/components/VoteArea.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { UndoRetryData } from '$lib/utils'
 
   let rtl = false
   let layout: 'bubble' | 'panel' = 'bubble'
@@ -47,17 +47,15 @@
   )
 
   const onReactionChange: OnReactionFn = async (kind, reaction) => {
-    console.log('onReactionChanged', kind, reaction)
     canVote = false
     await updateReaction(kind, reaction)
   }
 
-  function onRetry(data: UndoRetryData) {
-    console.log('onRetry', data)
+  function onRetry() {
+    retryAskChatBots()
   }
 
   async function onPromptSubmit() {
-    console.log('onPromptSubmit', prompt)
     await askChatBots(prompt)
   }
 

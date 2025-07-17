@@ -1,7 +1,7 @@
 import { api } from '$lib/api'
+import type { APIBotModel, Sizes } from '$lib/models'
 import { state, type Mode } from '$lib/state.svelte'
 import type { LoadingStatus } from '@gradio/statustracker'
-import type { APIBotModel, Sizes } from '$lib/models'
 
 // PROMPT
 
@@ -176,6 +176,25 @@ export async function askChatBots(text: string) {
 
   try {
     const job = await api.submit<APIChatMessage[]>('/add_text', { text })
+    // chatbot.status = 'streaming'
+
+    for await (const messages of job) {
+      chatbot.status = 'generating'
+      chatbot.messages = messages
+    }
+
+    chatbot.status = 'complete'
+  } catch (error) {
+    console.error('Error:', error)
+    chatbot.status = 'error'
+  }
+}
+
+export async function retryAskChatBots() {
+  chatbot.status = 'pending'
+
+  try {
+    const job = await api.submit<APIChatMessage[]>('/chatbot_retry')
     // chatbot.status = 'streaming'
 
     for await (const messages of job) {
