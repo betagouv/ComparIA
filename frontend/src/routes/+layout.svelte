@@ -7,6 +7,8 @@
   import { modeInfos, state } from '$lib/state.svelte'
   import { sanitize } from '$lib/utils/commons'
   import '../css/app.css'
+  import MobileMenu from '$lib/components/MobileMenu.svelte'
+  import Menubar from '$lib/components/Menubar.svelte'
 
   let { children } = $props()
   const mode = $derived(state.mode ? modeInfos.find((mode) => mode.value === state.mode)! : null)
@@ -93,6 +95,9 @@
       </div>
     </div>
   </div>
+  <Menubar></Menubar>
+  <!-- <MobileMenu></MobileMenu> -->
+  <!-- <Bunka></Bunka> -->
 </header>
 
 {#if state.currentScreen === 'chatbots' && state.step && mode}

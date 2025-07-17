@@ -4,7 +4,7 @@
     <p>Le service est édité par le service du numérique du ministère de la Culture.</p>
     <p><strong>Cookies déposés et consentement</strong></p>
     <p>
-      CCe site dépose un petit fichier texte (un « cookie ») sur votre ordinateur lorsque vous le
+      Ce site dépose un petit fichier texte (un « cookie ») sur votre ordinateur lorsque vous le
       consultez. Cela nous permet de mesurer le nombre de visites et de comprendre quelles sont les
       pages les plus consultées.
     </p>
