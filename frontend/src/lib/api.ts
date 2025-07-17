@@ -1,6 +1,8 @@
 import { env } from '$env/dynamic/public'
+import { useToast } from '$lib/helpers/useToast.svelte'
+import { m } from '$lib/i18n/messages'
 import { state } from '$lib/state.svelte'
-import type { Payload } from '@gradio/client'
+import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
 export interface GradioPayload<T> extends Payload {
@@ -20,8 +22,8 @@ interface GradioResponse<T> {
 }
 
 // Gradio not exported
-export interface GradioSubmitIterable<T> extends AsyncIterable<GradioPayload<T>> {
-  [Symbol.asyncIterator](): AsyncIterator<GradioPayload<T>>
+export interface GradioSubmitIterable<T> extends AsyncIterable<GradioPayload<T> | StatusMessage> {
+  [Symbol.asyncIterator](): AsyncIterator<GradioPayload<T> | StatusMessage>
   cancel: () => Promise<void>
   event_id: () => string
 }
@@ -37,6 +39,13 @@ function parseGradioResponse<T>(response: GradioPayload<T> | GradioResponse<T>):
 
 async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): AsyncIterable<T> {
   for await (const response of responses) {
+    if (response.type === 'status') {
+      if (response.success === false) {
+        const message = response.message ?? m['errors.unknown']()
+        useToast(message, 10000, 'error')
+        throw new Error(message)
+      }
+    }
     if (response.type === 'data') {
       yield parseGradioResponse(response)
     }
@@ -51,7 +60,7 @@ export const api = {
     if (this.client) return this.client
     console.debug('Connecting to Gradio at:', this.url + '/api')
     try {
-      this.client = await Client.connect(this.url + '/api')
+      this.client = await Client.connect(this.url + '/api', { events: ['data', 'status'] })
       console.debug('Successfully connected to Gradio')
       return this.client
     } catch (error) {
