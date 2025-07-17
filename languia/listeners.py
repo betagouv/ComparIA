@@ -539,7 +539,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
 
         chatbot = to_threeway_chatbot(conversations)
-        text = gr.update(visible=True, value="")
 
         # FIXME running bot_response_multi directly here to receive messages on front
         bot_response_multi(
