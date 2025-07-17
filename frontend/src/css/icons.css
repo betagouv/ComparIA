@@ -48,3 +48,9 @@
   -webkit-mask-image: url('/static/icons/shuffle.svg');
   mask-image: url('/static/icons/shuffle.svg');
 }
+
+.fr-icon-pass-expired-line::before,
+.fr-icon-pass-expired-line::after {
+  -webkit-mask-image: url('/static/icons/pass-expired-line.svg');
+  mask-image: url('/static/icons/pass-expired-line.svg');
+}
