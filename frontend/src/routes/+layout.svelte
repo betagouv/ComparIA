@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from '$lib/components/Icon.svelte'
+  import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
   import { setLocale } from '$lib/i18n/runtime'
   import { modeInfos, state } from '$lib/state.svelte'
@@ -66,12 +67,13 @@
           <div class=" fr-header__tools fr-col-12 fr-col-lg-6 fr-p-md-2w md-visible hidden">
             <div class="fr-container--fluid counter">
               <span class="fr-ml-1w legende">
-                {m['header.chatbot.vote.total']()}&nbsp;<a
-                  aria-describedby="gauge"
-                  href="#gauge"
-                  aria-label={m['header.chatbot.vote.legend']()}
-                  class="fr-icon fr-icon--xs fr-icon-question-line"
-                ></a>
+                {m['header.chatbot.vote.total']()}&nbsp;<Tooltip
+                  id="gauge"
+                  size="xs"
+                  label={m['header.chatbot.vote.legend']()}
+                >
+                  {@html sanitize(m['header.chatbot.vote.tooltip']())}
+                </Tooltip>
               </span>
               <div class="linear-gauge" style:--gauge-ratio={votes?.ratio}>
                 <div class="linear-gauge-fill">
@@ -80,9 +82,6 @@
               </div>
               <span class="objectif">{m['header.chatbot.vote.objective']()}{votes?.objective}</span>
             </div>
-            <span class="fr-tooltip fr-placement" id="gauge" role="tooltip" aria-hidden="true">
-              {@html sanitize(m['header.chatbot.vote.tooltip']())}
-            </span>
           </div>
         {/if}
 
@@ -128,8 +127,7 @@
           <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs bg-white text-center">
             <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>
-            &nbsp;<a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="mode-desc"
-            ></a>
+            &nbsp;<Tooltip id="mode-desc" text={mode.description} size="xs" />
           </div>
         {:else}
           <div class="text-center">
@@ -148,10 +146,6 @@
       </div>
     </div>
   </div>
-
-  <span class="fr-tooltip fr-placement" id="mode-desc" role="tooltip" aria-hidden="true">
-    {mode.description}
-  </span>
 {/if}
 
 <main>

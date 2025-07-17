@@ -3,6 +3,7 @@
   import Footer from '$lib/components/Footer.svelte'
   import Icon from '$lib/components/Icon.svelte'
   import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
+  import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
@@ -88,20 +89,11 @@
           <h6 class="fr-mb-2w">{m['reveal.impacts.title']()}</h6>
           <div class="energy-balance-1">
             <div class="rounded-tile fr-px-1w fr-py-1w relative text-center">
-              <span
-                class="fr-tooltip fr-placement"
+              <Tooltip
                 id="params-{side}"
-                role="tooltip"
-                aria-hidden="true"
-              >
-                {m['models.openWeight.tooltips.params']()}
-              </span>
-              <p>
-                <a
-                  class="fr-icon fr-icon--xs fr-icon-question-line"
-                  aria-describedby="params-{side}"
-                ></a>
-              </p>
+                text={m['models.openWeight.tooltips.params']()}
+                size="xs"
+              />
 
               <div class="">
                 <p class="">
@@ -125,20 +117,7 @@
               <strong>×</strong>
             </div>
             <div class="rounded-tile fr-px-1w fr-py-1w relative text-center">
-              <span
-                class="fr-tooltip fr-placement"
-                id="tokens-{side}"
-                role="tooltip"
-                aria-hidden="true"
-              >
-                {m['reveal.impacts.tokens.tooltip']()}
-              </span>
-              <p>
-                <a
-                  class="fr-icon fr-icon--xs fr-icon-question-line"
-                  aria-describedby="tokens-{side}"
-                ></a>
-              </p>
+              <Tooltip id="tokens-{side}" text={m['reveal.impacts.tokens.tooltip']()} size="xs" />
               <div class="">
                 <p class="">
                   <strong>
@@ -154,16 +133,7 @@
               <strong>=</strong>
             </div>
             <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <span
-                class="fr-tooltip fr-placement"
-                id="energie-{side}"
-                role="tooltip"
-                aria-hidden="true"
-              >
-                {m['reveal.impacts.energy.tooltip']()}
-              </span>
-              <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="energie-{side}"
-              ></a>
+              <Tooltip id="energie-{side}" text={m['reveal.impacts.energy.tooltip']()} size="xs" />
               <Icon icon="flashlight-fill" size="lg" block class="text-info" />
               <div class="">
                 <!-- FIXME co2?? should be kwh? -->
@@ -179,17 +149,9 @@
           <h6 class="fr-mt-4w fr-mb-2w">Ce qui correspond à :</h6>
           <div class="energy-balance-2">
             <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <span
-                class="fr-tooltip fr-placement"
-                id="co2-{side}"
-                role="tooltip"
-                aria-hidden="true"
-              >
+              <Tooltip id="co2-{side}" size="xs">
                 {@html sanitize(m['reveal.equivalent.co2.tooltip']())}
-              </span>
-
-              <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="co2-{side}"
-              ></a>
+              </Tooltip>
               <Icon icon="cloudy-2-fill" size="lg" block class="text-grey" />
               <div class="">
                 <p>
@@ -201,16 +163,11 @@
               </div>
             </div>
             <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <span
-                class="fr-tooltip fr-placement"
+              <Tooltip
                 id="ampoule-{side}"
-                role="tooltip"
-                aria-hidden="true"
-              >
-                {m['reveal.equivalent.lightbulb.tooltip']()}
-              </span>
-              <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="ampoule-{side}"
-              ></a>
+                text={m['reveal.equivalent.lightbulb.tooltip']()}
+                size="xs"
+              />
               <Icon icon="lightbulb-fill" size="lg" block class="text-yellow" />
               <div class="">
                 <p>
@@ -220,14 +177,7 @@
               </div>
             </div>
             <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <a class="fr-icon fr-icon--xs fr-icon-question-line" aria-describedby="videos-{side}"
-              ></a>
-              <span
-                class="fr-tooltip fr-placement"
-                id="videos-{side}"
-                role="tooltip"
-                aria-hidden="true"
-              >
+              <Tooltip id="videos-{side}" size="xs">
                 {@html sanitize(
                   m['reveal.equivalent.streaming.tooltip']({
                     linkProps: externalLinkProps(
@@ -235,7 +185,7 @@
                     )
                   })
                 )}
-              </span>
+              </Tooltip>
               <Icon icon="youtube-fill" size="lg" block class="text-error" />
               <div class="">
                 <p>

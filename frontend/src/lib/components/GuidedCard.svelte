@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from '$lib/components/Icon.svelte'
+  import Tooltip from '$lib/components/Tooltip.svelte'
 
   export let iconSrc: string
   export let iconAlt: string
@@ -23,7 +24,7 @@
 </script>
 
 <button
-  class="guided-card fr-enlarge-link"
+  class="guided-card"
   class:degrade={isIASummit}
   class:selected
   class:disabled
@@ -49,23 +50,12 @@
         alt={iconAlt}
       />
     {/if}
-    <span class="sommet-description"
-      >{@html title}&nbsp;
+    <span class="sommet-description">
+      {title}&nbsp;
       {#if iaSummitTooltip}
-        <span
-          class="fr-icon fr-icon--xs fr-icon-question-line"
-          aria-describedby="sommetia-tooltip-{value}"
-        ></span>
+        <Tooltip id="sommetia-tooltip-{value}" text={iaSummitTooltip} />
       {/if}
     </span>
-    {#if iaSummitTooltip}
-      <span
-        class="fr-tooltip fr-placement"
-        id="sommetia-tooltip-{value}"
-        role="tooltip"
-        aria-hidden="true">{iaSummitTooltip}</span
-      >
-    {/if}
   {:else}
     <Icon icon={iconSrc} aria-label={iconAlt} class="text-primary me-2 md:mb-4" />
     <span>{title}</span>
@@ -113,9 +103,6 @@
     background: linear-gradient(45deg, #e8e9fe 0%, #f2f5fe 36%, #fff 100%);
   }
 
-  .guided-card .fr-tooltip {
-    font-weight: 400 !important;
-  }
   @media (min-width: 48em) {
     /* .grid-cols-md-2 {
     grid-template-columns: 1fr 1fr;
@@ -138,16 +125,6 @@
   .sommet-description {
     color: #051f43;
     align-self: center;
-  }
-  .sommet-description .fr-icon-question-line {
-    color: #000091;
-  }
-
-  .guided-card .fr-tooltip {
-    font-weight: 400 !important;
-    font-size: 0.875rem;
-    color: var(--text-inverted-grey);
-    background-color: var(--background-contrast-grey);
   }
 
   @media (min-width: 48em) {

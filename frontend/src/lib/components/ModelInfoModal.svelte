@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { RevealData } from '$lib/chatService.svelte'
   import Icon from '$lib/components/Icon.svelte'
+  import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
   import type { APIBotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
@@ -42,20 +43,26 @@
                   class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v"
                 >
                   {m['models.licenses.type.openSource']()}&nbsp;
-                  <a
-                    class="fr-icon fr-icon--xs fr-icon-question-line"
-                    aria-describedby="license-{model.id}"
-                  ></a>
+                  <Tooltip id="license-{model.id}" size="xs">
+                    {#if model.fully_open_source}
+                      {m['models.openWeight.tooltips.openSource']()}
+                    {:else}
+                      {m['models.openWeight.tooltips.openWeight']()}
+                    {/if}
+                  </Tooltip>
                 </span>
               {:else if model.distribution === 'open-weights'}
                 <span
                   class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v"
                 >
                   {m['models.licenses.type.semiOpen']()}&nbsp;
-                  <a
-                    class="fr-icon fr-icon--xs fr-icon-question-line"
-                    aria-describedby="license-{model.id}"
-                  ></a>
+                  <Tooltip id="license-{model.id}" size="xs">
+                    {#if model.fully_open_source}
+                      {m['models.openWeight.tooltips.openSource']()}
+                    {:else}
+                      {m['models.openWeight.tooltips.openWeight']()}
+                    {/if}
+                  </Tooltip>
                 </span>
               {:else}
                 <span
@@ -68,10 +75,11 @@
                 {#if model.distribution === 'api-only'}
                   {m['models.size.estimated']({ size: model.friendly_size })}
                 {:else}
-                  {m['models.parameters']({ number: model.params })}&nbsp;<a
-                    class="fr-icon fr-icon--xs fr-icon-question-line"
-                    aria-describedby="params-{model.id}"
-                  ></a>
+                  {m['models.parameters']({ number: model.params })}&nbsp;<Tooltip
+                    id="params-{model.id}"
+                    text={m['models.openWeight.tooltips.params']()}
+                    size="xs"
+                  />
                 {/if}
               </span>
               {#if model.release_date}
@@ -136,10 +144,13 @@
                       >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                      <a
-                        class="fr-icon fr-icon--xs fr-icon-question-line"
-                        aria-describedby="license-type-{model.id}"
-                      ></a>
+                      {#if model.conditions === 'copyleft' || model.conditions === 'free'}
+                        <Tooltip
+                          id="license-type-{model.id}"
+                          text={m[`models.openWeight.tooltips.${model.conditions}`]()}
+                          size="xs"
+                        />
+                      {/if}
                       <span class="fr-badge fr-badge--sm">
                         {m[`models.openWeight.conditions.${model.conditions}`]()}
                       </span>
@@ -148,10 +159,11 @@
                       >
                     </div>
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                      <a
-                        class="fr-icon fr-icon--xs fr-icon-question-line"
-                        aria-describedby="ram-{model.id}"
-                      ></a>
+                      <Tooltip
+                        id="ram-{model.id}"
+                        text={m['models.openWeight.tooltips.ram']()}
+                        size="xs"
+                      />
                       <span class="fr-badge fr-badge--sm">
                         {m['models.ram']({
                           min: model.required_ram / 2,
@@ -193,31 +205,4 @@
       </div>
     </div>
   </div>
-
-  {#if model.distribution === 'open-weights'}
-    <span class="fr-tooltip fr-placement" id="license-{model.id}" role="tooltip" aria-hidden="true">
-      {#if model.fully_open_source}
-        {m['models.openWeight.tooltips.openSource']()}
-      {:else}
-        {m['models.openWeight.tooltips.openWeight']()}
-      {/if}
-    </span>
-
-    <span class="fr-tooltip fr-placement" id="params-{model.id}" role="tooltip" aria-hidden="true">
-      {m['models.openWeight.tooltips.params']()}
-    </span>
-    <span
-      class="fr-tooltip fr-placement"
-      id="license-type-{model.id}"
-      role="tooltip"
-      aria-hidden="true"
-    >
-      {#if model.conditions === 'copyleft' || model.conditions === 'free'}
-        {m[`models.openWeight.tooltips.${model.conditions}`]()}
-      {/if}
-    </span>
-    <span class="fr-tooltip fr-placement" id="ram-{model.id}" role="tooltip" aria-hidden="true">
-      {m['models.openWeight.tooltips.ram']()}
-    </span>
-  {/if}
 </dialog>
