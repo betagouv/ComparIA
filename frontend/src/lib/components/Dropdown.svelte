@@ -2,18 +2,21 @@
   import Icon from '$lib/components/Icon.svelte'
   import type { Mode, ModeInfos } from '$lib/state.svelte'
 
-  export let handle_option_selected: (index: number) => void
   // TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
-  export let mode: Mode
 
-  export let disabled = false
+  interface DropDownProps {
+    choices: ModeInfos[]
+    mode: Mode
+    disabled?: boolean
+    onOptionSelected: (index: number) => void
+  }
 
-  export var choices: ModeInfos[]
+  let { choices, mode = $bindable(), disabled = false, onOptionSelected }: DropDownProps = $props()
 
-  function handleKeyDown(index: number, event: KeyboardEvent) {
+  function onKeydown(index: number, event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
-      handle_option_selected(index)
+      onOptionSelected(index)
     }
   }
 </script>
@@ -29,8 +32,8 @@
       tabindex="0"
       role="radio"
       aria-checked={value === mode ? 'true' : 'false'}
-      on:click={() => handle_option_selected(index)}
-      on:keydown={(e) => handleKeyDown(index, e)}
+      onclick={() => onOptionSelected(index)}
+      onkeydown={(e) => onKeydown(index, e)}
       aria-controls={value != 'custom' ? 'modal-mode-selection' : ''}
     >
       <input

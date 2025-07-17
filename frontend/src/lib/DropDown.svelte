@@ -103,7 +103,7 @@
     })
   }
 
-  function handle_option_selected(index: number): void {
+  function onOptionSelected(index: number): void {
     if (index !== null && choices && choices.length > index) {
       choice = choices[index]
       mode.value = choice.value
@@ -302,7 +302,7 @@
               </h6>
               <p>{m['arenaHome.selectModels.help']()}</p>
               <div>
-                <Dropdown {handle_option_selected} {choices} bind:mode={mode.value} />
+                <Dropdown bind:mode={mode.value} {onOptionSelected} {choices} />
               </div>
             {:else}
               <div in:fade>
