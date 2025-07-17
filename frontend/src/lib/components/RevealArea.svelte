@@ -7,11 +7,13 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import { onMount } from 'svelte'
 
   let { data }: { data: RevealData } = $props()
 
   const { selected, modelsData, shareB64Data, ...infos } = data
 
+  let elem: HTMLDivElement
   let shareInput: HTMLInputElement
 
   function copyShareLink() {
@@ -19,9 +21,13 @@
     navigator.clipboard.writeText(shareInput.value)
     useToast(m['actions.copyLink.done'](), 2000)
   }
+
+  onMount(() => {
+    elem.scrollIntoView({ behavior: 'smooth' })
+  })
 </script>
 
-<div id="reveal-screen" class="fr-pt-4w next-screen">
+<div bind:this={elem} id="reveal-screen" class="fr-pt-4w next-screen">
   <div>
     <div id="reveal-grid" class="grid-cols-md-2 fr-mx-md-12w grid grid-cols-1">
       {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
@@ -270,3 +276,10 @@
 </div>
 
 <Footer />
+
+<style>
+  #reveal-screen {
+    scroll-margin-top: calc(var(--second-header-size) + 1rem);
+    min-height: 70vh;
+  }
+</style>

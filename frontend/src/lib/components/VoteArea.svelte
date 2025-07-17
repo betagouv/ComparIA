@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { VoteData } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
+  import { onMount } from 'svelte'
   import LikePanel from './LikePanel.svelte'
   import TextPrompt from './TextPrompt.svelte'
   import VoteRadioGroup from './VoteRadioGroup.svelte'
@@ -13,10 +14,15 @@
     disabled?: boolean
   } = $props()
 
+  let elem: HTMLDivElement
   let showComments = $state(false)
+
+  onMount(() => {
+    elem.scrollIntoView({ behavior: 'smooth' })
+  })
 </script>
 
-<div id="vote-area" class="fr-container">
+<div bind:this={elem} id="vote-area" class="fr-container mt-20">
   <div class="text-center">
     <h4 class="mb-2!">{m['vote.title']()}</h4>
     <p class="text-grey fr-text--sm">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
@@ -77,3 +83,10 @@
     {/if}
   {/if}
 </div>
+
+<style>
+  #vote-area {
+    scroll-margin-top: calc(var(--second-header-size) + 1rem);
+    min-height: 70vh;
+  }
+</style>

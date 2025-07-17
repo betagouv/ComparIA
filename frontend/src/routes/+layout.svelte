@@ -21,7 +21,21 @@
         }
       : null
   )
+
+  // Compute second header height for autoscrolling
+  let secondHeader = $state<HTMLElement>()
+  let secondHeaderSize: number = $state(0)
+
+  function onResize() {
+    secondHeaderSize = secondHeader ? secondHeader.offsetHeight : 0
+  }
+
+  $effect(() => {
+    secondHeaderSize = secondHeader ? secondHeader.offsetHeight : 0
+  })
 </script>
+
+<svelte:window onresize={onResize} />
 
 <header id="main-header" class="fr-header">
   <div class="fr-header__body">
@@ -96,7 +110,11 @@
 </header>
 
 {#if infos.currentScreen === 'chatbots' && infos.step && mode}
-  <div id="second-header" class="fr-container--fluid fr-py-1w">
+  <div
+    bind:this={secondHeader}
+    id="second-header"
+    class="fr-container--fluid fr-py-1w sticky top-0"
+  >
     <div class="fr-mb-0 fr-container fr-grid-row">
       <div class="fr-col-12 fr-col-md-8 align-center column md-row flex">
         <div>
@@ -105,7 +123,7 @@
             {infos.step}/2
           </span>
         </div>
-        <p class="fr-ml-1w fr-mb-md-0 fr-mb-md-1v md-text-left text-center">
+        <p class="fr-ml-1w fr-mb-md-0 fr-mb-md-1v md-text-left mb-0! text-center">
           <strong class="text-dark-grey">
             {#if infos.step == 1}
               {m['header.chatbot.stepOne.title']()}
@@ -125,7 +143,7 @@
       </div>
       <div class="fr-col-12 fr-col-md-4 align-center grid">
         {#if infos.step == 1}
-          <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs bg-white text-center">
+          <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs mb-0! bg-white text-center">
             <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>
             &nbsp;<Tooltip id="mode-desc" text={mode.description} size="xs" />
@@ -149,7 +167,7 @@
   </div>
 {/if}
 
-<main class="relative">
+<main class="relative" style="--second-header-size: {secondHeaderSize}px;">
   <Toaster />
 
   {@render children()}

@@ -72,16 +72,29 @@
       step = 'vote'
     }
   }
+
+  // Compute second header height for autoscrolling
+  let footer = $state<HTMLElement>()
+  let footerSize: number = $state(0)
+
+  function onResize() {
+    footerSize = footer ? footer.offsetHeight : 0
+  }
+
+  $effect(() => {
+    footerSize = footer ? footer.offsetHeight : 0
+  })
 </script>
 
-<div id="chat-area">
+<svelte:window onresize={onResize} />
+
+<div id="chat-area" style="--footer-size: {footerSize}px;">
   <ChatBot
     disabled={chatbotDisabled}
     pending={chatbot.status === 'pending'}
     generating={chatbot.status === 'generating'}
     {onReactionChange}
     {onRetry}
-    autoscroll={true}
     {layout}
   />
 </div>
@@ -93,7 +106,11 @@
 {#if step === 'reveal' && revealData}
   <RevealArea data={revealData} />
 {:else}
-  <div id="send-area" class="mt-auto flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]">
+  <div
+    bind:this={footer}
+    id="send-area"
+    class="mt-auto flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]"
+  >
     {#if step === 'chat'}
       <div class="flex w-full flex-col gap-3 md:flex-row">
         <TextPrompt

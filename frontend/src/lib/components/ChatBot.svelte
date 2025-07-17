@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { browser } from '$app/environment'
   import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
   import { chatbot } from '$lib/chatService.svelte'
   import Icon from '$lib/components/Icon.svelte'
@@ -7,13 +6,11 @@
   import MessageUser from '$lib/components/MessageUser.svelte'
   import Pending from '$lib/components/Pending.svelte'
   import { m } from '$lib/i18n/messages'
-  import { onMount, tick } from 'svelte'
 
   let {
     pending,
     generating,
     disabled,
-    autoscroll = true,
     layout = 'bubble',
     onReactionChange,
     onRetry
@@ -21,15 +18,10 @@
     pending: boolean
     generating: boolean
     disabled: boolean
-    autoscroll?: boolean
     layout: 'bubble' | 'panel'
     onReactionChange: OnReactionFn
     onRetry: () => void
   } = $props()
-
-  let div: HTMLDivElement
-
-  let show_scroll_button = false
 
   const groupedMessages = $derived.by(() => {
     const questionCount = Math.ceil(chatbot.messages.length / 3)
@@ -47,56 +39,6 @@
   })
 
   const errorString = $derived(chatbot.messages.find((message) => message.error !== null)?.error)
-
-  function is_at_bottom(): boolean {
-    return div && div.offsetHeight + div.scrollTop > div.scrollHeight - 100
-  }
-
-  function scroll_to_bottom(): void {
-    if (!div) return
-    div.scrollTo(0, div.scrollHeight)
-    show_scroll_button = false
-  }
-
-  let scroll_after_component_load = false
-
-  async function scroll_on_value_update(): Promise<void> {
-    if (!autoscroll) return
-
-    if (is_at_bottom()) {
-      // Child components may be loaded asynchronously,
-      // so trigger the scroll again after they load.
-      scroll_after_component_load = true
-
-      await tick() // Wait for the DOM to update so that the scrollHeight is correct
-      scroll_to_bottom()
-    } else {
-      show_scroll_button = true
-    }
-  }
-  onMount(() => {
-    scroll_on_value_update()
-  })
-  $effect(() => {
-    if (groupedMessages || pending) {
-      scroll_on_value_update()
-    }
-  })
-
-  onMount(() => {
-    function handle_scroll(): void {
-      if (is_at_bottom()) {
-        show_scroll_button = false
-      } else {
-        scroll_after_component_load = false
-      }
-    }
-
-    div?.addEventListener('scroll', handle_scroll)
-    return () => {
-      div?.removeEventListener('scroll', handle_scroll)
-    }
-  })
 </script>
 
 <!-- FIXME still needed? -->
@@ -110,39 +52,24 @@
 
 <div
   class={(layout === 'bubble' ? 'bubble-wrap' : 'panel-wrap') + ' min-h-full'}
-  bind:this={div}
   role="log"
   aria-label={m['chatbot.conversation']()}
   aria-live="polite"
 >
   {#if !pending}
     {#each groupedMessages as { user, bots }, i}
-      <div class="mb-15 px-4 md:px-8 xl:px-16">
-        <MessageUser message={user} onLoad={browser ? scroll : () => {}} />
+      <div class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16">
+        <MessageUser message={user} />
 
         <div class="grid gap-10 md:grid-cols-2 md:gap-6">
           {#each bots as botMessage, j}
-            <MessageBot
-              message={botMessage}
-              {generating}
-              {disabled}
-              onLoad={browser ? scroll : () => {}}
-              {onReactionChange}
-            />
+            <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
           {/each}
         </div>
       </div>
     {/each}
   {:else}
-    <Pending />
-    <!-- TODO: remove this placeholder, if it appears it should be an error instead -->
-    <!-- <div class="placeholder-content">
-      {#if placeholder !== null}
-        <div class="placeholder">
-          <Markdown message={placeholder} />
-        </div>
-      {/if}
-    </div> -->
+    <div class="my-6"><Pending /></div>
   {/if}
 
   {#if errorString}
@@ -201,6 +128,9 @@
 {/if} -->
 
 <style>
+  .grouped-messages:last-of-type {
+    min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
+  }
   .placeholder-content {
     display: flex;
     flex-direction: column;
