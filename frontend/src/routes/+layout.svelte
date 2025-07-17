@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from '$lib/components/Icon.svelte'
+  import Toaster from '$lib/components/Toaster.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
   import { setLocale } from '$lib/i18n/runtime'
@@ -148,7 +149,9 @@
   </div>
 {/if}
 
-<main>
+<main class="relative">
+  <Toaster />
+
   {@render children()}
 </main>
 
