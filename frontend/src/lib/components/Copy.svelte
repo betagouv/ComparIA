@@ -1,52 +1,31 @@
 <script lang="ts">
   import IconButton from '$lib/components/IconButton.svelte'
   import { m } from '$lib/i18n/messages'
+  import { copyToClipboard } from '$lib/utils/commons'
   import { onDestroy } from 'svelte'
 
-  let copied = false
-  export let value: string
-  let timer: NodeJS.Timeout
+  let { value }: { value: string } = $props()
 
-  function copy_feedback(): void {
-    copied = true
-    if (timer) clearTimeout(timer)
-    timer = setTimeout(() => {
-      copied = false
-    }, 2000)
-  }
-
-  async function handle_copy(): Promise<void> {
-    if ('clipboard' in navigator) {
-      await navigator.clipboard.writeText(value)
-      copy_feedback()
-    } else {
-      const textArea = document.createElement('textarea')
-      textArea.value = value
-
-      textArea.style.position = 'absolute'
-      textArea.style.left = '-999999px'
-
-      document.body.prepend(textArea)
-      textArea.select()
-
-      try {
-        document.execCommand('copy')
-        copy_feedback()
-      } catch (error) {
-        console.error(error)
-      } finally {
-        textArea.remove()
-      }
-    }
-  }
+  let copied = $state(false)
+  let timer: number
 
   onDestroy(() => {
     if (timer) clearTimeout(timer)
   })
+
+  function showFeedback(): void {
+    copied = true
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => (copied = false), 2000)
+  }
+
+  async function onCopy(): Promise<void> {
+    copyToClipboard(value).then(showFeedback)
+  }
 </script>
 
 <IconButton
-  onclick={handle_copy}
+  onclick={onCopy}
   label={m[`actions.copyMessage.${copied ? 'done' : 'do'}`]()}
   icon={copied ? 'check-line' : 'copy'}
 />

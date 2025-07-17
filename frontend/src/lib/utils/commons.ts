@@ -18,3 +18,30 @@ export function externalLinkProps(props: Record<string, unknown> | string): stri
     typeof props === 'string' ? { ..._props, href: props } : { ..._props, ...props }
   )
 }
+
+export function copyToClipboard(value: string): Promise<void> {
+  if ('clipboard' in navigator) {
+    return navigator.clipboard.writeText(value)
+  } else {
+    return new Promise((resolve, reject) => {
+      const textArea = document.createElement('textarea')
+      textArea.value = value
+  
+      textArea.style.position = 'absolute'
+      textArea.style.left = '-999999px'
+  
+      document.body.prepend(textArea)
+      textArea.select()
+  
+      try {
+        document.execCommand('copy')
+        resolve()
+      } catch (err) {
+        console.error(err)
+        reject(err)
+      } finally {
+        textArea.remove()
+      }
+    })
+  }
+}
