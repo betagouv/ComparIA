@@ -4,6 +4,7 @@
   import DropDown from '$lib/DropDown.svelte'
   import { state } from '$lib/state.svelte'
   import { onMount } from 'svelte'
+  import WelcomeModal from './WelcomeModal.svelte'
 
   let { data } = $props()
 
@@ -17,6 +18,8 @@
     await runChatBots(args)
   }
 </script>
+
+<WelcomeModal />
 
 {#if state.currentScreen === 'initial'}
   <DropDown {onSubmit} models={data.models} />

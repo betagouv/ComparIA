@@ -47,6 +47,14 @@
       "linkTitle": "Licence etalab - nouvelle fenêtre"
     }
   },
+  "welcome": {
+    "title": "Bienvenue dans compar:IA !",
+    "goodPractices": "Voici quelques bonnes pratiques :",
+    "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées",
+    "privacy": "Ne communiquez pas d'informations personnelles comme votre nom, prénom ou adresse",
+    "use": "N'utilisez pas le comparateur à des fins illégales ou nuisibles",
+    "go": "C'est parti"
+  },
   "arenaHome": {
     "title": "Comment puis-je vous aider aujourd'hui ?",
     "modelSelection": "Sélection des modèles",
