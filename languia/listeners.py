@@ -466,7 +466,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         text = gr.update(visible=True, value="")
 
         # FIXME running bot_response_multi directly here to receive messages on front
-        bot_response_multi(
+        yield from bot_response_multi(
             app_state_scoped,
             conv_a_scoped,
             conv_b_scoped,
