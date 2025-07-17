@@ -428,31 +428,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         event: gr.EventData,
     ):
 
-        # if retry, resend last user errored message
-        # TODO: check if it's a retry event more robustly, with listener specifically on Event.retry
-        if event._data is not None:
-            app_state_scoped.awaiting_responses = False
-
-            if (
-                conv_a_scoped.messages[-1].role == "assistant"
-                and conv_b_scoped.messages[-1].role == "assistant"
-            ):
-                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-
-            if (
-                conv_a_scoped.messages[-1].role == "user"
-                and conv_b_scoped.messages[-1].role == "user"
-            ):
-                text = conv_a_scoped.messages[-1].content
-                conv_a_scoped.messages = conv_a_scoped.messages[:-1]
-                conv_b_scoped.messages = conv_b_scoped.messages[:-1]
-            else:
-                raise gr.Error(
-                    message="Il n'est pas possible de réessayer, veuillez recharger la page.",
-                    duration=10,
-                )
-
         conversations = [conv_a_scoped, conv_b_scoped]
 
         # Check if "Enter" pressed and no text or still awaiting response and return early
@@ -465,6 +440,82 @@ document.getElementById("fr-modal-welcome-close").blur();
                     duration=10,
                 )
             )
+
+        logger.info(
+            f"msg_user: {text}",
+            extra={"request": request},
+        )
+
+        if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
+            logger.info(
+                f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
+                extra={"request": request},
+            )
+
+        text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
+        for i in range(config.num_sides):
+            conversations[i].messages.append(ChatMessage(role="user", content=text))
+        conv_a_scoped = conversations[0]
+        conv_b_scoped = conversations[1]
+        app_state_scoped.awaiting_responses = True
+
+        # record for questions only dataset and stats on ppl abandoning before generation completion
+        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+
+        chatbot = to_threeway_chatbot(conversations)
+        text = gr.update(visible=True, value="")
+
+        # FIXME running bot_response_multi directly here to receive messages on front
+        bot_response_multi(
+            app_state_scoped,
+            conv_a_scoped,
+            conv_b_scoped,
+            chatbot,
+            text,
+            request,
+        )
+    
+    @gr.on(
+        inputs=[app_state] + [conv_a] + [conv_b],
+        outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
+        api_name="chatbot_retry",
+        show_progress="hidden",
+    )
+    def retry(
+        app_state_scoped,
+        conv_a_scoped: gr.State,
+        conv_b_scoped: gr.State,
+        request: gr.Request,
+        event: gr.EventData,
+    ):
+
+        app_state_scoped.awaiting_responses = False
+
+        if (
+            conv_a_scoped.messages[-1].role == "assistant"
+            and conv_b_scoped.messages[-1].role == "assistant"
+        ):
+            conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+            conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+
+        if (
+            conv_a_scoped.messages[-1].role == "user"
+            and conv_b_scoped.messages[-1].role == "user"
+        ):
+            text = conv_a_scoped.messages[-1].content
+            conv_a_scoped.messages = conv_a_scoped.messages[:-1]
+            conv_b_scoped.messages = conv_b_scoped.messages[:-1]
+        else:
+            raise gr.Error(
+                message="Il n'est pas possible de réessayer, veuillez recharger la page.",
+                duration=10,
+            )
+
+        conversations = [conv_a_scoped, conv_b_scoped]
+
+        # Check if "Enter" pressed and no text or still awaiting response and return early
+        if text == "":
+            raise (gr.Error("Veuillez entrer votre texte.", duration=10))
 
         logger.info(
             f"msg_user: {text}",
