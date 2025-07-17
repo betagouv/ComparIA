@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
-import { state } from '$lib/state.svelte'
+import { infos } from '$lib/state.svelte'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
@@ -70,7 +70,7 @@ export const api = {
   },
 
   async submit<T>(uri: string, params: Record<string, unknown> = {}): Promise<AsyncIterable<T>> {
-    state.loading = true
+    infos.loading = true
     console.debug(`Submitting Gradio job '${uri}' with params:`, params)
 
     try {
@@ -82,12 +82,12 @@ export const api = {
       console.error('Failed to submit Gradio job:', error)
       throw error
     } finally {
-      state.loading = false
+      infos.loading = false
     }
   },
 
   async predict<T>(uri: string, params: Record<string, unknown> = {}): Promise<T> {
-    state.loading = true
+    infos.loading = true
     console.debug(`Predicting Gradio job '${uri}' with params:`, params)
 
     try {
@@ -99,7 +99,7 @@ export const api = {
       console.error('Failed to predict Gradio job:', error)
       throw error
     } finally {
-      state.loading = false
+      infos.loading = false
     }
   },
 

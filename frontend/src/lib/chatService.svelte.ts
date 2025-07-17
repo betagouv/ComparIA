@@ -1,6 +1,6 @@
 import { api } from '$lib/api'
 import type { APIBotModel, Sizes } from '$lib/models'
-import { state, type Mode } from '$lib/state.svelte'
+import { infos, type Mode } from '$lib/state.svelte'
 import type { LoadingStatus } from '@gradio/statustracker'
 
 // PROMPT
@@ -152,9 +152,9 @@ export async function runChatBots(args: APIModeAndPromptData) {
       model_dropdown_scoped: args
     })
 
-    state.currentScreen = 'chatbots'
-    state.mode = args.mode
-    state.step = 1
+    infos.currentScreen = 'chatbots'
+    infos.mode = args.mode
+    infos.step = 1
     // chatbot.status = 'streaming'
 
     for await (const messages of job) {
@@ -172,7 +172,7 @@ export async function runChatBots(args: APIModeAndPromptData) {
 }
 
 export async function askChatBots(text: string) {
-  chatbot.status = 'pending'
+  // chatbot.status = 'pending'
 
   try {
     const job = await api.submit<APIChatMessage[]>('/add_text', { text })

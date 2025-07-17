@@ -4,20 +4,20 @@
   import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
   import { setLocale } from '$lib/i18n/runtime'
-  import { modeInfos, state } from '$lib/state.svelte'
+  import { modeInfos, infos } from '$lib/state.svelte'
   import { sanitize } from '$lib/utils/commons'
   import '../css/app.css'
 
   let { children } = $props()
-  const mode = $derived(state.mode ? modeInfos.find((mode) => mode.value === state.mode)! : null)
+  const mode = $derived(infos.mode ? modeInfos.find((mode) => mode.value === infos.mode)! : null)
   // FIXME i18n
   const NumberFormater = new Intl.NumberFormat('fr', { maximumSignificantDigits: 3 })
   const votes = $derived(
-    state.votes
+    infos.votes
       ? {
-          count: NumberFormater.format(state.votes.count),
-          objective: NumberFormater.format(state.votes.objective),
-          ratio: (100 * (state.votes.count / state.votes.objective)).toFixed() + '%'
+          count: NumberFormater.format(infos.votes.count),
+          objective: NumberFormater.format(infos.votes.objective),
+          ratio: (100 * (infos.votes.count / infos.votes.objective)).toFixed() + '%'
         }
       : null
   )
@@ -52,7 +52,7 @@
           </div> -->
         </div>
 
-        {#if state.currentScreen === 'initial'}
+        {#if infos.currentScreen === 'initial'}
           <div class="md-visible fr-header__tools fr-col-12 fr-col-lg-4 fr-p-2w hidden">
             <a
               title={m['header.help.link.title']()}
@@ -95,19 +95,19 @@
   </div>
 </header>
 
-{#if state.currentScreen === 'chatbots' && state.step && mode}
+{#if infos.currentScreen === 'chatbots' && infos.step && mode}
   <div id="second-header" class="fr-container--fluid fr-py-1w">
     <div class="fr-mb-0 fr-container fr-grid-row">
       <div class="fr-col-12 fr-col-md-8 align-center column md-row flex">
         <div>
           <span class="step-badge fr-mt-md-0 fr-mb-md-0 fr-mt-1w fr-mb-3v">
             {m['header.chatbot.step']()}
-            {state.step}/2
+            {infos.step}/2
           </span>
         </div>
         <p class="fr-ml-1w fr-mb-md-0 fr-mb-md-1v md-text-left text-center">
           <strong class="text-dark-grey">
-            {#if state.step == 1}
+            {#if infos.step == 1}
               {m['header.chatbot.stepOne.title']()}
             {:else}
               {m['header.chatbot.stepTwo.title']()}
@@ -115,7 +115,7 @@
           </strong>
           <br />
           <span class="text-grey fr-text--xs">
-            {#if state.step == 1}
+            {#if infos.step == 1}
               {m['header.chatbot.stepOne.description']()}
             {:else}
               {m['header.chatbot.stepTwo.description']()}
@@ -124,7 +124,7 @@
         </p>
       </div>
       <div class="fr-col-12 fr-col-md-4 align-center grid">
-        {#if state.step == 1}
+        {#if infos.step == 1}
           <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs bg-white text-center">
             <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>

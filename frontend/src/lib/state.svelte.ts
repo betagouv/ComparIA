@@ -19,7 +19,7 @@ export type State = {
   loading: boolean
 }
 
-export const state = $state<State>({
+export const infos = $state<State>({
   currentScreen: 'initial',
   loading: false
 })
@@ -42,6 +42,6 @@ export const modeInfos: ModeInfos[] = (
 
 export function getVotes() {
   return api.get<State['votes']>('/counter').then((data) => {
-    state.votes = data
+    infos.votes = data
   })
 }
