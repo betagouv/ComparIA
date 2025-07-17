@@ -310,6 +310,9 @@
       "example": "Exemple de partage de résultat"
     }
   },
+  "errors": {
+    "unknown": "Une erreur est survenue"
+  },
   "actions": {
     "copyMessage": {
       "do": "Copier le message",
