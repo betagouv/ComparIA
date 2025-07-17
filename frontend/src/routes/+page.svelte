@@ -164,7 +164,7 @@
             générative et à ses enjeux</p>
         <div class="grid gap fr-container">
             <div class="rounded-tile">
-                <img src="assets/comparer.svg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue" />
+                <img src="static/home/comparer.svg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue" />
                 <div class="fr-p-3w">
                     <h6 class="fr-mb-1w">
                         Comparer les réponses de différents modèles d’IA</h6>
@@ -172,7 +172,7 @@
                 </div>
             </div>
             <div class="rounded-tile">
-                <div class="fr-responsive-img bg-blue"><img class="fr-responsive-img" src="assets/mesurer.png" /></div>
+                <div class="fr-responsive-img bg-blue"><img class="fr-responsive-img" src="static/home/mesurer.png" /></div>
                 <div class="fr-p-3w">
                     <h6 class="fr-mb-1w">
                         Tester au même endroit les dernières IA de l’écosystème</h6>
@@ -181,7 +181,7 @@
                 </div>
             </div>
             <div class="rounded-tile">
-                <img src="assets/tester.svg" class="fr-responsive-img fr-px-6w fr-py-2w bg-blue bg-blue" />
+                <img src="static/home/tester.svg" class="fr-responsive-img fr-px-6w fr-py-2w bg-blue bg-blue" />
                 <div class="fr-p-3w">
                     <h6 class="fr-mb-1w">
                         Mesurer l’empreinte écologique des questions posées aux IA
@@ -199,7 +199,7 @@
                 modèles
                 d’IA sur le français</p>
             <div class="fr-grid-row fr-grid-row--gutters">
-                <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w"><img src="assets/prefs.svg" alt="Vos préférences"
+                <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w"><img src="static/home/prefs.svg" alt="Vos préférences"
                         width="72" height="72"><span class="arrow-1"></span>
                     <h6>Vos préférences</h6>
                     <p class="text-grey"><br />Après discussion avec les IA, vous indiquez votre préférence pour un
@@ -209,7 +209,7 @@
                         donnés, tels que la pertinence ou l’utilité des réponses</p>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
-                    <img src="assets/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72"><span
+                    <img src="static/home/datasets.svg" alt="Les jeux de données compar:IA" width="72" height="72"><span
                         class="arrow-2"></span>
                     <h6>Les jeux de données<br />compar:IA</h6>
                     <p class="text-grey">compar:IA compile dans des jeux de données tous les votes et tous les messages
@@ -218,7 +218,7 @@
                         comparateur</p>
                 </div>
                 <div class="fr-col-12 fr-col-md-4 text-center fr-p-6w">
-                    <img src="assets/finetune.svg" alt="Des modèles affinés sur le français" width="72" height="72">
+                    <img src="static/home/finetune.svg" alt="Des modèles affinés sur le français" width="72" height="72">
                     <h6 class="fr-mt-1w">Des modèles affinés<br />sur le français</h6>
                     <p class="text-grey">A terme, les acteurs industriels et académiques peuvent exploiter les jeux de
                         données pour
@@ -243,14 +243,14 @@
                 plus spécifiques</p>
             <div class="grid gap">
                 <div class="rounded-tile fr-p-3w">
-                    <img src="assets/extra-icons/database-line.svg" aria-hidden="true" class="fr-mb-2w purple" />
+                    <img src="static/icons/database-line.svg" aria-hidden="true" class="fr-mb-2w purple" />
                     <h6 class="fr-mb-1w">Exploiter les données</h6>
                     <p class="text-grey">Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données
                         compar:IA
                         pour améliorer les modèles</p>
                 </div>
                 <div class="rounded-tile fr-p-3w">
-                    <img src="assets/extra-icons/search-line.svg" aria-hidden="true" class="fr-mb-2w" width="30"
+                    <img src="static/icons/search-line.svg" aria-hidden="true" class="fr-mb-2w" width="30"
                         height="30" />
                     <h6 class="fr-mb-1w">Explorer les modèles</h6>
                     <p class="text-grey">Consultez au même endroit toutes les caractéristiques et conditions
@@ -259,7 +259,7 @@
                         modèles</p>
                 </div>
                 <div class="rounded-tile fr-p-3w">
-                    <img src="assets/extra-icons/presentation.svg" aria-hidden="true" class="fr-mb-2w" />
+                    <img src="static/icons/presentation.svg" aria-hidden="true" class="fr-mb-2w" />
                     <h6 class="fr-mb-1w">Former et sensibiliser</h6>
                     <p class="text-grey">Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA
                         auprès de
@@ -286,17 +286,17 @@
                         faciles à utiliser.</p>
                     <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle fr-grid-row--gutters">
                         <div class="fr-col-md-4 fr-col-6">
-                            <img class="" src="assets/orgs/minicult.svg" alt="Ministère de la Culture"
+                            <img class="" src="static/orgs/minicult.svg" alt="Ministère de la Culture"
                                 title="Ministère de la Culture" width="137px" height="97px" />
                         </div>
                         <div class="fr-col-md-4 fr-col-6 text-center">
-                            <img class="dark-invert lol" src="assets/orgs/ateliernumerique.png" alt="Atelier numérique"
+                            <img class="dark-invert lol" src="static/orgs/ateliernumerique.png" alt="Atelier numérique"
                                 title="Atelier numérique" width="105px" height="105px" />
                         </div>
                         <div class="fr-col-md-4 fr-col-12">
-                            <img src="assets/orgs/betagouv.svg" alt="beta.gouv.fr" title="beta.gouv.fr"
+                            <img src="static/orgs/betagouv.svg" alt="beta.gouv.fr" title="beta.gouv.fr"
                                 class="dark-invert fr-responsive-img" width="191px" height="65px" />
-                            <img src="assets/orgs/dinum.png" class="dark-invert fr-responsive-img" alt="DINUM"
+                            <img src="static/orgs/dinum.png" class="dark-invert fr-responsive-img" alt="DINUM"
                                 title="DINUM" width="278px" height="59px" />
                         </div>
                     </div>
@@ -306,7 +306,7 @@
                 <div class="fr-container fr-py-4w fr-py-md-6w fr-px-md-2w">
                     <h5>Quelles sont nos missions ?</h5>
                     <div class="fr-grid-row fr-grid-row--top">
-                        <img src="assets/extra-icons/map-pin.svg" alt="Point sur la carte" aria-hidden="true"
+                        <img src="static/icons/map-pin.svg" alt="Point sur la carte" aria-hidden="true"
                             class="fr-col-1 fr-pr-md-1w" />
                         <div class="fr-col-11 fr-pl-1w">
                             <h6 class="fr-mb-0 fr-text--lg">Faciliter l’accès</h6>
@@ -315,7 +315,7 @@
                                 d’IA
                                 conversationnels à travers une unique plateforme.</p>
                         </div>
-                        <img src="assets/extra-icons/database-line.svg" alt="jeux de données"
+                        <img src="static/icons/database-line.svg" alt="jeux de données"
                             class="fr-col-1 fr-pr-md-1w" />
                         <div class="fr-col-11 fr-pl-1w">
                             <h6 class="fr-mb-0 fr-text--lg">Collecter des données</h6>
@@ -326,7 +326,7 @@
                                 français.
                             </p>
                         </div>
-                        <img src="assets/extra-icons/share.svg" alt="écosystème" aria-hidden="true"
+                        <img src="static/icons/share.svg" alt="écosystème" aria-hidden="true"
                             class="fr-col-1 fr-pr-md-1w" />
                         <div class="fr-col-11 fr-pl-1w">
                             <h6 class="fr-mb-0 fr-text--lg">Partager</h6>
