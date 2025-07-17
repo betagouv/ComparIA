@@ -14,6 +14,10 @@ export default defineConfig({
       strategy: ['localStorage', 'cookie', 'preferredLanguage', 'baseLocale']
     })
   ],
+  optimizeDeps: {
+    include: ['@gradio/client'],
+  },
+
   test: {
     workspace: [
       {
