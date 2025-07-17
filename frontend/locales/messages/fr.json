@@ -327,6 +327,7 @@
     "restart": "Recommencer",
     "retry": "Recommencer",
     "send": "Envoyer",
+    "tooltip": "Infobulle",
     "validate": "Valider"
   }
 }
