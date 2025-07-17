@@ -6,7 +6,7 @@ ENV PUBLIC_GIT_COMMIT=$GIT_COMMIT
 ENV PUBLIC_API_URL="https://alpha.comparia.beta.gouv.fr"
 
 WORKDIR /app
-# RUN npm install -g vite
+RUN npm install -g vite
 COPY ./package.json ./yarn.lock /app
 RUN yarn install
 COPY ./ /app
