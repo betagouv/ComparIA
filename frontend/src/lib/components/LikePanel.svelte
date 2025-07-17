@@ -115,8 +115,6 @@
   </p>
   <div class="flex flex-wrap gap-3">
     {#each reaction.choices as { value, label } (value)}
-      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-      <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
       <label
         class:disabled
         class:selected={selection.includes(value)}

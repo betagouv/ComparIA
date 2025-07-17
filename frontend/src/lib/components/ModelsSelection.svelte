@@ -19,8 +19,6 @@
 
 <div class="models-grid">
   {#each models as { id, simple_name, icon_path, organisation, params, total_params, friendly_size, distribution, release_date, fully_open_source }, index}
-    <!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
     <label
       class:selected={custom_models_selection.includes(id)}
       class:disabled={disabled ||
