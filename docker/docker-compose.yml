@@ -5,6 +5,7 @@ services:
       LOGDIR: /data
       LANGUIA_REGISTER_API_ENDPOINT_FILE: "/register-api-endpoint-file.json"
       LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
+      PUBLIC_API_URL: "http://languia:8001"
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -17,23 +18,16 @@ services:
       # Dev config
       - ../:/app
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
-  # languia-controller:
-  #   env_file: .env
-  #   environment:
-  #     LANGUIA_REGISTER_API_ENDPOINT_FILE: "/register-api-endpoint-file.json"
-  #   build:
-  #     context: ..
-  #     dockerfile: docker/Dockerfile
-  #   image: languia:latest
-  #   volumes:
-  #     - ../register-api-endpoint-file.json:/register-api-endpoint-file.json
-  #   command: ["uvicorn", "controller:app", "--host", "0.0.0.0", "--port", "21001", "--reload"]
-  # languia-db:
-  #   env_file: .env
-  #   image: postgres:latest
-  #   volumes:
-  #     - ./db:/data
-  #   environment:
-  #     - POSTGRES_DB=languia
-  #     - POSTGRES_USER=languia
-  #     - POSTGRES_PASSWORD=${LANGUIA_DB_PASSWORD}
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: ../docker/Dockerfile-sveltekit
+      args:
+        PUBLIC_API_URL: "http://languia:8001"
+    ports:
+      - "3000:80" # Assuming SvelteKit serves on port 80 inside the container
+    depends_on:
+      - languia
+    environment:
+      PUBLIC_API_URL: "http://languia:8001" # For runtime access in +page.server.ts
