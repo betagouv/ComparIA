@@ -78,7 +78,7 @@
     </p>
     <div class="gap fr-container grid">
       <div class="rounded-tile">
-        <img src="static/home/comparer.svg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue" />
+        <img src="/home/comparer.svg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue" />
         <div class="fr-p-3w">
           <h6 class="fr-mb-1w">Comparer les réponses de différents modèles d’IA</h6>
           <p class="text-grey">
@@ -88,7 +88,7 @@
       </div>
       <div class="rounded-tile">
         <div class="fr-responsive-img bg-blue">
-          <img class="fr-responsive-img" src="static/home/mesurer.png" />
+          <img class="fr-responsive-img" src="/home/mesurer.png" />
         </div>
         <div class="fr-p-3w">
           <h6 class="fr-mb-1w">Tester au même endroit les dernières IA de l’écosystème</h6>
@@ -98,10 +98,7 @@
         </div>
       </div>
       <div class="rounded-tile">
-        <img
-          src="static/home/tester.svg"
-          class="fr-responsive-img fr-px-6w fr-py-2w bg-blue bg-blue"
-        />
+        <img src="/home/tester.svg" class="fr-responsive-img fr-px-6w fr-py-2w bg-blue bg-blue" />
         <div class="fr-p-3w">
           <h6 class="fr-mb-1w">Mesurer l’empreinte écologique des questions posées aux IA</h6>
           <p class="text-grey">
@@ -120,7 +117,7 @@
       </p>
       <div class="fr-grid-row fr-grid-row--gutters">
         <div class="fr-col-12 fr-col-md-4 fr-p-6w text-center">
-          <img src="static/home/prefs.svg" alt="Vos préférences" width="72" height="72" /><span
+          <img src="/home/prefs.svg" alt="Vos préférences" width="72" height="72" /><span
             class="arrow-1"
           ></span>
           <h6>Vos préférences</h6>
@@ -131,7 +128,7 @@
         </div>
         <div class="fr-col-12 fr-col-md-4 fr-p-6w text-center">
           <img
-            src="static/home/datasets.svg"
+            src="/home/datasets.svg"
             alt="Les jeux de données compar:IA"
             width="72"
             height="72"
@@ -144,7 +141,7 @@
         </div>
         <div class="fr-col-12 fr-col-md-4 fr-p-6w text-center">
           <img
-            src="static/home/finetune.svg"
+            src="/home/finetune.svg"
             alt="Des modèles affinés sur le français"
             width="72"
             height="72"
@@ -175,7 +172,7 @@
       </p>
       <div class="gap grid">
         <div class="rounded-tile fr-p-3w">
-          <img src="static/icons/database-line.svg" aria-hidden="true" class="fr-mb-2w purple" />
+          <img src="/icons/database-line.svg" aria-hidden="true" class="fr-mb-2w purple" />
           <h6 class="fr-mb-1w">Exploiter les données</h6>
           <p class="text-grey">
             Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données compar:IA
@@ -184,7 +181,7 @@
         </div>
         <div class="rounded-tile fr-p-3w">
           <img
-            src="static/icons/search-line.svg"
+            src="/icons/search-line.svg"
             aria-hidden="true"
             class="fr-mb-2w"
             width="30"
@@ -197,7 +194,7 @@
           </p>
         </div>
         <div class="rounded-tile fr-p-3w">
-          <img src="static/icons/presentation.svg" aria-hidden="true" class="fr-mb-2w" />
+          <img src="/icons/presentation.svg" aria-hidden="true" class="fr-mb-2w" />
           <h6 class="fr-mb-1w">Former et sensibiliser</h6>
           <p class="text-grey">
             Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de
@@ -225,7 +222,7 @@
             <div class="fr-col-md-4 fr-col-6">
               <img
                 class=""
-                src="static/orgs/minicult.svg"
+                src="/orgs/minicult.svg"
                 alt="Ministère de la Culture"
                 title="Ministère de la Culture"
                 width="137px"
@@ -235,7 +232,7 @@
             <div class="fr-col-md-4 fr-col-6 text-center">
               <img
                 class="dark-invert lol"
-                src="static/orgs/ateliernumerique.png"
+                src="/orgs/ateliernumerique.png"
                 alt="Atelier numérique"
                 title="Atelier numérique"
                 width="105px"
@@ -244,7 +241,7 @@
             </div>
             <div class="fr-col-md-4 fr-col-12">
               <img
-                src="static/orgs/betagouv.svg"
+                src="/orgs/betagouv.svg"
                 alt="beta.gouv.fr"
                 title="beta.gouv.fr"
                 class="dark-invert fr-responsive-img"
@@ -252,7 +249,7 @@
                 height="65px"
               />
               <img
-                src="static/orgs/dinum.png"
+                src="/orgs/dinum.png"
                 class="dark-invert fr-responsive-img"
                 alt="DINUM"
                 title="DINUM"
@@ -268,7 +265,7 @@
           <h5>Quelles sont nos missions ?</h5>
           <div class="fr-grid-row fr-grid-row--top">
             <img
-              src="static/icons/map-pin.svg"
+              src="/icons/map-pin.svg"
               alt="Point sur la carte"
               aria-hidden="true"
               class="fr-col-1 fr-pr-md-1w"
@@ -281,7 +278,7 @@
               </p>
             </div>
             <img
-              src="static/icons/database-line.svg"
+              src="/icons/database-line.svg"
               alt="jeux de données"
               class="fr-col-1 fr-pr-md-1w"
             />
@@ -293,7 +290,7 @@
               </p>
             </div>
             <img
-              src="static/icons/share.svg"
+              src="/icons/share.svg"
               alt="écosystème"
               aria-hidden="true"
               class="fr-col-1 fr-pr-md-1w"
