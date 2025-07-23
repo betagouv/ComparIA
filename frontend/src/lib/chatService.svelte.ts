@@ -236,7 +236,7 @@ export async function postVoteGetReveal(vote: Required<VoteData>) {
     which_model_radio_output: vote.selected,
     positive_a_output: vote.a.like,
     positive_b_output: vote.b.like,
-    negative_a_output: vote.a.like,
+    negative_a_output: vote.a.dislike,
     negative_b_output: vote.b.dislike,
     comments_a_output: vote.a.comment,
     comments_b_output: vote.b.comment
