@@ -5,7 +5,7 @@
       <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
         <div class="fr-mx-2w">
           <img
-            src="assets/orgs/cnnum.png"
+            src="/orgs/cnnum.png"
             alt="Conseil national du numérique"
             width="112px"
             height="55px"
@@ -15,7 +15,7 @@
 
         <div class="fr-mx-2w">
           <img
-            src="assets/orgs/etalab.svg"
+            src="/orgs/etalab.svg"
             alt="Etalab"
             width="200px"
             height="43px"
@@ -24,7 +24,7 @@
         </div>
         <div class="fr-mx-2w">
           <img
-            src="assets/orgs/peren.svg"
+            src="/orgs/peren.svg"
             alt="PEReN, Pôle d'expertise de la régulation numérique"
             width="270px"
             height=""
@@ -42,7 +42,7 @@
       <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
         <div class="">
           <img
-            src="assets/orgs/cafe-ia.png"
+            src="/orgs/cafe-ia.png"
             alt="Cafés de l'IA"
             width="205px"
             height="132px"
@@ -52,7 +52,7 @@
 
         <div class="fr-mr-2w">
           <img
-            src="assets/orgs/latitudes.png"
+            src="/orgs/latitudes.png"
             class="dark-invert"
             alt="Latitudes"
             width="200px"
@@ -61,11 +61,11 @@
           />
         </div>
         <div class="fr-mx-2w">
-          <img src="assets/orgs/pix.svg" alt="Pix" width="90px" height="75px" title="Pix" />
+          <img src="/orgs/pix.svg" alt="Pix" width="90px" height="75px" title="Pix" />
         </div>
         <div class="fr-mx-2w">
           <img
-            src="assets/orgs/fresque-de-lia.png"
+            src="/orgs/fresque-de-lia.png"
             alt="Fresques de l'IA"
             width="200px"
             height="200px"
@@ -93,7 +93,7 @@
         multidisciplinaires mêlant sciences humaines et sociales et data science.
       </p>
       <div class="text-center">
-        <img src="assets/orgs/inria.png" alt="Inria" width="166px" height="63px" title="Inria" />
+        <img src="/orgs/inria.png" alt="Inria" width="166px" height="63px" title="Inria" />
       </div>
       <p class="fr-mt-4w text-center">
         <strong
@@ -117,7 +117,7 @@
       <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle">
         <div class="fr-mx-2w">
           <img
-            src="assets/orgs/genai.png"
+            src="/orgs/genai.png"
             alt="Gen AI Impact"
             width="110px"
             height="67px"
@@ -126,7 +126,7 @@
         </div>
         <div class="fr-mx-2w">
           <img
-            src="assets/orgs/impactco2.png"
+            src="/orgs/impactco2.png"
             alt="Impact CO2"
             width="123px"
             height="50px"

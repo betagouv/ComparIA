@@ -3,7 +3,7 @@
     <div class="fr-container">
       <img
         class="fr-my-1w"
-        src="assets/iasummit.png"
+        src="/iasummit.png"
         alt="Sommet pour l'action sur l'IA"
         title="Sommet pour l'action sur l'IA"
       />
@@ -24,7 +24,7 @@
     </div>
     <div class="fr-container">
       <img
-        src="assets/bnf/cover.jpg"
+        src="/bnf/cover.jpg"
         alt="Conférence d'Anastasia Stasenko dans un amphithéâtre de la BNF, présentant une diapositive qui analyse le jeu de données compar:IA"
         title="Conférence d'Anastasia Stasenko présentant une diapositive qui analyse le jeu de données compar:IA"
         class="rounded-img fr-responsive-img"
@@ -249,28 +249,28 @@
     <div class="w-min">
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/marie-bancal.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/marie-bancal.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Marie Bancal</h6>
           <p class="text-grey text-left">Directrice adjointe de Pix</p>
         </div>
-        <img src="assets/orgs/pix.svg" width="100" alt="Pix" title="Pix" />
+        <img src="/orgs/pix.svg" width="100" alt="Pix" title="Pix" />
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/mathilde-bras.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/mathilde-bras.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Mathilde Bras</h6>
           <p class="text-grey text-left">Co-Responsable de l'Atelier numérique</p>
         </div>
         <div>
-          <img class="fr-mr-1w dark-invert" src="assets/orgs/ateliernumerique.png" width="100" />
-          <img src="assets/orgs/minicult.svg" width="110" />
+          <img class="fr-mr-1w dark-invert" src="/orgs/ateliernumerique.png" width="100" />
+          <img src="/orgs/minicult.svg" width="110" />
         </div>
       </div>
       <div class="rounded-tile bg-blue">
         <div>
           <img
             class="rounded-img"
-            src="assets/bnf/margaux-levisalles.jpg"
+            src="/bnf/margaux-levisalles.jpg"
             width="226"
             height="226"
           />
@@ -279,7 +279,7 @@
         </div>
         <img
           class="dark-invert"
-          src="assets/orgs/latitudes.png"
+          src="/orgs/latitudes.png"
           alt="Latitudes"
           title="Latitudes"
           width="150"
@@ -287,30 +287,30 @@
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/jean-cattan.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/jean-cattan.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Jean Cattan</h6>
           <p class="text-grey text-left">Secrétaire général du Conseil national du numérique</p>
         </div>
-        <img src="assets/orgs/cnnum.png" class="dark-invert" width="100" />
+        <img src="/orgs/cnnum.png" class="dark-invert" width="100" />
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/loup-cellard.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/loup-cellard.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Loup Cellard</h6>
           <p class="text-grey text-left">Chercheur chez Datactivist</p>
         </div>
         <div>
-          <img src="assets/orgs/datactivist.png" width="150" class="fr-mr-1w dark-invert" />
+          <img src="/orgs/datactivist.png" width="150" class="fr-mr-1w dark-invert" />
         </div>
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/romain-delassus.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/romain-delassus.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Romain Delassus</h6>
           <p class="text-grey text-left">Chef du service du numérique du Ministère de la Culture</p>
         </div>
         <img
-          src="assets/orgs/minicult.svg"
+          src="/orgs/minicult.svg"
           width="110"
           alt="Ministère de la Culture"
           title="Ministère de la Culture"
@@ -319,20 +319,20 @@
 
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/victor-laymand.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/victor-laymand.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Victor Laymand</h6>
           <p class="text-grey text-left">Directeur des études chez make.org</p>
         </div>
-        <img src="assets/orgs/make-org.svg" alt="Make.org" title="Make.org" width="100" />
+        <img src="/orgs/make-org.svg" alt="Make.org" title="Make.org" width="100" />
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/sasha-luccioni.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/sasha-luccioni.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Sasha Luccioni</h6>
           <p class="text-grey text-left">AI &amp; Climate Lead chez Hugging Face</p>
         </div>
         <img
-          src="assets/orgs/huggingface-full.svg"
+          src="/orgs/huggingface-full.svg"
           width="160"
           alt="Hugging Face"
           title="Hugging Face"
@@ -340,58 +340,58 @@
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/david-mas.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/david-mas.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">David Mas</h6>
           <p class="text-grey text-left">Chief AI Officer chez Make.org</p>
-          <!-- <img src="assets/orgs/communs-democratiques.svg" alt="Consortium Communs Démocratiques" title="Consortium Communs Démocratiques width="100"> -->
+          <!-- <img src="/orgs/communs-democratiques.svg" alt="Consortium Communs Démocratiques" title="Consortium Communs Démocratiques width="100"> -->
         </div>
-        <img src="assets/orgs/make-org.svg" alt="Make.org" title="Make.org" width="100" />
+        <img src="/orgs/make-org.svg" alt="Make.org" title="Make.org" width="100" />
       </div>
       <div class="rounded-tile bg-blue">
         <div>
           <img
             class="rounded-img"
-            src="assets/bnf/benjamin-piwowarski.jpg"
+            src="/bnf/benjamin-piwowarski.jpg"
             width="226"
             height="226"
           />
           <h6 class="fr-pt-3w fr-mb-1w">Benjamin Piwowarski</h6>
           <p class="text-grey text-left">Directeur de recherche au CNRS</p>
-          <!-- <img src="assets/orgs/communs-democratiques.svg" alt="Consortium Communs Démocratiques" title="Consortium Communs Démocratiques width="100"> -->
+          <!-- <img src="/orgs/communs-democratiques.svg" alt="Consortium Communs Démocratiques" title="Consortium Communs Démocratiques width="100"> -->
         </div>
-        <img class="dark-invert" src="assets/orgs/cnrs.svg" alt="CNRS" title="CNRS" width="110" />
+        <img class="dark-invert" src="/orgs/cnrs.svg" alt="CNRS" title="CNRS" width="110" />
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/samuel-rince.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/samuel-rince.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Samuel Rincé</h6>
           <p class="text-grey text-left">Président et cofondateur de GenAI Impact</p>
         </div>
-        <img class="dark-invert" src="assets/orgs/genai.png" width="130" />
+        <img class="dark-invert" src="/orgs/genai.png" width="130" />
       </div>
       <div class="rounded-tile bg-blue">
         <div>
           <img
             class="rounded-img"
-            src="assets/bnf/anastasia-stasenko.jpg"
+            src="/bnf/anastasia-stasenko.jpg"
             width="226"
             height="226"
           />
           <h6 class="fr-pt-3w fr-mb-1w">Anastasia Stasenko</h6>
           <p class="text-grey text-left">Cofondatrice de Pleias</p>
         </div>
-        <img class="dark-invert" src="assets/orgs/pleias.png" width="130" />
+        <img class="dark-invert" src="/orgs/pleias.png" width="130" />
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/lucie-termignon.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/lucie-termignon.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Lucie Termignon</h6>
           <p class="text-grey text-left">Cheffe de produit de compar:IA</p>
         </div>
         <div>
-          <img src="assets/orgs/comparia.svg" width="80" class="fr-mr-1w" />
+          <img src="/orgs/comparia.svg" width="80" class="fr-mr-1w" />
           <img
-            src="assets/orgs/minicult.svg"
+            src="/orgs/minicult.svg"
             width="110"
             alt="Ministère de la Culture"
             title="Ministère de la Culture"
@@ -400,11 +400,11 @@
       </div>
       <div class="rounded-tile bg-blue">
         <div>
-          <img class="rounded-img" src="assets/bnf/francoise-tort.jpg" width="226" height="226" />
+          <img class="rounded-img" src="/bnf/francoise-tort.jpg" width="226" height="226" />
           <h6 class="fr-pt-3w fr-mb-1w">Françoise Tort</h6>
           <p class="text-grey text-left">Conceptrice de défis pédagogiques chez Pix</p>
         </div>
-        <img src="assets/orgs/pix.svg" width="100" alt="Pix" title="Pix" />
+        <img src="/orgs/pix.svg" width="100" alt="Pix" title="Pix" />
       </div>
     </div>
   </div>
@@ -429,7 +429,7 @@
     <div class="fr-col-md-2 fr-col-6">
       <img
         class=""
-        src="assets/orgs/minicult.svg"
+        src="/orgs/minicult.svg"
         alt="Ministère de la Culture"
         title="Ministère de la Culture"
         width="137px"
@@ -439,7 +439,7 @@
     <div class="fr-col-md-2 fr-col-6">
       <img
         class="dark-invert"
-        src="assets/orgs/ateliernumerique.png"
+        src="/orgs/ateliernumerique.png"
         alt="Atelier numérique"
         title="Atelier numérique"
         width=""
@@ -449,7 +449,7 @@
 
     <div class="fr-col-md-2 fr-col-6">
       <img
-        src="assets/iasummit.png"
+        src="/iasummit.png"
         alt="Sommet de l'IA"
         title="Sommet pour l'action sur l'IA"
         class="dark-invert fr-responsive-img"
@@ -459,7 +459,7 @@
     </div>
     <div class="fr-col-md-2 fr-col-6">
       <img
-        src="assets/orgs/betagouv.svg"
+        src="/orgs/betagouv.svg"
         alt="beta.gouv.fr"
         title="beta.gouv.fr"
         class="dark-invert fr-responsive-img"
@@ -468,7 +468,7 @@
     </div>
     <div class="fr-col-md-1 fr-col-6">
       <img
-        src="assets/orgs/bnf.svg"
+        src="/orgs/bnf.svg"
         class="dark-invert fr-responsive-img"
         alt="BNF"
         title="BNF"
