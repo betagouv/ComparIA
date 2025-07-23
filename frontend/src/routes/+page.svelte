@@ -5,12 +5,18 @@
   import { onMount } from 'svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
 
-  let acceptTos = false
   let showError = false
 
+  import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
+  import { m } from '$lib/i18n/messages'
+
+  const visited =
+    useLocalStorage('comparia:visited', false).value ||
+    document.cookie.includes('comparia_already_visited')
+  let acceptTos = visited
+
   onMount(() => {
-    // Check for the cookie on component mount
-    if (document.cookie.includes('comparia_already_visited')) {
+    if (visited) {
       acceptTos = true
     }
   })
@@ -23,7 +29,6 @@
     }
   }
 
-  // Reactive statement to hide the error when the user checks the box
   $: if (acceptTos) {
     showError = false
   }
