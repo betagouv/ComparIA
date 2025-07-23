@@ -29,7 +29,7 @@
         <div class="grid-3">
           <div class="rounded-tile bg-light-grey">
             <img
-              src="assets/datasets/conversations.png"
+              src="/datasets/conversations.png"
               class="fr-responsive-img"
               data-fr-js-ratio="true"
             />
@@ -48,7 +48,7 @@
           </div>
           <div class="rounded-tile bg-light-grey">
             <img
-              src="assets/datasets/reactions.png"
+              src="/datasets/reactions.png"
               class="fr-responsive-img"
               data-fr-js-ratio="true"
             />
@@ -65,7 +65,7 @@
           </div>
           <div class="rounded-tile bg-light-grey">
             <img
-              src="assets/datasets/votes.png"
+              src="/datasets/votes.png"
               class="fr-responsive-img"
               data-fr-js-ratio="true"
             />
@@ -93,7 +93,7 @@
 
     <div class="fr-container rounded-tile-large bg-dark-grey fr-p-5v fr-p-md-5w">
       <div class="bunka fr-pb-4w">
-        <img src="assets/datasets/bunka-ai-logo.jpg" class="fr-mr-md-4w" />
+        <img src="/datasets/bunka-ai-logo.jpg" class="fr-mr-md-4w" />
         <p class="fr-mb-0">
           L'équipe Bunka.ai a mené une étude approfondie sur les interactions entre les utilisateurs
           de la plateforme Compar:IA et les modèles d'IA, examinant les thématiques privilégiées,
@@ -109,7 +109,7 @@
             class="fr-container bg-light-grey rounded-tile no-border flex-column fr-px-3v fr-py-5v fr-px-md-5w fr-py-md-4w"
           >
             <div class="fr-px-2v fr-p-md-0">
-              <img src="assets/datasets/bunka-visualisation.png" class="fr-responsive-img" />
+              <img src="/datasets/bunka-visualisation.png" class="fr-responsive-img" />
               <p class="text-grey text-small fr-py-5v fr-m-0">
                 Visualisation interactive des conversations où chaque point représente un cluster de
                 discussions évoqué par les utilisateurs (comme l’éducation, la santé,
@@ -128,7 +128,7 @@
             class="fr-container bg-light-grey rounded-tile no-border flex-column fr-px-3v fr-py-5v fr-px-md-5w fr-py-md-4w"
           >
             <div class="fr-px-2v fr-p-md-0">
-              <img src="assets/datasets/bunka-analyse.png" class="fr-responsive-img" />
+              <img src="/datasets/bunka-analyse.png" class="fr-responsive-img" />
               <p class="text-grey text-small fr-py-5v fr-m-0">
                 Analyse des conversations des utilisateurs avec détection des tâches (création,
                 recherche d'informations...), des sujets (arts et culture, éducation...), des
