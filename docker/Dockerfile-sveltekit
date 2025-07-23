@@ -1,9 +1,11 @@
 FROM public.ecr.aws/docker/library/node:24.4
-
 ARG GIT_COMMIT
 ENV PUBLIC_GIT_COMMIT=$GIT_COMMIT
 
-ENV PUBLIC_API_URL="https://alpha.comparia.beta.gouv.fr"
+ARG PUBLIC_API_URL
+ENV PUBLIC_API_URL=$PUBLIC_API_URL
+
+
 
 WORKDIR /app
 RUN npm install -g vite

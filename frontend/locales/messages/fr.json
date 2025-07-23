@@ -174,7 +174,6 @@
         "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
         "ram": "La RAM (mémoire vive) stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de RAM pour fonctionner."
       },
-
       "descriptions": {
         "XS": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des modèles très petits (moins de 7 milliards de paramètres).",
         "S": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des petits modèles (entre 7 et 20 milliards de paramètres).",
@@ -203,7 +202,10 @@
         "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>"
       },
       "impacts": "Les calculs d’impacts environnementaux reposent sur les projets <a {linkProps1}>EcoLogits</a> et <a {linkProps2}>Impact CO<sub>2</sub></a>."
-    }
+    },
+    "title": "Découvrez les modèles",
+    "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
+    "noresults": "Aucun modèle ne correspond à vos critères de recherche."
   },
   "modes": {
     "random": {

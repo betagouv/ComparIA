@@ -53,7 +53,7 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 }
 
 export const api = {
-  url: env.PUBLIC_API_URL,
+  url: env.PUBLIC_API_URL || "http://localhost:8000",
   client: undefined as Client | undefined,
 
   async _connect() {
