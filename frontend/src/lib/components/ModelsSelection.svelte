@@ -44,7 +44,7 @@
       />
       <div>
         <span class="icon">
-          <img src="../assets/orgs/{icon_path}" alt={organisation} width="20" class="inline" />
+          <img src="/orgs/{icon_path}" alt={organisation} width="20" class="inline" />
         </span>&nbsp;<span class="organisation">{organisation}/</span><strong>{simple_name}</strong>
       </div>
       <div>

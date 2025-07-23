@@ -18,6 +18,11 @@ export default defineConfig({
     include: ['@gradio/client'],
   },
 
+  server: {
+    fs: {
+      allow: ['./static']
+    }
+  },
   test: {
     workspace: [
       {

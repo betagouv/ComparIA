@@ -246,7 +246,7 @@
           aria-controls="modal-mode-selection"
         >
           <img
-            src="../assets/orgs/{firstModelIconPath}"
+            src="/orgs/{firstModelIconPath}"
             alt={firstModelName}
             width="20"
             class="fr-mr-1v inline"
@@ -255,7 +255,7 @@
           <strong class="versus">&nbsp;vs.&nbsp;</strong>
           {#if secondModelIconPath != null}
             <img
-              src="../assets/orgs/{secondModelIconPath}"
+              src="/orgs/{secondModelIconPath}"
               alt={secondModelName}
               width="20"
               class="fr-mr-1v inline"

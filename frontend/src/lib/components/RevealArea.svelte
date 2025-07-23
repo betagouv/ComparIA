@@ -262,7 +262,7 @@
                 </div>
                 <img
                   class="fr-responsive-img fr-mb-4w"
-                  src="../assets/share-example.png"
+                  src="/share-example.png"
                   alt={m['reveal.feedback.example']()}
                   title={m['reveal.feedback.example']()}
                 />
