@@ -83,7 +83,11 @@
     </p>
     <div class="gap fr-container grid">
       <div class="rounded-tile">
-        <img src="/home/comparer.svg" class="fr-responsive-img fr-px-2w fr-py-4w bg-blue" />
+        <img
+          src="/home/comparer.svg"
+          class="fr-responsive-img fr-px-2w fr-py-4w bg-blue"
+          alt="Comparer"
+        />
         <div class="fr-p-3w">
           <h6 class="fr-mb-1w">Comparer les réponses de différents modèles d’IA</h6>
           <p class="text-grey">
@@ -93,7 +97,7 @@
       </div>
       <div class="rounded-tile">
         <div class="fr-responsive-img bg-blue">
-          <img class="fr-responsive-img" src="/home/mesurer.png" />
+          <img class="fr-responsive-img" src="/home/mesurer.png" alt="Mesurer" />
         </div>
         <div class="fr-p-3w">
           <h6 class="fr-mb-1w">Tester au même endroit les dernières IA de l’écosystème</h6>
