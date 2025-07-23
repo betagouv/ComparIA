@@ -6,31 +6,26 @@
   import HowItWorks from '$lib/components/HowItWorks.svelte'
 
   let acceptTos = false
+  let showError = false
 
   onMount(() => {
-    precheckEnterArena()
+    // Check for the cookie on component mount
+    if (document.cookie.includes('comparia_already_visited')) {
+      acceptTos = true
+    }
   })
 
-  function precheckEnterArena() {
-    const cookieExists = document.cookie.includes('comparia_already_visited')
-    if (cookieExists) {
-      acceptTos = true
+  function handleRedirect() {
+    if (acceptTos) {
+      window.location.href = '/arene/?cgu_acceptees'
+    } else {
+      showError = true
     }
   }
 
-  function validateAndRedirect() {
-    const startArenaBtn = document.getElementById('start_arena_btn')
-    startArenaBtn.addEventListener('click', function (event) {
-      if (acceptTos) {
-        window.location.href = '/arene/?cgu_acceptees'
-      } else {
-        event.preventDefault()
-        const acceptTosCheckbox = document.getElementById('accept_tos')
-        const errorMessage = document.getElementById('checkbox-error-messages')
-        acceptTosCheckbox.parentNode.classList.add('fr-checkbox-group--error')
-        errorMessage.classList.remove('fr-hidden')
-      }
-    })
+  // Reactive statement to hide the error when the user checks the box
+  $: if (acceptTos) {
+    showError = false
   }
 </script>
 
@@ -42,16 +37,25 @@
           Ne vous fiez pas<br />aux réponses<br /><span class="text-purple">d’une seule IA</span>
         </h1>
         <p>Discutez avec deux IA à l’aveugle<br />pour croiser leurs réponses</p>
-        <div class="fr-checkbox-group fr-checkbox-group--sm fr-mt-3w fr-mb-1w">
-          <input aria-describedby="checkbox-error-messages" id="accept_tos" type="checkbox" />
+        <div
+          class="fr-checkbox-group fr-checkbox-group--sm fr-mt-3w fr-mb-1w"
+          class:fr-checkbox-group--error={showError}
+        >
+          <input
+            aria-describedby="checkbox-error-messages"
+            id="accept_tos"
+            type="checkbox"
+            bind:checked={acceptTos}
+          />
           <label class="fr-label fr-text--sm" for="accept_tos">
             J'accepte les&nbsp;<a href="/modalites" target="_blank">modalités d'utilisation</a>
             <p class="fr-message">Les données sont partagées à des fins de recherche</p>
           </label>
           <div
-            class="fr-messages-group fr-hidden"
+            class="fr-messages-group"
             id="checkbox-error-messages"
             aria-live="assertive"
+            class:fr-hidden={!showError}
           >
             <p class="fr-message fr-message--error" id="checkbox-error-message-error">
               Vous devez accepter les modalités d'utilisation pour continuer
@@ -63,6 +67,7 @@
           id="start_arena_btn"
           class="fr-btn fr-btn--lg bg-light-blue fr-col-md-8 fr-col-12 fr-mb-4w w-full"
           value="Commencer à discuter"
+          on:click={handleRedirect}
         />
       </div>
       <div class="fr-col-md-7 bg-blue fr-p-1w fr-p-md-6w">
