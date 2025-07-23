@@ -11,8 +11,7 @@
   import { m } from '$lib/i18n/messages'
 
   const visited =
-    useLocalStorage('comparia:visited', false).value ||
-    document.cookie.includes('comparia_already_visited')
+    useLocalStorage('comparia:visited', false).value
   let acceptTos = visited
 
   onMount(() => {
@@ -34,7 +33,7 @@
   }
 </script>
 
-<main id="content" role="main" class="">
+<main id="content" class="">
   <section class="fr-grid-row fr-container--fluid bg-blue fr-pb-4w fr-pb-md-10w fr-pt-8w">
     <div class="fr-container-md fr-grid-row">
       <div class="fr-container fr-col-md-5 fr-grid-row">
