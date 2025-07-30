@@ -280,6 +280,17 @@ excerpt = "Mistral Small 3.1 24B Instruct est une variante améliorée du Mistra
 description = "Mistral Small 3.1 24B Instruct est un modèle multimodal qui offre des performances de pointe dans les tâches de raisonnement basées sur le texte et la vision, y compris l'analyse d'images, la programmation, le raisonnement mathématique et le soutien multilingue pour des dizaines de langues."
 release_date = "03/2025"
 
+["mistral-small-3.2-24b"]
+url = "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506"
+simple_name = "Mistral Small 3.2 24B"
+organisation = "Mistral AI"
+icon_path = "mistral.png"
+license = "Mistral"
+params = 24
+excerpt = "Mistral Small 3.2 24B Instruct est une variante améliorée du Mistral Small 3.1 (mars 2025), dotée de 24 milliards de paramètres et de capacités multimodales avancées."
+description = "Mistral Small 3.2 24B Instruct est un modèle multimodal qui offre des performances de pointe dans les tâches de raisonnement basées sur le texte et la vision, y compris l'analyse d'images, la programmation, le raisonnement mathématique et le soutien multilingue pour des dizaines de langues."
+release_date = "03/2025"
+
 ["mistral-saba"]
 url = "https://mistral.ai/news/mistral-saba"
 simple_name = "Mistral Saba"
@@ -747,28 +758,3 @@ excerpt = "Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en
 params = 9
 license = "Apache 2.0"
 
-# [Vicuna-13B]
-# simple_name = "Vicuna-13B"
-# organisation = "Meta"
-# # icon_path = "meta.svg"
-# friendly_size = "S"
-# distribution = "open-weights"
-# conditions = "restricted"
-
-# [Vicuna-33B]
-# simple_name = "Vicuna-33B"
-# organisation = "LMSYS"
-# # icon_path = "lmsys.png"
-# friendly_size = "M"
-# distribution = "open-weights"
-# conditions = "restricted"
-
-# ["Zephyr-ORPO-141b-A35b-v0.1"]
-# simple_name = "Zephyr-ORPO-141b-A35b-v0.1"
-# organisation = "Hugging Face"
-# # friendly_size = "L"
-# active_params = 35
-# total_params = 141
-# icon_path = "huggingface.svg"
-# distribution = "open-weights"
-# conditions = "restricted"
