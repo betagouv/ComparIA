@@ -1,6 +1,6 @@
 <script lang="ts">
   import Tooltip from '$lib/components/Tooltip.svelte'
-  import { global } from '$lib/global.svelte'
+  import { getVotesContext, global } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
 
@@ -9,15 +9,12 @@
   const NumberFormater = $derived(
     new Intl.NumberFormat(global.locale, { maximumSignificantDigits: 3 })
   )
-  const votes = $derived(
-    global.votes
-      ? {
-          count: NumberFormater.format(global.votes.count),
-          objective: NumberFormater.format(global.votes.objective),
-          ratio: (100 * (global.votes.count / global.votes.objective)).toFixed() + '%'
-        }
-      : null
-  )
+  const votesData = getVotesContext()
+  const votes = $derived({
+    count: NumberFormater.format(votesData.count),
+    objective: NumberFormater.format(votesData.objective),
+    ratio: (100 * (votesData.count / votesData.objective)).toFixed() + '%'
+  })
 </script>
 
 {#if votes}

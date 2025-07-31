@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { m } from '$lib/i18n/messages'
-  import type { Model } from '$lib/types'
   import ModelCard from '$lib/components/ModelCard.svelte'
   import ModelFilters from '$lib/components/ModelFilters.svelte'
+  import { m } from '$lib/i18n/messages'
+  import { getModelsContext } from '$lib/models'
 
-  const { data } = $props()
-  const models = $derived(data.models)
+  const models = getModelsContext()
 
   let selectedSizes = $state<string[]>([])
   let selectedOrgs = $state<string[]>([])

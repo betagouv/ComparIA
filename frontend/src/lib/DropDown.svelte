@@ -8,12 +8,11 @@
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
-  import type { APIBotModel } from '$lib/models'
+  import { getModelsContext, type APIBotModel } from '$lib/models'
   import { tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
   export let never_clicked: boolean = true
-  export let models: APIBotModel[] = []
   export let elem_id = ''
   export let elem_classes: string[] = []
   export let visible = true
@@ -22,6 +21,8 @@
   export let onSubmit: (args: APIModeAndPromptData) => void
 
   let textboxElement: HTMLTextAreaElement
+
+  const models = getModelsContext()
 
   const prompt = useLocalStorage('prompt', '', (parsed) => {
     if (parsed !== '') {

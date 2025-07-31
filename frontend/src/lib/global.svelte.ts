@@ -1,11 +1,10 @@
 import { browser } from '$app/environment'
-import { api } from '$lib/api'
 import { getLocale, setLocale, type Locale } from '$lib/i18n/runtime'
+import { getContext, setContext } from 'svelte'
 
 export type State = {
   loading: boolean
   locale?: Locale
-  votes?: { count: number; objective: number }
 }
 
 export const LOCALES = [
@@ -26,8 +25,12 @@ export function changeLocale(locale: Locale) {
   global.locale = locale
 }
 
-export function getVotes() {
-  return api.get<State['votes']>('/counter').then((data) => {
-    global.votes = data
-  })
+export type VotesData = { count: number; objective: number }
+
+export function setVotesContext(votes: VotesData) {
+  setContext('votes', votes)
+}
+
+export function getVotesContext() {
+  return getContext<VotesData>('votes')
 }

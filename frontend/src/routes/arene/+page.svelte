@@ -8,8 +8,6 @@
   import { m } from '$lib/i18n/messages'
   import WelcomeModal from './WelcomeModal.svelte'
 
-  let { data } = $props()
-
   const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
 
   // Compute second header height for autoscrolling
@@ -96,7 +94,7 @@
 
 <main class="relative" style="--second-header-size: {secondHeaderSize}px;">
   {#if arena.currentScreen === 'prompt'}
-    <DropDown onSubmit={runChatBots} models={data.models} />
+    <DropDown onSubmit={runChatBots} />
   {:else}
     <ChatBot />
   {/if}

@@ -1,4 +1,4 @@
-import { api } from '$lib/api'
+import { getContext, setContext } from 'svelte'
 
 export type Sizes = 'XS' | 'S' | 'M' | 'L' | 'XL'
 
@@ -33,6 +33,10 @@ export interface APIBotModel {
   quantization?: 'q4' | 'q8'
 }
 
-export async function getModels() {
-  return api.get<APIBotModel[]>('/available_models')
+export function setModelsContext(models: APIBotModel[]) {
+  setContext('models', models)
+}
+
+export function getModelsContext() {
+  return getContext<APIBotModel[]>('models')
 }
