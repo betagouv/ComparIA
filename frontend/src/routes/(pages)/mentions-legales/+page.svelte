@@ -1,3 +1,10 @@
+<script lang="ts">
+  import SeoHead from '$lib/components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
+</script>
+
+<SeoHead title={m['seo.titles.mentions-legales']()} />
+
 <main id="contenu" class="fr-my-7w fr-mt-md-12w fr-mb-md-10w">
   <div class="fr-container">
     <h2 id="-mentions-l-gales-"><strong>Mentions légales</strong></h2>

@@ -1,3 +1,10 @@
+<script>
+  import SeoHead from '$lib/components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
+</script>
+
+<SeoHead title={m['seo.titles.a-propos']()} />
+
 <main id="contenu">
   <div class="fr-container fr-mb-8w">
     <h2 class="fr-mt-8w fr-mb-4w">Le problème</h2>

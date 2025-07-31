@@ -1,3 +1,10 @@
+<script>
+  import SeoHead from '$lib/components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
+</script>
+
+<SeoHead title={m['seo.titles.accessibilite']()} />
+
 <div class="fr-container fr-my-7w fr-mt-md-12w fr-mb-md-10w">
   <p>
     <strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à

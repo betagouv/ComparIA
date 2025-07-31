@@ -3,6 +3,7 @@
   import { arena, modeInfos, runChatBots } from '$lib/chatService.svelte'
   import Header from '$lib/components/header/Header.svelte'
   import Icon from '$lib/components/Icon.svelte'
+  import SeoHead from '$lib/components/SEOHead.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
   import DropDown from '$lib/DropDown.svelte'
   import { m } from '$lib/i18n/messages'
@@ -24,6 +25,8 @@
 </script>
 
 <svelte:window onresize={onResize} />
+
+<SeoHead title={m['seo.titles.arene']()} />
 
 <WelcomeModal />
 

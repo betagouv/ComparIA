@@ -1,3 +1,10 @@
+<script>
+  import SeoHead from '$lib/components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
+</script>
+
+<SeoHead title={m['seo.titles.datasets']()} />
+
 <main id="content" role="main" class="">
   <section class="fr-container--fluid bg-blue fr-py-5v">
     <div class="fr-container">

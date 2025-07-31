@@ -1,3 +1,10 @@
+<script>
+  import SeoHead from '$lib/components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
+</script>
+
+<SeoHead title={m['seo.titles.donnees-personnelles']()} />
+
 <main id="contenu" class="fr-my-7w fr-mt-md-12w fr-mb-md-10w">
   <div class="fr-container">
     <h1 id="politique-de-confidentialit-">Politique de confidentialité</h1>

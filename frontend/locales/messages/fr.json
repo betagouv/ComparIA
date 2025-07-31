@@ -1,4 +1,23 @@
 {
+  "seo": {
+    "title": "compar:IA, le comparateur d'IA conversationnelles",
+    "desc": "compar:IA est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
+    "titles": {
+      "home": "Accueil",
+      "modeles": "Liste des modèles d’IA",
+      "datasets": "Jeux de données",
+      "a-propos": "À propos",
+      "partenaires": "Partenaires",
+      "faq": "FAQ",
+      "bnf": "Conférences",
+      "mentions-legales": "Mentions légales",
+      "modalites": "Modalités d’utilisation",
+      "donnees-personnelles": "Politique de confidentialité",
+      "accessibilite": "Déclaration d’accessibilité",
+      "arene": "Discussion",
+      "share": "Mon bilan"
+    }
+  },
   "header": {
     "title": {
       "compar": "compar",

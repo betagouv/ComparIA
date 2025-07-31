@@ -1,3 +1,10 @@
+<script>
+  import SeoHead from '$lib/components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
+</script>
+
+<SeoHead title={m['seo.titles.partenaires']()} />
+
 <main id="contenu">
   <div class="fr-container">
     <div class="fr-container bg-blue fr-my-4w fr-py-4w">

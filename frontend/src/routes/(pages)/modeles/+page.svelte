@@ -1,6 +1,7 @@
 <script lang="ts">
   import ModelCard from '$lib/components/ModelCard.svelte'
   import ModelFilters from '$lib/components/ModelFilters.svelte'
+  import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
 
@@ -38,6 +39,8 @@
     selectedLicenses = []
   }
 </script>
+
+<SeoHead title={m['seo.titles.modeles']()} />
 
 <div class="fr-container fr-py-4w">
   <div class="fr-grid-row fr-grid-row--gutters">
