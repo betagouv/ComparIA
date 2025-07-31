@@ -1,17 +1,13 @@
 <script lang="ts">
-  import Footer from '$lib/components/Footer.svelte'
   import FAQContent from '$lib/components/FAQContent.svelte'
-  import Newsletter from '$lib/components/Newsletter.svelte'
-  import { onMount } from 'svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
+  import Newsletter from '$lib/components/Newsletter.svelte'
+  import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
+  import { onMount } from 'svelte'
 
   let showError = false
 
-  import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
-  import { m } from '$lib/i18n/messages'
-
-  const visited =
-    useLocalStorage('comparia:visited', false).value
+  const visited = useLocalStorage('comparia:visited', false).value
   let acceptTos = visited
 
   onMount(() => {
@@ -352,8 +348,6 @@
     </div>
   </section>
 </main>
-
-<Footer></Footer>
 
 <style>
   .fr-checkbox-group input[type='checkbox'] + label:before {

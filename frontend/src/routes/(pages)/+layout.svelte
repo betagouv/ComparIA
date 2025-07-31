@@ -1,5 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import Footer from '$lib/components/Footer.svelte'
   import { Header, VoteGauge } from '$lib/components/header'
 
   let { children } = $props()
@@ -20,6 +21,8 @@
 </div>
 
 {@render children()}
+
+<Footer />
 
 <style>
   .gauge-banner {
