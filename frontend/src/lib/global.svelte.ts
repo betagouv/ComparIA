@@ -9,7 +9,9 @@ export type State = {
 
 export const LOCALES = [
   { code: 'fr', short: 'FR', long: 'FR - Français' },
-  { code: 'en', short: 'EN', long: 'EN - English' }
+  { code: 'en', short: 'EN', long: 'EN - English' },
+  { code: 'lt', short: 'LT', long: 'LT - Lietuvių' },
+  { code: 'se', short: 'SE', long: 'SE - Svensk' }
 ] as const
 
 export const global = $state<State>({
