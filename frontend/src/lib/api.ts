@@ -53,7 +53,7 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 }
 
 export const api = {
-  url: env.PUBLIC_API_URL || "http://localhost:8000",
+  url: env.PUBLIC_API_URL || 'http://localhost:8000',
   client: undefined as Client | undefined,
 
   async _connect() {
@@ -104,8 +104,12 @@ export const api = {
   },
 
   async get<T>(uri: string): Promise<T> {
-    return fetch(this.url + uri)
-      .then((response) => response.json())
-      .then((data) => data)
+    const url = this.url + uri
+    return fetch(url).then(async (response) => {
+      if (response.ok) return response.json()
+      const message = `Error ${response.status} [GET](${url}): "${await response.text()}"`
+      console.error(message)
+      throw new Error(message)
+    })
   }
 }
