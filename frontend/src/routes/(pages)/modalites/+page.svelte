@@ -1,0 +1,198 @@
+<script>
+  import SeoHead from '$lib/components/SEOHead.svelte'
+  import { m } from '$lib/i18n/messages'
+  import { getModelsContext } from '$lib/models'
+
+  const models = getModelsContext()
+</script>
+
+<SeoHead title={m['seo.titles.modalites']()} />
+
+<main id="contenu" class="fr-my-7w fr-mt-md-12w fr-mb-md-10w">
+  <div class="fr-container">
+    <h1 id="modalit-s-d-utilisation">Modalités d’utilisation</h1>
+    <h2 id="1-champ-d-application">1. Champ d’application</h2>
+    <p>
+      L’accès à la plateforme est gratuit, sans inscription et entraîne l’application de conditions
+      spécifiques, listées dans les présentes modalités d’utilisation.
+    </p>
+    <h2 id="2-d-finitions">2. Définitions</h2>
+    <p>
+      « Utilisateur » désigne toute personne physique consultant la plateforme et qui bénéficie de
+      ses services.
+    </p>
+    <p>« Éditeur » désigne le Service du numérique du Ministère de la Culture.</p>
+    <p>« Plateforme » désigne le site web qui rend les services accessibles.</p>
+    <p>
+      « Modèles » désigne les grands modèles de langages (LLM) réutilisés dans le cadre de leur
+      licence d’utilisation par la plateforme pour répondre à ses finalités.
+    </p>
+    <p>
+      « Services » désigne les fonctionnalités offertes par la plateforme pour répondre à ses
+      finalités.
+    </p>
+    <h2 id="3-description-de-la-plateforme">3. Description de la plateforme</h2>
+    <p>
+      Édité par le Service du numérique du Ministère de la Culture, le comparateur est une
+      plateforme de comparaison des modèles conversationnels adressée au grand public dans le but
+      (1) de sensibiliser les citoyens aux grands modèles de langage (LLMs), (2) de collecter les
+      préférences des utilisateurs pour constituer des jeux de données d’alignement.
+    </p>
+    <p>
+      L’utilisateur ou l’utilisatrice pose une question en français et obtient des réponses de deux
+      grands modèles de langages (LLM) anonymes. Il ou elle vote pour le modèle qui fournit la
+      réponse qu’il préfère et se voit alors révélée l’identité des modèles. Ce dispositif de
+      production participative inspiré de la plateforme <a href="https://chat.lmsys.org/"
+        >« chatbot arena » (LMSYS)</a
+      > permet de constituer des jeux de données de préférences humaines sur des tâches réelles, en français,
+      utilisables pour l’alignement des modèles.
+    </p>
+    <p>
+      Ces jeux de données seront rendus accessibles sous licence ouverte, notamment pour favoriser
+      des usages de recherche.
+    </p>
+    <h2 id="4-fonctionnalit-s">4. Fonctionnalités</h2>
+    <p>
+      Afin de répondre au double objectif de sensibiliser les citoyens aux grands modèles de langage
+      et collecter les préférences des utilisateurs et utilisatrices, les services rendus par la
+      plateforme sans restriction d’accès sont les suivants :
+    </p>
+    <ul>
+      <li>
+        Une interface humain-machine permettant de dialoguer simultanément avec deux modèles
+        conversationnels et de voter pour la réponse préférée.
+      </li>
+    </ul>
+    <p>
+      Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents
+      partenaires (Scaleway, OVH, Hugging Face, Google Cloud, Mistral Ai). Les conditions de
+      standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence
+      d’utilisation des modèles.
+    </p>
+    <ul>
+      <li>Une interface de comparaison des modèles.</li>
+    </ul>
+    <p>
+      A l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au
+      comparateur et accéder à une liste d’informations sur ces modèles. Les informations
+      documentant les modèles sont sourcées.
+    </p>
+    <ul>
+      <li>
+        Partage et mise à disposition des jeux de données issus de la collecte des préférences des
+        utilisateurs.
+      </li>
+    </ul>
+    <p>
+      Le service recueille les données de dialogue et de préférence des utilisateurs. Les jeux de
+      données partagés comprendront les questions de l’utilisateur, les réponses des deux modèles,
+      le vote et les préférences de l’utilisateur.
+    </p>
+    <p>
+      L’éditeur se réserve le droit de distribuer sous licence ouverte 2.0 les données de dialogue
+      et de préférence de l’utilisateur. Le jeu de données est diffusé sur la plateforme Hugging
+      Face à travers le compte du ministère de la culture (<a
+        href="https://huggingface.co/ministere-culture">https://huggingface.co/ministere-culture</a
+      >).
+    </p>
+    <h2 id="5-responsabilit-s">5. Responsabilités</h2>
+    <p>
+      L’utilisateur est responsable des données ou contenus qu&#39;il ou elle saisit dans l’invite
+      offert par la plateforme.
+    </p>
+    <p>
+      La plateforme n’a pas vocation à être utilisée pour générer des contenus illicites ou
+      contraires à l’ordre public et plus généralement toute génération contrevenant au cadre
+      juridique en vigueur.
+    </p>
+    <p>
+      A cet égard, l’utilisateur ne saisit pas dans l’invite des contenus ou informations contraires
+      aux dispositions légales et réglementaires en vigueur.
+    </p>
+    <p>
+      Les données saisies par l’utilisateur sur la plateforme ayant vocation à être mis à
+      disposition, il ou elle s’engage à ne pas transmettre d’informations permettant de
+      l’identifier ou d’identifier un tiers.
+    </p>
+    <p>
+      En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurer
+      de l’anonymisation les données de dialogue avant leur mise à disposition.
+    </p>
+    <p>
+      De manière générale, l’éditeur se dégage de toute responsabilité en cas d’utilisation
+      non-conforme aux modalités d’utilisation.
+    </p>
+    <h2 id="6-code-et-licences">6. Code et licences</h2>
+    <p>
+      Le code source de la plateforme est libre et disponible ici :
+      <a href="https://github.com/betagouv/languia">https://github.com/betagouv/languia</a>
+    </p>
+    <p>Les LLM utilisés pour alimenter les services sont régis par les licences suivantes :</p>
+    <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
+      <thead>
+        <tr>
+          <th>Modèle d’IA conversationnelle</th>
+          <th>Lien vers la notice des modèles</th>
+          <th>Licence</th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each models as model}
+          <tr>
+            <td>{model['simple_name']}</td>
+            <td>
+              <a href={model.url ?? '#'} target="_blank" rel="noopener external">
+                {model.url ?? 'Non disponible'}
+              </a>
+            </td>
+            <td>{model['license']}</td>
+          </tr>
+        {/each}
+      </tbody>
+    </table>
+    <p>
+      La liste des modèles de langage intégrés à la plateforme est susceptible d’évoluer au cours du
+      temps et est mise à jour à chaque modification.
+    </p>
+
+    <h2 id="7-disponibilit-des-services">7. Disponibilité des services</h2>
+    <p>
+      La plateforme est accessible, sauf cas de force majeure ou d’évènement hors de contrôle de son
+      éditeur.
+    </p>
+    <p>
+      L’éditeur se réserve le droit de suspendre, d&#39;interrompre ou de limiter, sans avis
+      préalable, l&#39;accès à tout ou partie des services, notamment pour des opérations de
+      maintenance et de mises à jour nécessaires au bon fonctionnement du service et des matériels
+      afférents, ou pour toute autre raison, notamment technique.
+    </p>
+    <p>
+      Il n’est pas garanti que le service soit exempt d’anomalies ou erreurs. Le service est donc
+      mis à disposition sans garantie sur sa disponibilité et ses performances.
+    </p>
+    <p>
+      A ce titre, l’éditeur ne saurait être tenu responsable des pertes ou préjudices, de quelque
+      nature qu’ils soient, qui pourraient être causés à la suite d’un dysfonctionnement ou une
+      indisponibilité du service. De telles situations n&#39;ouvriront droit à aucune compensation
+      financière.
+    </p>
+    <h2 id="8-volution-des-modalit-s-d-utilisation">
+      8. Évolution des modalités d&#39;utilisation
+    </h2>
+    <p>
+      Les modalités d’utilisation peuvent être modifiées ou complétées à tout moment, sans préavis,
+      en fonction des modifications apportées aux services, de l’évolution de la législation ou pour
+      tout autre motif jugé nécessaire.
+    </p>
+    <p>
+      Ces modifications et mises à jour s’imposent à l’utilisateur ou l’utilisatrice qui doit, en
+      conséquence, se référer régulièrement à cette rubrique pour vérifier les modalités générales
+      en vigueur.
+    </p>
+    <h2 id="9-contact">9. Contact</h2>
+    <p>
+      Pour toute question sur le service, vous pouvez écrire à
+      <a href="mailto:contact@comparia.beta.gouv.fr">contact@comparia.beta.gouv.fr</a>.
+    </p>
+  </div>
+</main>
