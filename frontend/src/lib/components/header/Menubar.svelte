@@ -1,15 +1,16 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import { m } from '$lib/i18n/messages'
 
   // Navigation links for both desktop and mobile menus
   const navLinks = [
-    { href: '/', label: 'Accueil' },
-    { href: '/modeles', label: 'Modèles' },
-    { href: '/datasets', label: 'Jeux de données' },
-    { href: '/a-propos', label: 'A propos' },
-    { href: '/partenaires', label: 'Partenaires' },
-    { href: '/faq', label: 'FAQ' },
-    { href: '/bnf', label: 'Conférences' }
+    { href: '/', label: m['seo.titles.home']() },
+    { href: '/modeles', label: m['seo.titles.modeles']() },
+    { href: '/datasets', label: m['seo.titles.datasets']() },
+    { href: '/a-propos', label: m['seo.titles.a-propos']() },
+    { href: '/partenaires', label: m['seo.titles.partenaires']() },
+    { href: '/faq', label: m['seo.titles.faq']() },
+    { href: '/bnf', label: m['seo.titles.bnf']() }
   ]
 </script>
 
