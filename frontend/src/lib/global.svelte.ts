@@ -5,12 +5,12 @@ export type State = {
   votes?: { count: number; objective: number }
 }
 
-export const infos = $state<State>({
+export const global = $state<State>({
   loading: false
 })
 
 export function getVotes() {
   return api.get<State['votes']>('/counter').then((data) => {
-    infos.votes = data
+    global.votes = data
   })
 }

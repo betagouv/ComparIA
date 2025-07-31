@@ -1,6 +1,6 @@
 <script lang="ts">
+  import type { Mode, ModeInfos } from '$lib/chatService.svelte'
   import Icon from '$lib/components/Icon.svelte'
-  import type { Mode, ModeInfos } from '$lib/state.svelte'
 
   // TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
 

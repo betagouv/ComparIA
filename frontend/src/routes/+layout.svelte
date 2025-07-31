@@ -4,9 +4,9 @@
   import Menubar from '$lib/components/Menubar.svelte'
   import Toaster from '$lib/components/Toaster.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
+  import { global } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { setLocale } from '$lib/i18n/runtime'
-  import { infos } from '$lib/state.svelte'
   import { sanitize } from '$lib/utils/commons'
   import '../css/app.css'
   // import MobileMenu from '$lib/components/MobileMenu.svelte'
@@ -16,11 +16,11 @@
   // FIXME i18n
   const NumberFormater = new Intl.NumberFormat('fr', { maximumSignificantDigits: 3 })
   const votes = $derived(
-    infos.votes
+    global.votes
       ? {
-          count: NumberFormater.format(infos.votes.count),
-          objective: NumberFormater.format(infos.votes.objective),
-          ratio: (100 * (infos.votes.count / infos.votes.objective)).toFixed() + '%'
+          count: NumberFormater.format(global.votes.count),
+          objective: NumberFormater.format(global.votes.objective),
+          ratio: (100 * (global.votes.count / global.votes.objective)).toFixed() + '%'
         }
       : null
   )
