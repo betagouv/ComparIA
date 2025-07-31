@@ -1,5 +1,6 @@
 <script lang="ts">
-  import type { APIModeAndPromptData } from '$lib/chatService.svelte'
+  import type { APIModeAndPromptData, Mode, ModeInfos } from '$lib/chatService.svelte'
+  import { modeInfos as choices } from '$lib/chatService.svelte'
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import Icon from '$lib/components/Icon.svelte'
@@ -8,8 +9,6 @@
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import type { APIBotModel } from '$lib/models'
-  import type { Mode, ModeInfos } from '$lib/state.svelte'
-  import { modeInfos as choices } from '$lib/state.svelte'
   import { tick } from 'svelte'
   import { fade } from 'svelte/transition'
 

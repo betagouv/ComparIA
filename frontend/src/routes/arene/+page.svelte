@@ -1,8 +1,7 @@
 <script lang="ts">
   import ChatBot from '$lib/ChatBot.svelte'
-  import { runChatBots, type APIModeAndPromptData } from '$lib/chatService.svelte'
+  import { arena, runChatBots, type APIModeAndPromptData } from '$lib/chatService.svelte'
   import DropDown from '$lib/DropDown.svelte'
-  import { infos } from '$lib/state.svelte'
   import { onMount } from 'svelte'
   import WelcomeModal from './WelcomeModal.svelte'
 
@@ -21,7 +20,7 @@
 
 <WelcomeModal />
 
-{#if infos.currentScreen === 'initial'}
+{#if arena.currentScreen === 'prompt'}
   <DropDown {onSubmit} models={data.models} />
 {:else}
   <ChatBot></ChatBot>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
-  import { chatbot } from '$lib/chatService.svelte'
+  import { arena } from '$lib/chatService.svelte'
   import Icon from '$lib/components/Icon.svelte'
   import MessageBot from '$lib/components/MessageBot.svelte'
   import MessageUser from '$lib/components/MessageUser.svelte'
@@ -24,13 +24,13 @@
   } = $props()
 
   const groupedMessages = $derived.by(() => {
-    const questionCount = Math.ceil(chatbot.messages.length / 3)
-    const messages = chatbot.messages.map((message, index) => ({
+    const questionCount = Math.ceil(arena.chat.messages.length / 3)
+    const messages = arena.chat.messages.map((message, index) => ({
       ...message,
       index,
       isLast: index >= (questionCount - 1) * 3,
       // FIXME still needed ?
-      content: message.content.replace('src="/file', `src="${chatbot}file`)
+      content: message.content.replace('src="/file', `src="${arena.chat.root}file`)
     }))
     // Group messages by exchange (1 user question, 2 bots answers)
     return Array.from(new Array(questionCount), (_, i) => messages.slice(i * 3, i * 3 + 3)).map(
@@ -38,7 +38,7 @@
     )
   })
 
-  const errorString = $derived(chatbot.messages.find((message) => message.error !== null)?.error)
+  const errorString = $derived(arena.chat.messages.find((message) => message.error !== null)?.error)
 </script>
 
 <!-- FIXME still needed? -->

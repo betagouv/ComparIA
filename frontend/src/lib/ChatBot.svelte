@@ -1,8 +1,8 @@
 <script lang="ts">
   import type { OnReactionFn, RevealData, VoteData } from '$lib/chatService.svelte'
   import {
+    arena,
     askChatBots,
-    chatbot,
     getReveal,
     postVoteGetReveal,
     retryAskChatBots,
@@ -41,9 +41,9 @@
   })
   let revealData = $state<RevealData>()
 
-  const chatbotDisabled = $derived(chatbot.status !== 'complete' || step !== 'chat')
+  const chatbotDisabled = $derived(arena.chat.status !== 'complete' || step !== 'chat')
   const revealDisabled = $derived(
-    chatbot.status !== 'complete' || (step === 'vote' && voteData.selected === undefined)
+    arena.chat.status !== 'complete' || (step === 'vote' && voteData.selected === undefined)
   )
 
   const onReactionChange: OnReactionFn = async (kind, reaction) => {
@@ -91,8 +91,8 @@
 <div id="chat-area" style="--footer-size: {footerSize}px;">
   <ChatBot
     disabled={chatbotDisabled}
-    pending={chatbot.status === 'pending'}
-    generating={chatbot.status === 'generating'}
+    pending={arena.chat.status === 'pending'}
+    generating={arena.chat.status === 'generating'}
     {onReactionChange}
     {onRetry}
     {layout}
@@ -128,7 +128,7 @@
 
         <button
           id="send-btn"
-          disabled={chatbot.status !== 'complete' || prompt === ''}
+          disabled={arena.chat.status !== 'complete' || prompt === ''}
           class="btn purple-btn md:self-end"
           onclick={onPromptSubmit}
         >

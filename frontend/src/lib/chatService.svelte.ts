@@ -1,9 +1,10 @@
 import { api } from '$lib/api'
+import { m } from '$lib/i18n/messages'
 import type { APIBotModel, Sizes } from '$lib/models'
-import { infos, type Mode } from '$lib/state.svelte'
 import type { LoadingStatus } from '@gradio/statustracker'
 
 // PROMPT
+export type Mode = 'random' | 'custom' | 'big-vs-small' | 'small-models' | 'reasoning'
 
 export interface APIModeAndPromptData {
   prompt_value: string
@@ -11,7 +12,16 @@ export interface APIModeAndPromptData {
   custom_models_selection: string[]
 }
 
-// MESSAGES
+export type ModeInfos = {
+  value: Mode
+  title: string
+  label: string
+  alt_label: string
+  icon: string
+  description: string
+}
+
+// CHAT
 
 type APIMessageRole = 'system' | 'user' | 'assistant'
 export type Bot = 'a' | 'b'
@@ -132,80 +142,105 @@ export interface RevealData {
 
 // DATA
 
-export const chatbot = $state<{
-  status: LoadingStatus['status']
-  messages: APIChatMessage[]
-  root: string
+export const modeInfos: ModeInfos[] = (
+  [
+    { value: 'random', icon: 'dice' },
+    { value: 'custom', icon: 'glass' },
+    { value: 'small-models', icon: 'leaf-line' },
+    { value: 'big-vs-small', icon: 'ruler' },
+    { value: 'reasoning', icon: 'brain' }
+  ] as const
+).map((item) => ({
+  ...item,
+  title: m[`modes.${item.value}.title`](),
+  label: m[`modes.${item.value}.label`](),
+  alt_label: m[`modes.${item.value}.altLabel`](),
+  description: m[`modes.${item.value}.description`]()
+}))
+
+export const arena = $state<{
+  currentScreen: 'prompt' | 'chat'
+  mode?: Mode
+  chat: {
+    step?: 1 | 2
+    status: LoadingStatus['status']
+    messages: APIChatMessage[]
+    root: string
+  }
 }>({
-  status: 'pending',
-  messages: [],
-  root: '/' // FIXME or '/arene'
+  currentScreen: 'prompt',
+  chat: {
+    step: 1,
+    status: 'pending',
+    messages: [],
+    root: '/' // FIXME or '/arene'
+  }
 })
 
 // API CALLS
 
 export async function runChatBots(args: APIModeAndPromptData) {
-  chatbot.status = 'pending'
+  arena.chat.status = 'pending'
 
   try {
     const job = await api.submit<APIChatMessage[]>('/add_first_text', {
       model_dropdown_scoped: args
     })
 
-    infos.currentScreen = 'chatbots'
-    infos.mode = args.mode
-    infos.step = 1
-    // chatbot.status = 'streaming'
+    arena.currentScreen = 'chat'
+    arena.mode = args.mode
+    arena.chat.step = 1
+    // arena.chat.status = 'streaming'
 
     for await (const messages of job) {
-      chatbot.status = 'generating'
-      chatbot.messages = messages
+      arena.chat.status = 'generating'
+      arena.chat.messages = messages
     }
 
-    chatbot.status = 'complete'
+    arena.chat.status = 'complete'
   } catch (error) {
     console.error('Error:', error)
-    chatbot.status = 'error'
+    arena.chat.status = 'error'
   }
 
-  return chatbot.status
+  return arena.chat.status
 }
 
 export async function askChatBots(text: string) {
-  // chatbot.status = 'pending'
+  // arena.chat.status = 'pending'
 
   try {
     const job = await api.submit<APIChatMessage[]>('/add_text', { text })
-    // chatbot.status = 'streaming'
+    // arena.chat.status = 'streaming'
 
     for await (const messages of job) {
-      chatbot.status = 'generating'
-      chatbot.messages = messages
+      arena.chat.status = 'generating'
+      arena.chat.messages = messages
     }
 
-    chatbot.status = 'complete'
+    arena.chat.status = 'complete'
   } catch (error) {
     console.error('Error:', error)
-    chatbot.status = 'error'
+    arena.chat.status = 'error'
   }
 }
 
 export async function retryAskChatBots() {
-  chatbot.status = 'pending'
+  arena.chat.status = 'pending'
 
   try {
     const job = await api.submit<APIChatMessage[]>('/chatbot_retry')
-    // chatbot.status = 'streaming'
+    // arena.chat.status = 'streaming'
 
     for await (const messages of job) {
-      chatbot.status = 'generating'
-      chatbot.messages = messages
+      arena.chat.status = 'generating'
+      arena.chat.messages = messages
     }
 
-    chatbot.status = 'complete'
+    arena.chat.status = 'complete'
   } catch (error) {
     console.error('Error:', error)
-    chatbot.status = 'error'
+    arena.chat.status = 'error'
   }
 }
 
@@ -226,7 +261,7 @@ export async function updateReaction(kind: ReactionKind, reaction: APIReactionDa
 
   return api.predict('/chatbot_react', {
     // pass complete raw messages array
-    chatbot: chatbot.messages,
+    chatbot: arena.chat.messages,
     reaction_json: data
   })
 }

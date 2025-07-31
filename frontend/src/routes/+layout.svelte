@@ -1,17 +1,18 @@
 <script lang="ts">
+  import { arena, modeInfos } from '$lib/chatService.svelte'
   import Icon from '$lib/components/Icon.svelte'
+  import Menubar from '$lib/components/Menubar.svelte'
   import Toaster from '$lib/components/Toaster.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
   import { setLocale } from '$lib/i18n/runtime'
-  import { modeInfos, infos } from '$lib/state.svelte'
+  import { infos } from '$lib/state.svelte'
   import { sanitize } from '$lib/utils/commons'
   import '../css/app.css'
   // import MobileMenu from '$lib/components/MobileMenu.svelte'
-  import Menubar from '$lib/components/Menubar.svelte'
 
   let { children } = $props()
-  const mode = $derived(infos.mode ? modeInfos.find((mode) => mode.value === infos.mode)! : null)
+  const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
   // FIXME i18n
   const NumberFormater = new Intl.NumberFormat('fr', { maximumSignificantDigits: 3 })
   const votes = $derived(
@@ -68,7 +69,7 @@
           </div> -->
         </div>
 
-        {#if infos.currentScreen === 'initial'}
+        {#if arena.currentScreen === 'prompt'}
           <div class="md-visible fr-header__tools fr-col-12 fr-col-lg-4 fr-p-2w hidden">
             <a
               title={m['header.help.link.title']()}
@@ -114,7 +115,7 @@
   <!-- <Bunka></Bunka> -->
 </header>
 
-{#if infos.currentScreen === 'chatbots' && infos.step && mode}
+{#if arena.currentScreen === 'chat' && arena.chat.step && mode}
   <div
     bind:this={secondHeader}
     id="second-header"
@@ -125,12 +126,12 @@
         <div>
           <span class="step-badge fr-mt-md-0 fr-mb-md-0 fr-mt-1w fr-mb-3v">
             {m['header.chatbot.step']()}
-            {infos.step}/2
+            {arena.chat.step}/2
           </span>
         </div>
         <p class="fr-ml-1w fr-mb-md-0 fr-mb-md-1v md-text-left mb-0! text-center">
           <strong class="text-dark-grey">
-            {#if infos.step == 1}
+            {#if arena.chat.step == 1}
               {m['header.chatbot.stepOne.title']()}
             {:else}
               {m['header.chatbot.stepTwo.title']()}
@@ -138,7 +139,7 @@
           </strong>
           <br />
           <span class="text-grey fr-text--xs">
-            {#if infos.step == 1}
+            {#if arena.chat.step == 1}
               {m['header.chatbot.stepOne.description']()}
             {:else}
               {m['header.chatbot.stepTwo.description']()}
@@ -147,7 +148,7 @@
         </p>
       </div>
       <div class="fr-col-12 fr-col-md-4 align-center grid">
-        {#if infos.step == 1}
+        {#if arena.chat.step == 1}
           <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs mb-0! bg-white text-center">
             <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>
