@@ -1,8 +1,6 @@
 <script lang="ts">
   import { m } from '$lib/i18n/messages'
-  import VoteGauge from '$lib/components/header/VoteGauge.svelte'
-  import Menubar from '$lib/components/Menubar.svelte'
-  import LanguageSelector from './LanguageSelector.svelte'
+  import { LanguageSelector, Menubar, VoteGauge } from '.'
 
   let {
     hideNavigation = false,

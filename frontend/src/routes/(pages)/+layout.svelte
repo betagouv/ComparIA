@@ -1,7 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import Header from '$lib/components/header/Header.svelte'
-  import VoteGauge from '$lib/components/header/VoteGauge.svelte'
+  import { Header, VoteGauge } from '$lib/components/header'
 
   let { children } = $props()
 </script>
