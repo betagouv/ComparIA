@@ -65,7 +65,7 @@
 
         <div class="ms-auto hidden items-center gap-8 p-4 lg:flex">
           {#if !hideVoteGauge}
-            <VoteGauge />
+            <VoteGauge id="vote-gauge" />
           {/if}
 
           {#if showHelpLink}

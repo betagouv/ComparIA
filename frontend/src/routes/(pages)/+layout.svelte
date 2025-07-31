@@ -16,7 +16,7 @@
 {/if}
 
 <div class="fr-container--fluid gauge-banner flex items-center justify-center lg:hidden">
-  <VoteGauge />
+  <VoteGauge id="mobile-vote-gauge" />
 </div>
 
 {@render children()}

@@ -11,6 +11,12 @@
         "content": "Nous aider à améliorer compar:IA"
       }
     },
+    "votes": {
+      "count": "{count} votes",
+      "objective": "Obj : {count}",
+      "legend": "Légende",
+      "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
+    },
     "chatbot": {
       "step": "Étape",
       "stepOne": {
@@ -20,12 +26,6 @@
       "stepTwo": {
         "title": "Les modèles sont démasqués !",
         "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle"
-      },
-      "vote": {
-        "total": "Total des votes",
-        "objective": "Objectif : ",
-        "legend": "Légende",
-        "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
       },
       "newDiscussion": "Nouvelle discussion"
     }
