@@ -321,7 +321,19 @@
     }
   },
   "errors": {
-    "unknown": "Une erreur est survenue"
+    "unknown": "Une erreur est survenue",
+    "404": {
+      "title": "Page non trouvée",
+      "error": "Erreur 404",
+      "sorry": "La page que vous cherchez est introuvable. Excusez-nous pour la gène occasionnée.",
+      "desc": "Si vous avez tapé l'adresse web dans le navigateur, vérifiez qu'elle est correcte. La page n’est peut-être plus disponible.<br />Dans ce cas, pour continuer votre visite vous pouvez consulter notre page d’accueil.<br />Sinon contactez-nous pour que l’on puisse vous rediriger vers la bonne information."
+    },
+    "unexpected": {
+      "title": "Erreur inattendue",
+      "error": "Erreur {code}",
+      "sorry": "Désolé, le service rencontre un problème, nous travaillons pour le résoudre le plus rapidement possible.",
+      "desc": "Essayez de rafraîchir la page ou bien ressayez plus tard."
+    }
   },
   "actions": {
     "copyMessage": {
@@ -332,6 +344,8 @@
       "do": "Copier le lien",
       "done": "Lien copié dans le presse-papiers"
     },
+    "contact": "Contactez-nous",
+    "home": "Page d'accueil",
     "returnHome": "Revenir à l'accueil",
     "seeMore": "Voir plus"
   },
