@@ -1,9 +1,10 @@
+import { browser } from '$app/environment'
 import { api } from '$lib/api'
 import { getLocale, setLocale, type Locale } from '$lib/i18n/runtime'
 
 export type State = {
   loading: boolean
-  locale: Locale
+  locale?: Locale
   votes?: { count: number; objective: number }
 }
 
@@ -16,7 +17,8 @@ export const LOCALES = [
 
 export const global = $state<State>({
   loading: false,
-  locale: getLocale()
+  // FIXME on server side the locale is taken from preferredLanguage which is weird
+  locale: browser ? getLocale() : undefined
 })
 
 export function changeLocale(locale: Locale) {
