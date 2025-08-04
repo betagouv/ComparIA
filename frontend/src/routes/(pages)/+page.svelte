@@ -291,12 +291,14 @@
     </div>
   </section>
 
-  <section>
+  <section class="fr-container--fluid pb-18 lg:pb-25 pt-10 lg:pt-20">
     <div class="fr-container">
-      <h3 class="fr-mt-md-8w fr-mt-4w fr-pb-2w text-center">Vos questions les plus courantes</h3>
+      <h3 class="mb-8! lg:mb-10! text-center">Vos questions les plus courantes</h3>
+
       <FAQContent />
-      <div class="fr-mt-4w fr-mb-8w text-center">
-        <a class="fr-btn purple-btn" href="/faq">Découvrir les autres questions</a>
+
+      <div class="mt-8 text-center lg:mt-11">
+        <Link button size="lg" href="/faq" text="Découvrir les autres questions" />
       </div>
     </div>
   </section>
@@ -310,36 +312,6 @@
   .fr-checkbox-group input[type='checkbox']:checked + label:before {
     --border-active-blue-france: var(--blue-france-main-525);
     background-color: var(--blue-france-main-525);
-  }
-
-  .rounded-tile {
-    border-color: #e5e5e5;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 1rem;
-  }
-
-  .bg-blue {
-    /* background-color: var(--blue-france-975-75); */
-    /* --background-contrast-info: var(--info-950-100); */
-    /* background-color: var(--background-contrast-info); */
-    background-color: #f3f5f9;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .rounded-tile {
-      background-color: black;
-    }
-
-    .dark-invert {
-      filter: invert(1);
-    }
-  }
-
-  @media (prefers-color-scheme: light) {
-    .rounded-tile {
-      background-color: white;
-    }
   }
 
   .arrow {
