@@ -33,6 +33,7 @@
 
 <Header
   hideNavigation
+  hideDiscussBtn
   hideVoteGauge={arena.currentScreen === 'prompt'}
   hideLanguageSelector={arena.currentScreen === 'chat'}
   showHelpLink={arena.currentScreen === 'prompt'}

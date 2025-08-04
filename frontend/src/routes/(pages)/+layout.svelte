@@ -4,11 +4,13 @@
   import { Header, VoteGauge } from '$lib/components/header'
 
   let { children } = $props()
+
+  const isHome = $derived(page.url.pathname === '/')
 </script>
 
-<Header />
+<Header hideDiscussBtn={isHome} />
 
-{#if page.url.pathname === '/'}
+{#if isHome}
   <div>
     <a class="temp-banner text-center" href="/datasets">
       Découvrez l’étude de Bunka.ai qui explore les questions posées sur compar:IA !

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Button, Link } from '$lib/components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { LanguageSelector, Menubar, VoteGauge } from '.'
 
@@ -6,28 +7,32 @@
     hideNavigation = false,
     hideLanguageSelector = false,
     hideVoteGauge = false,
+    hideDiscussBtn = false,
     showHelpLink = false
   }: {
     hideNavigation?: boolean
     hideLanguageSelector?: boolean
     hideVoteGauge?: boolean
+    hideDiscussBtn?: boolean
     showHelpLink?: boolean
   } = $props()
 </script>
 
 {#snippet helpLink()}
-  <a
-    title={m['header.help.link.title']()}
+  <Link
     href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX"
-    target="_blank"
-    rel="noopener external"
-    class="fr-link fr-icon-pencil-line fr-link--icon-left shadow-none! after:content-none!"
-  >
-    {m['header.help.link.content']()}
-  </a>
+    text={m['header.help.link.content']()}
+    title={m['header.help.link.title']()}
+    icon="pencil-line"
+    button
+    variant="tertiary-no-outline"
+    size="sm"
+    native
+    hideExternalIcon
+  />
 {/snippet}
 
-<header id="main-header" class="fr-header z-1">
+<header id="main-header" class="fr-header">
   <div class="fr-header__body">
     <div class="fr-container">
       <div class="fr-header__body-row fr-grid-row">
@@ -39,16 +44,26 @@
               </p>
             </div>
           </div>
-          <div class="fr-header__service before:content-none! w-1/2 lg:w-auto">
-            <a href="/" title="Accueil - compar:IA">
+          <div class="fr-header__service before:content-none! px-3! flex w-1/2 sm:w-auto">
+            <img
+              src="/orgs/comparia.svg"
+              aria-hidden="true"
+              alt=""
+              width="66"
+              height="47"
+              class="me-3 hidden sm:block"
+            />
+            <div>
               <p class="fr-header__service-title">
-                {m['header.title.compar']()}:{m['header.title.ia']()}
+                <a href="/" title={m['header.homeTitle']()}>
+                  {m['header.title.compar']()}:{m['header.title.ia']()}
+                </a>
               </p>
-            </a>
 
-            <span class="fr-header__service-tagline">
-              {m['header.subtitle']()}
-            </span>
+              <span class="fr-header__service-tagline text-dark-grey">
+                {m['header.subtitle']()}
+              </span>
+            </div>
           </div>
           <div class="fr-header__navbar self-auto! mt-0!">
             <button
@@ -56,14 +71,14 @@
               data-fr-opened="false"
               aria-controls="fr-modal-menu"
               aria-haspopup="menu"
-              title="Menu"
+              title={m['header.menu']()}
             >
-              Menu
+              {m['header.menu']()}
             </button>
           </div>
         </div>
 
-        <div class="ms-auto hidden items-center gap-8 p-4 lg:flex">
+        <div class="ms-auto hidden items-center gap-3 p-4 lg:flex">
           {#if !hideVoteGauge}
             <VoteGauge id="vote-gauge" />
           {/if}
@@ -75,6 +90,10 @@
           {#if !hideLanguageSelector}
             <LanguageSelector id="translate" />
           {/if}
+
+          {#if !hideDiscussBtn}
+            <Button text="Commencer à discuter" size="lg" class="whitespace-nowrap" />
+          {/if}
         </div>
       </div>
     </div>
@@ -83,15 +102,18 @@
   <dialog
     aria-labelledby="fr-modal-title-modal-menu"
     id="fr-modal-menu"
-    class="fr-modal fr-header__menu lg:min-h-auto min-h-screen"
+    class="fr-modal fr-header__menu"
   >
-    <div class="fr-container">
-      <button
-        class="fr-btn--close fr-btn"
-        title="Fermer la fenêtre modale"
-        aria-controls="fr-modal-menu">Fermer</button
-      >
-      <div class="fr-header__menu-links after:mt-4! relative lg:hidden">
+    <div class="fr-container lg:p-0!">
+      <Button
+        variant="tertiary-no-outline"
+        text={m['words.close']()}
+        title={m['closeModal']()}
+        aria-controls="fr-modal-menu"
+        class="fr-btn--close"
+      />
+
+      <div class="fr-header__menu-links after:mt-4! lg:hidden">
         {#if showHelpLink}
           {@render helpLink()}
         {/if}
@@ -104,14 +126,16 @@
       {#if !hideNavigation}
         <Menubar />
       {/if}
+
+      {#if !hideDiscussBtn}
+        <div class="mt-6! md:mt-0 lg:hidden">
+          <Button
+            text={m['header.startDiscussion']()}
+            size="lg"
+            class="w-full! whitespace-nowrap"
+          />
+        </div>
+      {/if}
     </div>
   </dialog>
 </header>
-
-<style>
-  #main-header {
-    --shadow-color: rgba(0, 0, 18, 0.16);
-    --raised-shadow: 0 1px 3px var(--shadow-color);
-    filter: drop-shadow(0 1px 3px var(--shadow-color));
-  }
-</style>
