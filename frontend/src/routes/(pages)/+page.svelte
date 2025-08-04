@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Button } from '$lib/components/dsfr'
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
@@ -20,51 +21,64 @@
 </script>
 
 <main id="content" class="">
-  <section class="fr-grid-row fr-container--fluid bg-blue fr-pb-4w fr-pb-md-10w fr-pt-8w">
-    <div class="fr-container-md fr-grid-row">
-      <div class="fr-container fr-col-md-5 fr-grid-row">
-        <h1>
-          Ne vous fiez pas<br />aux réponses<br /><span class="text-purple">d’une seule IA</span>
-        </h1>
-        <p>Discutez avec deux IA à l’aveugle<br />pour croiser leurs réponses</p>
-        <div
-          class="fr-checkbox-group fr-checkbox-group--sm fr-mt-3w fr-mb-1w"
-          class:fr-checkbox-group--error={showError}
-        >
-          <input
-            aria-describedby="checkbox-error-messages"
-            id="accept_tos"
-            type="checkbox"
-            bind:checked={acceptTos.value}
-          />
-          <label class="fr-label fr-text--sm" for="accept_tos">
-            J'accepte les&nbsp;<a href="/modalites" target="_blank">modalités d'utilisation</a>
-            <p class="fr-message">Les données sont partagées à des fins de recherche</p>
-          </label>
+  <section class="fr-container--fluid bg-light-grey pb-13 lg:pt-18 pt-10 lg:pb-28">
+    <div
+      class="fr-container max-w-[1070px]! flex flex-col gap-20 md:flex-row md:items-center md:gap-0"
+    >
+      <div class="">
+        <div class="mb-15 px-4 md:px-0">
+          <div class="mb-10 max-w-[280px] md:w-[320px] md:max-w-[320px]">
+            <h1 class="mb-5!">
+              Ne vous fiez pas aux réponses <span class="text-primary">d’une seule IA</span>
+            </h1>
+
+            <p>Discutez avec deux IA à l’aveugle et évaluez leurs réponses</p>
+          </div>
+
           <div
-            class="fr-messages-group"
-            id="checkbox-error-messages"
-            aria-live="assertive"
-            class:fr-hidden={!showError}
+            class="fr-checkbox-group fr-checkbox-group--sm"
+            class:fr-checkbox-group--error={showError}
           >
-            <p class="fr-message fr-message--error" id="checkbox-error-message-error">
-              Vous devez accepter les modalités d'utilisation pour continuer
-            </p>
+            <input
+              aria-describedby="checkbox-error-messages"
+              id="accept_tos"
+              type="checkbox"
+              bind:checked={acceptTos.value}
+            />
+            <label class="fr-label fr-text--sm block!" for="accept_tos">
+              J'accepte les <a href="/modalites" target="_blank"
+                >conditions générales d’utilisation</a
+              >
+              <p class="fr-message">Les données sont partagées à des fins de recherche</p>
+            </label>
+            <div
+              class="fr-messages-group"
+              id="checkbox-error-messages"
+              aria-live="assertive"
+              class:fr-hidden={!showError}
+            >
+              <p class="fr-message fr-message--error" id="checkbox-error-message-error">
+                Vous devez accepter les modalités d'utilisation pour continuer
+              </p>
+            </div>
           </div>
         </div>
-        <input
-          type="submit"
+
+        <Button
           id="start_arena_btn"
-          class="fr-btn fr-btn--lg bg-light-blue fr-col-md-8 fr-col-12 fr-mb-4w w-full"
-          value="Commencer à discuter"
+          type="submit"
+          text="Commencer à discuter"
+          size="lg"
+          class="w-full! md:max-w-[355px]"
           onclick={handleRedirect}
         />
       </div>
-      <div class="fr-col-md-7 bg-blue fr-p-1w fr-p-md-6w">
+      <div class="bg-light-grey m-auto max-w-[545px] grow px-4 md:me-0 md:px-0">
         <HowItWorks />
       </div>
     </div>
   </section>
+
   <section class="fr-container--fluid fr-py-4w fr-py-md-8w">
     <h3 class="fr-mb-1w text-center">À quoi sert compar:IA ?</h3>
     <p class="text-grey fr-mb-6w text-center">
@@ -327,10 +341,6 @@
     background-color: var(--blue-france-main-525);
   }
 
-  .text-purple {
-    color: var(--blue-france-main-525);
-  }
-
   .rounded-tile {
     border-color: #e5e5e5;
     border-width: 1px;
@@ -345,24 +355,7 @@
     background-color: #f3f5f9;
   }
 
-  .bg-light-blue {
-    /* --blue-france-main-525: #6A6AF4; */
-    --blue-france-main-525-hover: #9898f8;
-    --blue-france-main-525-active: #aeaef9;
-    --hover: var(--blue-france-main-525-hover);
-    --active: var(--blue-france-main-525-active);
-    background-color: var(--blue-france-main-525);
-  }
-
   @media (prefers-color-scheme: dark) {
-    .bg-blue {
-      background-color: #1c1e22;
-    }
-
-    .bg-light-grey {
-      background-color: #0a0a0b;
-    }
-
     .rounded-tile {
       background-color: black;
     }
@@ -373,10 +366,6 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .bg-light-grey {
-      background-color: #fcfcfd;
-    }
-
     .rounded-tile {
       background-color: white;
     }
