@@ -3,6 +3,8 @@
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
+  import { m } from '$lib/i18n/messages'
+  import { externalLinkProps, propsToAttrs, sanitize } from '$lib/utils/commons'
 
   const acceptTos = useLocalStorage('comparia:tos', false)
   let showError = $state(false)
@@ -19,93 +21,72 @@
     }
   }
 
-  const utilyCards = [
-    {
-      src: '/home/comparer.svg',
-      alt: 'Comparer',
-      title: 'Comparer les réponses de différents modèles d’IA',
-      desc: 'Discutez et développez votre esprit critique en donnant votre préférence',
-      classes: ''
-    },
-    {
-      src: '/home/tester.png',
-      alt: 'Tester',
-      title: 'Tester au même endroit les dernières IA de l’écosystème',
-      desc: 'Testez différents modèles, propriétaires ou non, de petites et grandes tailles',
-      classes: ''
-    },
-    {
-      src: '/home/mesurer.svg',
-      alt: 'Mesurer',
-      title: 'Mesurer l’empreinte écologique des questions posées aux IA',
-      desc: 'Découvrez l’impact environnemental de vos discussions avec chaque modèle',
-      classes: 'px-14 py-5'
-    }
-  ]
+  const utilyCards = (
+    [
+      { i18nKey: 'compare', src: '/home/comparer.svg', classes: '' },
+      { i18nKey: 'test', src: '/home/tester.png', classes: '' },
+      { i18nKey: 'measure', src: '/home/mesurer.svg', classes: 'px-14 py-5' }
+    ] as const
+  ).map(({ i18nKey, ...card }) => ({
+    ...card,
+    title: m[`home.use.${i18nKey}.title`](),
+    desc: m[`home.use.${i18nKey}.desc`](),
+    alt: m[`home.use.${i18nKey}.alt`]()
+  }))
 
   const europeCards = [
     {
       title: '/compar:IA',
       link: 'https://comparia.beta.gouv.fr/',
-      desc: 'en français',
+      desc: m['home.europe.languages.fr'](),
       flag: '🇫🇷'
     },
     {
       title: '/palyginti:AI',
       link: 'https://comparia.beta.gouv.fr/',
-      desc: 'en lituanien',
+      desc: m['home.europe.languages.lt'](),
       flag: '🇱🇹'
     },
     {
       title: '/jämföra:AI',
       link: 'https://comparia.beta.gouv.fr/',
-      desc: 'en suédois',
+      desc: m['home.europe.languages.se'](),
       flag: '🇸🇪'
     },
     {
       title: '/xxxxxx:AI',
       link: 'https://comparia.beta.gouv.fr/',
-      desc: 'en danois',
+      desc: m['home.europe.languages.da'](),
       flag: '🇩🇰'
     }
   ]
 
-  const whyVoteCards = [
-    {
-      src: '/home/prefs.svg',
-      title: 'Vos préférences',
-      desc: 'Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères donnés, tels que la pertinence ou l’utilité des réponses.'
-    },
-    {
-      src: '/home/datasets.svg',
-      title: 'Les jeux de données par langue',
-      desc: 'Toutes les questions posées et les votes sont compilées dans des jeux de données et publiés librement après anonmymisation.'
-    },
-    {
-      src: '/home/finetune.svg',
-      title: 'Des modèles affinés sur la langue spécifique',
-      desc: 'A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle.'
-    }
-  ]
+  const whyVoteCards = (
+    [
+      { i18nKey: 'prefs', src: '/home/prefs.svg' },
+      { i18nKey: 'datasets', src: '/home/datasets.svg' },
+      { i18nKey: 'finetune', src: '/home/finetune.svg' }
+    ] as const
+  ).map(({ i18nKey, ...card }) => ({
+    ...card,
+    title: m[`home.vote.steps.${i18nKey}.title`](),
+    desc: m[`home.vote.steps.${i18nKey}.desc`]()
+  }))
 
-  const usageCards = [
-    {
-      src: '/icons/database-line.svg',
-      title: 'Exploiter les données',
-      desc: 'Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données compar:IA pour améliorer les modèles'
-    },
-    {
-      src: '/icons/search-line.svg',
-      title: 'Explorer les modèles',
-      desc: 'Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des modèles'
-    },
-    {
-      src: '/icons/presentation.svg',
-      title: 'Former et sensibiliser',
-      desc: 'Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de votre public'
-    }
-  ]
+  const usageCards = (
+    [
+      { i18nKey: 'use', src: '/icons/database-line.svg' },
+      { i18nKey: 'explore', src: '/icons/search-line.svg' },
+      { i18nKey: 'educate', src: '/icons/presentation.svg' }
+    ] as const
+  ).map(({ i18nKey, ...card }) => ({
+    ...card,
+    title: m[`home.usage.${i18nKey}.title`](),
+    desc: m[`home.usage.${i18nKey}.desc`]()
+  }))
 </script>
+
+<span class="text-primary"></span>
 
 <main id="content" class="">
   <section class="fr-container--fluid bg-light-grey pb-13 lg:pt-18 pt-10 lg:pb-28">
@@ -116,10 +97,9 @@
         <div class="mb-15 px-4 md:px-0">
           <div class="mb-10 max-w-[280px] md:w-[320px] md:max-w-[320px]">
             <h1 class="mb-5!">
-              Ne vous fiez pas aux réponses <span class="text-primary">d’une seule IA</span>
+              {@html sanitize(m['home.intro.title']({ props: 'class="text-primary"' }))}
             </h1>
-
-            <p>Discutez avec deux IA à l’aveugle et évaluez leurs réponses</p>
+            <p>{m['home.intro.desc']()}</p>
           </div>
 
           <div
@@ -133,10 +113,12 @@
               bind:checked={acceptTos.value}
             />
             <label class="fr-label fr-text--sm block!" for="accept_tos">
-              J'accepte les <a href="/modalites" target="_blank"
-                >conditions générales d’utilisation</a
-              >
-              <p class="fr-message">Les données sont partagées à des fins de recherche</p>
+              {@html sanitize(
+                m['home.intro.tos.accept']({
+                  linkProps: propsToAttrs({ href: '/modalites', target: '_blank' })
+                })
+              )}
+              <p class="fr-message">{m['home.intro.tos.help']()}</p>
             </label>
             <div
               class="fr-messages-group"
@@ -145,7 +127,7 @@
               class:fr-hidden={!showError}
             >
               <p class="fr-message fr-message--error" id="checkbox-error-message-error">
-                Vous devez accepter les modalités d'utilisation pour continuer
+                {m['home.intro.tos.error']()}
               </p>
             </div>
           </div>
@@ -154,7 +136,7 @@
         <Button
           id="start_arena_btn"
           type="submit"
-          text="Commencer à discuter"
+          text={m['header.startDiscussion']()}
           size="lg"
           class="w-full! md:max-w-[355px]"
           onclick={handleRedirect}
@@ -168,12 +150,8 @@
 
   <section class="fr-container--fluid md:py-15 py-10">
     <div class="fr-container">
-      <h3 class="mb-3! text-center">À quoi sert compar:IA ?</h3>
-
-      <p class="text-grey mb-8! text-center">
-        compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et
-        à ses enjeux
-      </p>
+      <h3 class="mb-3! text-center">{m['home.use.title']()}</h3>
+      <p class="text-grey mb-8! text-center">{m['home.use.desc']()}</p>
 
       <div class="grid gap-7 md:grid-cols-3">
         {#each utilyCards as card}
@@ -200,26 +178,23 @@
     <div class="fr-container max-w-[1150px]! flex flex-col gap-8 lg:flex-row lg:items-center">
       <div class="max-w-[360px]">
         <h3 class="mb-4! fr-h2 max-w-[320px]">
-          Le comparateur <span class="text-primary">devient européen !</span>
+          {@html sanitize(m['home.europe.title']({ props: 'class="text-primary"' }))}
         </h3>
+        <p class="mb-2!">{m['home.europe.desc']()}</p>
+        <p><strong class="block">{m['home.europe.question']()}</strong></p>
 
-        <p class="mb-2!">
-          La Lituanie, la Suède et le Danemark rejoignent la France en adoptant le comparateur dans
-          le but d’affiner les futurs modèles d’IA dans leurs langues nationales.
-        </p>
-        <p>
-          <strong class="block">
-            Vous souhaitez également disposer du comparateur dans votre langue ?
-          </strong>
-        </p>
-
-        <Link button size="lg" href="FIXME" text="Nous contacter" />
+        <Link button size="lg" href="FIXME" text={m['actions.contactUs']()} />
       </div>
 
       <div
         class="py-15 flex w-full flex-col justify-center gap-8 rounded-xl bg-white px-9 xl:flex-row"
       >
-        <img src="/home/comparia-stars.svg" alt="FIXME" class="m-auto max-w-fit xl:m-0" />
+        <img
+          src="/home/comparia-stars.svg"
+          aria-hidden="true"
+          alt=""
+          class="m-auto max-w-fit xl:m-0"
+        />
 
         <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
           {#each europeCards as card}
@@ -247,12 +222,8 @@
   <section class="fr-container--fluid bg-very-light-grey py-10 lg:py-14">
     <div class="fr-container">
       <div class="cg-border xl:p-13! bg-white px-4 py-10">
-        <h4 class="mb-2! text-center">Pourquoi votre vote est-il important ?</h4>
-
-        <p class="text-grey text-center">
-          Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les
-          futurs modèles d’IA sur le français, le suédois, le lituanien et le danois
-        </p>
+        <h4 class="mb-2! text-center">{m['home.vote.title']()}</h4>
+        <p class="text-grey text-center">{m['home.vote.desc']()}</p>
 
         <div class="md:mt-13 mt-10 flex flex-col text-center lg:flex-row">
           {#each whyVoteCards as card, index}
@@ -275,7 +246,7 @@
             hideExternalIcon
             size="lg"
             href="https://huggingface.co/collections/comparIA/jeux-de-donnees-compar-ia-67644adf20912236342c3f3b"
-            text="Accéder aux jeux de données"
+            text={m['home.vote.datasetAccess']()}
           />
         </div>
       </div>
@@ -284,12 +255,8 @@
 
   <section class="fr-container--fluid bg-light-grey py-10 lg:py-20">
     <div class="fr-container">
-      <h3 class="mb-2! text-center">Les usages spécifiques de compar:IA</h3>
-
-      <p class="text-grey fr-mb-4w text-center">
-        L’outil s’adresse également aux experts IA et aux formateurs pour des usages plus
-        spécifiques
-      </p>
+      <h3 class="mb-2! text-center">{m['home.usage.title']()}</h3>
+      <p class="text-grey fr-mb-4w text-center">{m['home.vote.desc']()}</p>
 
       <div class="grid gap-8 md:grid-cols-3">
         {#each usageCards as card}
@@ -306,14 +273,8 @@
   <section class="fr-container--fluid bg-very-light-grey lg:pb-38 py-12 lg:pt-20">
     <div class="fr-container grid gap-10 lg:grid-cols-2 lg:gap-6">
       <div class="cg-border bg-white px-5 py-10 md:px-8">
-        <h5>Qui sommes-nous ?</h5>
-
-        <p>
-          Le comparateur est porté au sein du Ministère de la Culture par une équipe
-          pluridisciplinaire réunissant expert en Intelligence artificielle, développeurs, chargé de
-          déploiement, designer, avec pour mission de rendre les IA conversationnelles plus
-          transparentes et accessibles à toutes et tous.
-        </p>
+        <h5>{m['home.origin.team.title']()}</h5>
+        <p>{m['home.origin.team.desc']()}</p>
 
         <div class="mt-12 flex gap-8">
           <img
@@ -332,16 +293,11 @@
       </div>
 
       <div class="cg-border bg-white px-5 py-10 md:px-8">
-        <h5>Qui est à l’origine du projet ?</h5>
-
+        <h5>{m['home.origin.project.title']()}</h5>
         <p>
-          Le comparateur a été conçu et développé dans le cadre d’une start-up d’Etat portée par le
-          ministère de la Culture et intégrée au programme <a
-            href="https://beta.gouv.fr"
-            rel="noopener external"
-            target="_blank">Beta.gouv.fr</a
-          > de la Direction interministérielle du numérique (DINUM) qui aide les administrations publiques
-          françaises à construire des services numériques utiles, simples et faciles à utiliser.
+          {@html sanitize(
+            m['home.origin.project.desc']({ linkProps: externalLinkProps('https://beta.gouv.fr') })
+          )}
         </p>
 
         <div class="mt-12 flex gap-8">
@@ -368,12 +324,12 @@
 
   <section class="fr-container--fluid pb-18 lg:pb-25 pt-10 lg:pt-20">
     <div class="fr-container">
-      <h3 class="mb-8! lg:mb-10! text-center">Vos questions les plus courantes</h3>
+      <h3 class="mb-8! lg:mb-10! text-center">{m['home.faq.title']()}</h3>
 
       <FAQContent />
 
       <div class="mt-8 text-center lg:mt-11">
-        <Link button size="lg" href="/faq" text="Découvrir les autres questions" />
+        <Link button size="lg" href="/faq" text={m['home.faq.discover']()} />
       </div>
     </div>
   </section>

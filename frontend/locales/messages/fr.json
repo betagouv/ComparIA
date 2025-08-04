@@ -81,6 +81,115 @@
     "use": "N'utilisez pas le comparateur à des fins illégales ou nuisibles",
     "go": "C'est parti"
   },
+  "home": {
+    "intro": {
+      "title": "Ne vous fiez pas aux réponses <span {props}>d’une seule IA</span>",
+      "desc": "Discutez avec deux IA à l’aveugle et évaluez leurs réponses",
+      "tos": {
+        "accept": "J'accepte les <a {linkProps}>conditions générales d’utilisation</a>",
+        "help": "Les données sont partagées à des fins de recherche",
+        "error": "Vous devez accepter les modalités d'utilisation pour continuer"
+      },
+      "steps": {
+        "title": "Comment ça marche",
+        "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'amélioration des modèles d’IA. 3. Les modèles sont démasqués : apprenez-en plus sur les modèles d’IA et leurs caractéristiques.",
+        "one": {
+          "title": "Je discute avec deux IA anonymes",
+          "a": "Échangez aussi longtemps que",
+          "b": "vous le souhaitez"
+        },
+        "two": {
+          "title": "Je donne mon avis",
+          "a": "Vous contribuez ainsi à",
+          "b": "l'amélioration des modèles d’IA"
+        },
+        "three": {
+          "title": "Les modèles sont démasqués !",
+          "a": "Apprenez en plus sur les modèles",
+          "b": "d’IA et leurs caractéristiques"
+        }
+      }
+    },
+    "use": {
+      "title": "À quoi sert compar:IA ?",
+      "desc": "compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux",
+      "compare": {
+        "title": "Comparer les réponses de différents modèles d’IA",
+        "desc": "Discutez et développez votre esprit critique en donnant votre préférence",
+        "alt": "Comparer"
+      },
+      "test": {
+        "title": "Tester au même endroit les dernières IA de l’écosystème",
+        "desc": "Testez différents modèles, propriétaires ou non, de petites et grandes tailles",
+        "alt": "Tester"
+      },
+      "measure": {
+        "title": "Mesurer l’empreinte écologique des questions posées aux IA",
+        "desc": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
+        "alt": "Mesurer"
+      }
+    },
+    "europe": {
+      "title": "Le comparateur <span {props}>devient européen !</span>",
+      "desc": "La Lituanie, la Suède et le Danemark rejoignent la France en adoptant le comparateur dans le but d’affiner les futurs modèles d’IA dans leurs langues nationales.",
+      "question": "Vous souhaitez également disposer du comparateur dans votre langue ?",
+      "languages": {
+        "da": "en danois",
+        "fr": "en français",
+        "lt": "en lituanien",
+        "se": "en suédois"
+      }
+    },
+    "vote": {
+      "title": "Pourquoi votre vote est-il important ?",
+      "desc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois",
+      "steps": {
+        "prefs": {
+          "title": "Vos préférences",
+          "desc": "Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères donnés, tels que la pertinence ou l’utilité des réponses."
+        },
+        "datasets": {
+          "title": "Les jeux de données par langue",
+          "desc": "Toutes les questions posées et les votes sont compilées dans des jeux de données et publiés librement après anonmymisation."
+        },
+        "finetune": {
+          "title": "Des modèles affinés sur la langue spécifique",
+          "desc": "A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle."
+        }
+      },
+      "datasetAccess": "Accéder aux jeux de données"
+    },
+    "usage": {
+      "title": "Les usages spécifiques de compar:IA",
+      "desc": "L’outil s’adresse également aux experts IA et aux formateurs pour des usages plus spécifiques",
+      "use": {
+        "title": "Exploiter les données",
+        "desc": "Développeurs, chercheurs, éditeurs de modèles… accédez aux jeux de données compar:IA pour améliorer les modèles"
+      },
+      "explore": {
+        "title": "Explorer les modèles",
+        "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des modèles"
+      },
+      "educate": {
+        "title": "Former et sensibiliser",
+        "desc": "Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de votre public"
+      }
+    },
+    "origin": {
+      "team": {
+        "title": "Qui sommes-nous ?",
+        "desc": "Le comparateur est porté au sein du Ministère de la Culture par une équipe pluridisciplinaire réunissant expert en Intelligence artificielle, développeurs, chargé de déploiement, designer, avec pour mission de rendre les IA conversationnelles plus transparentes et accessibles à toutes et tous."
+      },
+      "project": {
+        "title": "Qui est à l’origine du projet ?",
+        "desc": "Le comparateur a été conçu et développé dans le cadre d’une start-up d’Etat portée par le ministère de la Culture et intégrée au programme <a {linkProps}>Beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM) qui aide les administrations publiques françaises à construire des services numériques utiles, simples et faciles à utiliser."
+      }
+    },
+    "faq": {
+      "title": "Vos questions les plus courantes",
+      "discover": "Découvrir les autres questions"
+    }
+  },
   "arenaHome": {
     "title": "Comment puis-je vous aider aujourd'hui ?",
     "modelSelection": "Sélection des modèles",
@@ -371,6 +480,7 @@
       "done": "Lien copié dans le presse-papiers"
     },
     "contact": "Contactez-nous",
+    "contactUs": "Nous contacter",
     "home": "Page d'accueil",
     "returnHome": "Revenir à l'accueil",
     "seeMore": "Voir plus",
