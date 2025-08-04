@@ -1,6 +1,9 @@
 <script lang="ts">
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+
+  const locale = getLocale()
 
   const links = (
     [
@@ -25,7 +28,17 @@
     <div class="fr-footer__body">
       <div class="fr-footer__brand fr-enlarge-link">
         <a href="/" title={m['footer.backHome']()}>
-          <p class="fr-logo">{@html sanitize(m['footer.logoTitle']())}</p>
+          {#if locale === 'fr' || locale === 'en'}
+            <p class="fr-logo">
+              Ministère<br />de la culture
+            </p>
+          {:else}
+            <img
+              src={`/orgs/countries/${locale}.png`}
+              alt={m['header.logoAlt']()}
+              class="max-h-[100px]"
+            />
+          {/if}
         </a>
       </div>
       <div class="fr-footer__content">

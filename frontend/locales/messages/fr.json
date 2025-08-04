@@ -28,6 +28,7 @@
     },
     "subtitle": "Le comparateur d’IA conversationnelles",
     "homeTitle": "Accueil - compar:IA",
+    "logoAlt": "République Française",
     "startDiscussion": "Commencer à discuter",
     "help": {
       "link": {
@@ -57,7 +58,6 @@
   },
   "footer": {
     "backHome": "Retour à l'accueil du site - compar:IA",
-    "logoTitle": "Ministère<br />de la culture",
     "helpUs": "Aidez-nous à améliorer ce service !",
     "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {linkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !",
     "links": {

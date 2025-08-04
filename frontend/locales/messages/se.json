@@ -1,1 +1,9 @@
-{}
+{
+  "header": {
+    "title": {
+      "compar": "jämföra",
+      "ia": "AI"
+    },
+    "subtitle": "Jämförelseverktyg för konversations-AI"
+  }
+}

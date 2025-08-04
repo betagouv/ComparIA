@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button, Link } from '$lib/components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { LanguageSelector, Menubar, VoteGauge } from '.'
 
   let {
@@ -16,6 +17,8 @@
     hideDiscussBtn?: boolean
     showHelpLink?: boolean
   } = $props()
+
+  const locale = getLocale()
 </script>
 
 {#snippet helpLink()}
@@ -39,9 +42,17 @@
         <div class="fr-header__brand fr-enlarge-link">
           <div class="fr-header__brand-top w-auto!">
             <div class="fr-header__logo">
-              <p class="fr-logo">
-                République<br />Française
-              </p>
+              {#if locale === 'fr' || locale === 'en'}
+                <p class="fr-logo">
+                  République<br />Française
+                </p>
+              {:else}
+                <img
+                  src={`/orgs/countries/${locale}.png`}
+                  alt={m['header.logoAlt']()}
+                  class="max-h-[68px]"
+                />
+              {/if}
             </div>
           </div>
           <div class="fr-header__service before:content-none! px-3! flex w-1/2 sm:w-auto">
