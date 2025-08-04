@@ -109,7 +109,7 @@
   <div
     bind:this={footer}
     id="send-area"
-    class="mt-auto flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]"
+    class="sticky bottom-0 mt-auto flex flex-col items-center gap-3 bg-white px-4 py-3 md:px-[20%]"
   >
     {#if step === 'chat'}
       <div class="flex w-full flex-col gap-3 md:flex-row">
@@ -146,14 +146,3 @@
     </button>
   </div>
 {/if}
-
-<style>
-  #send-area {
-    position: sticky;
-    width: 100%;
-    bottom: 0;
-    left: 0;
-    background-color: var(--main-background);
-    z-index: 100;
-  }
-</style>

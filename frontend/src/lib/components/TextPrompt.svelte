@@ -54,7 +54,7 @@
 </script>
 
 <div class="fr-input-group {classNames}">
-  <label class="fr-label" for={id} class:hidden={hideLabel}>{label}</label>
+  <label for={id} class={['fr-label', {'hidden!': hideLabel}]}>{label}</label>
   <textarea
     {id}
     data-testid="textbox"

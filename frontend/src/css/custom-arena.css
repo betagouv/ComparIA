@@ -83,9 +83,6 @@ footer:has(.built-with) {
   font-weight: 700;
 }
 
-.bg-white {
-  background-color: white;
-}
 
 .text-grey {
   /* color: var(--block-title-text-color); */
@@ -175,15 +172,7 @@ h6.text-blue {
 
 
 /* General */
-body {
-  margin: auto !important;
-}
 
-.app {
-  max-width: none !important;
-  /* max-width: none; */
-  background-color: #FCFCFD;
-}
 
 :root {
   --text-title-grey: var(--grey-200-850) !important;
@@ -221,16 +210,6 @@ li.fr-nav__item {
   .md-hidden {
     display: none;
   }
-}
-
-.step-badge {
-  display: inline-block;
-  border-radius: 3.75em;
-  text-align: center;
-  color: white;
-  background-color: var(--blue-france-main-525);
-  padding: 5px 10px;
-  font-weight: bold;
 }
 
 #arena {

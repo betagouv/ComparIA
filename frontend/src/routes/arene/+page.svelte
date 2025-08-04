@@ -43,17 +43,15 @@
   <div
     bind:this={secondHeader}
     id="second-header"
-    class="fr-container--fluid fr-py-1w sticky top-0"
+    class="fr-container--fluid bg-light-grey drop-shadow-(--raised-shadow) z-1 sticky top-0 py-4"
   >
-    <div class="fr-mb-0 fr-container fr-grid-row">
-      <div class="fr-col-12 fr-col-md-8 align-center column md-row flex">
-        <div>
-          <span class="step-badge fr-mt-md-0 fr-mb-md-0 fr-mt-1w fr-mb-3v">
-            {m['header.chatbot.step']()}
-            {arena.chat.step}/2
-          </span>
+    <div class="fr-container flex flex-col items-center gap-3 md:flex-row">
+      <div class="flex basis-2/3 flex-col items-center gap-3 md:flex-row">
+        <div class="bg-primary text-nowrap rounded-[3.75rem] px-4 py-2 font-bold text-white">
+          {m['header.chatbot.step']()}
+          {arena.chat.step}/2
         </div>
-        <p class="fr-ml-1w fr-mb-md-0 fr-mb-md-1v md-text-left mb-0! text-center">
+        <p class="mb-0! flex flex-col gap-1 text-center md:gap-0 md:text-left">
           <strong class="text-dark-grey">
             {#if arena.chat.step == 1}
               {m['header.chatbot.stepOne.title']()}
@@ -61,8 +59,7 @@
               {m['header.chatbot.stepTwo.title']()}
             {/if}
           </strong>
-          <br />
-          <span class="text-grey fr-text--xs">
+          <span class="text-grey text-sm">
             {#if arena.chat.step == 1}
               {m['header.chatbot.stepOne.description']()}
             {:else}
@@ -71,9 +68,9 @@
           </span>
         </p>
       </div>
-      <div class="fr-col-12 fr-col-md-4 align-center grid">
+      <div class="w-full basis-1/3 items-center">
         {#if arena.chat.step == 1}
-          <div class="mode-sticker fr-pt-1w fr-pb-1v fr-text--xs mb-0! bg-white text-center">
+          <div class="c-border border-dashed! rounded-lg bg-white py-1 text-center text-sm md:py-3">
             <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>
             &nbsp;<Tooltip id="mode-desc" text={mode.description} size="xs" />
@@ -104,46 +101,3 @@
     <ChatBot />
   {/if}
 </main>
-
-<style>
-  main {
-    background-color: var(--main-background);
-  }
-
-  #second-header {
-    width: 100%;
-    z-index: 750;
-    background-color: #f3f5f9;
-    --shadow-color: rgba(0, 0, 18, 0.16);
-    --raised-shadow: 0 1px 3px var(--shadow-color);
-    filter: drop-shadow(0 1px 3px var(--shadow-color));
-  }
-
-  .text-dark-grey {
-    color: #3a3a3a;
-  }
-
-  .mode-sticker {
-    z-index: 750;
-    border-radius: 0.5em;
-    border: #e5e5e5 dashed 1px;
-  }
-
-  .align-center {
-    align-items: center;
-  }
-
-  .column {
-    flex-direction: column;
-  }
-
-  @media (min-width: 48em) {
-    .md-row {
-      flex-direction: row;
-    }
-
-    .md-text-left {
-      text-align: left !important;
-    }
-  }
-</style>
