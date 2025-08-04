@@ -7,22 +7,62 @@
 @custom-variant dark (&:where([data-fr-theme="dark"], [data-fr-theme="dark"] *));
 
 @theme {
+  /* DFSR COLORS */
+  --color-white: var(--grey-1000-50);
+  --color-black: var(--grey-0-1000);
   --color-primary: var(--blue-france-main-525);
   --color-info: var(--info-425-625);
+  --color-light-info: var(--info-950-100);
   --color-error: var(--error-425-625);
   --color-warning: var(--warning-425-625);
   --color-success: var(--green-emeraude-main-632);
   --color-yellow: var(--yellow-tournesol-850-200);
+  --color-grey: var(--grey-425-625);
+  --color-dark-grey: var(--grey-200-850);
+  /* CUSTOM COLORS */
+  --color-very-light-grey: var(--cg-very-light-grey);
+  --color-light-grey: var(--cg-light-grey);
 }
 
 :root {
-  /* CUSTOM DSFR LIKE */
+  /* CUSTOM DSFR LIKE ADDITION */
+  --cg-blue-france-main-525-hover: #9898f8;
+  --cg-blue-france-main-525-active: #aeaef9;
   --outline-color: #0a76f6;
 
   /* CUSTOM */
+  --cg-very-light-grey: #fcfcfd;
+  --cg-light-grey: #f3f5f9;
   --bot-a-color: #a96afe;
   --bot-b-color: #ff9575;
-  --main-background: #fcfcfd;
+
+  /* xs breakpoint */
+  --text-sm: 0.75rem;
+  --text-sm--line-height: calc(1.25 / 0.875rem);
+}
+
+:root[data-fr-theme='dark'] {
+  --cg-very-light-grey: #0a0a0b;
+  --cg-light-grey: #1c1e22;
+}
+
+@media (min-width: 36em) {
+  /* sm */
+}
+
+@media (min-width: 48em) {
+  /* md */
+  :root {
+    --text-sm: 0.875rem;
+  }
+}
+
+@media (min-width: 62em) {
+  /* lg */
+}
+
+@media (min-width: 78em) {
+  /* xl */
 }
 
 html,
@@ -39,6 +79,7 @@ main {
   flex-grow: 1;
 }
 
+/* CUSTOM HELPER CLASSES */
 .c-border {
   border: 1px solid var(--grey-925-125);
 }
