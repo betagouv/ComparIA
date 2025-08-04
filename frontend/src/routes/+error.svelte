@@ -1,5 +1,8 @@
 <script lang="ts">
   import { page } from '$app/state'
+  import { Link } from '$lib/components/dsfr'
+  import Footer from '$lib/components/Footer.svelte'
+  import { Header } from '$lib/components/header'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import ovoidPictoSrc from '@gouvfr/dsfr/dist/artwork/background/ovoid.svg'
@@ -7,6 +10,8 @@
 
   const key = $derived(page.status === 404 ? '404' : 'unexpected')
 </script>
+
+<Header />
 
 <main>
   <div class="fr-container">
@@ -21,17 +26,17 @@
 
         <ul class="fr-btns-group fr-btns-group--inline-md">
           {#if key === '404'}
-            <li><a class="fr-btn" href="/">{m['actions.home']()}</a></li>
+            <li>
+              <Link button href="/" text={m['actions.home']()} />
+            </li>
           {/if}
           <li>
-            <a
-              class="fr-btn fr-btn--secondary"
+            <Link
+              button
+              variant="secondary"
               href="https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX"
-              target="_blank"
-              rel="noopener external"
-            >
-              {m['actions.contact']()}
-            </a>
+              text={m['actions.contact']()}
+            />
           </li>
         </ul>
       </div>
@@ -56,3 +61,5 @@
     </div>
   </div>
 </main>
+
+<Footer />
