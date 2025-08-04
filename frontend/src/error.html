@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="%lang%" data-fr-scheme="system">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -322,5 +322,13 @@
         </div>
       </div>
     </main>
+
+    <script>
+      // Directly set theme to avoid initial flash
+      document.documentElement.setAttribute(
+        'data-fr-theme',
+        localStorage.getItem('scheme') || 'system'
+      )
+    </script>
   </body>
 </html>

@@ -4,6 +4,8 @@
 @plugin '@tailwindcss/typography';
 @import './icons.css';
 
+@custom-variant dark (&:where([data-fr-theme="dark"], [data-fr-theme="dark"] *));
+
 @theme {
   --color-primary: var(--blue-france-main-525);
   --color-info: var(--info-425-625);
