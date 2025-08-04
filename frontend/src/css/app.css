@@ -2,7 +2,6 @@
 @import '@gouvfr/dsfr/dist/utility/icons/icons.css';
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
-@import './custom-arena.css';
 @import './icons.css';
 
 @theme {

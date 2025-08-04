@@ -7,6 +7,7 @@
   import Tooltip from '$lib/components/Tooltip.svelte'
   import DropDown from '$lib/DropDown.svelte'
   import { m } from '$lib/i18n/messages'
+  import '../../css/custom-arena.css'
   import WelcomeModal from './WelcomeModal.svelte'
 
   const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
