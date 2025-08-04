@@ -32,7 +32,7 @@
           class="sr-only"
         />
         <label
-          class="c-border h-full flex flex-col items-center justify-center rounded-xl px-3 py-4 text-center md:flex-row md:justify-center md:px-5"
+          class="cg-border md:rounded-[56px]! flex h-full flex-col items-center justify-center px-3 py-4 text-center md:flex-row md:justify-center md:px-5"
           for="radio-{value}"
         >
           {#if value === 'both-equal'}
@@ -67,11 +67,5 @@
     border: 2px solid var(--blue-france-main-525);
     background: var(--blue-france-975-75);
     color: var(--blue-france-main-525);
-  }
-
-  @media (min-width: 48em) {
-    label {
-      border-radius: 56px;
-    }
   }
 </style>

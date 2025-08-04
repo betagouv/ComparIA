@@ -85,8 +85,8 @@ main {
 }
 
 /* CUSTOM HELPER CLASSES */
-.c-border {
-  border: 1px solid var(--grey-925-125);
+.cg-border {
+  @apply border border-[--grey-925-125] rounded-xl;
 }
 
 .c-bot-disk-a {

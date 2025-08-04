@@ -34,7 +34,7 @@
     <div class="mt-11 flex flex-col gap-6 md:flex-row">
       {#each ['a', 'b'] as const as model (model)}
         <div
-          class="c-border flex w-full flex-col gap-4 rounded-sm bg-white p-2 md:rounded-lg md:px-6 md:py-8"
+          class="cg-border rounded-sm! flex w-full flex-col gap-4 bg-white p-2 md:rounded-lg md:px-6 md:py-8"
         >
           <div class="flex items-center">
             <div class="c-bot-disk-{model}"></div>

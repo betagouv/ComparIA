@@ -50,7 +50,7 @@
 </script>
 
 <div class="flex flex-col">
-  <div class="c-border flex h-full flex-col rounded-2xl px-5 pb-3 pt-7">
+  <div class="cg-border rounded-2xl! flex h-full flex-col px-5 pb-3 pt-7">
     <div>
       <div class="mb-5 flex items-center">
         <div class="c-bot-disk-{bot}"></div>

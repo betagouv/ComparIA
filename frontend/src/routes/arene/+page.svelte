@@ -70,7 +70,9 @@
       </div>
       <div class="w-full basis-1/3 items-center">
         {#if arena.chat.step == 1}
-          <div class="c-border border-dashed! rounded-lg bg-white py-1 text-center text-sm md:py-3">
+          <div
+            class="cg-border border-dashed! rounded-lg! bg-white py-1 text-center text-sm md:py-3"
+          >
             <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>
             &nbsp;<Tooltip id="mode-desc" text={mode.description} size="xs" />
