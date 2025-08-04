@@ -18,6 +18,30 @@
       showError = true
     }
   }
+
+  const utilyCards = [
+    {
+      src: '/home/comparer.svg',
+      alt: 'Comparer',
+      title: 'Comparer les réponses de différents modèles d’IA',
+      desc: 'Discutez et développez votre esprit critique en donnant votre préférence',
+      classes: ''
+    },
+    {
+      src: '/home/tester.png',
+      alt: 'Tester',
+      title: 'Tester au même endroit les dernières IA de l’écosystème',
+      desc: 'Testez différents modèles, propriétaires ou non, de petites et grandes tailles',
+      classes: ''
+    },
+    {
+      src: '/home/mesurer.svg',
+      alt: 'Mesurer',
+      title: 'Mesurer l’empreinte écologique des questions posées aux IA',
+      desc: 'Découvrez l’impact environnemental de vos discussions avec chaque modèle',
+      classes: 'px-14 py-5'
+    }
+  ]
 </script>
 
 <main id="content" class="">
@@ -79,48 +103,36 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid fr-py-4w fr-py-md-8w">
-    <h3 class="fr-mb-1w text-center">À quoi sert compar:IA ?</h3>
-    <p class="text-grey fr-mb-6w text-center">
-      compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à
-      ses enjeux
-    </p>
-    <div class="gap fr-container grid">
-      <div class="rounded-tile">
-        <img
-          src="/home/comparer.svg"
-          class="fr-responsive-img fr-px-2w fr-py-4w bg-blue"
-          alt="Comparer"
-        />
-        <div class="fr-p-3w">
-          <h6 class="fr-mb-1w">Comparer les réponses de différents modèles d’IA</h6>
-          <p class="text-grey">
-            Discutez et développez votre esprit critique en donnant votre préférence
-          </p>
-        </div>
-      </div>
-      <div class="rounded-tile">
-        <div class="fr-responsive-img bg-blue">
-          <img class="fr-responsive-img" src="/home/mesurer.png" alt="Mesurer" />
-        </div>
-        <div class="fr-p-3w">
-          <h6 class="fr-mb-1w">Tester au même endroit les dernières IA de l’écosystème</h6>
-          <p class="text-grey fr-mb-0">
-            Testez différents modèles, propriétaires ou non, de petites et grandes tailles
-          </p>
-        </div>
-      </div>
-      <div class="rounded-tile">
-        <img src="/home/tester.svg" class="fr-responsive-img fr-px-6w fr-py-2w bg-blue bg-blue" />
-        <div class="fr-p-3w">
-          <h6 class="fr-mb-1w">Mesurer l’empreinte écologique des questions posées aux IA</h6>
-          <p class="text-grey">
-            Découvrez l’impact environnemental de vos discussions avec chaque modèle
-          </p>
-        </div>
+  <section class="fr-container--fluid md:py-15 py-10">
+    <div class="fr-container">
+      <h3 class="mb-3! text-center">À quoi sert compar:IA ?</h3>
+
+      <p class="text-grey mb-8! text-center">
+        compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et
+        à ses enjeux
+      </p>
+
+      <div class="grid gap-7 md:grid-cols-3">
+        {#each utilyCards as card}
+          <div class="cg-border">
+            <img
+              src={card.src}
+              alt={card.alt}
+              class={[
+                'fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey rounded-t-xl object-contain',
+                card.classes
+              ]}
+            />
+            <div class="px-5 pb-7 pt-4 md:px-8 md:pb-10 md:pt-5">
+              <h6 class="mb-1! md:mb-2!">{card.title}</h6>
+              <p class="text-grey mb-0!">{card.desc}</p>
+            </div>
+          </div>
+        {/each}
       </div>
     </div>
   </section>
+
   <section class="bg-light-grey fr-container--fluid fr-py-4w fr-py-md-6w fr-px-2w fr-px-md-0">
     <div class="fr-container rounded-tile fr-pt-4w fr-pt-md-6w">
       <h4 class="fr-mb-1w text-center">Pourquoi votre vote est-il important ?</h4>

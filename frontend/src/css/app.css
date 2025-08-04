@@ -86,7 +86,7 @@ main {
 
 /* CUSTOM HELPER CLASSES */
 .cg-border {
-  @apply border border-[--grey-925-125] rounded-xl;
+  @apply border border-(--grey-925-125) rounded-xl;
 }
 
 .c-bot-disk-a {
