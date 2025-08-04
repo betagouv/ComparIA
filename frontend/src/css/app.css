@@ -7,6 +7,11 @@
 @custom-variant dark (&:where([data-fr-theme="dark"], [data-fr-theme="dark"] *));
 
 @theme {
+  --breakpoint-sm: 36em;
+  --breakpoint-md: 48em;
+  --breakpoint-lg: 62em;
+  --breakpoint-xl: 78em;
+
   /* DFSR COLORS */
   --color-white: var(--grey-1000-50);
   --color-black: var(--grey-0-1000);
