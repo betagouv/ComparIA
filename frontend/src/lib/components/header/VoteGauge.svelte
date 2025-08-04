@@ -1,14 +1,13 @@
 <script lang="ts">
   import Tooltip from '$lib/components/Tooltip.svelte'
-  import { getVotesContext, global } from '$lib/global.svelte'
+  import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { sanitize } from '$lib/utils/commons'
 
   let { id }: { id: string } = $props()
 
-  const NumberFormater = $derived(
-    new Intl.NumberFormat(global.locale, { maximumSignificantDigits: 3 })
-  )
+  const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
   const votesData = getVotesContext()
   const votes = $derived({
     count: NumberFormater.format(votesData.count),
