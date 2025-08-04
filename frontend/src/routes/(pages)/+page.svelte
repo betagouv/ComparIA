@@ -1,7 +1,6 @@
 <script lang="ts">
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
-  import Newsletter from '$lib/components/Newsletter.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { onMount } from 'svelte'
 
@@ -325,28 +324,6 @@
       </div>
     </div>
   </section>
-  <div class="fr-mt-4w fr-pb-1w text-center">
-    <span class="bg-blue fr-py-1w fr-px-3v">
-      <a class="fr-link fr-icon-arrow-up-line fr-link--icon-left fr-pb-1v" href="#top">
-        Haut de page
-      </a>
-    </span>
-  </div>
-  <!-- <section class="bg-light-blue fr-container--fluid"> -->
-  <section class="bg-blue fr-container--fluid">
-    <div class="grid-2 gap fr-container">
-      <div class="fr-pt-4w">
-        <h5><span class="fr-icon-mail-line"></span> Abonnez-vous à notre lettre d’information</h5>
-        <p>
-          Retrouvez les dernières actualités du projet : partenariats, intégration de nouveaux
-          modèles, publications de jeux de données et nouvelles fonctionnalités !
-        </p>
-      </div>
-      <div class="fr-mb-4w fr-mb-md-0">
-        <Newsletter />
-      </div>
-    </div>
-  </section>
 </main>
 
 <style>
@@ -357,21 +334,6 @@
   .fr-checkbox-group input[type='checkbox']:checked + label:before {
     --border-active-blue-france: var(--blue-france-main-525);
     background-color: var(--blue-france-main-525);
-  }
-
-  .fr-icon-check-line::before,
-  .fr-icon-check-line::after {
-    -webkit-mask-image: url('assets/dsfr/icons/system/check-line.svg');
-    mask-image: url('assets/dsfr/icons/system/check-line.svg');
-    background-color: var(--blue-france-main-525);
-  }
-
-  .flex {
-    display: flex;
-  }
-
-  .inline-block {
-    display: inline-block;
   }
 
   .text-purple {
@@ -427,10 +389,6 @@
     .rounded-tile {
       background-color: white;
     }
-
-    #formItem-mbtext-email.fr-input {
-      background-color: white;
-    }
   }
 
   .rounded-tile .fr-responsive-img {
@@ -458,29 +416,6 @@
       grid-auto-rows: 1fr;
       grid-template-columns: 1fr 1fr;
     }
-  }
-
-  .align-center {
-    align-items: center;
-  }
-
-  .h-full {
-    height: 100%;
-  }
-
-  .fr-icon-mail-line:after,
-  .fr-icon-mail-line:before {
-    background-color: var(--blue-france-main-525);
-    /* 6A6AF4 */
-    -webkit-mask-image: url(assets/dsfr/icons/business/mail-line.svg);
-    mask-image: url(assets/dsfr/icons/business/mail-line.svg);
-  }
-
-  .fr-icon-arrow-up-line:after,
-  .fr-icon-arrow-up-line:before {
-    background-color: var(--text-action-high-blue-france);
-    -webkit-mask-image: url('assets/dsfr/icons/system/arrow-up-line.svg');
-    mask-image: url('assets/dsfr/icons/system/arrow-up-line.svg');
   }
 
   @media (min-width: 62em) {
