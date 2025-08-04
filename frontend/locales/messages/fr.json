@@ -36,6 +36,7 @@
         "content": "Nous aider à améliorer compar:IA"
       }
     },
+    "banner": "Le comparateur est désormais disponible en lituanien 🇱🇹 en suédois 🇸🇪 et en danois 🇩🇰 !",
     "votes": {
       "count": "{count} votes",
       "objective": "Obj : {count}",
