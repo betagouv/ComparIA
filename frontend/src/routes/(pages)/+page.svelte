@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from '$lib/components/dsfr'
+  import { Button, Link } from '$lib/components/dsfr'
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
@@ -40,6 +40,24 @@
       title: 'Mesurer l’empreinte écologique des questions posées aux IA',
       desc: 'Découvrez l’impact environnemental de vos discussions avec chaque modèle',
       classes: 'px-14 py-5'
+    }
+  ]
+
+  const whyVoteCards = [
+    {
+      src: '/home/prefs.svg',
+      title: 'Vos préférences',
+      desc: 'Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères donnés, tels que la pertinence ou l’utilité des réponses.'
+    },
+    {
+      src: '/home/datasets.svg',
+      title: 'Les jeux de données par langue',
+      desc: 'Toutes les questions posées et les votes sont compilées dans des jeux de données et publiés librement après anonmymisation.'
+    },
+    {
+      src: '/home/finetune.svg',
+      title: 'Des modèles affinés sur la langue spécifique',
+      desc: 'A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle.'
     }
   ]
 </script>
@@ -133,61 +151,44 @@
     </div>
   </section>
 
-  <section class="bg-light-grey fr-container--fluid fr-py-4w fr-py-md-6w fr-px-2w fr-px-md-0">
-    <div class="fr-container rounded-tile fr-pt-4w fr-pt-md-6w">
-      <h4 class="fr-mb-1w text-center">Pourquoi votre vote est-il important ?</h4>
-      <p class="text-grey text-center">
-        Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les
-        futurs modèles d’IA sur le français
-      </p>
-      <div class="fr-grid-row fr-grid-row--gutters">
-        <div class="fr-col-12 fr-col-md-4 fr-p-6w text-center">
-          <img src="/home/prefs.svg" alt="Vos préférences" width="72" height="72" /><span
-            class="arrow-1"
-          ></span>
-          <h6>Vos préférences</h6>
-          <p class="text-grey">
-            <br />Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon
-            des critères donnés, tels que la pertinence ou l’utilité des réponses
-          </p>
+  <section class="fr-container--fluid bg-very-light-grey py-10 lg:py-14">
+    <div class="fr-container">
+      <div class="cg-border xl:p-13! bg-white px-4 py-10">
+        <h4 class="mb-2! text-center">Pourquoi votre vote est-il important ?</h4>
+
+        <p class="text-grey text-center">
+          Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les
+          futurs modèles d’IA sur le français, le suédois, le lituanien et le danois
+        </p>
+
+        <div class="md:mt-13 mt-10 flex flex-col text-center lg:flex-row">
+          {#each whyVoteCards as card, index}
+            <div class="basis-1/3">
+              <div class="xl:h-4/7 lg:h-1/2">
+                <img src={card.src} alt={card.title} width="72" height="72" class="m-auto mb-4" />
+                <h6 class="mb-1! mx-auto! max-w-[230px]">{card.title}</h6>
+              </div>
+              <p class="m-auto! text-sm! text-grey max-w-[280px]">{card.desc}</p>
+            </div>
+            {#if index < 2}
+              <div class="arrow relative my-5 shrink-0 xl:-me-12 xl:-ms-12"></div>
+            {/if}
+          {/each}
         </div>
-        <div class="fr-col-12 fr-col-md-4 fr-p-6w text-center">
-          <img
-            src="/home/datasets.svg"
-            alt="Les jeux de données compar:IA"
-            width="72"
-            height="72"
-          /><span class="arrow-2"></span>
-          <h6>Les jeux de données<br />compar:IA</h6>
-          <p class="text-grey">
-            compar:IA compile dans des jeux de données tous les votes et tous les messages partagés
-            avec le comparateur
-          </p>
-        </div>
-        <div class="fr-col-12 fr-col-md-4 fr-p-6w text-center">
-          <img
-            src="/home/finetune.svg"
-            alt="Des modèles affinés sur le français"
-            width="72"
-            height="72"
+
+        <div class="lg:mt-19 mt-12 flex justify-center">
+          <Link
+            button
+            hideExternalIcon
+            size="lg"
+            href="https://huggingface.co/collections/comparIA/jeux-de-donnees-compar-ia-67644adf20912236342c3f3b"
+            text="Accéder aux jeux de données"
           />
-          <h6 class="fr-mt-1w">Des modèles affinés<br />sur le français</h6>
-          <p class="text-grey">
-            A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données
-            pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et
-            culturelle
-          </p>
         </div>
-      </div>
-      <div class="fr-grid-row fr-grid-row--center fr-my-4w">
-        <a
-          class="fr-btn purple-btn"
-          href="https://huggingface.co/collections/comparIA/jeux-de-donnees-compar-ia-67644adf20912236342c3f3b"
-          target="_blank">Accéder aux jeux de données</a
-        >
       </div>
     </div>
   </section>
+
   <section class="fr-container--fluid bg-blue fr-py-8w fr-py-md-10w">
     <div class="fr-container fr-px-md-0">
       <h3 class="fr-mb-1w text-center">Les usages spécifiques de compar:IA</h3>
@@ -343,7 +344,7 @@
   </section>
 </main>
 
-<style>
+<style lang="postcss">
   .fr-checkbox-group input[type='checkbox'] + label:before {
     --border-action-high-blue-france: var(--blue-france-main-525);
   }
@@ -389,52 +390,20 @@
     min-height: 60%;
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
+  .arrow {
+    height: 62px;
+    width: 16px;
+    background-image: url('/home/arrow-h-mobile.svg');
+    left: calc(50% - 8px);
 
-  .grid-2 {
-    display: grid;
-    grid-template-columns: 1fr;
-  }
-
-  @media (min-width: 62em) {
-    .grid {
-      grid-template-columns: 1fr 1fr 1fr;
-    }
-
-    .grid-2 {
-      grid-auto-rows: 1fr;
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  @media (min-width: 62em) {
-    .arrow-1 {
-      display: block;
-      background-position: right 0px center;
-      background-repeat: no-repeat;
-      position: relative;
-      height: 16px;
-      width: 100px;
-      left: 100%;
-      top: 20px;
-      content: '';
-      background-image: url('assets/arrow-h.svg');
-    }
-
-    .arrow-2 {
-      display: block;
-      background-position: right 0px center;
-      background-repeat: no-repeat;
-      position: relative;
-      height: 16px;
-      width: 100px;
-      left: 100%;
-      top: 20px;
-      content: '';
-      background-image: url('assets/arrow-h.svg');
+    @media (min-width: 62em) {
+      & {
+        height: 16px;
+        width: 125px;
+        background-image: url('/home/arrow-h.svg');
+        left: 0;
+        margin-top: 110px;
+      }
     }
   }
 </style>
