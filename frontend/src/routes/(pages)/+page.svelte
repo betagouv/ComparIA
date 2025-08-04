@@ -2,29 +2,20 @@
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
-  import { onMount } from 'svelte'
 
-  let showError = false
+  const acceptTos = useLocalStorage('comparia:tos', false)
+  let showError = $state(false)
 
-  const visited = useLocalStorage('comparia:visited', false).value
-  let acceptTos = visited
-
-  onMount(() => {
-    if (visited) {
-      acceptTos = true
-    }
+  $effect(() => {
+    if (acceptTos.value) showError = false
   })
 
   function handleRedirect() {
-    if (acceptTos) {
+    if (acceptTos.value) {
       window.location.href = '/arene/?cgu_acceptees'
     } else {
       showError = true
     }
-  }
-
-  $: if (acceptTos) {
-    showError = false
   }
 </script>
 
@@ -44,7 +35,7 @@
             aria-describedby="checkbox-error-messages"
             id="accept_tos"
             type="checkbox"
-            bind:checked={acceptTos}
+            bind:checked={acceptTos.value}
           />
           <label class="fr-label fr-text--sm" for="accept_tos">
             J'accepte les&nbsp;<a href="/modalites" target="_blank">modalités d'utilisation</a>
@@ -66,7 +57,7 @@
           id="start_arena_btn"
           class="fr-btn fr-btn--lg bg-light-blue fr-col-md-8 fr-col-12 fr-mb-4w w-full"
           value="Commencer à discuter"
-          on:click={handleRedirect}
+          onclick={handleRedirect}
         />
       </div>
       <div class="fr-col-md-7 bg-blue fr-p-1w fr-p-md-6w">
