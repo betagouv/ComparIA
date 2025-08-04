@@ -43,6 +43,33 @@
     }
   ]
 
+  const europeCards = [
+    {
+      title: '/compar:IA',
+      link: 'https://comparia.beta.gouv.fr/',
+      desc: 'en français',
+      flag: '🇫🇷'
+    },
+    {
+      title: '/palyginti:AI',
+      link: 'https://comparia.beta.gouv.fr/',
+      desc: 'en lituanien',
+      flag: '🇱🇹'
+    },
+    {
+      title: '/jämföra:AI',
+      link: 'https://comparia.beta.gouv.fr/',
+      desc: 'en suédois',
+      flag: '🇸🇪'
+    },
+    {
+      title: '/xxxxxx:AI',
+      link: 'https://comparia.beta.gouv.fr/',
+      desc: 'en danois',
+      flag: '🇩🇰'
+    }
+  ]
+
   const whyVoteCards = [
     {
       src: '/home/prefs.svg',
@@ -165,6 +192,54 @@
             </div>
           </div>
         {/each}
+      </div>
+    </div>
+  </section>
+
+  <section id="european" class="fr-container--fluid bg-light-info pb-18 lg:pb-25 pt-10 lg:pt-20">
+    <div class="fr-container max-w-[1150px]! flex flex-col gap-8 lg:flex-row lg:items-center">
+      <div class="max-w-[360px]">
+        <h3 class="mb-4! fr-h2 max-w-[320px]">
+          Le comparateur <span class="text-primary">devient européen !</span>
+        </h3>
+
+        <p class="mb-2!">
+          La Lituanie, la Suède et le Danemark rejoignent la France en adoptant le comparateur dans
+          le but d’affiner les futurs modèles d’IA dans leurs langues nationales.
+        </p>
+        <p>
+          <strong class="block">
+            Vous souhaitez également disposer du comparateur dans votre langue ?
+          </strong>
+        </p>
+
+        <Link button size="lg" href="FIXME" text="Nous contacter" />
+      </div>
+
+      <div
+        class="py-15 flex w-full flex-col justify-center gap-8 rounded-xl bg-white px-9 xl:flex-row"
+      >
+        <img src="/home/comparia-stars.svg" alt="FIXME" class="m-auto max-w-fit xl:m-0" />
+
+        <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
+          {#each europeCards as card}
+            <div class="cg-border bg-very-light-grey flex items-center gap-4 px-4 py-5">
+              <div class="bg-light-info p-2 leading-none">
+                {card.flag}
+              </div>
+              <div>
+                <Link
+                  href={card.link}
+                  variant="primary"
+                  native={false}
+                  text={card.title}
+                  size="sm"
+                />
+                <p class="mb-0! fr-message">{card.desc}</p>
+              </div>
+            </div>
+          {/each}
+        </div>
       </div>
     </div>
   </section>
