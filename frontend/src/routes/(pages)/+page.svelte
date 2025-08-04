@@ -228,109 +228,69 @@
     </div>
   </section>
 
-  <section class="bg-light-grey fr-container--fluid">
-    <div class="fr-px-md-0 grid-2 gap fr-container fr-py-4w fr-py-md-8w">
-      <div class="rounded-tile">
-        <div class="fr-container fr-py-4w fr-py-md-6w">
-          <h5>Qui sommes-nous ?</h5>
-          <p>
-            Le comparateur compar:IA est développé dans le cadre de la start-up d’Etat compar:IA
-            (incubateurs de l’Atelier numérique et AllIAnce) intégrée au programme <a
-              href="https://beta.gouv.fr"
-              rel="noopener external"
-              target="_blank">beta.gouv.fr</a
-            > de la Direction interministérielle du numérique (DINUM) qui aide les administrations publiques
-            à construire des services numériques utiles, simples et faciles à utiliser.
-          </p>
-          <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle fr-grid-row--gutters">
-            <div class="fr-col-md-4 fr-col-6">
-              <img
-                class=""
-                src="/orgs/minicult.svg"
-                alt="Ministère de la Culture"
-                title="Ministère de la Culture"
-                width="137px"
-                height="97px"
-              />
-            </div>
-            <div class="fr-col-md-4 fr-col-6 text-center">
-              <img
-                class="dark-invert lol"
-                src="/orgs/ateliernumerique.png"
-                alt="Atelier numérique"
-                title="Atelier numérique"
-                width="105px"
-                height="105px"
-              />
-            </div>
-            <div class="fr-col-md-4 fr-col-12">
-              <img
-                src="/orgs/betagouv.svg"
-                alt="beta.gouv.fr"
-                title="beta.gouv.fr"
-                class="dark-invert fr-responsive-img"
-                width="191px"
-                height="65px"
-              />
-              <img
-                src="/orgs/dinum.png"
-                class="dark-invert fr-responsive-img"
-                alt="DINUM"
-                title="DINUM"
-                width="278px"
-                height="59px"
-              />
-            </div>
-          </div>
+  <section class="fr-container--fluid bg-very-light-grey lg:pb-38 py-12 lg:pt-20">
+    <div class="fr-container grid gap-10 lg:grid-cols-2 lg:gap-6">
+      <div class="cg-border bg-white px-5 py-10 md:px-8">
+        <h5>Qui sommes-nous ?</h5>
+
+        <p>
+          Le comparateur est porté au sein du Ministère de la Culture par une équipe
+          pluridisciplinaire réunissant expert en Intelligence artificielle, développeurs, chargé de
+          déploiement, designer, avec pour mission de rendre les IA conversationnelles plus
+          transparentes et accessibles à toutes et tous.
+        </p>
+
+        <div class="mt-12 flex gap-8">
+          <img
+            class="max-h-[95px]"
+            src="/orgs/minicult.svg"
+            alt="Ministère de la Culture"
+            title="Ministère de la Culture"
+          />
+          <img
+            class="max-h-[95px] dark:invert"
+            src="/orgs/ateliernumerique.png"
+            alt="Atelier numérique"
+            title="Atelier numérique"
+          />
         </div>
       </div>
-      <div class="fr-container rounded-tile">
-        <div class="fr-container fr-py-4w fr-py-md-6w fr-px-md-2w">
-          <h5>Quelles sont nos missions ?</h5>
-          <div class="fr-grid-row fr-grid-row--top">
-            <img
-              src="/icons/map-pin.svg"
-              alt="Point sur la carte"
-              aria-hidden="true"
-              class="fr-col-1 fr-pr-md-1w"
-            />
-            <div class="fr-col-11 fr-pl-1w">
-              <h6 class="fr-mb-0 fr-text--lg">Faciliter l’accès</h6>
-              <p class="text-grey">
-                Mise à disposition de plusieurs modèles d’IA conversationnels à travers une unique
-                plateforme.
-              </p>
-            </div>
-            <img
-              src="/icons/database-line.svg"
-              alt="jeux de données"
-              class="fr-col-1 fr-pr-md-1w"
-            />
-            <div class="fr-col-11 fr-pl-1w">
-              <h6 class="fr-mb-0 fr-text--lg">Collecter des données</h6>
-              <p class="text-grey">
-                Création de jeux de données de préférence à partir de tâches réelles, utiles pour
-                l’alignement des modèles en français.
-              </p>
-            </div>
-            <img
-              src="/icons/share.svg"
-              alt="écosystème"
-              aria-hidden="true"
-              class="fr-col-1 fr-pr-md-1w"
-            />
-            <div class="fr-col-11 fr-pl-1w">
-              <h6 class="fr-mb-0 fr-text--lg">Partager</h6>
-              <p class="text-grey">
-                Diffusion sous licence ouverte des jeux de données générées pour en faire bénéficier
-                l’écosystème IA.
-              </p>
-            </div>
-          </div>
+
+      <div class="cg-border bg-white px-5 py-10 md:px-8">
+        <h5>Qui est à l’origine du projet ?</h5>
+
+        <p>
+          Le comparateur a été conçu et développé dans le cadre d’une start-up d’Etat portée par le
+          ministère de la Culture et intégrée au programme <a
+            href="https://beta.gouv.fr"
+            rel="noopener external"
+            target="_blank">Beta.gouv.fr</a
+          > de la Direction interministérielle du numérique (DINUM) qui aide les administrations publiques
+          françaises à construire des services numériques utiles, simples et faciles à utiliser.
+        </p>
+
+        <div class="mt-12 flex gap-8">
+          <img
+            src="/orgs/betagouv.svg"
+            alt="beta.gouv.fr"
+            title="beta.gouv.fr"
+            class="max-w-[178px] dark:invert"
+            width="191px"
+            height="65px"
+          />
+          <img
+            src="/orgs/dinum.png"
+            class="max-w-[254px] dark:invert"
+            alt="DINUM"
+            title="DINUM"
+            width="278px"
+            height="59px"
+          />
         </div>
       </div>
     </div>
   </section>
+
   <section>
     <div class="fr-container">
       <h3 class="fr-mt-md-8w fr-mt-4w fr-pb-2w text-center">Vos questions les plus courantes</h3>
@@ -380,12 +340,6 @@
     .rounded-tile {
       background-color: white;
     }
-  }
-
-  .rounded-tile .fr-responsive-img {
-    border-top-left-radius: 1rem;
-    border-top-right-radius: 1rem;
-    min-height: 60%;
   }
 
   .arrow {
