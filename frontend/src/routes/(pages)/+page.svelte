@@ -60,6 +60,24 @@
       desc: 'A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle.'
     }
   ]
+
+  const usageCards = [
+    {
+      src: '/icons/database-line.svg',
+      title: 'Exploiter les données',
+      desc: 'Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données compar:IA pour améliorer les modèles'
+    },
+    {
+      src: '/icons/search-line.svg',
+      title: 'Explorer les modèles',
+      desc: 'Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des modèles'
+    },
+    {
+      src: '/icons/presentation.svg',
+      title: 'Former et sensibiliser',
+      desc: 'Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de votre public'
+    }
+  ]
 </script>
 
 <main id="content" class="">
@@ -189,47 +207,27 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid bg-blue fr-py-8w fr-py-md-10w">
-    <div class="fr-container fr-px-md-0">
-      <h3 class="fr-mb-1w text-center">Les usages spécifiques de compar:IA</h3>
+  <section class="fr-container--fluid bg-light-grey py-10 lg:py-20">
+    <div class="fr-container">
+      <h3 class="mb-2! text-center">Les usages spécifiques de compar:IA</h3>
+
       <p class="text-grey fr-mb-4w text-center">
         L’outil s’adresse également aux experts IA et aux formateurs pour des usages plus
         spécifiques
       </p>
-      <div class="gap grid">
-        <div class="rounded-tile fr-p-3w">
-          <img src="/icons/database-line.svg" aria-hidden="true" class="fr-mb-2w purple" />
-          <h6 class="fr-mb-1w">Exploiter les données</h6>
-          <p class="text-grey">
-            Développeurs, chercheurs, éditeurs de modèles... accédez aux jeux de données compar:IA
-            pour améliorer les modèles
-          </p>
-        </div>
-        <div class="rounded-tile fr-p-3w">
-          <img
-            src="/icons/search-line.svg"
-            aria-hidden="true"
-            class="fr-mb-2w"
-            width="30"
-            height="30"
-          />
-          <h6 class="fr-mb-1w">Explorer les modèles</h6>
-          <p class="text-grey">
-            Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des
-            modèles
-          </p>
-        </div>
-        <div class="rounded-tile fr-p-3w">
-          <img src="/icons/presentation.svg" aria-hidden="true" class="fr-mb-2w" />
-          <h6 class="fr-mb-1w">Former et sensibiliser</h6>
-          <p class="text-grey">
-            Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de
-            votre public
-          </p>
-        </div>
+
+      <div class="grid gap-8 md:grid-cols-3">
+        {#each usageCards as card}
+          <div class="cg-border bg-white p-5 lg:px-8 lg:pb-11 lg:pt-6">
+            <img src={card.src} alt="" aria-hidden="true" width="30" height="30" class="mb-4" />
+            <h6 class="mb-2!">{card.title}</h6>
+            <p class="text-grey mb-0!">{card.desc}</p>
+          </div>
+        {/each}
       </div>
     </div>
   </section>
+
   <section class="bg-light-grey fr-container--fluid">
     <div class="fr-px-md-0 grid-2 gap fr-container fr-py-4w fr-py-md-8w">
       <div class="rounded-tile">
