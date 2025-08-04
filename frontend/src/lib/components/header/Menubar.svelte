@@ -5,12 +5,10 @@
   // Navigation links for both desktop and mobile menus
   const navLinks = [
     { href: '/', label: m['seo.titles.home']() },
+    { href: '/product', label: m['seo.titles.product']() },
     { href: '/modeles', label: m['seo.titles.modeles']() },
     { href: '/datasets', label: m['seo.titles.datasets']() },
-    { href: '/a-propos', label: m['seo.titles.a-propos']() },
-    { href: '/partenaires', label: m['seo.titles.partenaires']() },
-    { href: '/faq', label: m['seo.titles.faq']() },
-    { href: '/bnf', label: m['seo.titles.bnf']() }
+    { href: '/news', label: m['seo.titles.news']() }
   ]
 </script>
 

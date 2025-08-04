@@ -3,7 +3,7 @@
   import { m } from '$lib/i18n/messages'
 </script>
 
-<SeoHead title={m['seo.titles.bnf']()} />
+<SeoHead title={m['seo.titles.news']()} />
 
 <section class="fr-container--fluid bg-grey fr-pb-4w fr-pb-md-6w fr-pt-8w">
   <div class="fr-container-md grid-2-md">
