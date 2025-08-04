@@ -20,3 +20,5 @@
 <Toaster />
 
 {@render children()}
+
+<div id="tooltips"></div>
