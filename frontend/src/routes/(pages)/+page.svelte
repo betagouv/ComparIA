@@ -2,6 +2,7 @@
   import { Button, Link } from '$lib/components/dsfr'
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
+  import Newsletter from '$lib/components/Newsletter.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'
@@ -319,7 +320,7 @@
           )}
         </p>
 
-        <div class="mt-12 flex gap-8">
+        <div class="mt-12 flex flex-wrap gap-8">
           <img
             src="/orgs/betagouv.svg"
             alt="beta.gouv.fr"
@@ -352,6 +353,10 @@
       </div>
     </div>
   </section>
+
+  {#if locale === 'fr'}
+    <Newsletter />
+  {/if}
 </main>
 
 <style lang="postcss">
