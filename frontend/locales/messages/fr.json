@@ -74,6 +74,27 @@
       "linkTitle": "Licence etalab - nouvelle fenêtre"
     }
   },
+  "general": {
+    "legal": {
+      "title": "Mentions légales",
+      "editorTitle": "Éditeur",
+      "editorDesc": "Ce site est édité par le Ministère de la culture, 182, rue Saint-Honoré 75001 Paris",
+      "directorTitle": "Directeur de la publication",
+      "directorDesc": "Monsieur Romain Delassus, chef du service du numérique du Ministère de la Culture",
+      "hostingTitle": "Hébergement du site",
+      "hostingDesc": "Ce site est hébergé par OVH SAS (<a {linkProps}>https://www.ovh.com</a>) dont le siège social est situé au 2 rue Kellermann - 59100 Roubaix - France.",
+      "a11yTitle": "Accessibilité",
+      "a11yDesc": "La conformité aux normes d’accessibilité numérique est un objectif ultérieur mais nous tâchons de rendre ce site accessible à toutes et à tous.",
+      "reportTitle": "Signaler un dysfonctionnement",
+      "reportA11y": "Si vous rencontrez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, merci de nous en faire part.",
+      "reportDesc": "Si vous n’obtenez pas de réponse rapide de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.",
+      "reportA11yDesc": "Pour en savoir plus sur la politique d’accessibilité numérique de l’État : <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
+      "securityTitle": "Sécurité",
+      "securityCertif": "Le site est protégé par un certificat électronique, matérialisé pour la grande majorité des navigateurs par un cadenas. Cette protection participe à la confidentialité des échanges.",
+      "securityNoMail": "En aucun cas les services associés à la plateforme ne seront à l’origine d’envoi de courriels pour demander la saisie d’informations personnelles.",
+      "sources": "Sauf mention contraire, tous les textes de ce site sont sous <a {etalabLinkProps}>licence Etalab Open 2.0</a>. Le code source de cette application est librement réutilisable et accessible sur <a {githubLinkProps}>GitHub</a>."
+    }
+  },
   "welcome": {
     "title": "Bienvenue dans compar:IA !",
     "goodPractices": "Voici quelques bonnes pratiques :",
