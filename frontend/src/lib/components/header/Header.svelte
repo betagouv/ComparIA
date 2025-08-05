@@ -55,7 +55,9 @@
               {/if}
             </div>
           </div>
-          <div class="fr-header__service before:content-none! px-3! flex w-1/2 sm:w-auto">
+          <div
+            class="fr-header__service before:content-none! px-3! me-0! sm:me-3! flex w-1/2 sm:w-auto"
+          >
             <img
               src="/orgs/comparia.svg"
               aria-hidden="true"
