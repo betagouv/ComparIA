@@ -1,8 +1,9 @@
 import { getContext, setContext } from 'svelte'
 
 export const LOCALES = [
-  { code: 'fr', short: 'FR', long: 'FR - Français' },
+  { code: 'da', short: 'DA', long: 'DA - Dansk'},
   { code: 'en', short: 'EN', long: 'EN - English' },
+  { code: 'fr', short: 'FR', long: 'FR - Français' },
   { code: 'lt', short: 'LT', long: 'LT - Lietuvių' },
   { code: 'se', short: 'SE', long: 'SE - Svensk' }
 ] as const
