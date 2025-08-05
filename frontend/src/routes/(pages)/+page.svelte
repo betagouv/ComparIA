@@ -4,8 +4,11 @@
   import HowItWorks from '$lib/components/HowItWorks.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale, type Locale } from '$lib/i18n/runtime'
   import { externalLinkProps, propsToAttrs, sanitize } from '$lib/utils/commons'
+  import type { HTMLImgAttributes } from 'svelte/elements'
 
+  const locale = getLocale()
   const acceptTos = useLocalStorage('comparia:tos', false)
   let showError = $state(false)
 
@@ -84,6 +87,30 @@
     title: m[`home.usage.${i18nKey}.title`](),
     desc: m[`home.usage.${i18nKey}.desc`]()
   }))
+
+  // FIXME i18n specific logos
+  const localizedLogos = (
+    {
+      da: [],
+      en: [],
+      fr: [
+        {
+          class: 'max-h-[95px]',
+          src: '/orgs/minicult.svg',
+          alt: 'Ministère de la Culture',
+          title: 'Ministère de la Culture'
+        },
+        {
+          class: 'max-h-[95px] dark:invert',
+          src: '/orgs/ateliernumerique.png',
+          alt: 'Atelier numérique',
+          title: 'Atelier numérique'
+        }
+      ],
+      lt: [],
+      se: []
+    } satisfies Record<Locale, HTMLImgAttributes[]>
+  )[locale]
 </script>
 
 <span class="text-primary"></span>
@@ -272,23 +299,15 @@
 
   <section class="fr-container--fluid bg-very-light-grey lg:pb-38 py-12 lg:pt-20">
     <div class="fr-container grid gap-10 lg:grid-cols-2 lg:gap-6">
+      <!-- i18n: specific to locales -->
       <div class="cg-border bg-white px-5 py-10 md:px-8">
         <h5>{m['home.origin.team.title']()}</h5>
         <p>{m['home.origin.team.desc']()}</p>
 
-        <div class="mt-12 flex gap-8">
-          <img
-            class="max-h-[95px]"
-            src="/orgs/minicult.svg"
-            alt="Ministère de la Culture"
-            title="Ministère de la Culture"
-          />
-          <img
-            class="max-h-[95px] dark:invert"
-            src="/orgs/ateliernumerique.png"
-            alt="Atelier numérique"
-            title="Atelier numérique"
-          />
+        <div class="mt-12 flex flex-wrap gap-8">
+          {#each localizedLogos as logoProps}
+            <img {...logoProps} />
+          {/each}
         </div>
       </div>
 
