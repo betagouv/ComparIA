@@ -191,6 +191,44 @@
       "discover": "Découvrir les autres questions"
     }
   },
+  "datasets": {
+    "access": {
+      "title": "Accédez aux jeux de données compar:IA",
+      "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
+      "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
+      "share": "Partagez-nous vos réutilisations",
+      "repos": {
+        "conversations": {
+          "title": "/conversations",
+          "desc": "Ensemble des réponses et des questions posées"
+        },
+        "reactions": {
+          "title": "/réactions",
+          "desc": "Ensemble des réactions exprimées"
+        },
+        "votes": {
+          "title": "/votes",
+          "desc": "Ensemble des préférences exprimées"
+        }
+      }
+    },
+    "reuse": {
+      "title": "Comment ces données sont-elles utilisées ?",
+      "desc": "Exemples de réutilisation des jeux de données compar:IA",
+      "bunka": {
+        "desc": "L'équipe Bunka.ai a mené une étude approfondie sur les interactions entre les utilisateurs de la plateforme Compar:IA et les modèles d'IA, examinant les thématiques privilégiées, les tâches principales et déterminant si ces modèles fonctionnent avant tout comme des outils d'automatisation ou d'augmentation des capacités humaines. Cette analyse repose sur un large échantillon de 25 000 conversations.",
+        "conversations": {
+          "title": "Explorer la visualisation de données",
+          "desc": "Visualisation interactive des conversations où chaque point représente un cluster de discussions évoqué par les utilisateurs (comme l’éducation, la santé, l’environnement, ou encore la philosophie)."
+        },
+        "analyze": {
+          "title": "Accéder à l’analyse par indicateur",
+          "desc": "Analyse des conversations des utilisateurs avec détection des tâches (création, recherche d'informations...), des sujets (arts et culture, éducation...), des émotions complexes (curiosité, enthousiasme...), des types de langage (formel, professionnel...)"
+        },
+        "method": "En savoir plus sur la méthodologie"
+      }
+    }
+  },
   "arenaHome": {
     "title": "Comment puis-je vous aider aujourd'hui ?",
     "modelSelection": "Sélection des modèles",

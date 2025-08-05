@@ -26,10 +26,11 @@
   }: LinkProps = $props()
 
   const externalProps = $derived(
-    href.startsWith('http')
+    href.startsWith('http') || href.startsWith('mailto:')
       ? {
           rel: 'noopener external',
           target: '_blank',
+          // FIXME a11y mailto
           title: m['a11y.externalLink']({ text })
         }
       : { target: '_self' }
