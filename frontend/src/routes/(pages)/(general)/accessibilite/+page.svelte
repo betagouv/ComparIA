@@ -1,92 +1,81 @@
 <script>
   import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
 </script>
 
 <SeoHead title={m['seo.titles.accessibilite']()} />
 
-<div class="fr-container fr-my-7w fr-mt-md-12w fr-mb-md-10w">
-  <p>
-    <strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à
-    l’article 47 de la loi n° 2005-102 du 11 février 2005.
-  </p>
-  <!-- 
-<p>À cette fin, beta.gouv.fr met en œuvre la stratégie et les actions suivantes :</p>
-<ul>
-  <li><a href="/accessibilite/schema-pluriannuel">Schéma pluriannuel 2024-2027</a></li>
-  <li><a href="/accessibilite/schema-pluriannuel#bilan-2023">Bilan 2023</a></li>
-  <li><a href="/accessibilite/schema-pluriannuel#plan-2024">Plan d’action 2024</a></li>
-</ul> -->
+<main class="lg:py-15 py-10">
+  <div class="fr-container">
+    <p>{@html sanitize(m['general.a11y.disclaimer']())}</p>
 
-  <h2 id="déclaration-daccessibilité">Déclaration d’accessibilité</h2>
-  <!-- <p><em>Établie le 24 avril 2024.</em></p> -->
-
-  <p>
-    Cette déclaration d’accessibilité s’applique au site <strong>comparia.beta.gouv.fr</strong>.
-  </p>
-
-  <h3 id="état-de-conformité">État de conformité</h3>
-
-  <p>
-    beta.gouv.fr est non conforme avec le RGAA 4.1. Le site n’a <strong
-      >pas encore été audité</strong
-    >. Il a cependant été conçu pour être accessible au plus grand nombre. Vous devriez donc pouvoir
-    :
-  </p>
+    <!-- <p>À cette fin, beta.gouv.fr met en œuvre la stratégie et les actions suivantes :</p>
   <ul>
-    <li>naviguer sur toutes les pages du site en utilisant un clavier</li>
-    <li>consulter le site web avec un lecteur d’écran.</li>
-    <li>
-      adapter le site à votre préférences (taille de la police, zoom écran, changement de
-      typographie…) sans perte de contenu
-    </li>
-  </ul>
+    <li><a href="/accessibilite/schema-pluriannuel">Schéma pluriannuel 2024-2027</a></li>
+    <li><a href="/accessibilite/schema-pluriannuel#bilan-2023">Bilan 2023</a></li>
+    <li><a href="/accessibilite/schema-pluriannuel#plan-2024">Plan d’action 2024</a></li>
+  </ul> -->
 
-  <!-- <h4 id="défauts-daccessibilité-connus">Défauts d’accessibilité connus</h4>
+    <h1 id="declaration-daccessibilite">{m['general.a11y.title']()}</h1>
+    <!-- <p><em>Établie le 24 avril 2024.</em></p> -->
+    <p>{@html sanitize(m['general.a11y.desc']())}</p>
 
-<p>Nous souhaitons corriger ces défauts courant 2024 :</p>
-<ul>
-  <li>Les pages <a href="/stats">Indicateurs</a> et <a href="/communaute/">Communauté</a> affichent des graphiques non accessibles.</li>
-  <li>Notre <a href="https://beta.gouv.fr/content/docs/betagouv_presentation.pdf">bilan 2023</a> sous forme de PDF n’est pas accessible.</li>
-</ul> -->
+    <h2 id="etat-de-conformite">{m['general.a11y.stateTitle']()}</h2>
+    <p>{@html sanitize(m['general.a11y.stateDesc']())}</p>
+    <ul>
+      <li>{m['general.a11y.stateNavigate']()}</li>
+      <li>{m['general.a11y.stateScreenReader']()}</li>
+      <li>{m['general.a11y.statePrefs']()}</li>
+    </ul>
 
-  <h3 id="amélioration-et-contact">Amélioration et contact</h3>
-  <p>
-    Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le
-    responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le
-    contenu sous une autre forme.
-  </p>
+    <!-- <h4 id="défauts-daccessibilité-connus">Défauts d’accessibilité connus</h4>
 
-  <ul>
-    <li>E-mail : <a href="mailto:contact@beta.gouv.fr">contact@beta.gouv.fr</a></li>
-    <li>Adresse : DINUM, 20 avenue de Ségur 75007 Paris</li>
-  </ul>
-
-  <p>Nous essayons de répondre dans les 2 jours ouvrés.</p>
-
-  <h3 id="voie-de-recours">Voie de recours</h3>
-
-  <p>
-    Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable du site
-    internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services
-    du portail et vous n’avez pas obtenu de réponse satisfaisante.
-  </p>
-
-  <p>Vous pouvez :</p>
+  <p>Nous souhaitons corriger ces défauts courant 2024 :</p>
   <ul>
     <li>
-      Écrire un message au <a href="https://formulaire.defenseurdesdroits.fr/"
-        >Défenseur des droits</a
-      >
+      Les pages <a href="/stats">Indicateurs</a> et <a href="/communaute/">Communauté</a> affichent des
+      graphiques non accessibles.
     </li>
     <li>
-      Contacter le délégué du <a href="https://www.defenseurdesdroits.fr/saisir/delegues"
-        >Défenseur des droits dans votre région</a
-      >
+      Notre <a href="https://beta.gouv.fr/content/docs/betagouv_presentation.pdf">bilan 2023</a> sous
+      forme de PDF n’est pas accessible.
     </li>
-    <li>
-      Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) : Défenseur des droits
-      Libre réponse 71120 75342 Paris CEDEX 07
-    </li>
-  </ul>
-</div>
+  </ul> -->
+
+    <h2 id="amelioration-et-contact">{m['general.a11y.improveTitle']()}</h2>
+    <p>{m['general.a11y.improveDesc']()}</p>
+    <ul>
+      <li>
+        {@html sanitize(
+          m['general.a11y.improveMail']({
+            linkProps: externalLinkProps('mailto:contact@beta.gouv.fr')
+          })
+        )}
+      </li>
+      <li>{m['general.a11y.improveAdress']()}</li>
+    </ul>
+    <p>{m['general.a11y.improveDelay']()}</p>
+
+    <h2 id="voie-de-recours">{m['general.a11y.remedyTitle']()}</h2>
+    <p>{m['general.a11y.remedyDesc']()}</p>
+    <p>{m['general.a11y.remedyList']()}</p>
+    <ul>
+      <li>
+        {@html sanitize(
+          m['general.a11y.remedyAdvocate']({
+            linkProps: externalLinkProps('https://formulaire.defenseurdesdroits.fr/')
+          })
+        )}
+      </li>
+      <li>
+        {@html sanitize(
+          m['general.a11y.remedyDelegateAdvocate']({
+            linkProps: externalLinkProps('https://www.defenseurdesdroits.fr/saisir/delegues')
+          })
+        )}
+      </li>
+      <li>{m['general.a11y.remedyAdvocateAdress']()}</li>
+    </ul>
+  </div>
+</main>
