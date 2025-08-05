@@ -9,7 +9,7 @@
   ]
 </script>
 
-<Tabs {tabs} label="Foire aux questions">
+<Tabs {tabs} noBorders label="Foire aux questions">
   {#snippet tab({ id })}
     {#if id === 'usage'}
       <div class="fr-accordions-group">

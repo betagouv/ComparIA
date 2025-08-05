@@ -4,15 +4,17 @@
   let {
     tabs,
     label,
+    noBorders = false,
     tab
   }: {
     tabs: T[]
     label: string
+    noBorders: boolean
     tab?: Snippet<[T]>
   } = $props()
 </script>
 
-<div class="fr-tabs">
+<div class={['fr-tabs', { 'before:shadow-none! shadow-none!': noBorders }]}>
   <ul class="fr-tabs__list" role="tablist" aria-label={label}>
     {#each tabs as item, i}
       <li role="presentation">
@@ -36,7 +38,7 @@
       role="tabpanel"
       aria-labelledby={`tab-${item.id}`}
       tabindex="0"
-      class={['fr-tabs__panel', i === 0 ? 'fr-tabs__panel--selected' : '']}
+      class={['fr-tabs__panel', { 'fr-tabs__panel--selected': i === 0, 'px-4! py-5!': noBorders }]}
     >
       {#if item.content}{item.content}{:else}{@render tab?.(item)}{/if}
     </div>
