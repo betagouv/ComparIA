@@ -10,9 +10,11 @@
       "product": "Produit et partenaires",
       "modeles": "Liste des modèles",
       "datasets": "Jeux de données",
-      "a-propos": "À propos",
-      "partenaires": "Partenaires",
+      "comparator": "Le comparateur",
+      "problem": "Le problème initial",
+      "history": "Historique du projet",
       "faq": "FAQ",
+      "partners": "Partenaires",
       "news": "Nouveautés",
       "mentions-legales": "Mentions légales",
       "modalites": "Modalités d’utilisation",
@@ -312,6 +314,9 @@
       "title": "Vos questions les plus courantes",
       "discover": "Découvrir les autres questions"
     }
+  },
+  "product": {
+    "title": "Tout savoir sur le comparateur"
   },
   "datasets": {
     "access": {

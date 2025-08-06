@@ -13,7 +13,7 @@
     tab,
     ...props
   }: {
-    tabs: T[]
+    tabs: Readonly<T[]>
     label: string
     initialId?: T['id']
     noBorders?: boolean
