@@ -105,7 +105,13 @@
           {/if}
 
           {#if !hideDiscussBtn}
-            <Button text="Commencer à discuter" size="lg" class="whitespace-nowrap" />
+            <Link
+              button
+              href="/arene"
+              text="Commencer à discuter"
+              size="lg"
+              class="whitespace-nowrap"
+            />
           {/if}
         </div>
       </div>
@@ -142,8 +148,10 @@
 
       {#if !hideDiscussBtn}
         <div class="mt-6! md:mt-0 lg:hidden">
-          <Button
-            text={m['header.startDiscussion']()}
+          <Link
+            button
+            href="/arene"
+            text="Commencer à discuter"
             size="lg"
             class="w-full! whitespace-nowrap"
           />
