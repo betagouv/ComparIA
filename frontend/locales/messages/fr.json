@@ -346,6 +346,52 @@
         "catch": "Vous souhaitez disposer du comparateur dans votre langue ?"
       }
     },
+    "problem": {
+      "title": "Les modèles d’IA conversationnelles respectent-ils la <span {props}>diversité</span> des langues européennes ?",
+      "diversity": {
+        "stereotypes": {
+          "title": "Réponses stéréotypées",
+          "desc": "Les systèmes d’IA conversationnelle donnent l’impression de parler toutes les langues mais les résultats qu’ils génèrent sont parfois stéréotypés ou discriminants."
+        },
+        "english": {
+          "title": "Données d’entrainement majoritairement en anglais",
+          "desc": "Les IA conversationnelles reposent sur des grands modèles de langage (LLM) entraînés principalement sur des données en anglais, ce qui crée des biais linguistiques et culturels dans les résultats qu'ils produisent."
+        },
+        "diversity": {
+          "title": "Diversités culturelles et linguistiques négligées",
+          "desc": "Ces biais peuvent aussi se traduire par des réponses partielles voire incorrectes négligeant la diversité des langues et des cultures, notamment européennes."
+        }
+      },
+      "alignment": {
+        "title": "Comment réduire les biais culturels et linguistiques de ces modèles ?",
+        "desc": "L'alignement : une technique de réduction des biais qui repose sur la collecte des préférences d’utilisateurs",
+        "alignment": {
+          "title": "L’alignement, étape décisive d’instruction du modèle",
+          "a": "L'alignement intervient après l'étape de pré-entraînement d'un modèle de langage, comme une étape de « finition » ou de « polissage ». Lors de son pré-entrainement, le modèle apprend à prédire le mot suivant et devient capable de générer du texte cohérent.",
+          "b": "L’étape d’alignement consiste à apprendre au modèle à mieux répondre aux besoins humains, c’est à dire à le rendre plus <strong>pertinent</strong> (le modèle répond « mieux » aux questions), <strong>honnête</strong> (capacité à assumer « qu’il ne sait pas répondre » quand il n’y a pas suffisamment de données), et <strong>inoffensif</strong> (éviter de générer des contenus dangereux ou inappropriés).",
+          "c": "<strong>Sans alignement, un LLM pourrait être techniquement compétent mais difficile à utiliser en pratique, car il ne comprendrait pas vraiment ce qu'on attend de lui dans une conversation.</strong>"
+        },
+        "datasets": {
+          "title": "Des jeux de données spécifiques",
+          "a": "L'alignement utilise des données très spécifiques, spécialement créées pour enseigner au modèle comment « bien » se comporter.",
+          "b": "Les <strong>données de préférence</strong> constituent un type particulier de données d’alignement, aux côtés des <strong>données de démonstration</strong> (exemples de conversations entre humains et assistants IA, rédigées par des annotateurs experts selon des consignes précises de ton et de style), des <strong>données de sécurité</strong> (exemples spécifiques enseignant au modèle à éviter les contenus dangereux en montrant comment refuser les demandes problématiques) ou des <strong>données spécialisées</strong> couvrant des domaines spécifiques (médecine, droit, éducation…).",
+          "c": "Les données de préférence présentent plusieurs réponses possibles à une même question, classées par ordre de qualité par des évaluateurs humains: les utilisateurs indiquent quelle réponse est la meilleure selon des critères donnés, telles que la pertinence, l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour entrainer les modèles en les ajustant selon les préférences exprimées par les utilisateurs."
+        },
+        "english": {
+          "title": "Peu de données de préférence en langues européennes",
+          "a": "Les données de préférence sont couteuses à produire car <strong>elles nécessitent du travail humain qualifié pour chaque exemple</strong>. Des plateformes telles que https://chat.lmsys.org/ permettent de constituer ces jeux de données de préférence mais peu d’utilisateurs s’en servent dans leur langue d’origine.",
+          "b": "Les jeux de données de préférence sont rares, voire inexistants dans les langues européennes. La part des questions posées en français dans le jeu de données de LMSYS est par exemple inférieure à 1%.",
+          "c": "comparIA est un exemple de dispositif permettant de collecter des conversations dans de multiples langues, incluant des références culturelles spécifiques à chaque région ou pays : tâches courantes, traditions culinaires locales, systèmes éducatifs, références historiques ou littéraires, etc."
+        },
+        "diversity": {
+          "title": "Diversifier les données pour réduire les biais",
+          "a": "Pour refléter la diversité des cultures et des langues dans les résultats générés par les modèles, <strong>les jeux de données d’alignement doivent inclure une variété de langues</strong>, de contextes et d’exemples issus de tâches courantes des utilisateurs. La diversification des données d'alignement permet d’améiorer à terme les performances d’un modèle à double titre :",
+          "b": "D'une part, elle <strong>réduit les biais culturels</strong> en évitant qu'une seule perspective - souvent anglo-saxonne - domine les réponses de l'IA. Le modèle apprend ainsi à reconnaître qu'il existe plusieurs façons valides d'aborder une même question selon le contexte culturel.",
+          "c": "D'autre part, cette exposition à la diversité de langues et de cultures favorise l’adaptation des réponses à des contextes spécifiques: un utilisateur français recevra des conseils adaptés au système français, tandis qu'un utilisateur danois obtiendra des informations correspondant à son contexte national.",
+          "d": "Le résultat est un modèle d’IA conversationnelle plus inclusif, capable de tenir compte des différentes cultures."
+        }
+      }
+    },
     "partners": {
       "institution": {
         "title": "Partenaires institutionnels"

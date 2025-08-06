@@ -5,6 +5,7 @@
 @import './icons.css';
 
 @source inline("text-primary");
+@source inline("text-orange");
 
 @custom-variant dark (&:where([data-fr-theme="dark"], [data-fr-theme="dark"] *));
 
