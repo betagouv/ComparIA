@@ -1,0 +1,5 @@
+export { default as Comparator } from './Comparator.svelte'
+export { default as FAQ } from './FAQ.svelte'
+export { default as History } from './History.svelte'
+export { default as Partners } from './Partners.svelte'
+export { default as Problem } from './Problem.svelte'

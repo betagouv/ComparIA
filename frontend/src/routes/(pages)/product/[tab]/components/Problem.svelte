@@ -1,42 +1,37 @@
 <script>
-  import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
 </script>
 
-<SeoHead title={m['seo.titles.a-propos']()} />
-
-<main id="contenu">
-  <div class="fr-container fr-mb-8w">
-    <h2 class="fr-mt-8w fr-mb-4w">Le problème</h2>
-    <div class="fr-grid-row fr-mb-4w fr-grid-row--gutters">
-      <div class="fr-col-12 fr-col-md-6 fr-pr-8w">
-        <h5>
-          Les modèles d’IA conversationnelle respectent-ils la diversité des cultures francophones ?
-        </h5>
-        <p>
-          Les IA conversationnelles reposent sur des grands modèles de langage (LLM) entraînés
-          principalement sur des données en anglais, ce qui crée des biais linguistiques et
-          culturels dans les résultats qu'ils produisent.
-        </p>
-        <p>
-          Les systèmes d’IA conversationnelle donnent l’impression de parler toutes les langues mais
-          les résultats qu’ils génèrent sont parfois stéréotypés ou discriminants.
-        </p>
-        <p>
-          Ces biais peuvent aussi se traduire par des réponses partielles voire incorrectes
-          négligeant la diversité des langues et des cultures, notamment francophones et
-          européennes.
-        </p>
-        <p>
-          <strong>Comment réduire les biais culturels et linguistiques de ces modèles ?</strong>
-        </p>
-      </div>
-      <div class="fr-col-md-6 fr-col-12">
-        <div class="cadre">
-          <img
-            src="assets/example.png"
-            title="Capture d’écran de la réponse générée par un modèle au prompt suivant “Donne moi la liste des 10 films qui ont le plus influencé l’histoire du cinéma”. Seuls des films américains sont cités par le modèle."
-            alt="Impossible de donner une liste objective e           t définitive des 10 films qui ont le plus influencé l'histoire du cinéma, étant donné que l'influence peut varier en fonction des perspectives et des critères d'évaluation. Cependant, voici une liste de 10 films qui sont généralement considérés comme ayant eu un impact significatif sur l'évolution du cinéma :
+<div class="fr-container fr-mb-8w">
+  <h2 class="fr-mt-8w fr-mb-4w">Le problème</h2>
+  <div class="fr-grid-row fr-mb-4w fr-grid-row--gutters">
+    <div class="fr-col-12 fr-col-md-6 fr-pr-8w">
+      <h5>
+        Les modèles d’IA conversationnelle respectent-ils la diversité des cultures francophones ?
+      </h5>
+      <p>
+        Les IA conversationnelles reposent sur des grands modèles de langage (LLM) entraînés
+        principalement sur des données en anglais, ce qui crée des biais linguistiques et culturels
+        dans les résultats qu'ils produisent.
+      </p>
+      <p>
+        Les systèmes d’IA conversationnelle donnent l’impression de parler toutes les langues mais
+        les résultats qu’ils génèrent sont parfois stéréotypés ou discriminants.
+      </p>
+      <p>
+        Ces biais peuvent aussi se traduire par des réponses partielles voire incorrectes négligeant
+        la diversité des langues et des cultures, notamment francophones et européennes.
+      </p>
+      <p>
+        <strong>Comment réduire les biais culturels et linguistiques de ces modèles ?</strong>
+      </p>
+    </div>
+    <div class="fr-col-md-6 fr-col-12">
+      <div class="cadre">
+        <img
+          src="assets/example.png"
+          title="Capture d’écran de la réponse générée par un modèle au prompt suivant “Donne moi la liste des 10 films qui ont le plus influencé l’histoire du cinéma”. Seuls des films américains sont cités par le modèle."
+          alt="Impossible de donner une liste objective e           t définitive des 10 films qui ont le plus influencé l'histoire du cinéma, étant donné que l'influence peut varier en fonction des perspectives et des critères d'évaluation. Cependant, voici une liste de 10 films qui sont généralement considérés comme ayant eu un impact significatif sur l'évolution du cinéma :
                         
                             &quote;La Naissance d'une Nation&quote; (1915) de D.W. Griffith - Bien que controversé pour son contenu raciste, ce film a été une étape importante dans le développement de la narration cinématographique et de la technique cinématographique.
                             &quote;Citizen Kane&quote; (1941) d'Orson Welles - Souvent considéré comme l'un des meilleurs films de tous les temps, il a influencé la narration non linéaire et l'utilisation de l'ombre et de la lumière.
@@ -50,9 +45,9 @@
                             &quote;Inception&quote; (2010) de Christopher Nolan - Ce film a influencé la façon dont les histoires complexes et les concepts scientifiques sont racontés à l'écran.
                         
                             Il est important de noter que cette liste n'est pas exhaustive et qu'il existe de nombreux autres films qui ont eu un impact significatif sur l'histoire du cinéma. "
-            class="fr-responsive-img"
-          />
-          <!-- <div class="texte">
+          class="fr-responsive-img"
+        />
+        <!-- <div class="texte">
                         <p>Impossible de donner une liste objective et définitive des 10 films qui ont le plus influencé
                             l'histoire du cinéma, étant donné que l'influence peut varier en fonction des perspectives
                             et
@@ -108,133 +103,131 @@
                                 autres films qui ont eu un impact significatif sur l'histoire du cinéma.
                             </p>
                     </div> -->
-        </div>
-        <legend class="fr-text--sm"
-          >Réponse d’un modèle de langue au prompt : “Donne moi la liste des 10 films qui ont le
-          plus influencé l’histoire du cinéma”</legend
-        >
       </div>
-    </div>
-    <div>
-      <h5>
-        L'alignement : une technique de réduction des biais qui repose sur la collecte des
-        préférences d’utilisateurs
-      </h5>
-      <p>
-        L'alignement des modèles d'IA est une <strong>méthode de réduction des biais</strong> qui consiste
-        à ajuster les modèles pour qu'ils génèrent des résultats conformes à des valeurs ou des objectifs
-        spécifiques.
-      </p>
-      <p>
-        Ce processus repose sur des jeux de données de préférences où les utilisateurs indiquent
-        quelle réponse est la meilleure selon des critères donnés, telles que la pertinence,
-        l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour
-        entrainer les modèles en les ajustant selon les préférences exprimées par les utilisateurs.
-      </p>
-      <p>
-        Pour améliorer la représentation des cultures francophones dans les modèles, les jeux de
-        données d’alignement doivent inclure une variété de langues, de contextes et d’exemples
-        issus de tâches courantes des utilisateurs.
-      </p>
-      <p>
-        En intégrant ces données, les modèles d’IA sont exposés à une diversité de contextes qui
-        permet de réduire les biais et d’améliorer la pertinence des réponses générées. Des
-        plateformes telles que <a
-          href="https://chat.lmsys.org/"
-          rel="noopener external"
-          target="_blank">chat.lmsys.org</a
-        >
-        permettent de constituer ces jeux de données de préférence mais peu d’utilisateurs s’en servent
-        en français (moins de 1%).
-        <strong
-          >Ce type de jeux de données est rare, voire inexistant pour le français et les langues de
-          France.</strong
-        >
-      </p>
-      <p>
-        <strong
-          >Comment faciliter la création de jeux de données de préférence francophones pour
-          l’alignement des modèles ?</strong
-        >
-      </p>
-      <h2 class="fr-mt-8w">La solution</h2>
-      <p>
-        Le comparateur compar:IA est un nouvel outil qui permet de créer des jeux de données de
-        préférence centrés sur des usages réels exprimés en français.
-      </p>
-
-      <p>L’application développée répond à un double objectif :</p>
-      <h5 class="fr-mt-4w">
-        1. Améliorer la qualité des modèles de langage conversationnels sur les usages francophones
-      </h5>
-      <div class="fr-highlight">
-        <p>
-          Créer un jeu de données de préférences humaines en français, et ciblé sur des tâches
-          spécifiquement liées à la langue et la culture française
-        </p>
-      </div>
-
-      <p>
-        L’amélioration de la qualité des modèles de langage conversationnels sur les usages
-        francophones passe par la mise à disposition de jeux de données de préférence en français
-        pour l’alignement des modèles, ressource actuellement rare pour l’écosystème des acteurs
-        académiques et industriels qui travaillent sur ces sujets.
-      </p>
-
-      <p>
-        Les données de préférence issues de la comparaison des modèles sont collectées, nettoyées et
-        partagées: le jeu de données constitué est rendu accessible librement et peut être utilisé
-        pour améliorer l’expression des modèles d’IA conversationnelle sur des tâches en français.
-      </p>
-
-      <p>Les jeux de données produits présentent plusieurs avantages :</p>
-
-      <ul>
-        <li>les jeux de données sont en français</li>
-        <li>
-          la préférence peut être exprimée de manière plus fine à travers des critères de fond, de
-          forme et de style.
-        </li>
-      </ul>
-
-      <h5 class="fr-mt-4w">
-        2. Faciliter l’accès aux IA génératives et encourager l’esprit critique des utilisateurs en
-        rendant effectif un droit au “pluralisme des modèles”
-      </h5>
-
-      <p>
-        L’accès simplifié et gratuit à une diversité de modèles d’IA conversationnelles, grands et
-        petits, propriétaires et "open weights" (semi-ouverts), permet à toutes et tous de les
-        utiliser et de les tester. C’est une première étape de sensibilisation pour encourager <strong
-          >l’appropriation responsable et réfléchie</strong
-        > de ces outils par les citoyens.
-      </p>
-
-      <p>
-        Sensibiliser le grand public à la variété des modèles d’IA existants s’inscrit dans la
-        défense d’un principe de « droit au <strong>pluralisme des modèles</strong> » dans la
-        continuité du principe de « pluralisme effectif des algorithmes » défendu dans les
-        recommandations des
-        <a href="https://etats-generaux-in formation.fr/" rel="noopener external" target="_blank"
-          >Etats généraux de l’information</a
-        >, permettant à l’utilisateur d’exercer un choix avisé entre différents modèles,
-        susceptibles d’être choisis parmi différents fournisseurs.
-      </p>
-
-      <p>
-        Portée par le ministère de la Culture, et associée à différents modules de formation
-        pédagogique (PIX, ministère de la Justice, association Kocoya…), cette plateforme contribue
-        enfin à sensibiliser les citoyens aux <strong>biais culturels et linguistiques</strong> portés
-        par les modèles. Pour guider l’exploration, nous proposons une série de tâches spécifiquement
-        conçues pour évaluer les performances des modèles en matière de langues et de cultures française
-        et francophone. Ces tâches sont accompagnées de suggestions de prompts que les utilisateurs peuvent
-        adapter selon leurs besoins. En confrontant directement les résultats de différents modèles sur
-        ces tâches spécifiques, les utilisateurs peuvent mieux comprendre les forces, les faiblesses
-        et les limites éventuelles des systèmes.
-      </p>
+      <legend class="fr-text--sm"
+        >Réponse d’un modèle de langue au prompt : “Donne moi la liste des 10 films qui ont le plus
+        influencé l’histoire du cinéma”</legend
+      >
     </div>
   </div>
-</main>
+  <div>
+    <h5>
+      L'alignement : une technique de réduction des biais qui repose sur la collecte des préférences
+      d’utilisateurs
+    </h5>
+    <p>
+      L'alignement des modèles d'IA est une <strong>méthode de réduction des biais</strong> qui consiste
+      à ajuster les modèles pour qu'ils génèrent des résultats conformes à des valeurs ou des objectifs
+      spécifiques.
+    </p>
+    <p>
+      Ce processus repose sur des jeux de données de préférences où les utilisateurs indiquent
+      quelle réponse est la meilleure selon des critères donnés, telles que la pertinence,
+      l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour entrainer
+      les modèles en les ajustant selon les préférences exprimées par les utilisateurs.
+    </p>
+    <p>
+      Pour améliorer la représentation des cultures francophones dans les modèles, les jeux de
+      données d’alignement doivent inclure une variété de langues, de contextes et d’exemples issus
+      de tâches courantes des utilisateurs.
+    </p>
+    <p>
+      En intégrant ces données, les modèles d’IA sont exposés à une diversité de contextes qui
+      permet de réduire les biais et d’améliorer la pertinence des réponses générées. Des
+      plateformes telles que <a
+        href="https://chat.lmsys.org/"
+        rel="noopener external"
+        target="_blank">chat.lmsys.org</a
+      >
+      permettent de constituer ces jeux de données de préférence mais peu d’utilisateurs s’en servent
+      en français (moins de 1%).
+      <strong
+        >Ce type de jeux de données est rare, voire inexistant pour le français et les langues de
+        France.</strong
+      >
+    </p>
+    <p>
+      <strong
+        >Comment faciliter la création de jeux de données de préférence francophones pour
+        l’alignement des modèles ?</strong
+      >
+    </p>
+    <h2 class="fr-mt-8w">La solution</h2>
+    <p>
+      Le comparateur compar:IA est un nouvel outil qui permet de créer des jeux de données de
+      préférence centrés sur des usages réels exprimés en français.
+    </p>
+
+    <p>L’application développée répond à un double objectif :</p>
+    <h5 class="fr-mt-4w">
+      1. Améliorer la qualité des modèles de langage conversationnels sur les usages francophones
+    </h5>
+    <div class="fr-highlight">
+      <p>
+        Créer un jeu de données de préférences humaines en français, et ciblé sur des tâches
+        spécifiquement liées à la langue et la culture française
+      </p>
+    </div>
+
+    <p>
+      L’amélioration de la qualité des modèles de langage conversationnels sur les usages
+      francophones passe par la mise à disposition de jeux de données de préférence en français pour
+      l’alignement des modèles, ressource actuellement rare pour l’écosystème des acteurs
+      académiques et industriels qui travaillent sur ces sujets.
+    </p>
+
+    <p>
+      Les données de préférence issues de la comparaison des modèles sont collectées, nettoyées et
+      partagées: le jeu de données constitué est rendu accessible librement et peut être utilisé
+      pour améliorer l’expression des modèles d’IA conversationnelle sur des tâches en français.
+    </p>
+
+    <p>Les jeux de données produits présentent plusieurs avantages :</p>
+
+    <ul>
+      <li>les jeux de données sont en français</li>
+      <li>
+        la préférence peut être exprimée de manière plus fine à travers des critères de fond, de
+        forme et de style.
+      </li>
+    </ul>
+
+    <h5 class="fr-mt-4w">
+      2. Faciliter l’accès aux IA génératives et encourager l’esprit critique des utilisateurs en
+      rendant effectif un droit au “pluralisme des modèles”
+    </h5>
+
+    <p>
+      L’accès simplifié et gratuit à une diversité de modèles d’IA conversationnelles, grands et
+      petits, propriétaires et "open weights" (semi-ouverts), permet à toutes et tous de les
+      utiliser et de les tester. C’est une première étape de sensibilisation pour encourager <strong
+        >l’appropriation responsable et réfléchie</strong
+      > de ces outils par les citoyens.
+    </p>
+
+    <p>
+      Sensibiliser le grand public à la variété des modèles d’IA existants s’inscrit dans la défense
+      d’un principe de « droit au <strong>pluralisme des modèles</strong> » dans la continuité du
+      principe de « pluralisme effectif des algorithmes » défendu dans les recommandations des
+      <a href="https://etats-generaux-in formation.fr/" rel="noopener external" target="_blank"
+        >Etats généraux de l’information</a
+      >, permettant à l’utilisateur d’exercer un choix avisé entre différents modèles, susceptibles
+      d’être choisis parmi différents fournisseurs.
+    </p>
+
+    <p>
+      Portée par le ministère de la Culture, et associée à différents modules de formation
+      pédagogique (PIX, ministère de la Justice, association Kocoya…), cette plateforme contribue
+      enfin à sensibiliser les citoyens aux <strong>biais culturels et linguistiques</strong> portés
+      par les modèles. Pour guider l’exploration, nous proposons une série de tâches spécifiquement conçues
+      pour évaluer les performances des modèles en matière de langues et de cultures française et francophone.
+      Ces tâches sont accompagnées de suggestions de prompts que les utilisateurs peuvent adapter selon
+      leurs besoins. En confrontant directement les résultats de différents modèles sur ces tâches spécifiques,
+      les utilisateurs peuvent mieux comprendre les forces, les faiblesses et les limites éventuelles
+      des systèmes.
+    </p>
+  </div>
+</div>
 
 <style>
   .cadre p,
