@@ -163,7 +163,7 @@
   })
 </script>
 
-<span class:chatbot bind:this={el} class="md" class:prose={render_markdown}>
+<span class:chatbot bind:this={el} class="md" class:prose={render_markdown} class:dark:prose-invert={render_markdown}>
   {@html html}
 </span>
 
