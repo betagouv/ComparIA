@@ -4,6 +4,8 @@
 @plugin '@tailwindcss/typography';
 @import './icons.css';
 
+@source inline("text-primary");
+
 @custom-variant dark (&:where([data-fr-theme="dark"], [data-fr-theme="dark"] *));
 
 @theme {

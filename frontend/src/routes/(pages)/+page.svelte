@@ -115,8 +115,6 @@
   )[locale]
 </script>
 
-<span class="text-primary"></span>
-
 <main id="content" class="">
   <section class="fr-container--fluid bg-light-grey pb-13 lg:pt-18 pt-10 lg:pb-28">
     <div
