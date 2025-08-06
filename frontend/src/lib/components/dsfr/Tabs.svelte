@@ -44,3 +44,16 @@
     </div>
   {/each}
 </div>
+
+<style lang="postcss">
+  @reference "$css/app.css";
+
+  .fr-tabs__list {
+    button {
+      &[aria-selected='true'] {
+        --border-active-blue-france: var(--blue-france-main-525);
+        @apply text-primary;
+      }
+    }
+  }
+</style>
