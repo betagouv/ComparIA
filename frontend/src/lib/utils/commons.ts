@@ -1,9 +1,14 @@
-import { sanitize as gradioSanitize } from '@gradio/sanitize'
+import sanitizeHtml from 'sanitize-html'
 
 export const noop = () => {}
 
 export function sanitize(html: string): string {
-  return gradioSanitize(html, '/')
+  return sanitizeHtml(html, {
+    allowedAttributes: {
+      span: ['class'],
+      a: ['href', 'rel', 'target', 'title']
+    }
+  })
 }
 
 export function propsToAttrs(props: Record<string, unknown>): string {
@@ -26,13 +31,13 @@ export function copyToClipboard(value: string): Promise<void> {
     return new Promise((resolve, reject) => {
       const textArea = document.createElement('textarea')
       textArea.value = value
-  
+
       textArea.style.position = 'absolute'
       textArea.style.left = '-999999px'
-  
+
       document.body.prepend(textArea)
       textArea.select()
-  
+
       try {
         document.execCommand('copy')
         resolve()
