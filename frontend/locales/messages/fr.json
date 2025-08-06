@@ -317,6 +317,35 @@
   },
   "product": {
     "title": "Tout savoir sur le comparateur",
+    "comparator": {
+      "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>.",
+      "cta": "Accéder au comparateur",
+      "challenges": {
+        "title": "L’application développée répond à plusieurs enjeux",
+        "bias": {
+          "title": "Biais culturels et linguistiques",
+          "desc": "Mettre en avant les biais de l'IA liés à la sous-représentation des données non anglophones dans les modèles et sensibiliser à leurs conséquences."
+        },
+        "impacts": {
+          "title": "Impact environnemental",
+          "desc": "Révéler les effets écologiques de l'IA générative, encore largement méconnus du grand public."
+        },
+        "pluralism": {
+          "title": "Pluralisme des modèles",
+          "desc": "Assurer aux citoyens l'accès à une diversité de modèles d'IA afin qu'ils puissent faire des choix éclairés et développer un regard critique sur ces technologies."
+        },
+        "thinking": {
+          "title": "Esprit critique et questions sociétales",
+          "desc": "Inciter au questionnement critique sur la place de l’IA générative dans les pratiques personnelles et professionnelles (éducation, travail)."
+        }
+      },
+      "europe": {
+        "title": "Le comparateur <span {props}>devient européen</span> !",
+        "adventure": "Depuis l’été 2025, la Lituanie, la Suède et le Danemark rejoignent l’aventure !",
+        "desc": "Le comparateur est mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
+        "catch": "Vous souhaitez disposer du comparateur dans votre langue ?"
+      }
+    },
     "partners": {
       "institution": {
         "title": "Partenaires institutionnels"
