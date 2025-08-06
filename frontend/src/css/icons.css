@@ -1,6 +1,12 @@
 @import '@gouvfr/dsfr/dist/utility/icons/icons.css';
 
 /* EXTRA ICONS */
+.fr-icon-alignment-star::before,
+.fr-icon-alignment-star::after {
+  -webkit-mask-image: url('/icons/alignment-star.svg');
+  mask-image: url('/icons/alignment-star.svg');
+}
+
 .fr-icon-book-open::before,
 .fr-icon-book-open::after {
   -webkit-mask-image: url('/icons/book-open-line.svg');
@@ -17,6 +23,18 @@
 .fr-icon-brain::after {
   -webkit-mask-image: url('/icons/brain.svg');
   mask-image: url('/icons/brain.svg');
+}
+
+.fr-icon-chat-charts::before,
+.fr-icon-chat-charts::after {
+  -webkit-mask-image: url('/icons/chat-charts.svg');
+  mask-image: url('/icons/chat-charts.svg');
+}
+
+.fr-icon-chat-search::before,
+.fr-icon-chat-search::after {
+  -webkit-mask-image: url('/icons/chat-search.svg');
+  mask-image: url('/icons/chat-search.svg');
 }
 
 .fr-icon-copy::before,
@@ -37,6 +55,36 @@
   mask-image: url('/icons/glass.svg');
 }
 
+.fr-icon-heart-hand::before,
+.fr-icon-heart-hand::after {
+  -webkit-mask-image: url('/icons/heart-hand.svg');
+  mask-image: url('/icons/heart-hand.svg');
+}
+
+.fr-icon-old-globe::before,
+.fr-icon-old-globe::after {
+  -webkit-mask-image: url('/icons/old-globe.svg');
+  mask-image: url('/icons/old-globe.svg');
+}
+
+.fr-icon-pass-expired-line::before,
+.fr-icon-pass-expired-line::after {
+  -webkit-mask-image: url('/icons/pass-expired-line.svg');
+  mask-image: url('/icons/pass-expired-line.svg');
+}
+
+.fr-icon-plural::before,
+.fr-icon-plural::after {
+  -webkit-mask-image: url('/icons/plural.svg');
+  mask-image: url('/icons/plural.svg');
+}
+
+.fr-icon-presentation::before,
+.fr-icon-presentation::after {
+  -webkit-mask-image: url('/icons/presentation.svg');
+  mask-image: url('/icons/presentation.svg');
+}
+
 .fr-icon-ruler::before,
 .fr-icon-ruler::after {
   -webkit-mask-image: url('/icons/ruler.svg');
@@ -47,16 +95,4 @@
 .fr-icon-shuffle::after {
   -webkit-mask-image: url('/icons/shuffle.svg');
   mask-image: url('/icons/shuffle.svg');
-}
-
-.fr-icon-pass-expired-line::before,
-.fr-icon-pass-expired-line::after {
-  -webkit-mask-image: url('/icons/pass-expired-line.svg');
-  mask-image: url('/icons/pass-expired-line.svg');
-}
-
-.fr-icon-presentation::before,
-.fr-icon-presentation::after {
-  -webkit-mask-image: url('/icons/presentation.svg');
-  mask-image: url('/icons/presentation.svg');
 }
