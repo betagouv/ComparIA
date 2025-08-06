@@ -316,7 +316,27 @@
     }
   },
   "product": {
-    "title": "Tout savoir sur le comparateur"
+    "title": "Tout savoir sur le comparateur",
+    "partners": {
+      "institution": {
+        "title": "Partenaires institutionnels"
+      },
+      "diffusion": {
+        "title": "Partenaires de diffusion",
+        "desc": "Nous créons un réseau de partenaires intégrant le comparateur dans leur offre de services et de formation.",
+        "catch": "Vous souhaitez utiliser le comparateur pour répondre à un besoin métier ?",
+        "cta": "Dites nous en plus"
+      },
+      "academy": {
+        "title": "Partenaires académiques",
+        "desc": "Nous avons à coeur que les jeux de données générés alimentent des travaux de recherche multidisciplinaires mêlant sciences humaines et sociales et data science.",
+        "catch": "Vous menez un projet de recherche et avez des suggestions ou besoin de précision sur la démarche et/ou les jeux de données produits ?"
+      },
+      "services": {
+        "title": "Services mis à contribution",
+        "desc": "Les calculs d’impacts environnementaux reposent sur les produits ci dessus."
+      }
+    }
   },
   "datasets": {
     "access": {
