@@ -3,13 +3,14 @@
   generics="T extends { id: string; label: string; href?: string; content?: string }"
 >
   import type { Snippet } from 'svelte'
-  import type { SvelteHTMLElements } from 'svelte/elements'
+  import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
   let {
     tabs,
     label,
     initialId = tabs[0].id,
     noBorders = false,
+    panelClass = '',
     tab,
     ...props
   }: {
@@ -17,6 +18,7 @@
     label: string
     initialId?: T['id']
     noBorders?: boolean
+    panelClass?: ClassValue
     tab?: Snippet<[T]>
   } & SvelteHTMLElements['div'] = $props()
 
@@ -66,7 +68,8 @@
           'fr-tabs__panel--selected': item.id === initialId,
           'px-4! py-5!': noBorders,
           'transition-none! visibility-none!': item.href && item.id !== currentTabId
-        }
+        },
+        panelClass
       ]}
     >
       {#if item.content}{item.content}{:else}{@render tab?.(item)}{/if}
