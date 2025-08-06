@@ -18,10 +18,14 @@
   --color-primary: var(--blue-france-main-525);
   --color-info: var(--info-425-625);
   --color-light-info: var(--info-950-100);
+  --color-very-light-info: var(--cg-very-light-blue);
   --color-error: var(--error-425-625);
   --color-warning: var(--warning-425-625);
   --color-success: var(--green-emeraude-main-632);
   --color-yellow: var(--yellow-tournesol-850-200);
+  --color-green: var(--cg-green);
+  --color-purple: var(--cg-purple);
+  --color-orange: var(--cg-orange);
   --color-grey: var(--grey-425-625);
   --color-dark-grey: var(--grey-200-850);
   /* CUSTOM COLORS */
@@ -38,10 +42,14 @@
   /* CUSTOM */
   --cg-very-light-grey: #fcfcfd;
   --cg-light-grey: #f3f5f9;
-  --bot-a-color: #a96afe;
-  --bot-b-color: #ff9575;
+  --cg-very-light-blue: #F9FBFF;
+  --cg-green: #58B77D;
+  --cg-purple: #a96afe;
+  --cg-orange: #ff9575;
 
   /* xs breakpoint */
+  --text-xs: 0.675rem;
+  --text-xs--line-height:calc(1 / 0.75);
   --text-sm: 0.75rem;
   --text-sm--line-height: calc(1.25 / 0.875rem);
 }
@@ -49,6 +57,8 @@
 :root[data-fr-theme='dark'] {
   --cg-very-light-grey: #0a0a0b;
   --cg-light-grey: #1c1e22;
+  /* FIXME need equivalent in dark */
+  --cg-very-light-blue: #0a0a0b;
 }
 
 @media (min-width: 36em) {
@@ -58,6 +68,7 @@
 @media (min-width: 48em) {
   /* md */
   :root {
+    --text-xs: 0.75rem;
     --text-sm: 0.875rem;
   }
 }
@@ -93,11 +104,11 @@ main {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background-color: var(--bot-a-color);
+  background-color: var(--cg-purple);
 }
 .c-bot-disk-b {
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  background-color: var(--bot-b-color);
+  background-color: var(--cg-orange);
 }
