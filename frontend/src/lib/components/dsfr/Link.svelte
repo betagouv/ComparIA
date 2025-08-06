@@ -74,7 +74,7 @@
   {text}
 </a>
 
-<style>
+<style lang="postcss">
   /* Override only light theme blue to purple */
   :root[data-fr-theme='light'] .cg-link-btn {
     --background-action-high-blue-france: var(--blue-france-main-525);
@@ -82,5 +82,15 @@
     --background-action-high-blue-france-active: var(--cg-blue-france-main-525-active);
     --border-action-high-blue-france: var(--blue-france-main-525);
     --text-action-high-blue-france: var(--blue-france-main-525);
+  }
+  /* To avoid flickering at page load */
+  @media (prefers-color-scheme: light) {
+    :root[data-fr-theme='system'] .cg-link-btn {
+      --background-action-high-blue-france: var(--blue-france-main-525);
+      --background-action-high-blue-france-hover: var(--cg-blue-france-main-525-hover);
+      --background-action-high-blue-france-active: var(--cg-blue-france-main-525-active);
+      --border-action-high-blue-france: var(--blue-france-main-525);
+      --text-action-high-blue-france: var(--blue-france-main-525);
+    }
   }
 </style>
