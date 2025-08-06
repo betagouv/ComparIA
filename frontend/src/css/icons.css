@@ -54,3 +54,9 @@
   -webkit-mask-image: url('/icons/pass-expired-line.svg');
   mask-image: url('/icons/pass-expired-line.svg');
 }
+
+.fr-icon-presentation::before,
+.fr-icon-presentation::after {
+  -webkit-mask-image: url('/icons/presentation.svg');
+  mask-image: url('/icons/presentation.svg');
+}
