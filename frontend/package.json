@@ -29,6 +29,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/svelte": "^5.2.4",
+    "@types/sanitize-html": "^2.16.0",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-svelte": "^3.0.0",
@@ -51,6 +52,7 @@
     "@gradio/client": "^1.15.0",
     "@gradio/icons": "^0.12.0",
     "@gradio/statustracker": "^0.10.13",
-    "@gradio/utils": "^0.10.2"
+    "@gradio/utils": "^0.10.2",
+    "sanitize-html": "^2.17.0"
   }
 }
