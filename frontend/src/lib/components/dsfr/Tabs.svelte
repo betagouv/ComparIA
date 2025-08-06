@@ -1,34 +1,56 @@
-<script lang="ts" generics="T extends {id: string; label: string; content?: string}">
+<script
+  lang="ts"
+  generics="T extends { id: string; label: string; href?: string; content?: string }"
+>
   import type { Snippet } from 'svelte'
+  import type { SvelteHTMLElements } from 'svelte/elements'
 
   let {
     tabs,
     label,
+    initialId = tabs[0].id,
     noBorders = false,
-    tab
+    tab,
+    ...props
   }: {
     tabs: T[]
     label: string
-    noBorders: boolean
+    initialId?: T['id']
+    noBorders?: boolean
     tab?: Snippet<[T]>
-  } = $props()
+  } & SvelteHTMLElements['div'] = $props()
+
+  let currentTabId = $state(initialId)
+
+  const items = $derived.by(() =>
+    tabs.map((tab) => ({
+      props: {
+        id: `tab-${tab.id}`,
+        tabindex: tab.id === initialId ? 0 : -1,
+        role: 'tab',
+        'aria-selected': tab.id === initialId ? true : false,
+        'aria-controls': `tab-${tab.id}-panel`,
+        class: 'fr-tabs__tab',
+        onclick: () => (currentTabId = tab.id)
+      },
+      ...tab
+    }))
+  )
 </script>
 
-<div class={['fr-tabs', { 'before:shadow-none! shadow-none!': noBorders }]}>
+<div {...props} class={['fr-tabs', { 'before:shadow-none! shadow-none!': noBorders }, props.class]}>
   <ul class="fr-tabs__list" role="tablist" aria-label={label}>
-    {#each tabs as item, i}
+    {#each items as item}
       <li role="presentation">
-        <button
-          type="button"
-          id={`tab-${item.id}`}
-          class="fr-tabs__tab"
-          tabindex={i === 0 ? 0 : -1}
-          role="tab"
-          aria-selected="true"
-          aria-controls={`tab-${item.id}-panel`}
-        >
-          {item.label}
-        </button>
+        {#if item.href}
+          <a {...item.props} href={item.href}>
+            {item.label}
+          </a>
+        {:else}
+          <button {...item.props} type="button">
+            {item.label}
+          </button>
+        {/if}
       </li>
     {/each}
   </ul>
@@ -38,7 +60,14 @@
       role="tabpanel"
       aria-labelledby={`tab-${item.id}`}
       tabindex="0"
-      class={['fr-tabs__panel', { 'fr-tabs__panel--selected': i === 0, 'px-4! py-5!': noBorders }]}
+      class={[
+        'fr-tabs__panel bg-white',
+        {
+          'fr-tabs__panel--selected': item.id === initialId,
+          'px-4! py-5!': noBorders,
+          'transition-none! visibility-none!': item.href && item.id !== currentTabId
+        }
+      ]}
     >
       {#if item.content}{item.content}{:else}{@render tab?.(item)}{/if}
     </div>
@@ -49,7 +78,8 @@
   @reference "$css/app.css";
 
   .fr-tabs__list {
-    button {
+    button,
+    a {
       &[aria-selected='true'] {
         --border-active-blue-france: var(--blue-france-main-525);
         @apply text-primary;
