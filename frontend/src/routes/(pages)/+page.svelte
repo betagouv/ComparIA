@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Icon from '$components/Icon.svelte'
   import { Button, Link } from '$lib/components/dsfr'
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
@@ -79,9 +80,9 @@
 
   const usageCards = (
     [
-      { i18nKey: 'use', src: '/icons/database-line.svg' },
-      { i18nKey: 'explore', src: '/icons/search-line.svg' },
-      { i18nKey: 'educate', src: '/icons/presentation.svg' }
+      { i18nKey: 'use', icon: 'database-line' },
+      { i18nKey: 'explore', icon: 'search-line' },
+      { i18nKey: 'educate', icon: 'presentation' }
     ] as const
   ).map(({ i18nKey, ...card }) => ({
     ...card,
@@ -289,7 +290,7 @@
       <div class="grid gap-8 md:grid-cols-3">
         {#each usageCards as card}
           <div class="cg-border bg-white p-5 lg:px-8 lg:pb-11 lg:pt-6">
-            <img src={card.src} alt="" aria-hidden="true" width="30" height="30" class="mb-4" />
+            <Icon icon={card.icon} size="lg" block class="text-primary mb-4" />
             <h6 class="mb-2!">{card.title}</h6>
             <p class="text-grey mb-0!">{card.desc}</p>
           </div>
