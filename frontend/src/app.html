@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="%lang%" data-fr-scheme="system">
+<html lang="%lang%" data-fr-scheme="%scheme%" data-fr-theme="%theme%">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />
@@ -24,11 +24,27 @@
     <div id="app">%sveltekit.body%</div>
 
     <script>
-      // Directly set theme to avoid initial flash
-      document.documentElement.setAttribute(
-        'data-fr-theme',
-        localStorage.getItem('scheme') || 'system'
-      )
+      // Directly set scheme + theme to avoid initial flash
+      const scheme = localStorage.getItem('scheme') || 'system'
+      const theme =
+        scheme === 'system'
+          ? window.matchMedia('(prefers-color-scheme: dark)').matches
+            ? 'dark'
+            : 'light'
+          : scheme
+
+      setCookie('scheme', scheme)
+      setCookie('theme', theme)
+
+      function setCookie(name, value, days) {
+        let expires = ''
+        if (days) {
+          const date = new Date()
+          date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
+          expires = '; expires=' + date.toUTCString()
+        }
+        document.cookie = name + '=' + value + expires + '; path=/'
+      }
     </script>
   </body>
 </html>
