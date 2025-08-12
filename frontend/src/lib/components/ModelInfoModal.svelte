@@ -3,22 +3,19 @@
   import Icon from '$lib/components/Icon.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { APIBotModel } from '$lib/models'
+  import { isAvailableLicense, licenseAttrs, type APIBotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
-  let {
-    model,
-    infos
-  }: { model: APIBotModel; infos: Pick<RevealData, 'sizeDesc' | 'licenseDesc' | 'licenseAttrs'> } =
-    $props()
+  let { model }: { model: APIBotModel } = $props()
+
+  const licenseDesc = isAvailableLicense(model.license)
+    ? m[`models.licenses.descriptions.${model.license}`]()
+    : m['models.licenses.noDesc']()
+  const warningCommercial = licenseAttrs?.[model.license]?.warningCommercial
+  const prohibitCommercial = licenseAttrs?.[model.license]?.prohibitCommercial
 </script>
 
-<dialog
-  aria-labelledby="fr-modal-title-modal-{model.id}"
-  role="dialog"
-  id="fr-modal-{model.id}"
-  class="fr-modal"
->
+<dialog aria-labelledby="fr-modal-title-modal-{model.id}" id="fr-modal-{model.id}" class="fr-modal">
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-8">
@@ -115,14 +112,14 @@
                   <p class="fr-text--sm text-grey">
                     <!-- FIXME i18n integrate licenseDesc in translations -->
                     <strong>{m['models.licenses.name']({ licence: model.license })}</strong>&nbsp;:
-                    {infos.licenseDesc[model.license] || m['models.licenses.noDesc']()}
+                    {licenseDesc}
                   </p>
                   <div class="model-details grid">
                     <div class="rounded-tile fr-px-1v fr-py-1w relative">
                       <!-- FIXME i18n -->
-                      {#if infos.licenseAttrs?.[model.license]?.warning_commercial}
+                      {#if warningCommercial}
                         <Icon icon="checkbox-circle-fill" block class="text-warning" />
-                      {:else if infos.licenseAttrs?.[model.license]?.prohibit_commercial}
+                      {:else if prohibitCommercial}
                         <Icon icon="close-circle-fill" block class="text-error" />
                       {:else}
                         <Icon icon="checkbox-circle-fill" block class="text-success" />
@@ -177,7 +174,7 @@
                   </div>
                 {:else}
                   <p class="fr-text--sm text-grey">
-                    {infos.licenseDesc[model.license] || m['models.licenses.noDesc']()}
+                    {licenseDesc}
                   </p>
                 {/if}
               </div>

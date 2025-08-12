@@ -134,9 +134,6 @@ interface RevealModelData {
 export interface RevealData {
   selected: APIVoteData['which_model_radio_output']
   modelsData: RevealModelData[]
-  sizeDesc: APIRevealData['size_desc']
-  licenseDesc: APIRevealData['license_desc']
-  licenseAttrs: APIRevealData['license_attrs']
   shareB64Data: APIRevealData['b64']
 }
 
