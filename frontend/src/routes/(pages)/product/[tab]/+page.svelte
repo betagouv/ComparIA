@@ -9,7 +9,7 @@
   const tabs = [
     { id: 'comparator', href: '/product/comparator', label: 'Le comparateur' },
     { id: 'problem', href: '/product/problem', label: 'Le problème initial' },
-    { id: 'history', href: '/product/history', label: 'Historique du projet' },
+    // { id: 'history', href: '/product/history', label: 'Historique du projet' },
     { id: 'faq', href: '/product/faq', label: 'FAQ' },
     { id: 'partners', href: '/product/partners', label: 'Partenaires' }
   ] as const
@@ -27,8 +27,8 @@
           <Comparator />
         {:else if id === 'problem'}
           <Problem />
-        {:else if id === 'history'}
-          <History />
+          <!-- {:else if id === 'history'}
+          <History /> -->
         {:else if id === 'faq'}
           <FAQ />
         {:else if id === 'partners'}
