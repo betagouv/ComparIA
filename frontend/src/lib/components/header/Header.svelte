@@ -35,7 +35,7 @@
   />
 {/snippet}
 
-<header id="main-header" class="fr-header">
+<header id="main-header" class="fr-header overflow-hidden">
   <div class="fr-header__body">
     <div class="fr-container">
       <div class="fr-header__body-row fr-grid-row">
