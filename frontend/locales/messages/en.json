@@ -197,7 +197,11 @@
             },
             "newDiscussion": "New chat"
         },
-        "menu": "Menu"
+        "menu": "Menu",
+        "title": {
+            "compar": "compar",
+            "ia": "AI"
+        }
     },
     "footer": {
         "backHome": "Back to home - compar:IA",
@@ -373,6 +377,26 @@
                     "b": "of AI and their characteristics"
                 }
             }
+        },
+        "use": {
+            "title": "What is compar:AI for?",
+            "desc": "compar:IA is a free tool that helps raise awareness among citizens about generative AI and its challenges.",
+            "compare": {
+                "title": "Compare the responses of different AI models",
+                "desc": "Discuss and develop your critical thinking by giving your preference",
+                "alt": "Compare"
+            },
+            "test": {
+                "title": "Test the latest AI in the ecosystem in one place",
+                "alt": "Test"
+            },
+            "measure": {
+                "desc": "Discover the environmental impact of your conversations with each model"
+            }
+        },
+        "europe": {
+            "title": "The comparator <span {props}>becomes European!</span>",
+            "desc": "Lithuania, Sweden, and Denmark are joining France in adopting the comparator to refine future AI models in their national languages."
         }
     }
 }
