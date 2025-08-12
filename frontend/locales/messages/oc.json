@@ -1,0 +1,402 @@
+{
+    "arenaHome": {
+        "title": "",
+        "modelSelection": "",
+        "prompt": {
+            "label": "",
+            "placeholder": ""
+        },
+        "selectModels": {
+            "question": "",
+            "help": ""
+        },
+        "compareModels": {
+            "question": "",
+            "count": "",
+            "help": ""
+        },
+        "suggestions": {
+            "title": "",
+            "generateAnother": "",
+            "choices": {
+                "iasummit": {
+                    "iconAlt": "",
+                    "title": "",
+                    "tooltip": ""
+                },
+                "ideas": {
+                    "iconAlt": "",
+                    "title": ""
+                },
+                "explanations": {
+                    "iconAlt": "",
+                    "title": ""
+                },
+                "languages": {
+                    "iconAlt": "",
+                    "title": ""
+                },
+                "administrative": {
+                    "iconAlt": "",
+                    "title": ""
+                },
+                "recipes": {
+                    "iconAlt": "",
+                    "title": ""
+                },
+                "coach": {
+                    "iconAlt": "",
+                    "title": ""
+                },
+                "stories": {
+                    "iconAlt": "",
+                    "title": ""
+                },
+                "recommendations": {
+                    "iconAlt": "",
+                    "title": ""
+                }
+            }
+        }
+    },
+    "closeModal": "",
+    "models": {
+        "licenses": {
+            "type": {
+                "proprietary": "",
+                "openSource": "",
+                "semiOpen": ""
+            }
+        },
+        "release": "",
+        "size": {
+            "estimated": ""
+        },
+        "parameters": "",
+        "names": {
+            "a": "",
+            "b": ""
+        }
+    },
+    "modes": {
+        "random": {
+            "title": "",
+            "label": "",
+            "altLabel": "",
+            "description": ""
+        },
+        "custom": {
+            "title": "",
+            "label": "",
+            "altLabel": "",
+            "description": ""
+        },
+        "small-models": {
+            "title": "",
+            "label": "",
+            "altLabel": "",
+            "description": ""
+        },
+        "big-vs-small": {
+            "title": "",
+            "label": "",
+            "altLabel": "",
+            "description": ""
+        },
+        "reasoning": {
+            "title": "",
+            "label": "",
+            "altLabel": "",
+            "description": ""
+        }
+    },
+    "vote": {
+        "title": "",
+        "bothEqual": "",
+        "comment": {
+            "add": "",
+            "placeholder": ""
+        },
+        "choices": {
+            "positive": {
+                "question": "",
+                "useful": "",
+                "complete": "",
+                "creative": "",
+                "clear-formatting": ""
+            },
+            "negative": {
+                "question": "",
+                "incorrect": "",
+                "superficial": "",
+                "instructions-not-followed": ""
+            },
+            "altText": ""
+        }
+    },
+    "words": {
+        "back": "",
+        "close": "",
+        "random": "",
+        "regenerate": "",
+        "send": "",
+        "validate": ""
+    },
+    "a11y": {
+        "externalLink": ""
+    },
+    "seo": {
+        "title": "",
+        "desc": "",
+        "titles": {
+            "home": "",
+            "product": "",
+            "modeles": "",
+            "datasets": "",
+            "comparator": "",
+            "problem": "",
+            "history": "",
+            "faq": "",
+            "partners": "",
+            "news": "",
+            "mentions-legales": "",
+            "modalites": "",
+            "donnees-personnelles": "",
+            "accessibilite": "",
+            "arene": "",
+            "share": ""
+        }
+    },
+    "header": {
+        "subtitle": "",
+        "homeTitle": "",
+        "logoAlt": "",
+        "startDiscussion": "",
+        "help": {
+            "link": {
+                "title": "",
+                "content": ""
+            }
+        },
+        "banner": "",
+        "votes": {
+            "count": "",
+            "objective": "",
+            "legend": "",
+            "tooltip": ""
+        },
+        "chatbot": {
+            "step": "",
+            "stepOne": {
+                "title": "",
+                "description": ""
+            },
+            "stepTwo": {
+                "title": "",
+                "description": ""
+            },
+            "newDiscussion": ""
+        },
+        "menu": "",
+        "title": {
+            "compar": "",
+            "ia": ""
+        }
+    },
+    "footer": {
+        "backHome": "",
+        "helpUs": "",
+        "writeUs": "",
+        "links": {
+            "legal": "",
+            "tos": "",
+            "privacy": "",
+            "accessibility": "",
+            "sources": ""
+        },
+        "license": {
+            "mention": "",
+            "linkTitle": ""
+        }
+    },
+    "general": {
+        "legal": {
+            "title": "",
+            "editorTitle": "",
+            "editorDesc": "",
+            "directorTitle": "",
+            "directorDesc": "",
+            "hostingTitle": "",
+            "hostingDesc": "",
+            "a11yTitle": "",
+            "a11yDesc": "",
+            "reportTitle": "",
+            "reportA11y": "",
+            "reportDesc": "",
+            "reportA11yDesc": "",
+            "securityTitle": "",
+            "securityCertif": "",
+            "securityNoMail": "",
+            "sources": ""
+        },
+        "tos": {
+            "title": "",
+            "scopeTitle": "",
+            "scopeDesc": "",
+            "defsTitle": "",
+            "defsUser": "",
+            "defsEditor": "",
+            "defsPlatform": "",
+            "defsModels": "",
+            "defsServices": "",
+            "descTitle": "",
+            "descEditor": "",
+            "descUse": "",
+            "descDatasets": "",
+            "featuresTitle": "",
+            "featuresDesc": "",
+            "featuresDescMore": "",
+            "featuresModels": "",
+            "featuresModelsMore": "",
+            "featuresVote": "",
+            "featuresVoteMore": "",
+            "featuresDatasets": "",
+            "featuresDatasetsMore": "",
+            "respTitle": "",
+            "respUser": "",
+            "respLegal": "",
+            "respLegalMore": "",
+            "respPrivacy": "",
+            "respPrivacyMore": "",
+            "respEditor": "",
+            "licenceTitle": "",
+            "licenceCode": "",
+            "licenceLLM": "",
+            "licenceLLMModel": "",
+            "licenceLLMNoticeLink": "",
+            "licenceLLMLicence": "",
+            "licenceLLMUnavailable": "",
+            "licenceLLMEvolution": "",
+            "dispoTitle": "",
+            "dispoDesc": "",
+            "dispoRight": "",
+            "dispoWarranty": "",
+            "dispoResp": "",
+            "evoTitle": "",
+            "evoDesc": "",
+            "evoDescMore": "",
+            "contactTitle": "",
+            "contactDesc": ""
+        },
+        "privacy": {
+            "title": "",
+            "desc": "",
+            "cookiesTitle": "",
+            "cookiesDesc": "",
+            "cookiesDescMore": "",
+            "cookiesBannerTitle": "",
+            "cookiesBannerDesc": "",
+            "cookiesBannerNoNeed": "",
+            "cookiesBannerTools": "",
+            "dataAccessTitle": "",
+            "dataAccessDesc": "",
+            "dataAccessDatasets": "",
+            "privacyTitle": "",
+            "privacyDesc": "",
+            "privacyData": "",
+            "privacyDataArena": "",
+            "privacyDataForm": "",
+            "privacyResp": "",
+            "dataUseTitle": "",
+            "dataUseDesc": "",
+            "dataTimeTitle": "",
+            "dataTimeDesc": "",
+            "dataRespTitle": "",
+            "dataRespDesc": "",
+            "dataExtraTitle": "",
+            "dataExtraHost": "",
+            "dataExtraCountry": "",
+            "dataExtraWhat": "",
+            "dataExtraWarranty": ""
+        },
+        "a11y": {
+            "disclaimer": "",
+            "title": "",
+            "desc": "",
+            "stateTitle": "",
+            "stateDesc": "",
+            "stateNavigate": "",
+            "stateScreenReader": "",
+            "statePrefs": "",
+            "improveTitle": "",
+            "improveDesc": "",
+            "improveMail": "",
+            "improveAdress": "",
+            "improveDelay": "",
+            "remedyTitle": "",
+            "remedyDesc": "",
+            "remedyList": "",
+            "remedyAdvocate": "",
+            "remedyDelegateAdvocate": "",
+            "remedyAdvocateAdress": ""
+        }
+    },
+    "welcome": {
+        "title": "",
+        "goodPractices": "",
+        "errors": "",
+        "privacy": "",
+        "use": "",
+        "go": ""
+    },
+    "home": {
+        "intro": {
+            "title": "",
+            "desc": "",
+            "tos": {
+                "accept": "",
+                "help": "",
+                "error": ""
+            },
+            "steps": {
+                "title": "",
+                "a11yDesc": "",
+                "one": {
+                    "title": "",
+                    "a": "",
+                    "b": ""
+                },
+                "two": {
+                    "title": "",
+                    "a": "",
+                    "b": ""
+                },
+                "three": {
+                    "title": "",
+                    "a": "",
+                    "b": ""
+                }
+            }
+        },
+        "use": {
+            "title": "",
+            "desc": "",
+            "compare": {
+                "title": "",
+                "desc": "",
+                "alt": ""
+            },
+            "test": {
+                "title": "",
+                "alt": ""
+            },
+            "measure": {
+                "desc": ""
+            }
+        },
+        "europe": {
+            "title": "",
+            "desc": ""
+        }
+    }
+}
