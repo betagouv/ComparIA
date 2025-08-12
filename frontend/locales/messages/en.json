@@ -144,5 +144,235 @@
     },
     "a11y": {
         "externalLink": "{text}"
+    },
+    "seo": {
+        "title": "compar:IA, the AI chatbot arena",
+        "desc": "compar:IA is a tool that enables the blind comparison of different conversational AI models, raising awareness of the issues surrounding generative AI (plurality, bias, environmental impact) and helping to build language preference datasets for less-resourced languages.",
+        "titles": {
+            "home": "Home",
+            "product": "Product and partners",
+            "modeles": "Model list",
+            "datasets": "Datasets",
+            "comparator": "The arena",
+            "problem": "The initial challenge",
+            "history": "Project history",
+            "faq": "FAQ",
+            "partners": "Partners",
+            "news": "News",
+            "mentions-legales": "Legal notice",
+            "modalites": "Terms of use",
+            "donnees-personnelles": "Privacy policy",
+            "accessibilite": "Accessibility statement",
+            "arene": "Chat",
+            "share": "My results"
+        }
+    },
+    "header": {
+        "subtitle": "The chatbot arena",
+        "homeTitle": "Home - compar:IA",
+        "logoAlt": "French Republic",
+        "startDiscussion": "Start the discussion",
+        "help": {
+            "link": {
+                "title": "Give feedback on the arena – opens a new window",
+                "content": "Help us improve compar:IA"
+            }
+        },
+        "banner": "The chatbot arena is now available in Lithuanian 🇱🇹, Swedish 🇸🇪, and Danish 🇩🇰!",
+        "votes": {
+            "count": "{count} votes",
+            "objective": "Goal: {count}",
+            "legend": "Legend",
+            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the compar:IA dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
+        },
+        "chatbot": {
+            "step": "Step",
+            "stepOne": {
+                "title": "What do you think of the answers?",
+                "description": "Pay attention to both content and form, then evaluate each response."
+            },
+            "stepTwo": {
+                "title": "Models are revealed!",
+                "description": "Discover the environmental impact of your conversations with each model"
+            },
+            "newDiscussion": "New chat"
+        },
+        "menu": "Menu"
+    },
+    "footer": {
+        "backHome": "Back to home - compar:IA",
+        "helpUs": "Help us improve the product!",
+        "writeUs": "If you encounter a problem or have feedback on the chatbot arena, feel free to write to us <a {linkProps}>using this form</a> - we read every message.<br />Thank you!",
+        "links": {
+            "legal": "Legal notice",
+            "tos": "Terms of use",
+            "privacy": "Privacy policy",
+            "accessibility": "Accessibility: non-compliant",
+            "sources": "Source code"
+        },
+        "license": {
+            "mention": "Unless otherwise explicitly stated as third-party intellectual property, the contents of this site are offered under the <a {linkProps}>Etalab 2.0 license</a>",
+            "linkTitle": "Etalab license - new window"
+        }
+    },
+    "general": {
+        "legal": {
+            "title": "Legal notice",
+            "editorTitle": "Published",
+            "editorDesc": "This site is published by the French Ministry of Culture, 182 Rue Saint-Honoré, 75001 Paris",
+            "directorTitle": "Director of the publication",
+            "directorDesc": "Mr. Romain Delassus, Head of the Digital Department at the Ministry of Culture",
+            "hostingTitle": "Hosting of the site",
+            "hostingDesc": "This site is hosted by OVH SAS (<a {linkProps}>https://www.ovh.com</a>), whose registered office is located at 2 Rue Kellermann, 59100 Roubaix, France.",
+            "a11yTitle": "Accessibility",
+            "a11yDesc": "Compliance with digital accessibility standards is a future goal, but we strive to make this site accessible to everyone.",
+            "reportTitle": "Report a problem",
+            "reportA11y": "If you encounter an accessibility issue preventing you from accessing any content or functionality on the site, please let us know.",
+            "reportDesc": "If you do not receive a prompt response from us, you have the right to submit your complaint or a request for referral to the Defender of Rights.",
+            "reportA11yDesc": "To learn more about the State’s digital accessibility policy: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
+            "securityTitle": "Security",
+            "securityCertif": "The site is protected by an electronic certificate, represented in most browsers by a padlock. This protection helps ensure the confidentiality of exchanges.",
+            "securityNoMail": "Under no circumstances will the services associated with the platform be the source of emails asking for the input of personal information.",
+            "sources": "Unless otherwise stated, all texts on this site are under the <a {etalabLinkProps}>Etalab Open 2.0 license</a>. The source code of this application is freely reusable and accessible on <a {githubLinkProps}>GitHub</a>."
+        },
+        "tos": {
+            "title": "Terms of use",
+            "scopeTitle": "1. Scope of application",
+            "scopeDesc": "Access to the platform is free, does not require registration, and entails the application of specific conditions, listed in these terms of use.",
+            "defsTitle": "2. Definitions",
+            "defsUser": "“User” refers to any natural person consulting the platform and benefiting from its services.",
+            "defsEditor": "“Publisher” refers to the Digital Department of the Ministry of Culture.",
+            "defsPlatform": "“Platform” refers to the website that makes the services accessible.",
+            "defsModels": "\"Models\" refers to the large language models (LLMs) reused under their usage license by the platform to fulfill its purposes.",
+            "defsServices": "\"Services\" refers to the features offered by the platform to fulfill its purposes.",
+            "descTitle": "3. Platform description",
+            "descEditor": "Published by the Digital Department of the French Ministry of Culture, the arena is a platform for comparing conversational models aimed at the general public with the goal of (1) raising citizens' awareness of large language models (LLMs), and (2) collecting user preferences to create alignment datasets.",
+            "descUse": "The user asks a question in a given language and receives answers from two anonymous large language models (LLMs). They vote for the model that provides their preferred response and are then shown the identities of the models. This participatory production system, inspired by the \"<a {linkProps}>chatbot arena</a>\" platform (LMarena), allows for the creation of datasets of human preferences for real-world tasks in French, which can be used for model alignment.",
+            "descDatasets": "These datasets will be made accessible under an open license, particularly to encourage research uses.",
+            "featuresTitle": "4. Features",
+            "featuresDesc": "To meet the dual objective of raising citizen awareness about large language models and collecting user preferences, the platform provides the following services without access restrictions:",
+            "featuresDescMore": "A human-machine interface that allows users to dialogue simultaneously with two conversational models and vote for the preferred response.",
+            "featuresModels": "The models integrated into the platform are deployed on the inference servers of various partners (Scaleway, OVH, Hugging Face, Google Cloud, Mistral AI). The conditions for standardized inference are specified on the platform to ensure transparency in the use of the models.",
+            "featuresModelsMore": "The model comparison interface.",
+            "featuresVote": "At the end of the voting process, the user can view the list of models integrated into the chatbot arena and access a list of information about these models. The information documenting the models is sourced.",
+            "featuresVoteMore": "Sharing and providing access to datasets resulting from the collection of user preferences.",
+            "featuresDatasets": "The service collects user dialogue and preference data. The shared datasets will include the user's questions, responses from the two models, the vote, and the user's preferences.",
+            "featuresDatasetsMore": "The publisher reserves the right to distribute the user's dialogue and preference data under an etalab 2.0 license. The dataset is disseminated on Data.gouv and the Hugging Face platform through the French Ministry of Culture's account (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "respTitle": "5. Responsabilities",
+            "respUser": "The user is responsible for the data or content they enter in the prompt provided by the platform.",
+            "respLegal": "The platform is not intended to be used for generating illegal content or content that is contrary to public order, and more generally, any generation that violates the current legal framework.",
+            "respLegalMore": "In this regard, the user does not enter content or information in the prompt that is contrary to current legal and regulatory provisions.",
+            "respPrivacy": "Since the data entered by the user on the platform is intended to be made available, they undertake not to transmit any information that could identify them or a third party.",
+            "respPrivacyMore": "In any case, the publisher undertakes to implement means to ensure the anonymization of dialogue data before making it available.",
+            "respEditor": "In general, the publisher disclaims any liability in the event of non-compliance with the terms of use.",
+            "licenceTitle": "6. Code and licenses",
+            "licenceCode": "The platform's source code is open and available here: <a {linkProps}>https://github.com/betagouv/ComparIA</a>",
+            "licenceLLM": "The LLMs used to power the services are governed by the following licenses:",
+            "licenceLLMModel": "Conversational AI model",
+            "licenceLLMNoticeLink": "Link to the model licenses",
+            "licenceLLMLicence": "License",
+            "licenceLLMUnavailable": "Not available",
+            "licenceLLMEvolution": "The list of language models integrated into the platform is subject to change over time and is updated with each modification.",
+            "dispoTitle": "7. Service availability",
+            "dispoDesc": "The platform is accessible, except in cases of force majeure or events beyond the control of its publisher.",
+            "dispoRight": "The publisher reserves the right to suspend, interrupt, or limit, without prior notice, access to all or part of the services, particularly for maintenance and update operations necessary for the proper functioning of the service and related equipment, or for any other reason, including technical reasons.",
+            "dispoWarranty": "It is not guaranteed that the service will be free of anomalies or errors. Therefore, the service is provided without any warranty regarding its availability and performance.",
+            "dispoResp": "In this regard, the publisher cannot be held responsible for any losses or damages of any kind that may result from a malfunction or unavailability of the service. Such situations will not entitle any financial compensation.",
+            "evoTitle": "8. Changes to the Terms of Use",
+            "evoDesc": "The terms of use may be modified or supplemented at any time without prior notice, depending on changes made to the services, changes in legislation, or for any other reason deemed necessary.",
+            "evoDescMore": "These modifications and updates are binding on the user, who should therefore regularly refer to this section to check the current general terms.",
+            "contactTitle": "9. Contact",
+            "contactDesc": "For any questions about the service, you can write to <a {linkProps}>contact@comparia.beta.gouv.fr</a>."
+        },
+        "privacy": {
+            "title": "Privacy policy",
+            "desc": "The service is published by the Digital Department of the French Ministry of Culture.",
+            "cookiesTitle": "Cookies and Consent",
+            "cookiesDesc": "This website places a small text file (a \"cookie\") on your computer when you visit it. This allows us to measure the number of visits and understand which pages are the most viewed.",
+            "cookiesDescMore": "You can opt out of tracking your browsing on this website. This will protect your privacy, but it will also prevent the owner from learning from your actions and creating a better experience for you and other users.",
+            "cookiesBannerTitle": "Why doesn't this site display a cookie consent banner?",
+            "cookiesBannerDesc": "It's true, you didn't have to click on a block covering half of the page to say that you agree to the use of cookies -even if you don't know what that means!",
+            "cookiesBannerNoNeed": "Nothing exceptional, no special treatment related to a .gouv.fr domain. We simply respect the law, which states that certain audience tracking tools, properly configured to respect privacy, are exempt from prior authorization.",
+            "cookiesBannerTools": "We use <a {matomoLinkProps}>Matomo</a>, a <a {libreLinkProps}>free</a> tool, configured to comply with the CNIL's \"Cookies\" <a {cnilLinkProps}>recommendation</a>. This means that your IP address, for example, is anonymized before being recorded. It is therefore impossible to associate your visits to this site with your person.",
+            "dataAccessTitle": "I contribute to enriching your data, can I access it?",
+            "dataAccessDesc": "Of course! The site's usage statistics are freely accessible at <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessDatasets": "User dialogue and preference data are distributed under Etalab's Open License 2.0 on the Hugging Face platform as well as on Data.gouv.fr through the Ministry of Culture's account (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "privacyTitle": "Do we process personal data?",
+            "privacyDesc": "The service does not process personal data as defined by the CNIL, meaning any information relating to an identifiable natural person, directly or indirectly.",
+            "privacyData": "The data collected on the site are as follows:",
+            "privacyDataArena": "Data related to user conversations with the models: questions asked by users, model responses, and user preferences expressed between the two models",
+            "privacyDataForm": "Data related to the questionnaire \"Help us improve compar:IA\".",
+            "privacyResp": "The user is responsible for the data or content they enter in the prompt provided by the platform. By accepting the <a {linkProps}>terms of use</a>, the user agrees not to transmit any information that could identify themselves or a third party.",
+            "dataUseTitle": "What processing is done on the conversation data?",
+            "dataUseDesc": "In any case, the publisher commits to implementing means to ensure the anonymization of dialogue data before making it publicly available.",
+            "dataTimeTitle": "How long do we keep this data?",
+            "dataTimeDesc": "Data relating to users and their conversations with models are retained from the time the preference vote is recorded.",
+            "dataRespTitle": "Who is responsible for data processing?",
+            "dataRespDesc": "The French Ministry of Culture's digital department is responsible for processing your personal data.",
+            "dataExtraTitle": "Who helps us process the data?",
+            "dataExtraHost": "Subcontractor: OVH",
+            "dataExtraCountry": "Destination country: France",
+            "dataExtraWhat": "Processing carried out: Accommodation",
+            "dataExtraWarranty": "Guarantees: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>"
+        },
+        "a11y": {
+            "disclaimer": "<strong> compar:IA </strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
+            "title": "Accessibility statement",
+            "desc": "This accessibility statement applies to the website <strong> comparia.beta.gouv.fr </strong> .",
+            "stateTitle": "Compliance Status",
+            "stateDesc": "The comparia.beta.gouv.fr website is non-compliant with RGAA 4.1. The site has not yet been audited <strong>. However, it has been designed to be accessible to as many people as possible </strong> . You should therefore be able to:",
+            "stateNavigate": "navigate all pages of the site using a keyboard",
+            "stateScreenReader": "view the website with a screen reader.",
+            "statePrefs": "adapt the site to your preferences (font size, screen zoom, change of typography, etc.) without loss of content",
+            "improveTitle": "Improvement and contact",
+            "improveDesc": "If you are unable to access any content or service, you can contact the manager of beta.gouv.fr to be directed to an accessible alternative or obtain the content in another format.",
+            "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
+            "improveDelay": "We try to respond within 2 business days.",
+            "remedyTitle": "Appeal",
+            "remedyDesc": "This procedure is to be used in the following case: you have reported to the website manager an accessibility defect which prevents you from accessing content or one of the portal's services and you have not received a satisfactory response.",
+            "remedyList": "You can :",
+            "remedyAdvocate": "Write a message to the <a {linkProps}>Defender of Rights</a>",
+            "remedyDelegateAdvocate": "Contact the <a {linkProps}>Defender of Rights representative in your region</a>",
+            "remedyAdvocateAdress": "Send a letter by post (free, do not put a stamp): Defender of Rights - Free response 71120 75342 Paris CEDEX 07"
+        }
+    },
+    "welcome": {
+        "title": "Welcome to compar:IA!",
+        "goodPractices": "Here are some best practices:",
+        "errors": "AI can make mistakes: we encourage you to check the information provided",
+        "privacy": "Do not share personal information such as your name, surname or address",
+        "use": "Do not use the comparator for illegal or harmful purposes",
+        "go": "Here we go"
+    },
+    "home": {
+        "intro": {
+            "title": "Don't trust the answers <span {props}>of a single AI</span>",
+            "desc": "Have a blind discussion with two AIs and evaluate their answers",
+            "tos": {
+                "accept": "I accept the <a {linkProps}>terms of use</a>",
+                "help": "Data is shared for research purposes",
+                "error": "You must accept the terms of use to continue"
+            },
+            "steps": {
+                "title": "How it works",
+                "a11yDesc": "1. I chat with two hidden AIs: Chat for as long as you like. 2. I give my preference: By doing so, you'll help improve the AI models. 3. The model identities are revealed: Learn more about them and their characteristics.",
+                "one": {
+                    "title": "I chat with two hidden AIs",
+                    "a": "Chat as long as",
+                    "b": "as you like"
+                },
+                "two": {
+                    "title": "I give my preference",
+                    "a": "By doing so,",
+                    "b": "you'll help improve the AI models"
+                },
+                "three": {
+                    "title": "The model identities are revealed!",
+                    "a": "Learn more about them and their characteristics",
+                    "b": "of AI and their characteristics"
+                }
+            }
+        }
     }
 }
