@@ -143,10 +143,10 @@
         "validate": ""
     },
     "a11y": {
-        "externalLink": ""
+        "externalLink": "{text}"
     },
     "seo": {
-        "title": "",
+        "title": "compar:IA, lo comparador d'IA conversacionalas",
         "desc": "",
         "titles": {
             "home": "",
