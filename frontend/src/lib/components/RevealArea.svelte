@@ -11,7 +11,7 @@
 
   let { data }: { data: RevealData } = $props()
 
-  const { selected, modelsData, shareB64Data, ...infos } = data
+  const { selected, modelsData, shareB64Data } = data
 
   let elem: HTMLDivElement
   let shareInput: HTMLInputElement
@@ -196,7 +196,7 @@
           </div>
         </div>
 
-        <ModelInfoModal {model} {infos} />
+        <ModelInfoModal {model} />
       {/each}
     </div>
   </div>
