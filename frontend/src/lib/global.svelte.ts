@@ -5,7 +5,7 @@ export const LOCALES = [
   { code: 'en', short: 'EN', long: 'EN - English' },
   { code: 'fr', short: 'FR', long: 'FR - Français' },
   { code: 'lt', short: 'LT', long: 'LT - Lietuvių' },
-  { code: 'se', short: 'SE', long: 'SE - Svensk' }
+  { code: 'sv', short: 'SV', long: 'SV - Svensk' }
 ] as const
 
 export type VotesData = { count: number; objective: number }

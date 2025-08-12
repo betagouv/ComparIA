@@ -55,7 +55,7 @@
     {
       title: '/jämföra:AI',
       link: 'https://comparia.beta.gouv.fr/',
-      desc: m['home.europe.languages.se'](),
+      desc: m['home.europe.languages.sv'](),
       flag: '🇸🇪'
     },
     {
@@ -110,7 +110,7 @@
         }
       ],
       lt: [],
-      se: []
+      sv: []
     } satisfies Record<Locale, HTMLImgAttributes[]>
   )[locale]
 </script>
