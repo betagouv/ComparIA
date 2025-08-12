@@ -3,13 +3,13 @@
   import ModelCard from '$lib/components/ModelCard.svelte'
   import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsContext } from '$lib/models'
+  import { getModelsContext, SIZES, type Sizes } from '$lib/models'
 
   const models = getModelsContext()
 
   const editorFilter = {
     id: 'editor',
-    legend: 'Éditeur',
+    legend: m['models.list.filters.editor.legend'](),
     options: [...new Set(models.map((m) => m.organisation))]
       .sort()
       .map((org) => ({ value: org, count: models.filter((m) => m.organisation === org).length }))
@@ -17,22 +17,17 @@
 
   const sizeFilter = {
     id: 'size',
-    legend: 'Taille (en milliards de paramètres)',
-    options: [
-      { value: 'XS', label: '< à 7 milliards' },
-      { value: 'S', label: 'de 7 à 20 milliards' },
-      { value: 'M', label: 'de 20 à 70 milliards' },
-      { value: 'L', label: 'de 70 à 150 milliards' },
-      { value: 'XL', label: '> 150 milliards' }
-    ].map((option) => ({
-      ...option,
-      count: models.filter((m) => m.friendly_size === option.value).length
+    legend: m['models.list.filters.size.legend'](),
+    options: SIZES.map((value) => ({
+      value,
+      label: m[`models.list.filters.size.labels.${value}`](),
+      count: models.filter((m) => m.friendly_size === value).length
     }))
   }
 
   const licenseFilter = {
     id: 'license',
-    legend: "Licence d'utilisation",
+    legend: m['models.list.filters.license.legend'](),
     options: [...new Set(models.map((m) => m.license))]
       .filter((l) => !l.toLowerCase().includes('propriétaire'))
       .map((license) => ({
@@ -49,9 +44,16 @@
       ])
   }
 
-  let editors = $state([])
-  let sizes = $state([])
-  let licenses = $state([])
+  const sortingOptions = (['name-asc', 'date-desc', 'params-asc', 'org-asc'] as const).map(
+    (value) => ({
+      value,
+      label: m[`models.list.triage.options.${value}`]()
+    })
+  )
+
+  let editors = $state<string[]>([])
+  let sizes = $state<Sizes[]>([])
+  let licenses = $state<string[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   const filteredModels = $derived(
     models
@@ -117,7 +119,7 @@
           type="button"
           class="fr-sidemenu__btn"
         >
-          Afficher les filtres
+          {m['models.list.filters.display']()}
           {#if filterCount}
             <span class="fr-badge bg-primary! fr-badge--sm rounded-full! ms-2 text-white">
               {filterCount}
@@ -127,7 +129,7 @@
         <div class="fr-collapse" id="fr-modal-filters-section">
           <p class="fr-h5 mb-5! hidden md:block">
             {models.length}
-            {models.length === 1 ? 'modèle' : 'modèles'}
+            {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
           <form class="mt-8 md:mt-0">
             <CheckboxGroup
@@ -169,7 +171,11 @@
             </CheckboxGroup>
 
             <div class="mb-8">
-              <Button text="Réinitialiser" variant="tertiary-no-outline" onclick={resetFilters} />
+              <Button
+                text={m['words.reset']()}
+                variant="tertiary-no-outline"
+                onclick={resetFilters}
+              />
             </div>
           </form>
         </div>
@@ -177,26 +183,25 @@
     </aside>
 
     <div class="basis-full">
-      <!-- <h2 class="fr-h2">{m['models.title']()}</h2>
-      <p class="fr-text--lead">{m['models.intro']()}</p> -->
+      <!-- <h2 class="fr-h2">{m['models.list.title']()}</h2>
+      <p class="fr-text--lead">{m['models.list.intro']()}</p> -->
 
       <p class="fr-h6 mb-4! md:hidden">
         {models.length}
-        {models.length === 1 ? 'modèle' : 'modèles'}
+        {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
       </p>
 
       <div class="fr-select-group">
-        <label class="fr-label" for="model-order">Trier par</label>
+        <label class="fr-label" for="model-order">{m['models.list.triage.label']()}</label>
         <select
           class="fr-select w-auto!"
           id="model-order"
           bind:value={sortingMethod}
           name="model-order"
         >
-          <option value="name-asc">Nom du modèle (A à Z)</option>
-          <option value="date-desc">Date de sortie (du plus au moins récent)</option>
-          <option value="params-asc">Taille (du plus petit au plus grand)</option>
-          <option value="org-asc">Éditeur (A à Z)</option>
+          {#each sortingOptions as option}
+            <option value={option.value}>{option.label}</option>
+          {/each}
         </select>
       </div>
 
@@ -207,7 +212,7 @@
       </div>
 
       {#if filteredModels.length === 0}
-        <p class="fr-text--lead fr-mt-4w">{m['models.noresults']()}</p>
+        <p class="fr-text--lead fr-mt-4w">{m['models.list.noresults']()}</p>
       {/if}
     </div>
   </div>

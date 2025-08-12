@@ -617,9 +617,41 @@
       },
       "impacts": "Les calculs d’impacts environnementaux reposent sur les projets <a {linkProps1}>EcoLogits</a> et <a {linkProps2}>Impact CO<sub>2</sub></a>."
     },
-    "title": "Découvrez les modèles",
-    "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
-    "noresults": "Aucun modèle ne correspond à vos critères de recherche."
+    "list": {
+      "title": "Découvrez les modèles",
+      "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
+      "filters": {
+        "editor": {
+          "legend": "Éditeur"
+        },
+        "size": {
+          "legend": "Taille (en milliards de paramètres)",
+          "labels": {
+            "XS": "< à 7 milliards",
+            "S": "de 7 à 20 milliards",
+            "M": "de 20 à 70 milliards",
+            "L": "de 70 à 150 milliards",
+            "XL": "> 150 milliards"
+          }
+        },
+        "license": {
+          "legend": "Licence d'utilisation"
+        },
+        "display": "Afficher les filtres"
+      },
+      "triage": {
+        "label": "Trier par",
+        "options": {
+          "name-asc": "Nom du modèle (A à Z)",
+          "date-desc": "Date de sortie (du plus au moins récent)",
+          "params-asc": "Taille (du plus petit au plus grand)",
+          "org-asc": "Éditeur (A à Z)"
+        }
+      },
+      "model": "modèle",
+      "models": "modèles",
+      "noresults": "Aucun modèle ne correspond à vos critères de recherche."
+    }
   },
   "modes": {
     "random": {
@@ -770,6 +802,7 @@
     "close": "Fermer",
     "random": "Aléatoire",
     "regenerate": "Regénérer",
+    "reset": "Réinitialiser",
     "restart": "Recommencer",
     "retry": "Recommencer",
     "send": "Envoyer",

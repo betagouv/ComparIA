@@ -18,10 +18,10 @@ export const LICENSES = [
   'propriétaire Anthropic',
   'Mistral AI Non-Production'
 ] as const
+export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
 
-export type Sizes = 'XS' | 'S' | 'M' | 'L' | 'XL'
-
-type License = (typeof LICENSES)[number]
+export type Sizes = (typeof SIZES)[number]
+export type License = (typeof LICENSES)[number]
 
 export interface APIBotModel {
   // [aya-expanse-8b]
