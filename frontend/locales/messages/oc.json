@@ -1,1 +1,9 @@
-{}
+{
+    "arenaHome": {
+        "title": "Cossí vos pòdi ajudar uèi ?",
+        "modelSelection": "Seleccion dels modèls",
+        "prompt": {
+            "label": "Escrivètz vòstre primièr messatge"
+        }
+    }
+}
