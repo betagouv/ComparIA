@@ -1,78 +1,62 @@
 <script lang="ts">
-  import { m } from '$lib/i18n/messages'
-  import type { Model } from '$lib/types'
+  import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
+  import type { APIBotModel } from '$lib/models'
 
-  export let model: Model
+  let { model }: { model: APIBotModel } = $props()
 
-  $: isProprietary = model.license.toLowerCase().includes('propriétaire')
-  $: badgeColor = model.fully_open_source
-    ? 'green-emeraude'
-    : model.distribution === 'open-weights'
-      ? 'yellow-tournesol'
-      : 'orange-terre-battue'
-
-  $: badgeText = model.fully_open_source
-    ? 'Open source'
-    : model.distribution === 'open-weights'
-      ? 'Semi-ouvert'
-      : 'Propriétaire'
+  const badges = [
+    model.fully_open_source
+      ? { color: 'green-emeraude', text: 'Open source' }
+      : model.distribution === 'open-weights'
+        ? { color: 'yellow-tournesol', text: 'Semi-ouvert' }
+        : { color: 'orange-terre-battue', text: 'Propriétaire' },
+    model.release_date ? { color: '', text: `Sortie ${model.release_date}` } : null,
+    {
+      color: 'info',
+      text:
+        model.distribution === 'open-weights'
+          ? `${Math.round(model.params)} mds de paramètres`
+          : `Taille estimée (${model.friendly_size})`
+    }
+  ].filter((b) => !!b)
 </script>
 
-<div class="fr-card fr-enlarge-link">
+<div class="fr-card fr-enlarge-link cg-border bg-none! rounded-xl">
   <div class="fr-card__body">
-    <div class="fr-card__content">
-      <h6 class="fr-card__title">
-        <a href="#" data-fr-opened="false" aria-controls="fr-modal-{model.id}"></a>
-      </h6>
-      <h6 class="fr-mb-2w github-title">
+    <div class="fr-card__content px-5! md:px-4! md:pt-4!">
+      <h6 class="fr-card__title text-dark-grey font-normal! text-sm! mb-3! flex items-start gap-3">
         <img
-          class="fr-mt-n2v relative"
-          src="assets/orgs/{model.icon_path}"
-          width="34"
+          class="object-contain"
+          src="/orgs/{model.icon_path}"
+          width="20"
           alt="{model.organisation} logo"
         />
-        {model.organisation}/<strong>{model.simple_name}</strong>
+        <div>
+          {model.organisation}/<a
+            class="text-black! after:text-primary"
+            data-fr-opened="false"
+            aria-controls="fr-modal-{model.id}"
+            href="#"><span class="font-extrabold">{model.simple_name}</span></a
+          >
+        </div>
       </h6>
-      <p class="fr-mb-4w">
-        <span
-          class="fr-badge fr-badge--sm fr-badge--{badgeColor} fr-badge--no-icon fr-mr-1v fr-mb-1v"
-        >
-          {badgeText}
-        </span>
-        {#if model.release_date}
-          <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">
-            Sortie {model.release_date}
-          </span>
-        {/if}
-        <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
-          {#if model.distribution === 'open-weights'}
-            {Math.round(model.params)} mds de paramètres&nbsp;
-            <a
-              class="fr-icon fr-icon--xs fr-icon--question-line"
-              aria-describedby="params-{model.id}"
-            ></a>
-          {:else}
-            Taille estimée ({model.friendly_size})
-          {/if}
-        </span>
-      </p>
+
       <p class="fr-card__desc">{model.excerpt}</p>
+
+      <div class="fr-card__start order-2!">
+        <ul class="fr-badges-group">
+          {#each badges as badge}
+            <li>
+              <p class={`text-xs! fr-badge fr-badge--${badge.color} fr-badge--no-icon`}>
+                {badge.text}
+              </p>
+            </li>
+          {/each}
+        </ul>
+      </div>
     </div>
   </div>
+  <div class="fr-card__header"></div>
 </div>
 
-<style>
-  .github-title {
-    color: var(--text-default-grey) !important;
-    font-weight: 400 !important;
-    font-size: 1.1rem;
-  }
-
-  .github-title img {
-    vertical-align: middle;
-  }
-
-  .relative {
-    position: relative;
-  }
-</style>
+<ModelInfoModal {model} />
