@@ -1,13 +1,457 @@
 [
-    {
-        "api_id": "phi-3-mini-4k-instruct",
-        "model_id": "phi-3-mini-4k-instruct",
-        "api_base": "https://api-inference.huggingface.co/v1/",
-        "api_type": "openai",
-        "api_key": "",
-        "model_name": "microsoft/Phi-3-mini-4k-instruct",
-        "recommended_config": {
-            "temperature": 0.7
-        }
+  {
+    "api_id": "openrouter-mistral-saba",
+    "model_id": "mistral-saba",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "mistralai/mistral-saba",
+    "recommended_config": {
+      "temperature": 0.7,
     }
+  },
+  {
+    "api_id": "hf-c4ai-aya-expanse-32b",
+    "model_id": "aya-expanse-32b",
+    "api_type": "openai",
+    // "api_type": "huggingface/cohere",
+    "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
+    "api_key": "{{ .Values.huggingfaceInferenceKey }}",
+    // "model_name": "CohereLabs/aya-expanse-32b",
+    "model_name": "c4ai-aya-expanse-32b",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  // {
+  //   "api_id": "openrouter-olmo-2-0325-32b",
+  //   "model_id": "olmo-2-0325-32b-instruct",
+  //   "api_type": "openrouter",
+  //   "api_key": "{{ .Values.OpenRouterApiKey }}",
+  //   "model_name": "allenai/olmo-2-0325-32b-instruct",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  // {
+  //   "api_id": "openrouter-mistral-small-3",
+  //   "model_id": "mistral-small-24b-instruct-2501",
+  //   "api_type": "openrouter",
+  //   "api_key": "{{ .Values.OpenRouterApiKey }}",
+  //   "model_name": "mistralai/mistral-small-24b-instruct-2501",
+  //   "recommended_config": {
+  //     "temperature": 0.15,
+  //   }
+  // },
+  // {
+  //   "model_id": "gemini-1.5-pro-002",
+  //   "api_id": "gemini-1.5-pro-002",
+  //   "api_type": "vertex_ai",
+  //   "model_name": "gemini-1.5-pro-002",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  {
+    "model_id": "gemini-2.0-flash-001",
+    "api_id": "gemini-2.0-flash-001",
+    "api_type": "vertex_ai",
+    "model_name": "gemini-2.0-flash-001",
+    "recommended_config": {
+      "temperature": 1,
+    }
+  },
+  {
+    "model_id": "claude-3-7-sonnet",
+    "api_id": "vertex-claude-3-7",
+    "api_type": "vertex_ai",
+    "model_name": "claude-3-7-sonnet@20250219",
+    "recommended_config": {
+      "temperature": 0.5,
+    },
+    "vertex_ai_location": "europe-west1"
+  },
+  // {
+  //   "model_id": "claude-3-5-sonnet-v2",
+  //   "api_id": "vertex-claude",
+  //   "api_type": "vertex_ai",
+  //   "vertex_ai_location": "europe-west1",
+  //   "model_name": "claude-3-5-sonnet-v2@20241022",
+  //   "recommended_config": {
+  //     "temperature": 0.5,
+  //   }
+  // },
+  {
+    "model_id": "llama-3.1-405b",
+    "api_id": "google-llama-405b",
+    "api_type": "vertex_ai",
+    "vertex_ai_location": "us-central1",
+    "model_name": "meta/llama3-405b-instruct-maas",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-grok-3-mini-beta",
+    "model_id": "grok-3-mini-beta",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "x-ai/grok-3-mini-beta",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-llama-4-scout",
+    "model_id": "llama-4-scout",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "meta-llama/llama-4-scout",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-deepseek-v3-0324",
+    "model_id": "deepseek-v3-0324",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "deepseek/deepseek-chat-v3-0324",
+    "recommended_config": {
+      "temperature": 0.3,
+    }
+  },
+  {
+    "model_id": "phi-4",
+    "api_id": "openrouter-phi-4",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "microsoft/phi-4"
+  },
+  {
+    "model_id": "mistral-large-2411",
+    "api_id": "openrouter-mistral-large-2411",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "mistralai/mistral-large-2411",
+    "recommended_config": {
+      "temperature": 0.7
+    }
+  },
+  {
+    "api_base": "https://albert.api.etalab.gouv.fr/v1/",
+    "api_type": "openai",
+    "model_id": "llama-3.1-8b",
+    "api_id": "albert-llama-3.1-8b",
+    "api_key": "{{ .Values.AlbertKey }}",
+    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  // {
+  //   "model_id": "phi-3.5-mini-instruct",
+  //   "api_id": "hf-serverless-phi-3.5",
+  //   "api_base": "https://api-inference.huggingface.co/v1/",
+  //   "api_type": "openai",
+  //   "api_key": "{{ .Values.huggingfaceInferenceKey }}",
+  //   "model_name": "microsoft/Phi-3.5-mini-instruct",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  // Stream false
+  // "gemma-2-2b-it": {
+  //   "api_base": "https://api-inference.huggingface.co/models/google/gemma-2-2b-it/v1/",
+  //   "api_type": "openai",
+  //   "api_key": "{{ .Values.huggingfaceInferenceKey }}",
+  //   "model_name": "google/gemma-2-2b-it",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //     "top_p": 1.0
+  //   }
+  // },
+  //  // q8 
+  //  {
+  //   "api_id": "hf-endpoint-choco-2-14b-q8",
+  //   "model_id": "chocolatine-2-14b-instruct-v2.0.3-q8",
+  //   "api_base": "https://h79kzp5p2bgg0c6g.us-east-1.aws.endpoints.huggingface.cloud",
+  //    "api_type": "openai",
+  //    "api_key": "{{ .Values.huggingfaceInferenceKey }}",
+  //    "model_name": "tgi",
+  //    "recommended_config": {
+  //  "temperature": 0.7,
+  //  }
+  //  },
+  // {
+  //   "model_id": "mistral-nemo-2407",
+  //   "api_id": "openrouter-nemo",
+  //   "api_type": "openrouter",
+  //   "api_key": "{{ .Values.OpenRouterApiKey }}",
+  //   "model_name": "mistralai/mistral-nemo",
+  //   "recommended_config": {
+  //     "temperature": 0.3,
+  //   }
+  // },
+  // {
+  //   "api_id": "openrouter-1-lfm-40b",
+  //   "model_id": "lfm-40b",
+  //   "api_base": "https://openrouter.ai/api/v1/",
+  //   "api_type": "openai",
+  //   "api_key": "{{ .Values.OpenRouterApiKey }}",
+  //   "model_name": "liquid/lfm-40b:free",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  // {
+  //   "api_id": "google-ministral",
+  //   "model_id": "ministral-8b-instruct-2410",
+  //   "api_base": "http://ministral.languia.beta.gouv.fr/v1/",
+  //   "api_type": "hosted_vllm",
+  //   "api_key": "{{ .Values.llamaCppApiKey }}",
+  //   "model_name": "mistralai/Ministral-8B-Instruct-2410",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  {
+    "api_id": "openrouter-ministral",
+    "model_id": "ministral-8b-instruct-2410",
+    // "api_base": "http://ministral.languia.beta.gouv.fr/v1/",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "mistralai/ministral-8b",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  // {
+  //   "api_id": "google-aya-expanse-8b",
+  //   "model_id": "aya-expanse-8b",
+  //   "api_base": "http://vm2.languia.beta.gouv.fr/v1/",
+  //   "api_type": "hosted_vllm",
+  //   "api_key": "{{ .Values.llamaCppApiKey }}",
+  //   "model_name": "CohereForAI/aya-expanse-8b",
+  //   "recommended_config": {
+  //     "temperature": 0.7
+  //   }
+  // },
+  // {
+  //   "model_id": "lfm-40b",
+  //   "api_id": "openrouter-lfm-40b",
+  //   "api_type": "openrouter",
+  //   "api_key": "{{ .Values.OpenRouterApiKey }}",
+  //   "model_name": "liquid/lfm-40b",
+  //   "recommended_config": {
+  //     "temperature": 0.5
+  //   }
+  // },
+  {
+    "model_id": "llama-3.3-70b",
+    "api_id": "openrouter-llama-3.3-70b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "meta-llama/llama-3.3-70b-instruct",
+    "recommended_config": {
+      "temperature": 1
+    }
+  },
+  {
+    "model_id": "hermes-3-llama-3.1-405b",
+    "api_id": "openrouter-hermes-3-llama-3.1-405b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "nousresearch/hermes-3-llama-3.1-405b",
+    "recommended_config": {
+      "temperature": 0.7
+    }
+  },
+  {
+    "model_id": "llama-3.1-nemotron-70b-instruct",
+    "api_id": "openrouter-llama-3.1-nemotron-70b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "nvidia/llama-3.1-nemotron-70b-instruct",
+    "recommended_config": {
+      "temperature": 0.7
+    }
+  },
+  {
+    "model_id": "c4ai-command-r-08-2024",
+    "api_id": "openrouter-command-r-08-2024",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "cohere/command-r-08-2024",
+    "recommended_config": {
+      "temperature": 0.7
+    }
+  },
+  // {
+  //   "api_id": "google-vm-gemma-2-27b-q8",
+  //   "model_id": "gemma-2-27b-it-q8",
+  //   "api_base": "http://gemma2.languia.beta.gouv.fr/v1/",
+  //   "api_type": "openai",
+  //   "api_key": "PcWzdn7r2VjH4bqTTMQPZsnFOaoFV9Sm7qz6ASiOfO4r1lKSFe",
+  //   "model_name": "gemma-2-27b-it",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  // {
+  //   "api_id": "betagouv-gemma-2-9b",
+  //   "model_id": "gemma-2-9b-it",
+  //   "api_base": "https://albert.api.etalab.gouv.fr/v1/",
+  //   "api_type": "openai",
+  //   "api_key": "{{ .Values.AlbertKey }}",
+  //   "model_name": "google/gemma-2-9b-it",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  // {
+  //   "api_id": "openrouter-gemma-2-9b",
+  //   "model_id": "gemma-2-9b-it",
+  //   "api_type": "openrouter",
+  //   "api_key": "{{ .Values.OpenRouterApiKey }}",
+  //   "model_name": "google/gemma-2-9b-it",
+  //   "recommended_config": {
+  //     "temperature": 0.7,
+  //   }
+  // },
+  {
+    "api_id": "openrouter-gemma-3-4b",
+    "model_id": "gemma-3-4b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "google/gemma-3-4b-it",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-gemma-3-12b",
+    "model_id": "gemma-3-12b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "google/gemma-3-12b-it",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-gemma-3-27b",
+    "model_id": "gemma-3-27b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "google/gemma-3-27b-it",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-mistral-small-3.1-24b",
+    "model_id": "mistral-small-3.1-24b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "mistralai/mistral-small-3.1-24b-instruct-2503",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-cohere-command-a",
+    "model_id": "command-a",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "cohere/command-a",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "model_id": "qwen2.5-coder-32b-instruct",
+    "api_id": "openrouter-qwen2.5-32b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "qwen/qwen-2.5-coder-32b-instruct",
+    "recommended_config": {
+      "temperature": 0.7,
+    }
+  },
+  {
+    "api_id": "openrouter-gpt-4.1-mini",
+    "model_id": "gpt-4.1-mini",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "openai/gpt-4.1-mini",
+    "recommended_config": {
+      "temperature": 0.5,
+    }
+  },
+  {
+    "api_id": "openrouter-gpt-4.1-nano",
+    "model_id": "gpt-4.1-nano",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "openai/gpt-4.1-nano",
+    "recommended_config": {
+      "temperature": 0.5,
+    }
+  },
+  {
+    "model_id": "deepseek-r1-distill-llama-70b",
+    "api_id": "openrouter-deepseek-r1-distill-llama-70b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "deepseek/deepseek-r1-distill-llama-70b",
+    "recommended_config": {
+      "include_reasoning": true,
+      "temperature": 0.6,
+    }
+  },
+  {
+    "api_id": "openrouter-deepseek-r1",
+    "model_id": "deepseek-r1",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "deepseek/deepseek-r1",
+    "recommended_config": {
+      "temperature": 0.7,
+      "include_reasoning": true,
+    }
+  },
+  {
+    "api_id": "openrouter-o4-mini",
+    "model_id": "o4-mini",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "openai/o4-mini",
+    "recommended_config": {
+      "temperature": 0.7,
+      // No need
+      // "include_reasoning": true,
+    }
+  },
+  {
+    "api_id": "openrouter-qwen3-32b",
+    "model_id": "qwen3-32b",
+    "api_type": "openrouter",
+    "api_key": "{{ .Values.OpenRouterApiKey }}",
+    "model_name": "qwen/qwen3-32b",
+    "recommended_config": {
+      "temperature": 0.7,
+      "include_reasoning": true,
+      "enable_reasoning": true
+    }
+  },
+  // {
+  //   "api_id": "openrouter-gpt-4o",
+  //   "model_id": "gpt-4o-2024-08-06",
+  //   "api_type": "openrouter",
+  //   "api_key": "{{ .Values.OpenRouterApiKey }}",
+  //   "model_name": "openai/gpt-4o-2024-08-06",
+  //   "recommended_config": {
+  //     "temperature": 0.5,
+  //   }
+  // },
 ]
