@@ -54,3 +54,7 @@ utils/results-output/
 litellm_config.yml
 results-output/
 venv.bak
+
+# Frontend
+frontend/.svelte-kit/
+frontend/locales/cache/plugins
