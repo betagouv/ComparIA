@@ -189,14 +189,14 @@
             <button
               class="fr-btn--sm grey-btn"
               data-fr-opened="false"
-              aria-controls="fr-modal-{model.id}"
+              aria-controls="modal-model-reveal-{model.id}"
             >
               {m['actions.seeMore']()}
             </button>
           </div>
         </div>
 
-        <ModelInfoModal {model} />
+        <ModelInfoModal {model} modalId="modal-model-reveal-{model.id}" />
       {/each}
     </div>
   </div>

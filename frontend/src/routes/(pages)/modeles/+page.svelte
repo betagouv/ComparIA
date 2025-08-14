@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Button, CheckboxGroup } from '$components/dsfr'
+  import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import ModelCard from '$lib/components/ModelCard.svelte'
   import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
@@ -100,6 +101,9 @@
     e.preventDefault()
     allFilter.forEach((arr) => (arr.length = 0))
   }
+
+  let selectedModel = $state<string>()
+  const selectedModelData = $derived(models.find((m) => m.id === selectedModel))
 </script>
 
 <SeoHead title={m['seo.titles.modeles']()} />
@@ -207,7 +211,11 @@
 
       <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
         {#each filteredModels as model (model.id)}
-          <ModelCard {model} />
+          <ModelCard
+            {model}
+            modalId="modal-model"
+            onModelSelected={(name) => (selectedModel = name)}
+          />
         {/each}
       </div>
 
@@ -217,3 +225,5 @@
     </div>
   </div>
 </main>
+
+<ModelInfoModal model={selectedModelData} modalId="modal-model" />

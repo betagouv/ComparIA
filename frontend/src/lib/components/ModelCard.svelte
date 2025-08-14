@@ -1,8 +1,15 @@
 <script lang="ts">
-  import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
   import type { APIBotModel } from '$lib/models'
 
-  let { model }: { model: APIBotModel } = $props()
+  let {
+    model,
+    onModelSelected,
+    modalId
+  }: {
+    model: APIBotModel
+    onModelSelected: (name: string) => void
+    modalId: string
+  } = $props()
 
   const badges = [
     model.fully_open_source
@@ -35,8 +42,10 @@
           {model.organisation}/<a
             class="text-black! after:text-primary"
             data-fr-opened="false"
-            aria-controls="fr-modal-{model.id}"
-            href="#"><span class="font-extrabold">{model.simple_name}</span></a
+            aria-controls={modalId}
+            href="#{model.id}"
+            onclick={() => onModelSelected(model.id)}
+            ><span class="font-extrabold">{model.simple_name}</span></a
           >
         </div>
       </h6>
@@ -58,5 +67,3 @@
   </div>
   <div class="fr-card__header"></div>
 </div>
-
-<ModelInfoModal {model} />
