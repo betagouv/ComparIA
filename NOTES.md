@@ -1,0 +1,6 @@
+- ne show pas raisonnement pr qwen 30b-a23 machin ni pr /qwen3-235b-a22b-thinking-2507
+- tire le meme modele en cas d'erreur ?
+- retry est KO
+- logs sont ok que dans conversation.py ?
+- marque vs. Aléatoire si on joue un peu avec la sélec des modèles
+- n'affiche pas quand a pioché un autre modele
