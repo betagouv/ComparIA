@@ -1,3 +1,5 @@
+export { default as Accordion } from './Accordion.svelte'
+export { default as AccordionGroup } from './AccordionGroup.svelte'
 export { default as Badge } from './Badge.svelte'
 export { default as Button } from './Button.svelte'
 export { default as CheckboxGroup } from './CheckboxGroup.svelte'
