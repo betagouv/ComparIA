@@ -5,7 +5,8 @@
     { id: 'usage', label: 'Usage' },
     { id: 'models', label: 'Modèles' },
     { id: 'datasets', label: 'Jeu de données' },
-    { id: 'ecology', label: 'Indicateurs écologiques' }
+    { id: 'ecology', label: 'Indicateurs écologiques' },
+    { id: 'i18n', label: 'Internationalisation' }
   ]
 </script>
 
@@ -373,6 +374,41 @@
             C'est pourquoi il est crucial que les outils d'évaluation de l'empreinte carbone de l'IA
             prennent en compte <strong>l'ensemble du cycle de vie</strong> des modèles, de l'entraînement
             à l'utilisation en production
+          </p>
+        </Accordion>
+      </AccordionGroup>
+    {:else if id === 'datasets'}
+      <AccordionGroup>
+        <Accordion
+          id={`${id}-1`}
+          label="compar:IA s’est d’abord concentré sur le français : y a-t-il des plans pour d'autres langues européennes ?"
+        >
+          <p>
+            Oui, l'internationalisation de compar:IA est en cours. Nous commençons par un
+            élargissement à trois pays pilotes : la Lituanie, la Suède et le Danemark. Cette
+            première phase permet de tester l’approche et d'adapter l’interface à différents
+            contextes linguistiques et culturels européens. À terme, le cercle pourra s'étendre à
+            davantage de langues européennes selon les retours d'expérience de ces pays pilotes.
+            L'objectif est de construire progressivement un véritable commun numérique européen pour
+            l'évaluation humaine des IA conversationelles, avec une gouvernance collaborative qui
+            reste encore à définir entre les différents pays participants.
+          </p>
+        </Accordion>
+        <Accordion
+          id={`${id}-2`}
+          label="Quels sont les avantages d'une plateforme de collecte de préférences spécifiquement européenne ?"
+        >
+          <p>
+            Le développement d’un plateforme européenne de comparaison des modèles d’IA
+            conversationnelle offre plusieurs avantages concrets. Elle permet de collecter des
+            données de préférence reflétant les besoins réels des utilisateurs européens, améliorant
+            ainsi la pertinence des modèles pour ce public. Elle garantit ainsi une meilleure
+            représentation des langues et cultures européennes, souvent sous-représentées dans les
+            évaluations globales dominées par l'anglais. Elle assure aussi une conformité avec les
+            réglementations européennes (RGPD, AI Act) et intègre des critères d'évaluation alignés
+            sur les priorités européennes comme la durabilité environnementale et la transparence
+            algorithmique. Enfin, elle favorise l'émergence d'un écosystème d'IA européen compétitif
+            et autonome.
           </p>
         </Accordion>
       </AccordionGroup>
