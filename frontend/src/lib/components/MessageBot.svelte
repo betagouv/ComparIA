@@ -1,12 +1,13 @@
 <script lang="ts">
   import type { ChatMessage, OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
   import Copy from '$lib/components/Copy.svelte'
+  import Icon from '$lib/components/Icon.svelte'
   import LikeDislike from '$lib/components/LikeDislike.svelte'
   import LikePanel from '$lib/components/LikePanel.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
   import Pending from '$lib/components/Pending.svelte'
   import { m } from '$lib/i18n/messages'
-  import { noop } from '$lib/utils/commons'
+  import { noop, sanitize } from '$lib/utils/commons'
 
   export type MessageBotProps = {
     message: ChatMessage<'assistant'>
@@ -56,6 +57,37 @@
         <div class="c-bot-disk-{bot}"></div>
         <h3 class="mb-0! ms-1!">{m[`models.names.${bot}`]()}</h3>
       </div>
+
+      <!-- FIXME i18n -->
+      {#if message.reasoning != ''}
+        <hr />
+        <div class="fr-highlight fr-py-1w">
+          <section class="fr-accordion text-primary fr-text--bold">
+            <h3 class="fr-accordion__title">
+              <button
+                type="button"
+                class="fr-accordion__btn"
+                aria-expanded="false"
+                aria-controls="reasonning"
+              >
+                <Icon icon="brain" class="text-primary" />
+                {#if message.content === '' && generating}
+                  Raisonnement en cours...
+                {:else}
+                  Raisonnement terminé
+                  <Icon icon="check-line" class="text-primary" />
+                {/if}
+              </button>
+            </h3>
+            <div id="reasonning" class="fr-collapse">
+              <div class="thought fr-mt-2w fr-mb-1w">
+                {@html sanitize(message.reasoning.split('\n').join('<br>'))}
+              </div>
+            </div>
+          </section>
+        </div>
+        <hr />
+      {/if}
 
       <Markdown message={message.content} chatbot on:load={onLoad} />
 
