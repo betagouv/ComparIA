@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Badge } from '$lib/components/dsfr'
   import Icon from '$lib/components/Icon.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
@@ -18,14 +19,51 @@
       prohibitCommercial: licenseAttrs?.[modelData.license]?.prohibitCommercial
     }
   })
+
+  const badges = $derived.by(() => {
+    if (!modelData) return []
+    return [
+      modelData.fully_open_source
+        ? ({
+            variant: 'green',
+            text: m['models.licenses.type.openSource'](),
+            tooltip: m['models.openWeight.tooltips.openSource']()
+          } as const)
+        : modelData.distribution === 'open-weights'
+          ? ({
+              variant: 'yellow',
+              text: m['models.licenses.type.semiOpen'](),
+              tooltip: m['models.openWeight.tooltips.openWeight']()
+            } as const)
+          : ({ variant: 'orange', text: m['models.licenses.type.proprietary']() } as const),
+      modelData.release_date
+        ? ({ color: '', text: m['models.release']({ date: modelData.release_date }) } as const)
+        : null,
+      modelData?.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
+    ].filter((b) => !!b)
+  })
+
+  const sizeBadge = $derived.by(() => {
+    if (!modelData) return
+    return {
+      id: 'model-parameters',
+      variant: 'info',
+      text:
+        modelData.distribution === 'api-only'
+          ? m['models.size.estimated']({ size: modelData.friendly_size })
+          : m['models.parameters']({ number: modelData.params }),
+      tooltip:
+        modelData.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
+    } as const
+  })
 </script>
 
 <dialog aria-labelledby="{modalId}-title" id={modalId} class="fr-modal">
-  <div class="fr-container fr-container--fluid fr-container-xl">
+  <div class="fr-container fr-container--fluid">
     <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-8">
-        <div class="fr-modal__body">
-          <div class="fr-modal__header">
+      <div class="fr-col-12 fr-col-md-10 fr-col-lg-10">
+        <div class="fr-modal__body bg-light-grey! rounded-xl">
+          <div class="fr-modal__header pb-0!">
             <button
               class="fr-btn--close fr-btn"
               title="Fermer la fenêtre modale"
@@ -34,176 +72,113 @@
               {m['words.close']()}
             </button>
           </div>
-          {#if model}
-            <div class="fr-modal__content fr-mb-4w modal-model">
-              <h6 id="{modalId}-title" class="fr-mb-2w github-title">
-                <img class="fr-mt-n2v relative inline" src="/orgs/{model.icon_path}" width="34" />
-                {model.organisation}/<strong>{model.simple_name}</strong>
-              </h6>
-              <p class="fr-mb-4w">
-                {#if model.fully_open_source}
-                  <span
-                    class="fr-badge fr-badge--sm fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v"
-                  >
-                    {m['models.licenses.type.openSource']()}&nbsp;
-                    <Tooltip id="license-{model.id}" size="xs">
-                      {#if model.fully_open_source}
-                        {m['models.openWeight.tooltips.openSource']()}
-                      {:else}
-                        {m['models.openWeight.tooltips.openWeight']()}
-                      {/if}
-                    </Tooltip>
-                  </span>
-                {:else if model.distribution === 'open-weights'}
-                  <span
-                    class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v"
-                  >
-                    {m['models.licenses.type.semiOpen']()}&nbsp;
-                    <Tooltip id="license-{model.id}" size="xs">
-                      {#if model.fully_open_source}
-                        {m['models.openWeight.tooltips.openSource']()}
-                      {:else}
-                        {m['models.openWeight.tooltips.openWeight']()}
-                      {/if}
-                    </Tooltip>
-                  </span>
-                {:else}
-                  <span
-                    class="fr-badge fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v"
-                  >
-                    {m['models.licenses.type.proprietary']()}
-                  </span>
-                {/if}
-                <span class="fr-badge fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                  {#if model.distribution === 'api-only'}
-                    {m['models.size.estimated']({ size: model.friendly_size })}
-                  {:else}
-                    {m['models.parameters']({ number: model.params })}&nbsp;<Tooltip
-                      id="params-{model.id}"
-                      text={m['models.openWeight.tooltips.params']()}
-                      size="xs"
-                    />
-                  {/if}
-                </span>
-                {#if model.release_date}
-                  <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-                    {m['models.release']({ date: model.release_date })}
-                  </span>
-                {/if}
 
-                <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-                  {#if model.distribution === 'open-weights'}
-                    {m['models.licenses.name']({ licence: model.license })}
-                  {:else}
-                    {m['models.licenses.commercial']()}
-                  {/if}
-                </span>
-              </p>
-              <p>{model.description}</p>
-              <div>
-                <h6 class="fr-mb-0">{m['models.size.title']()}</h6>
-                <p class="fr-mb-4w text-grey fr-text--sm">
-                  {#if model.distribution === 'open-weights'}
-                    {m[`models.openWeight.descriptions.${model.friendly_size}`]({
-                      paramsCount: Math.round(model.params)
-                    })}
-                  {/if}
-                  {m[`models.size.descriptions.${model.friendly_size}`]()}
-                </p>
-              </div>
-              <div class="fr-mb-4w">
-                <h6 class="fr-mb-0">{m['models.conditions']()}</h6>
-                <div class="fr-mb-1w">
-                  {#if model.distribution === 'open-weights'}
-                    <p class="fr-text--sm text-grey">
-                      <!-- FIXME i18n integrate licenseDesc in translations -->
-                      <strong>{m['models.licenses.name']({ licence: model.license })}</strong
-                      >&nbsp;:
-                      {model.licenseDesc}
-                    </p>
-                    <div class="model-details grid">
-                      <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                        <!-- FIXME i18n -->
-                        {#if model.warningCommercial}
-                          <Icon icon="checkbox-circle-fill" block class="text-warning" />
-                        {:else if model.prohibitCommercial}
-                          <Icon icon="close-circle-fill" block class="text-error" />
+          {#if model}
+            <div class="fr-modal__content">
+              <h5
+                id="{modalId}-title"
+                class="text-dark-grey font-normal! text-lg! mb-3! flex items-center gap-2"
+              >
+                <img
+                  class="h-[34px] object-contain"
+                  src="/orgs/{model.icon_path}"
+                  alt="{model.organisation} logo"
+                />
+                <div>
+                  {model.organisation}/<span class="font-extrabold">{model.simple_name}</span>
+                </div>
+              </h5>
+
+              <ul class="fr-badges-group mb-4!">
+                {#each badges as badge, i}
+                  <li><Badge {...badge} id="general-badge-{i}" /></li>
+                {/each}
+              </ul>
+
+              <p class="mb-5!">{model.description}</p>
+
+              <div class="grid gap-5 lg:grid-cols-8">
+                <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
+                  <div class="mb-4 flex">
+                    <h6 class="mb-0! text-lg! flex">
+                      <Icon icon="ruler" block class="text-info me-2" />{m['models.size.title']()}
+                    </h6>
+                    <Badge {...sizeBadge!} size="sm" class="self-center! ms-auto" />
+                  </div>
+
+                  <p class="text-sm! mb-0! fr-message">
+                    {m[`models.size.descriptions.${model.friendly_size}`]()}
+                  </p>
+                </div>
+
+                <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
+                  <div class="mb-4 flex">
+                    <h6 class="mb-0! text-lg! flex">
+                      <Icon icon="lightbulb-line" block class="text-yellow me-2" />Le saviez-vous ?
+                    </h6>
+                    <!-- FIXME -->
+                    <Badge
+                      id="arch-badge"
+                      variant="yellow"
+                      text="arch"
+                      tooltip="arch"
+                      size="sm"
+                      class="self-center! ms-auto"
+                    />
+                  </div>
+
+                  <p class="text-sm! mb-0! fr-message">arch desc</p>
+                </div>
+
+                <div class="cg-border flex gap-3 bg-white p-4 pb-6 lg:col-span-6">
+                  <div>
+                    <div class="mb-2 flex flex-wrap gap-2">
+                      <h6 class="mb-0! text-sm! flex">
+                        <Icon icon="copyright-line" block class="me-2" />{m['models.conditions']()}
+                      </h6>
+                      <Badge id="license-badge" size="sm" class="self-center! ms-auto">
+                        {#if model.distribution === 'open-weights'}
+                          {m['models.licenses.name']({ licence: model.license })}
                         {:else}
-                          <Icon icon="checkbox-circle-fill" block class="text-success" />
+                          {m['models.licenses.commercial']()}
                         {/if}
-                        <span class="text-grey-200 fr-text--xs fr-mb-0"
-                          >{m['models.openWeight.use.commercial']()}</span
-                        >
-                      </div>
-                      <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                        <Icon icon="checkbox-circle-fill" block class="text-success" />
-                        <span class="text-grey-200 fr-text--xs fr-mb-0"
-                          >{m['models.openWeight.use.modification']()}</span
-                        >
-                      </div>
-                      <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                        <Icon icon="checkbox-circle-fill" block class="text-success" />
-                        <span class="text-grey-200 fr-text--xs fr-mb-0"
-                          >{m['models.openWeight.use.attribution']()}</span
-                        >
-                      </div>
-                      <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                        {#if model.conditions === 'copyleft' || model.conditions === 'free'}
-                          <Tooltip
-                            id="license-type-{model.id}"
-                            text={m[`models.openWeight.tooltips.${model.conditions}`]()}
-                            size="xs"
-                          />
-                        {/if}
-                        <span class="fr-badge fr-badge--sm">
-                          {m[`models.openWeight.conditions.${model.conditions}`]()}
-                        </span>
-                        <span class="text-grey-200 fr-text--xs fr-mb-0"
-                          >{m['models.openWeight.use.licenseType']()}</span
-                        >
-                      </div>
-                      <div class="rounded-tile fr-px-1v fr-py-1w relative">
-                        <Tooltip
-                          id="ram-{model.id}"
-                          text={m['models.openWeight.tooltips.ram']()}
-                          size="xs"
-                        />
-                        <span class="fr-badge fr-badge--sm">
-                          {m['models.ram']({
-                            min: model.required_ram / 2,
-                            max: model.required_ram * 2
-                          })}
-                        </span>
-                        <span class="text-grey-200 fr-text--xs fr-mb-0"
-                          >{m['models.openWeight.use.requiredRam']()}</span
-                        >
-                      </div>
+                      </Badge>
                     </div>
-                  {:else}
-                    <p class="fr-text--sm text-grey">
-                      {model.licenseDesc}
-                    </p>
-                  {/if}
+
+                    <p class="mb-0! text-xs! fr-message">{model.licenseDesc}</p>
+                  </div>
+
+                  <div class="text-xs!">
+                    <!-- FIXME -->
+                    <!-- <div class="cg-border p-2"></div>
+                    <div class="cg-border p-2"></div> -->
+                  </div>
+                </div>
+
+                <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
+                  <h6 class="text-sm! mb-2! flex">
+                    <Icon icon="link" block class="me-2" />Pour aller plus loin
+                  </h6>
+
+                  <p class="text-grey text-xs! mb-3!">
+                    {@html sanitize(
+                      m[`models.extra.experts.${model.distribution}`]({
+                        linkProps: externalLinkProps(model.url || '#')
+                      })
+                    )}
+                  </p>
+                  <p class="text-grey text-xs! mb-0!">
+                    {@html sanitize(
+                      m['models.extra.impacts']({
+                        linkProps1: externalLinkProps(
+                          'https://huggingface.co/spaces/genai-impact/ecologits-calculator'
+                        ),
+                        linkProps2: externalLinkProps('https://impactco2.fr')
+                      })
+                    )}
+                  </p>
                 </div>
               </div>
-
-              <h6>Pour aller plus loin</h6>
-              <p class="text-grey">
-                {@html sanitize(
-                  m[`models.extra.experts.${model.distribution}`]({
-                    linkProps: externalLinkProps(model.url || '#')
-                  })
-                )}
-                <br />
-                {@html sanitize(
-                  m['models.extra.impacts']({
-                    linkProps1: externalLinkProps(
-                      'https://huggingface.co/spaces/genai-impact/ecologits-calculator'
-                    ),
-                    linkProps2: externalLinkProps('https://impactco2.fr')
-                  })
-                )}
-              </p>
             </div>
           {/if}
         </div>
