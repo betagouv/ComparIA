@@ -231,7 +231,7 @@ with gr.Blocks(
                 value="Passer à la révélation des modèles",
                 elem_classes="fr-col-12 fr-col-md-5 purple-btn fr-mt-1w",
                 visible=False,
-                interactive=False,
+                interactive=True,
             )
 
 
