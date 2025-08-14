@@ -512,10 +512,6 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         else:
             reaction = "none"
 
-        # if "comment" in data:
-        #     print("comment:")
-        #     print(data["comment"])
-
         # Alternative:
         # Index is from the 3-way chatbot, can associate it to conv a or conv b w/
         # role_index = chatbot_index % 3
@@ -652,7 +648,8 @@ def record_reaction(
     reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
     with open(reaction_log_path, "a") as fout:
         fout.write(json.dumps(data) + "\n")
-    # print(json.dumps(data))
+    logger.info(f"saved_reaction: {json.dumps(data)}",  extra={"request": request})
+
     upsert_reaction_to_db(data=data, request=request)
 
     return data
