@@ -845,7 +845,8 @@ window.scrollTo({
                 app_state_scoped.reactions.extend([None])
 
             # re-add comment if select a pref after commenting
-            if "comment" in app_state_scoped.reactions[event._data["index"]]:
+
+            if app_state_scoped.reactions[event._data["index"]] and "comment" in app_state_scoped.reactions[event._data["index"]]:
                 event._data["comment"] = app_state_scoped.reactions[
                     event._data["index"]
                 ]["comment"]
