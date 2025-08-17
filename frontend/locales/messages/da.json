@@ -68,7 +68,7 @@
                 "semiOpen": "Halvåben"
             },
             "name": "Licens {license}",
-            "commercial": "Kommercielt licens",
+            "commercial": "Kommerciel licens",
             "noDesc": "Licensoplysninger er ikke udfyldt for denne model.",
             "descriptions": {
                 "MIT": "MIT-licensen er en fri softwarelicens: Den giver enhver ret til at genbruge, ændre og distribuere modellen, selv til kommercielle formål, forudsat at den originale licens og copyright-meddelelser medtages.",
@@ -95,10 +95,10 @@
             "title": "Størrelse",
             "descriptions": {
                 "XS": "Meget små modeller med færre end 7 milliarder parametre er de mindst komplekse og mest ressourceeffektive og leverer tilstrækkelig ydeevne til enkle opgaver såsom tekstklassificering.",
-                "S": "En lille model er mindre kompleks og ressourcekrævende sammenlignet med større modeller, men leverer stadig tilstrækkelig ydeevne til forskellige opgaver (opsummering, oversættelse, tekstklassificering osv.)",
+                "S": "En lille model er mindre kompleks og ressourcekrævende sammenlignet med større modeller, men fungerer ofte tilstrækkeligt effektivt til forskellige opgaver (opsummering, oversættelse, tekstklassificering osv.)",
                 "M": "Mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og ydeevne: De er langt mindre ressourcekrævende end store modeller, men kan stadig håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnement.",
                 "L": "Store modeller kræver betydelige ressourcer, men tilbyder den bedste ydeevne til avancerede opgaver som kreativ skrivning, dialogmodellering og applikationer, der kræver en detaljeret forståelse af konteksten.",
-                "XL": "Disse modeller, med hundredvis af milliarder parametre, er de mest komplekse og avancerede med hensyn til ydeevne og nøjagtighed. De beregnings- og hukommelsesressourcer, der kræves for at implementere disse modeller, er af en sådan karakter, at de er beregnet til de mest avancerede applikationer og højt specialiserede miljøer."
+                "XL": "Disse modeller, med billioner af parametre, er de mest komplekse og avancerede med hensyn til ydeevne og nøjagtighed. De beregnings- og hukommelsesressourcer, der kræves for at implementere disse modeller, er af en sådan karakter, at de er beregnet til de mest avancerede applikationer og højt specialiserede miljøer."
             }
         },
         "parameters": "{number} parametre",
@@ -114,9 +114,9 @@
                 "restricted": "Betinget"
             },
             "tooltips": {
-                "openSource": "Træningsdata, koden og vægtene for denne model (dvs. de parametre, der er lært under træningen) kan downloades og ændres af offentligheden, så de kan køre og ændre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt end \"open weights\", især på grund af behovet for gennemsigtighed i træningskorpuset, og få modeller betragtes som \"open source\"",
-                "openWeight": "En såkaldt \"open weights\"-model, hvor vægtene, dvs. de parametre, der er lært under træningen, kan downloades af offentligheden, så de kan køre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt (hovedsageligt i relation til gennemsigtigheden af træningskorpuset), og få modeller betragtes som \"open source\".",
-                "params": "Parametre eller vægte, talt i milliarder, er de variabler, som en model lærer under træningen, og som bestemmer dens reaktioner. Jo større antallet af parametre er, jo større er deres læringsevne.",
+                "openSource": "Træningsdata, koden og vægtene for denne model (dvs. de parametre, der er lært under træningen) kan downloades og ændres af offentligheden, så de kan køre og ændre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt end \"open weights\", især på grund af behovet for gennemsigtighed i træningskorpuset. Få modeller betragtes som \"open source\"",
+                "openWeight": "En såkaldt \"open weights\"-model, hvor vægtene, dvs. de parametre, der er lært under træningen, kan downloades af offentligheden, så de kan køre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt (hovedsageligt i relation til gennemsigtigheden af træningskorpuset). Få modeller betragtes som \"open source\".",
+                "params": "Parametre eller vægte, talt i milliarder, er de variabler, som en model lærer under træningen, og som bestemmer dens svar. Jo større antallet af parametre er, jo større er deres læringsevne.",
                 "free": "Når modellen er ændret, kan den distribueres under en anden licens end kildemodellen.",
                 "copyleft": "Når modellen er ændret, skal den distribueres på ny under samme licens som kildemodellen.",
                 "ram": "RAM (random access memory) gemmer data, der behandles af en LLM i realtid. Jo større modellen er, jo mere RAM kræver den for at køre."
@@ -141,7 +141,7 @@
             "title": "For at lære mere",
             "experts": {
                 "open-weights": "For at læse mere, se <a {linkProps}>modelsiden på Hugging Face</a>",
-                "api-only": "For at læse mere, se den <a {linkProps}>officielle modelhjemmeside</a>."
+                "api-only": "For at læse mere, se den <a {linkProps}>officielle modelhjemmeside</a>"
             },
             "impacts": "Miljøpåvirkningsberegninger er baseret på <a {linkProps1}>EcoLogits</a> og <a {linkProps2}>Impact CO<sub>2</sub></a> projekterne."
         },
@@ -306,7 +306,7 @@
             "count": "{count} stemmer",
             "objective": "Mål: {count}",
             "legend": "Legend",
-            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller."
+            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
         },
         "chatbot": {
             "step": "Trin",
@@ -475,7 +475,7 @@
     "home": {
         "intro": {
             "title": "Stol ikke på svarene <span {props}>fra en enkelt AI</span>",
-            "desc": "Før en blind samtale med to AI'er og vurdér deres svar.",
+            "desc": "Før en blind samtale med to AI'er og vurdér deres svar",
             "tos": {
                 "accept": "Jeg accepterer <a {linkProps}>brugsbetingelserne</a>",
                 "help": "Data deles til forskningsformål",
@@ -562,7 +562,7 @@
                 "desc": "Find alle modelspecifikationer og brugsbetingelserne på ét sted"
             },
             "educate": {
-                "title": "Træn og øg bevidstheden",
+                "title": "Uddan og skab bevidsthed",
                 "desc": "Brug chatbot-arenaen som et pædagogisk redskab til at diskutere AI med dit publikum"
             }
         },
