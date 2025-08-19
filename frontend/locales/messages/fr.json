@@ -115,7 +115,7 @@
             "featuresDescMore": "Une interface humain-machine permettant de dialoguer simultanément avec deux modèles conversationnels et de voter pour la réponse préférée.",
             "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents partenaires (Scaleway, OVH, Hugging Face, Google Cloud, Mistral Ai). Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
             "featuresModelsMore": "Une interface de comparaison des modèles.",
-            "featuresVote": "A l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
+            "featuresVote": "À l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
             "featuresVoteMore": "Partage et mise à disposition des jeux de données issus de la collecte des préférences des utilisateurs.",
             "featuresDatasets": "Le service recueille les données de dialogue et de préférence des utilisateurs. Les jeux de données partagés comprendront les questions de l’utilisateur, les réponses des deux modèles, le vote et les préférences de l’utilisateur.",
             "featuresDatasetsMore": "L’éditeur se réserve le droit de distribuer sous licence ouverte 2.0 les données de dialogue et de préférence de l’utilisateur. Le jeu de données est diffusé sur la plateforme Hugging Face à travers le compte du ministère de la culture (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
@@ -187,7 +187,7 @@
             "statePrefs": "adapter le site à votre préférences (taille de la police, zoom écran, changement de typographie…) sans perte de contenu",
             "improveTitle": "Amélioration et contact",
             "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
-            "improveMail": "E-mail : <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveMail": "Courriel : <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
             "remedyTitle": "Voie de recours",
@@ -279,7 +279,7 @@
                 },
                 "finetune": {
                     "title": "Des modèles affinés sur la langue spécifique",
-                    "desc": "A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle."
+                    "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle."
                 }
             },
             "datasetAccess": "Accéder aux jeux de données"
@@ -586,7 +586,7 @@
                 "params": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il est capable d’effectuer des tâches complexes.",
                 "free": "Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle source.",
                 "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
-                "ram": "La RAM (mémoire vive) stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de RAM pour fonctionner."
+                "ram": "La mémoire vive stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de mémoire vive pour fonctionner."
             },
             "descriptions": {
                 "XS": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des modèles très petits (moins de 7 milliards de paramètres).",
@@ -752,7 +752,7 @@
             },
             "lightbulb": {
                 "label": "ampoule LED",
-                "tooltip": "Donnée calculée sur la base de consommation d’une ampoule LED standard de 5W (E14)"
+                "tooltip": "Donnée calculée sur la base de consommation d’une ampoule LED standard de 5 W (E14)"
             },
             "streaming": {
                 "label": "vidéos en ligne",
