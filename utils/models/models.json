@@ -3,7 +3,7 @@
     "name": "Meta",
     "models": [
       {
-        "name": "Llama 3.1 405B",
+        "simple_name": "Llama 3.1 405B",
         "license": "Llama 3.1",
         "release_date": "07/2024",
         "params": 405,
@@ -13,7 +13,7 @@
         "fyi": "Le modèle a été entraîné sur un corpus de 15 billions de jetons avec 16 000 cartes graphiques H100 (une des cartes graphiques les plus puissantes sur le marché en 2025). L'entraînement a combiné génération de données synthétiques et optimisation par préférences directes (DPO). Ce modèle est lui-même souvent utilisé pour générer des données synthétiques pour entraîner de plus petits modèles. Le modèle utilise par défaut une compression 8-bit pour réduire les besoins en mémoire et permettre l'exécution sur un seul serveur très puissant."
       },
       {
-        "name": "Llama 3.3 70B",
+        "simple_name": "Llama 3.3 70B",
         "license": "Llama 3.3",
         "release_date": "12/2024",
         "params": 70,
@@ -23,7 +23,7 @@
         "fyi": "Ce modèle est une version distillée issue du modèle 405B, auquel il doit une partie de ses connaissances transférées. Il a aussi bénéficié de techniques récentes d’alignement et apprentissage par renforcement avec des environnements en ligne (online reinforcement learning) - le modèle apprenait donc en essayant de réaliser des tâches en ligne de manière autonome.  Son entraînement s’appuie sur 15 billions de jetons."
       },
       {
-        "name": "Llama 3.1 8B",
+        "simple_name": "Llama 3.1 8B",
         "license": "Llama 3.1",
         "release_date": "07/2024",
         "params": 8,
@@ -33,7 +33,7 @@
         "fyi": "Ce modèle est une version distillée issue des modèles Llama 3 de plus grande tailles : il a été entraîné grâce à un transfert d’une partie des connaissances des plus grands modèles."
       },
       {
-        "name": "Llama 4 Scout",
+        "simple_name": "Llama 4 Scout",
         "license": "Llama 4",
         "release_date": "04/2025",
         "params": 109,
@@ -43,7 +43,7 @@
         "fyi": "Ce modèle a été codistillé avec Behemoth, ce qui veut dire qu’il a appris en même temps que le modèle géant, et non après comme dans une distillation classique. Il a été entraîné sur 30 billions de jetons, combinant texte en 200 langues et images  pour obtenir des capacités multimodales natives . L’architecture repose sur un système de mix d’experts (MoE - Mixture of Experts), avec 17 milliards de paramètres actifs, 16 experts et 109 milliards de paramètres totaux. Afin d'équilibrer performances multimodales, raisonnement et qualité conversationnelle, l'équipe Meta a développé une stratégie de post-entraînement progressive, combinant filtrage adaptatif des données (pour ne garder que les plus complexes et intéressantes), fine-tuning ciblé et apprentissage par renforcement avec des environnements en ligne (online reinforcement learning) - le modèle apprenait donc en essayant de réaliser des tâches en ligne de manière autonome. Grâce à l’architecture iRoPE (version optimisée de l’encodage positionnel), il peut gérer des fenêtres de contexte très longues, jusqu’à 10 millions de jetons et peut traiter jusqu’à 8 images simultanément. \n\nLe modèle a été bien reçu à son lancement, notamment pour sa fenêtre de contexte impressionnante, une première dans le domaine, ainsi que pour son rapport qualité-prix sur des tâches comme le résumé, l’appel d’outils et la génération augmentée (RAG). Cela en fait un choix adapté pour les pipelines automatisés."
       },
       {
-        "name": "Llama Maverick",
+        "simple_name": "Llama Maverick",
         "license": "Llama 4",
         "release_date": "04/2025",
         "params": 400,
@@ -58,7 +58,7 @@
     "name": "DeepSeek",
     "models": [
       {
-        "name": "DeepSeek R1",
+        "simple_name": "DeepSeek R1",
         "license": "MIT",
         "release_date": "01/2025",
         "params": 671,
@@ -68,7 +68,7 @@
         "fyi": "Ce modèle s’appuie sur une architecture de mélange d’experts (MoE, Mixture of Experts) avec 61 couches. Il totalise 671 milliards de paramètres, dont 37 milliards sont activés par jeton. L'entraînement a fait appel à un apprentissage par renforcement à grande échelle, avec plusieurs étapes d'ajustement SFT (supervised fine-tuning : un affinage supervisé où le modèle apprend à partir d'exemples de réponses correctes) et de données de démarrage."
       },
       {
-        "name": "DeepSeek R1 Llama 70B",
+        "simple_name": "DeepSeek R1 Llama 70B",
         "license": "Llama 3.3",
         "release_date": "01/2025",
         "params": 70,
@@ -78,7 +78,7 @@
         "fyi": "Le modèle n’a pas été entraîné depuis zéro. Il s’appuie sur Llama 3.3 70B, ré-entraîné en utilisant des résultats générés par DeepSeek R1. Ce processus a permis de doter Llama 3.3 70B d’une capacité à simuler le raisonnement, sans possibilité pour l’utilisateur de choisir d’activer ou non cette fonction.\n\nConformément aux obligations de la licence Llama 3.3, l'entreprise doit conserver la mention du modèle source dans le nom du modèle, soumis au même régime de licence."
       },
       {
-        "name": "DeepSeek V3",
+        "simple_name": "DeepSeek V3",
         "license": "MIT",
         "release_date": "03/2025",
         "params": 685,
@@ -108,7 +108,7 @@
     "name": "Cohere",
     "models": [
       {
-        "name": "Aya Expanse 32B",
+        "simple_name": "Aya Expanse 32B",
         "license": "CC-BY-NC-4.0",
         "release_date": "12/2024",
         "params": 32,
@@ -118,7 +118,7 @@
         "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier \"Attention Is All You Need\" qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle a été conçu pour offrir de bonnes capacités dans chacune des 23 langues de son corpus d’entraînement."
       },
       {
-        "name": "Command A",
+        "simple_name": "Command A",
         "license": "CC-BY-NC-4.0",
         "release_date": "03/2025",
         "params": 111,
@@ -128,7 +128,7 @@
         "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier [\"Attention Is All You Need\"](https://arxiv.org/abs/1706.03762) paru en 2017 et qui a révolutionné l'IA. L'entreprise se démarque par sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle est conçu pour fonctionner dans plus de 23 langues et pour s’intégrer facilement dans les systèmes d’entreprise.  Il fait partie des rares modèles distribués sous licence **CC-BY-NC 4.0 qui autorise le partage et la modification mais interdit toute utilisation commerciale.** Ce choix de licence reflète la volonté de Cohere de contribuer à la recherche et la communauté open source, tout en gardant le contrôle sur les usages commerciaux pour protéger son modèle économique... Cela exclut par exemple l’intégration du modèle dans des produits ou services vendus par une entreprise à des clients mais autorise un usage académique, des tests ou des projets internes, restreints à un cadre non-commercial."
       },
       {
-        "name": "Command R",
+        "simple_name": "Command R",
         "license": "CC-BY-NC-4.0",
         "release_date": "08/2024",
         "params": 35,
@@ -144,7 +144,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "name": "Grok 3 Mini",
+        "simple_name": "Grok 3 Mini",
         "license": "proprietary",
         "release_date": "04/2025",
         "params": "XL",
@@ -159,7 +159,7 @@
     "name": "Microsoft",
     "models": [
       {
-        "name": "Phi-4",
+        "simple_name": "Phi-4",
         "license": "MIT",
         "release_date": "12/2024",
         "params": 14,
@@ -176,7 +176,7 @@
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI\n",
     "models": [
       {
-        "name": "Gemini 2.5 Flash",
+        "simple_name": "Gemini 2.5 Flash",
         "license": "proprietary",
         "release_date": "06/2025",
         "params": "L",
@@ -186,7 +186,7 @@
         "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale."
       },
       {
-        "name": "Gemma 3n 4B",
+        "simple_name": "Gemma 3n 4B",
         "license": "Gemma",
         "release_date": "05/2025",
         "params": 4,
@@ -196,7 +196,7 @@
         "fyi": "Ce modèle peut traiter du texte, des images et de l’audio. Il repose sur l’architecture MatFormer et un système de cache PLE (per-layer embeddings), qui active uniquement les paramètres utiles selon la tâche, s'adaptant à la capacité des machines sur lesquelles fonctionne le modèle."
       },
       {
-        "name": "Gemma 3 4B",
+        "simple_name": "Gemma 3 4B",
         "license": "Gemma",
         "release_date": "03/2025",
         "params": 4,
@@ -206,7 +206,7 @@
         "fyi": "Il peut traiter du texte et des images en fonctionnant sur des appareils peu puissants, y compris smartphones et tablettes. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
       },
       {
-        "name": "Gemma 3 12B",
+        "simple_name": "Gemma 3 12B",
         "license": "Gemma",
         "release_date": "03/2025",
         "params": 12,
@@ -216,7 +216,7 @@
         "fyi": "Il traite du texte et des images et peut fonctionner en local sur des ordinateurs portables puissants ou des serveurs avec une seule carte graphique. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
       },
       {
-        "name": "Gemma 3 27B",
+        "simple_name": "Gemma 3 27B",
         "license": "Gemma",
         "release_date": "03/2025",
         "params": 27,
@@ -232,7 +232,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "name": "qwq 32B",
+        "simple_name": "qwq 32B",
         "license": "Apache 2.0",
         "release_date": "04/2025",
         "params": 32,
@@ -242,7 +242,7 @@
         "fyi": "Ce modèle a été entraîné avec une méthode d’apprentissage par renforcement (RL) pour optimiser la gestion des problèmes de mathématiques et des tâches de programmation. Il utilise plusieurs techniques récentes pour améliorer la qualité des réponses. Par exemple, la méthode RoPE (Rotary Position Embedding) lui permet de mieux comprendre l’ordre des mots dans un texte. La fonction d'activation SwiGLU est une manière plus efficace de gérer les calculs au sein du réseau de neurones qui aide le modèle à produire des réponses plus fiables. La méthode d'ajustement QKV (Query Key Value-biais) améliore la manière dont le modèle repère et sélectionne les informations importantes. Enfin, grâce à la méthode YaRN (Yet another RoPE extensioN method), il peut traiter de très longs textes allant jusqu’à 130 000 jetons, ce qui lui permet de travailler sur des documents complexes ou très détaillés."
       },
       {
-        "name": "Qwen 2.5 Coder 32B",
+        "simple_name": "Qwen 2.5 Coder 32B",
         "license": "Apache 2.0",
         "release_date": "04/2025",
         "params": 32,
@@ -252,7 +252,7 @@
         "fyi": "Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. \n\nGrâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques."
       },
       {
-        "name": "Qwen 3 32B",
+        "simple_name": "Qwen 3 32B",
         "license": "Apache 2.0",
         "release_date": "04/2025",
         "params": 32.8,
@@ -262,7 +262,7 @@
         "fyi": "Ce modèle a été entraîné sur un très grand volume de données : 36 billions de jetons, en 119 langues. L'entraînement s’est fait en trois étapes. Le modèle a d'abord appris à partir de 30 billions de jetons avec un contexte de 4 000 jetons. Ensuite, 5 billions de jetons ont été ajoutés pour renforcer ses connaissances factuelles. Enfin, il a été exposé à un corpus spécifique pour l’aider à mieux gérer les très longs textes. Résultat : il dispose en fin d'entrainement d'une fenêtre de contexte de 128 000 jetons, ce qui est utile pour lire et analyser de longs documents."
       },
       {
-        "name": "Qwen 3 30B A3B",
+        "simple_name": "Qwen 3 30B A3B",
         "license": "Apache 2.0",
         "release_date": "05/2025",
         "params": 30,
@@ -272,7 +272,7 @@
         "fyi": "Ce modèle MoE (Mixture of Experts) se distingue par une configuration de 128 experts au total, avec seulement 8 experts activés par jeton, ce qui permet une inférence plus rapide et plus efficace. Il utilise un système appelé \"global-batch\" pour optimiser la répartition du travail entre les experts, afin qu'ils soient tous utilisés de manière équilibrée.\n\nContrairement à d'autres modèles comme Qwen 2.5-MoE qui recyclent les mêmes experts à travers plusieurs couches du réseau, Qwen 3 30B A2B attribue des experts uniques à chaque couche. Concrètement, cela signifie que les experts de la première couche ne sont jamais réutilisés dans les couches suivantes - chaque niveau du modèle dispose de son propre ensemble d'experts spécialisés. Cette architecture permet à chaque expert de se concentrer exclusivement sur les tâches spécifiques à sa position dans le réseau neuronal, résultant en une spécialisation plus fine et des performances optimisées pour chaque étape du traitement de l'information."
       },
       {
-        "name": "Qwen 2.5 max 0125",
+        "simple_name": "Qwen 2.5 max 0125",
         "license": "proprietary",
         "release_date": "04/2025",
         "params": "XL",
@@ -287,7 +287,7 @@
     "name": "Moonshot AI",
     "models": [
       {
-        "name": "Kimi K2",
+        "simple_name": "Kimi K2",
         "params": 1000,
         "arch": "moe",
         "desc": "Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte.",
@@ -300,7 +300,7 @@
     "name": "Nvidia",
     "models": [
       {
-        "name": "Nemotron Llama 3.1 70B",
+        "simple_name": "Nemotron Llama 3.1 70B",
         "license": "Llama 3.1",
         "release_date": "10/2024",
         "params": 70,
@@ -316,7 +316,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "name": "GPT OSS-120B",
+        "simple_name": "GPT OSS-120B",
         "license": "Apache 2.0",
         "release_date": "08/2025",
         "params": "M",
@@ -326,7 +326,7 @@
         "fyi": "Ce modèle peut fonctionner sur une seule GPU de 80 Go (comme la NVIDIA H100). Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (\"low,\" \"medium,\" et \"high\") qui déterminent la verbosité du modèle."
       },
       {
-        "name": "GPT OSS-20B",
+        "simple_name": "GPT OSS-20B",
         "license": "Apache 2.0",
         "release_date": "08/2025",
         "params": "M",
@@ -336,7 +336,7 @@
         "fyi": "Ce modèle peut être exécuté localement sur un ordinateur portable haut de gamme équipé de seulement 16 Go de VRAM (ou de RAM système). Cela en fait une option très accessible pour les développeurs. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (\"low,\" \"medium,\" et \"high\") qui déterminent la verbosité du modèle."
       },
       {
-        "name": "GPT 5",
+        "simple_name": "GPT 5",
         "license": "proprietary",
         "release_date": "08/2025",
         "params": "M",
@@ -346,7 +346,7 @@
         "fyi": "Les développeurs qui utilisent ce modèle peuvent configurer un paramètre de verbosité pour ajuster la longueur de la phase de raisonnement.\n\nEn matière de sécurité, le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête. Les créateurs du modèle ont aussi utilisé la phase d’entraînement au “raisonnement” pour le rendre plus “résistant” aux tentatives de contournement de leurs règles de sécurité (\"jailbreaking\")."
       },
       {
-        "name": "GPT 5 Mini",
+        "simple_name": "GPT 5 Mini",
         "license": "proprietary",
         "release_date": "08/2025",
         "params": "M",
@@ -356,7 +356,7 @@
         "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.\n\nBien qu'il soit une version plus petite, il se montre très compétitif face au modèle GPT-5 principal sur de nombreux benchmarks, en particulier dans le domaine médical."
       },
       {
-        "name": "GPT 5 Nano",
+        "simple_name": "GPT 5 Nano",
         "license": "proprietary",
         "release_date": "04/2025",
         "params": "M",
@@ -366,7 +366,7 @@
         "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête."
       },
       {
-        "name": "GPT 4.1 Nano",
+        "simple_name": "GPT 4.1 Nano",
         "license": "proprietary",
         "release_date": "04/2025",
         "params": "M",
@@ -376,7 +376,7 @@
         "fyi": "Il s'agit d'une version distillée d’un modèle de plus grande taille, avec un transfert partiel de ses connaissances. Il peut traiter du texte, des images et de l’audio. Sa fenêtre de contexte peut atteindre jusqu’à 1 million de jetons, ce qui le rend particulièrement adapté à l’analyse de corpus de textes ou de dépôts de code très longs."
       },
       {
-        "name": "GPT-4.1 Mini",
+        "simple_name": "GPT-4.1 Mini",
         "license": "proprietary",
         "release_date": "04/2025",
         "params": "L",
@@ -386,7 +386,7 @@
         "fyi": "Il s'agit d'une version distillée d’un modèle plus grand, avec un transfert partiel de ses connaissances. Il peut traiter du texte, des images et de l’audio.  Sa fenêtre de contexte peut atteindre jusqu’à 1 million de jetons, ce qui le rend particulièrement adapté à l’analyse de corpus très longs ou de dépôts de code."
       },
       {
-        "name": "o4 mini",
+        "simple_name": "o4 mini",
         "license": "proprietary",
         "release_date": "04/2025",
         "params": "XL",
@@ -402,7 +402,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "name": "Mistral Large 2",
+        "simple_name": "Mistral Large 2",
         "license": "Mistral AI Research License",
         "release_date": "11/2024",
         "params": 123,
@@ -412,7 +412,7 @@
         "fyi": "Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes."
       },
       {
-        "name": "Mistral Saba",
+        "simple_name": "Mistral Saba",
         "license": "proprietary",
         "release_date": "02/2025",
         "params": "M",
@@ -422,7 +422,7 @@
         "fyi": "L’entraînement a porté principalement sur des textes en arabe, tamoul et malayalam. Les corpus régionaux ont été sélectionnés pour refléter les usages authentiques, y compris la syntaxe, les registres et les variantes dialectales. Pour la tokenisation (découpage du texte en unités de base que le modèle peut traiter), une stratégie spécialisée adaptée aux langues à morphologie complexe comme l'arabe a été employée. Des optimisations visent à éviter la fragmentation excessive des mots et à maximiser la couverture du vocabulaire."
       },
       {
-        "name": "Mistral Small 3.2",
+        "simple_name": "Mistral Small 3.2",
         "license": "Apache 2.0",
         "release_date": "06/2025",
         "params": 24,
@@ -432,7 +432,7 @@
         "fyi": "La version 3.2 de ce modèle est optimisée pour générer des sorties structurées, notamment en JSON, tout en limitant la répétitivité et les comportements indésirables lors de longues générations. Multimodal, il traite à la fois des entrées textuelles et des images, permettant une analyse conjointe."
       },
       {
-        "name": "Magistral Medium",
+        "simple_name": "Magistral Medium",
         "license": "proprietary",
         "release_date": "06/2025",
         "params": "M",
@@ -442,7 +442,7 @@
         "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. Il a été entraîné avec de l’apprentissage par renforcement sur Mistral Medium 3 et n'a pas été distillé à partir de modèles de raisonnement existants. Ce modèle hérite des capacités multimodales de Mistral Medium 3 même si l'apprentissage par renforcement n'a été réalisé que sur du texte."
       },
       {
-        "name": "Mistral Medium 2506",
+        "simple_name": "Mistral Medium 2506",
         "license": "proprietary",
         "release_date": "06/2025",
         "params": "M",
@@ -452,7 +452,7 @@
         "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement."
       },
       {
-        "name": "Magistral Small",
+        "simple_name": "Magistral Small",
         "license": "Apache 2.0",
         "release_date": "06/2025",
         "params": 24,
@@ -469,7 +469,7 @@
     "proprietary_reuse_specificities": "sauf pour distiller ou entraîner d’autres modèles sur les plateformes d’Amazon.\n",
     "models": [
       {
-        "name": "Nova Lite",
+        "simple_name": "Nova Lite",
         "license": "proprietary",
         "release_date": "12/2024",
         "desc": "Modèle multimodal et multilingue.",
@@ -482,7 +482,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "name": "Claude 3.7 Sonnet",
+        "simple_name": "Claude 3.7 Sonnet",
         "license": "proprietary",
         "release_date": "02/2025",
         "params": "XL",
@@ -492,7 +492,7 @@
         "fyi": "Claude 4 Opus est la version la plus avancée de la famille Claude 4. Il est optimisé pour la puissance brute et les tâches complexes nécessitant un raisonnement soutenu sur de longues périodes : il peut par exemple travailler sur des tâches à long terme (Anthropic déclarent qu'il peut travailler jusqu'à sept heures de manière indépendante). En contrepartie, Opus est plus coûteux à utiliser, plus lent à répondre et nécessite davantage de ressources pour fonctionner.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été majoritairement entraîné sur des données mathématiques, mais adapté à des cas d’usage réels."
       },
       {
-        "name": "Claude 4 Sonnet",
+        "simple_name": "Claude 4 Sonnet",
         "license": "proprietary",
         "release_date": "05/2025",
         "params": "XL",
@@ -507,7 +507,7 @@
     "name": "Zhipu",
     "models": [
       {
-        "name": "GLM 4.5",
+        "simple_name": "GLM 4.5",
         "params": 355,
         "arch": "moe",
         "desc": "Très grand modèle créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
@@ -520,7 +520,7 @@
     "name": "Nous",
     "models": [
       {
-        "name": "Hermes 3 405B",
+        "simple_name": "Hermes 3 405B",
         "license": "Llama 3.1",
         "release_date": "07/2024",
         "params": 405,

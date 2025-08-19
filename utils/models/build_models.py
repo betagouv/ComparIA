@@ -43,7 +43,7 @@ class License(BaseModel):
 
 
 class Model(BaseModel):
-    name: str
+    simple_name: str
     license: str
     release_date: str
     params: int | float | Literal["XS", "S", "M", "L", "XL"]
@@ -124,7 +124,7 @@ def validate_orgas_and_models(raw_orgas: Any) -> list[Any] | None:
                 name = f"organisation '{orga.get("name", err["loc"][0])}'"
                 key = err["loc"][1]
             elif "models" in err["loc"]:
-                name = f"model '{orga["models"][err["loc"][2]]["name"]}'"
+                name = f"model '{orga["models"][err["loc"][2]]["simple_name"]}'"
                 key = err["loc"][3]
 
             if name not in errors:
@@ -195,7 +195,9 @@ def validate() -> None:
         proprio_license_data["commercial_use"] = orga["proprietary_commercial_use"]
 
         for model in orga["models"]:
-            i18n["models"][model["name"]] = {k: model[k] for k in I18N_MODEL_KEYS}
+            i18n["models"][model["simple_name"]] = {
+                k: model[k] for k in I18N_MODEL_KEYS
+            }
             license_data = (
                 dict_licenses[model["license"]]
                 if model["license"] != "proprietary"
@@ -214,9 +216,10 @@ def validate() -> None:
                 )
 
             # Build complete model data (license + model) without translatable keys
-            generated_models[slugify(model["name"])] = sort_dict(
+            generated_models[slugify(model["simple_name"])] = sort_dict(
                 {
                     "organisation": orga["name"],
+                    "id": slugify(model["simple_name"]),
                     **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
                 }
