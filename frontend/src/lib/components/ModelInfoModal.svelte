@@ -1,60 +1,55 @@
 <script lang="ts">
   import { Badge } from '$lib/components/dsfr'
   import Icon from '$lib/components/Icon.svelte'
-  import Tooltip from '$lib/components/Tooltip.svelte'
   import { m } from '$lib/i18n/messages'
-  import { isAvailableLicense, licenseAttrs, type APIBotModel } from '$lib/models'
+  import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
-  let { model: modelData, modalId }: { model?: APIBotModel; modalId: string } = $props()
-
-  const model = $derived.by(() => {
-    if (!modelData) return
-    return {
-      ...modelData,
-      licenseDesc: isAvailableLicense(modelData.license)
-        ? m[`models.licenses.descriptions.${modelData.license}`]()
-        : m['models.licenses.noDesc'](),
-      warningCommercial: licenseAttrs?.[modelData.license]?.warningCommercial,
-      prohibitCommercial: licenseAttrs?.[modelData.license]?.prohibitCommercial
-    }
-  })
+  let { model, modalId }: { model?: BotModel; modalId: string } = $props()
 
   const badges = $derived.by(() => {
-    if (!modelData) return []
-    return [
-      modelData.fully_open_source
-        ? ({
-            variant: 'green',
-            text: m['models.licenses.type.openSource'](),
-            tooltip: m['models.openWeight.tooltips.openSource']()
-          } as const)
-        : modelData.distribution === 'open-weights'
-          ? ({
-              variant: 'yellow',
-              text: m['models.licenses.type.semiOpen'](),
-              tooltip: m['models.openWeight.tooltips.openWeight']()
-            } as const)
-          : ({ variant: 'orange', text: m['models.licenses.type.proprietary']() } as const),
-      modelData.release_date
-        ? ({ color: '', text: m['models.release']({ date: modelData.release_date }) } as const)
-        : null,
-      modelData?.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
-    ].filter((b) => !!b)
+    if (!model) return []
+    const { license, releaseDate, reasoning } = model.badges
+    return [license, releaseDate, reasoning].filter((b) => !!b)
   })
 
-  const sizeBadge = $derived.by(() => {
-    if (!modelData) return
-    return {
-      id: 'model-parameters',
-      variant: 'info',
-      text:
-        modelData.distribution === 'api-only'
-          ? m['models.size.estimated']({ size: modelData.friendly_size })
-          : m['models.parameters']({ number: modelData.params }),
-      tooltip:
-        modelData.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
-    } as const
+  const licenseCards = $derived.by(() => {
+    if (!model) return []
+    return [
+      model.commercial_use === null
+        ? null
+        : !model.commercial_use
+          ? {
+              title: 'Les usages commerciaux du modèle sont-ils autorisés ?',
+              badge: { variant: 'red' as const, text: 'Interdit' }
+            }
+          : {
+              title: 'Usage commercial',
+              badge: !!model.licenseInfos.commercialUseSpecificities
+                ? {
+                    variant: 'purple' as const,
+                    text: 'Sous conditions'
+                  }
+                : { variant: 'green' as const, text: 'Autorisé' },
+              subtitle: model.licenseInfos.commercialUseSpecificities
+            },
+      !model.reuse
+        ? {
+            title: 'Puis-je utiliser les sorties du modèle pour en entrainer de nouveaux ?',
+            badge: { variant: 'red' as const, text: 'Interdit' },
+            subtitle: 'Vous ne pouvez pas les réutiliser pour entraîner d’autres modèles'
+          }
+        : {
+            title: 'Réutilisation des résultats générés',
+            badge: !!model.licenseInfos.reuseSpecificities
+              ? {
+                  variant: 'purple' as const,
+                  text: 'Sous conditions'
+                }
+              : { variant: 'green' as const, text: 'Autorisé' },
+            subtitle: model.licenseInfos.reuseSpecificities
+          }
+    ].filter((b) => !!b)
   })
 </script>
 
@@ -81,7 +76,7 @@
               >
                 <img
                   class="h-[34px] object-contain"
-                  src="/orgs/{model.icon_path}"
+                  src="/orgs/ai/{model.icon_path}"
                   alt="{model.organisation} logo"
                 />
                 <div>
@@ -91,11 +86,11 @@
 
               <ul class="fr-badges-group mb-4!">
                 {#each badges as badge, i}
-                  <li><Badge {...badge} id="general-badge-{i}" /></li>
+                  <li><Badge id="general-badge-{i}" {...badge} /></li>
                 {/each}
               </ul>
 
-              <p class="mb-5!">{model.description}</p>
+              {@html sanitize(model.desc).replaceAll('<p>', '<p class="last:mb-5!">')}
 
               <div class="grid gap-5 lg:grid-cols-8">
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
@@ -103,12 +98,15 @@
                     <h6 class="mb-0! text-lg! flex">
                       <Icon icon="ruler" block class="text-info me-2" />{m['models.size.title']()}
                     </h6>
-                    <Badge {...sizeBadge!} size="sm" class="self-center! ms-auto" />
+                    <Badge {...model.badges.size} size="sm" class="self-center! ms-auto" />
                   </div>
 
-                  <p class="text-sm! mb-0! fr-message">
-                    {m[`models.size.descriptions.${model.friendly_size}`]()}
-                  </p>
+                  <div class="fr-message block!">
+                    {@html sanitize(model.sizeDesc).replaceAll(
+                      '<p>',
+                      '<p class="text-sm! mb-3! last:mb-0!">'
+                    )}
+                  </div>
                 </div>
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
@@ -127,31 +125,57 @@
                     />
                   </div>
 
-                  <p class="text-sm! mb-0! fr-message">arch desc</p>
+                  <div class="fr-message block!">
+                    {@html sanitize(model.fyi).replaceAll(
+                      '<p>',
+                      '<p class="text-sm! mb-3! last:mb-0!">'
+                    )}
+                  </div>
                 </div>
 
-                <div class="cg-border flex gap-3 bg-white p-4 pb-6 lg:col-span-6">
-                  <div>
+                <div
+                  class={[
+                    'cg-border grid gap-4 bg-white p-4 pb-6 lg:col-span-6',
+                    licenseCards.length > 1 ? 'grid-cols-2' : 'grid-cols-3'
+                  ]}
+                >
+                  <div class={[licenseCards.length > 1 ? '' : 'col-span-2']}>
                     <div class="mb-2 flex flex-wrap gap-2">
                       <h6 class="mb-0! text-sm! flex">
                         <Icon icon="copyright-line" block class="me-2" />{m['models.conditions']()}
                       </h6>
-                      <Badge id="license-badge" size="sm" class="self-center! ms-auto">
-                        {#if model.distribution === 'open-weights'}
-                          {m['models.licenses.name']({ licence: model.license })}
-                        {:else}
-                          {m['models.licenses.commercial']()}
-                        {/if}
-                      </Badge>
+                      <Badge text={model.license} size="sm" class="self-center! ms-auto" />
                     </div>
 
-                    <p class="mb-0! text-xs! fr-message">{model.licenseDesc}</p>
+                    <div class="fr-message block!">
+                      {@html sanitize(model.licenseInfos.desc).replaceAll(
+                        '<p>',
+                        '<p class="text-xs! mb-3! last:mb-0!">'
+                      )}
+                    </div>
                   </div>
 
-                  <div class="text-xs!">
-                    <!-- FIXME -->
-                    <!-- <div class="cg-border p-2"></div>
-                    <div class="cg-border p-2"></div> -->
+                  <div
+                    class={[
+                      'text-xs! grid gap-4',
+                      licenseCards.length > 1 ? 'col-span-1 grid-cols-2' : ''
+                    ]}
+                  >
+                    {#each licenseCards as card}
+                      <div
+                        class={[
+                          'cg-border flex w-full flex-col items-center p-3 text-center',
+                          { 'justify-between': !!card.subtitle }
+                        ]}
+                      >
+                        <p class="text-xs! mb-3! font-bold">{card.title}</p>
+
+                        <Badge {...card.badge} size="sm" />
+                        {#if !!card.subtitle}
+                          <p class="text-xs! mb-0! mt-3!">{card.subtitle}</p>
+                        {/if}
+                      </div>
+                    {/each}
                   </div>
                 </div>
 
@@ -162,7 +186,9 @@
 
                   <p class="text-grey text-xs! mb-3!">
                     {@html sanitize(
-                      m[`models.extra.experts.${model.distribution}`]({
+                      m[
+                        `models.extra.experts.${model.distribution === 'api-only' ? 'api-only' : 'open-weights'}`
+                      ]({
                         linkProps: externalLinkProps(model.url || '#')
                       })
                     )}
