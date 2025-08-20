@@ -1,6 +1,7 @@
 import json
 import rich
 import logging
+import markdown
 from pathlib import Path
 from pydantic import BaseModel, RootModel, ValidationError
 from rich import print
@@ -201,7 +202,7 @@ def validate() -> None:
 
         for model in orga["models"]:
             i18n["models"][model["simple_name"]] = {
-                k: model[k] for k in I18N_MODEL_KEYS
+                k: markdown.markdown(model[k]) for k in I18N_MODEL_KEYS
             }
             license_data = (
                 dict_licenses[model["license"]]
