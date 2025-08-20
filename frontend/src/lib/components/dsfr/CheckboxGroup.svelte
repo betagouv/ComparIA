@@ -44,7 +44,7 @@
           value={option.value}
           bind:group={value}
         />
-        <label class={['fr-label', labelClass]} for={`${id}-${option.value}`}>
+        <label class={['fr-label ms-6!', labelClass]} for={`${id}-${option.value}`}>
           {#if labelSlot}
             {@render labelSlot({ option, index: i })}
           {:else}
@@ -55,3 +55,28 @@
     </div>
   {/each}
 </fieldset>
+
+<style>
+  /* Override only light theme blue to purple */
+  :root[data-fr-theme='light'] input[type='checkbox'] + label {
+    --border-action-high-blue-france: var(--blue-france-main-525);
+    --border-active-blue-france: var(--blue-france-main-525);
+    --background-active-blue-france: var(--blue-france-main-525);
+  }
+
+  /* To avoid flickering at page load */
+  @media (prefers-color-scheme: light) {
+    :root[data-fr-theme='system'] input[type='checkbox'] + label {
+      --border-action-high-blue-france: var(--blue-france-main-525);
+      --border-active-blue-france: var(--blue-france-main-525);
+      --background-active-blue-france: var(--blue-france-main-525);
+    }
+  }
+
+  input[type='checkbox'] + label::before {
+    height: 1rem;
+    width: 1rem;
+    left: -1.5rem;
+    top: 0.25rem;
+  }
+</style>
