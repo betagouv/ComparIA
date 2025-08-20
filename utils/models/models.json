@@ -1,6 +1,7 @@
 [
   {
     "name": "Meta",
+    "icon_path": "meta.svg",
     "models": [
       {
         "id": "llama-3.1-405b",
@@ -64,6 +65,7 @@
   },
   {
     "name": "DeepSeek",
+    "icon_path": "deepseek.png",
     "models": [
       {
         "id": "deepseek-r1",
@@ -105,6 +107,7 @@
   },
   {
     "name": "Cohere",
+    "icon_path": "cohere.png",
     "models": [
       {
         "id": "aya-expanse-32b",
@@ -144,7 +147,8 @@
     ]
   },
   {
-    "name": "AI",
+    "name": "xAI",
+    "icon_path": "xai.svg",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -163,6 +167,7 @@
   },
   {
     "name": "Microsoft",
+    "icon_path": "microsoft.png",
     "models": [
       {
         "id": "phi-4",
@@ -180,6 +185,7 @@
   },
   {
     "name": "Google",
+    "icon_path": "google.png",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI\n",
     "models": [
@@ -335,6 +341,7 @@
   },
   {
     "name": "OpenAI",
+    "icon_path": "openai.svg",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -427,6 +434,7 @@
   },
   {
     "name": "Mistral AI",
+    "icon_path": "mistral.png",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -523,6 +531,7 @@
   },
   {
     "name": "Anthropic",
+    "icon_path": "anthropic.png",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -564,6 +573,7 @@
   },
   {
     "name": "Nous",
+    "icon_path": "nous.webp",
     "models": [
       {
         "id": "hermes-3-llama-3.1-405b",
