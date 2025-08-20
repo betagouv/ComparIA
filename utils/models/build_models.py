@@ -49,6 +49,7 @@ class Model(BaseModel):
     release_date: str
     params: int | float | Literal["XS", "S", "M", "L", "XL"]
     arch: str
+    url: str | None = None # FIXME required?
     desc: str
     size_desc: str
     fyi: str
