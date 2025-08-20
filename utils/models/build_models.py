@@ -44,7 +44,7 @@ class License(BaseModel):
 
 
 class Model(BaseModel):
-    id: str | None = None # FIXME required?
+    id: str | None = None  # FIXME required?
     simple_name: str
     license: str
     release_date: str
@@ -52,7 +52,7 @@ class Model(BaseModel):
     active_params: int | None = None
     arch: str
     reasoning: bool | Literal["hybrid"] = False
-    url: str | None = None # FIXME required?
+    url: str | None = None  # FIXME required?
     desc: str
     size_desc: str
     fyi: str
@@ -60,7 +60,7 @@ class Model(BaseModel):
 
 class Organisation(BaseModel):
     name: str
-    icon_path: str | None = None # FIXME required?
+    icon_path: str | None = None  # FIXME required?
     proprietary_license_desc: str | None = None
     proprietary_reuse: bool = False
     proprietary_commercial_use: bool | None = None
@@ -180,7 +180,12 @@ def validate() -> None:
             "os": sort_dict(
                 {
                     license["license"]: {
-                        k: license[k] or "" for k in I18N_OS_LICENSE_KEYS
+                        k: (
+                            license[k] or ""
+                            if k != "license_desc"
+                            else markdown.markdown(license[k])
+                        )
+                        for k in I18N_OS_LICENSE_KEYS
                     }
                     for license in dict_licenses.values()
                 }
@@ -222,7 +227,7 @@ def validate() -> None:
                 )
 
             # FIXME to remove, should be required
-            model_id = model['id'] or slugify(model["simple_name"])
+            model_id = model["id"] or slugify(model["simple_name"])
 
             # Build complete model data (license + model) without translatable keys
             generated_models[model_id] = sort_dict(
