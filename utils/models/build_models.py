@@ -48,6 +48,7 @@ class Model(BaseModel):
     license: str
     release_date: str
     params: int | float | Literal["XS", "S", "M", "L", "XL"]
+    active_params: int | None = None
     arch: str
     url: str | None = None # FIXME required?
     desc: str
