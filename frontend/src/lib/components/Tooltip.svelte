@@ -2,25 +2,39 @@
   import { teleport } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import type { Snippet } from 'svelte'
+  import type { HTMLAnchorAttributes } from 'svelte/elements'
 
-  export interface TooltipProps {
+  export type TooltipProps = {
     id: string
     size?: 'xs' | 'sm' | 'md'
     text?: string
     label?: string
     teleportId?: string
     children?: Snippet
-  }
+  } & HTMLAnchorAttributes
 
-  let { id, text, label, children, teleportId = 'tooltips', size = 'sm' }: TooltipProps = $props()
+  let {
+    id,
+    text,
+    label,
+    children,
+    teleportId = 'tooltips',
+    size = 'sm',
+    ...props
+  }: TooltipProps = $props()
 </script>
 
-<a class="fr-icon fr-icon-question-line fr-icon--{size}" aria-describedby={id} href="#{id}">
+<a
+  {...props}
+  class={['fr-icon fr-icon-question-line', `fr-icon--${size}`, props.class]}
+  aria-describedby={id}
+  href="#{id}"
+>
   <span class="sr-only">{label ?? m['words.tooltip']()}</span>
 </a>
 <span
   {id}
-  class="fr-tooltip fr-placement font-normal normal-case"
+  class="fr-tooltip fr-placement font-normal normal-case z-2000!"
   role="tooltip"
   {@attach teleport(teleportId)}
 >
