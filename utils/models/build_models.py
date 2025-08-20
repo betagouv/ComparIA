@@ -60,7 +60,7 @@ class Model(BaseModel):
 
 class Organisation(BaseModel):
     name: str
-    icon_path: str
+    icon_path: str | None = None # FIXME required?
     proprietary_license_desc: str | None = None
     proprietary_reuse: bool = False
     proprietary_commercial_use: bool | None = None
@@ -228,10 +228,10 @@ def validate() -> None:
             generated_models[model_id] = sort_dict(
                 {
                     "organisation": orga["name"],
-                    "id": model_id,
                     "icon_path": orga["icon_path"],
                     **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
+                    "id": model_id,
                 }
             )
 
