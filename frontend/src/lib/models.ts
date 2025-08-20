@@ -100,6 +100,7 @@ export interface APIBotModel {
   // required_ram: number
   // quantization?: 'q4' | 'q8'
 }
+export type BotModel = ReturnType<typeof parseModel>
 
 export const licenseAttrs: Record<string, { warningCommercial?: true; prohibitCommercial?: true }> =
   {
@@ -118,12 +119,83 @@ export const licenseAttrs: Record<string, { warningCommercial?: true; prohibitCo
     'Mistral AI Research': { prohibitCommercial: true }
   }
 
+export function parseModel(model: APIBotModel) {
+  return {
+    ...model,
+    desc: m[`generated.models.${model.simple_name}.desc`](),
+    sizeDesc: m[`generated.models.${model.simple_name}.size_desc`](),
+    fyi: m[`generated.models.${model.simple_name}.fyi`](),
+    licenseInfos:
+      model.license === 'proprietary'
+        ? {
+            desc: m[`generated.licenses.proprio.${model.organisation}.license_desc`](),
+            reuseSpecificities:
+              m[`generated.licenses.proprio.${model.organisation}.reuse_specificities`](),
+            commercialUseSpecificities:
+              m[`generated.licenses.proprio.${model.organisation}.commercial_use_specificities`]()
+          }
+        : {
+            desc: m[`generated.licenses.os.${model.license}.license_desc`](),
+            reuseSpecificities: m[`generated.licenses.os.${model.license}.reuse_specificities`](),
+            commercialUseSpecificities:
+              m[`generated.licenses.os.${model.license}.commercial_use_specificities`]()
+          },
+    badges: {
+      license: {
+        'fully-open-source': {
+          id: `model-os-${model.id}`,
+          variant: 'green' as const,
+          text: m['models.licenses.type.openSource'](),
+          tooltip: m['models.openWeight.tooltips.openSource']()
+        },
+        'open-weights': {
+          id: `model-ow-${model.id}`,
+          variant: 'yellow' as const,
+          text: m['models.licenses.type.semiOpen'](),
+          tooltip: m['models.openWeight.tooltips.openWeight']()
+        },
+        'api-only': {
+          id: `model-proprietary-${model.id}`,
+          variant: 'orange' as const,
+          text: m['models.licenses.type.proprietary']()
+        }
+      }[model.distribution],
+      releaseDate: model.release_date
+        ? ({
+            variant: '' as const,
+            text: m['models.release']({ date: model.release_date })
+          } as const)
+        : null,
+      size: {
+        id: `model-parameters-${model.id}`,
+        variant: 'info' as const,
+        text: model.params
+          ? m['models.parameters']({ number: model.params })
+          : m['models.size.estimated']({ size: model.friendly_size }),
+        tooltip:
+          model.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
+      },
+      arch: {
+        // FIXME need description and label for 'maybe-*'
+        id: `model-arch-${model.id}`,
+        variant: 'yellow' as const,
+        text: model.arch
+        // tooltip: ''
+      },
+      reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
+    }
+  }
+}
+
 export function setModelsContext(models: APIBotModel[]) {
-  setContext('models', models)
+  setContext(
+    'models',
+    models.map((model) => parseModel(model))
+  )
 }
 
 export function getModelsContext() {
-  return getContext<APIBotModel[]>('models')
+  return getContext<BotModel[]>('models')
 }
 
 export function isAvailableLicense(license: string): license is License {
