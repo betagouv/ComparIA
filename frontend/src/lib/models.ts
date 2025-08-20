@@ -1,57 +1,104 @@
 import { getContext, setContext } from 'svelte'
+import { m } from './i18n/messages'
 
-export const LICENSES = [
-  'MIT',
-  'Apache 2.0',
-  'Gemma',
-  'Llama 3 Community',
-  'Llama 3.1',
-  'Llama 3.3',
-  'Llama 4',
-  'Jamba Open Model',
-  'CC-BY-NC-4.0',
-  'propriétaire Gemini',
-  'propriétaire Mistral',
-  'propriétaire xAI',
-  'propriétaire Liquid',
-  'propriétaire OpenAI',
-  'propriétaire Anthropic',
-  'Mistral AI Non-Production'
-] as const
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
+export const LICENSES = [
+  'proprietary',
+  'CC-BY-NC-4.0',
+  'Apache 2.0',
+  'Llama 3.1',
+  'Llama 4',
+  'Mistral AI Research License',
+  'Llama 3.3',
+  'MIT',
+  'Gemma'
+] as const
+export const ORGANISATIONS = [
+  'Meta',
+  'DeepSeek',
+  'Cohere',
+  'xAI',
+  'Microsoft',
+  'Google',
+  'Alibaba',
+  'Moonshot AI',
+  'Nvidia',
+  'OpenAI',
+  'Mistral AI',
+  'Amazon',
+  'Anthropic',
+  'Zhipu',
+  'Nous'
+] as const
+export const MODELS = [
+  'Llama 3.1 405B',
+  'Llama 3.3 70B',
+  'Llama 3.1 8B',
+  'Llama 4 Scout',
+  'Llama Maverick',
+  'DeepSeek R1',
+  'DeepSeek R1 Llama 70B',
+  'DeepSeek V3',
+  'Aya Expanse 32B',
+  'Command A',
+  'Command R',
+  'Grok 3 Mini',
+  'Phi-4',
+  'Gemini 2.5 Flash',
+  'Gemma 3n 4B',
+  'Gemma 3 4B',
+  'Gemma 3 12B',
+  'Gemma 3 27B',
+  'qwq 32B',
+  'Qwen 2.5 Coder 32B',
+  'Qwen 3 32B',
+  'Qwen 3 30B A3B',
+  'Qwen 2.5 max 0125',
+  'Nemotron Llama 3.1 70B',
+  'GPT OSS-120B',
+  'GPT OSS-20B',
+  'GPT 5',
+  'GPT 5 Mini',
+  'GPT 5 Nano',
+  'GPT 4.1 Nano',
+  'GPT-4.1 Mini',
+  'o4 mini',
+  'Mistral Large 2',
+  'Mistral Saba',
+  'Mistral Small 3.2',
+  'Magistral Medium',
+  'Mistral Medium 2506',
+  'Magistral Small',
+  'Ministral',
+  'Claude 3.7 Sonnet',
+  'Claude 4 Sonnet',
+  'Hermes 3 405B'
+] as const
 
 export type Sizes = (typeof SIZES)[number]
 export type License = (typeof LICENSES)[number]
+export type Organisation = (typeof ORGANISATIONS)[number]
+export type Model = (typeof MODELS)[number]
 
 export interface APIBotModel {
-  // [aya-expanse-8b]
-  // simple_name = "Aya Expanse 8B"
-  // organisation = "Cohere"
-  // icon_path = "cohere.png"
-  // friendly_size = "S"
-  // distribution = "open-weights"
-  // conditions = "copyleft"
-  // params = 8
-  // license = "CC-BY-NC-4.0"
-  // description = "Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue."
-
   id: string
-  friendly_size: Sizes
-  simple_name: string
-  organisation: string
-  params: number
-  total_params?: number
-  distribution: 'open-weights' | 'api-only'
+  simple_name: Model
+  organisation: Organisation
   icon_path: string
-  release_date?: string | null
-  fully_open_source?: boolean
+  distribution: 'api-only' | 'open-weights' | 'fully-open-source'
   license: License
-  conditions: 'free' | 'copyleft' | 'restricted'
-  required_ram: number
-  url?: string
-  description: string
-  excerpt: string
-  quantization?: 'q4' | 'q8'
+  reuse: boolean
+  commercial_use: boolean | null
+  release_date: string
+  params: number | null
+  active_params: number | null
+  friendly_size: Sizes
+  arch: string
+  reasoning: boolean | 'hybrid'
+  url: string | null // FIXME required?
+  // conditions: 'free' | 'copyleft' | 'restricted'
+  // required_ram: number
+  // quantization?: 'q4' | 'q8'
 }
 
 export const licenseAttrs: Record<string, { warningCommercial?: true; prohibitCommercial?: true }> =
