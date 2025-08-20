@@ -43,6 +43,7 @@ class License(BaseModel):
 
 
 class Model(BaseModel):
+    id: str | None = None # FIXME required?
     simple_name: str
     license: str
     release_date: str
@@ -215,11 +216,14 @@ def validate() -> None:
                     model_data["params"]
                 )
 
+            # FIXME to remove, should be required
+            model_id = model['id'] or slugify(model["simple_name"])
+
             # Build complete model data (license + model) without translatable keys
-            generated_models[slugify(model["simple_name"])] = sort_dict(
+            generated_models[model_id] = sort_dict(
                 {
                     "organisation": orga["name"],
-                    "id": slugify(model["simple_name"]),
+                    "id": model_id,
                     **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
                 }
