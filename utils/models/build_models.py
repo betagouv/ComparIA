@@ -50,6 +50,7 @@ class Model(BaseModel):
     params: int | float | Literal["XS", "S", "M", "L", "XL"]
     active_params: int | None = None
     arch: str
+    reasoning: bool | Literal["hybrid"] = False
     url: str | None = None # FIXME required?
     desc: str
     size_desc: str
