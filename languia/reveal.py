@@ -271,16 +271,16 @@ def get_llm_impact(
     # most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
     # TODO: contribute back to that list
     # impact = llm_impacts("huggingface_hub", model_name, token_count, request_latency)
-    if "active_params" in model_extra_info and "total_params" in model_extra_info:
+    if "active_params" in model_extra_info and "params" in model_extra_info:
         # TODO: add request latency
         model_active_parameter_count = int(model_extra_info["active_params"])
-        model_total_parameter_count = int(model_extra_info["total_params"])
+        model_total_parameter_count = int(model_extra_info["params"])
         if (
             "quantization" in model_extra_info
             and model_extra_info.get("quantization", None) == "q8"
         ):
             model_active_parameter_count = int(model_extra_info["active_params"]) // 2
-            model_total_parameter_count = int(model_extra_info["total_params"]) // 2
+            model_total_parameter_count = int(model_extra_info["params"]) // 2
     else:
         if "params" in model_extra_info:
             if (

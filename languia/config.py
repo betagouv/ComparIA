@@ -5,6 +5,7 @@ import tomli
 from languia.utils import get_model_names_list, get_matomo_js, build_model_extra_info
 import random
 import datetime
+from pathlib import Path
 
 env_debug = os.getenv("LANGUIA_DEBUG")
 
@@ -218,13 +219,12 @@ api_endpoint_info = json5.load(open(register_api_endpoint_file))
 
 models = get_model_names_list(api_endpoint_info)
 
-all_models_extra_info_toml = {
-    (k.lower()): v
-    for k, v in tomli.load(open("./models-extra-info.toml", "rb")).items()
-}
+all_models_extra_info_toml = json5.loads(
+    Path("./utils/models/generated-models.json").read_text()
+)
 # TODO: refacto?
 models_extra_info = [
-    build_model_extra_info(model, all_models_extra_info_toml)
+    all_models_extra_info_toml[model]
     for model in models
     if model is not None
 ]
