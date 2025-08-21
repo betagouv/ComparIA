@@ -29,20 +29,12 @@
   const licenseFilter = {
     id: 'license',
     legend: m['models.list.filters.license.legend'](),
-    options: [...new Set(models.map((m) => m.license))]
-      .filter((l) => !l.toLowerCase().includes('propriétaire'))
-      .map((license) => ({
-        label: license as string,
-        value: license as string,
-        count: models.filter((m) => m.license === license).length
-      }))
-      .concat([
-        {
-          label: 'Commerciale',
-          value: 'Propriétaire',
-          count: models.filter((m) => m.license.toLowerCase().includes('propriétaire')).length
-        }
-      ])
+    options: [...new Set(models.map((m) => m.license))].map((license) => ({
+      label:
+        license === 'proprietary' ? m['models.licenses.type.proprietary']() : (license as string),
+      value: license as string,
+      count: models.filter((m) => m.license === license).length
+    }))
   }
 
   const sortingOptions = (['name-asc', 'date-desc', 'params-asc', 'org-asc'] as const).map(
@@ -61,14 +53,7 @@
       .filter((model) => {
         const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
         const orgMatch = editors.length === 0 || editors.includes(model.organisation)
-        const licenseMatch =
-          licenses.length === 0 ||
-          licenses.some((selectedLicense) => {
-            if (selectedLicense === 'Propriétaire') {
-              return model.license.toLowerCase().includes('propriétaire')
-            }
-            return model.license === selectedLicense
-          })
+        const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
         return sizeMatch && orgMatch && licenseMatch
       })
       .sort((a, b) => {
