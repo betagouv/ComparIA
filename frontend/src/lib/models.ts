@@ -102,23 +102,6 @@ export interface APIBotModel {
 }
 export type BotModel = ReturnType<typeof parseModel>
 
-export const licenseAttrs: Record<string, { warningCommercial?: true; prohibitCommercial?: true }> =
-  {
-    // Utilisation commerciale
-    // Modification autorisée
-    // Attribution requise
-    // "MIT": {"commercial": true, "can_modify": true, "attribution": true},
-    // "Apache 2.0": {"commercial": true, "can_modify": true, "attribution": true},
-    // "Gemma": {"copyleft": true},
-    'Llama 3 Community': { warningCommercial: true },
-    'Llama 3.1': { warningCommercial: true },
-    'Llama 3.3': { warningCommercial: true },
-    'Jamba Open Model': { warningCommercial: true },
-    'CC-BY-NC-4.0': { prohibitCommercial: true },
-    'Mistral AI Non-Production': { prohibitCommercial: true },
-    'Mistral AI Research': { prohibitCommercial: true }
-  }
-
 export function parseModel(model: APIBotModel) {
   return {
     ...model,
@@ -166,6 +149,7 @@ export function parseModel(model: APIBotModel) {
             text: m['models.release']({ date: model.release_date })
           } as const)
         : null,
+      licenseName: { variant: '' as const, text: model.license },
       size: {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
@@ -197,8 +181,4 @@ export function setModelsContext(models: APIBotModel[]) {
 
 export function getModelsContext() {
   return getContext<BotModel[]>('models')
-}
-
-export function isAvailableLicense(license: string): license is License {
-  return (LICENSES as ReadonlyArray<string>).includes(license)
 }

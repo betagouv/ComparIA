@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { RevealData } from '$lib/chatService.svelte'
+  import { Badge } from '$lib/components/dsfr'
   import Footer from '$lib/components/Footer.svelte'
   import Icon from '$lib/components/Icon.svelte'
   import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
@@ -31,51 +32,26 @@
   <div>
     <div id="reveal-grid" class="grid-cols-md-2 fr-mx-md-12w grid grid-cols-1">
       {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
+        {@const modelBadges = (['license', 'size', 'releaseDate', 'licenseName'] as const)
+          .map((k) => model.badges[k])
+          .filter((b) => !!b)}
+
         <div class="rounded-tile fr-mb-1w fr-p-4w fr-mx-3v bg-white text-left">
           {#if selected === side}
             <span class="your-choice fr-mb-2w fr-mb-md-0">{m['vote.yours']()}</span>
           {/if}
           <h5 class="fr-mb-2w github-title">
-            <img class="fr-mt-n2v relative inline" src="/orgs/{model.icon_path}" width="34" />
+            <img class="fr-mt-n2v relative inline" src="/orgs/ai/{model.icon_path}" width="34" />
             {model.organisation}/<strong>{model.simple_name}</strong>
           </h5>
-          <p class="fr-mb-2w">
-            {#if model.fully_open_source}
-              <span class="fr-badge fr-badge--green-emeraude fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                {m['models.licenses.type.openSource']()}&nbsp;
-              </span>
-            {:else if model.distribution === 'open-weights'}
-              <span class="fr-badge fr-badge--yellow-tournesol fr-badge--no-icon fr-mr-1v fr-mb-1v">
-                {m['models.licenses.type.semiOpen']()}&nbsp;
-              </span>
-            {:else}
-              <span
-                class="fr-badge fr-badge--orange-terre-battue fr-badge--no-icon fr-mr-1v fr-mb-1v"
-              >
-                {m['models.licenses.type.proprietary']()}
-              </span>
-            {/if}
-            <span class="fr-badge fr-badge--no-icon fr-badge--info fr-mr-1v fr-mb-1v">
-              {#if model.distribution === 'api-only'}
-                {m['models.size.estimated']({ size: model.friendly_size })}
-              {:else}
-                {m['models.parameters']({ number: model.params })}
-              {/if}
-            </span>
-            {#if model.release_date}
-              <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-                {m['models.release']({ date: model.release_date })}
-              </span>
-            {/if}
-            <span class="fr-badge fr-badge--no-icon fr-mr-1v">
-              {#if model.distribution === 'open-weights'}
-                {m['models.licenses.name']({ licence: model.license })}
-              {:else}
-                {m['models.licenses.commercial']()}
-              {/if}
-            </span>
-          </p>
-          <p class="fr-mb-4w fr-text--sm text-grey-200">{model.excerpt}</p>
+          <ul class="fr-badges-group">
+            {#each modelBadges as badge, i}
+              <li><Badge id="card-badge-{i}" {...badge} noTooltip /></li>
+            {/each}
+          </ul>
+
+          {@html sanitize(model.desc).replaceAll('<p>', '<p class="text-sm! last:mb-5!">')}
+
           <h6 class="fr-mb-2w">{m['reveal.impacts.title']()}</h6>
           <div class="energy-balance-1">
             <div class="rounded-tile fr-px-1w fr-py-1w relative text-center">

@@ -1,6 +1,7 @@
 import { api } from '$lib/api'
 import { m } from '$lib/i18n/messages'
-import type { APIBotModel, Sizes } from '$lib/models'
+import type { APIBotModel, BotModel } from '$lib/models'
+import { parseModel } from '$lib/models'
 import type { LoadingStatus } from '@gradio/statustracker'
 
 // PROMPT
@@ -103,11 +104,6 @@ export interface APIRevealData {
   model_b_kwh: number
   model_a_co2: number
   model_b_co2: number
-  size_desc: Record<Sizes, string>
-  license_desc: Record<string, string>
-  license_attrs: Partial<
-    Record<string, { warning_commercial: boolean; prohibit_commercial: boolean }>
-  >
   model_a_tokens: number
   model_b_tokens: number
   streaming_a: number
@@ -121,7 +117,7 @@ export interface APIRevealData {
 }
 
 interface RevealModelData {
-  model: APIBotModel
+  model: BotModel
   side: 'model-a' | 'model-b'
   kwh: number
   co2: number
@@ -277,11 +273,10 @@ export async function postVoteGetReveal(vote: Required<VoteData>) {
 }
 
 function parseAPIRevealData(data: APIRevealData): RevealData {
-  console.log('d', data)
   return {
     selected: data.chosen_model ?? 'both-equal',
     modelsData: (['a', 'b'] as const).map((model) => ({
-      model: data[`model_${model}`],
+      model: parseModel(data[`model_${model}`]),
       side: `model-${model}`,
       kwh: data[`model_${model}_kwh`],
       co2: data[`model_${model}_co2`] * 1000,
@@ -291,12 +286,10 @@ function parseAPIRevealData(data: APIRevealData): RevealData {
       streaming: data[`streaming_${model}`],
       streamingUnit: data[`streaming_${model}_unit`]
     })),
-    sizeDesc: data.size_desc,
-    licenseDesc: data.license_desc,
-    licenseAttrs: data.license_attrs,
     shareB64Data: data.b64
   }
 }
+
 export async function getReveal(): Promise<RevealData> {
   return api.predict<APIRevealData>('/reveal').then(parseAPIRevealData)
 }
