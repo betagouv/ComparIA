@@ -136,7 +136,7 @@
                 <div
                   class={[
                     'cg-border grid gap-4 bg-white p-4 pb-6 lg:col-span-6',
-                    licenseCards.length > 1 ? 'grid-cols-2' : 'grid-cols-3'
+                    licenseCards.length > 1 ? 'md:grid-cols-2' : 'md:grid-cols-3'
                   ]}
                 >
                   <div class={[licenseCards.length > 1 ? '' : 'col-span-2']}>

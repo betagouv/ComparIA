@@ -8,7 +8,7 @@
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
-  import { getModelsContext, type APIBotModel } from '$lib/models'
+  import { getModelsContext, type BotModel } from '$lib/models'
   import { tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
@@ -58,7 +58,7 @@
     }
   }
 
-  const findModelDetails = (id: string | null, modelsList: APIBotModel[]) => {
+  const findModelDetails = (id: string | null, modelsList: BotModel[]) => {
     if (!id || !modelsList || !Array.isArray(modelsList)) {
       return { name: m['words.random'](), iconPath: null }
     }
