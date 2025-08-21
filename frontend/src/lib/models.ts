@@ -90,15 +90,15 @@ export interface APIBotModel {
   reuse: boolean
   commercial_use: boolean | null
   release_date: string
-  params: number | null
+  params: number
   active_params: number | null
   friendly_size: Sizes
   arch: string
   reasoning: boolean | 'hybrid'
+  quantization: 'q4' | 'q8' | null
   url: string | null // FIXME required?
+  required_ram: number
   // conditions: 'free' | 'copyleft' | 'restricted'
-  // required_ram: number
-  // quantization?: 'q4' | 'q8'
 }
 export type BotModel = ReturnType<typeof parseModel>
 
@@ -169,9 +169,10 @@ export function parseModel(model: APIBotModel) {
       size: {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
-        text: model.params
-          ? m['models.parameters']({ number: model.params })
-          : m['models.size.estimated']({ size: model.friendly_size }),
+        text:
+          model.distribution === 'open-weights'
+            ? m['models.parameters']({ number: model.params })
+            : m['models.size.estimated']({ size: model.friendly_size }),
         tooltip:
           model.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
       },

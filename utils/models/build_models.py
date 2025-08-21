@@ -32,6 +32,8 @@ I18N_OS_LICENSE_KEYS = [
 I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
 I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
 
+PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
+
 
 class License(BaseModel):
     license: str
@@ -52,6 +54,7 @@ class Model(BaseModel):
     active_params: int | None = None
     arch: str
     reasoning: bool | Literal["hybrid"] = False
+    quantization: Literal["q4", "q8"] | None = None
     url: str | None = None  # FIXME required?
     desc: str
     size_desc: str
@@ -220,11 +223,18 @@ def validate() -> None:
 
             if isinstance(model_data["params"], str):
                 model_data["friendly_size"] = model_data["params"]
-                model_data["params"] = None
+                # Guess params
+                model_data["params"] = PARAMS_SIZE_MAP[model_data["params"]]
             else:
                 model_data["friendly_size"] = params_to_friendly_size(
                     model_data["params"]
                 )
+
+            if model.get("quantization", None) == "q8":
+                model["required_ram"] = model["params"] * 2
+            else:
+                # We suppose from q4 to fp16
+                model["required_ram"] = model["params"]
 
             # FIXME to remove, should be required
             model_id = model["id"] or slugify(model["simple_name"])
