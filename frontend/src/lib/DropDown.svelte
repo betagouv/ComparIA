@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { APIModeAndPromptData, Mode, ModeInfos } from '$lib/chatService.svelte'
-  import { modeInfos as choices } from '$lib/chatService.svelte'
+  import type { APIModeAndPromptData } from '$lib/chatService.svelte'
+  import { modeInfos as modeChoices } from '$lib/chatService.svelte'
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import Icon from '$lib/components/Icon.svelte'
@@ -8,27 +8,24 @@
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
-  import { getModelsContext, type BotModel } from '$lib/models'
+  import { getModelsContext } from '$lib/models'
   import { tick } from 'svelte'
   import { fade } from 'svelte/transition'
 
-  export let never_clicked: boolean = true
-  export let elem_id = ''
-  export let elem_classes: string[] = []
-  export let visible = true
-  export let disabled = false
-  export let show_custom_models_selection: boolean = false
-  export let onSubmit: (args: APIModeAndPromptData) => void
+  let { onSubmit }: { onSubmit: (args: APIModeAndPromptData) => void } = $props()
 
-  let textboxElement: HTMLTextAreaElement
+  let promptEl = $state<HTMLTextAreaElement>()
+  let neverClicked = $state(true)
+  let disabled = $state(false)
+  let showModelsSelection = $state(false)
 
   const models = getModelsContext()
 
   const prompt = useLocalStorage('prompt', '', (parsed) => {
     if (parsed !== '') {
       tick().then(() => {
-        if (textboxElement && typeof textboxElement.select === 'function') {
-          textboxElement.select()
+        if (promptEl && typeof promptEl.select === 'function') {
+          promptEl.select()
         }
       })
     }
@@ -43,54 +40,34 @@
     return []
   })
 
+  const choice = $derived(modeChoices.find((c) => c.value === mode.value) || modeChoices[0])
+  const { modelA, modelB } = $derived({
+    modelA: models.find((model) => model.id === modelsSelection.value[0]),
+    modelB: models.find((model) => model.id === modelsSelection.value[1])
+  })
+  const altLabel = $derived.by(() => {
+    if (
+      (mode.value == 'custom' && modelsSelection.value.length < 1) ||
+      (mode.value == 'random' && neverClicked)
+    ) {
+      return m['arenaHome.modelSelection']()
+    } else {
+      return choice.alt_label
+    }
+  })
+
   function selectPartialText(start?: number, end?: number): void {
-    if (textboxElement) {
-      textboxElement.focus()
+    if (promptEl) {
+      promptEl.focus()
       if (start !== undefined && end !== undefined) {
-        textboxElement.setSelectionRange(start, end)
+        promptEl.setSelectionRange(start, end)
         console.log(`[Textbox] Text selected from ${start} to ${end}`)
       } else {
-        textboxElement.select()
+        promptEl.select()
         console.log('[Textbox] All text selected')
       }
     } else {
       console.error("[Textbox] Element 'el' not found for selection.")
-    }
-  }
-
-  const findModelDetails = (id: string | null, modelsList: BotModel[]) => {
-    if (!id || !modelsList || !Array.isArray(modelsList)) {
-      return { name: m['words.random'](), iconPath: null }
-    }
-    const model = modelsList.find((m) => m.id === id)
-    return {
-      name: model?.simple_name ?? m['words.random'](),
-      iconPath: model?.icon_path ?? null
-    }
-  }
-
-  let choice: ModeInfos = get_choice(mode.value) || choices[0]
-  let firstModelName = m['words.random']()
-  let secondModelName = m['words.random']()
-  let firstModelIconPath: string | null = null
-  let secondModelIconPath: string | null = null
-
-  $: {
-    if (models && Array.isArray(models)) {
-      if (mode.value === 'custom') {
-        let firstDetails = findModelDetails(modelsSelection.value[0], models)
-        let secondDetails = findModelDetails(modelsSelection.value[1], models)
-
-        firstModelName = firstDetails.name
-        firstModelIconPath = firstDetails.iconPath
-
-        secondModelName = secondDetails.name
-        secondModelIconPath = secondDetails.iconPath
-      }
-    } else {
-      if (mode.value === 'custom') {
-        console.error('Error: models is not a valid array, cannot apply custom selection.')
-      }
     }
   }
 
@@ -103,15 +80,7 @@
     })
   }
 
-  function onOptionSelected(index: number): void {
-    if (index !== null && choices && choices.length > index) {
-      choice = choices[index]
-      mode.value = choice.value
-    }
-    show_custom_models_selection = mode.value === 'custom'
-  }
-
-  function toggle_model_selection(id: string): void {
+  function toggleModelSelection(id: string): void {
     if (!modelsSelection.value.includes(id)) {
       if (modelsSelection.value.length < 2) {
         modelsSelection.value.push(id)
@@ -132,10 +101,6 @@
     }
   }
 
-  function get_choice(modeValue: Mode): ModeInfos | undefined {
-    return choices.find((c) => c.value === modeValue)
-  }
-
   function handlePromptSelected(
     event: CustomEvent<{
       text: string
@@ -148,7 +113,7 @@
       `[Index] handlePromptSelected: Received promptselected. Text: "${prompt.value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`
     )
     if (
-      textboxElement &&
+      promptEl &&
       event.detail.selectionStart !== undefined &&
       event.detail.selectionEnd !== undefined
     ) {
@@ -185,26 +150,16 @@
     } else {
       // No valid selection range provided
       console.log(
-        '[Index] handlePromptSelected: No specific selection range provided, or textboxElement not ready. No text will be selected.',
+        '[Index] handlePromptSelected: No specific selection range provided, or promptEl not ready. No text will be selected.',
         event.detail
       )
     }
     // Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
     // dispatchSubmit();
   }
-
-  var alt_label: string = m['arenaHome.modelSelection']()
-  $: if (
-    (mode.value == 'custom' && modelsSelection.value.length < 1) ||
-    (mode.value == 'random' && never_clicked)
-  ) {
-    alt_label = m['arenaHome.modelSelection']()
-  } else {
-    alt_label = choice.alt_label
-  }
 </script>
 
-<div class:hidden={!visible} id={elem_id} class={elem_classes.join(' ') + ' fr-container'}>
+<div id="prompt-area" class="fr-container">
   <h3 class="text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w text-center">
     {m['arenaHome.title']()}
   </h3>
@@ -212,7 +167,7 @@
     <div class="first-textbox fr-mb-3v">
       <TextPrompt
         id="initial-prompt"
-        bind:el={textboxElement}
+        bind:el={promptEl}
         bind:value={prompt.value}
         label={m['arenaHome.prompt.label']()}
         placeholder={m['arenaHome.prompt.placeholder']()}
@@ -229,16 +184,16 @@
         data-fr-opened="false"
         {disabled}
         aria-controls="modal-mode-selection"
-        on:click={() => {
-          never_clicked = false
-          show_custom_models_selection = false
+        onclick={() => {
+          neverClicked = false
+          showModelsSelection = false
         }}
       >
         <Icon icon="equalizer-fill" size="sm" block class="text-primary" />
-        <span class="label">{alt_label}</span>
+        <span class="label">{altLabel}</span>
         <Icon icon="arrow-down-s-line" size="sm" />
       </button>
-      {#if mode.value == 'custom' && modelsSelection.value.length > 0}
+      {#if mode.value == 'custom' && modelA}
         <button
           {disabled}
           class="model-selection fr-mb-md-0 fr-mb-1w"
@@ -246,30 +201,30 @@
           aria-controls="modal-mode-selection"
         >
           <img
-            src="/orgs/{firstModelIconPath}"
-            alt={firstModelName}
+            src="/orgs/ai/{modelA.icon_path}"
+            alt={modelA.simple_name}
             width="20"
             class="fr-mr-1v inline"
-          />&thinsp;
-          {firstModelName}
+          />&thinsp;{modelA.simple_name}
           <strong class="versus">&nbsp;vs.&nbsp;</strong>
-          {#if secondModelIconPath != null}
+          {#if modelB}
             <img
-              src="/orgs/{secondModelIconPath}"
-              alt={secondModelName}
+              src="/orgs/ai/{modelB.icon_path}"
+              alt={modelB.simple_name}
               width="20"
               class="fr-mr-1v inline"
-            />&thinsp;
+            />&thinsp;{modelB.simple_name}
+          {:else}
+            {m['words.random']()}
           {/if}
-          {secondModelName}</button
-        >
+        </button>
       {/if}
     </div>
     <input
       type="submit"
       class="submit-btn purple-btn btn"
       disabled={prompt.value == '' || disabled}
-      on:click={() => dispatchSubmit()}
+      onclick={() => dispatchSubmit()}
       value={m['words.send']()}
     />
   </div>
@@ -282,8 +237,8 @@
     <div class="fr-grid-row fr-grid-row--center">
       <div
         class="fr-col-12"
-        class:fr-col-md-10={show_custom_models_selection}
-        class:fr-col-md-5={!show_custom_models_selection}
+        class:fr-col-md-10={showModelsSelection}
+        class:fr-col-md-5={!showModelsSelection}
       >
         <div class="fr-modal__body">
           <div class="fr-modal__header">
@@ -296,13 +251,17 @@
             </button>
           </div>
           <div class="fr-modal__content fr-pb-4w">
-            {#if show_custom_models_selection == false}
+            {#if showModelsSelection == false}
               <h6 id="modal-mode-selection" class="modal-title">
                 {m['arenaHome.selectModels.question']()}
               </h6>
               <p>{m['arenaHome.selectModels.help']()}</p>
               <div>
-                <Dropdown bind:mode={mode.value} {onOptionSelected} {choices} />
+                <Dropdown
+                  bind:mode={mode.value}
+                  choices={modeChoices}
+                  onOptionSelected={(mode) => (showModelsSelection = mode === 'custom')}
+                />
               </div>
             {:else}
               <div in:fade>
@@ -318,13 +277,13 @@
                 <div>
                   <ModelsSelection
                     {models}
-                    bind:custom_models_selection={modelsSelection.value}
-                    {toggle_model_selection}
+                    bind:selection={modelsSelection.value}
+                    {toggleModelSelection}
                   />
                   <div class="fr-mt-2w">
                     <button
                       class="btn fr-mb-md-0 fr-mb-1w"
-                      on:click={() => (show_custom_models_selection = false)}
+                      onclick={() => (showModelsSelection = false)}
                     >
                       {m['words.back']()}
                     </button>

@@ -8,16 +8,21 @@
     choices: ModeInfos[]
     mode: Mode
     disabled?: boolean
-    onOptionSelected: (index: number) => void
+    onOptionSelected: (mode: Mode) => void
   }
 
   let { choices, mode = $bindable(), disabled = false, onOptionSelected }: DropDownProps = $props()
 
-  function onKeydown(index: number, event: KeyboardEvent) {
+  function onKeydown(event: KeyboardEvent, value: Mode) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
-      onOptionSelected(index)
+      onChange(value)
     }
+  }
+
+  function onChange(value: Mode) {
+    mode = value
+    onOptionSelected(mode)
   }
 </script>
 
@@ -32,8 +37,8 @@
       tabindex="0"
       role="radio"
       aria-checked={value === mode ? 'true' : 'false'}
-      onclick={() => onOptionSelected(index)}
-      onkeydown={(e) => onKeydown(index, e)}
+      onclick={() => onChange(value)}
+      onkeydown={(e) => onKeydown(e, value)}
       aria-controls={value != 'custom' ? 'modal-mode-selection' : ''}
     >
       <input
