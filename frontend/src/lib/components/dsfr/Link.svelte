@@ -19,6 +19,7 @@
     size = 'md',
     variant = 'primary',
     icon,
+    iconOnly = false,
     iconPos = 'left',
     cornered = false,
     native = !button,
@@ -37,8 +38,9 @@
   )
 
   const btnClasses = $derived([
-    `fr-btn fr-btn--${variant} justify-center`,
+    `fr-btn fr-btn--${variant}`,
     {
+      xs: 'fr-btn--sm px-1! py-0!',
       sm: 'fr-btn--sm',
       md: '',
       lg: 'fr-btn--lg px-6!'
@@ -46,13 +48,17 @@
     {
       'cg-link-btn': !native,
       'rounded-lg': !cornered,
-      [`fr-icon-${icon} fr-btn--icon-${iconPos}`]: !!icon
+      'justify-center': !iconOnly,
+      [`fr-icon-${icon}`]: !!icon,
+      [`fr-btn--icon-${iconPos}`]: !!icon && !iconOnly,
+      'max-w-[1.5rem]! min-h-[1.5rem]! h-[1.5rem]!': size === 'xs' && iconOnly
     }
   ])
 
   const linkClasses = $derived([
     `fr-link fr-link--${size}`,
     {
+      xs: 'fr-link--sm',
       sm: 'fr-link--sm',
       md: '',
       lg: 'fr-link--lg'

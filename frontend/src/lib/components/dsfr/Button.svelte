@@ -3,9 +3,10 @@
 
   export type ButtonProps = {
     text?: string
-    size?: 'sm' | 'md' | 'lg'
+    size?: 'xs' | 'sm' | 'md' | 'lg'
     variant?: 'primary' | 'secondary' | 'tertiary' | 'tertiary-no-outline'
     icon?: string
+    iconOnly?: boolean
     iconPos?: 'left' | 'right'
     cornered?: boolean
     native?: boolean
@@ -16,6 +17,7 @@
     size = 'md',
     variant = 'primary',
     icon,
+    iconOnly = false,
     iconPos = 'left',
     cornered = false,
     native = false,
@@ -24,8 +26,9 @@
   }: Omit<HTMLButtonAttributes, 'size'> & ButtonProps = $props()
 
   const classes = $derived([
-    `fr-btn fr-btn--${variant} justify-center`,
+    `fr-btn fr-btn--${variant}`,
     {
+      xs: 'fr-btn--sm px-1! py-0!',
       sm: 'fr-btn--sm',
       md: '',
       lg: 'fr-btn--lg px-6!'
@@ -33,7 +36,10 @@
     {
       'cg-btn': !native,
       'rounded-lg': !cornered,
-      [`fr-icon-${icon} fr-btn--icon-${iconPos}`]: !!icon
+      'justify-center': !iconOnly,
+      [`fr-icon-${icon}`]: !!icon,
+      [`fr-btn--icon-${iconPos}`]: !!icon && !iconOnly,
+      'max-w-[1.5rem]! min-h-[1.5rem]! h-[1.5rem]!': size === 'xs' && iconOnly
     },
     props.class ?? ''
   ])
