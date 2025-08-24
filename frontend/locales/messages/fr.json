@@ -8,6 +8,7 @@
     "titles": {
       "home": "Accueil",
       "product": "Produit et partenaires",
+      "ranking": "Classement",
       "modeles": "Liste des modèles",
       "datasets": "Jeux de données",
       "comparator": "Le comparateur",
@@ -314,6 +315,10 @@
       "title": "Vos questions les plus courantes",
       "discover": "Découvrir les autres questions"
     }
+  },
+  "ranking": {
+    "title": "Classement des modèles",
+    "desc": "Découvrez comment les meilleurs modèles d’IA se positionnent à travers leur <strong>score de satisfaction</strong> issus des votes de la communauté compar:IA. Pour en savoir plus, consultez <a {linkProps}>notre méthodologie de classement</a>."
   },
   "product": {
     "title": "Tout savoir sur le comparateur",
