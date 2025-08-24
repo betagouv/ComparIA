@@ -1,32 +1,41 @@
 <script lang="ts">
-  import { m } from '$lib/i18n/messages'
-  import type { APIBotModel } from '$lib/models'
+  import { Badge } from '$lib/components/dsfr'
+  import type { BotModel } from '$lib/models'
 
-  export let custom_models_selection: string[] = [] // Default to an empty list
-  export let models: APIBotModel[] = []
-
-  export let disabled = false
-
-  export let toggle_model_selection: (id: string) => void
+  // FIXME rework as Selector
+  let {
+    selection = $bindable([]),
+    models,
+    disabled = false,
+    toggleModelSelection
+  }: {
+    selection: string[]
+    models: BotModel[]
+    disabled?: boolean
+    toggleModelSelection: (id: string) => void
+  } = $props()
 
   function handleKeyDown(id: string, event: KeyboardEvent) {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault()
-      toggle_model_selection(id)
+      toggleModelSelection(id)
     }
   }
 </script>
 
 <div class="models-grid">
-  {#each models as { id, simple_name, icon_path, organisation, params, total_params, friendly_size, distribution, release_date, fully_open_source }, index}
+  {#each models as { id, simple_name, icon_path, organisation, badges }, index}
+    {@const modelBadges = (['license', 'releaseDate', 'size'] as const)
+      .map((k) => badges[k])
+      .filter((b) => !!b)}
+
     <label
-      class:selected={custom_models_selection.includes(id)}
-      class:disabled={disabled ||
-        (!custom_models_selection.includes(id) && custom_models_selection.length == 2)}
+      class:selected={selection.includes(id)}
+      class:disabled={disabled || (!selection.includes(id) && selection.length == 2)}
       data-testid={`radio-label-${id}`}
       tabindex="0"
       role="radio"
-      aria-checked={custom_models_selection.includes(id) ? 'true' : 'false'}
+      aria-checked={selection.includes(id) ? 'true' : 'false'}
       on:keydown={(e) => handleKeyDown(id, e)}
     >
       <input
@@ -34,45 +43,23 @@
         name="radio-options"
         value={id}
         data-index={index}
-        aria-checked={custom_models_selection.includes(id)}
-        disabled={disabled ||
-          (!custom_models_selection.includes(id) && custom_models_selection.length == 2)}
+        aria-checked={selection.includes(id)}
+        disabled={disabled || (!selection.includes(id) && selection.length == 2)}
         on:click={(e) => {
-          toggle_model_selection(id)
+          toggleModelSelection(id)
           e.stopPropagation()
         }}
       />
       <div>
         <span class="icon">
-          <img src="/orgs/{icon_path}" alt={organisation} width="20" class="inline" />
-        </span>&nbsp;<span class="organisation">{organisation}/</span><strong>{simple_name}</strong>
+          <img src="/orgs/ai/{icon_path}" alt={organisation} width="20" class="inline" />
+        </span><span class="organisation">{organisation}/</span><strong>{simple_name}</strong>
       </div>
-      <div>
-        <span
-          class:fr-badge--yellow-tournesol={distribution == 'open-weights' && !fully_open_source}
-          class:fr-badge--orange-terre-battue={distribution == 'api-only'}
-          class:fr-badge--green-emeraude={distribution == 'open-weights' && fully_open_source}
-          class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v fr-mb-1v"
-        >
-          {distribution == 'api-only'
-            ? m['models.licenses.type.proprietary']()
-            : fully_open_source
-              ? m['models.licenses.type.openSource']()
-              : m['models.licenses.type.semiOpen']()}
-        </span>
-        {#if release_date}
-          <span class="fr-badge fr-badge--sm fr-badge--no-icon fr-mr-1v">
-            {m['models.release']({ date: release_date })}
-          </span>
-        {/if}
-        <span class="fr-badge fr-badge--sm fr-badge--info fr-badge--no-icon fr-mr-1v fr-mb-1v">
-          {#if distribution === 'api-only'}
-            {m['models.size.estimated']({ size: friendly_size })}
-          {:else}
-            {m['models.parameters']({ number: typeof params === 'number' ? params : total_params ?? '??' })}
-          {/if}
-        </span>
-      </div>
+      <ul class="fr-badges-group hidden! md:flex! mt-3!">
+        {#each modelBadges as badge, i}
+          <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
+        {/each}
+      </ul>
     </label>
   {/each}
 </div>
@@ -136,9 +123,6 @@
     color: #3a3a3a;
   }
 
-  .fr-badge {
-    display: none !important;
-  }
   .organisation {
     color: rgb(36, 36, 36);
     display: none;
@@ -146,9 +130,6 @@
   }
 
   @media (min-width: 48em) {
-    .fr-badge {
-      display: inline !important;
-    }
     .organisation {
       display: inline;
     }
