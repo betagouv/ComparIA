@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Table } from '$components/dsfr'
+  import { Badge, Table } from '$components/dsfr'
   import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
@@ -26,6 +26,23 @@
   }))
 
   let orderingCol = $state<(typeof cols)[number]['id']>('elo')
+
+  const rows = $derived.by(() => {
+    return modelsData.map((m, i) => {
+      // FIXME replace mock with real data
+      const conso = Math.round(Math.random() * 10)
+      const [month, year] = m.release_date.split('/')
+      return {
+        ...m,
+        release_date: new Date([month, '01', year].join('/')),
+        rank: i + 1,
+        elo: Math.round(Math.random() * 10),
+        trust: `+${Math.round(Math.random() * 10)}/-${Math.round(Math.random() * 10)}`,
+        votes: Math.round(Math.random() * 1000),
+        consumption: conso > 5 ? null : conso
+      }
+    })
+  })
 </script>
 
 <SeoHead title={m['seo.titles.ranking']()} />
@@ -42,9 +59,44 @@
       )}
     </p>
 
-    <Table caption={m['ranking.title']()} {cols} rows={modelsData} bind:orderingCol hideCaption>
+    <Table caption={m['ranking.title']()} {cols} rows={rows} bind:orderingCol hideCaption>
       {#snippet cell(model, col)}
-        {model[col.id]}
+        {#if col.id === 'rank'}
+          <span class="font-medium">{model.rank}</span>
+        {:else if col.id === 'name'}
+          <img
+            src="/orgs/ai/{model.icon_path}"
+            alt={model.organisation}
+            width="20"
+            class="me-1 inline-block"
+          />
+          {model.id}
+        {:else if col.id === 'elo'}
+          {model.elo}
+        {:else if col.id === 'trust'}
+          {model.trust}
+        {:else if col.id === 'votes'}
+          {model.votes}
+        {:else if col.id === 'consumption'}
+          {#if model.consumption === null}
+            <span class="text-xs">N/A</span>
+          {:else}
+            {model.consumption}
+          {/if}
+        {:else if col.id === 'size'}
+          <strong>{model.friendly_size}</strong> -
+          {#if model.distribution === 'api-only'}
+            <span class="text-xs">(est.)</span>
+          {:else}
+            {model.params} Mds
+          {/if}
+        {:else if col.id === 'release'}
+          {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}
+        {:else if col.id === 'organisation'}
+          {model.organisation}
+        {:else if col.id === 'license'}
+          <Badge {...model.badges.license} size="xs" noTooltip />
+        {/if}
       {/snippet}
     </Table>
   </div>
