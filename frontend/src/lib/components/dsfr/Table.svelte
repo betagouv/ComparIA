@@ -64,18 +64,19 @@
             <tr>
               {#each cols as col (col.id)}
                 <th>
-                  <div class="flex items-center text-xs font-medium">
+                  <div class="text-dark-grey! flex items-center text-xs font-medium">
                     <span>{@html sanitize(col.label)}</span>
                     {#if col.tooltip}
                       <Tooltip id={col.id} text={col.tooltip} size="xs" class="ms-1" />
                     {/if}
                     {#if col.orderable}
                       <Button
-                        text="order by FIXME"
+                        text="Trier"
                         icon="arrow-up-down-line"
                         size="xs"
                         variant="tertiary-no-outline"
-                        hideText
+                        iconOnly
+                        class={['ms-1!', { 'text-dark-grey!': orderingCol !== col.id }]}
                         onclick={() => onOrderingColClick(col)}
                       />
                     {/if}
