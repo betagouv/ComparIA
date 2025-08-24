@@ -318,7 +318,23 @@
   },
   "ranking": {
     "title": "Classement des modèles",
-    "desc": "Découvrez comment les meilleurs modèles d’IA se positionnent à travers leur <strong>score de satisfaction</strong> issus des votes de la communauté compar:IA. Pour en savoir plus, consultez <a {linkProps}>notre méthodologie de classement</a>."
+    "desc": "Découvrez comment les meilleurs modèles d’IA se positionnent à travers leur <strong>score de satisfaction</strong> issus des votes de la communauté compar:IA. Pour en savoir plus, consultez <a {linkProps}>notre méthodologie de classement</a>.",
+    "table": {
+      "data": {
+        "cols": {
+          "rank": "Rang",
+          "name": "Modèle",
+          "elo": "Score satisfaction",
+          "trust": "Confiance",
+          "votes": "Total votes",
+          "consumption": "Énergie<br>(1000 tokens)",
+          "size": "Taille<br>(paramètres actifs)",
+          "release": "Date sortie",
+          "organisation": "Organisation",
+          "license": "Licence"
+        }
+      }
+    }
   },
   "product": {
     "title": "Tout savoir sur le comparateur",
