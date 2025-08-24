@@ -43,6 +43,35 @@
       }
     })
   })
+
+  const sortedRows = $derived.by(() => {
+    return rows
+      .sort((a, b) => {
+        switch (orderingCol) {
+          case 'name':
+            return a.id.localeCompare(b.id)
+          case 'elo':
+            return b.elo - a.elo
+          case 'votes':
+            return b.votes - a.votes
+          case 'consumption':
+            if (a.consumption !== null && b.consumption !== null)
+              return b.consumption - a.consumption
+            if (a.consumption !== null) return -1
+            if (b.consumption !== null) return 1
+            return 0
+          case 'size':
+            return b.params - a.params
+          case 'release':
+            return Number(b.release_date) - Number(a.release_date)
+          case 'organisation':
+            return a.organisation.localeCompare(b.organisation)
+          default:
+            return a.rank - b.rank
+        }
+      })
+      .filter(() => true)
+  })
 </script>
 
 <SeoHead title={m['seo.titles.ranking']()} />
@@ -59,7 +88,7 @@
       )}
     </p>
 
-    <Table caption={m['ranking.title']()} {cols} rows={rows} bind:orderingCol hideCaption>
+    <Table caption={m['ranking.title']()} {cols} rows={sortedRows} bind:orderingCol hideCaption>
       {#snippet cell(model, col)}
         {#if col.id === 'rank'}
           <span class="font-medium">{model.rank}</span>
