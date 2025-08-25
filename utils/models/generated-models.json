@@ -19,7 +19,9 @@
   "c4ai-command-r-08-2024": {
     "arch": "dense",
     "commercial_use": false,
+    "consumption_wh": 8,
     "distribution": "open-weights",
+    "elo": 993,
     "friendly_size": "M",
     "icon_path": "cohere.png",
     "id": "c4ai-command-r-08-2024",
@@ -30,7 +32,12 @@
     "release_date": "08/2024",
     "required_ram": 35,
     "reuse": true,
-    "simple_name": "Command R"
+    "simple_name": "Command R",
+    "total_votes": 5427,
+    "trust_range": [
+      45,
+      26
+    ]
   },
   "claude-3-7-sonnet": {
     "arch": "maybe-dense",
@@ -68,7 +75,9 @@
   "command-a": {
     "arch": "dense",
     "commercial_use": false,
+    "consumption_wh": 18,
     "distribution": "open-weights",
+    "elo": 1106,
     "friendly_size": "L",
     "icon_path": "cohere.png",
     "id": "command-a",
@@ -80,13 +89,20 @@
     "required_ram": 111,
     "reuse": true,
     "simple_name": "Command A",
+    "total_votes": 3457,
+    "trust_range": [
+      22,
+      46
+    ],
     "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025"
   },
   "deepseek-r1": {
     "active_params": 37,
     "arch": "moe",
     "commercial_use": true,
+    "consumption_wh": 47,
     "distribution": "open-weights",
+    "elo": 1040,
     "friendly_size": "XL",
     "icon_path": "deepseek.png",
     "id": "deepseek-r1",
@@ -98,12 +114,19 @@
     "required_ram": 671,
     "reuse": true,
     "simple_name": "DeepSeek R1",
+    "total_votes": 3278,
+    "trust_range": [
+      68,
+      43
+    ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1"
   },
   "deepseek-r1-distill-llama-70b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 12,
     "distribution": "open-weights",
+    "elo": 944,
     "friendly_size": "L",
     "icon_path": "deepseek.png",
     "id": "deepseek-r1-distill-llama-70b",
@@ -115,6 +138,11 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "DeepSeek R1 Llama 70B",
+    "total_votes": 2394,
+    "trust_range": [
+      67,
+      112
+    ],
     "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b"
   },
   "deepseek-v3-0324": {
@@ -154,7 +182,9 @@
   "gemma-3-12b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 4,
     "distribution": "open-weights",
+    "elo": 1108,
     "friendly_size": "S",
     "icon_path": "google.png",
     "id": "gemma-3-12b",
@@ -166,12 +196,19 @@
     "required_ram": 12,
     "reuse": true,
     "simple_name": "Gemma 3 12B",
+    "total_votes": 3477,
+    "trust_range": [
+      57,
+      37
+    ],
     "url": "https://huggingface.co/google/gemma-3-12b-it"
   },
   "gemma-3-27b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 6,
     "distribution": "open-weights",
+    "elo": 1144,
     "friendly_size": "M",
     "icon_path": "google.png",
     "id": "gemma-3-27b",
@@ -183,12 +220,19 @@
     "required_ram": 27,
     "reuse": true,
     "simple_name": "Gemma 3 27B",
+    "total_votes": 3944,
+    "trust_range": [
+      19,
+      40
+    ],
     "url": "https://huggingface.co/google/gemma-3-27b-it"
   },
   "gemma-3-4b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 3,
     "distribution": "open-weights",
+    "elo": 1077,
     "friendly_size": "XS",
     "icon_path": "google.png",
     "id": "gemma-3-4b",
@@ -200,6 +244,11 @@
     "required_ram": 4,
     "reuse": true,
     "simple_name": "Gemma 3 4B",
+    "total_votes": 4407,
+    "trust_range": [
+      35,
+      20
+    ],
     "url": "https://huggingface.co/google/gemma-3-4b-it"
   },
   "gemma-3n-4b": {
@@ -352,7 +401,9 @@
   "hermes-3-llama-3.1-405b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 238,
     "distribution": "open-weights",
+    "elo": 1007,
     "friendly_size": "XL",
     "icon_path": "nous.webp",
     "id": "hermes-3-llama-3.1-405b",
@@ -364,12 +415,19 @@
     "required_ram": 405,
     "reuse": true,
     "simple_name": "Hermes 3 405B",
+    "total_votes": 6238,
+    "trust_range": [
+      47,
+      26
+    ],
     "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B"
   },
   "llama-3.1-405b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 238,
     "distribution": "open-weights",
+    "elo": 976,
     "friendly_size": "XL",
     "icon_path": "meta.svg",
     "id": "llama-3.1-405b",
@@ -381,12 +439,19 @@
     "required_ram": 405,
     "reuse": true,
     "simple_name": "Llama 3.1 405B",
+    "total_votes": 9226,
+    "trust_range": [
+      8,
+      118
+    ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct"
   },
   "llama-3.1-8b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 4,
     "distribution": "open-weights",
+    "elo": 943,
     "friendly_size": "S",
     "icon_path": "meta.svg",
     "id": "llama-3.1-8b",
@@ -398,12 +463,19 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Llama 3.1 8B",
+    "total_votes": 7277,
+    "trust_range": [
+      71,
+      63
+    ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct"
   },
   "llama-3.1-nemotron-70b-instruct": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 12,
     "distribution": "open-weights",
+    "elo": 1090,
     "friendly_size": "L",
     "icon_path": "nvidia.svg",
     "id": "llama-3.1-nemotron-70b-instruct",
@@ -415,12 +487,19 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Nemotron Llama 3.1 70B",
+    "total_votes": 6004,
+    "trust_range": [
+      7,
+      87
+    ],
     "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct"
   },
   "llama-3.3-70b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 12,
     "distribution": "open-weights",
+    "elo": 994,
     "friendly_size": "L",
     "icon_path": "meta.svg",
     "id": "llama-3.3-70b",
@@ -432,6 +511,11 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Llama 3.3 70B",
+    "total_votes": 5853,
+    "trust_range": [
+      43,
+      97
+    ],
     "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct"
   },
   "llama-4-scout": {
@@ -503,7 +587,9 @@
   "ministral-8b-instruct-2410": {
     "arch": "dense",
     "commercial_use": false,
+    "consumption_wh": 4,
     "distribution": "open-weights",
+    "elo": 960,
     "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "ministral-8b-instruct-2410",
@@ -515,12 +601,19 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Ministral",
+    "total_votes": 8619,
+    "trust_range": [
+      40,
+      66
+    ],
     "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410"
   },
   "mistral-large-2411": {
     "arch": "dense",
     "commercial_use": false,
+    "consumption_wh": 20,
     "distribution": "open-weights",
+    "elo": 1022,
     "friendly_size": "L",
     "icon_path": "mistral.png",
     "id": "mistral-large-2411",
@@ -532,6 +625,11 @@
     "required_ram": 123,
     "reuse": true,
     "simple_name": "Mistral Large 2",
+    "total_votes": 8177,
+    "trust_range": [
+      72,
+      56
+    ],
     "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
   },
   "mistral-medium-2506": {
@@ -603,7 +701,9 @@
   "phi-4": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 5,
     "distribution": "open-weights",
+    "elo": 1022,
     "friendly_size": "S",
     "icon_path": "microsoft.png",
     "id": "phi-4",
@@ -615,6 +715,11 @@
     "required_ram": 14,
     "reuse": true,
     "simple_name": "Phi-4",
+    "total_votes": 7071,
+    "trust_range": [
+      79,
+      44
+    ],
     "url": "https://huggingface.co/microsoft/Phi-4"
   },
   "qwen-2-5-max-0125": {
@@ -652,7 +757,9 @@
   "qwen2.5-coder-32b-instruct": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 7,
     "distribution": "open-weights",
+    "elo": 899,
     "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "qwen2.5-coder-32b-instruct",
@@ -664,6 +771,11 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Qwen 2.5 Coder 32B",
+    "total_votes": 6839,
+    "trust_range": [
+      104,
+      50
+    ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct"
   },
   "qwen3-32b": {
@@ -686,7 +798,9 @@
   "qwq-32b": {
     "arch": "dense",
     "commercial_use": true,
+    "consumption_wh": 7,
     "distribution": "open-weights",
+    "elo": 935,
     "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "qwq-32b",
@@ -698,6 +812,11 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "qwq 32B",
+    "total_votes": 1484,
+    "trust_range": [
+      58,
+      164
+    ],
     "url": "https://huggingface.co/Qwen/QwQ-32B"
   }
 }
