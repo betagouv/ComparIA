@@ -747,28 +747,234 @@ excerpt = "Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en
 params = 9
 license = "Apache 2.0"
 
-# [Vicuna-13B]
-# simple_name = "Vicuna-13B"
-# organisation = "Meta"
-# # icon_path = "meta.svg"
-# friendly_size = "S"
-# distribution = "open-weights"
-# conditions = "restricted"
+[claude-4-sonnet]
+arch = "maybe-dense"
+distribution = "api-only"
+friendly_size = "XL"
+icon_path = "anthropic.png"
+id = "claude-4-sonnet"
+license = "proprietary"
+organisation = "Anthropic"
+params = 200
+reasoning = false
+release_date = "05/2025"
+required_ram = 200
+reuse = false
+simple_name = "Claude 4 Sonnet"
 
-# [Vicuna-33B]
-# simple_name = "Vicuna-33B"
-# organisation = "LMSYS"
-# # icon_path = "lmsys.png"
-# friendly_size = "M"
-# distribution = "open-weights"
-# conditions = "restricted"
+[gemini-2-5-flash]
+arch = "moe"
+distribution = "api-only"
+friendly_size = "L"
+icon_path = "google.png"
+id = "gemini-2-5-flash"
+license = "proprietary"
+organisation = "Google"
+params = 70
+reasoning = false
+release_date = "06/2025"
+required_ram = 70
+reuse = false
+simple_name = "Gemini 2.5 Flash"
 
-# ["Zephyr-ORPO-141b-A35b-v0.1"]
-# simple_name = "Zephyr-ORPO-141b-A35b-v0.1"
-# organisation = "Hugging Face"
-# # friendly_size = "L"
-# active_params = 35
-# total_params = 141
-# icon_path = "huggingface.svg"
-# distribution = "open-weights"
-# conditions = "restricted"
+[gemma-3n-4b]
+arch = "matformer"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "XS"
+icon_path = "google.png"
+id = "gemma-3n-4b"
+license = "Gemma"
+organisation = "Google"
+params = 4
+reasoning = false
+release_date = "05/2025"
+required_ram = 4
+reuse = true
+simple_name = "Gemma 3n 4B"
+
+[gpt-5]
+arch = "maybe-moe"
+distribution = "api-only"
+friendly_size = "M"
+icon_path = "openai.svg"
+id = "gpt-5"
+license = "proprietary"
+organisation = "OpenAI"
+params = 35
+reasoning = false
+release_date = "08/2025"
+required_ram = 35
+reuse = false
+simple_name = "GPT 5"
+
+[gpt-5-mini]
+arch = "maybe-moe"
+distribution = "api-only"
+friendly_size = "M"
+icon_path = "openai.svg"
+id = "gpt-5-mini"
+license = "proprietary"
+organisation = "OpenAI"
+params = 35
+reasoning = false
+release_date = "08/2025"
+required_ram = 35
+reuse = false
+simple_name = "GPT 5 Mini"
+
+[gpt-5-nano]
+arch = "maybe-moe"
+distribution = "api-only"
+friendly_size = "M"
+icon_path = "openai.svg"
+id = "gpt-5-nano"
+license = "proprietary"
+organisation = "OpenAI"
+params = 35
+reasoning = false
+release_date = "04/2025"
+required_ram = 35
+reuse = false
+simple_name = "GPT 5 Nano"
+
+[gpt-oss-120b]
+arch = "maybe-moe"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "M"
+icon_path = "openai.svg"
+id = "gpt-oss-120b"
+license = "Apache 2.0"
+organisation = "OpenAI"
+params = 35
+reasoning = false
+release_date = "08/2025"
+required_ram = 35
+reuse = true
+simple_name = "GPT OSS-120B"
+
+[gpt-oss-20b]
+arch = "maybe-moe"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "M"
+icon_path = "openai.svg"
+id = "gpt-oss-20b"
+license = "Apache 2.0"
+organisation = "OpenAI"
+params = 35
+reasoning = false
+release_date = "08/2025"
+required_ram = 35
+reuse = true
+simple_name = "GPT OSS-20B"
+
+[llama-maverick]
+arch = "moe"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "XL"
+icon_path = "meta.svg"
+id = "llama-maverick"
+license = "Llama 4"
+organisation = "Meta"
+params = 400
+reasoning = false
+release_date = "04/2025"
+required_ram = 400
+reuse = true
+simple_name = "Llama Maverick"
+
+[magistral-medium]
+arch = "maybe-dense"
+distribution = "api-only"
+friendly_size = "M"
+icon_path = "mistral.png"
+id = "magistral-medium"
+license = "proprietary"
+organisation = "Mistral AI"
+params = 35
+reasoning = false
+release_date = "06/2025"
+required_ram = 35
+reuse = false
+simple_name = "Magistral Medium"
+
+[magistral-small]
+arch = "dense"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "M"
+icon_path = "mistral.png"
+id = "magistral-small"
+license = "Apache 2.0"
+organisation = "Mistral AI"
+params = 24
+reasoning = false
+release_date = "06/2025"
+required_ram = 24
+reuse = true
+simple_name = "Magistral Small"
+
+[mistral-medium-2506]
+arch = "maybe-dense"
+distribution = "api-only"
+friendly_size = "M"
+icon_path = "mistral.png"
+id = "mistral-medium-2506"
+license = "proprietary"
+organisation = "Mistral AI"
+params = 35
+reasoning = false
+release_date = "06/2025"
+required_ram = 35
+reuse = false
+simple_name = "Mistral Medium 2506"
+
+[mistral-small-3-2]
+arch = "dense"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "M"
+icon_path = "mistral.png"
+id = "mistral-small-3-2"
+license = "Apache 2.0"
+organisation = "Mistral AI"
+params = 24
+reasoning = false
+release_date = "06/2025"
+required_ram = 24
+reuse = true
+simple_name = "Mistral Small 3.2"
+
+[qwen-2-5-max-0125]
+arch = "moe"
+distribution = "api-only"
+friendly_size = "XL"
+icon_path = "qwen.png"
+id = "qwen-2-5-max-0125"
+license = "proprietary"
+organisation = "Alibaba"
+params = 200
+reasoning = false
+release_date = "04/2025"
+required_ram = 200
+reuse = false
+simple_name = "Qwen 2.5 max 0125"
+
+[qwen-3-30b-a3b]
+arch = "moe"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "M"
+icon_path = "qwen.png"
+id = "qwen-3-30b-a3b"
+license = "Apache 2.0"
+organisation = "Alibaba"
+params = 30
+reasoning = false
+release_date = "05/2025"
+required_ram = 30
+reuse = true
+simple_name = "Qwen 3 30B A3B"
