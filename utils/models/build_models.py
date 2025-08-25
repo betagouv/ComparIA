@@ -19,6 +19,7 @@ log = logging.getLogger("models")
 CURRENT_FOLDER = Path(__file__).parent
 LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
+MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
 GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
 I18N_PATH = (
     CURRENT_FOLDER.parent.parent / "frontend" / "locales" / "messages" / "fr.json"
@@ -168,6 +169,7 @@ def params_to_friendly_size(params):
 def validate() -> None:
     raw_licenses = read_json(LICENSES_PATH)
     raw_orgas = read_json(MODELS_PATH)
+    raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
 
     dumped_licenses = validate_licenses(raw_licenses)
     dumped_orgas = validate_orgas_and_models(raw_orgas)
@@ -184,7 +186,7 @@ def validate() -> None:
                 {
                     license["license"]: {
                         k: (
-                            license[k] if k in license else ""
+                            (license[k] if k in license else "")
                             if k != "license_desc"
                             else markdown.markdown(license[k])
                         )
@@ -206,7 +208,9 @@ def validate() -> None:
         }
         proprio_license_data = {**base_proprietary_license}
         proprio_license_data["reuse"] = orga["proprietary_reuse"]
-        proprio_license_data["commercial_use"] = orga.get("proprietary_commercial_use", None)
+        proprio_license_data["commercial_use"] = orga.get(
+            "proprietary_commercial_use", None
+        )
 
         for model in orga["models"]:
             i18n["models"][model["simple_name"]] = {
@@ -239,6 +243,27 @@ def validate() -> None:
             # FIXME to remove, should be required
             model_id = model["id"] if "id" in model else slugify(model["simple_name"])
 
+            model_extra_data = next(
+                (
+                    m
+                    for m in raw_extra_data
+                    if m["model_name"] == model_id or m["name"] == model["simple_name"]
+                ),
+                None,
+            )
+            if model_extra_data is not None:
+                model_extra_data = {
+                    "elo": round(model_extra_data["median"]),
+                    "trust_range": [
+                        round(model_extra_data["median_minus_p2.5"]),
+                        round(model_extra_data["p97.5_minus_median"]),
+                    ],
+                    "total_votes": model_extra_data["n_match"],
+                    "consumption": round(
+                        model_extra_data["mean_wh_per_thousand_token"]
+                    ),
+                }
+
             # Build complete model data (license + model) without translatable keys
             generated_models[model_id] = sort_dict(
                 {
@@ -246,6 +271,7 @@ def validate() -> None:
                     "icon_path": orga["icon_path"],
                     **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
+                    **(model_extra_data or {}),
                     "id": model_id,
                 }
             )
