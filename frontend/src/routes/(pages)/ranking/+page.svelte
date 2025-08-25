@@ -20,9 +20,9 @@
       { id: 'rank' },
       { id: 'name', orderable: true },
       { id: 'elo', orderable: true, tooltip: 'FIXME' },
-      { id: 'trust', tooltip: 'FIXME' },
-      { id: 'votes', orderable: true },
-      { id: 'consumption', orderable: true },
+      { id: 'trust_range', tooltip: 'FIXME' },
+      { id: 'total_votes', orderable: true },
+      { id: 'consumption_wh', orderable: true },
       { id: 'size', orderable: true, tooltip: 'FIXME' },
       { id: 'release', orderable: true },
       { id: 'organisation', orderable: true },
@@ -36,24 +36,28 @@
   let orderingCol = $state<(typeof cols)[number]['id']>('elo')
   let search = $state('')
 
+  function sortIfDefined(a: Record<string, any>, b: Record<string, any>, key: string) {
+    if (a[key] !== undefined && b[key] !== undefined) return b[key] - a[key]
+    if (a[key] !== undefined) return -1
+    if (b[key] !== undefined) return 1
+    return a.id.localeCompare(b.id)
+  }
+
   const rows = $derived.by(() => {
-    return modelsData.map((m, i) => {
-      // FIXME replace mock with real data
-      const conso = Math.round(Math.random() * 10)
-      const [month, year] = m.release_date.split('/')
-      return {
-        ...m,
-        release_date: new Date([month, '01', year].join('/')),
-        rank: i + 1,
-        elo: Math.round(Math.random() * 10),
-        trust: `+${Math.round(Math.random() * 10)}/-${Math.round(Math.random() * 10)}`,
-        votes: Math.round(Math.random() * 1000),
-        consumption: conso > 5 ? null : conso,
-        search: (['id', 'simple_name', 'organisation'] as const)
-          .map((key) => m[key].toLowerCase())
-          .join(' ')
-      }
-    })
+    return modelsData
+      .sort((a, b) => sortIfDefined(a, b, 'elo'))
+      .map((model, i) => {
+        const [month, year] = model.release_date.split('/')
+
+        return {
+          ...model,
+          release_date: new Date([month, '01', year].join('/')),
+          rank: i + 1,
+          search: (['id', 'simple_name', 'organisation'] as const)
+            .map((key) => model[key].toLowerCase())
+            .join(' ')
+        }
+      })
   })
 
   const sortedRows = $derived.by(() => {
@@ -66,15 +70,9 @@
           case 'name':
             return a.id.localeCompare(b.id)
           case 'elo':
-            return b.elo - a.elo
-          case 'votes':
-            return b.votes - a.votes
-          case 'consumption':
-            if (a.consumption !== null && b.consumption !== null)
-              return b.consumption - a.consumption
-            if (a.consumption !== null) return -1
-            if (b.consumption !== null) return 1
-            return 0
+          case 'total_votes':
+          case 'consumption_wh':
+            return sortIfDefined(a, b, orderingCol)
           case 'size':
             return b.params - a.params
           case 'release':
@@ -142,18 +140,6 @@
             class="me-1 inline-block"
           />
           {model.id}
-        {:else if col.id === 'elo'}
-          {model.elo}
-        {:else if col.id === 'trust'}
-          {model.trust}
-        {:else if col.id === 'votes'}
-          {model.votes}
-        {:else if col.id === 'consumption'}
-          {#if model.consumption === null}
-            <span class="text-xs">N/A</span>
-          {:else}
-            {model.consumption}
-          {/if}
         {:else if col.id === 'size'}
           <strong>{model.friendly_size}</strong> -
           {#if model.distribution === 'api-only'}
@@ -167,6 +153,14 @@
           {model.organisation}
         {:else if col.id === 'license'}
           <Badge {...model.badges.license} size="xs" noTooltip />
+        {:else if model[col.id] === undefined}
+          <span class="text-xs">{m['words.NA']()}</span>
+        {:else if col.id === 'trust_range'}
+          +{model.trust_range![0]}/-{model.trust_range![0]}
+        {:else if col.id === 'consumption_wh'}
+          {model.consumption_wh} Wh
+        {:else}
+          {model[col.id]}
         {/if}
       {/snippet}
     </Table>

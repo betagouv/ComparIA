@@ -99,6 +99,11 @@ export interface APIBotModel {
   required_ram: number
   url?: string // FIXME required?
   // conditions: 'free' | 'copyleft' | 'restricted'
+  // extra data
+  elo?: number
+  trust_range?: [number, number]
+  total_votes?: number
+  consumption_wh?: number
 }
 export type BotModel = ReturnType<typeof parseModel>
 
