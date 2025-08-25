@@ -175,7 +175,7 @@
             "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
             "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
-            "improveMail": "E-mail : <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveMail": "Courriel : <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Amélioration et contact",
             "remedyAdvocate": "Écrire un message au <a {linkProps}>Défenseur des droits</a>",
             "remedyAdvocateAdress": "Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) : Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07",
@@ -268,7 +268,7 @@
             "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents partenaires (Scaleway, OVH, Hugging Face, Google Cloud, Mistral Ai). Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
             "featuresModelsMore": "Une interface de comparaison des modèles.",
             "featuresTitle": "4. Fonctionnalités",
-            "featuresVote": "A l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
+            "featuresVote": "À l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
             "featuresVoteMore": "Partage et mise à disposition des jeux de données issus de la collecte des préférences des utilisateurs.",
             "licenceCode": "Le code source de la plateforme est libre et disponible ici : <a {linkProps}>https://github.com/betagouv/languia</a>",
             "licenceLLM": "Les LLM utilisés pour alimenter les services sont régis par les licences suivantes :",
@@ -626,17 +626,17 @@
         }
     },
     "header": {
-        "banner": "Le comparateur est désormais disponible en lituanien 🇱🇹 en suédois 🇸🇪 et en danois 🇩🇰 !",
+        "banner": "Le comparateur est désormais disponible en lituanien 🇱🇹 en suédois 🇸🇪 et en danois 🇩🇰 !",
         "chatbot": {
             "newDiscussion": "Nouvelle discussion",
             "step": "Étape",
             "stepOne": {
                 "description": "Prêtez attention au fond et à la forme puis évaluez chaque réponse",
-                "title": "Que pensez-vous des réponses ?"
+                "title": "Que pensez-vous des réponses ?"
             },
             "stepTwo": {
                 "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
-                "title": "Les modèles sont démasqués !"
+                "title": "Les modèles sont démasqués !"
             }
         },
         "help": {
@@ -737,7 +737,7 @@
                 "desc": "Discutez et développez votre esprit critique en donnant votre préférence",
                 "title": "Comparer les réponses de différents modèles d’IA"
             },
-            "desc": "compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux",
+            "desc": "compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux.",
             "measure": {
                 "alt": "Mesurer",
                 "desc": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
@@ -745,7 +745,7 @@
             },
             "test": {
                 "alt": "Tester",
-                "desc": "Testez différents modèles, propriétaires ou non, de petites et grandes tailles",
+                "desc": "Testez différents modèles, propriétaires ou non, de petites et grandes tailles...",
                 "title": "Tester au même endroit les dernières IA de l’écosystème"
             },
             "title": "À quoi sert compar:IA ?"
@@ -759,7 +759,7 @@
                     "title": "Les jeux de données par langue"
                 },
                 "finetune": {
-                    "desc": "A terme, les acteurs industriels et académiques peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle.",
+                    "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle.",
                     "title": "Des modèles affinés sur la langue spécifique"
                 },
                 "prefs": {
@@ -849,7 +849,7 @@
         },
         "openWeight": {
             "conditions": {
-                "copyleft": "Copyleft",
+                "copyleft": "Copyleft (gauche d'auteur)",
                 "free": "Permissive",
                 "restricted": "Sous conditions"
             },
@@ -865,8 +865,8 @@
                 "free": "Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle source.",
                 "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
                 "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source ».",
-                "params": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il est capable d’effectuer des tâches complexes.",
-                "ram": "La RAM (mémoire vive) stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de RAM pour fonctionner."
+                "params": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il a besoin de ressources pour fonctionner.",
+                "ram": "La mémoire vive stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de mémoire vive pour fonctionner."
             },
             "use": {
                 "attribution": "Attribution requise",
@@ -984,14 +984,14 @@
                 "datasets": {
                     "a": "L'alignement utilise des données très spécifiques, spécialement créées pour enseigner au modèle comment « bien » se comporter.",
                     "b": "Les <strong>données de préférence</strong> constituent un type particulier de données d’alignement, aux côtés des <strong>données de démonstration</strong> (exemples de conversations entre humains et assistants IA, rédigées par des annotateurs experts selon des consignes précises de ton et de style), des <strong>données de sécurité</strong> (exemples spécifiques enseignant au modèle à éviter les contenus dangereux en montrant comment refuser les demandes problématiques) ou des <strong>données spécialisées</strong> couvrant des domaines spécifiques (médecine, droit, éducation…).",
-                    "c": "Les données de préférence présentent plusieurs réponses possibles à une même question, classées par ordre de qualité par des évaluateurs humains: les utilisateurs indiquent quelle réponse est la meilleure selon des critères donnés, telles que la pertinence, l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour entrainer les modèles en les ajustant selon les préférences exprimées par les utilisateurs.",
+                    "c": "Les données de préférence présentent plusieurs réponses possibles à une même question, classées par ordre de qualité par des évaluateurs humains : les utilisateurs indiquent quelle réponse est la meilleure selon des critères donnés, telles que la pertinence, l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour entraîner les modèles en les ajustant selon les préférences exprimées par les utilisateurs.",
                     "title": "Des jeux de données spécifiques"
                 },
                 "desc": "L'alignement : une technique de réduction des biais qui repose sur la collecte des préférences d’utilisateurs",
                 "diversity": {
                     "a": "Pour refléter la diversité des cultures et des langues dans les résultats générés par les modèles, <strong>les jeux de données d’alignement doivent inclure une variété de langues</strong>, de contextes et d’exemples issus de tâches courantes des utilisateurs. La diversification des données d'alignement permet d’améiorer à terme les performances d’un modèle à double titre :",
                     "b": "D'une part, elle <strong>réduit les biais culturels</strong> en évitant qu'une seule perspective - souvent anglo-saxonne - domine les réponses de l'IA. Le modèle apprend ainsi à reconnaître qu'il existe plusieurs façons valides d'aborder une même question selon le contexte culturel.",
-                    "c": "D'autre part, cette exposition à la diversité de langues et de cultures favorise l’adaptation des réponses à des contextes spécifiques: un utilisateur français recevra des conseils adaptés au système français, tandis qu'un utilisateur danois obtiendra des informations correspondant à son contexte national.",
+                    "c": "D'autre part, cette exposition à la diversité de langues et de cultures favorise l’adaptation des réponses à des contextes spécifiques : un utilisateur français recevra des conseils adaptés au système français, tandis qu'un utilisateur danois obtiendra des informations correspondant à son contexte national.",
                     "d": "Le résultat est un modèle d’IA conversationnelle plus inclusif, capable de tenir compte des différentes cultures.",
                     "title": "Diversifier les données pour réduire les biais"
                 },
@@ -1053,7 +1053,7 @@
             },
             "lightbulb": {
                 "label": "ampoule LED",
-                "tooltip": "Donnée calculée sur la base de consommation d’une ampoule LED standard de 5W (E14)"
+                "tooltip": "Donnée calculée sur la base de consommation d’une ampoule LED standard de 5 W (E14)"
             },
             "streaming": {
                 "label": "vidéos en ligne",
@@ -1081,7 +1081,7 @@
             "title": "Impact énergétique de la discussion",
             "tokens": {
                 "label": "taille du texte",
-                "tokens": "tokens",
+                "tokens": "jetons",
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand."
             }
         }
