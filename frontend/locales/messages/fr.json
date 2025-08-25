@@ -2,475 +2,51 @@
     "a11y": {
         "externalLink": "{text}"
     },
-    "seo": {
-        "title": "compar:IA, le comparateur d'IA conversationnelles",
-        "desc": "compar:IA est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
-        "titles": {
-            "home": "Accueil",
-            "product": "Produit et partenaires",
-            "modeles": "Liste des modèles",
-            "datasets": "Jeux de données",
-            "comparator": "Le comparateur",
-            "problem": "Le problème initial",
-            "history": "Historique du projet",
-            "faq": "FAQ",
-            "partners": "Partenaires",
-            "news": "Nouveautés",
-            "mentions-legales": "Mentions légales",
-            "modalites": "Modalités d’utilisation",
-            "donnees-personnelles": "Politique de confidentialité",
-            "accessibilite": "Déclaration d’accessibilité",
-            "arene": "Discussion",
-            "share": "Mon bilan"
-        }
-    },
-    "header": {
-        "title": {
-            "compar": "compar",
-            "ia": "IA"
+    "actions": {
+        "contact": "Contactez-nous",
+        "contactUs": "Nous contacter",
+        "copyLink": {
+            "do": "Copier le lien",
+            "done": "Lien copié dans le presse-papiers"
         },
-        "subtitle": "Le comparateur d’IA conversationnelles",
-        "homeTitle": "Accueil - compar:IA",
-        "logoAlt": "République Française",
-        "startDiscussion": "Commencer à discuter",
-        "help": {
-            "link": {
-                "title": "Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre",
-                "content": "Nous aider à améliorer compar:IA"
-            }
+        "copyMessage": {
+            "do": "Copier le message",
+            "done": "Message copié"
         },
-        "banner": "Le comparateur est désormais disponible en lituanien 🇱🇹 en suédois 🇸🇪 et en danois 🇩🇰 !",
-        "votes": {
-            "count": "{count} votes",
-            "objective": "Obj : {count}",
-            "legend": "Légende",
-            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
-        },
-        "chatbot": {
-            "step": "Étape",
-            "stepOne": {
-                "title": "Que pensez-vous des réponses ?",
-                "description": "Prêtez attention au fond et à la forme puis évaluez chaque réponse."
-            },
-            "stepTwo": {
-                "title": "Les modèles sont démasqués !",
-                "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle"
-            },
-            "newDiscussion": "Nouvelle discussion"
-        },
-        "menu": "Menu"
-    },
-    "footer": {
-        "backHome": "Retour à l'accueil du site - compar:IA",
-        "helpUs": "Aidez-nous à améliorer ce service !",
-        "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {linkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !",
-        "links": {
-            "legal": "Mentions légales",
-            "tos": "Modalités d'utilisation",
-            "privacy": "Politique de confidentialité",
-            "accessibility": "Accessibilité : non conforme",
-            "sources": "Code source"
-        },
-        "license": {
-            "mention": "Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de ce site sont proposés sous <a {linkProps}>licence etalab-2.0</a>",
-            "linkTitle": "Licence etalab - nouvelle fenêtre"
-        }
-    },
-    "general": {
-        "legal": {
-            "title": "Mentions légales",
-            "editorTitle": "Éditeur",
-            "editorDesc": "Ce site est édité par le Ministère de la culture, 182, rue Saint-Honoré 75001 Paris",
-            "directorTitle": "Directeur de la publication",
-            "directorDesc": "Monsieur Romain Delassus, chef du service du numérique du Ministère de la Culture",
-            "hostingTitle": "Hébergement du site",
-            "hostingDesc": "Ce site est hébergé par OVH SAS (<a {linkProps}>https://www.ovh.com</a>) dont le siège social est situé au 2 rue Kellermann - 59100 Roubaix - France.",
-            "a11yTitle": "Accessibilité",
-            "a11yDesc": "La conformité aux normes d’accessibilité numérique est un objectif ultérieur mais nous tâchons de rendre ce site accessible à toutes et à tous.",
-            "reportTitle": "Signaler un dysfonctionnement",
-            "reportA11y": "Si vous rencontrez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, merci de nous en faire part.",
-            "reportDesc": "Si vous n’obtenez pas de réponse rapide de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.",
-            "reportA11yDesc": "Pour en savoir plus sur la politique d’accessibilité numérique de l’État : <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
-            "securityTitle": "Sécurité",
-            "securityCertif": "Le site est protégé par un certificat électronique, matérialisé pour la grande majorité des navigateurs par un cadenas. Cette protection participe à la confidentialité des échanges.",
-            "securityNoMail": "En aucun cas les services associés à la plateforme ne seront à l’origine d’envoi de courriels pour demander la saisie d’informations personnelles.",
-            "sources": "Sauf mention contraire, tous les textes de ce site sont sous <a {etalabLinkProps}>licence Etalab Open 2.0</a>. Le code source de cette application est librement réutilisable et accessible sur <a {githubLinkProps}>GitHub</a>."
-        },
-        "tos": {
-            "title": "Modalités d’utilisation",
-            "scopeTitle": "1. Champ d’application",
-            "scopeDesc": "L’accès à la plateforme est gratuit, sans inscription et entraîne l’application de conditions spécifiques, listées dans les présentes modalités d’utilisation.",
-            "defsTitle": "2. Définitions",
-            "defsUser": "« Utilisateur » désigne toute personne physique consultant la plateforme et qui bénéficie de ses services.",
-            "defsEditor": "« Éditeur » désigne le Service du numérique du Ministère de la Culture.",
-            "defsPlatform": "« Plateforme » désigne le site web qui rend les services accessibles.",
-            "defsModels": "« Modèles » désigne les grands modèles de langages (LLM) réutilisés dans le cadre de leur licence d’utilisation par la plateforme pour répondre à ses finalités.",
-            "defsServices": "« Services » désigne les fonctionnalités offertes par la plateforme pour répondre à ses finalités.",
-            "descTitle": "3. Description de la plateforme",
-            "descEditor": "Édité par le Service du numérique du Ministère de la Culture, le comparateur est une plateforme de comparaison des modèles conversationnels adressée au grand public dans le but (1) de sensibiliser les citoyens aux grands modèles de langage (LLMs), (2) de collecter les préférences des utilisateurs pour constituer des jeux de données d’alignement.",
-            "descUse": "L’utilisateur ou l’utilisatrice pose une question en français et obtient des réponses de deux grands modèles de langages (LLM) anonymes. Il ou elle vote pour le modèle qui fournit la réponse qu’il préfère et se voit alors révélée l’identité des modèles. Ce dispositif de production participative inspiré de la plateforme <a {linkProps}>« chatbot arena » (LMSYS)</a> permet de constituer des jeux de données de préférences humaines sur des tâches réelles, en français, utilisables pour l’alignement des modèles.",
-            "descDatasets": "Ces jeux de données seront rendus accessibles sous licence ouverte, notamment pour favoriser des usages de recherche.",
-            "featuresTitle": "4. Fonctionnalités",
-            "featuresDesc": "Afin de répondre au double objectif de sensibiliser les citoyens aux grands modèles de langage et collecter les préférences des utilisateurs et utilisatrices, les services rendus par la plateforme sans restriction d’accès sont les suivants :",
-            "featuresDescMore": "Une interface humain-machine permettant de dialoguer simultanément avec deux modèles conversationnels et de voter pour la réponse préférée.",
-            "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents partenaires (Scaleway, OVH, Hugging Face, Google Cloud, Mistral Ai). Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
-            "featuresModelsMore": "Une interface de comparaison des modèles.",
-            "featuresVote": "À l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
-            "featuresVoteMore": "Partage et mise à disposition des jeux de données issus de la collecte des préférences des utilisateurs.",
-            "featuresDatasets": "Le service recueille les données de dialogue et de préférence des utilisateurs. Les jeux de données partagés comprendront les questions de l’utilisateur, les réponses des deux modèles, le vote et les préférences de l’utilisateur.",
-            "featuresDatasetsMore": "L’éditeur se réserve le droit de distribuer sous licence ouverte 2.0 les données de dialogue et de préférence de l’utilisateur. Le jeu de données est diffusé sur la plateforme Hugging Face à travers le compte du ministère de la culture (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
-            "respTitle": "5. Responsabilités",
-            "respUser": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme.",
-            "respLegal": "La plateforme n’a pas vocation à être utilisée pour générer des contenus illicites ou contraires à l’ordre public et plus généralement toute génération contrevenant au cadre juridique en vigueur.",
-            "respLegalMore": "A cet égard, l’utilisateur ne saisit pas dans l’invite des contenus ou informations contraires aux dispositions légales et réglementaires en vigueur.",
-            "respPrivacy": "Les données saisies par l’utilisateur sur la plateforme ayant vocation à être mis à disposition, il ou elle s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
-            "respPrivacyMore": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurerde l’anonymisation les données de dialogue avant leur mise à disposition.",
-            "respEditor": "De manière générale, l’éditeur se dégage de toute responsabilité en cas d’utilisationnon-conforme aux modalités d’utilisation.",
-            "licenceTitle": "6. Code et licences",
-            "licenceCode": "Le code source de la plateforme est libre et disponible ici : <a {linkProps}>https://github.com/betagouv/languia</a>",
-            "licenceLLM": "Les LLM utilisés pour alimenter les services sont régis par les licences suivantes :",
-            "licenceLLMModel": "Modèle d’IA conversationnelle",
-            "licenceLLMNoticeLink": "Lien vers la notice des modèles",
-            "licenceLLMLicence": "Licence",
-            "licenceLLMUnavailable": "Non disponible",
-            "licenceLLMEvolution": "La liste des modèles de langage intégrés à la plateforme est susceptible d’évoluer au cours du temps et est mise à jour à chaque modification.",
-            "dispoTitle": "7. Disponibilité des services",
-            "dispoDesc": "La plateforme est accessible, sauf cas de force majeure ou d’évènement hors de contrôle de son éditeur.",
-            "dispoRight": "L’éditeur se réserve le droit de suspendre, d&#39;interrompre ou de limiter, sans avis préalable, l&#39;accès à tout ou partie des services, notamment pour des opérations de maintenance et de mises à jour nécessaires au bon fonctionnement du service et des matériels afférents, ou pour toute autre raison, notamment technique.",
-            "dispoWarranty": "Il n’est pas garanti que le service soit exempt d’anomalies ou erreurs. Le service est donc mis à disposition sans garantie sur sa disponibilité et ses performances.",
-            "dispoResp": "A ce titre, l’éditeur ne saurait être tenu responsable des pertes ou préjudices, de quelque nature qu’ils soient, qui pourraient être causés à la suite d’un dysfonctionnement ou une indisponibilité du service. De telles situations n&#39;ouvriront droit à aucune compensation financière.",
-            "evoTitle": "8. Évolution des modalités d'utilisation",
-            "evoDesc": "Les modalités d’utilisation peuvent être modifiées ou complétées à tout moment, sans préavis, en fonction des modifications apportées aux services, de l’évolution de la législation ou pour tout autre motif jugé nécessaire.",
-            "evoDescMore": "Ces modifications et mises à jour s’imposent à l’utilisateur ou l’utilisatrice qui doit, en conséquence, se référer régulièrement à cette rubrique pour vérifier les modalités générales en vigueur.",
-            "contactTitle": "9. Contact",
-            "contactDesc": "Pour toute question sur le service, vous pouvez écrire à <a {linkProps}>contact@comparia.beta.gouv.fr</a>."
-        },
-        "privacy": {
-            "title": "Politique de confidentialité",
-            "desc": "Le service est édité par le service du numérique du ministère de la Culture.",
-            "cookiesTitle": "Cookies déposés et consentement",
-            "cookiesDesc": "Ce site dépose un petit fichier texte (un « cookie ») sur votre ordinateur lorsque vous le consultez. Cela nous permet de mesurer le nombre de visites et de comprendre quelles sont les pages les plus consultées.",
-            "cookiesDescMore": "Vous pouvez vous opposer au suivi de votre navigation sur ce site web. Cela protégera votre vie privée, mais empêchera également le propriétaire d'apprendre de vos actions et de créer une meilleure expérience pour vous et les autres utilisateurs.",
-            "cookiesBannerTitle": "Ce site n’affiche pas de bannière de consentement aux cookies, pourquoi ?",
-            "cookiesBannerDesc": "C’est vrai, vous n’avez pas eu à cliquer sur un bloc qui recouvre la moitié de la page pour dire que vous êtes d’accord avec le dépôt de cookies — même si vous ne savez pas ce que ça veut dire !",
-            "cookiesBannerNoNeed": "Rien d’exceptionnel, pas de passe-droit lié à un .gouv.fr. Nous respectons simplement la loi, qui dit que certains outils de suivi d’audience, correctement configurés pour respecter la vie privée, sont exemptés d’autorisation préalable.",
-            "cookiesBannerTools": "Nous utilisons pour cela <a {matomoLinkProps}>Matomo</a>, un outil <a {libreLinkProps}>libre</a>, paramétré pour être en conformité avec la <a {cnilLinkProps}>recommandation « Cookies »</a> de la CNIL. Cela signifie que votre adresse IP, par exemple, est anonymisée avant d’être enregistrée. Il est donc impossible d’associer vos visites sur ce site à votre personne.",
-            "dataAccessTitle": "Je contribue à enrichir vos données, puis-je y accéder ?",
-            "dataAccessDesc": "Bien sûr ! Les statistiques d’usage du site sont disponibles en accès libre sur <a {linkProps}>stats.beta.gouv.fr</a>.",
-            "dataAccessDatasets": "Les données de dialogue et de préférence de l’utilisateur sont distribuées sous la Licence Ouverte 2.0 d'Etalab sur la plateforme Hugging Face à travers le compte du ministère de la culture (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
-            "privacyTitle": "Traitons-nous des données à caractère personnel ?",
-            "privacyDesc": "Le service ne traite pas de données à caractère personnel telles que définies par la CNIL, à savoir toute information relative à une personne physique susceptible d'être identifiée, directement ou indirectement.",
-            "privacyData": "Les données collectées sur le site sont les suivantes :",
-            "privacyDataArena": "Données relatives aux conversations des utilisateurs avec les modèles : questions posées par les utilisateurs, réponses des modèles et préférence exprimée par l’utilisateur sur les deux modèles",
-            "privacyDataForm": "Données relatives au questionnaire « Nous aider à améliorer compar:IA ».",
-            "privacyResp": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme. En acceptant les <a {linkProps}>modalités d’utilisation</a>, l’utilisateur ou l’utilisatrice s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
-            "dataUseTitle": "Quels sont les traitements réalisés sur les données de conversation ?",
-            "dataUseDesc": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurer de l’anonymisation des données de dialogue avant leur mise à disposition publique.",
-            "dataTimeTitle": "Pendant combien de temps conservons-nous ces données ?",
-            "dataTimeDesc": "Les données relatives aux utilisateurs et à leurs conversations avec les modèles sont conservées à compter de l’enregistrement du vote de préférence.",
-            "dataRespTitle": "Qui est responsable du traitement des données ?",
-            "dataRespDesc": "Le service du numérique du ministère de la Culture est le responsable du traitement de vos données à caractère personnel.",
-            "dataExtraTitle": "Qui nous aide à traiter les données ?",
-            "dataExtraHost": "Sous-traitant : OVH",
-            "dataExtraCountry": "Pays destinataire : France",
-            "dataExtraWhat": "Traitement réalisé : Hébergement",
-            "dataExtraWarranty": "Garanties : <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>"
-        },
-        "a11y": {
-            "disclaimer": "<strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
-            "title": "Déclaration d’accessibilité",
-            "desc": "Cette déclaration d’accessibilité s’applique au site <strong>comparia.beta.gouv.fr</strong>.",
-            "stateTitle": "État de conformité",
-            "stateDesc": "Le site comparia.beta.gouv.fr est non conforme avec le RGAA 4.1. Le site n’a <strong>pas encore été audité</strong>. Il a cependant été conçu pour être accessible au plus grand nombre. Vous devriez donc pouvoir :",
-            "stateNavigate": "naviguer sur toutes les pages du site en utilisant un clavier",
-            "stateScreenReader": "consulter le site web avec un lecteur d’écran.",
-            "statePrefs": "adapter le site à votre préférences (taille de la police, zoom écran, changement de typographie…) sans perte de contenu",
-            "improveTitle": "Amélioration et contact",
-            "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
-            "improveMail": "Courriel : <a {linkProps}>contact@beta.gouv.fr</a>",
-            "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
-            "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
-            "remedyTitle": "Voie de recours",
-            "remedyDesc": "Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable du site internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu de réponse satisfaisante.",
-            "remedyList": "Vous pouvez :",
-            "remedyAdvocate": "Écrire un message au <a {linkProps}>Défenseur des droits</a>",
-            "remedyDelegateAdvocate": "Contacter le délégué du <a {linkProps}>Défenseur des droits dans votre région</a>",
-            "remedyAdvocateAdress": "Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) : Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07"
-        }
-    },
-    "welcome": {
-        "title": "Bienvenue dans compar:IA !",
-        "goodPractices": "Voici quelques bonnes pratiques :",
-        "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées",
-        "privacy": "Ne communiquez pas d'informations personnelles comme votre nom, prénom ou adresse",
-        "use": "N'utilisez pas le comparateur à des fins illégales ou nuisibles",
-        "go": "C'est parti"
-    },
-    "home": {
-        "intro": {
-            "title": "Ne vous fiez pas aux réponses <span {props}>d’une seule IA</span>",
-            "desc": "Discutez avec deux IA à l’aveugle et évaluez leurs réponses",
-            "tos": {
-                "accept": "J'accepte les <a {linkProps}>conditions générales d’utilisation</a>",
-                "help": "Les données sont partagées à des fins de recherche",
-                "error": "Vous devez accepter les modalités d'utilisation pour continuer"
-            },
-            "steps": {
-                "title": "Comment ça marche",
-                "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'amélioration des modèles d’IA. 3. Les modèles sont démasqués : apprenez-en plus sur les modèles d’IA et leurs caractéristiques.",
-                "one": {
-                    "title": "Je discute avec deux IA anonymes",
-                    "a": "Échangez aussi longtemps que",
-                    "b": "vous le souhaitez"
-                },
-                "two": {
-                    "title": "Je donne mon avis",
-                    "a": "Vous contribuez ainsi à",
-                    "b": "l'amélioration des modèles d’IA"
-                },
-                "three": {
-                    "title": "Les modèles sont démasqués !",
-                    "a": "Apprenez en plus sur les modèles",
-                    "b": "d’IA et leurs caractéristiques"
-                }
-            }
-        },
-        "use": {
-            "title": "À quoi sert compar:IA ?",
-            "desc": "compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux.",
-            "compare": {
-                "title": "Comparer les réponses de différents modèles d’IA",
-                "desc": "Discutez et développez votre esprit critique en donnant votre préférence",
-                "alt": "Comparer"
-            },
-            "test": {
-                "title": "Tester au même endroit les dernières IA de l’écosystème",
-                "desc": "Testez différents modèles, propriétaires ou non, de petites et grandes tailles...",
-                "alt": "Tester"
-            },
-            "measure": {
-                "title": "Mesurer l’empreinte écologique des questions posées aux IA",
-                "desc": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
-                "alt": "Mesurer"
-            }
-        },
-        "europe": {
-            "title": "Le comparateur <span {props}>devient européen !</span>",
-            "desc": "La Lituanie, la Suède et le Danemark rejoignent la France en adoptant le comparateur dans le but d’affiner les futurs modèles d’IA dans leurs langues nationales.",
-            "question": "Vous souhaitez également disposer du comparateur dans votre langue ?",
-            "languages": {
-                "da": "en danois",
-                "fr": "en français",
-                "lt": "en lituanien",
-                "sv": "en suédois"
-            }
-        },
-        "vote": {
-            "title": "Pourquoi votre vote est-il important ?",
-            "desc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois",
-            "steps": {
-                "prefs": {
-                    "title": "Vos préférences",
-                    "desc": "Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères donnés, tels que la pertinence ou l’utilité des réponses."
-                },
-                "datasets": {
-                    "title": "Les jeux de données par langue",
-                    "desc": "Toutes les questions posées et les votes sont compilées dans des jeux de données et publiés librement après anonmymisation."
-                },
-                "finetune": {
-                    "title": "Des modèles affinés sur la langue spécifique",
-                    "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle."
-                }
-            },
-            "datasetAccess": "Accéder aux jeux de données"
-        },
-        "usage": {
-            "title": "Les usages spécifiques de compar:IA",
-            "desc": "L’outil s’adresse également aux experts IA et aux formateurs pour des usages plus spécifiques",
-            "use": {
-                "title": "Exploiter les données",
-                "desc": "Développeurs, chercheurs, éditeurs de modèles… accédez aux jeux de données compar:IA pour améliorer les modèles"
-            },
-            "explore": {
-                "title": "Explorer les modèles",
-                "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des modèles"
-            },
-            "educate": {
-                "title": "Former et sensibiliser",
-                "desc": "Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de votre public"
-            }
-        },
-        "origin": {
-            "team": {
-                "title": "Qui sommes-nous ?",
-                "desc": "Le comparateur est porté au sein du Ministère de la Culture par une équipe pluridisciplinaire réunissant expert en Intelligence artificielle, développeurs, chargé de déploiement, designer, avec pour mission de rendre les IA conversationnelles plus transparentes et accessibles à toutes et tous."
-            },
-            "project": {
-                "title": "Qui est à l’origine du projet ?",
-                "desc": "Le comparateur a été conçu et développé dans le cadre d’une start-up d’Etat portée par le ministère de la Culture et intégrée au programme <a {linkProps}>Beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM) qui aide les administrations publiques françaises à construire des services numériques utiles, simples et faciles à utiliser."
-            }
-        },
-        "faq": {
-            "title": "Vos questions les plus courantes",
-            "discover": "Découvrir les autres questions"
-        }
-    },
-    "product": {
-        "title": "Tout savoir sur le comparateur",
-        "comparator": {
-            "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>.",
-            "cta": "Accéder au comparateur",
-            "challenges": {
-                "title": "L’application développée répond à plusieurs enjeux",
-                "bias": {
-                    "title": "Biais culturels et linguistiques",
-                    "desc": "Mettre en avant les biais de l'IA liés à la sous-représentation des données non anglophones dans les modèles et sensibiliser à leurs conséquences."
-                },
-                "impacts": {
-                    "title": "Impact environnemental",
-                    "desc": "Révéler les effets écologiques de l'IA générative, encore largement méconnus du grand public."
-                },
-                "pluralism": {
-                    "title": "Pluralisme des modèles",
-                    "desc": "Assurer aux citoyens l'accès à une diversité de modèles d'IA afin qu'ils puissent faire des choix éclairés et développer un regard critique sur ces technologies."
-                },
-                "thinking": {
-                    "title": "Esprit critique et questions sociétales",
-                    "desc": "Inciter au questionnement critique sur la place de l’IA générative dans les pratiques personnelles et professionnelles (éducation, travail)."
-                }
-            },
-            "europe": {
-                "title": "Le comparateur <span {props}>devient européen</span> !",
-                "adventure": "Depuis l’été 2025, la Lituanie, la Suède et le Danemark rejoignent l’aventure !",
-                "desc": "Le comparateur est mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
-                "catch": "Vous souhaitez disposer du comparateur dans votre langue ?"
-            }
-        },
-        "problem": {
-            "title": "Les modèles d’IA conversationnelles respectent-ils la <span {props}>diversité</span> des langues européennes ?",
-            "diversity": {
-                "stereotypes": {
-                    "title": "Réponses stéréotypées",
-                    "desc": "Les systèmes d’IA conversationnelle donnent l’impression de parler toutes les langues mais les résultats qu’ils génèrent sont parfois stéréotypés ou discriminants."
-                },
-                "english": {
-                    "title": "Données d’entrainement majoritairement en anglais",
-                    "desc": "Les IA conversationnelles reposent sur des grands modèles de langage (LLM) entraînés principalement sur des données en anglais, ce qui crée des biais linguistiques et culturels dans les résultats qu'ils produisent."
-                },
-                "diversity": {
-                    "title": "Diversités culturelles et linguistiques négligées",
-                    "desc": "Ces biais peuvent aussi se traduire par des réponses partielles voire incorrectes négligeant la diversité des langues et des cultures, notamment européennes."
-                }
-            },
-            "alignment": {
-                "title": "Comment réduire les biais culturels et linguistiques de ces modèles ?",
-                "desc": "L'alignement : une technique de réduction des biais qui repose sur la collecte des préférences d’utilisateurs",
-                "alignment": {
-                    "title": "L’alignement, étape décisive d’instruction du modèle",
-                    "a": "L'alignement intervient après l'étape de pré-entraînement d'un modèle de langage, comme une étape de « finition » ou de « polissage ». Lors de son pré-entrainement, le modèle apprend à prédire le mot suivant et devient capable de générer du texte cohérent.",
-                    "b": "L’étape d’alignement consiste à apprendre au modèle à mieux répondre aux besoins humains, c’est à dire à le rendre plus <strong>pertinent</strong> (le modèle répond « mieux » aux questions), <strong>honnête</strong> (capacité à assumer « qu’il ne sait pas répondre » quand il n’y a pas suffisamment de données), et <strong>inoffensif</strong> (éviter de générer des contenus dangereux ou inappropriés).",
-                    "c": "<strong>Sans alignement, un LLM pourrait être techniquement compétent mais difficile à utiliser en pratique, car il ne comprendrait pas vraiment ce qu'on attend de lui dans une conversation.</strong>"
-                },
-                "datasets": {
-                    "title": "Des jeux de données spécifiques",
-                    "a": "L'alignement utilise des données très spécifiques, spécialement créées pour enseigner au modèle comment « bien » se comporter.",
-                    "b": "Les <strong>données de préférence</strong> constituent un type particulier de données d’alignement, aux côtés des <strong>données de démonstration</strong> (exemples de conversations entre humains et assistants IA, rédigées par des annotateurs experts selon des consignes précises de ton et de style), des <strong>données de sécurité</strong> (exemples spécifiques enseignant au modèle à éviter les contenus dangereux en montrant comment refuser les demandes problématiques) ou des <strong>données spécialisées</strong> couvrant des domaines spécifiques (médecine, droit, éducation…).",
-                    "c": "Les données de préférence présentent plusieurs réponses possibles à une même question, classées par ordre de qualité par des évaluateurs humains : les utilisateurs indiquent quelle réponse est la meilleure selon des critères donnés, telles que la pertinence, l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour entraîner les modèles en les ajustant selon les préférences exprimées par les utilisateurs."
-                },
-                "english": {
-                    "title": "Peu de données de préférence en langues européennes",
-                    "a": "Les données de préférence sont couteuses à produire car <strong>elles nécessitent du travail humain qualifié pour chaque exemple</strong>. Des plateformes telles que https://chat.lmsys.org/ permettent de constituer ces jeux de données de préférence mais peu d’utilisateurs s’en servent dans leur langue d’origine.",
-                    "b": "Les jeux de données de préférence sont rares, voire inexistants dans les langues européennes. La part des questions posées en français dans le jeu de données de LMSYS est par exemple inférieure à 1%.",
-                    "c": "comparIA est un exemple de dispositif permettant de collecter des conversations dans de multiples langues, incluant des références culturelles spécifiques à chaque région ou pays : tâches courantes, traditions culinaires locales, systèmes éducatifs, références historiques ou littéraires, etc."
-                },
-                "diversity": {
-                    "title": "Diversifier les données pour réduire les biais",
-                    "a": "Pour refléter la diversité des cultures et des langues dans les résultats générés par les modèles, <strong>les jeux de données d’alignement doivent inclure une variété de langues</strong>, de contextes et d’exemples issus de tâches courantes des utilisateurs. La diversification des données d'alignement permet d’améiorer à terme les performances d’un modèle à double titre :",
-                    "b": "D'une part, elle <strong>réduit les biais culturels</strong> en évitant qu'une seule perspective - souvent anglo-saxonne - domine les réponses de l'IA. Le modèle apprend ainsi à reconnaître qu'il existe plusieurs façons valides d'aborder une même question selon le contexte culturel.",
-                    "c": "D'autre part, cette exposition à la diversité de langues et de cultures favorise l’adaptation des réponses à des contextes spécifiques : un utilisateur français recevra des conseils adaptés au système français, tandis qu'un utilisateur danois obtiendra des informations correspondant à son contexte national.",
-                    "d": "Le résultat est un modèle d’IA conversationnelle plus inclusif, capable de tenir compte des différentes cultures."
-                }
-            }
-        },
-        "partners": {
-            "institution": {
-                "title": "Partenaires institutionnels"
-            },
-            "diffusion": {
-                "title": "Partenaires de diffusion",
-                "desc": "Nous créons un réseau de partenaires intégrant le comparateur dans leur offre de services et de formation.",
-                "catch": "Vous souhaitez utiliser le comparateur pour répondre à un besoin métier ?",
-                "cta": "Dites nous en plus"
-            },
-            "academy": {
-                "title": "Partenaires académiques",
-                "desc": "Nous avons à coeur que les jeux de données générés alimentent des travaux de recherche multidisciplinaires mêlant sciences humaines et sociales et data science.",
-                "catch": "Vous menez un projet de recherche et avez des suggestions ou besoin de précision sur la démarche et/ou les jeux de données produits ?"
-            },
-            "services": {
-                "title": "Services mis à contribution",
-                "desc": "Les calculs d’impacts environnementaux reposent sur les produits ci dessus."
-            }
-        }
-    },
-    "datasets": {
-        "access": {
-            "title": "Accédez aux jeux de données compar:IA",
-            "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
-            "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
-            "share": "Partagez-nous vos réutilisations",
-            "repos": {
-                "conversations": {
-                    "title": "/conversations",
-                    "desc": "Ensemble des réponses et des questions posées"
-                },
-                "reactions": {
-                    "title": "/réactions",
-                    "desc": "Ensemble des réactions exprimées"
-                },
-                "votes": {
-                    "title": "/votes",
-                    "desc": "Ensemble des préférences exprimées"
-                }
-            }
-        },
-        "reuse": {
-            "title": "Comment ces données sont-elles utilisées ?",
-            "desc": "Exemples de réutilisation des jeux de données compar:IA",
-            "bunka": {
-                "desc": "L'équipe Bunka.ai a mené une étude approfondie sur les interactions entre les utilisateurs de la plateforme Compar:IA et les modèles d'IA, examinant les thématiques privilégiées, les tâches principales et déterminant si ces modèles fonctionnent avant tout comme des outils d'automatisation ou d'augmentation des capacités humaines. Cette analyse repose sur un large échantillon de 25 000 conversations.",
-                "conversations": {
-                    "title": "Explorer la visualisation de données",
-                    "desc": "Visualisation interactive des conversations où chaque point représente un cluster de discussions évoqué par les utilisateurs (comme l’éducation, la santé, l’environnement, ou encore la philosophie)."
-                },
-                "analyze": {
-                    "title": "Accéder à l’analyse par indicateur",
-                    "desc": "Analyse des conversations des utilisateurs avec détection des tâches (création, recherche d'informations...), des sujets (arts et culture, éducation...), des émotions complexes (curiosité, enthousiasme...), des types de langage (formel, professionnel...)"
-                },
-                "method": "En savoir plus sur la méthodologie"
-            }
-        }
+        "home": "Page d'accueil",
+        "returnHome": "Revenir à l'accueil",
+        "seeMore": "Voir plus",
+        "selectLanguage": "Sélectionner une langue"
     },
     "arenaHome": {
-        "title": "Comment puis-je vous aider aujourd'hui ?",
+        "compareModels": {
+            "count": "{count}/2 modèles",
+            "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire",
+            "question": "Quels modèles voulez-vous comparer ?"
+        },
         "modelSelection": "Sélection des modèles",
         "prompt": {
             "label": "Écrivez votre premier message",
             "placeholder": "Écrivez votre premier message ici"
         },
         "selectModels": {
-            "question": "Quels modèles voulez-vous comparer ?",
-            "help": "Sélectionnez le mode de comparaison qui vous convient"
-        },
-        "compareModels": {
-            "question": "Quels modèles voulez-vous comparer ?",
-            "count": "{count}/2 modèles",
-            "help": "Si vous n’en choisissez qu’un, le second sera sélectionné de manière aléatoire"
+            "help": "Sélectionnez le mode de comparaison qui vous convient",
+            "question": "Quels modèles voulez-vous comparer ?"
         },
         "suggestions": {
-            "title": "Suggestions de prompts",
-            "generateAnother": "Générer un autre message",
             "choices": {
+                "administrative": {
+                    "iconAlt": "Administratif",
+                    "title": "Rédiger un document administratif"
+                },
+                "coach": {
+                    "iconAlt": "Conseils",
+                    "title": "Obtenir des conseils sur l’alimentation et le sport"
+                },
+                "explanations": {
+                    "iconAlt": "Explications",
+                    "title": "Expliquer simplement un concept"
+                },
                 "iasummit": {
                     "iconAlt": "Sommet pour l'action sur l'IA",
                     "title": "Prompts issus de la consultation citoyenne sur l’IA ",
@@ -480,272 +56,638 @@
                     "iconAlt": "Idées",
                     "title": "Générer de nouvelles idées"
                 },
-                "explanations": {
-                    "iconAlt": "Explications",
-                    "title": "Expliquer simplement un concept"
-                },
                 "languages": {
                     "iconAlt": "Traduction",
                     "title": "M’exprimer dans une autre langue"
-                },
-                "administrative": {
-                    "iconAlt": "Administratif",
-                    "title": "Rédiger un document administratif"
                 },
                 "recipes": {
                     "iconAlt": "Recettes",
                     "title": "Découvrir une nouvelle recette de cuisine"
                 },
-                "coach": {
-                    "iconAlt": "Conseils",
-                    "title": "Obtenir des conseils sur l’alimentation et le sport"
+                "recommendations": {
+                    "iconAlt": "Recommandations",
+                    "title": "Proposer des idées de films, livres, musiques"
                 },
                 "stories": {
                     "iconAlt": "Histoires",
                     "title": "Raconter une histoire"
-                },
-                "recommendations": {
-                    "iconAlt": "Recommandations",
-                    "title": "Proposer des idées de films, livres, musiques"
                 }
-            }
-        }
+            },
+            "generateAnother": "Générer un autre message",
+            "title": "Suggestions de prompts"
+        },
+        "title": "Comment puis-je vous aider aujourd'hui ?"
     },
     "chatbot": {
         "continuePrompt": "Continuer à discuter avec les deux modèles d'IA",
-        "revealButton": "Passer à la révélation des modèles",
         "conversation": "Conversation",
         "errors": {
-            "tooLong": {
-                "title": "Oups, la conversation est trop longue pour un des modèles.",
-                "message": "Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.",
-                "vote": "Vous pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation avec deux nouveaux.",
-                "retry": "Vous pouvez recommencer une conversation avec deux nouveaux modèles."
-            },
             "other": {
-                "title": "Oups, erreur temporaire",
                 "message": "Une erreur temporaire est survenue.",
-                "vote": "Ou bien conclure votre expérience en donnant votre avis sur les modèles.",
-                "retry": "Vous pouvez tenter de réessayer de solliciter les modèles."
+                "retry": "Vous pouvez tenter de réessayer de solliciter les modèles.",
+                "title": "Oups, erreur temporaire",
+                "vote": "Ou bien conclure votre expérience en donnant votre avis sur les modèles."
+            },
+            "tooLong": {
+                "message": "Chaque modèle est limité dans la taille des conversations qu'il est capable de traiter.",
+                "retry": "Vous pouvez recommencer une conversation avec deux nouveaux modèles.",
+                "title": "Oups, la conversation est trop longue pour un des modèles.",
+                "vote": "Vous pouvez tout de même donner votre avis sur ces modèles ou recommencer une conversation avec deux nouveaux."
             }
         },
-        "loading": "Chargement des réponses"
+        "loading": "Chargement des réponses",
+        "revealButton": "Passer à la révélation des modèles"
     },
     "closeModal": "Fermer la fenêtre modale",
+    "datasets": {
+        "access": {
+            "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
+            "desc": "Les questions et préférences posées sur la plateforme sont majoritairement en français et reflètent des usages réels et non contraints. Ces jeux de données sont accessibles sur <a {linkProps}>data.gouv</a> et Hugging Face.",
+            "repos": {
+                "conversations": {
+                    "desc": "Ensemble des réponses et des questions posées",
+                    "title": "/conversations"
+                },
+                "reactions": {
+                    "desc": "Ensemble des réactions exprimées",
+                    "title": "/réactions"
+                },
+                "votes": {
+                    "desc": "Ensemble des préférences exprimées",
+                    "title": "/votes"
+                }
+            },
+            "share": "Partagez-nous vos réutilisations",
+            "title": "Accédez aux jeux de données compar:IA"
+        },
+        "reuse": {
+            "bunka": {
+                "analyze": {
+                    "desc": "Analyse des conversations des utilisateurs avec détection des tâches (création, recherche d'informations...), des sujets (arts et culture, éducation...), des émotions complexes (curiosité, enthousiasme...), des types de langage (formel, professionnel...)",
+                    "title": "Accéder à l’analyse par indicateur"
+                },
+                "conversations": {
+                    "desc": "Visualisation interactive des conversations où chaque point représente un cluster de discussions évoqué par les utilisateurs (comme l’éducation, la santé, l’environnement, ou encore la philosophie).",
+                    "title": "Explorer la visualisation de données"
+                },
+                "desc": "L'équipe Bunka.ai a mené une étude approfondie sur les interactions entre les utilisateurs de la plateforme Compar:IA et les modèles d'IA, examinant les thématiques privilégiées, les tâches principales et déterminant si ces modèles fonctionnent avant tout comme des outils d'automatisation ou d'augmentation des capacités humaines. Cette analyse repose sur un large échantillon de 25 000 conversations.",
+                "method": "En savoir plus sur la méthodologie"
+            },
+            "desc": "Exemples de réutilisation des jeux de données compar:IA",
+            "title": "Comment ces données sont-elles utilisées ?"
+        }
+    },
+    "errors": {
+        "404": {
+            "desc": "Si vous avez tapé l'adresse web dans le navigateur, vérifiez qu'elle est correcte. La page n’est peut-être plus disponible.<br />Dans ce cas, pour continuer votre visite vous pouvez consulter notre page d’accueil.<br />Sinon contactez-nous pour que l’on puisse vous rediriger vers la bonne information.",
+            "error": "Erreur 404",
+            "sorry": "La page que vous cherchez est introuvable. Excusez-nous pour la gène occasionnée.",
+            "title": "Page non trouvée"
+        },
+        "unexpected": {
+            "desc": "Essayez de rafraîchir la page ou bien ressayez plus tard.",
+            "error": "Erreur {code}",
+            "sorry": "Désolé, le service rencontre un problème, nous travaillons pour le résoudre le plus rapidement possible.",
+            "title": "Erreur inattendue"
+        },
+        "unknown": "Une erreur est survenue"
+    },
+    "footer": {
+        "backHome": "Retour à l'accueil du site - compar:IA",
+        "helpUs": "Aidez-nous à améliorer ce service !",
+        "license": {
+            "linkTitle": "Licence etalab - nouvelle fenêtre",
+            "mention": "Sauf mention explicite de propriété intellectuelle détenue par des tiers, les contenus de ce site sont proposés sous <a {linkProps}>licence etalab-2.0</a>"
+        },
+        "links": {
+            "accessibility": "Accessibilité : non conforme",
+            "legal": "Mentions légales",
+            "privacy": "Politique de confidentialité",
+            "sources": "Code source",
+            "tos": "Modalités d'utilisation"
+        },
+        "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {linkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !"
+    },
+    "general": {
+        "a11y": {
+            "desc": "Cette déclaration d’accessibilité s’applique au site <strong>comparia.beta.gouv.fr</strong>.",
+            "disclaimer": "<strong>compar:IA</strong> s’engage à rendre ses services numériques accessibles, conformément à l’article 47 de la loi n° 2005-102 du 11 février 2005.",
+            "improveAdress": "Adresse : DINUM, 20 avenue de Ségur 75007 Paris",
+            "improveDelay": "Nous essayons de répondre dans les 2 jours ouvrés.",
+            "improveDesc": "Si vous n’arrivez pas à accéder à un contenu ou à un service, vous pouvez contacter le responsable de beta.gouv.fr pour être orienté·e vers une alternative accessible ou obtenir le contenu sous une autre forme.",
+            "improveMail": "Courriel : <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveTitle": "Amélioration et contact",
+            "remedyAdvocate": "Écrire un message au <a {linkProps}>Défenseur des droits</a>",
+            "remedyAdvocateAdress": "Envoyer un courrier par la poste (gratuit, ne pas mettre de timbre) : Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07",
+            "remedyDelegateAdvocate": "Contacter le délégué du <a {linkProps}>Défenseur des droits dans votre région</a>",
+            "remedyDesc": "Cette procédure est à utiliser dans le cas suivant : vous avez signalé au responsable du site internet un défaut d’accessibilité qui vous empêche d’accéder à un contenu ou à un des services du portail et vous n’avez pas obtenu de réponse satisfaisante.",
+            "remedyList": "Vous pouvez :",
+            "remedyTitle": "Voie de recours",
+            "stateDesc": "Le site comparia.beta.gouv.fr est non conforme avec le RGAA 4.1. Le site n’a <strong>pas encore été audité</strong>. Il a cependant été conçu pour être accessible au plus grand nombre. Vous devriez donc pouvoir :",
+            "stateNavigate": "naviguer sur toutes les pages du site en utilisant un clavier",
+            "statePrefs": "adapter le site à votre préférences (taille de la police, zoom écran, changement de typographie…) sans perte de contenu",
+            "stateScreenReader": "consulter le site web avec un lecteur d’écran.",
+            "stateTitle": "État de conformité",
+            "title": "Déclaration d’accessibilité"
+        },
+        "legal": {
+            "a11yDesc": "La conformité aux normes d’accessibilité numérique est un objectif ultérieur mais nous tâchons de rendre ce site accessible à toutes et à tous.",
+            "a11yTitle": "Accessibilité",
+            "directorDesc": "Monsieur Romain Delassus, chef du service du numérique du Ministère de la Culture",
+            "directorTitle": "Directeur de la publication",
+            "editorDesc": "Ce site est édité par le Ministère de la culture, 182, rue Saint-Honoré 75001 Paris",
+            "editorTitle": "Éditeur",
+            "hostingDesc": "Ce site est hébergé par OVH SAS (<a {linkProps}>https://www.ovh.com</a>) dont le siège social est situé au 2 rue Kellermann - 59100 Roubaix - France.",
+            "hostingTitle": "Hébergement du site",
+            "reportA11y": "Si vous rencontrez un défaut d’accessibilité vous empêchant d’accéder à un contenu ou une fonctionnalité du site, merci de nous en faire part.",
+            "reportA11yDesc": "Pour en savoir plus sur la politique d’accessibilité numérique de l’État : <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
+            "reportDesc": "Si vous n’obtenez pas de réponse rapide de notre part, vous êtes en droit de faire parvenir vos doléances ou une demande de saisine au Défenseur des droits.",
+            "reportTitle": "Signaler un dysfonctionnement",
+            "securityCertif": "Le site est protégé par un certificat électronique, matérialisé pour la grande majorité des navigateurs par un cadenas. Cette protection participe à la confidentialité des échanges.",
+            "securityNoMail": "En aucun cas les services associés à la plateforme ne seront à l’origine d’envoi de courriels pour demander la saisie d’informations personnelles.",
+            "securityTitle": "Sécurité",
+            "sources": "Sauf mention contraire, tous les textes de ce site sont sous <a {etalabLinkProps}>licence Etalab Open 2.0</a>. Le code source de cette application est librement réutilisable et accessible sur <a {githubLinkProps}>GitHub</a>.",
+            "title": "Mentions légales"
+        },
+        "privacy": {
+            "cookiesBannerDesc": "C’est vrai, vous n’avez pas eu à cliquer sur un bloc qui recouvre la moitié de la page pour dire que vous êtes d’accord avec le dépôt de cookies — même si vous ne savez pas ce que ça veut dire !",
+            "cookiesBannerNoNeed": "Rien d’exceptionnel, pas de passe-droit lié à un .gouv.fr. Nous respectons simplement la loi, qui dit que certains outils de suivi d’audience, correctement configurés pour respecter la vie privée, sont exemptés d’autorisation préalable.",
+            "cookiesBannerTitle": "Ce site n’affiche pas de bannière de consentement aux cookies, pourquoi ?",
+            "cookiesBannerTools": "Nous utilisons pour cela <a {matomoLinkProps}>Matomo</a>, un outil <a {libreLinkProps}>libre</a>, paramétré pour être en conformité avec la <a {cnilLinkProps}>recommandation « Cookies »</a> de la CNIL. Cela signifie que votre adresse IP, par exemple, est anonymisée avant d’être enregistrée. Il est donc impossible d’associer vos visites sur ce site à votre personne.",
+            "cookiesDesc": "Ce site dépose un petit fichier texte (un « cookie ») sur votre ordinateur lorsque vous le consultez. Cela nous permet de mesurer le nombre de visites et de comprendre quelles sont les pages les plus consultées.",
+            "cookiesDescMore": "Vous pouvez vous opposer au suivi de votre navigation sur ce site web. Cela protégera votre vie privée, mais empêchera également le propriétaire d'apprendre de vos actions et de créer une meilleure expérience pour vous et les autres utilisateurs.",
+            "cookiesTitle": "Cookies déposés et consentement",
+            "dataAccessDatasets": "Les données de dialogue et de préférence de l’utilisateur sont distribuées sous la Licence Ouverte 2.0 d'Etalab sur la plateforme Hugging Face à travers le compte du ministère de la culture (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDesc": "Bien sûr ! Les statistiques d’usage du site sont disponibles en accès libre sur <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "Je contribue à enrichir vos données, puis-je y accéder ?",
+            "dataExtraCountry": "Pays destinataire : France",
+            "dataExtraHost": "Sous-traitant : OVH",
+            "dataExtraTitle": "Qui nous aide à traiter les données ?",
+            "dataExtraWarranty": "Garanties : <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataExtraWhat": "Traitement réalisé : Hébergement",
+            "dataRespDesc": "Le service du numérique du ministère de la Culture est le responsable du traitement de vos données à caractère personnel.",
+            "dataRespTitle": "Qui est responsable du traitement des données ?",
+            "dataTimeDesc": "Les données relatives aux utilisateurs et à leurs conversations avec les modèles sont conservées à compter de l’enregistrement du vote de préférence.",
+            "dataTimeTitle": "Pendant combien de temps conservons-nous ces données ?",
+            "dataUseDesc": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurer de l’anonymisation des données de dialogue avant leur mise à disposition publique.",
+            "dataUseTitle": "Quels sont les traitements réalisés sur les données de conversation ?",
+            "desc": "Le service est édité par le service du numérique du ministère de la Culture.",
+            "privacyData": "Les données collectées sur le site sont les suivantes :",
+            "privacyDataArena": "Données relatives aux conversations des utilisateurs avec les modèles : questions posées par les utilisateurs, réponses des modèles et préférence exprimée par l’utilisateur sur les deux modèles",
+            "privacyDataForm": "Données relatives au questionnaire « Nous aider à améliorer compar:IA ».",
+            "privacyDesc": "Le service ne traite pas de données à caractère personnel telles que définies par la CNIL, à savoir toute information relative à une personne physique susceptible d'être identifiée, directement ou indirectement.",
+            "privacyResp": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme. En acceptant les <a {linkProps}>modalités d’utilisation</a>, l’utilisateur ou l’utilisatrice s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
+            "privacyTitle": "Traitons-nous des données à caractère personnel ?",
+            "title": "Politique de confidentialité"
+        },
+        "tos": {
+            "contactDesc": "Pour toute question sur le service, vous pouvez écrire à <a {linkProps}>contact@comparia.beta.gouv.fr</a>.",
+            "contactTitle": "9. Contact",
+            "defsEditor": "« Éditeur » désigne le Service du numérique du Ministère de la Culture.",
+            "defsModels": "« Modèles » désigne les grands modèles de langages (LLM) réutilisés dans le cadre de leur licence d’utilisation par la plateforme pour répondre à ses finalités.",
+            "defsPlatform": "« Plateforme » désigne le site web qui rend les services accessibles.",
+            "defsServices": "« Services » désigne les fonctionnalités offertes par la plateforme pour répondre à ses finalités.",
+            "defsTitle": "2. Définitions",
+            "defsUser": "« Utilisateur » désigne toute personne physique consultant la plateforme et qui bénéficie de ses services.",
+            "descDatasets": "Ces jeux de données seront rendus accessibles sous licence ouverte, notamment pour favoriser des usages de recherche.",
+            "descEditor": "Édité par le Service du numérique du Ministère de la Culture, le comparateur est une plateforme de comparaison des modèles conversationnels adressée au grand public dans le but (1) de sensibiliser les citoyens aux grands modèles de langage (LLMs), (2) de collecter les préférences des utilisateurs pour constituer des jeux de données d’alignement.",
+            "descTitle": "3. Description de la plateforme",
+            "descUse": "L’utilisateur ou l’utilisatrice pose une question en français et obtient des réponses de deux grands modèles de langages (LLM) anonymes. Il ou elle vote pour le modèle qui fournit la réponse qu’il préfère et se voit alors révélée l’identité des modèles. Ce dispositif de production participative inspiré de la plateforme <a {linkProps}>« chatbot arena » (LMSYS)</a> permet de constituer des jeux de données de préférences humaines sur des tâches réelles, en français, utilisables pour l’alignement des modèles.",
+            "dispoDesc": "La plateforme est accessible, sauf cas de force majeure ou d’évènement hors de contrôle de son éditeur.",
+            "dispoResp": "A ce titre, l’éditeur ne saurait être tenu responsable des pertes ou préjudices, de quelque nature qu’ils soient, qui pourraient être causés à la suite d’un dysfonctionnement ou une indisponibilité du service. De telles situations n&#39;ouvriront droit à aucune compensation financière.",
+            "dispoRight": "L’éditeur se réserve le droit de suspendre, d&#39;interrompre ou de limiter, sans avis préalable, l&#39;accès à tout ou partie des services, notamment pour des opérations de maintenance et de mises à jour nécessaires au bon fonctionnement du service et des matériels afférents, ou pour toute autre raison, notamment technique.",
+            "dispoTitle": "7. Disponibilité des services",
+            "dispoWarranty": "Il n’est pas garanti que le service soit exempt d’anomalies ou erreurs. Le service est donc mis à disposition sans garantie sur sa disponibilité et ses performances.",
+            "evoDesc": "Les modalités d’utilisation peuvent être modifiées ou complétées à tout moment, sans préavis, en fonction des modifications apportées aux services, de l’évolution de la législation ou pour tout autre motif jugé nécessaire.",
+            "evoDescMore": "Ces modifications et mises à jour s’imposent à l’utilisateur ou l’utilisatrice qui doit, en conséquence, se référer régulièrement à cette rubrique pour vérifier les modalités générales en vigueur.",
+            "evoTitle": "8. Évolution des modalités d'utilisation",
+            "featuresDatasets": "Le service recueille les données de dialogue et de préférence des utilisateurs. Les jeux de données partagés comprendront les questions de l’utilisateur, les réponses des deux modèles, le vote et les préférences de l’utilisateur.",
+            "featuresDatasetsMore": "L’éditeur se réserve le droit de distribuer sous licence ouverte 2.0 les données de dialogue et de préférence de l’utilisateur. Le jeu de données est diffusé sur la plateforme Hugging Face à travers le compte du ministère de la culture (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "featuresDesc": "Afin de répondre au double objectif de sensibiliser les citoyens aux grands modèles de langage et collecter les préférences des utilisateurs et utilisatrices, les services rendus par la plateforme sans restriction d’accès sont les suivants :",
+            "featuresDescMore": "Une interface humain-machine permettant de dialoguer simultanément avec deux modèles conversationnels et de voter pour la réponse préférée.",
+            "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents partenaires (Scaleway, OVH, Hugging Face, Google Cloud, Mistral Ai). Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
+            "featuresModelsMore": "Une interface de comparaison des modèles.",
+            "featuresTitle": "4. Fonctionnalités",
+            "featuresVote": "À l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
+            "featuresVoteMore": "Partage et mise à disposition des jeux de données issus de la collecte des préférences des utilisateurs.",
+            "licenceCode": "Le code source de la plateforme est libre et disponible ici : <a {linkProps}>https://github.com/betagouv/languia</a>",
+            "licenceLLM": "Les LLM utilisés pour alimenter les services sont régis par les licences suivantes :",
+            "licenceLLMEvolution": "La liste des modèles de langage intégrés à la plateforme est susceptible d’évoluer au cours du temps et est mise à jour à chaque modification.",
+            "licenceLLMLicence": "Licence",
+            "licenceLLMModel": "Modèle d’IA conversationnelle",
+            "licenceLLMNoticeLink": "Lien vers la notice des modèles",
+            "licenceLLMUnavailable": "Non disponible",
+            "licenceTitle": "6. Code et licences",
+            "respEditor": "De manière générale, l’éditeur se dégage de toute responsabilité en cas d’utilisationnon-conforme aux modalités d’utilisation.",
+            "respLegal": "La plateforme n’a pas vocation à être utilisée pour générer des contenus illicites ou contraires à l’ordre public et plus généralement toute génération contrevenant au cadre juridique en vigueur.",
+            "respLegalMore": "A cet égard, l’utilisateur ne saisit pas dans l’invite des contenus ou informations contraires aux dispositions légales et réglementaires en vigueur.",
+            "respPrivacy": "Les données saisies par l’utilisateur sur la plateforme ayant vocation à être mis à disposition, il ou elle s’engage à ne pas transmettre d’informations permettant de l’identifier ou d’identifier un tiers.",
+            "respPrivacyMore": "En tout état de cause, l’éditeur s’engage à mettre en œuvre les moyens permettant de s’assurerde l’anonymisation les données de dialogue avant leur mise à disposition.",
+            "respTitle": "5. Responsabilités",
+            "respUser": "L’utilisateur est responsable des données ou contenus qu'il ou elle saisit dans l’invite offert par la plateforme.",
+            "scopeDesc": "L’accès à la plateforme est gratuit, sans inscription et entraîne l’application de conditions spécifiques, listées dans les présentes modalités d’utilisation.",
+            "scopeTitle": "1. Champ d’application",
+            "title": "Modalités d’utilisation"
+        }
+    },
+    "header": {
+        "banner": "Le comparateur est désormais disponible en lituanien 🇱🇹 en suédois 🇸🇪 et en danois 🇩🇰 !",
+        "chatbot": {
+            "newDiscussion": "Nouvelle discussion",
+            "step": "Étape",
+            "stepOne": {
+                "description": "Prêtez attention au fond et à la forme puis évaluez chaque réponse.",
+                "title": "Que pensez-vous des réponses ?"
+            },
+            "stepTwo": {
+                "description": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
+                "title": "Les modèles sont démasqués !"
+            }
+        },
+        "help": {
+            "link": {
+                "content": "Nous aider à améliorer compar:IA",
+                "title": "Donner mon avis sur le comparateur - ouvre une nouvelle fenêtre"
+            }
+        },
+        "homeTitle": "Accueil - compar:IA",
+        "logoAlt": "République Française",
+        "menu": "Menu",
+        "startDiscussion": "Commencer à discuter",
+        "subtitle": "Le comparateur d’IA conversationnelles",
+        "title": {
+            "compar": "compar",
+            "ia": "IA"
+        },
+        "votes": {
+            "count": "{count} votes",
+            "legend": "Légende",
+            "objective": "Obj : {count}",
+            "tooltip": "Discutez, votez et aidez-nous à atteindre cet objectif !<br /><strong>Vos votes sont importants</strong> : ils alimentent le jeu de données compar:IA mis à disposition librement pour affiner les prochains modèles sur le français.<br />Ce commun numérique contribue au meilleur <strong>respect de la diversité linguistique et culturelle des futurs modèles de langue.</strong>"
+        }
+    },
+    "home": {
+        "europe": {
+            "desc": "La Lituanie, la Suède et le Danemark rejoignent la France en adoptant le comparateur dans le but d’affiner les futurs modèles d’IA dans leurs langues nationales.",
+            "languages": {
+                "da": "en danois",
+                "fr": "en français",
+                "lt": "en lituanien",
+                "sv": "en suédois"
+            },
+            "question": "Vous souhaitez également disposer du comparateur dans votre langue ?",
+            "title": "Le comparateur <span {props}>devient européen !</span>"
+        },
+        "faq": {
+            "discover": "Découvrir les autres questions",
+            "title": "Vos questions les plus courantes"
+        },
+        "intro": {
+            "desc": "Discutez avec deux IA à l’aveugle et évaluez leurs réponses",
+            "steps": {
+                "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'amélioration des modèles d’IA. 3. Les modèles sont démasqués : apprenez-en plus sur les modèles d’IA et leurs caractéristiques.",
+                "one": {
+                    "a": "Échangez aussi longtemps que",
+                    "b": "vous le souhaitez",
+                    "title": "Je discute avec deux IA anonymes"
+                },
+                "three": {
+                    "a": "Apprenez en plus sur les modèles",
+                    "b": "d’IA et leurs caractéristiques",
+                    "title": "Les modèles sont démasqués !"
+                },
+                "title": "Comment ça marche",
+                "two": {
+                    "a": "Vous contribuez ainsi à",
+                    "b": "l'amélioration des modèles d’IA",
+                    "title": "Je donne mon avis"
+                }
+            },
+            "title": "Ne vous fiez pas aux réponses <span {props}>d’une seule IA</span>",
+            "tos": {
+                "accept": "J'accepte les <a {linkProps}>conditions générales d’utilisation</a>",
+                "error": "Vous devez accepter les modalités d'utilisation pour continuer",
+                "help": "Les données sont partagées à des fins de recherche"
+            }
+        },
+        "origin": {
+            "project": {
+                "desc": "Le comparateur a été conçu et développé dans le cadre d’une start-up d’Etat portée par le ministère de la Culture et intégrée au programme <a {linkProps}>Beta.gouv.fr</a> de la Direction interministérielle du numérique (DINUM) qui aide les administrations publiques françaises à construire des services numériques utiles, simples et faciles à utiliser.",
+                "title": "Qui est à l’origine du projet ?"
+            },
+            "team": {
+                "desc": "Le comparateur est porté au sein du Ministère de la Culture par une équipe pluridisciplinaire réunissant expert en Intelligence artificielle, développeurs, chargé de déploiement, designer, avec pour mission de rendre les IA conversationnelles plus transparentes et accessibles à toutes et tous.",
+                "title": "Qui sommes-nous ?"
+            }
+        },
+        "usage": {
+            "desc": "L’outil s’adresse également aux experts IA et aux formateurs pour des usages plus spécifiques",
+            "educate": {
+                "desc": "Utilisez le comparateur comme un support pédagogique de sensibilisation à l’IA auprès de votre public",
+                "title": "Former et sensibiliser"
+            },
+            "explore": {
+                "desc": "Consultez au même endroit toutes les caractéristiques et conditions d’utilisation des modèles",
+                "title": "Explorer les modèles"
+            },
+            "title": "Les usages spécifiques de compar:IA",
+            "use": {
+                "desc": "Développeurs, chercheurs, éditeurs de modèles… accédez aux jeux de données compar:IA pour améliorer les modèles",
+                "title": "Exploiter les données"
+            }
+        },
+        "use": {
+            "compare": {
+                "alt": "Comparer",
+                "desc": "Discutez et développez votre esprit critique en donnant votre préférence",
+                "title": "Comparer les réponses de différents modèles d’IA"
+            },
+            "desc": "compar:IA est un outil gratuit qui permet de sensibiliser les citoyens à l’IA générative et à ses enjeux.",
+            "measure": {
+                "alt": "Mesurer",
+                "desc": "Découvrez l’impact environnemental de vos discussions avec chaque modèle",
+                "title": "Mesurer l’empreinte écologique des questions posées aux IA"
+            },
+            "test": {
+                "alt": "Tester",
+                "desc": "Testez différents modèles, propriétaires ou non, de petites et grandes tailles...",
+                "title": "Tester au même endroit les dernières IA de l’écosystème"
+            },
+            "title": "À quoi sert compar:IA ?"
+        },
+        "vote": {
+            "datasetAccess": "Accéder aux jeux de données",
+            "desc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois",
+            "steps": {
+                "datasets": {
+                    "desc": "Toutes les questions posées et les votes sont compilées dans des jeux de données et publiés librement après anonmymisation.",
+                    "title": "Les jeux de données par langue"
+                },
+                "finetune": {
+                    "desc": "À terme, les entreprises et les acteurs universitaires peuvent exploiter les jeux de données pour entrainer de nouveaux modèles plus respectueux de la diversité linguistique et culturelle.",
+                    "title": "Des modèles affinés sur la langue spécifique"
+                },
+                "prefs": {
+                    "desc": "Après discussion avec les IA, vous indiquez votre préférence pour un modèle selon des critères donnés, tels que la pertinence ou l’utilité des réponses.",
+                    "title": "Vos préférences"
+                }
+            },
+            "title": "Pourquoi votre vote est-il important ?"
+        }
+    },
     "models": {
         "conditions": "Conditions d'utilisation",
-        "licenses": {
-            "type": {
-                "proprietary": "Propriétaire",
-                "openSource": "Open source",
-                "semiOpen": "Semi-ouvert"
+        "extra": {
+            "experts": {
+                "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>",
+                "open-weights": "Pour les expert·es, consultez la <a {linkProps}>fiche du modèle sur Hugging Face</a>"
             },
-            "name": "Licence {licence}",
+            "impacts": "Les calculs d’impacts environnementaux reposent sur les projets <a {linkProps1}>EcoLogits</a> et <a {linkProps2}>Impact CO<sub>2</sub></a>.",
+            "title": "Pour aller plus loin"
+        },
+        "licenses": {
             "commercial": "Licence commerciale",
-            "noDesc": "Les informations de licence n'ont pas été remplies pour ce modèle.",
             "descriptions": {
-                "MIT": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur.",
                 "Apache 2.0": "Cette licence permet d'utiliser, modifier et distribuer librement, même à des fins commerciales. Outre la liberté d’utilisation, elle garantit la protection juridique en incluant une clause de non-atteinte aux brevets et la transparence : toutes les modifications doivent être documentées et sont donc traçables.",
+                "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
                 "Gemma": "Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagée avec la communauté sous la même licence, favorisant ainsi la collaboration et la transparence dans le développement logiciel.",
+                "Jamba Open Model": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels.",
                 "Llama 3 Community": "Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta.",
                 "Llama 3.1": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
                 "Llama 3.3": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
                 "Llama 4": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
-                "Jamba Open Model": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels.",
-                "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
-                "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-                "propriétaire Mistral": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
-                "propriétaire xAI": "Le modèle est accessible via API xAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-                "propriétaire Liquid": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
-                "propriétaire OpenAI": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
+                "Mistral AI Non-Production": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
+                "MIT": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur.",
                 "propriétaire Anthropic": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-                "Mistral AI Non-Production": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur."
+                "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
+                "propriétaire Liquid": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
+                "propriétaire Mistral": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
+                "propriétaire OpenAI": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
+                "propriétaire xAI": "Le modèle est accessible via API xAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise."
+            },
+            "name": "Licence {licence}",
+            "noDesc": "Les informations de licence n'ont pas été remplies pour ce modèle.",
+            "type": {
+                "openSource": "Open source",
+                "proprietary": "Propriétaire",
+                "semiOpen": "Semi-ouvert"
             }
         },
-        "release": "Sortie {date}",
-        "size": {
-            "title": "Taille",
-            "estimated": "Taille estimée ({size})",
-            "descriptions": {
-                "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
-                "S": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
-                "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-                "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
-                "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés."
+        "list": {
+            "filters": {
+                "display": "Afficher les filtres",
+                "editor": {
+                    "legend": "Éditeur"
+                },
+                "license": {
+                    "legend": "Licence d'utilisation"
+                },
+                "size": {
+                    "labels": {
+                        "L": "de 70 à 150 milliards",
+                        "M": "de 20 à 70 milliards",
+                        "S": "de 7 à 20 milliards",
+                        "XL": "> 150 milliards",
+                        "XS": "< à 7 milliards"
+                    },
+                    "legend": "Taille (en milliards de paramètres)"
+                }
+            },
+            "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
+            "model": "modèle",
+            "models": "modèles",
+            "noresults": "Aucun modèle ne correspond à vos critères de recherche.",
+            "title": "Découvrez les modèles",
+            "triage": {
+                "label": "Trier par",
+                "options": {
+                    "date-desc": "Date de sortie (du plus au moins récent)",
+                    "name-asc": "Nom du modèle (A à Z)",
+                    "org-asc": "Éditeur (A à Z)",
+                    "params-asc": "Taille (du plus petit au plus grand)"
+                }
             }
+        },
+        "names": {
+            "a": "Modèle A",
+            "b": "Modèle B"
         },
         "openWeight": {
             "conditions": {
-                "free": "Permissive",
                 "copyleft": "Copyleft (gauche d'auteur)",
+                "free": "Permissive",
                 "restricted": "Sous conditions"
             },
+            "descriptions": {
+                "L": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des grands modèles (entre 70 et 100 milliards de paramètres).",
+                "M": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des moyens modèles (entre 20 et 70 milliards de paramètres).",
+                "S": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des petits modèles (entre 7 et 20 milliards de paramètres).",
+                "XL": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des très grands modèles.",
+                "XS": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des modèles très petits (moins de 7 milliards de paramètres)."
+            },
             "tooltips": {
+                "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
+                "free": "Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle source.",
                 "openSource": "Le corpus, le code d'entraînement, et les poids de ce modèle (c’est-à-dire les paramètres appris pendant son entraînement) sont entièrement téléchargeables et modifiables par le public, lui permettant de faire fonctionner et modifier le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant qu'« open weights », notamment à cause de la nécessité de transparence du corpus d'entraînement, et rares sont les modèles qui sont considérés « open source ».",
                 "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source ».",
                 "params": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il est capable d’effectuer des tâches complexes.",
-                "free": "Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle source.",
-                "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
                 "ram": "La mémoire vive stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de mémoire vive pour fonctionner."
             },
-            "descriptions": {
-                "XS": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des modèles très petits (moins de 7 milliards de paramètres).",
-                "S": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des petits modèles (entre 7 et 20 milliards de paramètres).",
-                "M": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des moyens modèles (entre 20 et 70 milliards de paramètres).",
-                "L": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des grands modèles (entre 70 et 100 milliards de paramètres).",
-                "XL": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des très grands modèles."
-            },
             "use": {
-                "commercial": "Utilisation commerciale",
-                "modification": "Modification autorisée",
                 "attribution": "Attribution requise",
+                "commercial": "Utilisation commerciale",
                 "licenseType": "Type de licence",
+                "modification": "Modification autorisée",
                 "requiredRam": "RAM nécessaire"
             }
         },
         "parameters": "{number} mds de paramètres",
         "ram": "{min} à {max} Go",
-        "names": {
-            "a": "Modèle A",
-            "b": "Modèle B"
-        },
-        "extra": {
-            "title": "Pour aller plus loin",
-            "experts": {
-                "open-weights": "Pour les expert·es, consultez la <a {linkProps}>fiche du modèle sur Hugging Face</a>",
-                "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>"
+        "release": "Sortie {date}",
+        "size": {
+            "descriptions": {
+                "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
+                "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+                "S": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
+                "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
+                "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte."
             },
-            "impacts": "Les calculs d’impacts environnementaux reposent sur les projets <a {linkProps1}>EcoLogits</a> et <a {linkProps2}>Impact CO<sub>2</sub></a>."
-        },
-        "list": {
-            "title": "Découvrez les modèles",
-            "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
-            "filters": {
-                "editor": {
-                    "legend": "Éditeur"
-                },
-                "size": {
-                    "legend": "Taille (en milliards de paramètres)",
-                    "labels": {
-                        "XS": "< à 7 milliards",
-                        "S": "de 7 à 20 milliards",
-                        "M": "de 20 à 70 milliards",
-                        "L": "de 70 à 150 milliards",
-                        "XL": "> 150 milliards"
-                    }
-                },
-                "license": {
-                    "legend": "Licence d'utilisation"
-                },
-                "display": "Afficher les filtres"
-            },
-            "triage": {
-                "label": "Trier par",
-                "options": {
-                    "name-asc": "Nom du modèle (A à Z)",
-                    "date-desc": "Date de sortie (du plus au moins récent)",
-                    "params-asc": "Taille (du plus petit au plus grand)",
-                    "org-asc": "Éditeur (A à Z)"
-                }
-            },
-            "model": "modèle",
-            "models": "modèles",
-            "noresults": "Aucun modèle ne correspond à vos critères de recherche."
+            "estimated": "Taille estimée ({size})",
+            "title": "Taille"
         }
     },
     "modes": {
-        "random": {
-            "title": "Mode Aléatoire",
-            "label": "Aléatoire",
-            "altLabel": "Modèles aléatoires",
-            "description": "Deux modèles choisis au hasard parmi toute la liste"
+        "big-vs-small": {
+            "altLabel": "David contre Goliath",
+            "description": "Un petit modèle contre un grand, les deux tirés au hasard",
+            "label": "David contre Goliath",
+            "title": "Mode David contre Goliath"
         },
         "custom": {
-            "title": "Mode Sélection",
-            "label": "Sélection manuelle",
             "altLabel": "Sélection manuelle",
-            "description": "Reconnaîtrez-vous les deux modèles que vous avez choisis ?"
+            "description": "Reconnaîtrez-vous les deux modèles que vous avez choisis ?",
+            "label": "Sélection manuelle",
+            "title": "Mode Sélection"
         },
-        "small-models": {
-            "title": "Mode Frugal",
-            "label": "Frugal",
-            "altLabel": "Modèles frugaux",
-            "description": "Deux modèles tirés au hasard parmi ceux de plus petite taille"
-        },
-        "big-vs-small": {
-            "title": "Mode David contre Goliath",
-            "label": "David contre Goliath",
-            "altLabel": "David contre Goliath",
-            "description": "Un petit modèle contre un grand, les deux tirés au hasard"
+        "random": {
+            "altLabel": "Modèles aléatoires",
+            "description": "Deux modèles choisis au hasard parmi toute la liste",
+            "label": "Aléatoire",
+            "title": "Mode Aléatoire"
         },
         "reasoning": {
-            "title": "Mode Raisonnement",
-            "label": "Raisonnement",
             "altLabel": "Modèles avec raisonnement",
-            "description": "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes"
+            "description": "Deux modèles tirés au hasard parmi ceux optimisés pour des tâches complexes",
+            "label": "Raisonnement",
+            "title": "Mode Raisonnement"
+        },
+        "small-models": {
+            "altLabel": "Modèles frugaux",
+            "description": "Deux modèles tirés au hasard parmi ceux de plus petite taille",
+            "label": "Frugal",
+            "title": "Mode Frugal"
         }
     },
-    "vote": {
-        "title": "Quel modèle d’IA préférez-vous ?",
-        "introA": "Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.",
-        "introB": "Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français",
-        "bothEqual": "Les deux se valent",
-        "comment": {
-            "add": "Ajouter des commentaires",
-            "placeholder": "Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
-        },
-        "choices": {
-            "positive": {
-                "question": "Qu'avez-vous apprécié dans la réponse ?",
-                "useful": "Utile",
-                "complete": "Complète",
-                "creative": "Créative",
-                "clear-formatting": "Mise en forme claire"
+    "product": {
+        "comparator": {
+            "challenges": {
+                "bias": {
+                    "desc": "Mettre en avant les biais de l'IA liés à la sous-représentation des données non anglophones dans les modèles et sensibiliser à leurs conséquences.",
+                    "title": "Biais culturels et linguistiques"
+                },
+                "impacts": {
+                    "desc": "Révéler les effets écologiques de l'IA générative, encore largement méconnus du grand public.",
+                    "title": "Impact environnemental"
+                },
+                "pluralism": {
+                    "desc": "Assurer aux citoyens l'accès à une diversité de modèles d'IA afin qu'ils puissent faire des choix éclairés et développer un regard critique sur ces technologies.",
+                    "title": "Pluralisme des modèles"
+                },
+                "thinking": {
+                    "desc": "Inciter au questionnement critique sur la place de l’IA générative dans les pratiques personnelles et professionnelles (éducation, travail).",
+                    "title": "Esprit critique et questions sociétales"
+                },
+                "title": "L’application développée répond à plusieurs enjeux"
             },
-            "negative": {
-                "question": "Pourquoi la réponse ne convient-elle pas ?",
-                "incorrect": "Incorrecte",
-                "superficial": "Superficielle",
-                "instructions-not-followed": "Instructions non suivies"
+            "cta": "Accéder au comparateur",
+            "europe": {
+                "adventure": "Depuis l’été 2025, la Lituanie, la Suède et le Danemark rejoignent l’aventure !",
+                "catch": "Vous souhaitez disposer du comparateur dans votre langue ?",
+                "desc": "Le comparateur est mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
+                "title": "Le comparateur <span {props}>devient européen</span> !"
             },
-            "altText": "{choice} pour le modèle {model}"
+            "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>."
         },
-        "qualify": {
-            "question": "Comment qualifiez-vous ses réponses ?",
-            "placeholder": "Les réponses du modèle {model} sont...",
-            "addDetails": "Ajouter des détails"
-        },
-        "like": {
-            "label": "j'apprécie",
-            "selectedLabel": "j'apprécie (sélectionné)"
-        },
-        "dislike": {
-            "label": "je n'apprécie pas",
-            "selectedLabel": "je n'apprécie pas (sélectionné)"
-        },
-        "yours": "Votre vote"
-    },
-    "reveal": {
-        "impacts": {
-            "title": "Impact énergétique de la discussion",
-            "size": {
-                "label": "taille du modèle",
-                "count": "milliards param.",
-                "estimated": "(est.)",
-                "quantized": "(quantisé)"
+        "partners": {
+            "academy": {
+                "catch": "Vous menez un projet de recherche et avez des suggestions ou besoin de précision sur la démarche et/ou les jeux de données produits ?",
+                "desc": "Nous avons à coeur que les jeux de données générés alimentent des travaux de recherche multidisciplinaires mêlant sciences humaines et sociales et data science.",
+                "title": "Partenaires académiques"
             },
-            "tokens": {
-                "label": "taille du texte",
-                "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand.",
-                "tokens": "jetons"
+            "diffusion": {
+                "catch": "Vous souhaitez utiliser le comparateur pour répondre à un besoin métier ?",
+                "cta": "Dites nous en plus",
+                "desc": "Nous créons un réseau de partenaires intégrant le comparateur dans leur offre de services et de formation.",
+                "title": "Partenaires de diffusion"
             },
-            "energy": {
-                "label": "énergie conso.",
-                "tooltip": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
+            "institution": {
+                "title": "Partenaires institutionnels"
+            },
+            "services": {
+                "desc": "Les calculs d’impacts environnementaux reposent sur les produits ci dessus.",
+                "title": "Services mis à contribution"
             }
         },
+        "problem": {
+            "alignment": {
+                "alignment": {
+                    "a": "L'alignement intervient après l'étape de pré-entraînement d'un modèle de langage, comme une étape de « finition » ou de « polissage ». Lors de son pré-entrainement, le modèle apprend à prédire le mot suivant et devient capable de générer du texte cohérent.",
+                    "b": "L’étape d’alignement consiste à apprendre au modèle à mieux répondre aux besoins humains, c’est à dire à le rendre plus <strong>pertinent</strong> (le modèle répond « mieux » aux questions), <strong>honnête</strong> (capacité à assumer « qu’il ne sait pas répondre » quand il n’y a pas suffisamment de données), et <strong>inoffensif</strong> (éviter de générer des contenus dangereux ou inappropriés).",
+                    "c": "<strong>Sans alignement, un LLM pourrait être techniquement compétent mais difficile à utiliser en pratique, car il ne comprendrait pas vraiment ce qu'on attend de lui dans une conversation.</strong>",
+                    "title": "L’alignement, étape décisive d’instruction du modèle"
+                },
+                "datasets": {
+                    "a": "L'alignement utilise des données très spécifiques, spécialement créées pour enseigner au modèle comment « bien » se comporter.",
+                    "b": "Les <strong>données de préférence</strong> constituent un type particulier de données d’alignement, aux côtés des <strong>données de démonstration</strong> (exemples de conversations entre humains et assistants IA, rédigées par des annotateurs experts selon des consignes précises de ton et de style), des <strong>données de sécurité</strong> (exemples spécifiques enseignant au modèle à éviter les contenus dangereux en montrant comment refuser les demandes problématiques) ou des <strong>données spécialisées</strong> couvrant des domaines spécifiques (médecine, droit, éducation…).",
+                    "c": "Les données de préférence présentent plusieurs réponses possibles à une même question, classées par ordre de qualité par des évaluateurs humains : les utilisateurs indiquent quelle réponse est la meilleure selon des critères donnés, telles que la pertinence, l’utilité, la nocivité. Une fois constitués, ces jeux de données sont utilisés pour entraîner les modèles en les ajustant selon les préférences exprimées par les utilisateurs.",
+                    "title": "Des jeux de données spécifiques"
+                },
+                "desc": "L'alignement : une technique de réduction des biais qui repose sur la collecte des préférences d’utilisateurs",
+                "diversity": {
+                    "a": "Pour refléter la diversité des cultures et des langues dans les résultats générés par les modèles, <strong>les jeux de données d’alignement doivent inclure une variété de langues</strong>, de contextes et d’exemples issus de tâches courantes des utilisateurs. La diversification des données d'alignement permet d’améiorer à terme les performances d’un modèle à double titre :",
+                    "b": "D'une part, elle <strong>réduit les biais culturels</strong> en évitant qu'une seule perspective - souvent anglo-saxonne - domine les réponses de l'IA. Le modèle apprend ainsi à reconnaître qu'il existe plusieurs façons valides d'aborder une même question selon le contexte culturel.",
+                    "c": "D'autre part, cette exposition à la diversité de langues et de cultures favorise l’adaptation des réponses à des contextes spécifiques : un utilisateur français recevra des conseils adaptés au système français, tandis qu'un utilisateur danois obtiendra des informations correspondant à son contexte national.",
+                    "d": "Le résultat est un modèle d’IA conversationnelle plus inclusif, capable de tenir compte des différentes cultures.",
+                    "title": "Diversifier les données pour réduire les biais"
+                },
+                "english": {
+                    "a": "Les données de préférence sont couteuses à produire car <strong>elles nécessitent du travail humain qualifié pour chaque exemple</strong>. Des plateformes telles que https://chat.lmsys.org/ permettent de constituer ces jeux de données de préférence mais peu d’utilisateurs s’en servent dans leur langue d’origine.",
+                    "b": "Les jeux de données de préférence sont rares, voire inexistants dans les langues européennes. La part des questions posées en français dans le jeu de données de LMSYS est par exemple inférieure à 1%.",
+                    "c": "comparIA est un exemple de dispositif permettant de collecter des conversations dans de multiples langues, incluant des références culturelles spécifiques à chaque région ou pays : tâches courantes, traditions culinaires locales, systèmes éducatifs, références historiques ou littéraires, etc.",
+                    "title": "Peu de données de préférence en langues européennes"
+                },
+                "title": "Comment réduire les biais culturels et linguistiques de ces modèles ?"
+            },
+            "diversity": {
+                "diversity": {
+                    "desc": "Ces biais peuvent aussi se traduire par des réponses partielles voire incorrectes négligeant la diversité des langues et des cultures, notamment européennes.",
+                    "title": "Diversités culturelles et linguistiques négligées"
+                },
+                "english": {
+                    "desc": "Les IA conversationnelles reposent sur des grands modèles de langage (LLM) entraînés principalement sur des données en anglais, ce qui crée des biais linguistiques et culturels dans les résultats qu'ils produisent.",
+                    "title": "Données d’entrainement majoritairement en anglais"
+                },
+                "stereotypes": {
+                    "desc": "Les systèmes d’IA conversationnelle donnent l’impression de parler toutes les langues mais les résultats qu’ils génèrent sont parfois stéréotypés ou discriminants.",
+                    "title": "Réponses stéréotypées"
+                }
+            },
+            "title": "Les modèles d’IA conversationnelles respectent-ils la <span {props}>diversité</span> des langues européennes ?"
+        },
+        "title": "Tout savoir sur le comparateur"
+    },
+    "reveal": {
         "equivalent": {
-            "title": "Ce qui correspond à :",
             "co2": {
                 "label": "CO<sub>2</sub> émis",
                 "tooltip": "Le CO<sub>2</sub> émis équivaut aux émissions de dioxyde de carbone produites par l’énergie utilisée pour faire fonctionner le modèle. Elle traduit l'impact environnemental lié à la consommation énergétique. Le calcul d’équivalence Wattheures/CO<sub>2</sub> diffère selon le mix énergétique de chaque pays. Or, les serveurs utilisés pour l’inférence des modèles ne sont pas tous localisés en France. Ainsi, le calcul d’équivalence repose sur la moyenne mondiale du taux d’émissions de CO<sub>2</sub> par énergie consommée."
@@ -757,45 +699,103 @@
             "streaming": {
                 "label": "vidéos en ligne",
                 "tooltip": "Donnée calculée selon l’impact carbone d’une heure de vidéo en ligne en haute définition, sur une télévision, en connexion wifi (source <a {linkProps}>ADEME</a>)"
-            }
+            },
+            "title": "Ce qui correspond à :"
         },
         "feedback": {
-            "shareResult": "Partager votre résultat",
-            "moreOnVotes": "En savoir plus sur les votes",
             "description": "Faites découvrir compar:IA en partageant les modèles d’IA avec lesquels vous avez échangé ! Seuls les noms et l’impact énergétique de la discussion seront visibles via ce lien, sans accès aux messages échangés.",
-            "example": "Exemple de partage de résultat"
+            "example": "Exemple de partage de résultat",
+            "moreOnVotes": "En savoir plus sur les votes",
+            "shareResult": "Partager votre résultat"
+        },
+        "impacts": {
+            "energy": {
+                "label": "énergie conso.",
+                "tooltip": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token."
+            },
+            "size": {
+                "count": "milliards param.",
+                "estimated": "(est.)",
+                "label": "taille du modèle",
+                "quantized": "(quantisé)"
+            },
+            "title": "Impact énergétique de la discussion",
+            "tokens": {
+                "label": "taille du texte",
+                "tokens": "jetons",
+                "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand."
+            }
         }
     },
-    "errors": {
-        "unknown": "Une erreur est survenue",
-        "404": {
-            "title": "Page non trouvée",
-            "error": "Erreur 404",
-            "sorry": "La page que vous cherchez est introuvable. Excusez-nous pour la gène occasionnée.",
-            "desc": "Si vous avez tapé l'adresse web dans le navigateur, vérifiez qu'elle est correcte. La page n’est peut-être plus disponible.<br />Dans ce cas, pour continuer votre visite vous pouvez consulter notre page d’accueil.<br />Sinon contactez-nous pour que l’on puisse vous rediriger vers la bonne information."
-        },
-        "unexpected": {
-            "title": "Erreur inattendue",
-            "error": "Erreur {code}",
-            "sorry": "Désolé, le service rencontre un problème, nous travaillons pour le résoudre le plus rapidement possible.",
-            "desc": "Essayez de rafraîchir la page ou bien ressayez plus tard."
+    "seo": {
+        "desc": "compar:IA est un outil permettant de comparer à l’aveugle différents modèles d'IA conversationnelle pour sensibiliser aux enjeux de l'IA générative (biais, impact environmental) et constituer des jeux de données de préférence en français.",
+        "title": "compar:IA, le comparateur d'IA conversationnelles",
+        "titles": {
+            "accessibilite": "Déclaration d’accessibilité",
+            "arene": "Discussion",
+            "comparator": "Le comparateur",
+            "datasets": "Jeux de données",
+            "donnees-personnelles": "Politique de confidentialité",
+            "faq": "FAQ",
+            "history": "Historique du projet",
+            "home": "Accueil",
+            "mentions-legales": "Mentions légales",
+            "modalites": "Modalités d’utilisation",
+            "modeles": "Liste des modèles",
+            "news": "Nouveautés",
+            "partners": "Partenaires",
+            "problem": "Le problème initial",
+            "product": "Produit et partenaires",
+            "share": "Mon bilan"
         }
     },
-    "actions": {
-        "copyMessage": {
-            "do": "Copier le message",
-            "done": "Message copié"
+    "vote": {
+        "bothEqual": "Les deux se valent",
+        "choices": {
+            "altText": "{choice} pour le modèle {model}",
+            "negative": {
+                "incorrect": "Incorrecte",
+                "instructions-not-followed": "Instructions non suivies",
+                "question": "Pourquoi la réponse ne convient-elle pas ?",
+                "superficial": "Superficielle"
+            },
+            "positive": {
+                "clear-formatting": "Mise en forme claire",
+                "complete": "Complète",
+                "creative": "Créative",
+                "question": "Qu'avez-vous apprécié dans la réponse ?",
+                "useful": "Utile"
+            }
         },
-        "copyLink": {
-            "do": "Copier le lien",
-            "done": "Lien copié dans le presse-papiers"
+        "comment": {
+            "add": "Ajouter des commentaires",
+            "placeholder": "Vous pouvez ajouter des précisions sur cette réponse du modèle {model}"
         },
-        "contact": "Contactez-nous",
-        "contactUs": "Nous contacter",
-        "home": "Page d'accueil",
-        "returnHome": "Revenir à l'accueil",
-        "seeMore": "Voir plus",
-        "selectLanguage": "Sélectionner une langue"
+        "dislike": {
+            "label": "je n'apprécie pas",
+            "selectedLabel": "je n'apprécie pas (sélectionné)"
+        },
+        "introA": "Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.",
+        "introB": "Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français",
+        "like": {
+            "label": "j'apprécie",
+            "selectedLabel": "j'apprécie (sélectionné)"
+        },
+        "qualify": {
+            "addDetails": "Ajouter des détails",
+            "placeholder": "Les réponses du modèle {model} sont...",
+            "question": "Comment qualifiez-vous ses réponses ?"
+        },
+        "title": "Quel modèle d’IA préférez-vous ?",
+        "yours": "Votre vote"
+    },
+    "welcome": {
+        "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées",
+        "go": "C'est parti",
+        "goodPractices": "Voici quelques bonnes pratiques :",
+        "privacy": "Ne communiquez pas d'informations personnelles comme votre nom, prénom ou adresse",
+        "title": "Bienvenue dans compar:IA !",
+        "use": "N'utilisez pas le comparateur à des fins illégales ou nuisibles"
     },
     "words": {
         "back": "Retour",
