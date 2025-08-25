@@ -53,6 +53,9 @@
     "@gradio/icons": "^0.12.0",
     "@gradio/statustracker": "^0.10.13",
     "@gradio/utils": "^0.10.2",
-    "sanitize-html": "^2.17.0"
+    "sanitize-html": "^2.17.0",
+    "vega": "^6.1.2",
+    "vega-embed": "^7.0.2",
+    "vega-lite": "^6.2.0"
   }
 }
