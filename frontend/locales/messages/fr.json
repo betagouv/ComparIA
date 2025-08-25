@@ -1023,6 +1023,9 @@
     },
     "ranking": {
         "desc": "Découvrez comment les meilleurs modèles d’IA se positionnent à travers leur <strong>score de satisfaction</strong> issus des votes de la communauté compar:IA. Pour en savoir plus, consultez <a {linkProps}>notre méthodologie de classement</a>.",
+        "graphs": {
+            "title": "Graphiques"
+        },
         "table": {
             "data": {
                 "cols": {
