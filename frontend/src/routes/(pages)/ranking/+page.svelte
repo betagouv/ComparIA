@@ -176,7 +176,7 @@
             <span class="z-1 relative p-1 text-xs font-bold">{model.elo}</span>
           </div>
         {:else if col.id === 'trust_range'}
-          +{model.trust_range![0]}/-{model.trust_range![0]}
+          +{model.trust_range![0]}/-{model.trust_range![1]}
         {:else if col.id === 'consumption_wh'}
           {model.consumption_wh} Wh
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
