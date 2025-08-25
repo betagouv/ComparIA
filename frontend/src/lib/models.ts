@@ -91,13 +91,13 @@ export interface APIBotModel {
   commercial_use: boolean | null
   release_date: string
   params: number
-  active_params: number | null
+  active_params?: number
   friendly_size: Sizes
   arch: string
   reasoning: boolean | 'hybrid'
-  quantization: 'q4' | 'q8' | null
-  url: string | null // FIXME required?
+  quantization?: 'q4' | 'q8'
   required_ram: number
+  url?: string // FIXME required?
   // conditions: 'free' | 'copyleft' | 'restricted'
 }
 export type BotModel = ReturnType<typeof parseModel>

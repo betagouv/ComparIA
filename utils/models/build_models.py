@@ -81,7 +81,7 @@ def read_json(path: Path) -> Any:
 
 
 def write_json(path: Path, data) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2))
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
 
 
 def filter_dict(data: Obj, exclude: list[str]) -> Obj:
@@ -107,7 +107,7 @@ def log_errors(errors: dict[str, list[Obj]]) -> None:
 
 def validate_licenses(raw_licenses: Any) -> list[Any] | None:
     try:
-        return Licenses(raw_licenses).model_dump()
+        return Licenses(raw_licenses).model_dump(exclude_none=True)
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
@@ -123,7 +123,7 @@ def validate_licenses(raw_licenses: Any) -> list[Any] | None:
 
 def validate_orgas_and_models(raw_orgas: Any) -> list[Any] | None:
     try:
-        return Orgas(raw_orgas).model_dump()
+        return Orgas(raw_orgas).model_dump(exclude_none=True)
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
@@ -184,7 +184,7 @@ def validate() -> None:
                 {
                     license["license"]: {
                         k: (
-                            license[k] or ""
+                            license[k] if k in license else ""
                             if k != "license_desc"
                             else markdown.markdown(license[k])
                         )
@@ -201,12 +201,12 @@ def validate() -> None:
 
     for orga in dumped_orgas:
         i18n["licenses"]["proprio"][orga["name"]] = {
-            k.replace("proprietary_", ""): orga[k] or ""
+            k.replace("proprietary_", ""): orga[k] if k in orga else ""
             for k in I18N_PROPRIO_LICENSE_KEYS
         }
         proprio_license_data = {**base_proprietary_license}
         proprio_license_data["reuse"] = orga["proprietary_reuse"]
-        proprio_license_data["commercial_use"] = orga["proprietary_commercial_use"]
+        proprio_license_data["commercial_use"] = orga.get("proprietary_commercial_use", None)
 
         for model in orga["models"]:
             i18n["models"][model["simple_name"]] = {
@@ -231,13 +231,13 @@ def validate() -> None:
                 )
 
             if model.get("quantization", None) == "q8":
-                model["required_ram"] = model["params"] * 2
+                model_data["required_ram"] = model_data["params"] * 2
             else:
                 # We suppose from q4 to fp16
-                model["required_ram"] = model["params"]
+                model_data["required_ram"] = model_data["params"]
 
             # FIXME to remove, should be required
-            model_id = model["id"] or slugify(model["simple_name"])
+            model_id = model["id"] if "id" in model else slugify(model["simple_name"])
 
             # Build complete model data (license + model) without translatable keys
             generated_models[model_id] = sort_dict(
