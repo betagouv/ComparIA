@@ -1,11 +1,19 @@
 <script lang="ts">
-  import { Badge, Table } from '$components/dsfr'
+  import { Badge, Search, Table } from '$components/dsfr'
   import SeoHead from '$lib/components/SEOHead.svelte'
+  import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { getModelsContext } from '$lib/models'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
 
+  const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
+
   const modelsData = getModelsContext()
+  const votesData = getVotesContext()
+  const totalVotes = $derived(NumberFormater.format(votesData.count))
+  // FIXME retrieve info from backend
+  let lastUpdateDate = new Date()
 
   const cols = (
     [
@@ -26,6 +34,7 @@
   }))
 
   let orderingCol = $state<(typeof cols)[number]['id']>('elo')
+  let search = $state('')
 
   const rows = $derived.by(() => {
     return modelsData.map((m, i) => {
@@ -39,13 +48,19 @@
         elo: Math.round(Math.random() * 10),
         trust: `+${Math.round(Math.random() * 10)}/-${Math.round(Math.random() * 10)}`,
         votes: Math.round(Math.random() * 1000),
-        consumption: conso > 5 ? null : conso
+        consumption: conso > 5 ? null : conso,
+        search: (['id', 'simple_name', 'organisation'] as const)
+          .map((key) => m[key].toLowerCase())
+          .join(' ')
       }
     })
   })
 
   const sortedRows = $derived.by(() => {
+    const _search = search.toLowerCase()
+
     return rows
+      .filter((m) => (!_search ? true : m.search.includes(_search)))
       .sort((a, b) => {
         switch (orderingCol) {
           case 'name':
@@ -70,7 +85,6 @@
             return a.rank - b.rank
         }
       })
-      .filter(() => true)
   })
 </script>
 
@@ -87,8 +101,36 @@
         })
       )}
     </p>
+    <Table
+      {cols}
+      rows={sortedRows}
+      bind:orderingCol
+      caption={m['ranking.title']()}
+      hideCaption
+      class="mt-15!"
+    >
+      {#snippet header()}
+        <div class="flex flex-wrap items-center gap-5">
+          <div class="flex gap-5">
+            <div class="cg-border rounded-sm! bg-white px-4 py-2">
+              <strong>{m['ranking.table.totalModels']()}</strong>
+              <span class="text-grey">{rows.length}</span>
+            </div>
 
-    <Table caption={m['ranking.title']()} {cols} rows={sortedRows} bind:orderingCol hideCaption>
+            <div class="cg-border rounded-sm! bg-white px-4 py-2">
+              <strong>{m['ranking.table.totalVotes']()}</strong>
+              <span class="text-grey">{totalVotes}</span>
+            </div>
+          </div>
+
+          <p class="fr-table__detail mb-0!">
+            {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
+          </p>
+        </div>
+
+        <Search id="model-search" bind:value={search} label={m['ranking.table.search']()} />
+      {/snippet}
+
       {#snippet cell(model, col)}
         {#if col.id === 'rank'}
           <span class="font-medium">{model.rank}</span>
