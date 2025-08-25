@@ -255,6 +255,7 @@
   },
   {
     "name": "Alibaba",
+    "icon_path": "qwen.png",
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
@@ -319,6 +320,7 @@
   },
   {
     "name": "Moonshot AI",
+    "icon_path": "moonshot-ai.webp",
     "models": [
       {
         "simple_name": "Kimi K2",
@@ -332,6 +334,7 @@
   },
   {
     "name": "Nvidia",
+    "icon_path": "nvidia.svg",
     "models": [
       {
         "id": "llama-3.1-nemotron-70b-instruct",
