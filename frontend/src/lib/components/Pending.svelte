@@ -1,12 +1,14 @@
-<script>
-    import { m } from "$lib/i18n/messages"
+<script lang="ts">
+  import { m } from '$lib/i18n/messages'
+
+  let { message = m['words.loading']() }: { message?: string } = $props()
 </script>
 
 <div class="pending" role="status" aria-label="Loading response" aria-live="polite">
   <span class="sr-only">Loading content</span>
   <div class="disc left"></div>
   <div class="disc right"></div>
-  <div class="message-pending"><strong>{m["chatbot.loading"]()}</strong></div>
+  <div class="message-pending"><strong>{message}</strong></div>
 </div>
 
 <style>

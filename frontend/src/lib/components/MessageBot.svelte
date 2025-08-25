@@ -92,7 +92,7 @@
       <Markdown message={message.content} chatbot on:load={onLoad} />
 
       {#if generating && message.isLast}
-        <Pending />
+        <Pending message={m['chatbot.loading']()} />
       {/if}
     </div>
 

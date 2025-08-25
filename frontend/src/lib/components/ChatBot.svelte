@@ -69,7 +69,7 @@
       </div>
     {/each}
   {:else}
-    <div class="my-6"><Pending /></div>
+    <div class="my-6"><Pending message={m['chatbot.loading']()} /></div>
   {/if}
 
   {#if errorString}
