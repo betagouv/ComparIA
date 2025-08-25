@@ -1,11 +1,9 @@
 <script lang="ts">
   import { Badge, Search, Table } from '$components/dsfr'
-  import SeoHead from '$lib/components/SEOHead.svelte'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { getModelsContext } from '$lib/models'
-  import { propsToAttrs, sanitize } from '$lib/utils/commons'
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
 
@@ -98,94 +96,79 @@
   })
 </script>
 
-<SeoHead title={m['seo.titles.ranking']()} />
-
-<main class="pb-30 bg-light-grey pt-12">
-  <div class="fr-container">
-    <h1 class="fr-h3 mb-10!">{m['ranking.title']()}</h1>
-
-    <p>
-      {@html sanitize(
-        m['ranking.desc']({
-          linkProps: propsToAttrs({ href: '#FIXME', class: 'text-primary!' })
-        })
-      )}
-    </p>
-    <Table
-      {cols}
-      rows={sortedRows}
-      bind:orderingCol
-      caption={m['ranking.title']()}
-      hideCaption
-      class="mt-15!"
-    >
-      {#snippet header()}
-        <div class="flex flex-wrap items-center gap-5">
-          <div class="flex gap-5">
-            <div class="cg-border rounded-sm! bg-white px-4 py-2">
-              <strong>{m['ranking.table.totalModels']()}</strong>
-              <span class="text-grey">{rows.length}</span>
-            </div>
-
-            <div class="cg-border rounded-sm! bg-white px-4 py-2">
-              <strong>{m['ranking.table.totalVotes']()}</strong>
-              <span class="text-grey">{totalVotes}</span>
-            </div>
-          </div>
-
-          <p class="fr-table__detail mb-0!">
-            {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
-          </p>
+<Table
+  {cols}
+  rows={sortedRows}
+  bind:orderingCol
+  caption={m['ranking.title']()}
+  hideCaption
+  class="mt-15!"
+>
+  {#snippet header()}
+    <div class="flex flex-wrap items-center gap-5">
+      <div class="flex gap-5">
+        <div class="cg-border rounded-sm! bg-white px-4 py-2">
+          <strong>{m['ranking.table.totalModels']()}</strong>
+          <span class="text-grey">{rows.length}</span>
         </div>
 
-        <Search id="model-search" bind:value={search} label={m['ranking.table.search']()} />
-      {/snippet}
+        <div class="cg-border rounded-sm! bg-white px-4 py-2">
+          <strong>{m['ranking.table.totalVotes']()}</strong>
+          <span class="text-grey">{totalVotes}</span>
+        </div>
+      </div>
 
-      {#snippet cell(model, col)}
-        {#if col.id === 'rank'}
-          <span class="font-medium">{model.rank}</span>
-        {:else if col.id === 'name'}
-          <img
-            src="/orgs/ai/{model.icon_path}"
-            alt={model.organisation}
-            width="20"
-            class="me-1 inline-block"
-          />
-          {model.id}
-        {:else if col.id === 'size'}
-          <strong>{model.friendly_size}</strong> -
-          {#if model.distribution === 'api-only'}
-            <span class="text-xs">(est.)</span>
-          {:else}
-            {model.params} Mds
-          {/if}
-        {:else if col.id === 'release'}
-          {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}
-        {:else if col.id === 'organisation'}
-          {model.organisation}
-        {:else if col.id === 'license'}
-          <Badge {...model.badges.license} size="xs" noTooltip />
-        {:else if model[col.id] === undefined}
-          <span class="text-xs">{m['words.NA']()}</span>
-        {:else if col.id === 'elo'}
-          <div
-            class="cg-border text-info rounded-sm! relative max-w-[100px]"
-            style="--range-width: {model.eloRangeWidth}%"
-          >
-            <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
-            <span class="z-1 relative p-1 text-xs font-bold">{model.elo}</span>
-          </div>
-        {:else if col.id === 'trust_range'}
-          +{model.trust_range![0]}/-{model.trust_range![1]}
-        {:else if col.id === 'consumption_wh'}
-          {model.consumption_wh} Wh
-          <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-            <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
-          </div>
-        {:else}
-          {model[col.id]}
-        {/if}
-      {/snippet}
-    </Table>
-  </div>
-</main>
+      <p class="fr-table__detail mb-0!">
+        {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
+      </p>
+    </div>
+
+    <Search id="model-search" bind:value={search} label={m['ranking.table.search']()} />
+  {/snippet}
+
+  {#snippet cell(model, col)}
+    {#if col.id === 'rank'}
+      <span class="font-medium">{model.rank}</span>
+    {:else if col.id === 'name'}
+      <img
+        src="/orgs/ai/{model.icon_path}"
+        alt={model.organisation}
+        width="20"
+        class="me-1 inline-block"
+      />
+      {model.id}
+    {:else if col.id === 'size'}
+      <strong>{model.friendly_size}</strong> -
+      {#if model.distribution === 'api-only'}
+        <span class="text-xs">(est.)</span>
+      {:else}
+        {model.params} Mds
+      {/if}
+    {:else if col.id === 'release'}
+      {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}
+    {:else if col.id === 'organisation'}
+      {model.organisation}
+    {:else if col.id === 'license'}
+      <Badge {...model.badges.license} size="xs" noTooltip />
+    {:else if model[col.id] === undefined}
+      <span class="text-xs">{m['words.NA']()}</span>
+    {:else if col.id === 'elo'}
+      <div
+        class="cg-border text-info rounded-sm! relative max-w-[100px]"
+        style="--range-width: {model.eloRangeWidth}%"
+      >
+        <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
+        <span class="z-1 relative p-1 text-xs font-bold">{model.elo}</span>
+      </div>
+    {:else if col.id === 'trust_range'}
+      +{model.trust_range![0]}/-{model.trust_range![1]}
+    {:else if col.id === 'consumption_wh'}
+      {model.consumption_wh} Wh
+      <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
+        <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
+      </div>
+    {:else}
+      {model[col.id]}
+    {/if}
+  {/snippet}
+</Table>
