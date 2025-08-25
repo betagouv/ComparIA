@@ -44,20 +44,32 @@
   }
 
   const rows = $derived.by(() => {
-    return modelsData
-      .sort((a, b) => sortIfDefined(a, b, 'elo'))
-      .map((model, i) => {
-        const [month, year] = model.release_date.split('/')
+    const models = modelsData.sort((a, b) => sortIfDefined(a, b, 'elo'))
+    const highestElo = models[0].elo!
+    const lowestElo = models.reduce((a, m) => (m?.elo && m.elo < a ? m.elo : a), highestElo)
+    const highestConso = models.reduce(
+      (a, m) => (m?.consumption_wh && m.consumption_wh > a ? m.consumption_wh : a),
+      0
+    )
 
-        return {
-          ...model,
-          release_date: new Date([month, '01', year].join('/')),
-          rank: i + 1,
-          search: (['id', 'simple_name', 'organisation'] as const)
-            .map((key) => model[key].toLowerCase())
-            .join(' ')
-        }
-      })
+    return models.map((model, i) => {
+      const [month, year] = model.release_date.split('/')
+
+      return {
+        ...model,
+        release_date: new Date([month, '01', year].join('/')),
+        rank: i + 1,
+        eloRangeWidth: model.elo
+          ? Math.ceil(((model.elo - lowestElo) / (highestElo - lowestElo)) * 100)
+          : null,
+        consoRangeWidth: model.consumption_wh
+          ? Math.ceil((model.consumption_wh / highestConso) * 100)
+          : null,
+        search: (['id', 'simple_name', 'organisation'] as const)
+          .map((key) => model[key].toLowerCase())
+          .join(' ')
+      }
+    })
   })
 
   const sortedRows = $derived.by(() => {
@@ -155,10 +167,21 @@
           <Badge {...model.badges.license} size="xs" noTooltip />
         {:else if model[col.id] === undefined}
           <span class="text-xs">{m['words.NA']()}</span>
+        {:else if col.id === 'elo'}
+          <div
+            class="cg-border text-info rounded-sm! relative max-w-[100px]"
+            style="--range-width: {model.eloRangeWidth}%"
+          >
+            <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
+            <span class="z-1 relative p-1 text-xs font-bold">{model.elo}</span>
+          </div>
         {:else if col.id === 'trust_range'}
           +{model.trust_range![0]}/-{model.trust_range![0]}
         {:else if col.id === 'consumption_wh'}
           {model.consumption_wh} Wh
+          <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
+            <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
+          </div>
         {:else}
           {model[col.id]}
         {/if}
