@@ -226,7 +226,7 @@ all_models_extra_info_toml = json5.loads(
 models_extra_info = [
     all_models_extra_info_toml[model]
     for model in models
-    if model is not None
+    if model is not None and all_models_extra_info_toml.get(model)
 ]
 
 models_extra_info.sort(key=lambda x: x["simple_name"])
