@@ -320,6 +320,10 @@
     "title": "Classement des modèles",
     "desc": "Découvrez comment les meilleurs modèles d’IA se positionnent à travers leur <strong>score de satisfaction</strong> issus des votes de la communauté compar:IA. Pour en savoir plus, consultez <a {linkProps}>notre méthodologie de classement</a>.",
     "table": {
+      "search": "Rechercher un modèle",
+      "lastUpdate": "Mise à jour le {date}",
+      "totalModels": "Total modèles :",
+      "totalVotes": "Total votes :",
       "data": {
         "cols": {
           "rank": "Rang",
