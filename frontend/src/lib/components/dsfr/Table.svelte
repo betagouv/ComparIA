@@ -30,6 +30,7 @@
     hideCaption = false,
     cell,
     header,
+    class: classes,
     ...props
   }: TableProps = $props()
 
@@ -47,9 +48,9 @@
   const maxRowsOptions = [10, 25, 50].map((value) => ({ value, label: `${value} lignes par page` }))
 </script>
 
-<div class={['fr-table', { 'fr-table--no-caption': hideCaption }]}>
+<div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
   {#if header}
-    <div class="fr-table__header">
+    <div class="fr-table__header mb-4 flex flex-col gap-5 md:flex-row">
       {@render header()}
     </div>
   {/if}
