@@ -13,7 +13,11 @@
       title: 'Intervalles de confiance sur le score du modèle',
       filename: 'elo_random_scores_confidence.json'
     },
-    { id: 'minwin', title: 'Taux de victoire moyen par rapport à tous les autres modèles' },
+    {
+      id: 'meanwin',
+      title: 'Taux de victoire moyen par rapport à tous les autres modèles',
+      filename: 'elo_random_winrate_plot.json'
+    },
     {
       id: 'winrate',
       title: 'Victoires du modèle A pour toutes les batailles contre B',
@@ -39,7 +43,7 @@
       return Promise.all(
         schemas.map((schema, i) => {
           if (!schema) return
-          vegaEmbed(`#${graphs[i].id}`, schema, { mode: 'vega-lite' })
+          return vegaEmbed(`#${graphs[i].id}`, schema, { mode: 'vega-lite' })
         })
       )
     })
@@ -72,9 +76,9 @@
         <div class="cg-border bg-white px-8 py-10">
           <h2 class="fr-h6 mb-3!">{graph.title}</h2>
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit</p>
-          
+
           <div id={graph.id} class="graph p-0! w-full"></div>
-          
+
           {#if graphLoading}<Pending />{/if}
         </div>
       {/each}
