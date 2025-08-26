@@ -146,8 +146,6 @@
       {/if}
     {:else if col.id === 'release'}
       {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}
-    {:else if col.id === 'organisation'}
-      {model.organisation}
     {:else if col.id === 'license'}
       <Badge {...model.badges.license} size="xs" noTooltip />
     {:else if model[col.id] === undefined}
