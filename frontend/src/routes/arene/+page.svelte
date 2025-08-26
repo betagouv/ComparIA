@@ -1,14 +1,12 @@
 <script lang="ts">
-  import ChatBot from '$lib/ChatBot.svelte'
   import { arena, modeInfos, runChatBots } from '$lib/chatService.svelte'
   import Header from '$lib/components/header/Header.svelte'
   import Icon from '$lib/components/Icon.svelte'
   import SeoHead from '$lib/components/SEOHead.svelte'
   import Tooltip from '$lib/components/Tooltip.svelte'
-  import DropDown from '$lib/DropDown.svelte'
   import { m } from '$lib/i18n/messages'
   import '../../css/custom-arena.css'
-  import WelcomeModal from './WelcomeModal.svelte'
+  import { ViewChat, ViewPrompt, WelcomeModal } from './components'
 
   const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
 
@@ -98,8 +96,8 @@
 
 <main class="relative" style="--second-header-size: {secondHeaderSize}px;">
   {#if arena.currentScreen === 'prompt'}
-    <DropDown onSubmit={runChatBots} />
+    <ViewPrompt onSubmit={runChatBots} />
   {:else}
-    <ChatBot />
+    <ViewChat />
   {/if}
 </main>
