@@ -819,7 +819,7 @@ description = "Très petit modèle multimodal et compact conçu pour fonctionner
 [gpt-5-mini]
 arch = "maybe-moe"
 distribution = "api-only"
-friendly_size = "M"
+friendly_size = "XL"
 icon_path = "openai.svg"
 id = "gpt-5-mini"
 license = "propriétaire OpenAI"
@@ -835,7 +835,7 @@ description = "Le GPT-5 Mini est une version allégée du modèle GPT-5 principa
 [gpt-5-nano]
 arch = "maybe-moe"
 distribution = "api-only"
-friendly_size = "M"
+friendly_size = "L"
 icon_path = "openai.svg"
 id = "gpt-5-nano"
 license = "propriétaire OpenAI"
@@ -852,7 +852,7 @@ description = "Le GPT-5 Nano est la plus petite et la plus rapide version du mod
 arch = "maybe-moe"
 commercial_use = true
 distribution = "open-weights"
-friendly_size = "M"
+friendly_size = "L"
 icon_path = "openai.svg"
 id = "gpt-oss-120b"
 license = "Apache 2.0"
