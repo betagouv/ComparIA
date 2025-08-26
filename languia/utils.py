@@ -6,12 +6,6 @@ import gradio as gr
 
 import logging
 
-import requests
-
-from custom_components.customchatbot.backend.gradio_customchatbot.customchatbot import (
-    ChatMessage,
-)
-
 
 class ContextTooLongError(ValueError):
     def __str__(self):
@@ -475,27 +469,6 @@ def gen_prompt(category):
     # for category in get_categories(prompts_pool):
     # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
     return prompts[np.random.randint(len(prompts))]
-
-
-def refresh_unavailable_models(previous_unavailable_models, controller_url):
-    logger = logging.getLogger("languia")
-    try:
-        response = requests.get(controller_url + "/unavailable_models/", timeout=1)
-    except Exception as e:
-        logger.warning("controller_inaccessible: " + str(e))
-        return previous_unavailable_models
-    # Check if the request was successful
-    if response.status_code == 200:
-        # Parse the JSON response
-        data = response.json()
-        logger.debug("refreshed outage models:" + str(data))
-        return data
-    else:
-        logger.warning(
-            f"Failed to retrieve outage data. Status code: {response.status_code}"
-        )
-        return previous_unavailable_models
-
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
