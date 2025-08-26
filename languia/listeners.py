@@ -814,7 +814,7 @@ setTimeout(() => {
             your_choice_badge = None
 
         chosen_model = get_chosen_model(your_choice_badge)
-        reveal_dict = build_reveal_dict(conv_a_scoped, conv_a_scoped, chosen_model)
+        reveal_dict = build_reveal_dict(conv_a_scoped, conv_b_scoped, chosen_model)
 
         return reveal_dict
 
@@ -1002,7 +1002,7 @@ window.scrollTo({
         )
 
         chosen_model = get_chosen_model(which_model_radio_output)
-        reveal_dict = build_reveal_dict(conv_a_scoped, conv_a_scoped, chosen_model)
+        reveal_dict = build_reveal_dict(conv_a_scoped, conv_b_scoped, chosen_model)
 
         return reveal_dict
 
