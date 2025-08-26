@@ -2,6 +2,7 @@
   import { Icon } from '$components/dsfr'
   import type { Mode, ModeInfos } from '$lib/chatService.svelte'
 
+  // FIXME a11y + css
   // TODO: might need to refacto w/ mapfilter func for only choice + custom_models_selection + models
 
   interface DropDownProps {
@@ -26,7 +27,7 @@
   }
 </script>
 
-<div>
+<div class="flex flex-col gap-3 md:gap-4">
   {#each choices as { value, label, icon, description }, index}
     <!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
     <!-- svelte-ignore a11y-click-events-have-key-events -->
@@ -37,6 +38,7 @@
       tabindex="0"
       role="radio"
       aria-checked={value === mode ? 'true' : 'false'}
+      class="text-dark-grey flex items-center p-4"
       onclick={() => onChange(value)}
       onkeydown={(e) => onKeydown(e, value)}
       aria-controls={value != 'custom' ? 'modal-mode-selection' : ''}
@@ -49,17 +51,13 @@
         aria-checked={value === mode}
         {disabled}
       />
-      <div class="icon">
-        <Icon {icon} class="text-primary" />
-      </div>
-      <div class="description">
-        {#if value != 'custom'}
-          <strong>{label}</strong>&nbsp;: {description}
-        {:else}
-          <strong>{label}</strong>
-          <Icon icon="arrow-right-s-line" size="sm" class="float-right" />
-        {/if}
-      </div>
+      <Icon {icon} class="text-primary me-3" />
+      {#if value != 'custom'}
+        <div><strong>{label}</strong>&nbsp;: {description}</div>
+      {:else}
+        <strong>{label}</strong>
+        <Icon icon="arrow-right-s-line" size="sm" class="ms-auto" />
+      {/if}
     </label>
   {/each}
 </div>
@@ -68,35 +66,18 @@
   label.selected,
   label:active,
   label:focus {
-    outline: 2px solid #6a6af4 !important;
-    /* border: 2px solid var(--blue-france-main-525); */
+    outline: 2px solid var(--blue-france-main-525) !important;
   }
 
   label {
     border-radius: 0.5em;
-    outline: 1px solid #e5e5e5;
-    display: grid;
-    padding: 1em 0.5em;
-    align-items: center;
-    grid-template-columns: auto 1fr;
-    margin: 0.75em 0;
-  }
-
-  label .icon {
-    padding: 0 0.5em 0 0.5em;
+    outline: 1px solid var(--grey-925-125);
+    font-size: 0.875em;
   }
 
   input[type='radio'] {
     position: fixed;
     opacity: 0;
     pointer-events: none;
-  }
-  /* p {
-		color: #666666 !important;
-		font-size: 0.875em !important;
-	} */
-  .description {
-    font-size: 0.875em;
-    color: #3a3a3a;
   }
 </style>
