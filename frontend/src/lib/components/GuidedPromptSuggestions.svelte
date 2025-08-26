@@ -112,7 +112,7 @@
 </script>
 
 <div class="fr-container px-0!">
-  <h4 class="text-dark-grey text-sm! md:text-base! mb-4! md:mb-5!">
+  <h4 class="text-dark-grey text-base! md:text-base! mb-4! md:mb-5!">
     <strong>{m['arenaHome.suggestions.title']()}</strong>
   </h4>
 
@@ -124,10 +124,16 @@
   >
     {#snippet item({ value, label, iconSrc, iconAlt, iaSummitSmallIconSrc, iaSummitTooltip })}
       {#if value === 'iasummit'}
-        <img class="mb-3 hidden md:block" width="110" height="35" src={iconSrc} alt={iconAlt} />
+        <img
+          class="mb-3 hidden md:block dark:invert"
+          width="110"
+          height="35"
+          src={iconSrc}
+          alt={iconAlt}
+        />
         {#if iaSummitSmallIconSrc}
           <img
-            class="me-2 inline-block md:hidden"
+            class="me-2 inline-block md:hidden dark:invert"
             width="24"
             height="24"
             src={iaSummitSmallIconSrc}
@@ -160,8 +166,23 @@
   {/if}
 </div>
 
-<style>
+<style lang="postcss">
   :global(.iasummit) {
-    background: linear-gradient(45deg, #e8e9fe 0%, #f2f5fe 36%, #fff 100%) !important;
+    /* background: linear-gradient(45deg, #e8e9fe 0%, #f2f5fe 36%, #fff 100%) !important; */
+    background: linear-gradient(
+      57deg,
+      rgba(232, 233, 254, 0.6) 8.29%,
+      rgba(242, 245, 254, 0.3) 36.19%,
+      #fff 96.89%
+    ) !important;
+
+    :root[data-fr-theme='dark'] & {
+      background: linear-gradient(
+        57deg,
+        rgba(58, 58, 63, 0.6) 8.29%,
+        rgba(65, 66, 68, 0.3) 36.19%,
+        rgb(22, 22, 22) 96.89%
+      ) !important;
+    }
   }
 </style>
