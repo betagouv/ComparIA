@@ -133,9 +133,8 @@
         />
         {#if iaSummitSmallIconSrc}
           <img
-            class="me-2 inline-block md:hidden dark:invert"
+            class="me-2 inline-block md:hidden dark:invert object-contain"
             width="24"
-            height="24"
             src={iaSummitSmallIconSrc}
             alt={iconAlt}
           />

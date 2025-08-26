@@ -40,7 +40,10 @@
 
     <label
       for="{id}-{option.value}"
-      class={['cg-border rounded-sm! text-dark-grey! px-4! py-3! md:py-5! bg-white', option.class]}
+      class={[
+        'cg-border rounded-sm! text-dark-grey! px-4! py-3! md:py-5! flex items-center bg-white md:flex-col md:items-start',
+        option.class
+      ]}
     >
       {#if item}
         {@render item(option)}
