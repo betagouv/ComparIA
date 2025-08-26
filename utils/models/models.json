@@ -196,6 +196,7 @@
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
       {
+        "id": "gemini-2.5-flash",
         "simple_name": "Gemini 2.5 Flash",
         "license": "proprietary",
         "release_date": "06/2025",
@@ -206,6 +207,7 @@
         "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale."
       },
       {
+        "id": "gemma-3n-e4b-it",
         "simple_name": "Gemma 3n 4B",
         "license": "Gemma",
         "release_date": "05/2025",
@@ -297,6 +299,7 @@
         "fyi": "Ce modèle a été entraîné sur un très grand volume de données : 36 billions de jetons, en 119 langues. L'entraînement s’est fait en trois étapes. Le modèle a d'abord appris à partir de 30 billions de jetons avec un contexte de 4 000 jetons. Ensuite, 5 billions de jetons ont été ajoutés pour renforcer ses connaissances factuelles. Enfin, il a été exposé à un corpus spécifique pour l’aider à mieux gérer les très longs textes. Résultat : il dispose en fin d'entrainement d'une fenêtre de contexte de 128 000 jetons, ce qui est utile pour lire et analyser de longs documents."
       },
       {
+        "id": "qwen3-30b-a3b",
         "simple_name": "Qwen 3 30B A3B",
         "license": "Apache 2.0",
         "release_date": "05/2025",
@@ -504,6 +507,7 @@
         "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement."
       },
       {
+        "id": "magistral-small-2506",
         "simple_name": "Magistral Small",
         "license": "Apache 2.0",
         "release_date": "06/2025",

@@ -163,13 +163,13 @@
     "simple_name": "DeepSeek V3",
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324"
   },
-  "gemini-2-5-flash": {
+  "gemini-2.5-flash": {
     "arch": "moe",
     "commercial_use": null,
     "distribution": "api-only",
     "friendly_size": "L",
     "icon_path": "google.png",
-    "id": "gemini-2-5-flash",
+    "id": "gemini-2.5-flash",
     "license": "proprietary",
     "organisation": "Google",
     "params": 70,
@@ -251,13 +251,13 @@
     ],
     "url": "https://huggingface.co/google/gemma-3-4b-it"
   },
-  "gemma-3n-4b": {
+  "gemma-3n-e4b-it": {
     "arch": "matformer",
     "commercial_use": true,
     "distribution": "open-weights",
     "friendly_size": "XS",
     "icon_path": "google.png",
-    "id": "gemma-3n-4b",
+    "id": "gemma-3n-e4b-it",
     "license": "Gemma",
     "organisation": "Google",
     "params": 4,
@@ -568,13 +568,13 @@
     "reuse": false,
     "simple_name": "Magistral Medium"
   },
-  "magistral-small": {
+  "magistral-small-2506": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
     "friendly_size": "M",
     "icon_path": "mistral.png",
-    "id": "magistral-small",
+    "id": "magistral-small-2506",
     "license": "Apache 2.0",
     "organisation": "Mistral AI",
     "params": 24,
@@ -738,13 +738,13 @@
     "reuse": false,
     "simple_name": "Qwen 2.5 max 0125"
   },
-  "qwen-3-30b-a3b": {
+  "qwen3-30b-a3b": {
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
     "friendly_size": "M",
     "icon_path": "qwen.png",
-    "id": "qwen-3-30b-a3b",
+    "id": "qwen3-30b-a3b",
     "license": "Apache 2.0",
     "organisation": "Alibaba",
     "params": 30,
