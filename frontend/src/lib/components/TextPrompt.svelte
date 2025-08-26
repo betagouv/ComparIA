@@ -54,14 +54,14 @@
 </script>
 
 <div class="fr-input-group {classNames}">
-  <label for={id} class={['fr-label', {'hidden!': hideLabel}]}>{label}</label>
+  <label for={id} class={['fr-label', { 'hidden!': hideLabel }]}>{label}</label>
   <textarea
     {id}
     data-testid="textbox"
     bind:value
     bind:this={el}
     {rows}
-    class="fr-input scroll-hide"
+    class="fr-input cg-border rounded-t-md! rounded-b-none! bg-white! md:min-h-10!"
     {...nativeTextAreaProps}
     {onkeypress}
     {@attach updateAuto}
@@ -69,20 +69,8 @@
   ></textarea>
 </div>
 
-<!--  -->
-<style>
-  textarea.fr-input {
-    background-color: var(--background-default-grey);
-    border-radius: 0.5em 0.5em 0 0;
-    border: 1px solid var(--border-default-grey);
-    box-shadow: inset 0 -2px 0 0 var(--blue-france-main-525);
-    /* outline: none !important;
-    outline-offset: 0 !important; */
-  }
-
-  @media (min-width: 48em) {
-    textarea.fr-input {
-      min-height: 2.5rem !important;
-    }
+<style lang="postcss">
+  .fr-input {
+    --border-plain-grey: var(--blue-france-main-525);
   }
 </style>
