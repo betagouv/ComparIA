@@ -89,7 +89,7 @@
                 "Mistral AI Non-Production": "Denne licens giver dig ret til at dele og tilpasse indholdet, så længe du angiver forfatteren, men forbyder enhver kommerciel brug. Den giver fleksibilitet til ikke-kommerciel brug, samtidig med at forfatterens rettigheder beskyttes."
             }
         },
-        "release": "Udgivet {dato}",
+        "release": "Udgivet {date}",
         "size": {
             "estimated": "Estimeret størrelse ({size})",
             "title": "Størrelse",
@@ -788,7 +788,7 @@
         },
         "unexpected": {
             "title": "Uventet fejl",
-            "error": "Fejl {kode}",
+            "error": "Fejl {code}",
             "sorry": "Vi beklager, der er et problem med tjenesten, vi arbejder på at løse det så hurtigt som muligt.",
             "desc": "Prøv at opdatere siden eller prøv igen senere."
         }
