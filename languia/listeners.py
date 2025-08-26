@@ -34,17 +34,15 @@ import sentry_sdk
 
 import copy
 
-import openai
+import requests
+
 
 from languia.utils import (
     AppState,
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
-    # refresh_unavailable_models,
-    gen_prompt,
     to_threeway_chatbot,
-    EmptyResponseError,
     second_header_html,
 )
 
@@ -55,8 +53,6 @@ from languia.logs import vote_last_response, sync_reactions, record_conversation
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
 )
-
-# from fastchat.model.model_adapter import get_conversation_template
 
 from languia.conversation import bot_response, Conversation
 
@@ -80,10 +76,7 @@ def register_listeners():
     # Step 0
 
     def enter_arena(request: gr.Request):
-        # Refresh on picking model? Do it async? Should do it globally and async...
-        # config.unavailable_models = refresh_unavailable_models(
-        #     config.unavailable_models, controller_url=config.controller_url
-        # )
+
 
         # TODO: actually check for it
         # tos_accepted = request...
@@ -139,11 +132,7 @@ document.getElementById("fr-modal-welcome-close").blur();
         request: gr.Request,
         # event: gr.EventData,
     ):
-        # Already refreshed in enter_arena, but not refreshed if add_first_text accessed directly
-        # TODO: replace outage detection with disabling models + use litellm w/ routing and outage detection
-        # config.unavailable_models = refresh_unavailable_models(
-        #     config.unavailable_models, controller_url=config.controller_url
-        # )
+
         didnt_reset_prompt = True
         text = model_dropdown_scoped.get("prompt_value", "")
         mode = model_dropdown_scoped.get("mode", "random")
@@ -294,14 +283,19 @@ document.getElementById("fr-modal-welcome-close").blur();
             error_with_model = conversations[i].model_name
 
             if os.getenv("SENTRY_DSN"):
+                # TODO: only capture model name to sort more easily in sentry
 
-                # with sentry_sdk.configure_scope() as scope:
-                # Set the fingerprint based on the message content
-                # scope.fingerprint = [e]
                 sentry_sdk.capture_exception(e)
 
+            error_reason = f"error_first_text: {error_with_model}, {error_with_endpoint}, {e}"
+            print(error_reason)
+            try:
+                requests.post(f"{config.controller_url}/models/{error_with_model}/error", json={"error": error_reason}, timeout=1)
+            except:
+                pass
+
             logger.exception(
-                f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
+                error_reason,
                 extra={
                     "request": request,
                     "error": str(e),
@@ -323,14 +317,6 @@ document.getElementById("fr-modal-welcome-close").blur();
                     original_user_prompt = conv_error.messages[0].content
                 else:
                     original_user_prompt = conv_error.messages[1].content
-
-                # config.unavailable_models = refresh_unavailable_models(
-                #     config.unavailable_models, controller_url=config.controller_url
-                # )
-
-                # logger.debug(
-                #     "refreshed outage models:" + str(config.unavailable_models)
-                # )  # Simpler to repick 2 models
 
                 if app_state_scoped.mode == "custom":
                     gr.Warning(
@@ -547,14 +533,17 @@ document.getElementById("fr-modal-welcome-close").blur();
             error_with_model = conversations[i].model_name
 
             if os.getenv("SENTRY_DSN"):
-
-                # with sentry_sdk.configure_scope() as scope:
-                # Set the fingerprint based on the message content
-                # scope.fingerprint = [e]
+                # TODO: only capture model name to sort more easily in sentry
                 sentry_sdk.capture_exception(e)
 
+            error_reason = f"error_during_convo: {error_with_model}, {error_with_endpoint}, {e}"
+            try:
+                requests.post(f"{config.controller_url}/models/{error_with_model}/error", json={"error": error_reason}, timeout=1)
+            except:
+                pass
+
             logger.exception(
-                f"erreur_modele: {error_with_model}, {error_with_endpoint}, '{e}'\n{traceback.format_exc()}",
+                error_reason,
                 extra={
                     "request": request,
                     "error": str(e),
