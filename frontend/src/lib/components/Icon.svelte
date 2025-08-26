@@ -1,22 +1,18 @@
-<script lang="ts" generics="Block extends boolean = false">
+<script lang="ts">
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   type IconProps = {
     icon: string
     size?: 'xs' | 'sm' | 'md' | 'lg'
-    block?: Block
-  } & SvelteHTMLElements[Block extends false ? 'span' : 'div']
+    block?: boolean
+  } & SvelteHTMLElements['span']
 
-  let { icon, size = 'md', block = false as Block, ...props }: IconProps = $props()
-  const classes = $derived(`fr-icon-${icon} fr-icon--${size} ${props.class ?? ''}`)
+  let { icon, size = 'md', block = false, ...props }: IconProps = $props()
+  const classes = $derived([`fr-icon-${icon} fr-icon--${size}`, { block: block }, props.class])
   // FIXME check if aria-label else set aria-hidden="true"
 </script>
 
-{#if block}
-  <div {...props as SvelteHTMLElements['div']} class={classes}></div>
-{:else}
-  <span {...props as SvelteHTMLElements['span']} class={classes}></span>
-{/if}
+<span {...props} class={classes}></span>
 
 <style>
   /* set icon-size on element itself for div to set its size in block mode */
@@ -41,12 +37,12 @@
     --icon-size: 2rem;
   }
 
-  div {
+  .block {
     height: var(--icon-size);
     width: var(--icon-size);
   }
-  div::before,
-  div::after {
+  .block,
+  .block {
     vertical-align: top;
   }
 </style>
