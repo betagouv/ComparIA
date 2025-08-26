@@ -93,7 +93,7 @@
   </div>
 {/if}
 
-<main class="relative" style="--second-header-size: {secondHeaderSize}px;">
+<main class="bg-very-light-grey relative" style="--second-header-size: {secondHeaderSize}px;">
   {#if arena.currentScreen === 'prompt'}
     <ViewPrompt onSubmit={runChatBots} />
   {:else}

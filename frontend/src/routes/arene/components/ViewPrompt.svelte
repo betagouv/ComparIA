@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Button } from '$components/dsfr'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
@@ -109,12 +110,12 @@
   }
 </script>
 
-<div id="prompt-area" class="fr-container">
-  <h3 class="text-grey-200 fr-mt-md-12w fr-mb-md-7w fr-my-5w text-center">
+<div id="prompt-area" class="fr-container py-10 md:py-24">
+  <h3 class="mb-0! text-center">
     {m['arenaHome.title']()}
   </h3>
-  <div class="grid">
-    <div class="first-textbox fr-mb-3v">
+  <div class="grid gap-3 py-10 md:grid-flow-row-dense md:grid-cols-3 md:pb-20 md:pt-12">
+    <div class="order-1 md:order-none md:col-span-3">
       <TextPrompt
         id="initial-prompt"
         bind:el={promptEl}
@@ -135,152 +136,15 @@
       {disabled}
     />
 
-    <input
+    <Button
       type="submit"
-      class="submit-btn purple-btn btn"
+      text={m['words.send']()}
       disabled={prompt.value == '' || disabled}
+      class="w-full! md:w-auto! order-2 min-w-[130px] place-self-end md:order-none"
       onclick={() => dispatchSubmit()}
-      value={m['words.send']()}
     />
   </div>
-  <div class="my-10 md:my-20">
+  <div class="pb-10">
     <GuidedPromptSuggestions onPromptSelected={handlePromptSelected} />
   </div>
 </div>
-
-<style>
-  .versus {
-    font-size: 1.125rem;
-    margin: 0 5px;
-    line-height: 0 !important;
-  }
-
-  .text-purple {
-    color: #6a6af4;
-  }
-
-  .mode-selection-btn {
-    --hover-tint: transparent;
-    --active-tint: transparent;
-    --focus-tint: transparent;
-    display: flex;
-    width: 100%;
-    border-radius: 0.5em;
-    border: 1px solid #e5e5e5 !important;
-    flex-direction: row;
-    padding: 0 0.5em 0 0.5em;
-    align-items: center;
-    text-align: left;
-    font-weight: 500;
-    font-size: 0.875em;
-    color: #3a3a3a !important;
-    background-color: white !important;
-  }
-
-  .model-selection {
-    align-items: center;
-    width: 100%;
-    --hover-tint: transparent;
-    --active-tint: transparent;
-    --focus-tint: transparent;
-    display: flex;
-    border-radius: 0.5em;
-    border: 1px solid #e5e5e5 !important;
-    flex-direction: row;
-    padding: 0.5em;
-
-    text-align: left;
-    font-weight: 500;
-    font-size: 0.875em !important;
-    color: #3a3a3a !important;
-    background-color: white !important;
-    max-height: 40px;
-  }
-
-  .mode-selection-btn .label {
-    margin-left: 0.5em;
-    flex-grow: 1;
-    font-size: 0.875em;
-  }
-
-  .float-right {
-    float: right;
-  }
-
-  .fr-modal__content {
-    margin-bottom: 1em !important;
-  }
-
-  .fr-btn--close {
-    color: #6a6af4 !important;
-  }
-
-  .fr-btn--close::after {
-    background-color: #6a6af4 !important;
-  }
-
-  h6 {
-    font-size: 1.125em;
-  }
-
-  .column {
-    flex-direction: column;
-  }
-  .grid {
-    display: grid;
-    /* grid-template-columns: 1fr 1fr auto; */
-  }
-  .first-textbox {
-    order: 1;
-  }
-  .mode-selection-btn {
-    order: 0;
-  }
-  .submit-btn {
-    order: 2;
-    width: 100% !important;
-  }
-  /* .fr-modal__content { */
-  .fr-modal__body {
-    overflow-y: scroll;
-  }
-
-  @media (min-width: 48em) {
-    .first-textbox,
-    .mode-selection-btn {
-      order: initial;
-    }
-    .submit-btn {
-      width: 8.25rem !important;
-    }
-    .grid {
-      grid-template-areas: 'text text' 'left right';
-    }
-    .first-textbox {
-      grid-area: text;
-    }
-
-    .selections {
-      grid-area: left;
-      display: flex;
-    }
-    .mode-selection-btn {
-      width: 260px;
-    }
-    .model-selection {
-      width: fit-content;
-    }
-
-    .submit-btn {
-      grid-area: right;
-      justify-self: right;
-    }
-  }
-
-  input[disabled] {
-    cursor: not-allowed;
-    /* background-color: var(--background-disabled-grey);
-		color: var(--text-disabled-grey); */
-    pointer-events: none;
-  }
-</style>
