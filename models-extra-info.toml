@@ -764,12 +764,12 @@ simple_name = "Claude 4 Sonnet"
 excerpt = "Très grand modèle multimodal et multilingue, très puissant en code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale."
 description = "Très grand modèle multimodal et multilingue, très puissant en code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale. Claude 4 Sonnet est une version plus compacte de Claude 4 Opus optimisée pour la vitesse, l’efficacité et l’accessibilité. Il est un peu moins à l’aise sur les tâches qui demandent un raisonnement complexe en plusieurs étapes. En contrepartie, il est nettement moins coûteux, plus rapide, peut générer de plus longs textes et consomme moins d’énergie que Opus.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été surtout entraîné sur des données mathématiques, mais adapté à des cas d’usage réels."
 
-[gemini-2-5-flash]
+["gemini-2.5-flash"]
 arch = "moe"
 distribution = "api-only"
 friendly_size = "L"
 icon_path = "google.png"
-id = "gemini-2-5-flash"
+id = "gemini-2.5-flash"
 license = "propriétaire Gemini"
 organisation = "Google"
 params = 70
@@ -782,13 +782,13 @@ excerpt = "Grand modèle multimodal et multilingue avec deux modalités de répo
 description = "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale. Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale."
       
 
-[gemma-3n-4b]
+[gemma-3n-e4b-it]
 arch = "matformer"
 commercial_use = true
 distribution = "open-weights"
 friendly_size = "XS"
 icon_path = "google.png"
-id = "gemma-3n-4b"
+id = "gemma-3n-e4b-it"
 license = "Gemma"
 organisation = "Google"
 params = 4
@@ -914,14 +914,14 @@ required_ram = 35
 reuse = false
 simple_name = "Magistral Medium"
 
-[magistral-small]
+[magistral-small-2506]
 description = "Modèle de raisonnement de taille moyenne, multimodal et multilingue. Adapté à des tâches nécessitant une analyse approfondie, compréhension de systèmes logiques ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes."
 arch = "dense"
 commercial_use = true
 distribution = "open-weights"
 friendly_size = "M"
 icon_path = "mistral.png"
-id = "magistral-small"
+id = "magistral-small-2506"
 license = "Apache 2.0"
 organisation = "Mistral AI"
 params = 24
@@ -980,13 +980,13 @@ required_ram = 200
 reuse = false
 simple_name = "Qwen 2.5 max 0125"
 
-[qwen-3-30b-a3b]
+[qwen3-30b-a3b]
 arch = "moe"
 commercial_use = true
 distribution = "open-weights"
 friendly_size = "M"
 icon_path = "qwen.png"
-id = "qwen-3-30b-a3b"
+id = "qwen3-30b-a3b"
 license = "Apache 2.0"
 organisation = "Alibaba"
 params = 30
@@ -997,3 +997,8 @@ excerpt = "Modèle de taille moyenne multilingue."
 description = "Ce modèle MoE (Mixture of Experts) se distingue par une configuration de 128 experts au total, avec seulement 8 experts activés par jeton, ce qui permet une inférence plus rapide et plus efficace. Il utilise un système appelé *global-batch* pour optimiser la répartition du travail entre les experts, afin qu'ils soient tous utilisés de manière équilibrée.\n\nContrairement à d'autres modèles comme Qwen 2.5-MoE qui recyclent les mêmes experts à travers plusieurs couches du réseau, Qwen 3 30B A2B attribue des experts uniques à chaque couche. Concrètement, cela signifie que les experts de la première couche ne sont jamais réutilisés dans les couches suivantes - chaque niveau du modèle dispose de son propre ensemble d'experts spécialisés. Cette architecture permet à chaque expert de se concentrer exclusivement sur les tâches spécifiques à sa position dans le réseau neuronal, résultant en une spécialisation plus fine et des performances optimisées pour chaque étape du traitement de l'information."
 reuse = true
 simple_name = "Qwen 3 30B A3B"
+
+# FIXME:
+# [qwen3-235b-a22b-thinking-2507]
+# [kimi-k2]
+# [glm-4.5]
