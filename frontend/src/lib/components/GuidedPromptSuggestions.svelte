@@ -1,18 +1,27 @@
 <script lang="ts">
-  import GuidedCardComponent from '$lib/components/GuidedCard.svelte'
+  import { Button, Icon, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import promptsTable from '$lib/promptsTable'
-  import { createEventDispatcher } from 'svelte'
+  import { selectRandomFromArray, shuffleArray } from '$lib/utils/commons'
+  import type { ClassValue } from 'svelte/elements'
+  import RadioGroupCard from './RadioGroupCard.svelte'
+
+  let {
+    onPromptSelected
+  }: {
+    onPromptSelected: (text: string, selectionStart?: number, selectionEnd?: number) => void
+  } = $props()
 
   // Interface pour les données des cartes, utilisant des props au lieu de HTML brut
   interface GuidedCardData {
     iconSrc: string
     iconAlt: string
-    title: string
+    label: string
     value: string
     isIASummit?: boolean
     iaSummitSmallIconSrc?: string
     iaSummitTooltip?: string
+    class?: ClassValue
   }
 
   const totalGuidedCardsChoices: GuidedCardData[] = [
@@ -26,44 +35,23 @@
     { value: 'recommendations' as const, iconSrc: 'music-2-line' }
   ].map((item) => ({
     ...item,
-    title: m[`arenaHome.suggestions.choices.${item.value}.title`](),
+    label: m[`arenaHome.suggestions.choices.${item.value}.title`](),
     iconAlt: m[`arenaHome.suggestions.choices.${item.value}.iconAlt`]()
   }))
 
   const iaSummitChoice: GuidedCardData = {
     value: 'iasummit',
-    iconSrc: '/iasummit.png', // Updated to use imported variable
+    iconSrc: '/iasummit.png',
     iconAlt: m['arenaHome.suggestions.choices.iasummit.iconAlt'](),
-    title: m['arenaHome.suggestions.choices.iasummit.title'](),
+    label: m['arenaHome.suggestions.choices.iasummit.title'](),
     isIASummit: true,
-    iaSummitSmallIconSrc: '/iasummit-small.png', // Updated to use imported variable
-    iaSummitTooltip: m['arenaHome.suggestions.choices.iasummit.tooltip']()
+    iaSummitSmallIconSrc: '/iasummit-small.png',
+    iaSummitTooltip: m['arenaHome.suggestions.choices.iasummit.tooltip'](),
+    class: 'iasummit'
   }
 
-  let displayedCards: GuidedCardData[] = []
-  const dispatch = createEventDispatcher()
-
-  function shuffleArray<T>(array: T[]): T[] {
-    const newArray = [...array]
-    for (let i = newArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1))
-      ;[newArray[i], newArray[j]] = [newArray[j], newArray[i]]
-    }
-    return newArray
-  }
-
-  // Helper function to select a random item from an array
-  function selectRandomFromArray<T>(array: T[]): T | undefined {
-    if (!array || array.length === 0) {
-      return undefined
-    }
-    return array[Math.floor(Math.random() * array.length)]
-  }
-
-  const shuffled = shuffleArray(totalGuidedCardsChoices)
-  displayedCards = [iaSummitChoice, ...shuffled.slice(0, 3)]
-
-  let currentSelectedCategoryValue: string | null = null
+  const displayedCards = [iaSummitChoice, ...shuffleArray(totalGuidedCardsChoices).slice(0, 3)]
+  let selected = $state<string>()
 
   // Helper function to dispatch prompt with or without selection
   function dispatchPromptWithSelection(promptText: string, origin: string) {
@@ -81,25 +69,25 @@
       console.log(
         `[GuidedPromptSuggestions] ${origin}: dispatching promptselected with selection. Text: "${promptText}", Start: ${selectionStart}, End: ${selectionEnd}`
       )
-      dispatch('promptselected', { text: promptText, selectionStart, selectionEnd })
+      onPromptSelected(promptText, selectionStart, selectionEnd)
     } else {
       console.log(
         `[GuidedPromptSuggestions] ${origin}: dispatching promptselected without selection. Text: "${promptText}"`
       )
-      dispatch('promptselected', { text: promptText })
+      onPromptSelected(promptText)
     }
   }
 
   function shufflePrompts() {
-    if (currentSelectedCategoryValue) {
-      const promptsForCategory = promptsTable[currentSelectedCategoryValue]
+    if (selected) {
+      const promptsForCategory = promptsTable[selected]
       const randomPromptText = selectRandomFromArray(promptsForCategory)
 
       if (randomPromptText) {
         dispatchPromptWithSelection(randomPromptText, 'shufflePrompts')
       } else {
         console.warn(
-          `[GuidedPromptSuggestions] No prompts found for the current category: ${currentSelectedCategoryValue}.`
+          `[GuidedPromptSuggestions] No prompts found for the current category: ${selected}.`
         )
       }
     } else {
@@ -107,10 +95,7 @@
     }
   }
 
-  function handleCardSelect(event: CustomEvent<{ value: string }>) {
-    const categoryValue = event.detail.value
-    currentSelectedCategoryValue = categoryValue
-
+  function handleCardSelect(categoryValue: string) {
     const promptsForCategory = promptsTable[categoryValue]
     const randomPromptText = selectRandomFromArray(promptsForCategory)
 
@@ -121,71 +106,63 @@
       console.warn(
         `[GuidedPromptSuggestions] No prompts found for category: ${categoryValue}. Using fallback: "${fallbackText}"`
       )
-      dispatch('promptselected', { text: fallbackText }) // No selection for fallback
+      onPromptSelected(fallbackText) // No selection for fallback
     }
   }
 </script>
 
-<div class="fr-container fr-px-0">
-  <h4 class="text-grey-200 fr-text--md fr-mt-md-5w fr-mt-5v fr-mb-3v fr-pb-0 fr-px-0">
+<div class="fr-container px-0!">
+  <h4 class="text-dark-grey text-sm! md:text-base! mb-4! md:mb-5!">
     <strong>{m['arenaHome.suggestions.title']()}</strong>
   </h4>
 
-  <div class="fr-grid-row fr-grid-row--gutters">
-    {#each displayedCards as card (card.value)}
-      <div class="fr-col-12 fr-col-md-6 fr-col-lg-3 fr-mb-2w">
-        <GuidedCardComponent
-          selected={currentSelectedCategoryValue == card.value}
-          iconSrc={card.iconSrc}
-          iconAlt={card.iconAlt}
-          title={card.title}
-          value={card.value}
-          isIASummit={card.isIASummit}
-          iaSummitSmallIconSrc={card.iaSummitSmallIconSrc}
-          iaSummitTooltip={card.iaSummitTooltip}
-          on:select={handleCardSelect}
-        />
-      </div>
-    {/each}
-  </div>
+  <RadioGroupCard
+    id="guided-cards"
+    bind:value={selected}
+    options={displayedCards}
+    onChange={handleCardSelect}
+  >
+    {#snippet item({ value, label, iconSrc, iconAlt, iaSummitSmallIconSrc, iaSummitTooltip })}
+      {selected === value}
+      {#if value === 'iasummit'}
+        <img class="mb-3 hidden md:block" width="110" height="35" src={iconSrc} alt={iconAlt} />
+        {#if iaSummitSmallIconSrc}
+          <img
+            class="me-2 inline-block md:hidden"
+            width="24"
+            height="24"
+            src={iaSummitSmallIconSrc}
+            alt={iconAlt}
+          />
+        {/if}
+        <span>
+          {label}
+          {#if iaSummitTooltip}
+            <Tooltip id="iasummit-tooltip-{value}" text={iaSummitTooltip} />
+          {/if}
+        </span>
+      {:else}
+        <Icon icon={iconSrc} aria-label={iconAlt} class="text-primary me-2 md:mb-4 md:block" />
+        <span>{label}</span>
+      {/if}
+    {/snippet}
+  </RadioGroupCard>
 
-  {#if currentSelectedCategoryValue}
-    <div class="text-center">
-      <button
-        class="fr-btn fr-icon-shuffle fr-btn--icon-left fr-btn--tertiary mobile-w-full fr-mt-2w"
-        on:click={shufflePrompts}
-      >
-        {m['arenaHome.suggestions.generateAnother']()}
-      </button>
+  {#if selected}
+    <div class="mt-4 text-center md:mt-5">
+      <Button
+        icon="shuffle"
+        variant="secondary"
+        text={m['arenaHome.suggestions.generateAnother']()}
+        class="w-full! md:w-auto!"
+        onclick={shufflePrompts}
+      />
     </div>
   {/if}
 </div>
 
 <style>
-  .text-grey-200 {
-    color: var(--text-mention-grey); /* Utiliser une variable DSFR si disponible */
+  :global(.iasummit) {
+    background: linear-gradient(45deg, #e8e9fe 0%, #f2f5fe 36%, #fff 100%) !important;
   }
-
-  /* .mobile-flex {
-        display: flex;
-        align-items: center;
-    }
-
-    .mobile-flex img {
-        margin-bottom: 0; 
-    } */
-
-  /* .grid {
-		display: grid;
-		grid-template-columns: repeat(var(--min-columns), 1fr);
-		gap: 0.625rem; 
-		padding: 0.75rem; 
-		margin: 0.75rem; 
-	}
-	@media (min-width: 48em) {
-		.grid {
-			gap: 1.5rem; 
-			grid-template-columns: repeat(var(--columns), 1fr);
-		}
-	} */
 </style>

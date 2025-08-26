@@ -51,3 +51,20 @@ export function copyToClipboard(value: string): Promise<void> {
     })
   }
 }
+
+export function shuffleArray<T>(array: T[]): T[] {
+  const newArray = [...array]
+  for (let i = newArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[newArray[i], newArray[j]] = [newArray[j], newArray[i]]
+  }
+  return newArray
+}
+
+// Helper function to select a random item from an array
+export function selectRandomFromArray<T>(array: T[]): T | undefined {
+  if (!array || array.length === 0) {
+    return undefined
+  }
+  return array[Math.floor(Math.random() * array.length)]
+}

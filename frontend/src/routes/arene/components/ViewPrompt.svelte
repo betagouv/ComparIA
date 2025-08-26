@@ -102,28 +102,21 @@
   }
 
   function handlePromptSelected(
-    event: CustomEvent<{
-      text: string
-      selectionStart?: number
-      selectionEnd?: number
-    }>
+    text: string,
+    selectionStart?: number,
+    selectionEnd?: number
   ): void {
-    prompt.value = event.detail.text
+    prompt.value = text
     console.log(
-      `[Index] handlePromptSelected: Received promptselected. Text: "${prompt.value}", Start: ${event.detail.selectionStart}, End: ${event.detail.selectionEnd}`
+      `[Index] handlePromptSelected: Received promptselected. Text: "${prompt.value}", Start: ${selectionStart}, End: ${selectionEnd}`
     )
-    if (
-      promptEl &&
-      event.detail.selectionStart !== undefined &&
-      event.detail.selectionEnd !== undefined
-    ) {
-      const sStart = event.detail.selectionStart
-      const sEnd = event.detail.selectionEnd
-
+    if (promptEl && selectionStart !== undefined && selectionEnd !== undefined) {
       const performSelection = () => {
         if (selectPartialText && typeof selectPartialText === 'function') {
-          console.log(`[Index] Performing selection. Start: ${sStart}, End: ${sEnd}`)
-          selectPartialText(sStart, sEnd)
+          console.log(
+            `[Index] Performing selection. Start: ${selectionStart}, End: ${selectionEnd}`
+          )
+          selectPartialText(selectionStart, selectionEnd)
         } else {
           console.warn(
             `[Index] Textbox element or selectPartialText method not available when trying to perform selection.`
@@ -151,7 +144,7 @@
       // No valid selection range provided
       console.log(
         '[Index] handlePromptSelected: No specific selection range provided, or promptEl not ready. No text will be selected.',
-        event.detail
+        { text, selectionStart, selectionEnd }
       )
     }
     // Optionnellement, si on veut soumettre directement après sélection d'un prompt suggéré:
