@@ -377,7 +377,7 @@
           </p>
         </Accordion>
       </AccordionGroup>
-    {:else if id === 'datasets'}
+    {:else if id === 'i18n'}
       <AccordionGroup>
         <Accordion
           id={`${id}-1`}
