@@ -753,7 +753,7 @@ distribution = "api-only"
 friendly_size = "XL"
 icon_path = "anthropic.png"
 id = "claude-4-sonnet"
-license = "proprietary"
+license = "propriétaire Anthropic"
 organisation = "Anthropic"
 params = 200
 reasoning = false
@@ -761,6 +761,8 @@ release_date = "05/2025"
 required_ram = 200
 reuse = false
 simple_name = "Claude 4 Sonnet"
+excerpt = "Très grand modèle multimodal et multilingue, très puissant en code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale."
+description = "Très grand modèle multimodal et multilingue, très puissant en code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale. Claude 4 Sonnet est une version plus compacte de Claude 4 Opus optimisée pour la vitesse, l’efficacité et l’accessibilité. Il est un peu moins à l’aise sur les tâches qui demandent un raisonnement complexe en plusieurs étapes. En contrepartie, il est nettement moins coûteux, plus rapide, peut générer de plus longs textes et consomme moins d’énergie que Opus.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été surtout entraîné sur des données mathématiques, mais adapté à des cas d’usage réels."
 
 [gemini-2-5-flash]
 arch = "moe"
@@ -768,7 +770,7 @@ distribution = "api-only"
 friendly_size = "L"
 icon_path = "google.png"
 id = "gemini-2-5-flash"
-license = "proprietary"
+license = "propriétaire Gemini"
 organisation = "Google"
 params = 70
 reasoning = false
@@ -776,6 +778,9 @@ release_date = "06/2025"
 required_ram = 70
 reuse = false
 simple_name = "Gemini 2.5 Flash"
+excerpt = "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale."
+description = "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale. Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale."
+      
 
 [gemma-3n-4b]
 arch = "matformer"
@@ -792,21 +797,23 @@ release_date = "05/2025"
 required_ram = 4
 reuse = true
 simple_name = "Gemma 3n 4B"
+excerpt = "Très petit modèle multimodal et compact conçu pour fonctionner localement sur un ordinateur ou un smartphone, sans recours à un serveur - il est capable d’adapter sa puissance selon la capacité de la capacité et le besoin."
+description = "Très petit modèle multimodal et compact conçu pour fonctionner localement sur un ordinateur ou un smartphone, sans recours à un serveur - il est capable d’adapter sa puissance selon la capacité de la capacité et le besoin. Ce modèle peut traiter du texte, des images et de l’audio. Il repose sur l’architecture MatFormer et un système de cache PLE (per-layer embeddings), qui active uniquement les paramètres utiles selon la tâche, s'adaptant à la capacité des machines sur lesquelles fonctionne le modèle."
 
-[gpt-5]
-arch = "maybe-moe"
-distribution = "api-only"
-friendly_size = "M"
-icon_path = "openai.svg"
-id = "gpt-5"
-license = "proprietary"
-organisation = "OpenAI"
-params = 35
-reasoning = false
-release_date = "08/2025"
-required_ram = 35
-reuse = false
-simple_name = "GPT 5"
+# [gpt-5]
+# arch = "maybe-moe"
+# distribution = "api-only"
+# friendly_size = "M"
+# icon_path = "openai.svg"
+# id = "gpt-5"
+# license = "propriétaire OpenAI"
+# organisation = "OpenAI"
+# params = 35
+# reasoning = false
+# release_date = "08/2025"
+# required_ram = 35
+# reuse = false
+# simple_name = "GPT 5"
 
 [gpt-5-mini]
 arch = "maybe-moe"
@@ -814,7 +821,7 @@ distribution = "api-only"
 friendly_size = "M"
 icon_path = "openai.svg"
 id = "gpt-5-mini"
-license = "proprietary"
+license = "propriétaire OpenAI"
 organisation = "OpenAI"
 params = 35
 reasoning = false
@@ -822,6 +829,7 @@ release_date = "08/2025"
 required_ram = 35
 reuse = false
 simple_name = "GPT 5 Mini"
+description = "Le GPT-5 Mini est une version allégée du modèle GPT-5 principal. Il est conçu pour être utilisé dans des environnements où il est nécessaire de limiter les coûts, par exemple à grande échelle. Son modèle de raisonnement est presque aussi performant que celui du modèle principal (`gpt-5-thinking`) malgré sa taille plus petite. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois."
 
 [gpt-5-nano]
 arch = "maybe-moe"
@@ -829,7 +837,7 @@ distribution = "api-only"
 friendly_size = "M"
 icon_path = "openai.svg"
 id = "gpt-5-nano"
-license = "proprietary"
+license = "propriétaire OpenAI"
 organisation = "OpenAI"
 params = 35
 reasoning = false
@@ -837,6 +845,7 @@ release_date = "04/2025"
 required_ram = 35
 reuse = false
 simple_name = "GPT 5 Nano"
+description = "Le GPT-5 Nano est la plus petite et la plus rapide version du modèle de raisonnement GPT-5. Il est conçu pour des contextes où une latence ou un coût ultra-faible est nécessaire. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois."
 
 [gpt-oss-120b]
 arch = "maybe-moe"
@@ -853,6 +862,7 @@ release_date = "08/2025"
 required_ram = 35
 reuse = true
 simple_name = "GPT OSS-120B"
+description = "Le plus grand des deux premiers modèles semi-ouverts d'OpenAI depuis GPT-2. Conçu en réponse à la montée en puissance des acteurs open source comme Meta (LLaMA) et Mistral, il s'agit d'un modèle de raisonnement performant, notamment sur des tâches complexes et dans des environnements « agentiques »."
 
 [gpt-oss-20b]
 arch = "maybe-moe"
@@ -869,6 +879,7 @@ release_date = "08/2025"
 required_ram = 35
 reuse = true
 simple_name = "GPT OSS-20B"
+description = "Le plus petit des deux modèles semi-ouverts d'OpenAI. Il a été conçu en réponse à la concurrence de l'open source et est destiné aux cas d'utilisation nécessitant une faible latence ainsi qu'aux déploiements locaux ou spécialisés."
 
 [llama-maverick]
 arch = "moe"
@@ -885,6 +896,7 @@ release_date = "04/2025"
 required_ram = 400
 reuse = true
 simple_name = "Llama Maverick"
+description = "Très grand modèle doté d’une très large fenêtre de contexte, adapté par exemple au résumé de plusieurs documents en même temps."
 
 [magistral-medium]
 arch = "maybe-dense"
@@ -892,7 +904,8 @@ distribution = "api-only"
 friendly_size = "M"
 icon_path = "mistral.png"
 id = "magistral-medium"
-license = "proprietary"
+description = "Modèle de raisonnement de taille moyenne multimodal et multilingue. Adapté à des tâches de programmation ou autres tâches nécessitant analyse approfondie compréhension de systèmes logiques complexes ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes."
+license = "propriétaire Mistral"
 organisation = "Mistral AI"
 params = 35
 reasoning = false
@@ -902,6 +915,7 @@ reuse = false
 simple_name = "Magistral Medium"
 
 [magistral-small]
+description = "Modèle de raisonnement de taille moyenne, multimodal et multilingue. Adapté à des tâches nécessitant une analyse approfondie, compréhension de systèmes logiques ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes."
 arch = "dense"
 commercial_use = true
 distribution = "open-weights"
@@ -923,7 +937,8 @@ distribution = "api-only"
 friendly_size = "M"
 icon_path = "mistral.png"
 id = "mistral-medium-2506"
-license = "proprietary"
+description = "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est particulièrement intéressant pour des tâches de programmation ou des tâches de raisonnement, par exemple les mathématiques."
+license = "propriétaire Mistral"
 organisation = "Mistral AI"
 params = 35
 reasoning = false
@@ -937,6 +952,7 @@ arch = "dense"
 commercial_use = true
 distribution = "open-weights"
 friendly_size = "M"
+description = "Malgré son nom, c’est un modèle de taille moyenne. Il est multimodal (capable de traiter texte et images) et il se démarque par un respect précis des requêtes et sa capacité à utiliser des outils avancées."
 icon_path = "mistral.png"
 id = "mistral-small-3-2"
 license = "Apache 2.0"
@@ -954,9 +970,10 @@ distribution = "api-only"
 friendly_size = "XL"
 icon_path = "qwen.png"
 id = "qwen-2-5-max-0125"
-license = "proprietary"
+license = "propriétaire Alibaba"
 organisation = "Alibaba"
 params = 200
+description = "Très grand modèle de raisonnement spécialisé et très performant en mathématiques, code et résolution de problèmes logiques."
 reasoning = false
 release_date = "04/2025"
 required_ram = 200
@@ -976,5 +993,7 @@ params = 30
 reasoning = false
 release_date = "05/2025"
 required_ram = 30
+excerpt = "Modèle de taille moyenne multilingue."
+description = "Ce modèle MoE (Mixture of Experts) se distingue par une configuration de 128 experts au total, avec seulement 8 experts activés par jeton, ce qui permet une inférence plus rapide et plus efficace. Il utilise un système appelé *global-batch* pour optimiser la répartition du travail entre les experts, afin qu'ils soient tous utilisés de manière équilibrée.\n\nContrairement à d'autres modèles comme Qwen 2.5-MoE qui recyclent les mêmes experts à travers plusieurs couches du réseau, Qwen 3 30B A2B attribue des experts uniques à chaque couche. Concrètement, cela signifie que les experts de la première couche ne sont jamais réutilisés dans les couches suivantes - chaque niveau du modèle dispose de son propre ensemble d'experts spécialisés. Cette architecture permet à chaque expert de se concentrer exclusivement sur les tâches spécifiques à sa position dans le réseau neuronal, résultant en une spécialisation plus fine et des performances optimisées pour chaque étape du traitement de l'information."
 reuse = true
 simple_name = "Qwen 3 30B A3B"
