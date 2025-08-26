@@ -1002,7 +1002,39 @@ description = "Ce modèle MoE (Mixture of Experts) se distingue par une configur
 reuse = true
 simple_name = "Qwen 3 30B A3B"
 
-# FIXME:
-# [qwen3-235b-a22b-thinking-2507]
-# [kimi-k2]
-# [glm-4.5]
+[kimi-k2]
+arch = "moe"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "XL"
+icon_path = "kimi.svg"
+id = "kimi-k2"
+license = "MIT"
+organisation = "Moonshot AI"
+total_params = 1000
+active_params = 32
+reasoning = true
+release_date = "11/2025"
+required_ram = 1000
+description = "Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte."
+reuse = true
+simple_name = "Kimi K2"
+
+
+["glm-4.5"]
+arch = "moe"
+commercial_use = true
+distribution = "open-weights"
+friendly_size = "XL"
+icon_path = "zhipu.svg"
+id = "glm-4.5"
+license = "MIT"
+organisation = "Zhipu AI"
+params = 355
+active_params = 32
+reasoning = true
+release_date = "07/2025"
+required_ram = 355
+description = "Très grand modèle créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses : l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale. "
+reuse = true
+simple_name = "GLM 4.5"
