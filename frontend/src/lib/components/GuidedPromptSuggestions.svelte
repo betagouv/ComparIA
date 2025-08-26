@@ -123,7 +123,6 @@
     onChange={handleCardSelect}
   >
     {#snippet item({ value, label, iconSrc, iconAlt, iaSummitSmallIconSrc, iaSummitTooltip })}
-      {selected === value}
       {#if value === 'iasummit'}
         <img class="mb-3 hidden md:block" width="110" height="35" src={iconSrc} alt={iconAlt} />
         {#if iaSummitSmallIconSrc}
