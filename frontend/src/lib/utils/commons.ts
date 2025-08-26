@@ -6,7 +6,8 @@ export function sanitize(html: string): string {
   return sanitizeHtml(html, {
     allowedAttributes: {
       span: ['class'],
-      a: ['href', 'rel', 'target', 'title']
+      a: ['href', 'rel', 'target', 'title', 'class'],
+      br: []
     }
   })
 }
