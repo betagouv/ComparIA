@@ -951,7 +951,14 @@
                 "desc": "Le comparateur est mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
                 "title": "Le comparateur <span {props}>devient européen</span> !"
             },
+            "tabLabel": "Le comparateur",
             "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>."
+        },
+        "faq": {
+            "tabLabel": "FAQ"
+        },
+        "history": {
+            "tabLabel": "Historique du projet"
         },
         "partners": {
             "academy": {
@@ -971,7 +978,8 @@
             "services": {
                 "desc": "Les calculs d’impacts environnementaux reposent sur les produits ci dessus.",
                 "title": "Services mis à contribution"
-            }
+            },
+            "tabLabel": "Partenaires"
         },
         "problem": {
             "alignment": {
@@ -1017,6 +1025,7 @@
                     "title": "Réponses stéréotypées"
                 }
             },
+            "tabLabel": "Le problème initial",
             "title": "Les modèles d’IA conversationnelles respectent-ils la <span {props}>diversité</span> des langues européennes ?"
         },
         "title": "Tout savoir sur le comparateur"

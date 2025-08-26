@@ -6,13 +6,19 @@
 
   const { data } = $props()
 
-  const tabs = [
-    { id: 'comparator', href: '/product/comparator', label: 'Le comparateur' },
-    { id: 'problem', href: '/product/problem', label: 'Le problème initial' },
-    // { id: 'history', href: '/product/history', label: 'Historique du projet' },
-    { id: 'faq', href: '/product/faq', label: 'FAQ' },
-    { id: 'partners', href: '/product/partners', label: 'Partenaires' }
-  ] as const
+  const tabs = (
+    [
+      { id: 'comparator' },
+      { id: 'problem' },
+      // { id: 'history' },
+      { id: 'faq' },
+      { id: 'partners' }
+    ] as const
+  ).map((tab) => ({
+    ...tab,
+    href: `/product/${tab.id}`,
+    label: m[`product.${tab.id}.tabLabel`]()
+  }))
 </script>
 
 <SeoHead title={m[`seo.titles.${data.tab}`]()} />
