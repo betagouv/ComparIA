@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '$components/dsfr'
+  import { Button, Icon } from '$components/dsfr'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { modeInfos as modeChoices } from '$lib/chatService.svelte'
   import Dropdown from '$lib/components/Dropdown.svelte'
@@ -58,50 +58,60 @@
   }
 </script>
 
-<div class="selections">
-  <button
-    class="mode-selection-btn fr-py-1w fr-py-md-0 fr-mb-md-0 fr-mb-1w fr-mr-3v"
-    data-fr-opened="false"
-    {disabled}
+<div class="flex flex-col gap-3 md:col-span-2 md:flex-row">
+  <Button
+    variant="secondary"
+    native
     aria-controls="modal-mode-selection"
+    {disabled}
+    data-fr-opened="false"
+    class="px-3! bg-white! text-dark-grey! text-sm! w-full! md:w-auto! items-center justify-start"
+    style="--border-action-high-blue-france: var(--grey-925-125)"
     onclick={() => {
       neverClicked = false
       showModelsSelection = false
     }}
   >
-    <Icon icon="equalizer-fill" size="sm" block class="text-primary" />
+    <Icon icon="equalizer-fill" size="sm" class="text-primary me-2" />
     <span class="label">{altLabel}</span>
-    <Icon icon="arrow-down-s-line" size="sm" />
-  </button>
+    <Icon icon="arrow-down-s-line" size="sm" class="ms-auto md:ms-2" />
+  </Button>
+
   {#if mode == 'custom' && modelA}
-    <button
-      {disabled}
-      class="model-selection fr-mb-md-0 fr-mb-1w"
-      data-fr-opened="false"
+    <Button
+      variant="secondary"
+      native
       aria-controls="modal-mode-selection"
+      {disabled}
+      data-fr-opened="false"
+      class="px-3! bg-white! text-dark-grey! text-sm! w-full! md:w-auto! justify-start"
+      style="--border-action-high-blue-france: var(--grey-925-125)"
+      onclick={() => (showModelsSelection = true)}
     >
       <img
         src="/orgs/ai/{modelA.icon_path}"
         alt={modelA.simple_name}
         width="20"
         class="fr-mr-1v inline"
-      />&thinsp;{modelA.simple_name}
-      <strong class="versus">&nbsp;vs.&nbsp;</strong>
+      />
+      {modelA.simple_name}
+      <strong class="mx-2">VS</strong>
       {#if modelB}
         <img
           src="/orgs/ai/{modelB.icon_path}"
           alt={modelB.simple_name}
           width="20"
           class="fr-mr-1v inline"
-        />&thinsp;{modelB.simple_name}
+        />
+        {modelB.simple_name}
       {:else}
         {m['words.random']()}
       {/if}
-    </button>
+    </Button>
   {/if}
 </div>
 
-<dialog aria-labelledby="modal-mode-selection" id="modal-mode-selection" class="fr-modal">
+<dialog aria-labelledby="modal-mode-selection-title" id="modal-mode-selection" class="fr-modal">
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
       <div
@@ -119,51 +129,60 @@
               {m['words.close']()}
             </button>
           </div>
-          <div class="fr-modal__content fr-pb-4w">
+          <div class="fr-modal__content pb-8!">
             {#if showModelsSelection == false}
-              <h6 id="modal-mode-selection" class="modal-title">
+              <h6 id="modal-mode-selection-title" class="mb-3!">
                 {m['arenaHome.selectModels.question']()}
               </h6>
-              <p>{m['arenaHome.selectModels.help']()}</p>
-              <div>
-                <Dropdown
-                  bind:mode
-                  choices={modeChoices}
-                  onOptionSelected={(mode) => (showModelsSelection = mode === 'custom')}
-                />
-              </div>
+              <p class="mb-6!">{m['arenaHome.selectModels.help']()}</p>
+
+              <Dropdown
+                bind:mode
+                choices={modeChoices}
+                onOptionSelected={(mode) => (showModelsSelection = mode === 'custom')}
+              />
             {:else}
               <div in:fade>
-                <h6 id="modal-mode-selection" class="modal-title">
+                <h6 id="modal-mode-selection" class="mb-3! flex flex-wrap gap-4 md:gap-6">
                   {m['arenaHome.compareModels.question']()}
-                  <span class="text-purple fr-ml-2w">
+                  <span class="text-primary">
                     {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
                   </span>
                 </h6>
-                <p class="fr-mb-2w">
+                <p class="mb-5! md:mb-8!">
                   {m['arenaHome.compareModels.help']()}
                 </p>
+
                 <div>
                   <ModelsSelection
                     {models}
                     bind:selection={modelsSelection}
                     {toggleModelSelection}
                   />
-                  <div class="fr-mt-2w">
-                    <button
-                      class="btn fr-mb-md-0 fr-mb-1w"
-                      onclick={() => (showModelsSelection = false)}
-                    >
-                      {m['words.back']()}
-                    </button>
-                    <button aria-controls="modal-mode-selection" class="btn purple-btn float-right">
-                      {m['words.validate']()}
-                    </button>
-                  </div>
                 </div>
               </div>
             {/if}
           </div>
+          {#if showModelsSelection == true}
+            <div class="fr-modal__footer p-4! md:px-5!">
+              <div
+                class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left"
+              >
+                <Button
+                  text={m['words.back']()}
+                  variant="tertiary"
+                  class="md:me-auto!"
+                  onclick={() => (showModelsSelection = false)}
+                />
+
+                <Button
+                  aria-controls="modal-mode-selection"
+                  text={m['words.validate']()}
+                  class=""
+                />
+              </div>
+            </div>
+          {/if}
         </div>
       </div>
     </div>
