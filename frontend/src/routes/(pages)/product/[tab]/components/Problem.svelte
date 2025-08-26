@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from '$components/Icon.svelte'
+  import { Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
 

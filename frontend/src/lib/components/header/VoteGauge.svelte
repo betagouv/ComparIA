@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Tooltip from '$lib/components/Tooltip.svelte'
+  import { Tooltip } from '$components/dsfr'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'

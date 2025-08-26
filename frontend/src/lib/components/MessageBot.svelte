@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { Icon } from '$components/dsfr'
   import type { ChatMessage, OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
   import Copy from '$lib/components/Copy.svelte'
-  import Icon from '$lib/components/Icon.svelte'
   import LikeDislike from '$lib/components/LikeDislike.svelte'
   import LikePanel from '$lib/components/LikePanel.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'

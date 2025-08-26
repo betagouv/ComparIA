@@ -5,12 +5,10 @@
     Row extends { id: string }
   "
 >
-  import Tooltip from '$components/Tooltip.svelte'
+  import { Button, Pagination, Select, Tooltip } from '$components/dsfr'
   import { sanitize } from '$lib/utils/commons'
   import type { Snippet } from 'svelte'
   import type { HTMLTableAttributes } from 'svelte/elements'
-  import { Pagination, Select } from '.'
-  import Button from './Button.svelte'
 
   type TableProps = {
     caption: string

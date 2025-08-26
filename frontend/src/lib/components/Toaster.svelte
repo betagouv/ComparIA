@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Toast from '$lib/components/Toast.svelte'
+  import { Toast } from '$components/dsfr'
   import { toasts } from '$lib/helpers/useToast.svelte'
   import { fade, fly } from 'svelte/transition'
 </script>

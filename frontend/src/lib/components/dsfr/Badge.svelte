@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Tooltip from '$components/Tooltip.svelte'
+  import { Tooltip } from '$components/dsfr'
   import type { SvelteHTMLElements } from 'svelte/elements'
 
   export type BadgeProps = {

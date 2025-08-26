@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icon.svelte'
+  import { Icon } from '$components/dsfr'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
 

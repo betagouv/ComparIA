@@ -1,6 +1,5 @@
 <script lang="ts">
-  import Icon from '$components/Icon.svelte'
-  import { Button, Link } from '$lib/components/dsfr'
+  import { Button, Icon, Link } from '$lib/components/dsfr'
   import FAQContent from '$lib/components/FAQContent.svelte'
   import HowItWorks from '$lib/components/HowItWorks.svelte'
   import Newsletter from '$lib/components/Newsletter.svelte'

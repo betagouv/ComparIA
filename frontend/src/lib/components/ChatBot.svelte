@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { Icon } from '$components/dsfr'
   import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
   import { arena } from '$lib/chatService.svelte'
-  import Icon from '$lib/components/Icon.svelte'
   import MessageBot from '$lib/components/MessageBot.svelte'
   import MessageUser from '$lib/components/MessageUser.svelte'
   import Pending from '$lib/components/Pending.svelte'

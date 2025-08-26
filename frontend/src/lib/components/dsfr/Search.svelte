@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { Button } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { HTMLInputAttributes } from 'svelte/elements'
-  import Button from './Button.svelte'
 
   let {
     id,

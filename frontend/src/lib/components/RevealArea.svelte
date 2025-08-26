@@ -1,10 +1,8 @@
 <script lang="ts">
   import type { RevealData } from '$lib/chatService.svelte'
-  import { Badge } from '$lib/components/dsfr'
+  import { Badge, Icon, Tooltip } from '$lib/components/dsfr'
   import Footer from '$lib/components/Footer.svelte'
-  import Icon from '$lib/components/Icon.svelte'
   import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
-  import Tooltip from '$lib/components/Tooltip.svelte'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icon.svelte'
+  import { Icon } from '$components/dsfr'
   import type { HTMLButtonAttributes } from 'svelte/elements'
 
   type IconButtonProps = Omit<HTMLButtonAttributes, 'size'> & {

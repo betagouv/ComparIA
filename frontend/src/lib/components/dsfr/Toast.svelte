@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icon.svelte'
+  import { Icon } from '$components/dsfr'
   import type { ToastItem } from '$lib/helpers/useToast.svelte'
   import { removeToast } from '$lib/helpers/useToast.svelte'
   import { onDestroy, onMount } from 'svelte'

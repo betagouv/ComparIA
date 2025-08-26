@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { Icon } from '$components/dsfr'
   import { negativeReactions, positiveReactions, type ReactionPref } from '$lib/chatService.svelte'
-  import Icon from '$lib/components/Icon.svelte'
   import { m } from '$lib/i18n/messages'
   import { noop } from '$lib/utils/commons'
 

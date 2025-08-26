@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { Button, Link } from '$lib/components/dsfr'
-  import Icon from '$lib/components/Icon.svelte'
+  import { Button, Icon, Link } from '$lib/components/dsfr'
   import { useToast } from '$lib/helpers/useToast.svelte'
 
   async function handleNewsletterSubmit(e: SubmitEvent) {

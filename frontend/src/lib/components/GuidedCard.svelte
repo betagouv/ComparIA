@@ -1,6 +1,5 @@
 <script lang="ts">
-  import Icon from '$lib/components/Icon.svelte'
-  import Tooltip from '$lib/components/Tooltip.svelte'
+  import { Icon, Tooltip } from '$components/dsfr'
 
   export let iconSrc: string
   export let iconAlt: string

@@ -1,9 +1,9 @@
 <script lang="ts">
+  import { Icon } from '$components/dsfr'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { modeInfos as modeChoices } from '$lib/chatService.svelte'
   import Dropdown from '$lib/components/Dropdown.svelte'
   import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
-  import Icon from '$lib/components/Icon.svelte'
   import ModelsSelection from '$lib/components/ModelsSelection.svelte'
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'

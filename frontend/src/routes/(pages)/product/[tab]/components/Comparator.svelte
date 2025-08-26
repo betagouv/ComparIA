@@ -1,6 +1,5 @@
 <script lang="ts">
-  import Link from '$components/dsfr/Link.svelte'
-  import Icon from '$components/Icon.svelte'
+  import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
 

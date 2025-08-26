@@ -1,6 +1,6 @@
 <script lang="ts" generics="T extends {id?: string; label: string; content: string}">
+  import { Accordion } from '$components/dsfr'
   import type { SvelteHTMLElements } from 'svelte/elements'
-  import Accordion from './Accordion.svelte'
 
   let { items, children, ...props }: { items?: T[] } & SvelteHTMLElements['div'] = $props()
 </script>

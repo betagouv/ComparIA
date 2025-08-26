@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Link from '$lib/components/dsfr/Link.svelte'
+  import { Link } from '$lib/components/dsfr'
   import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
