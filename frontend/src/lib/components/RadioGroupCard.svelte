@@ -1,4 +1,7 @@
-<script lang="ts" generics="Value extends string, Option extends { value: Value, label: string, class?: ClassValue }">
+<script
+  lang="ts"
+  generics="Value extends string, Option extends { value: Value, label: string, class?: ClassValue }"
+>
   import type { Snippet } from 'svelte'
   import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
 
@@ -35,7 +38,10 @@
       onchange={() => onChange?.(option.value)}
     />
 
-    <label for="{id}-{option.value}" class={["cg-border rounded-sm! text-dark-grey! px-4! py-3! md:py-5!", option.class]}>
+    <label
+      for="{id}-{option.value}"
+      class={['cg-border rounded-sm! text-dark-grey! px-4! py-3! md:py-5! bg-white', option.class]}
+    >
       {#if item}
         {@render item(option)}
       {:else}
@@ -47,9 +53,7 @@
 
 <style>
   input + label {
-    background: white;
-    color: #606367;
-    border: 1px #dadce0 solid;
+    border: 1px var(--grey-925-125) solid;
   }
 
   input:focus + label {
@@ -62,7 +66,6 @@
   input:active + label,
   input:focus + label {
     border: 2px solid var(--blue-france-main-525);
-    /* background: #f5f5fe; */
     color: var(--blue-france-main-525);
   }
 
