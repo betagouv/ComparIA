@@ -229,7 +229,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     reasoning_models = [
         model["id"] for model in models_extra_info if model.get("reasoning", False)
     ]
-
+    # print(f"reasoning_models: {reasoning_models}")
     random_pool = [
         model["id"]
         for model in models_extra_info

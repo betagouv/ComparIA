@@ -1,9 +1,8 @@
 import os
 import sentry_sdk
 import json5
-import tomli
+import sys
 from languia.utils import get_model_names_list, get_matomo_js, build_model_extra_info
-import random
 import datetime
 from pathlib import Path
 
@@ -42,6 +41,15 @@ def build_logger(logger_filename):
         logger.setLevel(logging.DEBUG)
     else:
         logger.setLevel(logging.INFO)
+
+    console_handler = logging.StreamHandler(sys.stdout)
+    # Use a more human-readable format for the console.
+    console_formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(funcName)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    console_handler.setFormatter(console_formatter)
+    logger.addHandler(console_handler)
 
     file_formatter = JSONFormatter(
         '{"time":"%(asctime)s", "name": "%(name)s", \
