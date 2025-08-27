@@ -33,6 +33,7 @@ from httpx import Timeout
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
 db = os.getenv("COMPARIA_DB_URI", None)
+enable_postgres_handler = False
 
 def build_logger(logger_filename):
     # TODO: log "funcName"
@@ -55,7 +56,7 @@ def build_logger(logger_filename):
         file_handler.setFormatter(file_formatter)
         logger.addHandler(file_handler)
 
-    if db:
+    if db and enable_postgres_handler:
         postgres_handler = PostgresHandler(db)
         logger.addHandler(postgres_handler)
 
