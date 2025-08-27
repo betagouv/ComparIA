@@ -1,0 +1,812 @@
+{
+    "arenaHome": {
+        "title": "Hvordan kan jeg hjælpe dig i dag?",
+        "modelSelection": "Modelvalg",
+        "prompt": {
+            "label": "Skriv din første besked",
+            "placeholder": "Skriv din første besked her"
+        },
+        "selectModels": {
+            "question": "Hvilke modeller vil du gerne sammenligne?",
+            "help": "Vælg sammenligningstypen"
+        },
+        "compareModels": {
+            "question": "Hvilke modeller vil du gerne sammenligne?",
+            "count": "{count}/2 modeller",
+            "help": "Hvis du kun vælger én, vil den anden blive valgt tilfældigt"
+        },
+        "suggestions": {
+            "title": "Foreslåede prompts",
+            "generateAnother": "Generér en ny prompt",
+            "choices": {
+                "iasummit": {
+                    "iconAlt": "AI Action Summit",
+                    "title": "Spørgsmål fra en borgerhøring om kunstig intelligens",
+                    "tooltip": "Disse spørgsmål er resultatet af en borgerhøring om AI, der blev afholdt fra 16.09.2024 til 08.11.2024. Formålet var at inddrage borgere og civilsamfundet bredt i AI Action Summit og indsamle deres idéer til, hvordan AI kan blive en mulighed for alle, samtidig med at misbrug og forkert brug begrænses."
+                },
+                "ideas": {
+                    "iconAlt": "Idéer",
+                    "title": "Generér nye idéer"
+                },
+                "explanations": {
+                    "iconAlt": "Forklaring",
+                    "title": "Forklar et koncept"
+                },
+                "languages": {
+                    "iconAlt": "Oversættelse",
+                    "title": "Skriv på et andet sprog"
+                },
+                "administrative": {
+                    "iconAlt": "Administrativ",
+                    "title": "Skriv et administrativt dokument"
+                },
+                "recipes": {
+                    "iconAlt": "Madlavning",
+                    "title": "Vis mig nye opskrifter"
+                },
+                "coach": {
+                    "iconAlt": "Rådgivning",
+                    "title": "Giv mig råd omkring sundhed og fitness"
+                },
+                "stories": {
+                    "iconAlt": "Historier",
+                    "title": "Fortæl mig en historie"
+                },
+                "recommendations": {
+                    "iconAlt": "Forslag",
+                    "title": "Foreslå film, bøger, musik"
+                }
+            }
+        }
+    },
+    "closeModal": "Luk pop op-vinduet",
+    "models": {
+        "licenses": {
+            "type": {
+                "proprietary": "Ophavsretligt beskyttet",
+                "openSource": "Open source",
+                "semiOpen": "Halvåben"
+            },
+            "name": "Licens {license}",
+            "commercial": "Kommerciel licens",
+            "noDesc": "Licensoplysninger er ikke udfyldt for denne model.",
+            "descriptions": {
+                "MIT": "MIT-licensen er en fri softwarelicens: Den giver enhver ret til at genbruge, ændre og distribuere modellen, selv til kommercielle formål, forudsat at den originale licens og copyright-meddelelser medtages.",
+                "Apache 2.0": "Denne licens tillader gratis brug, ændring og distribution, selv til kommercielle formål. Ud over friheden til brug garanterer den juridisk beskyttelse ved at indeholde en klausul om ikke-krænkelse og gennemsigtighed: alle ændringer skal dokumenteres og er derfor sporbare.",
+                "Gemma": "Denne licens er udformet med henblik på at fremme brugen, ændringen og videredistributionen af softwaren, men indeholder en klausul, der fastslår, at alle ændrede eller forbedrede versioner skal deles med fællesskabet under samme licens, hvilket fremmer samarbejde og gennemsigtighed i softwareudviklingen.",
+                "Llama 3 Community": "Denne licens tillader gratis brug, ændring og distribution af koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere, og forbyder genbrug af koden eller genereret indhold til træning eller forbedring af konkurrerende modeller, hvilket beskytter Metas teknologiinvesteringer og brand.",
+                "Llama 3.1": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere. Genbrug af koden eller genereret indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at du angiver \"bygget med llama\" og inkluderer \"Llama\" i navnet for enhver distribution.",
+                "Llama 3.3": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere. Genbrug af koden eller genereret indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at du angiver \"bygget med llama\" og inkluderer \"Llama\" i navnet for enhver distribution.",
+                "Llama 4": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere. Genbrug af koden eller genereret indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at du angiver \"bygget med llama\" og inkluderer \"Llama\" i navnet for enhver distribution.",
+                "Jamba Open Model": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for organisationer med en årlig omsætning på over 50 millioner dollars.",
+                "CC-BY-NC-4.0": "Denne licens giver dig ret til at dele og tilpasse indholdet, så længe du angiver forfatteren, men forbyder enhver kommerciel brug. Den giver fleksibilitet til ikke-kommerciel brug, samtidig med at forfatterens rettigheder beskyttes.",
+                "propriétaire Gemini": "Modellen er tilgængelig under en betalt licens og kan tilgås via Gemini API, der er tilgængelig på Google AI Studio- og Vertex AI-platformene. Der opkræves et gebyr pr. brug baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår.",
+                "propriétaire Mistral": "Modellen er tilgængelig under en betalt licens og kan tilgås via Mistral og andre partner-API'er, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens.",
+                "propriétaire xAI": "Modellen er tilgængelig via xAI API og kræver betaling pr. brug baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår.",
+                "propriétaire Liquid": "Modellen er tilgængelig under en betalt licens og kan tilgås via API på Liquid AI's platforme, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens.",
+                "propriétaire OpenAI": "Modellen er tilgængelig under en betalt licens og kan tilgås via API på OpenAI's platforme, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår.",
+                "propriétaire Anthropic": "Modellen er tilgængelig under en betalt licens og kan tilgås via API på Anthropics platforme, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår.",
+                "Mistral AI Non-Production": "Denne licens giver dig ret til at dele og tilpasse indholdet, så længe du angiver forfatteren, men forbyder enhver kommerciel brug. Den giver fleksibilitet til ikke-kommerciel brug, samtidig med at forfatterens rettigheder beskyttes."
+            }
+        },
+        "release": "Udgivet {date}",
+        "size": {
+            "estimated": "Estimeret størrelse ({size})",
+            "title": "Størrelse",
+            "descriptions": {
+                "XS": "Meget små modeller med færre end 7 milliarder parametre er de mindst komplekse og mest ressourceeffektive og leverer tilstrækkelig ydeevne til enkle opgaver såsom tekstklassificering.",
+                "S": "En lille model er mindre kompleks og ressourcekrævende sammenlignet med større modeller, men fungerer ofte tilstrækkeligt effektivt til forskellige opgaver (opsummering, oversættelse, tekstklassificering osv.)",
+                "M": "Mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og ydeevne: De er langt mindre ressourcekrævende end store modeller, men kan stadig håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnement.",
+                "L": "Store modeller kræver betydelige ressourcer, men tilbyder den bedste ydeevne til avancerede opgaver som kreativ skrivning, dialogmodellering og applikationer, der kræver en detaljeret forståelse af konteksten.",
+                "XL": "Disse modeller, med billioner af parametre, er de mest komplekse og avancerede med hensyn til ydeevne og nøjagtighed. De beregnings- og hukommelsesressourcer, der kræves for at implementere disse modeller, er af en sådan karakter, at de er beregnet til de mest avancerede applikationer og højt specialiserede miljøer."
+            }
+        },
+        "parameters": "{number} parametre",
+        "names": {
+            "a": "Model A",
+            "b": "Model B"
+        },
+        "conditions": "Brugsbetingelser",
+        "openWeight": {
+            "conditions": {
+                "free": "Permissiv",
+                "copyleft": "Copyleft",
+                "restricted": "Betinget"
+            },
+            "tooltips": {
+                "openSource": "Træningsdata, koden og vægtene for denne model (dvs. de parametre, der er lært under træningen) kan downloades og ændres af offentligheden, så de kan køre og ændre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt end \"open weights\", især på grund af behovet for gennemsigtighed i træningskorpuset. Få modeller betragtes som \"open source\"",
+                "openWeight": "En såkaldt \"open weights\"-model, hvor vægtene, dvs. de parametre, der er lært under træningen, kan downloades af offentligheden, så de kan køre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt (hovedsageligt i relation til gennemsigtigheden af træningskorpuset). Få modeller betragtes som \"open source\".",
+                "params": "Parametre eller vægte, talt i milliarder, er de variabler, som en model lærer under træningen, og som bestemmer dens svar. Jo større antallet af parametre er, jo større er deres læringsevne.",
+                "free": "Når modellen er ændret, kan den distribueres under en anden licens end kildemodellen.",
+                "copyleft": "Når modellen er ændret, skal den distribueres på ny under samme licens som kildemodellen.",
+                "ram": "RAM (random access memory) gemmer data, der behandles af en LLM i realtid. Jo større modellen er, jo mere RAM kræver den for at køre."
+            },
+            "descriptions": {
+                "XS": "Med {paramsCount} milliarder parametre hører denne model til kategorien meget små modeller (mindre end 7 milliarder parametre).",
+                "S": "Med {paramsCount} milliarder parametre hører denne model til kategorien små modeller (mellem 7 og 20 milliarder parametre).",
+                "M": "Med {paramsCount} milliarder parametre hører denne model til kategorien mellemstore modeller (mellem 20 og 70 milliarder parametre).",
+                "L": "Med {paramsCount} milliarder parametre hører denne model til kategorien store modeller (mellem 70 og 100 milliarder parametre).",
+                "XL": "Med {paramsCount} milliarder parametre hører denne model til kategorien meget store modeller."
+            },
+            "use": {
+                "commercial": "Kommerciel brug",
+                "modification": "Ændringer er tilladt",
+                "attribution": "Kildeangivelse påkrævet",
+                "licenseType": "Licenstype",
+                "requiredRam": "RAM nødvendig"
+            }
+        },
+        "ram": "{min} til {max} GB",
+        "extra": {
+            "title": "For at lære mere",
+            "experts": {
+                "open-weights": "For at læse mere, se <a {linkProps}>modelsiden på Hugging Face</a>",
+                "api-only": "For at læse mere, se den <a {linkProps}>officielle modelhjemmeside</a>"
+            },
+            "impacts": "Miljøpåvirkningsberegninger er baseret på <a {linkProps1}>EcoLogits</a> og <a {linkProps2}>Impact CO<sub>2</sub></a> projekterne."
+        },
+        "list": {
+            "title": "Udforsk modellerne",
+            "intro": "Udforsk de forskellige samtale AI-modeller, deres specifikationer og licenser.",
+            "filters": {
+                "editor": {
+                    "legend": "Udgiver"
+                },
+                "size": {
+                    "legend": "Størrelse (i millarder parametre)",
+                    "labels": {
+                        "XS": "< 7 milliarder",
+                        "S": "7 til 20 milliarder",
+                        "M": "20 til 70 milliarder",
+                        "L": "70 til 150 milliarder",
+                        "XL": "> 150 milliarder"
+                    }
+                },
+                "license": {
+                    "legend": "Licens"
+                },
+                "display": "Vis filtre"
+            },
+            "triage": {
+                "label": "Sortér efter",
+                "options": {
+                    "name-asc": "Modelnavn (A til Z)",
+                    "date-desc": "Udgivelsesdato (nyeste til ældste)",
+                    "params-asc": "Størrelse (mindste til største)",
+                    "org-asc": "Udgiver (A til Z)"
+                }
+            },
+            "model": "model",
+            "models": "modeller",
+            "noresults": "Ingen modeller matcher dine søgekriterier."
+        }
+    },
+    "modes": {
+        "random": {
+            "title": "Tilfældig",
+            "label": "Tilfældig",
+            "altLabel": "Vilkårligt modelvalg",
+            "description": "To modeller valgt vilkårligt fra den fulde liste"
+        },
+        "custom": {
+            "title": "Manuel udvælgelse",
+            "label": "Manuel udvælgelse",
+            "altLabel": "Manuel modeludvælgelse",
+            "description": "Kan du genkende de to modeller, du valgte?"
+        },
+        "small-models": {
+            "title": "Sparetilstand",
+            "label": "Sparsom",
+            "altLabel": "Sparsom modeludvælgelse",
+            "description": "To små modeller valgt tilfældigt"
+        },
+        "big-vs-small": {
+            "title": "David mod Goliat-tilstand",
+            "label": "David mod Goliat",
+            "altLabel": "David mod Goliat-modelvalg",
+            "description": "En lille model mod en stor model, begge valgt tilfældigt"
+        },
+        "reasoning": {
+            "title": "Ræsonnement",
+            "label": "Ræsonnement",
+            "altLabel": "Valg af ræsonnementmodel",
+            "description": "To tilfældigt udvalgte ræsonnementmodeller"
+        }
+    },
+    "vote": {
+        "title": "Hvilken AI-model foretrækker du?",
+        "bothEqual": "Begge er lige gode",
+        "comment": {
+            "add": "Tilføj kommentarer",
+            "placeholder": "Du kan tilføje detaljer om model {model}s svar"
+        },
+        "choices": {
+            "positive": {
+                "question": "Hvad kunne du lide ved svaret?",
+                "useful": "Brugbart",
+                "complete": "Fuldstændigt",
+                "creative": "Kreativt",
+                "clear-formatting": "Klar formattering"
+            },
+            "negative": {
+                "question": "Hvorfor kunne du ikke lide svaret?",
+                "incorrect": "Forkert",
+                "superficial": "Overfladisk",
+                "instructions-not-followed": "Instruktionerne er ikke blevet fulgt"
+            },
+            "altText": "{choice} for modellen {model}"
+        },
+        "introA": "Før vi finder ud af modellernes identitet, har vi brug for din stemme.",
+        "introB": "Det giver os mulighed for at forbedre compar:IA-datasættene, hvis formål er at forfine fremtidige AI-modeller på sprog med færre ressourcer",
+        "qualify": {
+            "question": "Hvordan vil du beskrive dens svar?",
+            "placeholder": "Svarene fra {model} modellen er...",
+            "addDetails": "Tilføj detaljer"
+        },
+        "like": {
+            "label": "Jeg kan godt lide",
+            "selectedLabel": "Jeg kan godt lide (udvalgte)"
+        },
+        "dislike": {
+            "label": "Jeg kan ikke lide",
+            "selectedLabel": "Jeg kan ikke lide (udvalgt)"
+        },
+        "yours": "Din stemme"
+    },
+    "words": {
+        "back": "Tilbage",
+        "close": "Luk",
+        "random": "Tilfældig",
+        "regenerate": "Regenerer",
+        "send": "Send",
+        "validate": "Validér",
+        "reset": "Nulstil",
+        "restart": "Start forfra",
+        "retry": "Start forfra",
+        "tooltip": "Tip"
+    },
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "seo": {
+        "title": "compar:IA, arenaen for AI-chatbots",
+        "desc": "compar:IA er et værktøj, der gør det muligt at sammenligne forskellige samtale-AI-modeller blindt, øge bevidstheden om problemerne omkring generativ AI (pluralitet, bias, miljøpåvirkning) og hjælpe med at opbygge datasæt for sprogpræferencer for sprog med færre ressourcer.",
+        "titles": {
+            "home": "Hjem",
+            "product": "Produkt og partnere",
+            "modeles": "Modelliste",
+            "datasets": "Datasæt",
+            "comparator": "Arenaen",
+            "problem": "Den indledende udfordring",
+            "history": "Projektets historie",
+            "faq": "Ofte stillede spørgsmål",
+            "partners": "Partnere",
+            "news": "Nyheder",
+            "mentions-legales": "Juridisk meddelelse",
+            "modalites": "Brugsbetingelser",
+            "donnees-personnelles": "Fortrolighedspolitik",
+            "accessibilite": "Erklæring om tilgængelighed",
+            "arene": "Chat",
+            "share": "Mine resultater"
+        }
+    },
+    "header": {
+        "subtitle": "Chatbot-arenaen",
+        "homeTitle": "Hjem - compar:IA",
+        "logoAlt": "Den Franske Republik",
+        "startDiscussion": "Start samtalen",
+        "help": {
+            "link": {
+                "title": "Giv feedback på arenaen – åbner et nyt vindue",
+                "content": "Hjælp os med at forbedre compar:IA"
+            }
+        },
+        "banner": "Chatbot-arenaen er nu tilgængelig på litauisk 🇱🇹, svensk 🇸🇪 og dansk 🇩🇰!",
+        "votes": {
+            "count": "{count} stemmer",
+            "objective": "Mål: {count}",
+            "legend": "Legend",
+            "tooltip": "Diskuter, stem og hjælp os med at nå dette mål!<br /><strong>Dine stemmer betyder noget</strong>: de leverer data til compar:IA-datasættet, som er frit tilgængeligt, for at hjælpe med at forbedre fremtidige modeller på lavresourcesprog.<br />Denne digitale fælles ressource bidrager til bedre <strong>respekt for sproglig og kulturel mangfoldighed i fremtidige sprogmodeller.</strong>"
+        },
+        "chatbot": {
+            "step": "Trin",
+            "stepOne": {
+                "title": "Hvad synes du om svarene?",
+                "description": "Vær opmærksom på både indhold og form, og vurdér derefter hvert svar."
+            },
+            "stepTwo": {
+                "title": "Modellerne er afsløret!",
+                "description": "Se den miljømæssige påvirkning af dine samtaler med hver model"
+            },
+            "newDiscussion": "Ny samtale"
+        },
+        "menu": "Menu",
+        "title": {
+            "compar": "compar",
+            "ia": "AI"
+        }
+    },
+    "footer": {
+        "backHome": "TIlbage til hjem - compar:IA",
+        "helpUs": "Hjælp os med at forbedre produktet!",
+        "writeUs": "Hvis du støder på et problem eller har feedback til chatbot-arenaen, er du velkommen til at skrive til os <a {linkProps}>ved hjælp af denne formular</a> – vi læser alle beskeder. Tak!",
+        "links": {
+            "legal": "Juridisk meddelelse",
+            "tos": "Brugsbetingelser",
+            "privacy": "Privatlivspolitik",
+            "accessibility": "Tilgængelighed: ikke compliant",
+            "sources": "Kildekode"
+        },
+        "license": {
+            "mention": "Medmindre andet udtrykkeligt er angivet som tredjeparts intellektuel ejendom, tilbydes indholdet på dette websted under <a {linkProps}>Etalab 2.0-licensen</a>",
+            "linkTitle": "Etalab-licens - nyt vindue"
+        }
+    },
+    "general": {
+        "legal": {
+            "title": "Juridisk meddelelse",
+            "editorTitle": "Udgivet",
+            "editorDesc": "Denne hjemmeside er udgivet af det franske kulturministerium, 182 Rue Saint-Honoré, 75001 Paris",
+            "directorTitle": "Publikationens direktør",
+            "directorDesc": "Romain Delassus, chef for den digitale afdeling i Kulturministeriet",
+            "hostingTitle": "Hosting af hjemmesiden",
+            "hostingDesc": "Denne hjemmeside hostes af OVH SAS (<a {linkProps}>https://www.ovh.com</a>), som ligger på adressen 2 Rue Kellermann, 59100 Roubaix, Frankrig.",
+            "a11yTitle": "Tilgængelighed",
+            "a11yDesc": "Overholdelse af standarder for digital tilgængelighed er et fremtidigt mål, men vi stræber efter at gøre dette websted tilgængeligt for alle.",
+            "reportTitle": "Rapporter et problem",
+            "reportA11y": "Hvis du støder på et tilgængelighedsproblem, der forhindrer dig i at få adgang til indhold eller funktioner på webstedet, må du endelig give os besked.",
+            "reportDesc": "Hvis du ikke modtager et hurtigt svar fra os, har du ret til at indgive din klage eller en anmodning om henvisning til Ombudsmanden.",
+            "reportA11yDesc": "For at lære mere om statens politik for digital tilgængelighed: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
+            "securityTitle": "Sikkerhed",
+            "securityCertif": "Hjemmesiden er beskyttet af et elektronisk certifikat, der i de fleste browsere vises som et hængelås. Denne beskyttelse hjælper med at sikre fortroligheden af udvekslinger.",
+            "securityNoMail": "Under ingen omstændigheder vil de tjenester, der er forbundet med platformen, lede til e-mails, der beder om indtastning af personlige oplysninger.",
+            "sources": "Medmindre andet er angivet, er alle tekster på denne hjemmeside underlagt <a {etalabLinkProps}>Etalab Open 2.0-licensen</a>. Kildekoden til denne applikation kan frit genbruges og er tilgængelig på <a {githubLinkProps}>GitHub</a>."
+        },
+        "tos": {
+            "title": "Brugsbetingelser",
+            "scopeTitle": "1. Anvendelsesområde",
+            "scopeDesc": "Adgang til platformen er gratis, kræver ikke registrering og indebærer anvendelse af specifikke betingelser, der er angivet i disse brugsbetingelser.",
+            "defsTitle": "2. Definitioner",
+            "defsUser": "\"Bruger\" henviser til enhver fysisk person, der bruger platformen og drager fordel af dens tjenester.",
+            "defsEditor": "\"Udgiver\" henviser til Kulturministeriets digitale afdeling.",
+            "defsPlatform": "\"Platform\" henviser til den hjemmeside, der gør tjenesterne tilgængelige.",
+            "defsModels": "\"Modeller\" henviser til de store sprogmodeller (LLM'er), der genbruges under deres brugslicens af platformen for at opfylde dens formål.",
+            "defsServices": "\"Tjenester\" henviser til de funktioner, som platformen tilbyder for at opfylde sine formål.",
+            "descTitle": "3. Platformsbeskrivelse",
+            "descEditor": "Arenaen er en platform, udgivet af det franske kulturministeriums digitale afdeling, til sammenligning af samtalemodeller rettet mod den brede offentlighed med det formål at (1) øge borgernes bevidsthed om store sprogmodeller (LLM'er) og (2) indsamle brugerpræferencer for at skabe afstemningsdatasæt.",
+            "descUse": "Brugeren stiller et spørgsmål på et givet sprog og modtager svar fra to anonyme store sprogmodeller (LLM'er). Hun/han stemmer på den model, der giver hendes/hans foretrukne svar, og får derefter vist modellernes identitet. Dette deltagende produktionssystem, der er inspireret af platformen \"<a {linkProps}>chatbot arena</a>\" (LMarena), gør det muligt at oprette datasæt med menneskelige præferencer for ægte opgaver på dansk, som kan bruges til modeltræning.",
+            "descDatasets": "Disse datasæt vil blive gjort tilgængelige under en åben licens, især for at fremme forskningsformål.",
+            "featuresTitle": "4. Funktioner",
+            "featuresDesc": "For at opfylde det dobbelte mål om at øge borgernes bevidsthed om store sprogmodeller og indsamle brugerpræferencer tilbyder platformen følgende tjenester uden adgangsbegrænsninger:",
+            "featuresDescMore": "En menneske-maskine-grænseflade, der giver brugerne mulighed for at føre en dialog med to samtalemodeller samtidigt og stemme på det foretrukne svar.",
+            "featuresModels": "De modeller, der er integreret i platformen, implementeres på forskellige partneres inferensservere (Scaleway, OVH, Hugging Face, Google Cloud, Mistral AI). Betingelserne for standardiseret inferens er specificeret på platformen for at sikre gennemsigtighed i brugen af modellerne.",
+            "featuresModelsMore": "Modelsammenligningsgrænsefladen.",
+            "featuresVote": "Når afstemningen er afsluttet, kan brugeren se listen over modeller, der er integreret i chatbot-arenaen, og få adgang til en liste med oplysninger om disse modeller. Oplysningerne om modellerne er hentet fra forskellige kilder.",
+            "featuresVoteMore": "Deling og adgang til datasæt, der er resultatet af indsamling af brugerpræferencer.",
+            "featuresDatasets": "Tjenesten indsamler data om brugerdialog og præferencer. De delte datasæt vil omfatte brugerens spørgsmål, svar fra de to modeller, afstemningen og brugerens præferencer.",
+            "featuresDatasetsMore": "Udgiveren forbeholder sig ret til at distribuere brugerens dialog- og præferencedata under en etalab 2.0-licens. Datasættet distribueres på Data.gouv og Hugging Face-platformen via det franske kulturministeriums konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "respTitle": "5. Ansvar",
+            "respUser": "Brugeren er ansvarlig for de data eller det indhold, som vedkommende indtaster i den prompt, som platformen stiller til rådighed.",
+            "respLegal": "Platformen er ikke beregnet til at blive brugt til at generere ulovligt indhold eller indhold, der strider mod den offentlige orden, og mere generelt til generering, der overtræder den gældende lovgivning.",
+            "respLegalMore": "I denne henseende må brugeren ikke indtaste indhold eller oplysninger i prompten, der er i strid med gældende lovgivningsmæssige og reguleringsmæssige bestemmelser.",
+            "respPrivacy": "Da de data, som brugeren indtaster på platformen, er beregnet til at blive gjort tilgængelige, forpligter brugeren sig til ikke at overføre oplysninger, der kan identificere brugeren eller en tredjepart.",
+            "respPrivacyMore": "Under alle omstændigheder forpligter udgiveren sig til at implementere midler til at sikre anonymiseringen af dialogdata, inden disse gøres tilgængelige.",
+            "respEditor": "Generelt fraskriver udgiveren sig ethvert ansvar i tilfælde af manglende overholdelse af brugsbetingelserne.",
+            "licenceTitle": "6. Kode og licenser",
+            "licenceCode": "Platformens kildekode er åben og tilgængelig her: <a {linkProps}>https://github.com/betagouv/ComparIA</a>",
+            "licenceLLM": "De LLM'er, der bruges til at drive tjenesterne, er underlagt følgende licenser:",
+            "licenceLLMModel": "Samtale AI-model",
+            "licenceLLMNoticeLink": "Link til model-licenserne",
+            "licenceLLMLicence": "Licens",
+            "licenceLLMUnavailable": "Ikke tilgængelig",
+            "licenceLLMEvolution": "Listen over sprogmodeller, der er integreret i platformen, kan ændres over tid og opdateres ved hver ændring.",
+            "dispoTitle": "7. Tjenestens tilgængelighed",
+            "dispoDesc": "Platformen er tilgængelig, undtagen i tilfælde af force majeure eller begivenheder, der ligger uden for udgiverens kontrol.",
+            "dispoRight": "Udgiveren forbeholder sig ret til uden forudgående varsel at suspendere, afbryde eller begrænse adgangen til alle eller en del af tjenesterne, især i forbindelse med vedligeholdelses- og opdateringsarbejder, der er nødvendige for, at tjenesten og det tilhørende udstyr kan fungere korrekt, eller af andre årsager, herunder tekniske årsager.",
+            "dispoWarranty": "Det kan ikke garanteres, at tjenesten vil være fri for fejl eller uregelmæssigheder. Tjenesten leveres derfor uden nogen form for garanti med hensyn til dens tilgængelighed og ydeevne.",
+            "dispoResp": "I denne henseende kan udgiveren ikke holdes ansvarlig for tab eller skader af nogen art, der måtte opstå som følge af en fejlfunktion eller utilgængelighed af tjenesten. Sådanne situationer giver ikke ret til økonomisk kompensation.",
+            "evoTitle": "8. Ændringer af brugsbetingelserne",
+            "evoDesc": "Brugsvilkårene kan til enhver tid ændres eller suppleres uden forudgående varsel, afhængigt af ændringer i tjenesterne, ændringer i lovgivningen eller af andre årsager, der anses for nødvendige.",
+            "evoDescMore": "Disse ændringer og opdateringer er bindende for brugeren, som derfor bør regelmæssigt henvise til dette afsnit for at kontrollere de aktuelle generelle vilkår.",
+            "contactTitle": "9. Kontakt",
+            "contactDesc": "Hvis du har spørgsmål om tjenesten, kan du skrive til <a {linkProps}>contact@comparia.beta.gouv.fr</a>."
+        },
+        "privacy": {
+            "title": "Fortrolighedspolitik",
+            "desc": "Tjenesten udgives af det franske kulturministeriums digitale afdeling.",
+            "cookiesTitle": "Cookies og samtykke",
+            "cookiesDesc": "Denne hjemmeside placerer en lille tekstfil (en \"cookie\") på din computer, når du besøger den. Dette giver os mulighed for at måle antallet af besøg og forstå, hvilke sider der er mest besøgte.",
+            "cookiesDescMore": "Du kan fravælge sporing af din browsing på dette websted. Dette beskytter dit privatliv, men det forhindrer også ejeren i at lære af dine handlinger og skabe en bedre oplevelse for dig og andre brugere.",
+            "cookiesBannerTitle": "Hvorfor vises der ikke et banner om cookie-samtykke på dette websted?",
+            "cookiesBannerDesc": "Det er rigtigt, du behøvede ikke at klikke på et vindue, der dækkede halvdelen af siden, for at sige, at du accepterer brugen af cookies – selvom du ikke ved, hvad det betyder!",
+            "cookiesBannerNoNeed": "Intet usædvanligt, ingen særlig behandling i forbindelse med et .gouv.fr-domæne. Vi overholder blot loven, som fastslår, at visse værktøjer til publikumssporing, der er korrekt konfigureret til at respektere privatlivets fred, er undtaget fra forudgående godkendelse.",
+            "cookiesBannerTools": "Vi bruger <a {matomoLinkProps}>Matomo</a>, et <a {libreLinkProps}>gratis</a> værktøj, der er konfigureret til at overholde CNIL's \"Cookies\" <a {cnilLinkProps}>anbefaling</a>. Det betyder, at din IP-adresse for eksempel anonymiseres, inden den registreres. Det er derfor umuligt at knytte dine besøg på dette websted til din person.",
+            "dataAccessTitle": "Jeg bidrager til at berige dine data, kan jeg få adgang til dem?",
+            "dataAccessDesc": "Selvfølgelig! Webstedets brugsstatistikker er frit tilgængelige på <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessDatasets": "Brugerdialog og præferencedata distribueres under Etalabs Open License 2.0 på Hugging Face-platformen samt på Data.gouv.fr via Kulturministeriets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "privacyTitle": "Behandler vi personoplysninger?",
+            "privacyDesc": "Tjenesten behandler ikke personoplysninger som defineret af CNIL, dvs. oplysninger, der direkte eller indirekte kan henføres til en identificerbar fysisk person.",
+            "privacyData": "De data, der indsamles på hjemmesiden, er følgende:",
+            "privacyDataArena": "Data relateret til brugeres samtaler med modellerne: spørgsmål stillet af brugere, modellernes svar og brugerpræferencer udtrykt mellem de to modeller",
+            "privacyDataForm": "Data relateret til spørgeskemaet \"Hjælp os med at forbedre compar:IA\".",
+            "privacyResp": "Brugeren er ansvarlig for de data eller det indhold, som vedkommende indtaster i den prompt, som platformen stiller til rådighed. Ved at acceptere <a {linkProps}>brugsbetingelserne</a> accepterer brugeren ikke at overføre oplysninger, der kan identificere vedkommende selv eller en tredjepart.",
+            "dataUseTitle": "Hvilken behandling foretages der af samtaledataene?",
+            "dataUseDesc": "Under alle omstændigheder forpligter udgiveren sig til at implementere foranstaltninger, der sikrer anonymiseringen af dialogdata, inden disse gøres offentligt tilgængelige.",
+            "dataTimeTitle": "Hvor længe opbevarer vi disse data?",
+            "dataTimeDesc": "Data vedrørende brugere og deres samtaler med modeller gemmes fra det tidspunkt, hvor præferenceafstemningen registreres.",
+            "dataRespTitle": "Hvem er ansvarlig for databehandlingen?",
+            "dataRespDesc": "Det franske kulturministeriums digitale afdeling er ansvarlig for behandlingen af dine personoplysninger.",
+            "dataExtraTitle": "Hvem hjælper os med at behandle dataene?",
+            "dataExtraHost": "Underleverandør: OVH",
+            "dataExtraCountry": "Destinationsland: Frankrig",
+            "dataExtraWhat": "Udført behandling: Hosting",
+            "dataExtraWarranty": "Garantier: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>"
+        },
+        "a11y": {
+            "disclaimer": "<strong> compar:IA </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
+            "title": "Erklæring om tilgængelighed",
+            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> comparia.beta.gouv.fr </strong> .",
+            "stateTitle": "Overholdelsesstatus",
+            "stateDesc": "Hjemmesiden comparia.beta.gouv.fr overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret <strong>. Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
+            "stateNavigate": "navigere på alle sider på webstedet ved hjælp af et tastatur",
+            "stateScreenReader": "se hjemmesiden med en skærmlæser.",
+            "statePrefs": "tilpasse siden til dine præferencer (skriftstørrelse, skærmzoom, ændring af typografi osv.) uden tab af indhold",
+            "improveTitle": "Forbedring og kontakt",
+            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af beta.gouv.fr for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
+            "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
+            "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
+            "remedyTitle": "Klageadgang",
+            "remedyDesc": "Denne procedure skal anvendes i følgende tilfælde: Du har rapporteret en tilgængelighedsfejl til webstedsadministratoren, som forhindrer dig i at få adgang til indhold eller en af portalens tjenester, og du har ikke modtaget et tilfredsstillende svar.",
+            "remedyList": "Du kan:",
+            "remedyAdvocate": "Skriv en besked til <a {linkProps}>Ombudsmanden</a>",
+            "remedyDelegateAdvocate": "Kontakt repræsentanten for <a {linkProps}>ombudsmanden i dit område</a>",
+            "remedyAdvocateAdress": "Send et brev med posten (gratis, uden frimærke): Ombudsmanden - Gratis svar 71120 75342 Paris CEDEX 07"
+        }
+    },
+    "welcome": {
+        "title": "Velkommen til compar:IA!",
+        "goodPractices": "Her er nogle gode råd:",
+        "errors": "AI kan begå fejl: vi opfordrer dig til at kontrollere de leverede oplysninger",
+        "privacy": "Del ikke personlige oplysninger såsom dit navn, efternavn eller adresse",
+        "use": "Brug ikke sammenligningsværktøjet til ulovlige eller skadelige formål",
+        "go": "Så er vi klar"
+    },
+    "home": {
+        "intro": {
+            "title": "Stol ikke på svarene <span {props}>fra en enkelt AI</span>",
+            "desc": "Før en blind samtale med to AI'er og vurdér deres svar",
+            "tos": {
+                "accept": "Jeg accepterer <a {linkProps}>brugsbetingelserne</a>",
+                "help": "Data deles til forskningsformål",
+                "error": "Du skal acceptere brugsbetingelserne for at fortsætte"
+            },
+            "steps": {
+                "title": "Sådan fungerer det",
+                "a11yDesc": "1. Jeg chatter med to skjulte AI'er: Chat så længe du vil. 2. Jeg angiver mine præferencer: Dermed hjælper du med at forbedre AI-modellerne. 3. Modellernes identiteter afsløres: Få mere at vide om dem og deres egenskaber.",
+                "one": {
+                    "title": "Jeg chatter med to skjulte AI'er",
+                    "a": "Chat så længe",
+                    "b": "som du vil"
+                },
+                "two": {
+                    "title": "Jeg giver min præference",
+                    "a": "Ved at gøre dette,",
+                    "b": "hjælper du med at forbedre AI modellerne"
+                },
+                "three": {
+                    "title": "Modellernes identiteter afsløres!",
+                    "a": "Lær mere om dem og deres egenskaber",
+                    "b": "om AI og deres egenskaber"
+                }
+            }
+        },
+        "use": {
+            "title": "Hvad bruges compar:IA til?",
+            "desc": "compar:IA er et gratis værktøj, der hjælper med at øge borgernes bevidsthed om generativ AI og dens udfordringer.",
+            "compare": {
+                "title": "Sammenlign svarene fra forskellige AI-modeller",
+                "desc": "Diskuter og udvikl din kritiske tænkning ved at give udtryk for dine præferencer",
+                "alt": "Sammenlign"
+            },
+            "test": {
+                "title": "Test de nyeste AI i økosystemet på ét sted",
+                "alt": "Test",
+                "desc": "Test forskellige modeller: åbne, proprietære, små, store..."
+            },
+            "measure": {
+                "desc": "Opdag den miljømæssige påvirkning af dine samtaler med hver model",
+                "title": "Mål det miljømæssige fodaftryk af spørgsmål stillet til AI",
+                "alt": "Mål"
+            }
+        },
+        "europe": {
+            "title": "Sammenligneren <span {props}>bliver europæisk!</span>",
+            "desc": "Litauen, Sverige og Danmark slutter sig til Frankrig i at indføre sammenligningsværktøjet for at forbedre fremtidige AI-modeller på deres nationale sprog.",
+            "question": "Vil du gerne have chatbot-arenaen på dit sprog?",
+            "languages": {
+                "da": "på dansk",
+                "fr": "på fransk",
+                "lt": "på litauisk",
+                "sv": "på svensk"
+            }
+        },
+        "vote": {
+            "title": "Hvorfor er din stemme vigtig?",
+            "desc": "Dine præferencer beriger compar:IA-datasættene, som har til formål at forbedre fremtidige AI-modeller på fransk, svensk, litauisk og dansk",
+            "steps": {
+                "prefs": {
+                    "title": "Dine præferencer",
+                    "desc": "Efter at have snakket med AI'erne, bliver du bedt om at angive din præference for en model ud fra givne kriterier, såsom relevansen eller nytten af svarene."
+                },
+                "datasets": {
+                    "title": "Datasæt efter sprog",
+                    "desc": "Alle spørgsmål og afstemninger samles i datasæt og offentliggøres efter anonymisering."
+                },
+                "finetune": {
+                    "title": "Modeller, der er finjusteret til specifikke sprog",
+                    "desc": "Virksomheder og akademiske institutioner kan bruge datasættene til at træne nye modeller, der i højere grad respekterer sproglig og kulturel mangfoldighed."
+                }
+            },
+            "datasetAccess": "Få adgang til datasættene"
+        },
+        "usage": {
+            "title": "Specifikke use cases for compar:IA",
+            "desc": "Værktøjet er også rettet mod AI-eksperter og undervisere til mere specifikke anvendelsestilfælde",
+            "use": {
+                "title": "Genbrug data",
+                "desc": "Udviklere, forskere, modeludgivere – få adgang til compar:IA's datasæt for at forbedre modeller til sprog med begrænsede ressourcer"
+            },
+            "explore": {
+                "title": "Udforsk modellerne",
+                "desc": "Find alle modelspecifikationer og brugsbetingelserne på ét sted"
+            },
+            "educate": {
+                "title": "Uddan og skab bevidsthed",
+                "desc": "Brug chatbot-arenaen som et pædagogisk redskab til at diskutere AI med dit publikum"
+            }
+        },
+        "origin": {
+            "team": {
+                "title": "Hvem er vi?",
+                "desc": "Chatbot-området ledes inden for det franske kulturministerium af et tværfagligt team – AI-eksperter, udviklere, implementeringsspecialister og designere – med en mission om at gøre dialogbaseret AI mere gennemsigtig og tilgængelig for alle."
+            },
+            "project": {
+                "title": "Hvem tog initiativ til projektet?",
+                "desc": "Chatbot-arenaen blev designet og udviklet som en del af et statsligt startup-projekt ledet af det franske kulturministerium og integreret i programmet <a {linkProps}>Beta.gouv.fr</a> af det tværministerielle digitale direktorat (DINUM). Dette initiativ støtter franske offentlige myndigheder i at opbygge nyttige, enkle og brugervenlige digitale tjenester."
+            }
+        },
+        "faq": {
+            "title": "Dine ofte stillede spørgsmål",
+            "discover": "Se andre spørgsmål"
+        }
+    },
+    "product": {
+        "title": "Alt, hvad du behøver at vide om chatbot-arenaen",
+        "comparator": {
+            "title": "Arenaen gør det muligt at oprette <span {props}>præference-datasæt</span> med fokus på <span {props}>reel brug</span> i <span {props}>europæiske sprog</span>.",
+            "cta": "Gå til sammenligningsværktøjet",
+            "challenges": {
+                "title": "Platformen adresserer flere udfordringer",
+                "bias": {
+                    "title": "Kulturel og sproglig bias",
+                    "desc": "Fremhæv AI bias, der skyldes underrepræsentation af ikke-engelske data i modeller, og øg bevidstheden om deres virkelige indvirkning."
+                },
+                "impacts": {
+                    "title": "Miljøpåvirkning",
+                    "desc": "Vis den miljømæssige påvirkning af generativ AI, som stadig er stort set ukendt for offentligheden."
+                },
+                "pluralism": {
+                    "title": "Model-diversitet",
+                    "desc": "Sikr at borgerne har adgang til en bred vifte af AI-modeller, så de kan træffe informerede valg og udvikle en kritisk forståelse af disse teknologier."
+                },
+                "thinking": {
+                    "title": "Kritisk tænkning og samfundsmæssige spørgsmål",
+                    "desc": "Frem kritisk tænkning om generativ AI's rolle i personlige og professionelle praksisser."
+                }
+            },
+            "europe": {
+                "title": "Arenaen <span {props}>bliver europæisk</span>!",
+                "adventure": "Fra sommeren 2025 tilslutter Litauen, Sverige og Danmark sig initiativet!",
+                "desc": "Arenaen er nu tilgængelig for deres borgere på nationale sprog med en central mission: at opbygge præferencedatasæt for at forbedre fremtidige AI-modellers ydeevne på sprog med begrænsede ressourcer.",
+                "catch": "Vil du gerne have chatbot-arenaen på dit sprog?"
+            }
+        },
+        "problem": {
+            "title": "Respekterer samtalebaserede AI-modeller <span {props}>mangfoldigheden</span> i de europæiske sprog?",
+            "diversity": {
+                "stereotypes": {
+                    "title": "Bias-forstærkende svar",
+                    "desc": "Samtalebaserede AI-systemer ser ud til at være flydende i alle sprog – men deres output kan stadig være stereotypisk eller diskriminerende."
+                },
+                "english": {
+                    "title": "Træningsdata overvejende på engelsk",
+                    "desc": "Samtalebaseret AI er afhængig af store sprogmodeller (LLM'er), der primært er trænet på engelske data, hvilket skaber sproglige og kulturelle skævheder i deres output."
+                },
+                "diversity": {
+                    "title": "Overset kulturel og sproglig mangfoldighed",
+                    "desc": "Disse bias kan føre til ufuldstændige eller direkte forkerte svar, der negligerer mangfoldigheden i de europæiske sprog og kulturer."
+                }
+            },
+            "alignment": {
+                "title": "Hvordan kan vi reducere kulturel og sproglig bias i disse modeller?",
+                "desc": "Justering: En teknik til reduktion af bias baseret på crowdsourcing af brugerpræferencer for at forbedre modeladfærd",
+                "alignment": {
+                    "title": "Justering: en kritisk fase efter træningen",
+                    "a": "Justering kommer efter en sprogmodels prætræningsfase og fungerer som det sidste trin til \"forfining\" eller \"polering\". Under prætræningen lærer modellen at forudsige det næste ord og får dermed evnen til at generere sammenhængende tekst – men justeringen er det, der tilpasser den til menneskelige præferencer.",
+                    "b": "Justeringsfasen træner modellen til bedre at imødekomme menneskelige behov ved at gøre den <strong>mere relevant</strong> (besvare spørgsmål mere præcist), <strong>mere ærlig</strong> (indrømme, når der mangler tilstrækkelige data), og <strong>mere sikker</strong> (undgå skadeligt eller upassende indhold).",
+                    "c": "<strong>Uden justering kan en LLM være teknisk kapabel, men upraktisk at bruge, da den ikke forstår, hvad brugerne virkelig forventer i en samtale.</strong>"
+                },
+                "datasets": {
+                    "title": "Specifikke datasæt",
+                    "a": "Justeringen er afhængig af højt specialiserede datasæt, der er omhyggeligt designet til at lære modellen \"korrekt\" adfærd.",
+                    "b": "<strong>Præferencedata</strong> er en vigtig komponent i justeringen og fungerer sammen med <strong>ekspertdata</strong> (ekspertudarbejdede samtaler mellem mennesker og AI med præcise retningslinjer for tone og stil), <strong>sikkerhedsdata</strong> (udvalgte eksempler, der lærer modeller at afvise skadelige anmodninger), og <strong>domænespecifikke datasæt</strong> (tilpasset til områder som medicin, jura eller uddannelse).",
+                    "c": "Præferencedata præsenterer flere mulige svar på det samme spørgsmål, rangordnet af menneskelige evaluatorer på baggrund af kriterier som relevans, nytteværdi eller skadepotentiale. Brugerne angiver, hvilket svar der fungerer bedst, og disse kuraterede datasæt bruges derefter til at finjustere modellerne, så de stemmer overens med de udtrykte menneskelige præferencer."
+                },
+                "english": {
+                    "title": "De europæiske sprog lider under en mangel på præferencedata",
+                    "a": "Præferencedata er dyre at producere, fordi <strong>hvert eksempel kræver en dygtig menneskelig evaluering</strong>. Platforme som chat.lmsys.org hjælper med at crowdsource disse datasæt, men få brugere bidrager på deres modersmål, hvilket betyder, at sprog med få ressourcer er underrepræsenterede.",
+                    "b": "Der findes kun få eller ingen præferencedatasæt for europæiske sprog. I LMSYS' datasæt udgør franske søgninger for eksempel mindre end 1% af det samlede antal.",
+                    "c": "compar:IA er en chatbot-arena, der er designet til at samle multilingvale samtaler, som indfanger regionsspecifikke kulturelle referencer som daglige gøremål, lokale kulinariske traditioner, uddannelsessystemer eller historiske og litterære milepæle."
+                },
+                "diversity": {
+                    "title": "Diversificer datakilder for at reducere bias",
+                    "a": "For at afspejle mangfoldigheden af kulturer og sprog i modelresultaterne skal <strong>justeringsdatasæt indeholde en bred vifte af sprog</strong>, kontekster og virkelige brugeropgaver. Diversificering af justeringsdata forbedrer i sidste ende en models ydeevne på to vigtige måder:",
+                    "b": "For det første <strong>reducerer den kulturel bias</strong> ved at forhindre, at et enkelt – ofte engelsksproget – perspektiv dominerer AI'ens svar. Modellen lærer, at gyldige svar varierer alt efter den kulturelle kontekst, og anerkender flere legitime måder at besvare det samme spørgsmål på.",
+                    "c": "For det andet muliggør eksponering for sproglig og kulturel mangfoldighed kontekstbevidste svar: en fransk bruger får rådgivning, der er tilpasset de franske systemer, mens en dansk bruger modtager information, der er tilpasset den nationale kontekst.",
+                    "d": "Resultatet? En mere inkluderende samtalebaseret AI – en AI, der anerkender og tilpasser sig forskellige kulturelle perspektiver."
+                }
+            }
+        },
+        "partners": {
+            "institution": {
+                "title": "Institutionelle partnere"
+            },
+            "diffusion": {
+                "title": "Kommunikationspartnere",
+                "desc": "Vi opbygger et netværk af partnere, der integrerer chatbot-området i deres tjenester og uddannelsestilbud.",
+                "catch": "Vil du gerne bruge chatbot-arenaen i en professionel sammenhæng?",
+                "cta": "Giv os besked"
+            },
+            "academy": {
+                "title": "Akademiske partnere",
+                "desc": "Vi er fast besluttede på at sikre, at de datasæt, vi genererer, fremmer tværfaglig forskning og bygger bro mellem humaniora, samfundsvidenskab og data science.",
+                "catch": "Arbejder du med et forskningsprojekt? Har du forslag eller brug for afklaring om vores metodik eller datasæt?"
+            },
+            "services": {
+                "title": "Anvendte tjenester",
+                "desc": "Beregninger af miljøpåvirkningen er baseret på ovenstående værktøjer."
+            }
+        }
+    },
+    "datasets": {
+        "access": {
+            "title": "Få adgang til compar:IA datasæt",
+            "desc": "Platformens spørgsmål og præferencer er primært på fransk, dansk, svensk og litauisk, hvilket afspejler organisk, reel brug – ikke kunstige spørgsmål. Disse datasæt er offentligt tilgængelige på <a {linkProps}>data.gouv.fr</a> og Hugging Face.",
+            "catch": "Modeludgivere, forskere, virksomheder, nu er det jeres tur!",
+            "share": "Vis os, hvordan I bruger datasættene",
+            "repos": {
+                "conversations": {
+                    "title": "/samtaler",
+                    "desc": "Alle spørgsmål og svar"
+                },
+                "reactions": {
+                    "title": "/reaktioner",
+                    "desc": "Alle reaktioner på beskeder"
+                },
+                "votes": {
+                    "title": "/stemmer",
+                    "desc": "Alle de udtrykte præferencer"
+                }
+            }
+        },
+        "reuse": {
+            "title": "Hvordan bruges disse data?",
+            "desc": "Eksempler på brug af compar:IA datasæt",
+            "bunka": {
+                "desc": "Bunka.ai-teamet gennemførte en storstilet undersøgelse af bruger-AI-interaktioner på chatbot-området, hvor de kortlagde dominerende temaer, nøgleopgaver og balancen mellem automatisering og menneskelig forstærkning. Deres analyse, der er baseret på 25.000 reelle samtaler, giver en sjælden empirisk indsigt i, hvordan mennesker rent faktisk bruger AI.",
+                "conversations": {
+                    "title": "Udforsk datavisualiseringen",
+                    "desc": "Interaktiv visualisering af samtaler, hvor hver klynge repræsenterer et tilbagevendende tema, som brugerne diskuterer (f.eks. uddannelse, sundhed, miljø eller endda filosofi)."
+                },
+                "analyze": {
+                    "title": "Få adgang til analysen",
+                    "desc": "Analyse af brugeres samtaler med registrering af opgaver (oprettelse, informationssøgning osv.), emner (kunst og kultur, uddannelse osv.), komplekse følelser (nysgerrighed, entusiasme osv.), sproglig tone (formel, professionel osv.)"
+                },
+                "method": "Lær mere om metodikken"
+            }
+        }
+    },
+    "chatbot": {
+        "continuePrompt": "Fortsæt chatten med AI-modellerne",
+        "revealButton": "Afslør modellerne",
+        "conversation": "Chat",
+        "errors": {
+            "tooLong": {
+                "title": "Ups, samtalen er for lang for en af modellerne.",
+                "message": "Hver model er begrænset i størrelsen af de samtaler, den kan håndtere.",
+                "vote": "Du kan stadig angive dine præferencer for disse modeller eller starte en samtale med to nye.",
+                "retry": "Du kan genstarte en chat med to nye modeller."
+            },
+            "other": {
+                "title": "Ups, midlertidig fejl",
+                "message": "Der er opstået en midlertidig fejl.",
+                "vote": "Eller afslut oplevelsen ved at angive din præference for disse modeller.",
+                "retry": "Du kan prøve at skrive til modellerne igen."
+            }
+        },
+        "loading": "Indlæser svar"
+    },
+    "reveal": {
+        "impacts": {
+            "title": "Chatens energiforbrug",
+            "size": {
+                "label": "modelstørrelse",
+                "count": "milliarder parametre.",
+                "estimated": "(ca.)",
+                "quantized": "(kvantiseret)"
+            },
+            "tokens": {
+                "label": "tekststørrelse",
+                "tooltip": "AI analyserer og genererer sætninger ud fra ord eller dele af ord på cirka fire bogstaver; denne tekstdel kaldes et token. Jo længere en tekst er, jo større er antallet af tokens.",
+                "tokens": "tokens"
+            },
+            "energy": {
+                "label": "energiforbrug",
+                "tooltip": "Målt i watt-timer repræsenterer energiforbruget den elektricitet, som modellen bruger til at behandle en forespørgsel og generere det tilsvarende svar. Generelt gælder det, at jo større en model er (i milliarder af parametre), jo mere energi kræves der for at producere et token."
+            }
+        },
+        "equivalent": {
+            "title": "Hvilket svarer til:",
+            "co2": {
+                "label": "CO <sub> 2 </sub> udledt",
+                "tooltip": "Den udledte CO <sub> 2 </sub> svarer til den mængde kuldioxid, der udledes ved den energi, der bruges til at drive modellen. Den afspejler den miljømæssige påvirkning, der er forbundet med energiforbruget. Beregningen af watt-time/CO <sub> 2 </sub>-ækvivalensen varierer afhængigt af hvert lands energimix. De servere, der anvendes til modelinferens, er dog ikke alle placeret i Europa. Ækvivalensberegningen er således baseret på den globale gennemsnitlige CO <sub> 2 </sub>-emissionsrate pr. forbrugt energi."
+            },
+            "lightbulb": {
+                "label": "LED-pære",
+                "tooltip": "Data beregnet på baggrund af forbruget af en standard 5W LED-pære (E14)"
+            },
+            "streaming": {
+                "label": "online videoer",
+                "tooltip": "Data beregnet på baggrund af CO2-aftrykket fra en times streaming af video i høj opløsning på et fjernsyn med Wi-Fi-forbindelse (kilde <a {linkProps}>ADEME</a>)"
+            }
+        },
+        "feedback": {
+            "shareResult": "Del dit resultat",
+            "moreOnVotes": "Lær mere om stemmer",
+            "description": "Del compar:AI med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
+            "example": "Eksempel på delte resultater"
+        }
+    },
+    "errors": {
+        "unknown": "Der er opstået en fejl",
+        "404": {
+            "title": "Siden blev ikke fundet",
+            "error": "Fejl 404",
+            "sorry": "Den side, du søger, kan ikke findes. Vi beklager ulejligheden.",
+            "desc": "Hvis du har indtastet URL'en i din browser, skal du kontrollere, om den er korrekt. Siden er muligvis ikke længere tilgængelig. <br />Du kan fortsætte ved at besøge vores hjemmeside. <br /> Hvis du har svært ved at finde den side, du leder efter, skal du kontakte os, så vi kan videresende dig til den korrekte URL."
+        },
+        "unexpected": {
+            "title": "Uventet fejl",
+            "error": "Fejl {code}",
+            "sorry": "Vi beklager, der er et problem med tjenesten, vi arbejder på at løse det så hurtigt som muligt.",
+            "desc": "Prøv at opdatere siden eller prøv igen senere."
+        }
+    },
+    "actions": {
+        "copyMessage": {
+            "do": "Kopiér beskeden",
+            "done": "Besked kopieret"
+        },
+        "copyLink": {
+            "do": "Kopiér linket",
+            "done": "Link kopieret til udklipsholder"
+        },
+        "contact": "Kontakt os",
+        "contactUs": "Kontakt os",
+        "home": "Hjemmeside",
+        "returnHome": "Tilbage til startsiden",
+        "seeMore": "Se mere",
+        "selectLanguage": "Vælg sprog"
+    }
+}
