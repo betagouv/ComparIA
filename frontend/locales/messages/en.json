@@ -263,7 +263,10 @@
         "reset": "Reset",
         "restart": "Start again",
         "retry": "Start again",
-        "tooltip": "Tooltip"
+        "tooltip": "Tooltip",
+        "loading": "Loading",
+        "NA": "N / A",
+        "search": "Search"
     },
     "a11y": {
         "externalLink": "{text}"
@@ -287,7 +290,8 @@
             "donnees-personnelles": "Privacy policy",
             "accessibilite": "Accessibility statement",
             "arene": "Chat",
-            "share": "My results"
+            "share": "My results",
+            "ranking": "Leaderboard"
         }
     },
     "header": {
@@ -610,7 +614,8 @@
                 "adventure": "As of summer 2025, Lithuania, Sweden, and Denmark are joining the initiative!",
                 "desc": "The arena is now available to their citizens in national languages, with a core mission: build preference datasets to improve future AI model performance in low-resource languages.",
                 "catch": "Would you like to have the chatbot arena in your language?"
-            }
+            },
+            "tabLabel": "The arena"
         },
         "problem": {
             "title": "Do conversational AI models respect the <span {props}>diversity</span> of European languages?",
@@ -656,7 +661,8 @@
                     "c": "Second, exposure to linguistic and cultural diversity enables context-aware responses: a French user gets advice tailored to France’s systems, while a Danish user receives information aligned with their national context.",
                     "d": "The result? A more inclusive conversational AI - one that acknowledges and adapts to diverse cultural perspectives."
                 }
-            }
+            },
+            "tabLabel": "The initial problem"
         },
         "partners": {
             "institution": {
@@ -676,7 +682,14 @@
             "services": {
                 "title": "Services used",
                 "desc": "Environmental impact calculations are based on the tools above."
-            }
+            },
+            "tabLabel": "Partners"
+        },
+        "faq": {
+            "tabLabel": "FAQ"
+        },
+        "history": {
+            "tabLabel": "Project history"
         }
     },
     "datasets": {
@@ -808,5 +821,303 @@
         "returnHome": "Return to homepage",
         "seeMore": "See more",
         "selectLanguage": "Select a language"
+    },
+    "generated": {
+        "licenses": {
+            "os": {
+                "Apache 2.0": {
+                    "license_desc": "<p> This license allows you to freely use, modify, and distribute the model, including for commercial purposes. In addition to freedom of use, it guarantees legal protection by including a patent grant clause that acts as insurance: if you use this model, the contributors agree not to sue you for violating their patents related to the project. This mutual protection avoids legal conflicts between users and developers. When distributing modified versions, significant changes must be indicated with appropriate notices, ensuring transparency for the user. </p>"
+                },
+                "CC-BY-NC-4.0": {
+                    "license_desc": "<p> This license allows you to freely share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights. </p>",
+                    "reuse_specificities": "but only for non-commercial uses"
+                },
+                "Gemma": {
+                    "license_desc": "<p> This license is designed to encourage the use, modification, and redistribution of the software, but includes a clause stating that all modified or improved versions must be shared with the community under the same source license, thus promoting collaboration and transparency in software development. </p>"
+                },
+                "Llama 3.1": {
+                    "commercial_use_specificities": "below 700 million users",
+                    "license_desc": "<p> This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution. </p>"
+                },
+                "Llama 3.3": {
+                    "commercial_use_specificities": "below 700 million users",
+                    "license_desc": "<p> This <strong> non-exclusive, worldwide, royalty-free </strong> license allows you to freely use, reproduce, modify, and distribute the Llama 3.3 code and Materials with attribution. It notably permits reuse for improving derivative models, but imposes restrictions on very large-scale commercial operations. </p>"
+                },
+                "Llama 4": {
+                    "commercial_use_specificities": "below 700 million users\n",
+                    "license_desc": "<p> This non-exclusive, worldwide, royalty-free license allows you to use, reproduce, modify, and distribute the Llama 4 Materials (models and documentation) with attribution. However, it imposes two major restrictions: (1) companies exceeding 700 million monthly active users must obtain a special license from Meta, and (2) <strong> total exclusion </strong> of EU residents and companies headquartered in the EU from directly using the multimodal models, due to regulatory uncertainties related to the European AI Act. European end users may nevertheless access services integrating Llama 4, provided they are provided from outside the EU. </p>"
+                },
+                "Mistral AI Research License": {
+                    "license_desc": "<p> This non-exclusive, royalty-free license authorizes the use, copying, modification, and distribution of Mistral models and their derivatives (including modified or refined versions). However, it is strictly limited to research purposes. </p>",
+                    "reuse_specificities": "but only for non-commercial uses"
+                },
+                "MIT": {
+                    "license_desc": "<p> The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices. </p>"
+                }
+            },
+            "proprio": {
+                "Alibaba": {
+                    "license_desc": "The model is available under paid license and accessible via API on Alibaba company platforms, requiring pay-per-use based on the number of tokens processed or the infrastructure reserved."
+                },
+                "Amazon": {
+                    "license_desc": "The model is available under paid licensing and accessed through Amazon Bedrock, requiring to pay-as-you-go based on the number of tokens processed or infrastructure reserved.",
+                    "reuse_specificities": "except to distill or train other models on Amazon's platforms."
+                },
+                "Anthropic": {
+                    "license_desc": "The model is available under paid license and accessible via API on the Anthropic platform or partner platforms, requiring to pay-per-use based on the number of tokens processed or based on the infrastructure reserved to host the model."
+                },
+                "Google": {
+                    "license_desc": "The model is available under paid license and accessible via API on Google platforms, requiring to pay-per-use based on the number of tokens processed or on infrastructure reserved.",
+                    "reuse_specificities": "except for training other models on Vertex AI"
+                },
+                "Mistral AI": {
+                    "license_desc": "The model is available under a paid license and accessible via the Mistral API, Amazon Sagemaker, and several other infrastructure providers, requiring to pay-per-use based on the number of tokens processed or the infrastructure reserved."
+                },
+                "OpenAI": {
+                    "license_desc": "The model is available under a paid license and accessible via API on OpenAI's platforms or through Microsoft Azure services, requiring to pay-per-use based on the number of tokens processed or the infrastructure reserved."
+                },
+                "xAI": {
+                    "license_desc": "The model is available under a paid license and accessible via X and xAI, requiring to pay-per-use based on the number of tokens processed or infrastructure reserved."
+                }
+            }
+        },
+        "models": {
+            "DeepSeek R1": {
+                "desc": "<p> Very large model with high performance on mathematical, scientific and programming tasks, which simulates a reasoning step before generating its answer. </p>",
+                "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture with 61 layers. It has a total of 671 billion parameters, 37 billion of which are token-activated. Training used large-scale reinforcement learning, with multiple SFT (supervised fine-tuning) steps where the model learns from examples of correct answers. </p>",
+                "size_desc": "<p> With 671 billion parameters, DeepSeek R1 is a very large model that requires multiple powerful graphics cards to run. Reasoning models of this type take longer to produce an answer, which increases energy consumption. However, the Mixture of Experts (MoE) architecture activates only a portion of the parameters at each token, thus limiting its energy footprint. The context window reaches 128,000 tokens, which is suitable for analyzing long documents. </p>"
+            },
+            "DeepSeek R1 Llama 70B": {
+                "desc": "<p> Large model based on Meta Llama 3.3 70B, retrained with reasoning examples from the DeepSeek R1 model. It offers good math and coding capabilities. </p>",
+                "fyi": "<p> The model was not trained from scratch. It relies on Llama 3.3 70B, retrained using results generated by DeepSeek R1. This process gave Llama 3.3 70B the ability to simulate reasoning, without the user being able to choose whether or not to enable this feature. </p>\n <p> In accordance with the obligations of the Llama 3.3 license, the company must retain the mention of the source model in the name of the model, subject to the same licensing regime. </p>",
+                "size_desc": "<p> With 70 billion parameters, this model is considered large. It requires multiple powerful graphics cards to run, resulting in high inference costs. Reasoning models also take longer to produce an answer, increasing their energy consumption. </p>\n <p> The context window is 16,000 tokens, which can be limiting for analyzing large documents. </p>"
+            },
+            "DeepSeek V3": {
+                "desc": "<p> Very large model designed for complex tasks: code generation, tool usage, long document analysis. It can handle many languages, but is particularly well-suited to English and Chinese. </p>",
+                "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture, with 671 billion parameters but only activating 37 billion per generated token. It is well suited for tool calling, generating structured output (JSON), and code generation. </p>",
+                "size_desc": "<p> DeepSeek V3 is a very large model, requiring multiple graphics cards to run. The Mixture of Experts (MoE) architecture, however, allows only a portion of the parameters to be used for generating the next token, reducing the footprint compared to a dense model of the same size. </p>\n <p> The context window reaches 163,000 tokens, which is useful for analyzing long documents. </p>"
+            },
+            "Gemini 2.5 Flash": {
+                "desc": "<p> Large multimodal and multilingual model with two response modalities: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to generate the final answer directly. </p>",
+                "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture and has been distilled by keeping only an approximation of the predictions of the teacher model - Gemini 2.5 Pro. It has been trained on a TPUv5p architecture incorporating advances such as the ability to continue training automatically even in the event of training errors, data corruption, or memory issues. </p>\n <p> Gemini 2.5 Flash supports contexts of up to 1 million tokens and three hours of video content. Optimized vision processing allows for approximately three times longer video to be processed in the same context window: only 66 visual tokens are needed to generate a frame, compared to 258 previously. This model also enables native audio generation for dialogue and speech synthesis. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring multiple powerful graphics cards to run. However, the Mixture of Experts (MoE) architecture only activates a portion of the parameters to predict each new token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. Its context window extends up to 1 million tokens, which allows it to process very large document corpora. </p>"
+            },
+            "Gemma 3 12B": {
+                "desc": "<p> Small multimodal model suitable for common tasks such as question-and-answer, summarization, or image interpretation. </p>",
+                "fyi": "<p> It processes text and images and can run locally on powerful laptops or servers with a single graphics card. It has been trained to be able to interact with external tools (web search, etc.) via function calls, which makes it useful in agentic use cases. </p>",
+                "size_desc": "<p> With 12 billion parameters, it is one of the smallest models. It can be used locally on a personal computer to preserve data confidentiality, or on an inexpensive server to limit costs compared to a larger model. </p>\n <p> Its context window can hold up to 128,000 tokens, making it easy to process long documents. </p>"
+            },
+            "Gemma 3 27B": {
+                "desc": "<p> Medium-sized, multimodal model suitable for common tasks such as question-and-answering, summarization, or image interpretation. </p>",
+                "fyi": "<p> It can process text and images on a server equipped with a single powerful graphics card. It has been trained to be able to interact with external tools (internet search, etc.) via function calls, which makes it useful in agentic use cases. </p>",
+                "size_desc": "<p> With 27 billion parameters, it is a medium-sized model. It can be deployed on a server with a single graphics card (GPU). </p>\n <p> It accepts contexts of up to 128,000 tokens, making it suitable for parsing long documents. </p>"
+            },
+            "Gemma 3 4B": {
+                "desc": "<p> Very small, compact, multimodal model suitable for common tasks such as question-and-answer, summarization, or image interpretation. </p>",
+                "fyi": "<p> It can process text and images while running on less powerful computers, including smartphones and tablets. It has been trained to interact with external tools (web search, etc.) via function calls, making it usable in agentic use cases. </p>",
+                "size_desc": "<p> With 4 billion parameters, it is considered a very small model. It can be used locally to preserve data confidentiality, or on a server to limit costs compared to a larger model. </p>\n <p> Its context window can reach 128,000 tokens, allowing it to analyze long documents. </p>"
+            },
+            "Gemma 3n 4B": {
+                "desc": "<p> Very small, compact, multimodal model designed to run locally on a computer or smartphone, without the need for a server - it is capable of adapting its ressource consumption according to the capacity of the device it is running on. </p>",
+                "fyi": "<p> This model can process text, images, and audio. It is based on the MatFormer architecture and a PLE (per-layer embeddings) cache system, which activates only the useful parameters depending on the task, adapting to the capacity of the machines on which the model runs. </p>",
+                "size_desc": "<p> With 4 billion parameters, it is one of the smallest models available. It can be used locally on a computer or smartphone to maintain data confidentiality, or on a server to limit costs compared to a larger model. </p>\n <p> Its context window goes up to 32,000 tokens. </p>"
+            },
+            "GPT 4.1 Nano": {
+                "desc": "<p> Smaller, lightweight version of the GPT 4.1 model, designed to keep costs down while remaining competitive on most tasks. The model supports very long queries, making it suitable for use in long document corpus analysis. </p>",
+                "fyi": "<p> This is a distilled version of a larger model, with partial knowledge transfer. It can process text, images, and audio. Its context window can reach up to 1 million tokens, making it particularly suitable for analyzing text corpora or very long code repositories. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a medium-sized model, requiring a powerful graphics card to run. However, the supposed Mixture of Experts (MoE) architecture activates only a subset of parameters at each token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. </p>"
+            },
+            "GPT 5": {
+                "desc": "<p> GPT-5 is not a single model, but a unified system composed of two separate models: a fast model ( <code> gpt-5-main </code> ) for common queries and a reasoning model ( <code> gpt-5-thinking </code> ) for complex problems. Compared to its predecessors, OpenAI claims it is more useful in real-world queries, with notable improvements in the areas of writing, coding, and health. Its creators also claim it produces less hallucinations. Thanks to its context window of 400,000 tokens, it can accept long queries, making it possible to analyze multiple documents at once. </p>",
+                "fyi": "<p> Developers using this model can configure a verbosity parameter to adjust the length of the reasoning phase. </p>\n <p> In terms of security, the system uses a new security approach called \"safe-completions\" to prevent unauthorized content at response time rather than at request time. The model's creators also used the \"reasoning\" training phase to make it more \"resistant\" to attempts to circumvent their security rules ( <em> jailbreaking </em> ). </p>",
+                "size_desc": "<p> The GPT-5 system is composed of models of various sizes, but the exact sizes are unknown. Its architecture is designed to include multiple models, orchestrated by an internal routing system, which selects the smallest model suited to the task to optimize the speed and depth of reasoning. The architecture is likely based on a \"mixture of experts\" (MoE), meaning that only a portion of the parameters are activated for each query. This allows for greater energy efficiency and high performance. Available estimates of model sizes are based on public information and indirect indices such as inference costs and response latency. </p>"
+            },
+            "GPT 5 Mini": {
+                "desc": "<p> GPT-5 Mini is a lightweight version of the main GPT-5 model. It is designed for use in environments where cost constraints are needed, such as large scale. Its reasoning model performs almost as well as the main model ( <code> gpt-5-thinking </code> ) despite its smaller size. Thanks to its 400,000 token context window, it can handle long queries, making it possible to analyze multiple documents at once. </p>",
+                "fyi": "<p> The system uses a new security approach called \"safe-completions\" to prevent unauthorized content at response time rather than request time. </p>\n <p> Although it is a smaller version, it is very competitive against the leading GPT-5 model on many benchmarks, especially in the medical field. </p>",
+                "size_desc": "<p> The Mini model is a more compact (medium-sized according to estimations) version of the GPT-5 system. It is designed to perform optimally for a good balance between performance and cost, thanks to a routing system that selects it for specific tasks. The architecture is likely based on a \"mixture of experts\" (MoE), meaning that only a portion of the parameters are activated for each query. However, the models are likely very large, requiring multiple powerful graphics cards for inference. </p>"
+            },
+            "GPT 5 Nano": {
+                "desc": "<p> GPT-5 Nano is the smallest and fastest version of the GPT-5 reasoning model. It is designed for contexts where ultra-low latency or cost is required. Thanks to its 400,000 token context window, it can accept long queries, making it possible to analyze multiple documents at once. </p>",
+                "fyi": "<p> The system uses a new security approach called \"safe-completions\" to prevent unauthorized content at response time rather than request time. </p>",
+                "size_desc": "<p> The Nano model is the most compact of the GPT-5 family (estimated to be small). It is selected by the routing system for queries requiring ultra-low latency and instant responses. Its architecture is likely based on a \"Mixture of Experts\" (MoE), which allows for better energy efficiency and high performance, even on queries requiring a fast response. </p>"
+            },
+            "GPT OSS-120B": {
+                "desc": "<p> The larger of OpenAI's first two semi-open models since GPT-2. Designed in response to the rise of open source players like Meta (LLaMA) and Mistral, it is a powerful reasoning model, particularly on complex tasks and in \"agentic\" environments. </p>",
+                "fyi": "<p> This model can run on a single 80GB GPU (like the NVIDIA H100). It has a context window of 131,000 tokens, making it ideal for analyzing large documents. </p>\n <p> In the model configurations, it is possible to choose between three levels of reasoning ( <em> low </em> , <em> medium </em> , and <em> high </em> ) which determine the verbosity of the model. </p>",
+                "size_desc": "<p> The architecture is a \"mixture of experts\" (MoE), which allows for greater energy efficiency by activating only a portion of the parameters (5.1 billion per token) for each token prediction. It is a reasoning model, thus its energy consumption is higher because it generates an internal chain of thought before providing the final answer. It has a context window of 131,000 tokens, making it ideal for analyzing large documents. </p>"
+            },
+            "GPT OSS-20B": {
+                "desc": "<p> The smaller of OpenAI's two semi-open models. It was designed in response to open source competition and is intended for use cases requiring low latency as well as local or specialized deployments. </p>",
+                "fyi": "<p> This model can be run locally on a high-end laptop with only 16GB of VRAM (or system RAM). This makes it a very accessible option for developers. </p>\n <p> In the model configurations, it is possible to choose between three levels of reasoning ( <em> low </em> , <em> medium </em> , and <em> high </em> ) which determine the verbosity of the model at the reasoning step. </p>",
+                "size_desc": "<p> With 20 billion parameters, this model belongs to the medium-sized model category. The architecture is based on a \"mixture of experts\" (MoE), which allows for greater energy efficiency by activating only a portion of the parameters (3.6 billion per token) for each token generation. It is a reasoning model, which results in higher energy consumption because it generates an internal chain of thought before providing the final answer. It has a context window of 131,000 tokens, making it ideal for analyzing large documents. </p>"
+            },
+            "GPT-4.1 Mini": {
+                "desc": "<p> A lightweight version of GPT 4.1, but still large in size, designed to keep costs down while remaining competitive on most tasks. The model supports very long queries, making it suitable for use in document corpus analysis. </p>",
+                "fyi": "<p> This is a distilled version of a larger model, with partial knowledge transfer. It can process text, images, and audio. Its context window can reach up to 1 million tokens, making it particularly suitable for analyzing very long corpora or code repositories. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Indicators suggest that it is a large model, requiring a powerful graphics card to run. However, the supposed Mixture of Experts (MoE) architecture activates only a portion of the parameters at each token generation, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. </p>"
+            },
+            "Grok 3 Mini": {
+                "desc": "<p> A lighter version of the Grok 3 model, reducing costs while maintaining good performance for many tasks. It can go through a reasoning phase before providing a final answer. </p>",
+                "fyi": "<p> Grok 3 Mini is a distilled version of Grok 3: it is close to it in terms of capabilities, while being faster and less expensive.\n The model offers two modes: a thinking mode with step-by-step reasoning for complex problems, and a quick mode for immediate answers.\n Its context window reaches 131,000 tokens, making it suitable for analyzing long documents. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Despite its name, Grok 3 Mini is likely a very large model, requiring multiple powerful graphics cards to run. Additionally, it contains an optional reasoning phase that involves longer generation times and therefore higher power consumption. However, the supposed Mixture of Experts (MoE) architecture only activates a portion of the parameters at each token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. </p>"
+            },
+            "Hermes 3 405B": {
+                "desc": "<p> Very large model retrained from the Llama 3.1 405B, adjusted to better meet user prompts and improve it's capacity to use tools. </p>",
+                "fyi": "<p> This model is the result of retraining the Llama 3.1 405B parameter set to make its behavior less restricted and better account for the nuances of user and system prompts - thus giving the user greater control over the model's “personality” and behavior. Specific reasoning functions such as <strong> <code> &lt; SCRATCHPAD &gt; </code> </strong> , <strong> <code> &lt; REASONING &gt; </code> </strong> , <strong> <code> &lt; THINKING &gt; </code> </strong> have been added to simulate reasoning about complex tasks. The training used a tool called AdamW (learning rate of 3.5×10⁻⁶), which helps the model learn efficiently by gradually adjusting its parameters. Then, it was fine-tuned with a method called DPO (direct preference optimization), which improves its responses based on specific preferences. To make this training lighter and faster, LoRA adapters were used; these are smaller modules that modify only a part of the model, avoiding the need to rework all the parameters at once. </p>",
+                "size_desc": "<p> With 405 billion parameters, this model is considered to be very large. It requires a server equipped with several powerful graphics cards, which results in significant operating costs. </p>"
+            },
+            "Llama 3.1 405B": {
+                "desc": "<p> Very large model designed for complex or specialized tasks. Often used as a “teacher model” for training more specialized models. </p>",
+                "fyi": "<p> The model was trained on a corpus of 15 trillion tokens with 16,000 H100 graphics cards (one of the most powerful graphics cards on the market in 2025). Training combined synthetic data generation and direct preference optimization (DPO). This model is itself often used to generate synthetic data to train smaller models. The model uses 8-bit compression by default to reduce memory requirements and allow execution on a single, high-powered server. </p>",
+                "size_desc": "<p> With 405 billion parameters, this model is one of the very large models. It requires a server equipped with several powerful graphics cards, which results in significant running costs. The model has a context window of up to 128,000 tokens, making it suitable for long document analysis tasks. </p>"
+            },
+            "Llama 3.1 8B": {
+                "desc": "<p> Small model designed for local use on a laptop, while offering good capabilities for text synthesis and straight-forward questions and answers. </p>",
+                "fyi": "<p> This model is a distilled version of the larger Llama 3 models: it was trained by transferring some of the knowledge from the larger models. </p>",
+                "size_desc": "<p> With 8 billion parameters, this model is small. It can be run locally on a powerful computer, ensuring data confidentiality, or hosted on a server equipped with a single graphics card, which limits infrastructure costs. Its context window of 128,000 tokens allows it to process long documents. </p>"
+            },
+            "Llama 3.3 70B": {
+                "desc": "<p> Large model designed for a wide range of tasks and able to compete with larger models. </p>",
+                "fyi": "<p> This model is a distilled version of the 405B model, to which it owes some of its transferred knowledge. It also benefited from recent alignment and reinforcement learning techniques with online environments (online reinforcement learning) - the model learned by trying to perform online tasks autonomously. Its training was done on 15 billion tokens of data. </p>",
+                "size_desc": "<p> With 70 billion parameters, this model is large. It requires multiple powerful graphics cards to run, which results in significant operating costs. Its context window of 128,000 tokens allows it to process long documents. </p>"
+            },
+            "Llama 4 Scout": {
+                "desc": "<p> Large model with a very large context window, useful, for example, for summarizing a set of documents. </p>",
+                "fyi": "<p> This model was co-distilled with Behemoth, meaning it learned alongside the giant model, not afterward as in a traditional distillation. It was trained on 30 trillion tokens of data, combining text in 200 languages and images to achieve native multimodal capabilities. The architecture is based on a Mixture of Experts (MoE), with 17 billion active parameters, 16 experts, and 109 billion total parameters. To balance multimodal performance, reasoning, and conversational quality, the Meta team developed a progressive post-training strategy, combining adaptive data filtering (to keep only the most complex and interesting data), targeted fine-tuning, and online reinforcement learning - the model learned by trying to perform online tasks autonomously. Thanks to the iRoPE architecture (optimized version of positional encoding), it can handle very long context windows, up to 10 million tokens and can process up to 8 images simultaneously. </p>\n <p> The model was well received upon launch, notably for its impressive context window, a first in the field, as well as its cost-effectiveness on tasks such as summarization, tool invocation, and augmented generation (RAG). This makes it a suitable choice for automated pipelines. </p>",
+                "size_desc": "<p> With 109 billion parameters, this model falls into the large model category. However, thanks to a Mixture of Experts (MoE) architecture, it can be hosted on a server with a single, high-performance graphics card. Its context window can hold up to 10 million tokens, making it useful for processing extremely long document corpora. </p>"
+            },
+            "Llama Maverick": {
+                "desc": "<p> Very large model with a very large context window. Useful, for example, for summarizing several documents at once. </p>",
+                "fyi": "<p> This model was co-distilled with Behemoth, meaning it learned alongside the giant model, rather than afterward, as in traditional distillation. This allows for faster and less computational transfer of skills. It was trained on 30 trillion tokens of data, combining text in 200 languages and images to achieve native multimodal capabilities - it can process up to 8 images simultaneously. The architecture is based on a Mixture of Experts (MoE) system, with 17 billion active parameters, 16 experts, and 109 billion total parameters. The Meta team developed a progressive post-training strategy, combining adaptive data filtering - keeping only the most complex and interesting data-targeted fine-tuning, and online reinforcement learning to balance multimodal performance, reasoning, and conversational quality. Thanks to the iRoPE architecture (optimized version of positional encoding), it can handle very long context windows, up to 10 million tokens. </p>\n <p> The Llama 4 Maverick model was presented as Meta's direct response to the DeepSeek models. However, upon its release, many users felt that it did not live up to expectations, especially for programming tasks and creative work. </p>",
+                "size_desc": "<p> With 400 billion parameters, this model is considered to be very large. However, thanks to a Mixture of Experts (MoE) architecture, it requires fewer resources to run than “dense” models of this size. Its context window extends up to 1 million tokens, which allows it to process very large document corpora. </p>"
+            },
+            "Magistral Medium": {
+                "desc": "<p> Medium-sized, multimodal, and multilingual reasoning model. Suitable for programming tasks or other tasks requiring in-depth analysis, understanding of complex logical systems, or planning - for example, for agentic use cases or writing long, complex content. </p>",
+                "fyi": "<p> This model is part of the first generation of Mistral AI reasoning models (Summer 2025). Unlike most other reasoning models, this model can reason in multiple languages, including English, French, Spanish, German, Italian, Arabic, Russian, and Simplified Chinese. It was trained with reinforcement learning on Mistral Medium 3 and was not distilled from existing reasoning models. This model inherits the multimodal capabilities of Mistral Medium 3, even though reinforcement learning was only performed on text. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Reasoning models require more computing power to produce a response, which increases their power consumption. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 40,000 tokens, useful for analyzing short documents but insufficient for analyzing large document corpora. </p>"
+            },
+            "Magistral Small": {
+                "desc": "<p> Medium-sized, multimodal, and multilingual reasoning model. Suitable for tasks requiring in-depth analysis, understanding of logical systems, or planning- for example, for agentic use cases or writing long, complex content. </p>",
+                "fyi": "<p> This model is part of Mistral AI's first generation of reasoning models (Summer 2025). Unlike most other reasoning models, this model can reason in multiple languages, including English, French, Spanish, German, Italian, Arabic, Russian, and Simplified Chinese. </p>\n <p> Training was done in two phases. The first, called <em> cold-start </em> by distillation (from Mistral Medium 3 and <em> /OpenR1), allows the model to acquire basic reasoning capabilities from general instructional data (10%). The second is a high-entropy reinforcement learning (RL) phase, where the model is encouraged to explore diverse and varied solutions rather than converging on a single answer, and to generate long completions (up to 32,000 tokens), which allows the development of reasoning capabilities that exceed those of the teaching model. </em> </p>",
+                "size_desc": "<p> With 24 billion parameters, this model is considered medium-sized. It requires a single powerful graphics card to run. Reasoning models also take longer to produce an answer, which increases their power consumption. </p>\n <p> It has a context window of up to 40,000 tokens, useful for analyzing short documents but insufficient for analyzing large document corpora. </p>"
+            },
+            "Ministral": {
+                "desc": "<p> Small multilingual model designed to run on a laptop without a server connection, while still offering good capabilities in text summarization, simple question answering, and basic tool use. </p>",
+                "fyi": "<p> This model uses a grouped query attention (GQA) method to limit the analyzed text at each generation step and gain speed and memory: computation times are reduced without impacting quality. The attention mechanism is improved by applying windows of different sizes, which allows handling large contexts (up to 128,000 tokens) while remaining lightweight. The large tokenizer (V3-Tekken) better compresses languages and code, which improves its performance on multilingual tasks. </p>",
+                "size_desc": "<p> With its 8 billion parameters, this model is considered small. It can be deployed locally on a fairly powerful computer, ensuring data confidentiality, or hosted on a server with a single graphics card to limit infrastructure costs. </p>"
+            },
+            "Mistral Large 2": {
+                "desc": "<p> Large model designed to handle complex questions and tasks: for example, code generation, tool use, long document analysis, or specific-domain language understanding. </p>",
+                "fyi": "<p> This model was trained with a high proportion of code data (over 80 programming languages) and mathematics, which improves its ability to solve complex problems and use tools. </p>",
+                "size_desc": "<p> With 123 billion parameters, this model is considered large. It requires a server equipped with at least one powerful graphics card, which implies a significant operating cost. It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
+            },
+            "Mistral Medium 2506": {
+                "desc": "<p> A medium-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It is particularly interesting for programming tasks or reasoning tasks, such as mathematics. </p>",
+                "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
+            },
+            "Mistral Saba": {
+                "desc": "<p> Medium-sized model designed for a detailed linguistic and cultural understanding of Middle Eastern and South Asian languages, including Arabic, Tamil, and Malayalam. </p>",
+                "fyi": "<p> Training focused primarily on texts in Arabic, Tamil, and Malayalam. Regional corpora were selected to reflect authentic usage, including syntax, registers, and dialectal variants. For tokenization (splitting the text into basic units that the model can process), a specialized strategy adapted to languages with complex morphology such as Arabic was used. Optimizations aimed to avoid excessive word fragmentation and maximize vocabulary coverage. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a medium-sized model, requiring at least a powerful graphics card to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> The model offers a context window of up to 128,000 tokens, suitable for analyzing long documents. </p>"
+            },
+            "Mistral Small 3.2": {
+                "desc": "<p> Despite its name, this is a medium-sized model. It is multimodal (capable of processing text and images) and stands out for its precise query processing and its ability to use tools. </p>",
+                "fyi": "<p> Version 3.2 of this model is optimized to generate structured output, particularly in JSON, while limiting repetitiveness and undesirable behavior during long generation chains. Multimodal, it processes both text and image inputs, allowing for joint analysis. </p>",
+                "size_desc": "<p> With 32 billion parameters, this model is considered medium-sized. It can be hosted on a server with a single powerful graphics card, limiting infrastructure costs. It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
+            },
+            "Nemotron Llama 3.1 70B": {
+                "desc": "<p> Large model trained from Llama 3.1 70B. This retrained (fine-tune) version tends to detail more and provide more structured responses. </p>",
+                "fyi": "<p> This model is based on retraining the Llama 3.1 70B, hence the presence of its source model in its name. It introduces improvements achieved thanks to reinforcement learning with human feedback (RLHF) and the REINFORCE algorithm: the model explores different responses, receives feedback in the form of rewards, then gradually adjusts its choices to better meet user expectations. This alignment process is often used when the model is intended to adapt to human preferences or to optimize its responses according to specific criteria. </p>",
+                "size_desc": "<p> With 70 billion parameters, this model belongs to the large model category. It requires several powerful graphics cards to run, which results in significant operating costs. </p>"
+            },
+            "o4 mini": {
+                "desc": "<p> Very large reasoning model, suitable for complex scientific and technological tasks and questions. </p>",
+                "fyi": "<p> This model is very powerful for analyzing images and graphs. It has also been trained to interact with other tools via function calls, making it suitable for agentic use cases. As a very powerful reasoning model, it can be used to distribute tasks among several smaller and/or more specialized models. It has a context window of up to 200,000 tokens, making it easy to analyze long documents. </p>",
+                "size_desc": "<p> Despite its name and the fact that the exact size is unknown, o4 mini is most likely a large model requiring servers equipped with multiple graphics cards. Reasoning models like o4 mini require more time to respond because a reasoning phase precedes the generation of the final result, which increases their energy consumption. However, the assumed Mixture of Experts (MoE) architecture only activates a subset of the parameters to generate each token, thus limiting its energy footprint. Size estimates rely on indirect indices such as inference costs and response latency. </p>"
+            },
+            "Phi-4": {
+                "desc": "<p> Small, multilingual model that can use tools and performs well on complex tasks like logic, math, and code, while remaining compact. </p>",
+                "fyi": "<p> This model uses TikTok for tokenization, which improves its capabilities in a multilingual context. It was trained on a total of 9.8 <strong> trillion </strong> tokens, 400 billion of which were specifically sourced from high-quality synthetic data, and the rest from filtered organic data. Training took place on 1,920 H100 graphics cards for 21 days. Techniques such as self-assessment - during which the model critiques and rewrites its responses - and instruction reversal were used to strengthen its understanding of instructions and reasoning abilities. </p>",
+                "size_desc": "<p> With 14 billion parameters, this model is considered small. It can be deployed locally on a sufficiently powerful computer, or hosted on a server with a single graphics card, which reduces infrastructure costs. The context window, of 16,000 tokens, can be limiting for analyzing very long documents. </p>"
+            },
+            "Qwen 2.5 Coder 32B": {
+                "desc": "<p> Medium-sized model specializing in programming and the use of tools (web searches, interactions with APIs, etc.). </p>",
+                "fyi": "<p> This model has been trained on 5.5 trillion tokens and over 92 programming languages, including specialized coding languages like Haskell and Racket. </p>\n <p> Thanks to its code performance, it is able to handle calls to tools well, which is useful for agentic uses. </p>",
+                "size_desc": "<p> With 32 billion parameters, this model is considered mid-sized. It can run on a server equipped with a single powerful graphics card, which limits infrastructure costs. </p>\n <p> Its 128,000-token context window allows it to process long documents. </p>"
+            },
+            "Qwen 2.5 max 0125": {
+                "desc": "<p> Very large, specialized reasoning model with high performance in mathematics, coding, and logical problem solving. </p>",
+                "fyi": "<p> The exact size of the model is unknown, but it is most likely a very large model requiring servers equipped with multiple graphics cards. However, the Mixture of Experts (MoE) architecture only activates a subset of parameters at each token generation, thus limiting its energy footprint. Size estimates rely on indirect indices such as inference costs and response latency. </p>",
+                "size_desc": "<p> This proprietary model based on a <strong> large-scale MoE architecture has been </strong> trained on <strong> more than 20 trillion tokens </strong> . It is designed for tasks requiring multiple thinking stages. </p>\n <p> The context window goes up to 32,000 tokens. </p>"
+            },
+            "Qwen 3 30B A3B": {
+                "desc": "<p> Multilingual medium-sized model. </p>",
+                "fyi": "<p> This MoE (Mixture of Experts) model features a configuration of 128 experts in total, with only 8 experts activated per token generated, allowing for faster and more efficient inference. It uses a system called <em> global-batch </em> to optimize the distribution of work among the experts, so that they are all used in a balanced manner. </p>\n <p> Unlike other models like Qwen 2.5-MoE that recycle the same experts across multiple layers of the network, Qwen 3 30B A2B assigns unique experts to each layer. In practical terms, this means that experts from the first layer are never reused in subsequent layers—each level of the model has its own set of specialized experts. This architecture allows each expert to focus exclusively on tasks specific to their position in the neural network, resulting in finer-grained specialization and optimized performance for each stage of information processing. </p>",
+                "size_desc": "<p> With 30 billion parameters, this model falls into the mid-size category. It can run on a server with a single powerful graphics card, limiting infrastructure costs. In addition, the Mixture of Experts (MoE) architecture activates only a portion of the parameters at each token generation, thus limiting its energy footprint. </p>"
+            },
+            "Qwen 3 32B": {
+                "desc": "<p> Medium-sized multilingual model with two response methods: the user can choose between a reasoning mode, for more in-depth answers, or a quick mode, to directly generate the final answer. </p>",
+                "fyi": "<p> This model was trained on a very large data set: 36 billion tokens in 119 languages. Training was done in three stages. The model first learned from 30 billion tokens with a context of 4,000 tokens. Then, 5 billion tokens were added to strengthen its factual knowledge. Finally, it was exposed to a specific corpus to help it better handle very long texts. As a result, it has a context window of 128,000 tokens at the end of training, which is useful for reading and analyzing long documents. </p>",
+                "size_desc": "<p> With 32 billion parameters, this model is considered mid-sized. It can run on a server equipped with a single powerful graphics card, which limits infrastructure costs. </p>\n <p> Its 128,000-token context window allows it to process long documents. </p>"
+            },
+            "qwq 32B": {
+                "desc": "<p> Medium-sized reasoning model specialized and highly efficient in mathematics, code generation, and logical problem solving. </p>",
+                "fyi": "<p> This model was trained with a reinforcement learning (RL) method to optimize its handling of math problems and programming tasks. It uses several recent techniques to improve the quality of answers. For example, the RoPE (Rotary Position Embedding) method allows it to better understand the word order in a text. The SwiGLU activation function is a more efficient way of handling computations within the neural network, which helps the model produce more reliable answers. The QKV (Query Key Value-bias) adjustment method improves how the model identifies and selects important information. Finally, thanks to the YaRN (Yet another RoPE extensioN method), it can process very long texts of up to 130,000 tokens, allowing it to work on complex or very detailed documents. </p>",
+                "size_desc": "<p> With 32 billion parameters, this model falls into the mid-size category. It can run on a server with a single powerful graphics card, which limits infrastructure costs. However, reasoning models of this type take longer to produce an answer because a reasoning phase precedes the generation of the final result, which increases energy consumption. </p>"
+            },
+            "Aya Expanse 32B": {
+                "fyi": "<p> Cohere, the Canadian company that trained this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous “Attention Is All You Need” paper that revolutionized modern AI. Its main uniqueness lies in its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing, and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model was designed to provide good capabilities in each of the 23 languages in its training corpus. </p>",
+                "size_desc": "<p> With 32 billion parameters, this model falls is considered mid-sized. It can be hosted on a server with a single powerful graphics card, which helps keep infrastructure costs low. </p>\n <p> It has a context window of up to 130,000 tokens, useful for analyzing long documents. </p>"
+            },
+            "Claude 3.7 Sonnet": {
+                "desc": "<p> Very large, multimodal and multilingual model, efficient for code generation, with two response modes: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to directly generate the final answer. </p>",
+                "fyi": "<p> Claude 4 Opus is the most advanced model in the Claude 4 family. It is optimized for raw power and complex tasks requiring sustained reasoning over long periods of time: for example, it can work on long-term tasks (Anthropic claims it can work independently for up to seven hours). On the other hand, Opus is more expensive to use, slower to respond, and requires more resources to run. </p>\n <p> The model offers two modes of use: a reasoning mode with step-by-step reasoning for complex problems, and a quick mode for direct answers. Unlike other models, the reasoning mode was not primarily trained on mathematical data, but adapted to real-life use cases. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. It has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
+            },
+            "Claude 4 Sonnet": {
+                "desc": "<p> Very large multimodal and multilingual model, very powerful in code, with two response modes: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to directly generate the final answer. </p>",
+                "fyi": "<p> Claude 4 Sonnet is a more compact version of Claude 4 Opus optimized for speed, efficiency, and accessibility. It is slightly less adept at tasks requiring complex, multi-step reasoning. On the other hand, it is significantly less expensive, faster, can generate longer texts, and consumes less power than Opus. </p>\n <p> The model offers two modes of use: a reasoning mode with step-by-step reasoning for complex problems, and a rapid mode for direct answers. Unlike other models, the reasoning mode was not primarily trained on mathematical data, but adapted to real-life use cases. </p>",
+                "size_desc": "<p> The exact size is unknown. Evidence suggests that this is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. The model has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
+            },
+            "Command A": {
+                "desc": "<p> Large model, efficient for programming, use of tools, and “retrieval augmented generation” (RAG). </p>",
+                "fyi": "<p> Cohere, the Canadian company behind this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous paper <a href=\"https://arxiv.org/abs/1706.03762\"> \"Attention Is All You Need\" </a> published in 2017 and which revolutionized AI. The company stands out for its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model is designed to work in more than 23 languages and to integrate easily into enterprise systems. It is one of the few models distributed under <strong> CC-BY-NC 4.0 license, which allows sharing and modification but prohibits any commercial use. </strong> This choice of license reflects Cohere's desire to contribute to research and the open source community, while maintaining control over commercial uses to protect its business model... This excludes, for example, the integration of the model into products or services sold by a company to customers but allows academic use, testing, or internal projects, restricted to a non-commercial framework. </p>",
+                "size_desc": "<p> With 111 billion parameters, this model is considered large. It requires at least two powerful graphics cards to host, which results in significant running costs. </p>\n <p> Its context window reaches 256,000 tokens, suitable for analyzing large sets of documents or code bases. </p>"
+            },
+            "Command R": {
+                "desc": "<p> Medium-sized model optimized for summarization, general questions, tool usage, and efficient in retrieval augmented generation (RAG) systems. </p>",
+                "fyi": "<p> Cohere, the Canadian company behind this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous “Attention Is All You Need” paper that revolutionized AI. Its main uniqueness lies in its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing, and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model has been evaluated in over 10 languages. Its context window reaches 128,000 tokens, which facilitates the analysis of long documents. This window was doubled in the next version of the model (Command A). </p>",
+                "size_desc": "<p> With 35 billion parameters, this model is mid-sized. It can be hosted on a server with a single powerful graphics card, which helps keep infrastructure costs down. </p>"
+            }
+        }
+    },
+    "ranking": {
+        "desc": "Find out how the best AI models stack up based on their preference scores, based on votes from the compar:AI community. To learn more, see our ranking methodology.",
+        "graphs": {
+            "title": "Graphs"
+        },
+        "table": {
+            "data": {
+                "cols": {
+                    "consumption_wh": "Energy<br>(1000 tokens)",
+                    "elo": "Preference score",
+                    "license": "Licence",
+                    "name": "Model",
+                    "organisation": "Organization",
+                    "rank": "Rank",
+                    "release": "Release date",
+                    "size": "Size<br>(active parameters)",
+                    "total_votes": "Total votes",
+                    "trust_range": "Confidence (±)"
+                }
+            },
+            "lastUpdate": "Updated on {date}",
+            "search": "Search for a model",
+            "totalModels": "Total models:",
+            "totalVotes": "Total votes:"
+        },
+        "title": "Model leaderboard"
     }
 }
