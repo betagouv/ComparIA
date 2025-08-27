@@ -877,14 +877,15 @@ window.scrollTo({
 
         # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
         # TODO: or just create another event type like "Event.react"
-        if "comment" in reaction_json:
-            app_state_scoped.reactions[reaction_json["index"]]["comment"] = (
-                reaction_json["comment"]
-            )
-        else:
-            while len(app_state_scoped.reactions) <= reaction_json["index"]:
-                app_state_scoped.reactions.extend([None])
-            app_state_scoped.reactions[reaction_json["index"]] = reaction_json
+        if reaction_json:
+            if "comment" in reaction_json:
+                app_state_scoped.reactions[reaction_json["index"]]["comment"] = (
+                    reaction_json["comment"]
+                )
+            else:
+                while len(app_state_scoped.reactions) <= reaction_json["index"]:
+                    app_state_scoped.reactions.extend([None])
+                app_state_scoped.reactions[reaction_json["index"]] = reaction_json
 
         sync_reactions(
             conv_a_scoped,
