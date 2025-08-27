@@ -1,0 +1,38 @@
+{
+    "header": {
+        "title": {
+            "compar": "palyginti",
+            "ia": "AI"
+        }
+    },
+    "arenaHome": {
+        "title": "Kaip galime Jums padėti?",
+        "modelSelection": "Modelių pasirinkimas",
+        "prompt": {
+            "label": "Parašykite savo pirmąją žinutę",
+            "placeholder": "Rašykite savo žinutę čia"
+        },
+        "selectModels": {
+            "question": "Kuriuos modelius norėtumėte palyginti?",
+            "help": "Pasirinkite palyginimo tipą"
+        },
+        "compareModels": {
+            "question": "Kuriuos modelius norėtumėte palyginti?",
+            "count": "{count}/2 modeliai",
+            "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai"
+        },
+        "suggestions": {
+            "title": "Siūlomos užklausos",
+            "generateAnother": "Sukurti dar vieną užklausą",
+            "choices": {
+                "iasummit": {
+                    "iconAlt": "„AI Action Summit“",
+                    "tooltip": "Šie klausimai yra visuomenės konsultacijos dėl dirbtinio intelekto, vykusios nuo 2024-09-16 iki 2024-11-08, rezultatas. Konsultacijos tikslas buvo plačiai įtraukti piliečius ir pilietinę visuomenę į „AI Action Summit“, surinkti jų idėjas, kaip padaryti DI galimybe visiems, kartu ribojant netinkamą ar piktavališką naudojimą."
+                },
+                "ideas": {
+                    "iconAlt": "Idėjos"
+                }
+            }
+        }
+    }
+}
