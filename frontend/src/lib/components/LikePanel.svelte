@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { Icon } from '$components/dsfr'
+  import { Button, Icon } from '$components/dsfr'
   import { negativeReactions, positiveReactions, type ReactionPref } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { noop } from '$lib/utils/commons'
+
+  // TODO: rework
 
   export interface LikePanelProps {
     show: boolean
@@ -109,16 +111,18 @@
   class:hidden={show === false}
   class:flex={mode === 'vote'}
 >
-  <p class="thumb-icon me-3! {mode === 'vote' ? 'mb-0! mt-1!' : 'mb-3!'}">
+  <p class="me-3! {mode === 'vote' ? 'mb-0! mt-1!' : 'mb-3!'}">
     <Icon icon={reaction.icon} class="text-primary" />
-    <span class="ms-2" class:sr-only={mode === 'vote'}>{reaction.label}</span>
+    <span class="text-dark-grey ms-2 font-bold" class:sr-only={mode === 'vote'}>
+      {reaction.label}
+    </span>
   </p>
   <div class="flex flex-wrap gap-3">
     {#each reaction.choices as { value, label } (value)}
       <label
         class:disabled
         class:selected={selection.includes(value)}
-        class="checkbox-btn"
+        class="checkbox-btn cg-border bg-white!"
         aria-checked={selection.includes(value)}
         aria-disabled={disabled ? 'true' : 'false'}
         tabindex="0"
@@ -143,7 +147,7 @@
       <button
         {disabled}
         class:selected={comment !== ''}
-        class="checkbox-btn"
+        class="checkbox-btn cg-border bg-white!"
         data-fr-opened="false"
         aria-controls={modalId}
       >
@@ -189,13 +193,13 @@
                   rows="4"
                   bind:value={comment}
                 ></textarea>
-                <button
+                <Button
                   aria-controls={modalId}
-                  class="btn purple-btn"
+                  class="mt-8!"
                   onclick={() => onCommentChange(comment)}
                 >
                   {m['words.send']()}
-                </button>
+                </Button>
               </div>
             </div>
           </div>
@@ -206,11 +210,6 @@
 {/if}
 
 <style>
-  .thumb-icon {
-    font-weight: 700;
-    color: #3a3a3a;
-  }
-
   [type='checkbox'] {
     display: none;
   }
@@ -221,9 +220,7 @@
   .checkbox-btn {
     display: inline-block;
     border-radius: 1.5rem !important;
-    background: white;
     color: #606367 !important;
-    border: 1px #dadce0 solid !important;
     font-weight: 500;
     cursor: pointer;
   }
@@ -233,9 +230,9 @@
 
   .checkbox-btn.selected,
   .checkbox-btn:active {
-    background: #f5f5fe !important;
-    color: #6a6af4 !important;
-    border: 1px #6a6af4 solid !important;
+    background: var(--cg-light-grey) !important;
+    color: var(--blue-france-main-525) !important;
+    border: 1px var(--blue-france-main-525) solid !important;
   }
 
   .checkbox-btn:hover {
@@ -246,9 +243,9 @@
   button[disabled].checkbox-btn.selected {
     opacity: 0.5;
     box-shadow: none;
-    background-color: #eee !important;
+    background-color: var(--grey-950-125) !important;
     border: 1px solid #606367 !important;
-    color: #3a3a3a !important;
+    color: var(--grey-200-850) !important;
   }
 
   .checkbox-btn.disabled:hover,
@@ -259,10 +256,5 @@
   .modal-title {
     font-weight: 700;
     font-size: 1.1em;
-  }
-
-  .fr-modal__content .purple-btn {
-    float: right;
-    margin: 2em 0 !important;
   }
 </style>

@@ -1,21 +1,19 @@
 <script lang="ts">
   import type { ChatMessage } from '$lib/chatService.svelte'
   import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
-  import { onMount } from 'svelte'
+  import { scrollTo } from '$lib/helpers/attachments'
 
   export type MessageUserProps = {
     message: ChatMessage<'user'>
   }
 
-  let elem: HTMLDivElement
   let { message }: MessageUserProps = $props()
-
-  onMount(() => {
-    elem.scrollIntoView({ behavior: 'smooth' })
-  })
 </script>
 
-<div bind:this={elem} class="message-user mb-4 mt-5 rounded-2xl px-5 py-3 md:mb-8">
+<div
+  {@attach scrollTo}
+  class="message-user md:max-w-3/5 mb-4 mt-5 rounded-2xl px-5 py-3 md:mb-8 md:ms-auto"
+>
   <Markdown message={message.content} />
 
   <!-- <div class="message-buttons-right">
@@ -31,12 +29,5 @@
 
   .message-user :global(p:last-of-type) {
     margin: 0;
-  }
-
-  @media (min-width: 48em) {
-    .message-user {
-      width: 60%;
-      margin-left: auto;
-    }
   }
 </style>

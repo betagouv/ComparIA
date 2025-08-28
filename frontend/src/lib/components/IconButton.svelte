@@ -2,6 +2,8 @@
   import { Icon } from '$components/dsfr'
   import type { HTMLButtonAttributes } from 'svelte/elements'
 
+  // TODO: rework
+
   type IconButtonProps = Omit<HTMLButtonAttributes, 'size'> & {
     icon: string
     label?: string
@@ -68,17 +70,17 @@
   }
 
   button.border {
-    border: 1px solid #e5e5e5 !important;
+    border: 1px solid var(--grey-925-125) !important;
   }
   button.border.highlight {
-    border: 1px solid #6a6af4 !important;
-    background-color: #f5f5fe !important;
+    border: 1px solid var(--blue-france-main-525) !important;
+    background-color: var(--blue-france-975-75) !important;
   }
 
   button[disabled] {
     opacity: 0.5;
     box-shadow: none;
-    background-color: #eee !important;
+    background-color: var(--grey-950-100) !important;
   }
   button.border.highlight[disabled] {
     border: 1px solid #606367 !important;
@@ -96,7 +98,7 @@
   button:hover > *,
   button.highlight > * {
     cursor: pointer;
-    color: #6a6af4;
+    color: var(--blue-france-main-525);
   }
 
   .padded:hover {

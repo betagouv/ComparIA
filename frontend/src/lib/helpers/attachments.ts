@@ -8,3 +8,7 @@ export function teleport(containerId: string): Attachment {
     return () => element.remove()
   }
 }
+
+export const scrollTo: Attachment = (element) => {
+  element.scrollIntoView({ behavior: 'smooth' })
+}

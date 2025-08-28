@@ -14,15 +14,13 @@
     generating?: boolean
     disabled?: boolean
     onReactionChange: OnReactionFn
-    onLoad?: () => void
   }
 
   let {
     message,
     generating = false,
     disabled = false,
-    onReactionChange,
-    onLoad = noop
+    onReactionChange
   }: MessageBotProps = $props()
 
   const bot = message.metadata.bot
@@ -51,7 +49,7 @@
 </script>
 
 <div class="flex flex-col">
-  <div class="cg-border rounded-2xl! flex h-full flex-col px-5 pb-3 pt-7">
+  <div class="cg-border rounded-lg! flex h-full flex-col px-5 pb-3 pt-7">
     <div>
       <div class="mb-5 flex items-center">
         <div class="c-bot-disk-{bot}"></div>
@@ -81,7 +79,7 @@
               id="reasoning-{message.metadata.bot}"
               class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]"
             >
-              <div class="py-4 px-5">
+              <div class="px-5 py-4">
                 {@html sanitize(message.reasoning.split('\n').join('<br>'))}
               </div>
             </div>
@@ -89,7 +87,7 @@
         </section>
       {/if}
 
-      <Markdown message={message.content} chatbot on:load={onLoad} />
+      <Markdown message={message.content} chatbot />
 
       {#if generating && message.isLast}
         <Pending message={m['chatbot.loading']()} />
@@ -110,7 +108,7 @@
   </div>
 
   {#if reaction.liked !== null}
-    <div class="message-bot-like-panel mt-3">
+    <div class="cg-border rounded-lg! border-dashed! mt-3 p-5">
       <LikePanel
         kind={reaction.liked ? 'like' : 'dislike'}
         show={true}
@@ -124,14 +122,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  .message-bot-like-panel {
-    padding: 1em 1.5em 1em;
-    background-color: white;
-    border-color: #e5e5e5;
-    border-style: dashed;
-    border-width: 1.5px;
-    border-radius: 0.25rem;
-  }
-</style>
