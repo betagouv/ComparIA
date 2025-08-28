@@ -96,6 +96,10 @@
             }
         },
         "loading": "Chargement des réponses",
+        "reasoning": {
+            "finished": "Raisonnement terminé",
+            "inProgress": "Raisonnement en cours…"
+        },
         "revealButton": "Passer à la révélation des modèles"
     },
     "closeModal": "Fermer la fenêtre modale",

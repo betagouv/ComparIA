@@ -60,33 +60,33 @@
 
       <!-- FIXME i18n -->
       {#if message.reasoning != ''}
-        <hr />
-        <div class="fr-highlight fr-py-1w">
-          <section class="fr-accordion text-primary fr-text--bold">
-            <h3 class="fr-accordion__title">
+        <section class="fr-accordion mb-8 py-2">
+          <div class="fr-highlight ms-0! ps-0!">
+            <h3 class="fr-accordion__title ms-1!">
               <button
                 type="button"
-                class="fr-accordion__btn"
-                aria-expanded="false"
-                aria-controls="reasonning"
+                class="fr-accordion__btn text-primary! bg-transparent!"
+                aria-expanded="true"
+                aria-controls="reasoning-{message.metadata.bot}"
               >
-                <Icon icon="brain" class="text-primary" />
+                <Icon icon="brain" class="text-primary me-1" />
                 {#if message.content === '' && generating}
-                  Raisonnement en cours...
+                  {m['chatbot.reasoning.inProgress']()}
                 {:else}
-                  Raisonnement terminé
-                  <Icon icon="check-line" class="text-primary" />
+                  {m['chatbot.reasoning.finished']()}
                 {/if}
               </button>
             </h3>
-            <div id="reasonning" class="fr-collapse">
-              <div class="thought fr-mt-2w fr-mb-1w">
+            <div
+              id="reasoning-{message.metadata.bot}"
+              class="fr-collapse m-0! p-0! text-sm text-[#8B8B8B]"
+            >
+              <div class="py-4 px-5">
                 {@html sanitize(message.reasoning.split('\n').join('<br>'))}
               </div>
             </div>
-          </section>
-        </div>
-        <hr />
+          </div>
+        </section>
       {/if}
 
       <Markdown message={message.content} chatbot on:load={onLoad} />
