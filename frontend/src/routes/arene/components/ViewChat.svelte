@@ -47,7 +47,7 @@
   )
 
   const onReactionChange: OnReactionFn = async (kind, reaction) => {
-    canVote = false
+    canVote = reaction.liked === null
     await updateReaction(kind, reaction)
   }
 
