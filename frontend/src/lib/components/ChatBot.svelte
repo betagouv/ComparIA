@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '$components/dsfr'
+  import { Button, Icon, Link } from '$components/dsfr'
   import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
   import { arena } from '$lib/chatService.svelte'
   import MessageBot from '$lib/components/MessageBot.svelte'
@@ -11,16 +11,16 @@
     pending,
     generating,
     disabled,
-    layout = 'bubble',
     onReactionChange,
-    onRetry
+    onRetry,
+    onVote
   }: {
     pending: boolean
     generating: boolean
     disabled: boolean
-    layout: 'bubble' | 'panel'
     onReactionChange: OnReactionFn
     onRetry: () => void
+    onVote: () => void
   } = $props()
 
   const groupedMessages = $derived.by(() => {
@@ -41,21 +41,7 @@
   const errorString = $derived(arena.chat.messages.find((message) => message.error !== null)?.error)
 </script>
 
-<!-- FIXME still needed? -->
-<!-- {#if value !== null && value.length > 0}
-  <div>
-    {#if show_copy_all_button}
-      <CopyAll {value} />
-    {/if}
-  </div>
-{/if} -->
-
-<div
-  class={(layout === 'bubble' ? 'bubble-wrap' : 'panel-wrap') + ' min-h-full'}
-  role="log"
-  aria-label={m['chatbot.conversation']()}
-  aria-live="polite"
->
+<div class="min-h-full" role="log" aria-label={m['chatbot.conversation']()} aria-live="polite">
   {#if !pending}
     {#each groupedMessages as { user, bots }, i}
       <div class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16">
@@ -73,115 +59,67 @@
   {/if}
 
   {#if errorString}
-    <div class="fr-py-4w fr-mb-4w error rounded-tile fr-container">
-      {#if errorString == 'Context too long.'}
-        <h5>
-          <Icon icon="warning-fill" class="text-error" />
-          {m['chatbot.errors.tooLong.title']()}
-        </h5>
-        <p>
-          {m['chatbot.errors.tooLong.message']()}&nbsp;{m[
-            `chatbot.errors.tooLong.${groupedMessages.length > 1 ? 'vote' : 'retry'}`
-          ]()}
-        </p>
-        <p class="text-center">
-          <!-- TODO: icone Recommencer -->
-          <a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank"
-            >{m['words.restart']()}</a
-          >
-          <!-- TODO: Bouton "donner son avis" -->
-        </p>
-      {:else}
-        <h3>
-          <Icon icon="warning-fill" class="text-error" />
-          {m['chatbot.errors.other.title']()}
-        </h3>
-        <p>
-          {m['chatbot.errors.other.message']()}<br />
-          {m['chatbot.errors.other.retry']()}{#if groupedMessages.length > 1}&nbsp;{m[
-              'chatbot.errors.other.vote'
-            ]()}{/if}.
-          <span class="hidden">{errorString}</span>
-        </p>
-        <p class="text-center">
-          <button
-            class="fr-btn purple-btn"
-            onclick={() => onRetry()}
-            disabled={generating || disabled}>{m['words.retry']()}</button
-          >
-        </p>
-      {/if}
+    <div class="fr-container">
+      <div class="cg-border lg:max-w-1/2 pe-13 m-auto flex gap-4 bg-white p-4 pb-7">
+        <Icon icon="warning-fill" class="text-error" />
+        <div>
+          {#if errorString === 'Context too long.'}
+            <h6 class="mb-2!">{m['chatbot.errors.tooLong.title']()}</h6>
+            <p>
+              {m['chatbot.errors.tooLong.message']()}&nbsp;{m[
+                `chatbot.errors.tooLong.${groupedMessages.length > 1 ? 'vote' : 'retry'}`
+              ]()}
+            </p>
+          {:else}
+            <h6 class="mb-2!">{m['chatbot.errors.other.title']()}</h6>
+            <p>
+              {m['chatbot.errors.other.message']()}<br />
+              {m['chatbot.errors.other.retry']()}{#if groupedMessages.length > 1}&nbsp;{m[
+                  'chatbot.errors.other.vote'
+                ]()}{/if}.
+              <span class="hidden">{errorString}</span>
+            </p>
+          {/if}
+
+          <div class="grid gap-5 md:grid-cols-2">
+            {#if errorString === 'Context too long.'}
+              <Link
+                button
+                icon="refresh-line"
+                iconPos="right"
+                variant="secondary"
+                href="../arene/?cgu_acceptees"
+                text={m['words.restart']()}
+                class="w-full!"
+              />
+            {:else}
+              <Button
+                icon="checkbox-fill"
+                iconPos="right"
+                text={m['words.retry']()}
+                onclick={() => onRetry()}
+                class="w-full!"
+              />
+            {/if}
+
+            {#if groupedMessages.length > 1}
+              <Button
+                icon="checkbox-fill"
+                iconPos="right"
+                text={m['actions.vote']()}
+                onclick={() => onVote()}
+                class="w-full!"
+              />
+            {/if}
+          </div>
+        </div>
+      </div>
     </div>
   {/if}
 </div>
 
-<!-- FIXME still needed? -->
-<!-- {#if show_scroll_button}
-  <div class="scroll-down-button-container">
-    <IconButton
-      Icon={ScrollDownArrow}
-      label="Scroll down"
-      size="large"
-      on:click={scroll_to_bottom}
-    />
-  </div>
-{/if} -->
-
 <style>
   .grouped-messages:last-of-type {
     min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
-  }
-  .placeholder-content {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-
-  .placeholder {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    height: 100%;
-    flex-grow: 1;
-  }
-
-  .panel-wrap {
-    width: 100%;
-    /* overflow-y: auto; */
-    background-color: #fcfcfd;
-  }
-
-  .bubble-wrap {
-    width: 100%;
-    /* overflow-y: auto; */
-    height: 100%;
-    padding-top: var(--spacing-xxl);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .bubble-wrap {
-      background: var(--background-fill-secondary);
-    }
-  }
-
-  .scroll-down-button-container {
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: var(--layer-top);
-  }
-  .scroll-down-button-container :global(button) {
-    border-radius: 50%;
-    box-shadow: var(--shadow-drop);
-    transition:
-      box-shadow 0.2s ease-in-out,
-      transform 0.2s ease-in-out;
-  }
-  .scroll-down-button-container :global(button:hover) {
-    box-shadow:
-      var(--shadow-drop),
-      0 2px 2px rgba(0, 0, 0, 0.05);
-    transform: translateY(-2px);
   }
 </style>

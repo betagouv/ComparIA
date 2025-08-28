@@ -15,7 +15,6 @@
   import { m } from '$lib/i18n/messages'
 
   let rtl = false
-  let layout: 'bubble' | 'panel' = 'bubble'
   let latex_delimiters: {
     left: string
     right: string
@@ -53,6 +52,11 @@
 
   function onRetry() {
     retryAskChatBots()
+  }
+
+  function onVote() {
+    // FIXME if user already react? go to reveal for now
+    onRevealModels()
   }
 
   async function onPromptSubmit() {
@@ -95,7 +99,7 @@
     generating={arena.chat.status === 'generating'}
     {onReactionChange}
     {onRetry}
-    {layout}
+    {onVote}
   />
 </div>
 
