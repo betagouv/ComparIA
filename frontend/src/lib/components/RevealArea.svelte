@@ -1,18 +1,17 @@
 <script lang="ts">
+  import { Badge, Button, Link } from '$components/dsfr'
+  import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { RevealData } from '$lib/chatService.svelte'
-  import { Badge, Icon, Tooltip } from '$lib/components/dsfr'
-  import Footer from '$lib/components/Footer.svelte'
-  import ModelInfoModal from '$lib/components/ModelInfoModal.svelte'
+  import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
-  import { onMount } from 'svelte'
+  import MiniCard from '../../routes/arene/components/MiniCard.svelte'
 
   let { data }: { data: RevealData } = $props()
 
   const { selected, modelsData, shareB64Data } = data
 
-  let elem: HTMLDivElement
   let shareInput: HTMLInputElement
 
   function copyShareLink() {
@@ -20,181 +19,161 @@
     navigator.clipboard.writeText(shareInput.value)
     useToast(m['actions.copyLink.done'](), 2000)
   }
-
-  onMount(() => {
-    elem.scrollIntoView({ behavior: 'smooth' })
-  })
 </script>
 
-<div bind:this={elem} id="reveal-screen" class="fr-pt-4w next-screen">
-  <div>
-    <div id="reveal-grid" class="grid-cols-md-2 fr-mx-md-12w grid grid-cols-1">
-      {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
-        {@const modelBadges = (['license', 'size', 'releaseDate', 'licenseName'] as const)
-          .map((k) => model.badges[k])
-          .filter((b) => !!b)}
+<div id="reveal-screen" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
+  <div id="reveal-grid" class="grid gap-5 lg:grid-cols-2 lg:gap-6">
+    {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
+      {@const modelBadges = (['license', 'size', 'releaseDate', 'licenseName'] as const)
+        .map((k) => model.badges[k])
+        .filter((b) => !!b)}
 
-        <div class="rounded-tile fr-mb-1w fr-p-4w fr-mx-3v bg-white text-left">
+      <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
+        <div>
           {#if selected === side}
-            <span class="your-choice fr-mb-2w fr-mb-md-0">{m['vote.yours']()}</span>
+            <div
+              class="bg-primary mb-3 inline-block text-nowrap rounded-[3.75rem] px-4 py-2 font-bold text-white"
+            >
+              {m['vote.yours']()}
+            </div>
           {/if}
-          <h5 class="fr-mb-2w github-title">
-            <img class="fr-mt-n2v relative inline" src="/orgs/ai/{model.icon_path}" width="34" />
-            {model.organisation}/<strong>{model.simple_name}</strong>
+          <h5 class="text-dark-grey! mb-4! flex items-center gap-2">
+            <img src="/orgs/ai/{model.icon_path}" width="34" aria-hidden="true" alt="" />
+            <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
           </h5>
-          <ul class="fr-badges-group">
+          <ul class="fr-badges-group mb-4!">
             {#each modelBadges as badge, i}
               <li><Badge id="card-badge-{i}" {...badge} noTooltip /></li>
             {/each}
           </ul>
 
-          {@html sanitize(model.desc).replaceAll('<p>', '<p class="text-sm! last:mb-5!">')}
+          {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
+        </div>
 
-          <h6 class="fr-mb-2w">{m['reveal.impacts.title']()}</h6>
-          <div class="energy-balance-1">
-            <div class="rounded-tile fr-px-1w fr-py-1w relative text-center">
-              <Tooltip
-                id="params-{side}"
-                text={m['models.openWeight.tooltips.params']()}
-                size="xs"
-              />
-
-              <div class="">
-                <p class="">
-                  <strong>
-                    <span class="fr-text--xxl">{model.params}</span>
-                    <span class="fr-text--xs">
-                      {m['reveal.impacts.size.count']()}
-                      {#if model.distribution !== 'open-weights'}
-                        {m['reveal.impacts.size.estimated']()}
-                      {/if}
-                      {#if model.quantization === 'q8'}
-                        {m['reveal.impacts.size.quantized']()}
-                      {/if}
-                    </span>
-                  </strong>
-                </p>
-                <p class="fr-text--sm">{m['reveal.impacts.size.label']()}</p>
-              </div>
-            </div>
-            <div class="self-center justify-self-center">
-              <strong>×</strong>
-            </div>
-            <div class="rounded-tile fr-px-1w fr-py-1w relative text-center">
-              <Tooltip id="tokens-{side}" text={m['reveal.impacts.tokens.tooltip']()} size="xs" />
-              <div class="">
-                <p class="">
-                  <strong>
-                    <span class="fr-text--xxl">{tokens}</span>
-                    <span class="fr-text--xs">{m['reveal.impacts.tokens.tokens']()}</span>
-                  </strong>
-                </p>
-                <p class="fr-text--sm">{m['reveal.impacts.tokens.label']()}</p>
-              </div>
-            </div>
-
-            <div class="self-center justify-self-center">
-              <strong>=</strong>
-            </div>
-            <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <Tooltip id="energie-{side}" text={m['reveal.impacts.energy.tooltip']()} size="xs" />
-              <Icon icon="flashlight-fill" size="lg" block class="text-info" />
-              <div class="">
-                <!-- FIXME co2?? should be kwh? -->
-                <p>
-                  <strong>
-                    <span class="fr-text--xxl">{co2.toFixed(co2 < 2 ? 2 : 0)}</span> Wh
-                  </strong>
-                </p>
-                <p class="fr-text--xs">{m['reveal.impacts.energy.label']()}</p>
-              </div>
-            </div>
-          </div>
-          <h6 class="fr-mt-4w fr-mb-2w">Ce qui correspond à :</h6>
-          <div class="energy-balance-2">
-            <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <Tooltip id="co2-{side}" size="xs">
-                {@html sanitize(m['reveal.equivalent.co2.tooltip']())}
-              </Tooltip>
-              <Icon icon="cloudy-2-fill" size="lg" block class="text-grey" />
-              <div class="">
-                <p>
-                  <strong>
-                    <span class="fr-text--xxl">{co2.toFixed(co2 < 2 ? 2 : 0)}</span> g
-                  </strong>
-                </p>
-                <p class="fr-text--xs">{@html sanitize(m['reveal.equivalent.co2.label']())}</p>
-              </div>
-            </div>
-            <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <Tooltip
-                id="ampoule-{side}"
-                text={m['reveal.equivalent.lightbulb.tooltip']()}
-                size="xs"
-              />
-              <Icon icon="lightbulb-fill" size="lg" block class="text-yellow" />
-              <div class="">
-                <p>
-                  <strong><span class="fr-text--xxl">{lightbulb}</span>{lightbulbUnit}</strong>
-                </p>
-                <p class="fr-text--xs">{m['reveal.equivalent.lightbulb.label']()}</p>
-              </div>
-            </div>
-            <div class="rounded-tile with-icon fr-px-1w fr-py-1w relative">
-              <Tooltip id="videos-{side}" size="xs">
-                {@html sanitize(
-                  m['reveal.equivalent.streaming.tooltip']({
-                    linkProps: externalLinkProps(
-                      'https://impactco2.fr/outils/usagenumerique/streamingvideo'
-                    )
-                  })
-                )}
-              </Tooltip>
-              <Icon icon="youtube-fill" size="lg" block class="text-error" />
-              <div class="">
-                <p>
-                  <strong><span class="fr-text--xxl">{streaming}</span>{streamingUnit}</strong>
-                </p>
-                <p class="fr-text--xs">{m['reveal.equivalent.streaming.label']()}</p>
-              </div>
-            </div>
-          </div>
-          <div class="fr-grid-row fr-grid-row--center fr-mt-4w">
-            <button
-              class="fr-btn--sm grey-btn"
-              data-fr-opened="false"
-              aria-controls="modal-model-reveal-{model.id}"
+        <h6 class="mt-auto! mb-5!">{m['reveal.impacts.title']()}</h6>
+        <div class="flex">
+          <div class="flex basis-1/2 flex-col md:basis-2/3 md:flex-row">
+            <MiniCard
+              id="params-{side}"
+              value={model.params}
+              desc={m['reveal.impacts.size.label']()}
+              tooltip={m['models.openWeight.tooltips.params']()}
+              class="md:w-full"
             >
-              {m['actions.seeMore']()}
-            </button>
+              {m['reveal.impacts.size.count']()}
+              {#if model.distribution !== 'open-weights'}
+                {m['reveal.impacts.size.estimated']()}
+              {/if}
+              {#if model.quantization === 'q8'}
+                {m['reveal.impacts.size.quantized']()}
+              {/if}
+            </MiniCard>
+
+            <strong class="m-auto mb-1 text-[20px] md:mx-1 md:my-auto">×</strong>
+
+            <MiniCard
+              id="tokens-{side}"
+              value={tokens}
+              units={m['reveal.impacts.tokens.tokens']()}
+              desc={m['reveal.impacts.tokens.label']()}
+              tooltip={m['reveal.impacts.tokens.tooltip']()}
+              class="md:w-full"
+            />
+          </div>
+
+          <div class="flex basis-1/2 items-center md:basis-1/3">
+            <strong class="m-auto">=</strong>
+
+            <!-- FIXME co2??? -->
+            <MiniCard
+              id="energy-{side}"
+              value={co2.toFixed(co2 < 2 ? 2 : 0)}
+              units="Wh"
+              desc={m['reveal.impacts.energy.label']()}
+              icon="flashlight-fill"
+              iconClass="text-info"
+              tooltip={m['reveal.impacts.energy.tooltip']()}
+              class="h-fit"
+            />
           </div>
         </div>
 
-        <ModelInfoModal {model} modalId="modal-model-reveal-{model.id}" />
-      {/each}
-    </div>
+        <!-- FIXME i18n -->
+        <h6 class="mt-9! mb-5!">Ce qui correspond à :</h6>
+        <div class="grid grid-cols-3 gap-2">
+          <MiniCard
+            id="co2-{side}"
+            value={co2.toFixed(co2 < 2 ? 2 : 0)}
+            units="g"
+            desc={m['reveal.equivalent.co2.label']()}
+            icon="cloudy-2-fill"
+            iconClass="text-grey"
+            tooltip={m['reveal.equivalent.co2.tooltip']()}
+          />
+
+          <MiniCard
+            id="ampoule-{side}"
+            value={lightbulb}
+            units={lightbulbUnit}
+            desc={m['reveal.equivalent.lightbulb.label']()}
+            icon="lightbulb-fill"
+            iconClass="text-yellow"
+            tooltip={m['reveal.equivalent.lightbulb.tooltip']()}
+          />
+
+          <MiniCard
+            id="videos-{side}"
+            value={streaming}
+            units={streamingUnit}
+            desc={m['reveal.equivalent.streaming.label']()}
+            icon="youtube-fill"
+            iconClass="text-error"
+            tooltip={m['reveal.equivalent.streaming.tooltip']({
+              linkProps: externalLinkProps(
+                'https://impactco2.fr/outils/usagenumerique/streamingvideo'
+              )
+            })}
+          />
+        </div>
+
+        <div class="mt-7 text-center">
+          <Button
+            text={m['actions.seeMore']()}
+            data-fr-opened="false"
+            aria-controls="modal-model-reveal-{model.id}"
+          />
+        </div>
+      </div>
+
+      <ModelInfoModal {model} modalId="modal-model-reveal-{model.id}" />
+    {/each}
   </div>
 
-  <div class="feedback">
-    <div id="feedback-row">
-      <div class="fr-container fr-mb-4w flex flex-col items-center text-center">
-        <a class="btn fr-btn--secondary fr-my-2w feedback-btns" href="/" target="_blank">
-          {m['actions.returnHome']()}
-        </a><br />
-        <button
-          class="btn fr-icon-upload-2-line fr-btn--icon-left fr-btn--secondary fr-my-2w feedback-btns"
-          data-fr-opened="false"
-          aria-controls="share-modal"
-        >
-          {m['reveal.feedback.shareResult']()}
-        </button>
-        <!-- Remplacer par https://monitor.bunka.ai/compar:ia ? -->
-        <a
-          class="fr-mb-4w link"
-          href="https://languia-metabase.stg.cloud.culture.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1"
-          target="_blank">{m['reveal.feedback.moreOnVotes']()}</a
-        >
-      </div>
+  <div class="feedback py-7">
+    <div class="fr-container md:max-w-[280px]! flex flex-col items-center gap-4">
+      <Link
+        button
+        href="../arene/?cgu_acceptees"
+        text={m['header.chatbot.newDiscussion']()}
+        class="w-full!"
+      />
+
+      <Button
+        icon="upload-2-line"
+        variant="secondary"
+        text={m['reveal.feedback.shareResult']()}
+        data-fr-opened="false"
+        aria-controls="share-modal"
+        class="w-full!"
+      />
+
+      <!-- Remplacer par https://monitor.bunka.ai/compar:ia ? -->
+      <Link
+        native={false}
+        href="https://languia-metabase.stg.cloud.culture.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1"
+        target="_blank"
+        text={m['reveal.feedback.moreOnVotes']()}
+      />
     </div>
 
     <dialog
@@ -215,11 +194,14 @@
                 >
               </div>
               <div class="fr-modal__content">
-                <h6 class="fr-text--lg">{m['reveal.feedback.shareResult']()}</h6>
-                <p class="fr-text-md--sm fr-text--xs">
+                <h6 class="mb-3! text-dark-grey!">
+                  {m['reveal.feedback.shareResult']()}
+                </h6>
+
+                <p class="text-sm! mb-0!">
                   {m['reveal.feedback.description']()}
                 </p>
-                <div class="fr-grid-row fr-mb-4w">
+                <div class="flex flex-wrap gap-3 py-8">
                   <input
                     bind:this={shareInput}
                     type="text"
@@ -227,15 +209,14 @@
                     class="fr-col-md-8 fr-col-12 fr-input inline"
                     value="https://www.comparia.beta.gouv.fr/share?i={shareB64Data}"
                   />
-                  <button
-                    class="fr-col-md-4 fr-icon-links-fill fr-btn--icon-left fr-col-12 btn purple-btn block"
+                  <Button
+                    icon="links-fill"
                     onclick={copyShareLink}
-                  >
-                    {m['actions.copyLink.do']()}</button
-                  >
+                    text={m['actions.copyLink.do']()}
+                  />
                 </div>
                 <img
-                  class="fr-responsive-img fr-mb-4w"
+                  class="fr-responsive-img"
                   src="/share-example.png"
                   alt={m['reveal.feedback.example']()}
                   title={m['reveal.feedback.example']()}
@@ -248,8 +229,6 @@
     </dialog>
   </div>
 </div>
-
-<Footer />
 
 <style>
   #reveal-screen {

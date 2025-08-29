@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Footer from '$components/Footer.svelte'
   import type { OnReactionFn, RevealData, VoteData } from '$lib/chatService.svelte'
   import {
     arena,
@@ -109,6 +110,7 @@
 
 {#if step === 'reveal' && revealData}
   <RevealArea data={revealData} />
+  <Footer />
 {:else}
   <div
     bind:this={footer}
