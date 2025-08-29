@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Button } from '$components/dsfr'
   import Footer from '$components/Footer.svelte'
   import type { OnReactionFn, RevealData, VoteData } from '$lib/chatService.svelte'
   import {
@@ -14,14 +15,6 @@
   import TextPrompt from '$lib/components/TextPrompt.svelte'
   import VoteArea from '$lib/components/VoteArea.svelte'
   import { m } from '$lib/i18n/messages'
-
-  let rtl = false
-  let latex_delimiters: {
-    left: string
-    right: string
-    display: boolean
-  }[] = []
-  let placeholder: string | null = null
 
   let step = $state<'chat' | 'vote' | 'reveal'>('chat')
   let prompt = $state('')
@@ -73,6 +66,7 @@
       if (!voteData.selected) return
       revealData = await postVoteGetReveal(voteData as Required<VoteData>)
       step = 'reveal'
+      arena.chat.step = 2
     } else {
       step = 'vote'
     }
@@ -125,30 +119,28 @@
           label={m['chatbot.continuePrompt']()}
           placeholder={m['chatbot.continuePrompt']()}
           hideLabel
-          rows={2}
+          rows={1}
           maxRows={4}
           autofocus
           onSubmit={onPromptSubmit}
           class="mb-0! w-full"
         />
 
-        <button
+        <Button
           id="send-btn"
+          text={m['words.send']()}
           disabled={arena.chat.status !== 'complete' || prompt === ''}
-          class="btn purple-btn md:self-end"
+          class="md:self-end!"
           onclick={onPromptSubmit}
-        >
-          {m['words.send']()}
-        </button>
+        />
       </div>
     {/if}
 
-    <button
+    <Button
+      text={m['chatbot.revealButton']()}
       disabled={revealDisabled}
-      class="btn purple-btn w-full md:w-fit"
+      class="w-full! md:w-fit!"
       onclick={onRevealModels}
-    >
-      {m['chatbot.revealButton']()}
-    </button>
+    />
   </div>
 {/if}

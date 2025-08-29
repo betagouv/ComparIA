@@ -1,10 +1,9 @@
 <script lang="ts">
-  import { Icon, Tooltip } from '$components/dsfr'
+  import { Icon, Link, Tooltip } from '$components/dsfr'
   import { arena, modeInfos, runChatBots } from '$lib/chatService.svelte'
   import Header from '$lib/components/header/Header.svelte'
   import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
-  import '../../css/custom-arena.css'
   import { ViewChat, ViewPrompt, WelcomeModal } from './components'
 
   const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
@@ -65,27 +64,25 @@
           </span>
         </p>
       </div>
-      <div class="w-full basis-1/3 items-center">
+      <div class={['w-full basis-1/3 items-center', { 'hidden md:block': arena.chat.step == 2 }]}>
         {#if arena.chat.step == 1}
           <div
-            class="cg-border border-dashed! rounded-lg! bg-white py-1 text-center text-sm md:py-3"
+            class="cg-border border-dashed! rounded-lg! w-full bg-white py-1 text-center text-sm md:py-3"
           >
             <Icon icon={mode.icon} size="sm" class="text-primary" />
             &nbsp;<strong>{mode.title}</strong>
             &nbsp;<Tooltip id="mode-desc" text={mode.description} size="xs" />
           </div>
         {:else}
-          <div class="text-center">
+          <div class="text-right">
             <!--<a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank"><svg width="21" height="20" viewBox="0 0 21 20" fill="none"
                 xmlns="http://www.w3.org/2000/svg">
             </svg>&nbsp;Reposer ma question</a>-->
-            <a
-              class="btn purple-btn md-visible hidden"
+            <Link
+              button
               href="../arene/?cgu_acceptees"
-              target="_blank"
-            >
-              {m['header.chatbot.newDiscussion']()}
-            </a>
+              text={m['header.chatbot.newDiscussion']()}
+            />
           </div>
         {/if}
       </div>
