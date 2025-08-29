@@ -1,7 +1,8 @@
 <script lang="ts">
+  import { Button } from '$components/dsfr'
   import type { VoteData } from '$lib/chatService.svelte'
+  import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { onMount } from 'svelte'
   import LikePanel from './LikePanel.svelte'
   import TextPrompt from './TextPrompt.svelte'
   import VoteRadioGroup from './VoteRadioGroup.svelte'
@@ -14,17 +15,12 @@
     disabled?: boolean
   } = $props()
 
-  let elem: HTMLDivElement
   let showComments = $state(false)
-
-  onMount(() => {
-    elem.scrollIntoView({ behavior: 'smooth' })
-  })
 </script>
 
-<div bind:this={elem} id="vote-area" class="fr-container mt-20">
+<div id="vote-area" class="fr-container py-7 md:py-20" {@attach scrollTo}>
   <div class="text-center">
-    <h4 class="mb-2!">{m['vote.title']()}</h4>
+    <h4 class="fr-h6 mb-2!">{m['vote.title']()}</h4>
     <p class="text-grey fr-text--sm">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
   </div>
 
@@ -34,7 +30,7 @@
     <div class="mt-11 flex flex-col gap-6 md:flex-row">
       {#each ['a', 'b'] as const as model (model)}
         <div
-          class="cg-border rounded-sm! flex w-full flex-col gap-4 bg-white p-2 md:rounded-lg md:px-6 md:py-8"
+          class="cg-border rounded-sm! flex w-full flex-col gap-4 bg-white p-4 md:rounded-lg md:px-6 md:py-8"
         >
           <div class="flex items-center">
             <div class="c-bot-disk-{model}"></div>
@@ -76,9 +72,12 @@
 
     {#if !showComments}
       <div class="mt-4 text-center">
-        <button class="link" {disabled} onclick={() => (showComments = true)}>
-          {m['vote.qualify.addDetails']()}
-        </button>
+        <Button
+          variant="secondary"
+          text={m['vote.qualify.addDetails']()}
+          {disabled}
+          onclick={() => (showComments = true)}
+        />
       </div>
     {/if}
   {/if}

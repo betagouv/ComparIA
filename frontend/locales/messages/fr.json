@@ -16,7 +16,8 @@
         "home": "Page d'accueil",
         "returnHome": "Revenir à l'accueil",
         "seeMore": "Voir plus",
-        "selectLanguage": "Sélectionner une langue"
+        "selectLanguage": "Sélectionner une langue",
+        "vote": "Donner mon avis"
     },
     "arenaHome": {
         "compareModels": {
