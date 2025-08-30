@@ -84,10 +84,9 @@
           <div class="flex basis-1/2 items-center md:basis-1/3">
             <strong class="m-auto">=</strong>
 
-            <!-- FIXME co2??? -->
             <MiniCard
               id="energy-{side}"
-              value={co2.toFixed(co2 < 2 ? 2 : 0)}
+              value={kwh.toFixed(kwh < 2 ? 2 : 0)}
               units="Wh"
               desc={m['reveal.impacts.energy.label']()}
               icon="flashlight-fill"
