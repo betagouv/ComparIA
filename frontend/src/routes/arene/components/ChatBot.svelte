@@ -3,6 +3,7 @@
   import Pending from '$components/Pending.svelte'
   import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
   import { arena } from '$lib/chatService.svelte'
+  import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
   import { MessageBot, MessageUser } from '.'
 
@@ -40,21 +41,27 @@
   const errorString = $derived(arena.chat.messages.find((message) => message.error !== null)?.error)
 </script>
 
-<div class="min-h-full" role="log" aria-label={m['chatbot.conversation']()} aria-live="polite">
-  {#if !pending}
-    {#each groupedMessages as { user, bots }, i}
-      <div class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16">
-        <MessageUser message={user} />
+<div
+  id="chat-area"
+  role="log"
+  aria-label={m['chatbot.conversation']()}
+  aria-live="polite"
+  class="flex grow flex-col pb-7"
+>
+  {#each groupedMessages as { user, bots }, i}
+    <div class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16" {@attach scrollTo}>
+      <MessageUser message={user} />
 
-        <div class="grid gap-10 md:grid-cols-2 md:gap-6">
-          {#each bots as botMessage, j}
-            <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
-          {/each}
-        </div>
+      <div class="grid gap-10 md:grid-cols-2 md:gap-6">
+        {#each bots as botMessage, j}
+          <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
+        {/each}
       </div>
-    {/each}
-  {:else}
-    <div class="my-6"><Pending message={m['chatbot.loading']()} /></div>
+    </div>
+  {/each}
+
+  {#if pending}
+    <Pending message={m['chatbot.loading']()} class="m-auto" {@attach scrollTo} />
   {/if}
 
   {#if errorString}
@@ -118,7 +125,8 @@
 </div>
 
 <style>
-  .grouped-messages:last-of-type {
+  :global(#chat-area:has(+ #send-area)) .grouped-messages:last-of-type {
     min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
+    scroll-margin-top: calc(var(--second-header-size));
   }
 </style>

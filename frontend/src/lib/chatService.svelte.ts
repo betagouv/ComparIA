@@ -200,7 +200,7 @@ export async function runChatBots(args: APIModeAndPromptData) {
 }
 
 export async function askChatBots(text: string) {
-  // arena.chat.status = 'pending'
+  arena.chat.status = 'pending'
 
   try {
     const job = await api.submit<APIChatMessage[]>('/add_text', { text })

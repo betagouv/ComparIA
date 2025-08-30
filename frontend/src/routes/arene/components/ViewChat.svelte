@@ -52,6 +52,7 @@
   }
 
   async function onPromptSubmit() {
+    window.scrollTo(0, document.body.scrollHeight)
     await askChatBots(prompt)
   }
 
@@ -60,6 +61,7 @@
     if (canVote === false) {
       revealData = await getReveal()
       step = 'reveal'
+      arena.chat.step = 2
     } else if (step === 'vote') {
       if (!voteData.selected) return
       revealData = await postVoteGetReveal(voteData as Required<VoteData>)
@@ -79,13 +81,15 @@
   }
 
   $effect(() => {
+    // Take step change into account for footer offset calculation
+    step
     footerSize = footer ? footer.offsetHeight : 0
   })
 </script>
 
 <svelte:window onresize={onResize} />
 
-<div id="chat-area" style="--footer-size: {footerSize}px;">
+<div style="--footer-size: {footerSize}px;" class="flex grow flex-col">
   <ChatBot
     disabled={chatbotDisabled}
     pending={arena.chat.status === 'pending'}
@@ -94,51 +98,51 @@
     {onRetry}
     {onVote}
   />
+
+  {#if step === 'vote' || (step === 'reveal' && canVote)}
+    <VoteArea bind:value={voteData} disabled={step === 'reveal'} />
+  {/if}
+
+  {#if step === 'reveal' && revealData}
+    <RevealArea data={revealData} />
+    <Footer />
+  {:else}
+    <div
+      bind:this={footer}
+      id="send-area"
+      class="z-1 sticky bottom-0 mt-auto flex flex-col items-center gap-3 bg-white px-4 py-3 md:px-[20%]"
+    >
+      {#if step === 'chat'}
+        <div class="flex w-full flex-col gap-3 md:flex-row">
+          <TextPrompt
+            id="chatbot-prompt"
+            bind:value={prompt}
+            label={m['chatbot.continuePrompt']()}
+            placeholder={m['chatbot.continuePrompt']()}
+            hideLabel
+            rows={1}
+            maxRows={4}
+            autofocus
+            onSubmit={onPromptSubmit}
+            class="mb-0! w-full"
+          />
+
+          <Button
+            id="send-btn"
+            text={m['words.send']()}
+            disabled={arena.chat.status !== 'complete' || prompt === ''}
+            class="md:self-end!"
+            onclick={onPromptSubmit}
+          />
+        </div>
+      {/if}
+
+      <Button
+        text={m['chatbot.revealButton']()}
+        disabled={revealDisabled}
+        class="w-full! md:w-fit!"
+        onclick={onRevealModels}
+      />
+    </div>
+  {/if}
 </div>
-
-{#if step === 'vote' || step === 'reveal'}
-  <VoteArea bind:value={voteData} disabled={step === 'reveal'} />
-{/if}
-
-{#if step === 'reveal' && revealData}
-  <RevealArea data={revealData} />
-  <Footer />
-{:else}
-  <div
-    bind:this={footer}
-    id="send-area"
-    class="z-1 sticky bottom-0 mt-auto flex flex-col items-center gap-3 bg-white px-4 py-3 md:px-[20%]"
-  >
-    {#if step === 'chat'}
-      <div class="flex w-full flex-col gap-3 md:flex-row">
-        <TextPrompt
-          id="chatbot-prompt"
-          bind:value={prompt}
-          label={m['chatbot.continuePrompt']()}
-          placeholder={m['chatbot.continuePrompt']()}
-          hideLabel
-          rows={1}
-          maxRows={4}
-          autofocus
-          onSubmit={onPromptSubmit}
-          class="mb-0! w-full"
-        />
-
-        <Button
-          id="send-btn"
-          text={m['words.send']()}
-          disabled={arena.chat.status !== 'complete' || prompt === ''}
-          class="md:self-end!"
-          onclick={onPromptSubmit}
-        />
-      </div>
-    {/if}
-
-    <Button
-      text={m['chatbot.revealButton']()}
-      disabled={revealDisabled}
-      class="w-full! md:w-fit!"
-      onclick={onRevealModels}
-    />
-  </div>
-{/if}

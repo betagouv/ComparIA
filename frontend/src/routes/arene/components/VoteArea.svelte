@@ -83,8 +83,8 @@
 </div>
 
 <style>
-  #vote-area {
-    scroll-margin-top: calc(var(--second-header-size) + 1rem);
-    min-height: 70vh;
+  :global(#vote-area:has(+ #send-area)) {
+    min-height: calc(100vh - var(--second-header-size) - var(--footer-size) + 2px);
+    scroll-margin-top: calc(var(--second-header-size));
   }
 </style>

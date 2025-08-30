@@ -1,7 +1,6 @@
 <script lang="ts">
   import Markdown from '$components/markdown/MarkdownCode.svelte'
   import type { ChatMessage } from '$lib/chatService.svelte'
-  import { scrollTo } from '$lib/helpers/attachments'
 
   export type MessageUserProps = {
     message: ChatMessage<'user'>
@@ -11,8 +10,7 @@
 </script>
 
 <div
-  {@attach scrollTo}
-  class="message-user md:max-w-3/5 mb-4 mt-5 rounded-2xl px-5 py-3 md:mb-8 md:ms-auto"
+  class="message-user bg-(--grey-950-100) md:max-w-3/5 mb-4 mt-5 rounded-2xl px-5 py-3 md:mb-8 md:ms-auto"
 >
   <Markdown message={message.content} />
 
@@ -22,11 +20,6 @@
 </div>
 
 <style>
-  .message-user {
-    background-color: var(--grey-950-100);
-    scroll-margin-top: calc(var(--second-header-size) + 1rem);
-  }
-
   .message-user :global(p:last-of-type) {
     margin: 0;
   }

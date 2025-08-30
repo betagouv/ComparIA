@@ -21,8 +21,8 @@
   }
 </script>
 
-<div id="reveal-screen" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
-  <div id="reveal-grid" class="grid gap-5 lg:grid-cols-2 lg:gap-6">
+<div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
+  <div class="grid gap-5 lg:grid-cols-2 lg:gap-6">
     {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
       {@const modelBadges = (['license', 'size', 'releaseDate', 'licenseName'] as const)
         .map((k) => model.badges[k])
@@ -231,8 +231,7 @@
 </div>
 
 <style>
-  #reveal-screen {
+  #reveal-area {
     scroll-margin-top: calc(var(--second-header-size) + 1rem);
-    min-height: 70vh;
   }
 </style>
