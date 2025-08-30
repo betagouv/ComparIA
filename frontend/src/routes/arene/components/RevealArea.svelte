@@ -157,14 +157,15 @@
         class="w-full!"
       />
 
-      <Button
+      <!-- TODO missing share page, hide btn for now -->
+      <!-- <Button
         icon="upload-2-line"
         variant="secondary"
         text={m['reveal.feedback.shareResult']()}
         data-fr-opened="false"
         aria-controls="share-modal"
         class="w-full!"
-      />
+      /> -->
 
       <!-- Remplacer par https://monitor.bunka.ai/compar:ia ? -->
       <Link
