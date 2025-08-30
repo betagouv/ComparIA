@@ -1,6 +1,6 @@
 <script lang="ts">
+  import Markdown from '$components/markdown/MarkdownCode.svelte'
   import type { ChatMessage } from '$lib/chatService.svelte'
-  import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
 
   export type MessageUserProps = {

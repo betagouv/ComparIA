@@ -1,11 +1,10 @@
 <script lang="ts">
   import { Button, Icon, Link } from '$components/dsfr'
+  import Pending from '$components/Pending.svelte'
   import type { GroupedChatMessages, OnReactionFn } from '$lib/chatService.svelte'
   import { arena } from '$lib/chatService.svelte'
-  import MessageBot from '$lib/components/MessageBot.svelte'
-  import MessageUser from '$lib/components/MessageUser.svelte'
-  import Pending from '$lib/components/Pending.svelte'
   import { m } from '$lib/i18n/messages'
+  import { MessageBot, MessageUser } from '.'
 
   let {
     pending,

@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Button, Icon, Tooltip } from '$components/dsfr'
+  import RadioGroupCard from '$components/RadioGroupCard.svelte'
   import { m } from '$lib/i18n/messages'
   import promptsTable from '$lib/promptsTable'
   import { selectRandomFromArray, shuffleArray } from '$lib/utils/commons'
   import type { ClassValue } from 'svelte/elements'
-  import RadioGroupCard from './RadioGroupCard.svelte'
 
   let {
     onPromptSelected
@@ -133,7 +133,7 @@
         />
         {#if iaSummitSmallIconSrc}
           <img
-            class="me-2 inline-block md:hidden dark:invert object-contain"
+            class="me-2 inline-block object-contain md:hidden dark:invert"
             width="24"
             src={iaSummitSmallIconSrc}
             alt={iconAlt}

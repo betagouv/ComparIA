@@ -1,13 +1,12 @@
 <script lang="ts">
+  import Copy from '$components/Copy.svelte'
   import { Icon } from '$components/dsfr'
+  import Markdown from '$components/markdown/MarkdownCode.svelte'
+  import Pending from '$components/Pending.svelte'
   import type { ChatMessage, OnReactionFn, ReactionPref } from '$lib/chatService.svelte'
-  import Copy from '$lib/components/Copy.svelte'
-  import LikeDislike from '$lib/components/LikeDislike.svelte'
-  import LikePanel from '$lib/components/LikePanel.svelte'
-  import Markdown from '$lib/components/markdown/MarkdownCode.svelte'
-  import Pending from '$lib/components/Pending.svelte'
   import { m } from '$lib/i18n/messages'
-  import { noop, sanitize } from '$lib/utils/commons'
+  import { sanitize } from '$lib/utils/commons'
+  import { LikeDislike, LikePanel } from '.'
 
   export type MessageBotProps = {
     message: ChatMessage<'assistant'>

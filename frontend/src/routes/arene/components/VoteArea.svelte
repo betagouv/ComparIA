@@ -1,11 +1,10 @@
 <script lang="ts">
   import { Button } from '$components/dsfr'
+  import TextPrompt from '$components/TextPrompt.svelte'
   import type { VoteData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import LikePanel from './LikePanel.svelte'
-  import TextPrompt from './TextPrompt.svelte'
-  import VoteRadioGroup from './VoteRadioGroup.svelte'
+  import { LikePanel, VoteRadioGroup } from '.'
 
   let {
     value: form = $bindable(),

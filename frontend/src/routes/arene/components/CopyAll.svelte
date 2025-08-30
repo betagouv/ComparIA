@@ -1,6 +1,6 @@
 <script lang="ts">
+  import IconButton from '$components/IconButton.svelte'
   import type { ChatMessage } from '$lib/chatService.svelte'
-  import IconButton from '$lib/components/IconButton.svelte'
   import { copyToClipboard } from '$lib/utils/commons'
   import { onDestroy } from 'svelte'
 

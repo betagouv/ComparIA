@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge } from '$lib/components/dsfr'
+  import { Badge } from '$components/dsfr'
   import type { BotModel } from '$lib/models'
 
   // FIXME ally, rework as Selector checkbox

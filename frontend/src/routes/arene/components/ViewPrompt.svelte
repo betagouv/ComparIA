@@ -1,13 +1,12 @@
 <script lang="ts">
   import { Button } from '$components/dsfr'
+  import TextPrompt from '$components/TextPrompt.svelte'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
-  import GuidedPromptSuggestions from '$lib/components/GuidedPromptSuggestions.svelte'
-  import TextPrompt from '$lib/components/TextPrompt.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages.js'
   import { getModelsContext } from '$lib/models'
   import { tick } from 'svelte'
-  import { ModelSelector } from '.'
+  import { GuidedPromptSuggestions, ModelSelector } from '.'
 
   let { onSubmit }: { onSubmit: (args: APIModeAndPromptData) => void } = $props()
 

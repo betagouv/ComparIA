@@ -1,5 +1,5 @@
 <script lang="ts">
-  import IconButton from '$lib/components/IconButton.svelte'
+  import IconButton from '$components/IconButton.svelte'
   import { m } from '$lib/i18n/messages'
 
   export interface LikeDislikeProps {

@@ -6,7 +6,7 @@
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
-  import MiniCard from '../../routes/arene/components/MiniCard.svelte'
+  import { MiniCard } from '.'
 
   let { data }: { data: RevealData } = $props()
 

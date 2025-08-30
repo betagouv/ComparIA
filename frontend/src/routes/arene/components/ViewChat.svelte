@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Button } from '$components/dsfr'
   import Footer from '$components/Footer.svelte'
+  import TextPrompt from '$components/TextPrompt.svelte'
   import type { OnReactionFn, RevealData, VoteData } from '$lib/chatService.svelte'
   import {
     arena,
@@ -10,11 +11,8 @@
     retryAskChatBots,
     updateReaction
   } from '$lib/chatService.svelte'
-  import ChatBot from '$lib/components/ChatBot.svelte'
-  import RevealArea from '$lib/components/RevealArea.svelte'
-  import TextPrompt from '$lib/components/TextPrompt.svelte'
-  import VoteArea from '$lib/components/VoteArea.svelte'
   import { m } from '$lib/i18n/messages'
+  import { ChatBot, RevealArea, VoteArea } from '.'
 
   let step = $state<'chat' | 'vote' | 'reveal'>('chat')
   let prompt = $state('')

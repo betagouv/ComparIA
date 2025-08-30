@@ -2,11 +2,10 @@
   import { Button, Icon } from '$components/dsfr'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { modeInfos as modeChoices } from '$lib/chatService.svelte'
-  import Dropdown from '$lib/components/Dropdown.svelte'
-  import ModelsSelection from '$lib/components/ModelsSelection.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { fade } from 'svelte/transition'
+  import { Dropdown, ModelsSelection } from '.'
 
   let {
     models,
