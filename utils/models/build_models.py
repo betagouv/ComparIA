@@ -52,7 +52,7 @@ class Model(BaseModel):
     license: str
     release_date: str
     params: int | float | Literal["XS", "S", "M", "L", "XL"]
-    active_params: int | None = None
+    active_params: int | float | None = None
     arch: str
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
