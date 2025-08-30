@@ -81,8 +81,8 @@ def read_json(path: Path) -> Any:
     return json.loads(path.read_text())
 
 
-def write_json(path: Path, data) -> None:
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n")
+def write_json(path: Path, data, indent: int = 2) -> None:
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=indent) + "\n")
 
 
 def filter_dict(data: Obj, exclude: list[str]) -> Obj:
@@ -174,9 +174,11 @@ def validate() -> None:
     # Filter out some models based on attr `deactivated`
     for orga in raw_orgas:
         filtered_models = []
-        for model in orga['models']:
+        for model in orga["models"]:
             if model.get("deactivated", False):
-                log.warning(f"Model '{model["simple_name"]}' is deactivated (reason={model["deactivated"]})")
+                log.warning(
+                    f"Model '{model["simple_name"]}' is deactivated (reason={model["deactivated"]})"
+                )
             else:
                 filtered_models.append(model)
         orga["models"] = filtered_models
@@ -293,7 +295,7 @@ def validate() -> None:
     frontend_i18n = read_json(I18N_PATH)
     frontend_i18n["generated"] = sort_dict(i18n)
 
-    write_json(I18N_PATH, frontend_i18n)
+    write_json(I18N_PATH, frontend_i18n, indent=4)
     write_json(GENERATED_MODELS_PATH, sort_dict(generated_models))
 
 
