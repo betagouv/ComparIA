@@ -23,7 +23,9 @@
 </script>
 
 <div
-  class="cl-toast {variant === 'error' ? 'border-error' : 'border-primary'} flex border-2 bg-white"
+  class="cl-toast {variant === 'error'
+    ? 'border-error'
+    : 'border-primary'} text-dark-grey flex border-2 bg-white"
 >
   <div class="{variant === 'error' ? 'bg-error' : 'bg-primary'} flex flex-col justify-center p-2">
     <Icon
@@ -41,7 +43,6 @@
 
 <style>
   .cl-toast {
-    color: #333;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     width: 400px;
     max-width: 100%;
