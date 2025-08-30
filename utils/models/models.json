@@ -391,7 +391,7 @@
         "simple_name": "GPT 5",
         "license": "proprietary",
         "release_date": "08/2025",
-        "params": "XXL",
+        "params": "XL",
         "arch": "maybe-moe",
         "desc": "Le GPT-5 n'est pas un modèle unique, mais un système unifié composé de deux modèles distincts : un modèle rapide (`gpt-5-main`) pour les requêtes courantes et un modèle de raisonnement (`gpt-5-thinking`) pour les problèmes complexes. Comparé à ses prédécesseurs, OpenAI affirme qu'il est plus utile dans les requêtes du monde réel, avec des améliorations notables dans les domaines de l'écriture, du codage et de la santé. Il réduit également le phénomène des hallucinations. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
         "size_desc": "Le système GPT-5 est composé de modèles de différentes tailles, mais les tailles exactes ne sont pas connues. Son architecture est conçue pour inclure plusieurs modèles, orchestrés par un système de routage interne, qui sélectionne le plus petit modèle adapté à la tâche pour optimiser la vitesse et la profondeur du raisonnement. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.",
