@@ -171,6 +171,16 @@ def validate() -> None:
     raw_orgas = read_json(MODELS_PATH)
     raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
 
+    # Filter out some models based on attr `deactivated`
+    for orga in raw_orgas:
+        filtered_models = []
+        for model in orga['models']:
+            if model.get("deactivated", False):
+                log.warning(f"Model '{model["simple_name"]}' is deactivated (reason={model["deactivated"]})")
+            else:
+                filtered_models.append(model)
+        orga["models"] = filtered_models
+
     dumped_licenses = validate_licenses(raw_licenses)
     dumped_orgas = validate_orgas_and_models(raw_orgas)
 
