@@ -54,6 +54,7 @@ export const MODELS = [
   'Qwen 3 32B',
   'Qwen 3 30B A3B',
   'Qwen 2.5 max 0125',
+  'Kimi K2',
   'Nemotron Llama 3.1 70B',
   'GPT OSS-120B',
   'GPT OSS-20B',
@@ -68,10 +69,12 @@ export const MODELS = [
   'Mistral Small 3.2',
   'Magistral Medium',
   'Mistral Medium 2506',
+  'Mistral Medium 3.1',
   'Magistral Small',
   'Ministral',
   'Claude 3.7 Sonnet',
   'Claude 4 Sonnet',
+  'GLM 4.5',
   'Hermes 3 405B'
 ] as const
 
