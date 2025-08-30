@@ -334,7 +334,6 @@
         "reasoning": true,
         "license": "MIT",
         "release_date": "11/2025",
-        "reuse": true,
         "active_params": 32,
         "arch": "moe",
         "desc": "Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte.",
@@ -449,7 +448,6 @@
         "release_date": "04/2025",
         "params": "XL",
         "arch": "maybe-moe",
-        "reasoning": false,
         "url": "https://openai.com/index/introducing-o3-and-o4-mini/",
         "desc": "Très grand modèle de raisonnement, adapté pour des tâches et questions scientifiques et technologiques complexes.",
         "size_desc": "Malgré son nom et le fait que la taille exacte n’est pas connue, o4 mini est très probablement un grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Les modèles de raisonnement comme o4 mini nécessitent plus de temps pour répondre, car une phase de raisonnement précède la génération du résultat final, ce qui accroit leur consommation énergétique. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres pour générer chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
@@ -597,6 +595,7 @@
   },
   {
     "name": "Zhipu",
+    "icon_path": "zhipu.svg",
     "models": [
       {
         "id": "glm-4.5",
@@ -607,7 +606,6 @@
         "release_date": "07/2025",
         "arch": "moe",
         "reasoning": true,
-        "reuse": true,
         "desc": "Très grand modèle créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
         "size_desc": "Avec 355 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.",
         "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
