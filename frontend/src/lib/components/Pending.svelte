@@ -1,53 +1,45 @@
 <script lang="ts">
   import { m } from '$lib/i18n/messages'
+  import type { SvelteHTMLElements } from 'svelte/elements'
 
-  let { message = m['words.loading']() }: { message?: string } = $props()
+  let {
+    message = m['words.loading'](),
+    ...props
+  }: { message?: string } & SvelteHTMLElements['div'] = $props()
 </script>
 
-<div class="pending" role="status" aria-label="Loading response" aria-live="polite">
-  <span class="sr-only">Loading content</span>
-  <div class="disc left"></div>
-  <div class="disc right"></div>
-  <div class="message-pending"><strong>{message}</strong></div>
+<div
+  {...props}
+  class={['flex flex-col items-center py-5', props.class]}
+  role="status"
+  aria-label={m['words.loading']()}
+  aria-live="polite"
+>
+  <div class="mb-1 h-[15px] w-[15px]">
+    <div class="disc left"></div>
+    <div class="disc right"></div>
+  </div>
+  <p class="mb-0!">
+    <strong>{message}</strong>
+  </p>
 </div>
 
 <style>
-  .message-pending {
-    position: absolute;
-    margin-top: 60px;
-  }
-  .pending {
-    margin-bottom: 30px;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    align-self: center;
-    gap: 0px; /* You might adjust this gap based on the animation */
-    width: 100%;
-    position: relative; /* Needed for absolute positioning of discs */
-  }
-
   .disc {
     position: absolute;
     width: 15px; /* Adjust disc size as needed */
     height: 15px; /* Adjust disc size as needed */
     border-radius: 50%;
-    top: 50%;
   }
 
   .disc.left {
-    background-color: #ff9575;
+    background-color: var(--cg-orange);
     animation: animate-left 1.5s infinite ease-in-out;
-
-    left: 50%; /* Start from center */
   }
 
   .disc.right {
-    background-color: #a96afe;
+    background-color: var(--cg-purple);
     animation: animate-right 1.5s infinite ease-in-out;
-
-    left: 50%; /* Start from center */
   }
 
   @keyframes animate-left {
