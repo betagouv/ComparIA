@@ -53,8 +53,8 @@
   </div>
 
   <div class="mt-17">
-    <h3 class="fr-h5 text-primary! md:text-center">{m['product.problem.alignment.title']()}</h3>
-    <p class="fr-h5 text-start! md:text-center!">{m['product.problem.alignment.desc']()}</p>
+    <h3 class="fr-h5 text-primary! text-center">{m['product.problem.alignment.title']()}</h3>
+    <p class="fr-h5 text-center!">{m['product.problem.alignment.desc']()}</p>
   </div>
 
   <div class="mt-12 grid gap-6 md:grid-cols-2">
@@ -64,7 +64,7 @@
         <h4 class="fr-h6 mb-3!">{card.title}</h4>
 
         {#each card.ps as p}
-          <p class="text-xs! mb-3!">{@html sanitize(p)}</p>
+          <p class="text-[12px]! leading-normal! mb-3!">{@html sanitize(p)}</p>
         {/each}
       </section>
     {/each}
