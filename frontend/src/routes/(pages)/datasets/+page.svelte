@@ -60,7 +60,7 @@
             {@html sanitize(
               m['datasets.access.desc']({
                 linkProps: externalLinkProps({
-                  href: 'https://www.data.gouv.fr',
+                  href: 'https://www.data.gouv.fr/datasets/compar-ia/',
                   class: 'text-primary!'
                 })
               })
