@@ -6,6 +6,7 @@
   "
 >
   import { Button, Pagination, Select, Tooltip } from '$components/dsfr'
+  import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import type { Snippet } from 'svelte'
   import type { HTMLTableAttributes } from 'svelte/elements'
@@ -43,7 +44,10 @@
   let maxRows = $state(10)
 
   const displayedRows = $derived(rows.slice(page * maxRows, page * maxRows + maxRows))
-  const maxRowsOptions = [10, 25, 50].map((value) => ({ value, label: `${value} lignes par page` }))
+  const maxRowsOptions = [10, 25, 50].map((value) => ({
+    value,
+    label: m['components.table.pageCount']({ count: value })
+  }))
 </script>
 
 <div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
@@ -70,7 +74,7 @@
                     {/if}
                     {#if col.orderable}
                       <Button
-                        text="Trier"
+                        text={m['components.table.triage']()}
                         icon="arrow-up-down-line"
                         size="xs"
                         variant="tertiary-no-outline"
@@ -105,7 +109,7 @@
         bind:selected={maxRows}
         id="max-row-select"
         options={maxRowsOptions}
-        label="Nombre de lignes par page"
+        label={m['components.table.linePerPage']()}
         hideLabel
       />
     </div>

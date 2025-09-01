@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/i18n/messages'
+
   type PaginationProps = {
     page: number
     itemCount: number
@@ -20,30 +22,30 @@
 {#if pageCount > 1}
   <nav
     class="fr-pagination"
-    aria-label="Pagination"
+    aria-label={m['components.pagination.label']()}
     data-fr-analytics-page-total={pageCount}
   >
     <ul class="fr-pagination__list">
       <li>
         <a
           class="fr-pagination__link fr-pagination__link--first"
-          title="Première page"
+          title={m['components.pagination.first']()}
           {...page === 0
             ? { role: 'link', 'aria-disabled': 'true' }
             : { href: `#0`, onclick: () => (page = 0) }}
         >
-          Première page
+          {m['components.pagination.first']()}
         </a>
       </li>
       <li>
         <a
           class="fr-pagination__link fr-pagination__link--prev fr-pagination__link--lg-label"
-          title="Page précédente"
+          title={m['components.pagination.previous']()}
           {...page === 0
             ? { role: 'link', 'aria-disabled': 'true' }
             : { href: `#0`, onclick: () => page-- }}
         >
-          Page précédente
+          {m['components.pagination.previous']()}
         </a>
       </li>
 
@@ -52,7 +54,7 @@
           <a
             class="fr-pagination__link"
             aria-current={pageNumber === page ? 'page' : undefined}
-            title="Page {pageNumber}"
+            title={m['components.pagination.nth']({ count: pageNumber + 1 })}
             href="#{pageCount}"
             onclick={() => (page = pageNumber)}
           >
@@ -64,23 +66,23 @@
       <li>
         <a
           class="fr-pagination__link fr-pagination__link--next fr-pagination__link--lg-label"
-          title="Page suivante"
+          title={m['components.pagination.next']()}
           {...page >= pageCount - 1
             ? { role: 'link', 'aria-disabled': 'true' }
             : { href: `#${page - 1}`, onclick: () => page++ }}
         >
-          Page suivante
+          {m['components.pagination.next']()}
         </a>
       </li>
       <li>
         <a
           class="fr-pagination__link fr-pagination__link--last"
-          title="Dernière page"
+          title={m['components.pagination.last']()}
           {...page === pageCount - 1
             ? { role: 'link', 'aria-disabled': 'true' }
             : { href: `#${pageCount - 1}`, onclick: () => (page = pageCount - 1) }}
         >
-          Dernière page
+          {m['components.pagination.last']()}
         </a>
       </li>
     </ul>

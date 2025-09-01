@@ -104,6 +104,21 @@
         "revealButton": "Passer à la révélation des modèles"
     },
     "closeModal": "Fermer la fenêtre modale",
+    "components": {
+        "pagination": {
+            "first": "Première page",
+            "label": "Pagination",
+            "last": "Dernière page",
+            "next": "Page suivante",
+            "nth": "Page {count}",
+            "previous": "Page précédente"
+        },
+        "table": {
+            "linePerPage": "Nombre de lignes par page",
+            "pageCount": "{count} lignes par page",
+            "triage": "Trier"
+        }
+    },
     "datasets": {
         "access": {
             "catch": "Editeurs de modèles, chercheurs, chercheuses, entreprises, à vous de jouer !",
