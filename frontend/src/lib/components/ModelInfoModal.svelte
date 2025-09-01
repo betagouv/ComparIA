@@ -55,7 +55,7 @@
 <dialog aria-labelledby="{modalId}-title" id={modalId} class="fr-modal">
   <div class="fr-container fr-container--fluid">
     <div class="fr-grid-row fr-grid-row--center">
-      <div class="fr-col-12 fr-col-md-10 fr-col-lg-10">
+      <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div class="fr-modal__body bg-light-grey! rounded-xl">
           <div class="fr-modal__header pb-0!">
             <button
