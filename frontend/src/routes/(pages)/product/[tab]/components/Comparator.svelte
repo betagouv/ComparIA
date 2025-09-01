@@ -1,7 +1,10 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { sanitize } from '$lib/utils/commons'
+
+  const locale = getLocale()
 
   const challengesCards = (
     [
@@ -15,6 +18,10 @@
     title: m[`product.comparator.challenges.${i18nKey}.title`](),
     desc: m[`product.comparator.challenges.${i18nKey}.desc`]()
   }))
+
+  const chatbotScreenshotSrc = $derived(
+    `/product/chatbot-screenshot-${locale === 'fr' ? 'fr' : 'en'}.png`
+  )
 </script>
 
 <div class="pb-4">
@@ -28,7 +35,7 @@
     </div>
 
     <div class="rounded-[28px] bg-[#686868] p-4">
-      <img src="/product/chatbot-screenshot.png" class="w-full max-w-[622px] rounded-2xl" />
+      <img src={chatbotScreenshotSrc} class="w-full max-w-[622px] rounded-2xl" />
     </div>
   </div>
 
