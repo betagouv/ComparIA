@@ -9,7 +9,7 @@
     { href: '/ranking', label: m['seo.titles.ranking']() },
     { href: '/modeles', label: m['seo.titles.modeles']() },
     { href: '/datasets', label: m['seo.titles.datasets']() },
-    { href: '/news', label: m['seo.titles.news']() }
+    // { href: '/news', label: m['seo.titles.news']() }
   ]
 
   function isCurrentPage(path: string, href: string) {
