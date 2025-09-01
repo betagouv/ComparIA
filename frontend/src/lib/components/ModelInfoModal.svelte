@@ -56,7 +56,7 @@
   <div class="fr-container fr-container--fluid">
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
-        <div class="fr-modal__body bg-light-grey! rounded-xl">
+        <div class="fr-modal__body bg-light-grey! dark:border! dark:border-grey! rounded-xl">
           <div class="fr-modal__header pb-0!">
             <button
               class="fr-btn--close fr-btn"
@@ -143,11 +143,7 @@
                       <h6 class="mb-0! text-sm! flex">
                         <Icon icon="copyright-line" block class="me-2" />{m['models.conditions']()}
                       </h6>
-                      <Badge
-                        {...model.badges.licenseName}
-                        size="sm"
-                        class="self-center! ms-auto"
-                      />
+                      <Badge {...model.badges.licenseName} size="sm" class="self-center! ms-auto" />
                     </div>
 
                     <div class="fr-message block!">
