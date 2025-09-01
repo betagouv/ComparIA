@@ -107,7 +107,12 @@
           {/if}
 
           {#if !hideDiscussBtn}
-            <Link button href="/arene" text="Commencer à discuter" class="whitespace-nowrap" />
+            <Link
+              button
+              href="/arene"
+              text={m['header.startDiscussion']()}
+              class="whitespace-nowrap"
+            />
           {/if}
         </div>
       </div>
