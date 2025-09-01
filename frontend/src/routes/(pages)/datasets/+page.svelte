@@ -72,6 +72,7 @@
             variant="secondary"
             href="mailto:contact@comparia.beta.gouv.fr"
             text={m['datasets.access.share']()}
+            class="w-full! md:w-auto!"
           />
         </div>
 
@@ -123,7 +124,12 @@
                 <img src={card.img} class="fr-responsive-img" />
                 <p class="text-grey text-sm! py-5! m-0!">{card.desc}</p>
               </div>
-              <Link button href={card.link} text={card.linkTitle} class="w-full! mt-auto" />
+              <Link
+                button
+                href={card.link}
+                text={card.linkTitle}
+                class="w-full! text-center! mt-auto"
+              />
             </div>
           {/each}
         </div>
