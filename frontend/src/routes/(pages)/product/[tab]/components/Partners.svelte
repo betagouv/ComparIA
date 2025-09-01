@@ -103,7 +103,7 @@
   @reference '$css/app.css';
 
   .cl-card {
-    @apply bg-very-light-info p-8;
+    @apply bg-very-light-info p-4 md:p-8;
   }
   .cl-logos {
     @apply my-4 flex flex-wrap gap-8 *:object-contain;
