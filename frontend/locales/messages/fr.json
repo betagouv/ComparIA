@@ -772,7 +772,7 @@
         },
         "vote": {
             "datasetAccess": "Accéder aux jeux de données",
-            "desc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois",
+            "desc": "L’outil s’adresse également aux experts IA et aux formateurs pour des usages plus spécifiques",
             "steps": {
                 "datasets": {
                     "desc": "Toutes les questions posées et les votes sont compilés dans des jeux de données et publiés librement après anonymisation.",
