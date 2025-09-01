@@ -914,7 +914,22 @@
         "arch": {
             "title": "Le saviez-vous ?"
         },
-        "conditions": "Conditions d'utilisation",
+        "conditions": {
+            "commercialUse": {
+                "question": "Les usages commerciaux du modèle sont-ils autorisés ?",
+                "title": "Usage commercial"
+            },
+            "reuse": {
+                "question": "Puis-je utiliser les sorties du modèle pour en entrainer de nouveaux ?",
+                "subTitle": "Vous ne pouvez pas les réutiliser pour entraîner d’autres modèles",
+                "title": "Réutilisation des résultats générés"
+            },
+            "types": {
+                "allowed": "Autorisé",
+                "conditions": "Sous conditions",
+                "forbidden": "Interdit"
+            }
+        },
         "extra": {
             "experts": {
                 "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>",

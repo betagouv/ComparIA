@@ -19,33 +19,33 @@
         ? null
         : !model.commercial_use
           ? {
-              title: 'Les usages commerciaux du modèle sont-ils autorisés ?',
-              badge: { variant: 'red' as const, text: 'Interdit' }
+              title: m['models.conditions.commercialUse.question'](),
+              badge: { variant: 'red' as const, text: m['models.conditions.types.forbidden']() }
             }
           : {
-              title: 'Usage commercial',
+              title: m['models.conditions.commercialUse.title'](),
               badge: !!model.licenseInfos.commercialUseSpecificities
                 ? {
                     variant: 'purple' as const,
-                    text: 'Sous conditions'
+                    text: m['models.conditions.types.conditions']()
                   }
-                : { variant: 'green' as const, text: 'Autorisé' },
+                : { variant: 'green' as const, text: m['models.conditions.types.allowed']() },
               subtitle: model.licenseInfos.commercialUseSpecificities
             },
       !model.reuse
         ? {
-            title: 'Puis-je utiliser les sorties du modèle pour en entrainer de nouveaux ?',
-            badge: { variant: 'red' as const, text: 'Interdit' },
-            subtitle: 'Vous ne pouvez pas les réutiliser pour entraîner d’autres modèles'
+            title: m['models.conditions.reuse.question'](),
+            badge: { variant: 'red' as const, text: m['models.conditions.types.forbidden']() },
+            subtitle: m['models.conditions.reuse.subTitle']()
           }
         : {
-            title: 'Réutilisation des résultats générés',
+            title: m['models.conditions.reuse.title'](),
             badge: !!model.licenseInfos.reuseSpecificities
               ? {
                   variant: 'purple' as const,
-                  text: 'Sous conditions'
+                  text: m['models.conditions.types.conditions']()
                 }
-              : { variant: 'green' as const, text: 'Autorisé' },
+              : { variant: 'green' as const, text: m['models.conditions.types.allowed']() },
             subtitle: model.licenseInfos.reuseSpecificities
           }
     ].filter((b) => !!b)
@@ -58,11 +58,7 @@
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div class="fr-modal__body bg-light-grey! dark:border! dark:border-grey! rounded-xl">
           <div class="fr-modal__header pb-0!">
-            <button
-              class="fr-btn--close fr-btn"
-              title={m['closeModal']()}
-              aria-controls={modalId}
-            >
+            <button class="fr-btn--close fr-btn" title={m['closeModal']()} aria-controls={modalId}>
               {m['words.close']()}
             </button>
           </div>
@@ -111,7 +107,9 @@
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
                     <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="lightbulb-line" block class="text-yellow me-2" />{m['models.arch.title']()}
+                      <Icon icon="lightbulb-line" block class="text-yellow me-2" />{m[
+                        'models.arch.title'
+                      ]()}
                     </h6>
                     <!-- FIXME -->
                     <Badge
