@@ -20,7 +20,9 @@
 <div class="fr-card fr-enlarge-link cg-border bg-none! rounded-xl">
   <div class="fr-card__body">
     <div class="fr-card__content px-5! md:px-4! md:pt-4!">
-      <h6 class="fr-card__title text-dark-grey font-normal! text-sm! mb-3! flex items-center gap-3">
+      <h6
+        class="fr-card__title text-dark-grey font-normal! text-[14px]! leading-normal! mb-3! flex items-center gap-3"
+      >
         <img
           class="object-contain"
           src="/orgs/ai/{model.icon_path}"

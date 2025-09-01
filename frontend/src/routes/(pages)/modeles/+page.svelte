@@ -104,7 +104,7 @@
       <div class="fr-sidemenu__inner h-full">
         <button
           id="results-count"
-          aria-expanded="true"
+          aria-expanded="false"
           aria-controls="fr-modal-filters-section"
           type="button"
           class="fr-sidemenu__btn"
@@ -201,10 +201,10 @@
       <div class="fr-select-group">
         <label class="fr-label" for="model-order">{m['models.list.triage.label']()}</label>
         <select
-          class="fr-select w-auto!"
           id="model-order"
           bind:value={sortingMethod}
           name="model-order"
+          class="fr-select w-auto! max-w-full"
         >
           {#each sortingOptions as option}
             <option value={option.value}>{option.label}</option>
