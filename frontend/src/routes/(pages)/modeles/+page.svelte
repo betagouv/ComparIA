@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Accordion, AccordionGroup, Button, CheckboxGroup } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import ModelCard from '$lib/components/ModelCard.svelte'
-  import SeoHead from '$lib/components/SEOHead.svelte'
+  import ModelCard from '$components/ModelCard.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import type { License, Organisation, Sizes } from '$lib/models'
   import { getModelsContext, SIZES } from '$lib/models'

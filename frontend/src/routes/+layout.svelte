@@ -1,6 +1,6 @@
 <script lang="ts">
   import { browser } from '$app/environment'
-  import Toaster from '$lib/components/Toaster.svelte'
+  import Toaster from '$components/Toaster.svelte'
   import { setVotesContext } from '$lib/global.svelte'
   import { setModelsContext } from '$lib/models'
   import '../css/app.css'

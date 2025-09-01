@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SeoHead from '$lib/components/SEOHead.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 </script>

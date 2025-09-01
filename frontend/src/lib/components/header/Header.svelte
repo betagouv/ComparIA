@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Link } from '$lib/components/dsfr'
+  import { Button, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { LanguageSelector, Menubar, VoteGauge } from '.'

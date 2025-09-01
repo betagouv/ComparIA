@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Accordion, AccordionGroup, Tabs } from '$lib/components/dsfr'
+  import { Accordion, AccordionGroup, Tabs } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
 

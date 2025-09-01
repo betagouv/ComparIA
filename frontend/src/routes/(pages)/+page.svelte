@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { Button, Icon, Link } from '$lib/components/dsfr'
-  import FAQContent from '$lib/components/FAQContent.svelte'
-  import HowItWorks from '$lib/components/HowItWorks.svelte'
-  import Newsletter from '$lib/components/Newsletter.svelte'
+  import { Button, Icon, Link } from '$components/dsfr'
+  import FAQContent from '$components/FAQContent.svelte'
+  import HowItWorks from '$components/HowItWorks.svelte'
+  import Newsletter from '$components/Newsletter.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'

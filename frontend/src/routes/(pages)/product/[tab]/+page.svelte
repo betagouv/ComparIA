@@ -1,6 +1,6 @@
 <script lang="ts">
   import SeoHead from '$components/SEOHead.svelte'
-  import { Tabs } from '$lib/components/dsfr'
+  import { Tabs } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { Comparator, FAQ, History, Partners, Problem } from './components'
 

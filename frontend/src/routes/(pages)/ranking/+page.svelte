@@ -1,6 +1,6 @@
 <script lang="ts">
   import Pending from '$components/Pending.svelte'
-  import SeoHead from '$lib/components/SEOHead.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { propsToAttrs, sanitize } from '$lib/utils/commons'
   import { onMount } from 'svelte'

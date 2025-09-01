@@ -1,8 +1,8 @@
 <script lang="ts">
   import { Icon, Link, Tooltip } from '$components/dsfr'
+  import Header from '$components/header/Header.svelte'
+  import SeoHead from '$components/SEOHead.svelte'
   import { arena, modeInfos, runChatBots } from '$lib/chatService.svelte'
-  import Header from '$lib/components/header/Header.svelte'
-  import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import { ViewChat, ViewPrompt, WelcomeModal } from './components'
 

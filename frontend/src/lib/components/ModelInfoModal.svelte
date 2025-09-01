@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge, Icon } from '$lib/components/dsfr'
+  import { Badge, Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'

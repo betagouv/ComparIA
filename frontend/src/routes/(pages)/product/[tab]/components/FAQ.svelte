@@ -1,5 +1,5 @@
 <script lang="ts">
-  import FaqContent from '$lib/components/FAQContent.svelte'
+  import FaqContent from '$components/FAQContent.svelte'
 </script>
 
 <FaqContent />

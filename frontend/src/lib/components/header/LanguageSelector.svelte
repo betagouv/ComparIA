@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from '$lib/components/dsfr'
+  import { Button } from '$components/dsfr'
   import { LOCALES } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, setLocale } from '$lib/i18n/runtime'
