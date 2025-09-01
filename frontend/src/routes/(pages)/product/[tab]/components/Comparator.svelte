@@ -31,7 +31,12 @@
         {@html sanitize(m['product.comparator.title']({ props: 'class="text-primary"' }))}
       </h2>
 
-      <Link button href="/arene" text={m['product.comparator.cta']()} class="lg:mt-13" />
+      <Link
+        button
+        href="/arene"
+        text={m['product.comparator.cta']()}
+        class="lg:mt-13 w-full! sm:w-auto!"
+      />
     </div>
 
     <div class="rounded-[28px] bg-[#686868] p-4">
@@ -69,7 +74,12 @@
       </p>
       <p><strong>{m['product.comparator.europe.catch']()}</strong></p>
 
-      <Link button href="mailto:contact@comparia.beta.gouv.fr" text={m['actions.contactUs']()} />
+      <Link
+        button
+        href="mailto:contact@comparia.beta.gouv.fr"
+        text={m['actions.contactUs']()}
+        class="w-full! sm:w-auto!"
+      />
     </div>
   </div>
 </div>

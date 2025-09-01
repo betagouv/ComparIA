@@ -59,6 +59,7 @@
       button
       href="mailto:contact@comparia.beta.gouv.fr"
       text={m['product.partners.diffusion.cta']()}
+      class="w-full! sm:w-auto!"
     />
   </section>
 
@@ -75,7 +76,12 @@
     <p>{m['product.partners.academy.desc']()}</p>
     <p><strong>{m['product.partners.academy.catch']()}</strong></p>
 
-    <Link button href="mailto:contact@comparia.beta.gouv.fr" text={m['actions.contactUs']()} />
+    <Link
+      button
+      href="mailto:contact@comparia.beta.gouv.fr"
+      text={m['actions.contactUs']()}
+      class="w-full! sm:w-auto!"
+    />
   </section>
 
   <section class="cg-border cl-card">
