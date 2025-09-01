@@ -35,7 +35,7 @@
   </legend>
 
   {#each options as option, i}
-    <div class="fr-fieldset__element">
+    <div class="fr-fieldset__element not-last:mb-2! last:mb-0!">
       <div class="fr-checkbox-group">
         <input
           name="checkbox1"
@@ -74,9 +74,10 @@
   }
 
   input[type='checkbox'] + label::before {
-    height: 1rem;
-    width: 1rem;
-    left: -1.5rem;
-    top: 0.25rem;
+    position: relative;
+    height: 1rem !important;
+    width: 1rem !important;
+    left: -1.5rem !important;
+    top: 0.25rem !important;
   }
 </style>

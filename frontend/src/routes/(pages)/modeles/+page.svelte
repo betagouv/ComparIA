@@ -1,10 +1,11 @@
 <script lang="ts">
-  import { Button, CheckboxGroup } from '$components/dsfr'
+  import { Accordion, AccordionGroup, Button, CheckboxGroup } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import ModelCard from '$lib/components/ModelCard.svelte'
   import SeoHead from '$lib/components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsContext, SIZES, type Sizes } from '$lib/models'
+  import type { License, Organisation, Sizes } from '$lib/models'
+  import { getModelsContext, SIZES } from '$lib/models'
 
   const models = getModelsContext()
 
@@ -44,9 +45,9 @@
     })
   )
 
-  let editors = $state<string[]>([])
+  let editors = $state<Organisation[]>([])
   let sizes = $state<Sizes[]>([])
-  let licenses = $state<string[]>([])
+  let licenses = $state<License[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   const filteredModels = $derived(
     models
@@ -121,43 +122,58 @@
             {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
           <form class="mt-8 md:mt-0">
-            <CheckboxGroup
-              {...editorFilter}
-              bind:value={editors}
-              legendClass="fr-h6"
-              labelClass="flex-nowrap!"
-              class="border-b-1! border-(--grey-925-125)! pb-6! mb-8! md:border-0! md:mb-0!"
-            >
-              {#snippet labelSlot({ option })}
-                <div class="me-2">{option.value}</div>
-                <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
-              {/snippet}
-            </CheckboxGroup>
+            <AccordionGroup class="mb-6">
+              <Accordion id="field-editors" label={editorFilter.legend}>
+                <div class="p-4">
+                  <CheckboxGroup
+                    {...editorFilter}
+                    bind:value={editors}
+                    legendClass="sr-only"
+                    labelClass="flex-nowrap!"
+                    class="mb-0!"
+                  >
+                    {#snippet labelSlot({ option })}
+                      <div class="me-2">{option.value}</div>
+                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                    {/snippet}
+                  </CheckboxGroup>
+                </div>
+              </Accordion>
 
-            <CheckboxGroup
-              {...sizeFilter}
-              bind:value={sizes}
-              legendClass="fr-h6"
-              labelClass="flex-nowrap!"
-              class="border-b-1! border-(--grey-925-125)! pb-6! mb-8! md:border-0! md:mb-0!"
-            >
-              {#snippet labelSlot({ option })}
-                <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
-                <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
-              {/snippet}
-            </CheckboxGroup>
+              <Accordion id="field-size" label={sizeFilter.legend}>
+                <div class="p-4">
+                  <CheckboxGroup
+                    {...sizeFilter}
+                    bind:value={sizes}
+                    legendClass="sr-only"
+                    labelClass="flex-nowrap!"
+                    class="mb-0!"
+                  >
+                    {#snippet labelSlot({ option })}
+                      <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
+                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                    {/snippet}
+                  </CheckboxGroup>
+                </div>
+              </Accordion>
 
-            <CheckboxGroup
-              {...licenseFilter}
-              bind:value={licenses}
-              legendClass="fr-h6"
-              labelClass="flex-nowrap!"
-            >
-              {#snippet labelSlot({ option })}
-                <div class="me-2">{option.label}</div>
-                <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
-              {/snippet}
-            </CheckboxGroup>
+              <Accordion id="field-license" label={licenseFilter.legend}>
+                <div class="p-4">
+                  <CheckboxGroup
+                    {...licenseFilter}
+                    bind:value={licenses}
+                    legendClass="sr-only"
+                    labelClass="flex-nowrap!"
+                    class="mb-0!"
+                  >
+                    {#snippet labelSlot({ option })}
+                      <div class="me-2">{option.label}</div>
+                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                    {/snippet}
+                  </CheckboxGroup>
+                </div>
+              </Accordion>
+            </AccordionGroup>
 
             <div class="mb-8">
               <Button
@@ -212,3 +228,10 @@
 </main>
 
 <ModelInfoModal model={selectedModelData} modalId="modal-model" />
+
+<style>
+  :global(.fr-sidemenu .fr-collapse) {
+    padding: 0;
+    margin: 0;
+  }
+</style>

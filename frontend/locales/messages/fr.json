@@ -845,7 +845,7 @@
                         "XL": "> 150 milliards",
                         "XS": "< à 7 milliards"
                     },
-                    "legend": "Taille (en milliards de paramètres)"
+                    "legend": "Taille (paramètres)"
                 }
             },
             "intro": "Explorez les différents modèles d'IA conversationnels disponibles, leurs caractéristiques et leurs licences.",
