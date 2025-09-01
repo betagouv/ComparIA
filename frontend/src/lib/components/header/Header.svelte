@@ -56,7 +56,7 @@
             </div>
           </div>
           <div
-            class="fr-header__service before:content-none! px-3! me-0! sm:me-3! flex w-1/2 sm:w-auto"
+            class="fr-header__service before:content-none! md:px-3! mx-1! sm:mx-3! flex w-1/2 grow sm:w-auto"
           >
             <img
               src="/orgs/comparia.svg"
@@ -67,20 +67,22 @@
               class="me-3 hidden sm:block"
             />
             <div>
-              <p class="fr-header__service-title">
+              <p class="fr-header__service-title mb-0! leading-normal!">
                 <a href="/" title={m['header.homeTitle']()}>
                   {m['header.title.compar']()}:{m['header.title.ia']()}
                 </a>
               </p>
 
-              <span class="fr-header__service-tagline text-dark-grey">
+              <p
+                class="fr-header__service-tagline text-dark-grey text-[10px]! md:text-[14px]! leading-normal! mb-0!"
+              >
                 {m['header.subtitle']()}
-              </span>
+              </p>
             </div>
           </div>
           <div class="fr-header__navbar self-auto! mt-0!">
             <button
-              class="fr-btn fr-btn--menu me-3!"
+              class="fr-btn fr-btn--menu me-3! -ms-1!"
               data-fr-opened="false"
               aria-controls="fr-modal-menu"
               aria-haspopup="menu"
