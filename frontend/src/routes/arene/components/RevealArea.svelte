@@ -97,8 +97,7 @@
           </div>
         </div>
 
-        <!-- FIXME i18n -->
-        <h6 class="mt-9! mb-5!">Ce qui correspond à :</h6>
+        <h6 class="mt-9! mb-5!">{m['reveal.equivalent.title']()}</h6>
         <div class="grid grid-cols-3 gap-2">
           <MiniCard
             id="co2-{side}"

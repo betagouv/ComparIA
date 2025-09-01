@@ -55,7 +55,6 @@
         <h3 class="mb-0! ms-1!">{m[`models.names.${bot}`]()}</h3>
       </div>
 
-      <!-- FIXME i18n -->
       {#if message.reasoning != ''}
         <section class="fr-accordion mb-8 py-2">
           <div class="fr-highlight ms-0! ps-0!">
