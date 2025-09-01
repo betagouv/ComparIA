@@ -105,13 +105,7 @@
           {/if}
 
           {#if !hideDiscussBtn}
-            <Link
-              button
-              href="/arene"
-              text="Commencer à discuter"
-              size="lg"
-              class="whitespace-nowrap"
-            />
+            <Link button href="/arene" text="Commencer à discuter" class="whitespace-nowrap" />
           {/if}
         </div>
       </div>
@@ -152,7 +146,6 @@
             button
             href="/arene"
             text="Commencer à discuter"
-            size="lg"
             class="w-full! whitespace-nowrap"
           />
         </div>
