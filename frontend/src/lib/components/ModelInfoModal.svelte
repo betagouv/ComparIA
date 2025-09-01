@@ -143,7 +143,11 @@
                       <h6 class="mb-0! text-sm! flex">
                         <Icon icon="copyright-line" block class="me-2" />{m['models.conditions']()}
                       </h6>
-                      <Badge text={model.license} size="sm" class="self-center! ms-auto" />
+                      <Badge
+                        {...model.badges.licenseName}
+                        size="sm"
+                        class="self-center! ms-auto"
+                      />
                     </div>
 
                     <div class="fr-message block!">

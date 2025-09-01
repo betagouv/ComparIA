@@ -157,7 +157,11 @@ export function parseModel(model: APIBotModel) {
             text: m['models.release']({ date: model.release_date })
           } as const)
         : null,
-      licenseName: { variant: '' as const, text: model.license },
+      licenseName: {
+        variant: '' as const,
+        text:
+          model.license === 'proprietary' ? m['models.licenses.type.proprietary']() : model.license
+      },
       size: {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
