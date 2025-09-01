@@ -11,6 +11,11 @@
     { href: '/datasets', label: m['seo.titles.datasets']() },
     { href: '/news', label: m['seo.titles.news']() }
   ]
+
+  function isCurrentPage(path: string, href: string) {
+    if (path.includes('product')) return href.includes('product')
+    return path === href
+  }
 </script>
 
 <nav class="fr-nav" data-fr-js-navigation="true">
@@ -22,7 +27,7 @@
           target="_self"
           aria-controls="modal-header__menu"
           class="fr-nav__link"
-          aria-current={page.url.pathname === link.href ? 'true' : undefined}
+          aria-current={isCurrentPage(page.url.pathname, link.href) ? 'true' : undefined}
           data-fr-js-modal-button="true"
         >
           {link.label}
