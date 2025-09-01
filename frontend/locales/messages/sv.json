@@ -7,6 +7,125 @@
         "subtitle": "Jämförelseverktyg för konversations-AI"
     },
     "arenaHome": {
-        "title": "Hur kan jag hjälpa dig idag?"
+        "title": "Hur kan jag hjälpa dig idag?",
+        "compareModels": {
+            "count": "{count}/2 modeller",
+            "help": "Om bara en är vald, kommer den andra att väljas slumpmässigt",
+            "question": "Vilka modeller vill du jämföra?"
+        },
+        "modelSelection": "Val av modeller",
+        "prompt": {
+            "label": "Skriv ditt första meddelande",
+            "placeholder": "Skriv ditt första meddelande här"
+        },
+        "selectModels": {
+            "help": "Välj jämförelseläge",
+            "question": "Vilka modeller vill du jämföra?"
+        },
+        "suggestions": {
+            "choices": {
+                "administrative": {
+                    "iconAlt": "Administrativ",
+                    "title": "Skriv ett administrativt dokument"
+                },
+                "coach": {
+                    "iconAlt": "Tips",
+                    "title": "Få råd om kost och träning"
+                },
+                "explanations": {
+                    "iconAlt": "Förklaringar",
+                    "title": "Förklara ett koncept enkelt"
+                },
+                "iasummit": {
+                    "iconAlt": "AI Action Summit",
+                    "title": "Prompter from medborgarkonsultation om AI ",
+                    "tooltip": "Dessa frågor är resultatet av en medborgarkonsultation om IA som hölls 16/9 till 8/11 2024. Syftet var att låta medborgare och samhälle delta i AI Action Summit, och samla deras idéer om hur AI kan skapa möjligheter för alla, medan missbruk minimeras."
+                },
+                "ideas": {
+                    "iconAlt": "Idéer",
+                    "title": "Generera nya idéer"
+                },
+                "languages": {
+                    "iconAlt": "Översättning",
+                    "title": "Skriv på annat språk"
+                },
+                "recipes": {
+                    "iconAlt": "Recept",
+                    "title": "Upptäck ett nytt recept"
+                },
+                "recommendations": {
+                    "iconAlt": "Rekommendationer",
+                    "title": "Föreslå filmer, böcker och musik"
+                },
+                "stories": {
+                    "iconAlt": "Berättelser",
+                    "title": "Berätta en historia"
+                }
+            },
+            "generateAnother": "Skapa ett nytt meddelande",
+            "title": "Förslag på prompter"
+        }
+    },
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "contact": "Kontakta oss",
+        "contactUs": "Kontakta oss",
+        "copyLink": {
+            "do": "Kopiera länk",
+            "done": "Länk kopierad"
+        },
+        "copyMessage": {
+            "do": "Kopiera meddelande",
+            "done": "Meddelandet har kopierats"
+        },
+        "home": "Startsida",
+        "returnHome": "Tillbaka till startsida",
+        "seeMore": "Visa mer",
+        "selectLanguage": "Välj språk"
+    },
+    "chatbot": {
+        "continuePrompt": "Fortsätt chatta med AI-modellerna",
+        "errors": {
+            "other": {
+                "message": "Ett tillfälligt fel har uppstått.",
+                "retry": "Du kan försöka begära modellerna igen.",
+                "title": "Ett tillfälligt fel har uppstått",
+                "vote": "Eller avsluta din upplevelse genom att ge din åsikt om modellerna."
+            },
+            "tooLong": {
+                "message": "Varje modell har en gräns för hur stora samtal den kan hantera.",
+                "retry": "Du kan återuppta en konversation med två nya modeller.",
+                "title": "Konversationen är för lång för en av modellerna.",
+                "vote": "Du kan fortfarande ge din åsikt om dessa modeller eller starta en konversation med två nya."
+            }
+        },
+        "loading": "Läser in svar",
+        "conversation": "Konversation",
+        "revealButton": "Visa vilka modeller som användes"
+    },
+    "datasets": {
+        "access": {
+            "catch": "Modellskapare, forskare, företag, det är er tur!",
+            "desc": "Frågorna som ställs på plattformen är mestadels på franska och återspeglar verklig användning utan restriktioner. Dessa datamängder finns tillgängliga på <a {linkProps}>data.gouv</a> och Hugging Face.",
+            "repos": {
+                "conversations": {
+                    "desc": "Frågor och svar"
+                },
+                "reactions": {
+                    "desc": "Alla reaktioner"
+                }
+            },
+            "title": "Åtkomst till datauppsättningar från compar:IA"
+        },
+        "reuse": {
+            "bunka": {
+                "conversations": {
+                    "desc": "Interaktiv visualisering av samtal där varje punkt representerar ett kluster av diskussioner som nämns av användare (som tex. utbildning, hälsa, miljö eller filosofi).",
+                    "title": "Utforska visualisering av data"
+                }
+            }
+        }
     }
 }
