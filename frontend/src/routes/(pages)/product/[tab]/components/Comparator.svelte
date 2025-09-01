@@ -60,8 +60,13 @@
 
   <div class="cg-border bg-light-grey grid gap-10 px-4 py-10 md:grid-cols-2">
     <div class="flex">
-      <!-- FIXME replace image -->
-      <img src="/home/comparia-stars.svg" aria-hidden="true" alt="" width="326px" class="m-auto" />
+      <img
+        src="/product/comparia-europe.png"
+        aria-hidden="true"
+        alt=""
+        width="326px"
+        class="m-auto"
+      />
     </div>
 
     <div class="lg:pe-17">
