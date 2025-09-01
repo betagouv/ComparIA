@@ -60,7 +60,7 @@
           <div class="fr-modal__header pb-0!">
             <button
               class="fr-btn--close fr-btn"
-              title="Fermer la fenêtre modale"
+              title={m['closeModal']()}
               aria-controls={modalId}
             >
               {m['words.close']()}
@@ -111,7 +111,7 @@
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
                     <h6 class="mb-0! text-lg! flex">
-                      <Icon icon="lightbulb-line" block class="text-yellow me-2" />Le saviez-vous ?
+                      <Icon icon="lightbulb-line" block class="text-yellow me-2" />{m['models.arch.title']()}
                     </h6>
                     <!-- FIXME -->
                     <Badge
@@ -180,7 +180,7 @@
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
                   <h6 class="text-sm! mb-2! flex">
-                    <Icon icon="link" block class="me-2" />Pour aller plus loin
+                    <Icon icon="link" block class="me-2" />{m['models.extra.title']()}
                   </h6>
 
                   <p class="text-grey text-xs! mb-3!">

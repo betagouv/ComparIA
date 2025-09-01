@@ -152,7 +152,7 @@
           <Link
             button
             href="/arene"
-            text="Commencer à discuter"
+            text={m['header.startDiscussion']()}
             class="w-full! whitespace-nowrap"
           />
         </div>

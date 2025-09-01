@@ -190,8 +190,10 @@
                 <button
                   class="fr-btn--close fr-btn"
                   title={m['closeModal']()}
-                  aria-controls="share-modal">{m['words.close']()}</button
+                  aria-controls="share-modal"
                 >
+                  {m['words.close']()}
+                </button>
               </div>
               <div class="fr-modal__content">
                 <h6 class="mb-3! text-dark-grey!">

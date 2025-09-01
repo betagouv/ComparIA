@@ -122,7 +122,7 @@
           <div class="fr-modal__header">
             <button
               class="fr-btn--close fr-btn"
-              title="Fermer la fenêtre modale"
+              title={m['closeModal']()}
               aria-controls="modal-mode-selection"
             >
               {m['words.close']()}

@@ -806,6 +806,9 @@
         }
     },
     "models": {
+        "arch": {
+            "title": "Le saviez-vous ?"
+        },
         "conditions": "Conditions d'utilisation",
         "extra": {
             "experts": {

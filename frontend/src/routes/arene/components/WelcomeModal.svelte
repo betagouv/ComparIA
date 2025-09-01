@@ -32,7 +32,7 @@
           <div class="fr-modal__header">
             <button
               class="fr-btn--close fr-btn"
-              title="Fermer la fenêtre modale"
+              title={m['closeModal']()}
               aria-controls="fr-modal-welcome"
               id="fr-modal-welcome-close"
               onclick={onClose}
