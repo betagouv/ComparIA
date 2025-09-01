@@ -177,8 +177,10 @@
 
             <div class="mb-8">
               <Button
-                text={m['words.reset']()}
+                text={m['models.list.filters.reset']()}
+                icon="delete-line"
                 variant="tertiary-no-outline"
+                disabled={filterCount === 0}
                 onclick={resetFilters}
               />
             </div>

@@ -837,6 +837,7 @@
                 "license": {
                     "legend": "Licence d'utilisation"
                 },
+                "reset": "Effacer tous les filtres",
                 "size": {
                     "labels": {
                         "L": "de 70 à 150 milliards",
