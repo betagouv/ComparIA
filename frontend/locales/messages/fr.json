@@ -117,6 +117,17 @@
             "linePerPage": "Nombre de lignes par page",
             "pageCount": "{count} lignes par page",
             "triage": "Trier"
+        },
+        "theme": {
+            "legend": "Choisissez un thème pour personnaliser l’apparence du site.",
+            "options": {
+                "dark": "Thème sombre",
+                "light": "Thème clair",
+                "system": "Système",
+                "systemSub": "Utilise les paramètres système"
+            },
+            "title": "Paramètres d'affichage"
+
         }
     },
     "datasets": {

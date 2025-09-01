@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ThemeSelector from '$components/ThemeSelector.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
@@ -59,6 +60,9 @@
             <a class="fr-footer__bottom-link" {...props}>{label}</a>
           </li>
         {/each}
+        <li class="fr-footer__bottom-item">
+          <ThemeSelector />
+        </li>
       </ul>
       <div class="fr-footer__bottom-copy">
         <p>
