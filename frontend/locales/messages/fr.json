@@ -775,7 +775,7 @@
             "desc": "Votre préférence enrichit les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français, le suédois, le lituanien et le danois",
             "steps": {
                 "datasets": {
-                    "desc": "Toutes les questions posées et les votes sont compilées dans des jeux de données et publiés librement après anonmymisation.",
+                    "desc": "Toutes les questions posées et les votes sont compilés dans des jeux de données et publiés librement après anonymisation.",
                     "title": "Les jeux de données par langue"
                 },
                 "finetune": {
