@@ -7,6 +7,117 @@
         "subtitle": "Jämförelseverktyg för konversations-AI"
     },
     "arenaHome": {
-        "title": "Hur kan jag hjälpa dig idag?"
+        "title": "Hur kan jag hjälpa dig idag?",
+        "modelSelection": "Val av modell",
+        "prompt": {
+            "label": "Skriv ditt första meddelande",
+            "placeholder": "Skriv ditt första meddelande här"
+        },
+        "selectModels": {
+            "question": "Vilka modeller vill du jämföra?",
+            "help": "Välj jämförelseläge"
+        },
+        "compareModels": {
+            "question": "Vilka modeller vill du jämföra?",
+            "count": "{count}/2 modeller",
+            "help": "Om bara en modell är vald, kommer den andra väljas slumpmässigt"
+        },
+        "suggestions": {
+            "title": "Föreslagna prompter",
+            "generateAnother": "Generera ny prompt",
+            "choices": {
+                "iasummit": {
+                    "iconAlt": "AI Action Summit",
+                    "title": "Prompter från en medborgarkonsultation om AI",
+                    "tooltip": "Dessa frågor är resultatet av en medborgarkonsultation om IA som hölls 16/9 till 8/11 2024. Syftet var att låta medborgare och samhälle delta i AI Action Summit, och samla deras idéer om hur AI kan skapa möjligheter för alla, medan missbruk minimeras."
+                },
+                "ideas": {
+                    "iconAlt": "Idéer",
+                    "title": "Generera nya idéer"
+                },
+                "explanations": {
+                    "iconAlt": "Förklaring",
+                    "title": "Förklara ett koncept"
+                },
+                "languages": {
+                    "iconAlt": "Översättning",
+                    "title": "Skriv på annat språk"
+                },
+                "administrative": {
+                    "iconAlt": "Administrativ",
+                    "title": "Skriv ett administrativt dokument"
+                },
+                "recipes": {
+                    "title": "Visa mig nya recept",
+                    "iconAlt": "Recept"
+                },
+                "coach": {
+                    "iconAlt": "Tips",
+                    "title": "Ge mig råd om hälsa och träning"
+                },
+                "stories": {
+                    "iconAlt": "Berättelser",
+                    "title": "Berätta en historia"
+                },
+                "recommendations": {
+                    "iconAlt": "Rekommendationer",
+                    "title": "Föreslå filmer, böcker, musik"
+                }
+            }
+        }
+    },
+    "closeModal": "Stäng popup-fönstret",
+    "models": {
+        "licenses": {
+            "type": {
+                "proprietary": "Proprietär",
+                "openSource": "Öppen källkod",
+                "semiOpen": "Semi-öppen"
+            },
+            "name": "Licens {licence}",
+            "commercial": "Kommersiell licens",
+            "noDesc": "Licensinformation saknas för denna modell.",
+            "descriptions": {
+                "MIT": "MIT-licensen är en licens för fri programvara. Den tillåter att vem som helst återanvänder, ändrar eller sprider en modell, även för kommersiella ändamål, förutsatt att den ursprungliga licensen och upphovsrättstexten skickas med.",
+                "Apache 2.0": "Denna licens låter dig använda, ändra eller sprida en modell, även för kommersiella ändamål. Utöver det garanteras rättsligt skydd genom en klausul om icke-intrång och transparens. Alla ändringar måste därför vara dokumenterade och spårbara.",
+                "Gemma": "Denna licens är skapad för att uppmuntra att mjukvaran används, ändras och sprids, men innehåller en klausul som säger att alla ändrade versioner måste delas under samma licens, för att främja samarbete och transparens inom mjukvaruutveckling.",
+                "Llama 3 Community": "Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad, och förbjuder att kod eller genererat material återanvänds för att träna eller utveckla konkurrerande modeller, för att därigenom skydda Metas investeringar och varumärke.",
+                "Llama 3.1": "Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad. Kod och genererat material får återanvändas för att träna eller utveckla modeller som bygger vidare på denna, så länge texten \"built with llama\" visas och ordet \"Llama\" ingår i titeln.",
+                "Llama 3.3": "Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad. Kod och genererat material får återanvändas för att träna eller utveckla modeller som bygger vidare på denna, så länge texten \"built with llama\" visas och ordet \"Llama\" ingår i titeln.",
+                "Llama 4": "Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad. Kod och genererat material får återanvändas för att träna eller utveckla modeller som bygger vidare på denna, så länge texten \"built with llama\" visas och ordet \"Llama\" ingår i titeln.",
+                "Jamba Open Model": "Denna licens tillåter att koden fritt används, reproduceras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för organisationer vars omsättning överskrider 50 miljoner USD.",
+                "CC-BY-NC-4.0": "Denna licens tillåter att du sprider och ändrar innehållet, så länge upphovsmannen nämns, med förbjuder kommersiell användning. Det ger flexibilitet för icke-kommersiell användning, medan skaparens rättigheter bevaras.",
+                "propriétaire Gemini": "Modellen är tillgänglig under en betald licens och åtkomlig via Gemini API som finns tillgängligt på Google AI Studio och Vertex AI, vilket kräver en avgift per användning baserat på antalet bearbetade tokens eller enligt företagets villkor.",
+                "propriétaire Mistral": "Modellen är tillgänglig under en betald licens och åtkomlig via Mistral och andra partner-API:er. Den kräver en avgift per användning baserad på antalet bearbetade tokens.",
+                "propriétaire xAI": "Modellen är tillgänglig via xAI API. Det kräver betalning per användning baserat på antalet bearbetade tokens, eller enligt företagets villkor.",
+                "propriétaire Liquid": "Modellen är tillgänglig under en betald licens och åtkomlig via API på Liquid AIs plattformar. Den kräver en avgift per användning baserad på antalet bearbetade tokens.",
+                "propriétaire OpenAI": "Modellen är tillgänglig under en betald licens och åtkomlig via API på OpenAIs plattformar. Den kräver en avgift per användning baserad på antalet bearbetade tokens, eller enligt företagets villkor.",
+                "propriétaire Anthropic": "Modellen är tillgänglig under en betald licens och åtkomlig via API på Anthropics plattformar. Den kräver en avgift per användning baserad på antalet bearbetade tokens, eller enligt företagets villkor.",
+                "Mistral AI Non-Production": "Denna licens tillåter att du sprider och ändrar innehållet, så länge upphovsmannen nämns, med förbjuder kommersiell användning. Det ger flexibilitet för icke-kommersiell användning, medan skaparens rättigheter bevaras."
+            }
+        },
+        "release": "Utgiven {date}",
+        "size": {
+            "estimated": "Uppskattad storlek ({size})",
+            "title": "Storlek",
+            "descriptions": {
+                "XS": "Mycket små modeller, med färre än 7 miljarder parametrar, är de minst komplexa och mest resurseffektiva och ger tillräcklig prestanda för enkla uppgifter som textklassificering.",
+                "S": "En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)",
+                "M": "Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.",
+                "L": "Stora modeller kräver betydande resurser, men erbjuder bäst prestanda för avancerade uppgifter som kreativt skrivande, dialogmodellering och tillämpningar som kräver en noggrann förståelse av kontext.",
+                "XL": "Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer."
+            }
+        },
+        "parameters": "{number} parametrar",
+        "names": {
+            "a": "Modell A",
+            "b": "Modell B"
+        },
+        "conditions": "Användarvillkor",
+        "openWeight": {
+            "conditions": {
+                "copyleft": "Copyleft"
+            }
+        }
     }
 }
