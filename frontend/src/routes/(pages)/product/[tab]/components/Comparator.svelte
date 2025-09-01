@@ -27,7 +27,7 @@
 <div class="pb-4">
   <div class="flex flex-col items-center gap-10 lg:flex-row lg:gap-20">
     <div class="md:basis-1/3">
-      <h2 class="fr-h3">
+      <h2 class="fr-h3 leading-11!">
         {@html sanitize(m['product.comparator.title']({ props: 'class="text-primary"' }))}
       </h2>
 

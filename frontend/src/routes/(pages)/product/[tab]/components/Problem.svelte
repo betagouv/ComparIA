@@ -40,7 +40,7 @@
 
 <div class="py-10">
   <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-    <h2 class="fr-h3 mb-3!">
+    <h2 class="fr-h3 mb-3! leading-11!">
       {@html sanitize(m['product.problem.title']({ props: 'class="text-orange"' }))}
     </h2>
 
