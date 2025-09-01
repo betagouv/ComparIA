@@ -352,7 +352,7 @@
       <FAQContent />
 
       <div class="mt-8 text-center lg:mt-11">
-        <Link button size="lg" href="/faq" text={m['home.faq.discover']()} />
+        <Link button size="lg" href="/product/faq" text={m['home.faq.discover']()} />
       </div>
     </div>
   </section>
