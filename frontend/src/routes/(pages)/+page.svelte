@@ -41,25 +41,25 @@
   const europeCards = [
     {
       title: '/compar:IA',
-      link: 'https://comparia.beta.gouv.fr/',
+      link: 'https://comparia.beta.gouv.fr/arene',
       desc: m['home.europe.languages.fr'](),
       flag: '🇫🇷'
     },
     {
       title: '/palyginti:AI',
-      link: 'https://comparia.beta.gouv.fr/',
+      link: 'https://comparia.beta.gouv.fr/arene',
       desc: m['home.europe.languages.lt'](),
       flag: '🇱🇹'
     },
     {
       title: '/jämföra:AI',
-      link: 'https://comparia.beta.gouv.fr/',
+      link: 'https://comparia.beta.gouv.fr/arene',
       desc: m['home.europe.languages.sv'](),
       flag: '🇸🇪'
     },
     {
       title: '/xxxxxx:AI',
-      link: 'https://comparia.beta.gouv.fr/',
+      link: 'https://comparia.beta.gouv.fr/arene',
       desc: m['home.europe.languages.da'](),
       flag: '🇩🇰'
     }
@@ -209,7 +209,12 @@
         <p class="mb-2!">{m['home.europe.desc']()}</p>
         <p><strong class="block">{m['home.europe.question']()}</strong></p>
 
-        <Link button size="lg" href="FIXME" text={m['actions.contactUs']()} />
+        <Link
+          button
+          size="lg"
+          href="mailto:contact@comparia.beta.gouv.fr"
+          text={m['actions.contactUs']()}
+        />
       </div>
 
       <div
@@ -225,7 +230,7 @@
         <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
           {#each europeCards as card}
             <div class="cg-border bg-very-light-grey flex items-center gap-4 px-4 py-5">
-              <div class="bg-light-info p-2 leading-none">
+              <div class="bg-light-info rounded-md p-2 leading-none">
                 {card.flag}
               </div>
               <div>
