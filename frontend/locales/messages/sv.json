@@ -116,8 +116,81 @@
         "conditions": "Användarvillkor",
         "openWeight": {
             "conditions": {
-                "copyleft": "Copyleft"
+                "copyleft": "Copyleft",
+                "free": "Tillåtande",
+                "restricted": "Villkorlig"
+            },
+            "tooltips": {
+                "openSource": "Träningsdata, kod och vikter för denna modell (dvs. parametrarna som lärs in under träningen) kan laddas ner och modifieras fritt. Att en modell är \"öppen källkod\" ställer hårdare krav än \"öppna vikter\", särskilt på grund av behovet av transparens i träningsmaterialet, och få modeller anses vara \"öppen källkod\".",
+                "openWeight": "En så kallad \"open weights\"-modell, vilket innebär att dess vikter – de parametrar som lärs in under träning – kan laddas ner fritt, vilket gör att det går att köra modellen på sin egen dator. Att en modell är \"öppen källkod\" ställer hårdare krav än \"öppna vikter\", särskilt på grund av behovet av transparens i träningsmaterialet, och få modeller anses vara \"öppen källkod\".",
+                "params": "Parametrar eller vikter – ofta flera miljarder – är de variabler som lärs in av en modell under träning och som bestämmer dess svar. Ju fler parametrar, desto större inlärningskapacitet har modellen.",
+                "free": "När modellen har modifierats kan den spridas under en annan licens än källmodellen.",
+                "copyleft": "När modellen har modifierats får den bara spridas med samma licens som källmodellen.",
+                "ram": "RAM-minnet (Random Access Memory) lagrar data som bearbetas av en LLM i realtid. Ju större modellen är, desto mer RAM behöver den för att köras."
+            },
+            "descriptions": {
+                "XS": "Med {paramsCount} miljarder parametrar tillhör den här modellen kategorin mycket små modeller (färre än 7 miljarder parametrar).",
+                "S": "Med {paramsCount} miljarder parametrar tillhör den här modellen kategorin små modeller (mellan 7 och 20 miljarder parametrar).",
+                "M": "Med {paramsCount} miljarder parametrar tillhör den här modellen kategorin medelstora modeller (mellan 20 och 70 miljarder parametrar).",
+                "L": "Med {paramsCount} miljarder parametrar tillhör den här modellen kategorin stora modeller (mellan 70 och 100 miljarder parametrar).",
+                "XL": "Med {paramsCount} miljarder parametrar tillhör den här modellen kategorin mycket stora modeller."
+            },
+            "use": {
+                "commercial": "Kommersiell användning",
+                "modification": "Ändring godkänd",
+                "licenseType": "Licenstyp",
+                "attribution": "Attribution krävs",
+                "requiredRam": "Krav på RAM-minne"
             }
+        },
+        "ram": "{min} till {max} GB",
+        "extra": {
+            "title": "För att lära dig mer",
+            "experts": {
+                "open-weights": "För att lära dig mer, gå till <a {linkProps}>modellens sida på Hugging Face</a>",
+                "api-only": "För att lära dig mer, titta på <a {linkProps}>modellens officiella webbplats</a>"
+            },
+            "impacts": "Miljöpåverkansberäkningarna baseras på projekten <a {linkProps1}>EcoLogits</a> och <a {linkProps2}>Impact CO<sub>2</sub></a>."
+        },
+        "list": {
+            "title": "Utforska modellerna",
+            "intro": "Utforska de olika konversationsbaserade AI-modellerna, deras specifikationer och licenser.",
+            "filters": {
+                "editor": {
+                    "legend": "Utgivare"
+                },
+                "size": {
+                    "labels": {
+                        "XS": "< 7 miljarder",
+                        "S": "7 till 20 miljarder",
+                        "M": "20 till 70 miljarder",
+                        "L": "70 till 150 miljarder",
+                        "XL": "> 150 miljarder"
+                    }
+                },
+                "license": {
+                    "legend": "Användarlicens"
+                },
+                "display": "Visa filter"
+            },
+            "triage": {
+                "label": "Sortera efter",
+                "options": {
+                    "name-asc": "Modellnamn (bokstavsordning)",
+                    "date-desc": "Utgivningsdatum (från nyaste till äldsta)",
+                    "params-asc": "Storlek (från minsta till största)",
+                    "org-asc": "Utgivare (bokstavsordning)"
+                }
+            },
+            "model": "modell",
+            "models": "modeller",
+            "noresults": "Inga modeller matchar dina sökkriterier."
+        }
+    },
+    "modes": {
+        "random": {
+            "title": "Slumpläge",
+            "label": "Slump"
         }
     }
 }
