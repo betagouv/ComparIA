@@ -1,7 +1,3 @@
-"""
-The gradio utilities for chatting with a single model.
-"""
-
 import gradio as gr
 
 from languia.litellm import litellm_stream_iter
@@ -109,7 +105,7 @@ def bot_response(
 
     endpoint = state.endpoint
 
-    endpoint_name = endpoint["api_id"]
+    endpoint_name = endpoint.get("api_id", state.model_name)
     logger.info(
         f"using endpoint {endpoint_name} for {state.model_name}",
         extra={"request": request},
