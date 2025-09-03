@@ -10,7 +10,6 @@ from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
 from languia.block_arena import demo
 
-import logging
 import gradio as gr
 
 from languia import config
