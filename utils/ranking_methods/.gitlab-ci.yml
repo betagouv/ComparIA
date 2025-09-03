@@ -1,0 +1,191 @@
+# SPDX-FileCopyrightText: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+#
+# SPDX-License-Identifier: MIT
+
+stages:
+  - check
+  - test
+  - package-build
+  - package-publish
+
+
+variables:
+  # could be overwritten in Settings > CI/CD > Variables
+  PYTHON_VERSION: "3.11-bookworm"
+  POETRY_VERSION: "1.3.2"
+  NODEJS_VERSION: "16.x"
+  # Speedup caching of node modules
+  # see https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/2684
+  FF_USE_FASTZIP: 1
+  CACHE_COMPRESSION_LEVEL: "fastest"
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  POETRY_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pypoetry"
+  POETRY: "/root/.local/bin/poetry"
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS && $CI_PIPELINE_SOURCE == "push"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+    - if: $CI_COMMIT_TAG =~ /v(\d+!)?\d+(\.\d+)*({a|b|rc}\d+)?(\.post\d+)?(\.dev\d+)?/
+
+
+
+# YAML anchor, not a real job
+.download_poetry: &download_poetry
+  - "pip install pipx"
+  - "pipx ensurepath"
+  - "pipx install poetry==${POETRY_VERSION}"
+
+
+default:
+  image: "python:${PYTHON_VERSION}"
+  interruptible: true
+  cache:
+    - key:
+        files:
+          - poetry.lock
+      paths:
+        - $PIP_CACHE_DIR
+        - $POETRY_CACHE_DIR
+    - key:
+        files:
+          - package-lock.json
+      paths:
+        - .cache/npm
+  before_script:
+    - *download_poetry
+    - "$POETRY config http-basic.peren_package_registry -- gitlab-ci-token ${CI_JOB_TOKEN}"
+    - "$POETRY install"
+    - "if test -f package.json ; then curl -fsSL https://deb.nodesource.com/setup_${NODEJS_VERSION} | bash - && apt-get install -y nodejs ; fi"
+
+.check:
+  stage: check
+  needs: []
+
+licensing:
+  extends: .check
+  script:
+    - "$POETRY run licensecheck"
+    - "$POETRY run reuse lint"
+
+linting:
+  extends: .check
+  script:
+    - "$POETRY run isort --check ."
+    - "$POETRY run black --check ."
+    - "$POETRY run flake8 ."
+    - "$POETRY run pyright ."
+    - "$POETRY run pylint ."
+
+.test:
+  stage: test
+  needs: []
+
+# Dirty uninstall to have polars working on all workers
+test:
+  extends: .test
+  rules:
+    - exists:
+      - tests/**/test_*.py
+      - tests/**/*_test.py
+  script:
+    - "$POETRY run pytest --cov=rank_comparia --junitxml=report.xml tests/"
+    - "$POETRY run coverage xml"
+    - "$POETRY run coverage html"
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
+  artifacts:
+    paths:
+      - htmlcov
+    reports:
+      junit: report.xml
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
+
+package-build:
+  stage: package-build
+  script:
+    - "$POETRY build"
+  artifacts:
+    paths:
+      - "dist/"
+
+###################################
+### Package publication section ###
+###################################
+
+.package-publish-base:
+  stage: package-publish
+  variables:
+    CHANGELOG_VERSION_PREFIX: "## "
+    CHANGELOG_FILE: "CHANGELOG.md"
+  before_script:  # Override before_script to remove poetry install
+    - *download_poetry
+
+# YAML anchors, not real jobs
+.script_check_changelog: &script_check_changelog
+  - "PYPROJECT_VERSION=$($POETRY version | cut -f2 -d ' ')"
+  - "echo Detected package version: ${PYPROJECT_VERSION}"
+  - 'EXPECTED_HEADER="${CHANGELOG_VERSION_PREFIX}v${PYPROJECT_VERSION}"'
+  - 'grep -P "^\Q${EXPECTED_HEADER}\E \(\d{4}-(0[1-9]|1[0-2])-[0-3]\d\)$" $CHANGELOG_FILE || { echo "$CHANGELOG_FILE is missing a section \"${EXPECTED_HEADER}\""; exit 1; }'
+
+.script_config_repository: &script_config_repository
+  - '$POETRY config repositories.gitlab "${CI_API_V4_URL}/projects/${PUBLISH_IN_PROJECT_ID}/packages/pypi"'
+  - '$POETRY config http-basic.gitlab -- gitlab-ci-token "${CI_JOB_TOKEN}"'
+
+# To publish a package, push a tag with the name "v<python_version_id>" and uncomment one or both of the following blocks
+# See https://packaging.python.org/en/latest/specifications/version-specifiers/#public-version-identifiers
+# for the Python public version identifier syntax
+.package-publish-dry-run:
+  extends: .package-publish-base
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+  script:
+    - *script_check_changelog
+    - *script_config_repository
+    - "$POETRY publish --dry-run --repository gitlab"  # Dry-run
+
+.package-publish:
+  extends: .package-publish-base
+  rules:
+    - if: $CI_COMMIT_TAG # version matching is done in workflow rules
+  script:
+    - *script_check_changelog
+    - 'if [[ "$PYPROJECT_VERSION" != "${CI_COMMIT_TAG:1}" ]]; then echo -e "Version mismatch:\npyproject.toml:\t$PYPROJECT_VERSION\ntag version:\t${CI_COMMIT_TAG:1}"; exit 1; fi'
+    - *script_config_repository
+    - "$POETRY publish --repository gitlab"
+
+
+#####
+## Uncomment to enable package publishing on this repository
+#####
+# package-publish-project-dry-run:
+#   extends: .package-publish-dry-run
+#   variables:
+#     PUBLISH_IN_PROJECT_ID: $CI_PROJECT_ID
+#
+# package-publish-project:
+#   extends: .package-publish
+#   variables:
+#     PUBLISH_IN_PROJECT_ID: $CI_PROJECT_ID
+
+
+#####
+## Uncomment to enable package publishing on the central repository
+## (The `CENTRAL_REGISTRY_ID` CI/CD variable is automatically inherited from PEREN group)
+#####
+# package-publish-central-dry-run:
+#   extends: .package-publish-dry-run
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CENTRAL_REGISTRY_ID
+#   variables:
+#     PUBLISH_IN_PROJECT_ID: $CENTRAL_REGISTRY_ID
+#
+# package-publish-central:
+#   extends: .package-publish
+#   rules:
+#     - if: $CI_COMMIT_TAG && $CENTRAL_REGISTRY_ID
+#   variables:
+#     PUBLISH_IN_PROJECT_ID: $CENTRAL_REGISTRY_ID
