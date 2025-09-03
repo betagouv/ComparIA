@@ -50,6 +50,7 @@ class Model(BaseModel):
     id: str | None = None  # FIXME required?
     simple_name: str
     license: str
+    fully_open_source: bool | None = None
     release_date: str
     params: int | float | Literal["XS", "S", "M", "L", "XL"]
     active_params: int | float | None = None
@@ -226,6 +227,9 @@ def validate() -> None:
 
             # Enhance model data
             model_data = filter_dict(model, I18N_MODEL_KEYS)
+
+            if model_data.get("fully_open_source"):
+                model_data["distribution"] = "fully_open_source"
 
             if isinstance(model_data["params"], str):
                 model_data["friendly_size"] = model_data["params"]
