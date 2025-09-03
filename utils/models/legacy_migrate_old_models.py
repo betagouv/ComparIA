@@ -4,6 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, RootModel
 from rich import print
 from pathlib import Path
+from slugify import slugify
 from build_models import (
     Model,
     GENERATED_MODELS_PATH,
@@ -13,6 +14,7 @@ from build_models import (
 from utils import read_json, write_json
 
 CURRENT_FOLDER = Path(__file__).parent
+ROOT_FOLDER = Path(__file__).parent.parent.parent
 
 size_desc = {
     "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
@@ -66,7 +68,7 @@ OldModels = RootModel[list[OldModel]]
 
 
 def migrate_old_models_to_new_format():
-    fp = Path(__file__).parent.parent.parent / "models-extra-info.toml"
+    fp = ROOT_FOLDER / "models-extra-info.toml"
     new_models = read_json(GENERATED_MODELS_PATH)
     raw_old_models = tomli.loads(fp.read_text())
     filtered_raw_old_models = []
@@ -124,5 +126,55 @@ def migrate_old_models_to_new_format():
     write_json(MODELS_PATH, orgas)
 
 
+def migrate_models_id():
+    orgas = read_json(MODELS_PATH)
+
+    for orga in orgas:
+        for model in orga["models"]:
+            if not model.get("id"):
+                model["id"] = slugify(model["simple_name"])
+
+    write_json(MODELS_PATH, orgas)
+
+
+def migrate_api_endpoint_file():
+    register_api_endpoint_file_path = ROOT_FOLDER / "register-api-endpoint-file.json"
+    models_api_data = read_json(register_api_endpoint_file_path)
+    orgas = read_json(MODELS_PATH)
+
+    for orga in orgas:
+        for model in orga["models"]:
+            if model.get("status", None):
+                continue
+
+            api_data = next(
+                (
+                    api_data
+                    for api_data in models_api_data
+                    if api_data["model_id"] == model["id"]
+                ),
+                None,
+            )
+
+            model["endpoint"] = {}
+
+            if not api_data:
+                print(
+                    f"Missing endpoint data in `register-api-endpoint-file.json` for model '{model['id']}', skipping"
+                )
+                continue
+
+            model["endpoint"]["api_model_id"] = api_data["model_name"]
+
+            if api_data.get("api_type") != "openai":
+                model["endpoint"]["api_type"] = api_data["api_type"]
+            if api_data.get("api_base"):
+                model["endpoint"]["api_base"] = api_data["api_base"]
+
+    write_json(MODELS_PATH, orgas)
+
+
 if __name__ == "__main__":
     migrate_old_models_to_new_format()
+    migrate_models_id()
+    migrate_api_endpoint_file()
