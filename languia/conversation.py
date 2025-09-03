@@ -11,6 +11,7 @@ from languia.utils import (
     EmptyResponseError,
     get_endpoint,
     messages_to_dict_list,
+    get_api_key
 )
 from languia import config
 
@@ -129,11 +130,13 @@ def bot_response(
         endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
     )
 
+    api_key = get_api_key(endpoint)
+
     stream_iter = litellm_stream_iter(
         model_name=litellm_model_name,
         messages=messages_dict,
         temperature=temperature,
-        api_key=endpoint.get("api_key", "F4K3-4P1-K3Y"),
+        api_key=api_key,
         api_base=endpoint.get("api_base", None),
         api_version=endpoint.get("api_version", None),
         # stream=model_api_dict.get("stream", True),

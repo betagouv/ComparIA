@@ -303,6 +303,19 @@ def pick_models(mode, custom_models_selection, unavailable_models):
 
     return [model_left_name, model_right_name]
 
+def get_api_key(endpoint: Endpoint):
+
+    # // "api_type": "huggingface/cohere",
+    # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
+
+    # "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
+    if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get("api_base"):
+        return os.environ("ALBERT_KEY")
+    if endpoint.get("api_base") and "huggingface.co" in endpoint.get("api_base"):
+        return os.environ("HF_INFERENCE_KEY")
+    # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value
+    # And no need for Vertex, handled differently
+    return None
 
 def get_matomo_js(matomo_url, matomo_id):
     js = """
