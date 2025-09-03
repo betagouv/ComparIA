@@ -83,7 +83,8 @@
         "home": "Startsida",
         "returnHome": "Tillbaka till startsida",
         "seeMore": "Visa mer",
-        "selectLanguage": "Välj språk"
+        "selectLanguage": "Välj språk",
+        "vote": "Skicka åsikt"
     },
     "chatbot": {
         "continuePrompt": "Fortsätt chatta med AI-modellerna",
@@ -103,7 +104,11 @@
         },
         "loading": "Läser in svar",
         "conversation": "Konversation",
-        "revealButton": "Visa vilka modeller som användes"
+        "revealButton": "Visa vilka modeller som användes",
+        "reasoning": {
+            "finished": "Resonemang avslutat",
+            "inProgress": "Resonemang pågår…"
+        }
     },
     "datasets": {
         "access": {
@@ -124,8 +129,185 @@
                 "conversations": {
                     "desc": "Interaktiv visualisering av samtal där varje punkt representerar ett kluster av diskussioner som nämns av användare (som tex. utbildning, hälsa, miljö eller filosofi).",
                     "title": "Utforska visualisering av data"
+                },
+                "analyze": {
+                    "title": "Visa analys för indikator"
+                },
+                "desc": "Bunka.ai-teamet genomförde en djupgående studie av interaktioner mellan användare av Compar:AI-plattformen och AI-modeller, där de undersökte vilka ämnen man föredrog, vilka frågor som ställdes, och ifall modellerna främst användes som automatiseringsverktyg eller för att assistera användaren. Denna analys baseras på ett stort urval av 25 000 konversationer.",
+                "method": "Läs mer om metoderna"
+            },
+            "title": "Hur används dessa uppgifter?"
+        }
+    },
+    "closeModal": "Stäng modalfönstret",
+    "components": {
+        "pagination": {
+            "first": "Första sidan",
+            "last": "Sista sidan",
+            "next": "Nästa sida",
+            "nth": "Sida {count}",
+            "previous": "Föregående sida"
+        },
+        "table": {
+            "linePerPage": "Antal rader per sida",
+            "pageCount": "{count} rader per sida",
+            "triage": "Sortera"
+        },
+        "theme": {
+            "legend": "Välj ett tema för att anpassa webbplatsens utseende.",
+            "options": {
+                "dark": "Mörkt tema",
+                "light": "Ljust tema",
+                "system": "System"
+            }
+        }
+    },
+    "errors": {
+        "404": {
+            "desc": "Om du skrev in webbadressen i din webbläsare, kontrollera att den är korrekt. Sidan kanske inte längre är tillgänglig. <br /> I så fall kan du gå tillbaka till startsidan. <br />Kontakta oss så hjälper vi dig hitta rätt information.",
+            "error": "Fel 404",
+            "sorry": "Sidan kunde inte visas.",
+            "title": "Sidan hittades inte"
+        },
+        "unexpected": {
+            "desc": "Prova att ladda om sidan, eller försök igen senare.",
+            "error": "Felkod {code}",
+            "sorry": "Ett problem har uppstått med tjänsten. Vi arbetar på att lösa det så snabbt som möjligt.",
+            "title": "Oväntat fel"
+        },
+        "unknown": "Ett fel har uppstått"
+    },
+    "faq": {
+        "datasets": {
+            "title": "Datamängd",
+            "questions": {
+                "3": {
+                    "title": "Vad skiljer compar:IA från andra liknande initiativ?"
                 }
             }
+        },
+        "ecology": {
+            "title": "Miljömässiga indikatorer",
+            "questions": {
+                "1": {
+                    "title": "Hur beräknas miljömässiga indikatorer?"
+                },
+                "2": {
+                    "title": "Tar miljöindikatorer hänsyn till olika typer av energikällor i olika länder?"
+                },
+                "3": {
+                    "title": "Tar indikatorer för miljöpåverkan hänsyn till de resurser som används för att träna modellerna?"
+                }
+            }
+        },
+        "i18n": {
+            "title": "Internationalisering",
+            "questions": {
+                "1": {
+                    "title": "compar:IA fokuserade från början på franska – finns det planer för andra europeiska språk?",
+                    "desc": "<p> Ja, internationaliseringen av compar:AI är igång. Vi börjar med en expansion till tre pilotländer: Litauen, Sverige och Danmark. Denna första fas kommer att göra det möjligt för oss att testa tillvägagångssättet och anpassa gränssnittet till olika europeiska språkliga och kulturella sammanhang. Så småningom kan vi expandera till fler europeiska språk baserat på feedback från dessa pilotländer. Målet är att gradvis bygga en gemensam europeisk digital plattform för mänsklig utvärdering av konversationsbaserad AI, med samarbetsinriktad styrning som återstår att definiera mellan de olika deltagande länderna. </p>"
+                }
+            }
+        },
+        "models": {
+            "title": "Modeller",
+            "questions": {
+                "1": {
+                    "title": "Hur väljs modellerna som finns tillgängliga i jämförelseverktyget?",
+                    "desc": "<p>Vi väljer modeller baserat på deras popularitet, mångfald och relevans för användarna. Vi lägger särskild vikt vid att ta med modeller i olika storlekar, och modeller med så kallade <em>open weights</em>.</p>"
+                },
+                "2": {
+                    "title": "Hur finansieras den här tjänsten?",
+                    "desc": "<p>Funktionen att fråga modellerna möjliggörs tack vare donationer från molnleverantörerna som stöder projektet: Google Cloud Platform, Hugging Face, Microsoft Azure, OVH, Scaleway.</p>"
+                },
+                "3": {
+                    "title": "Vad är en \"kvantiserad modell\"?",
+                    "desc": "<p>Kvantiserade modeller är optimerade för att förbruka färre resurser genom att förenkla vissa beräkningar. Tekniken innebär att man minskar precisionen hos parametrarna i en AI-modell. På det sättet kan man göra <strong> modellen mindre </strong>och<strong> beräkningarna snabbare</strong>, vilket är särskilt användbart för maskiner med begränsade resurser.</p>"
+                },
+                "4": {
+                    "title": "Finns det ett samband mellan nationaliteten hos skaparen av modellen och dess förmåga att tala flera språk?",
+                    "desc": "<p> <strong>Vilka språk en modell kan hantera väl beror på språken som används i dess träningsdata.</strong> <strong> En LLM använder enorma korpusar på många språk</strong> men språkfördelningen i träningsdatan skiljer mellan modeller. En överrepresentation av engelska kan leda till begränsningar på andra språk. Dessa begränsningar återspeglas till exempel i <strong> anglicismer eller en oförmåga att generera innehåll på vissa språk som klassificeras som \"hotade\" av UNESCO.</strong></p><p><strong>En modells noggrannhet och ordförråd beror på de data som använts för träning</strong>.</p>"
+                },
+                "5": {
+                    "title": "Går det att få tag på modellernas träningsdata?",
+                    "desc": "<p>Bara ett fåtal modeller är \"transparenta\" i den bemärkelsen. I de flesta fall är träningsdatan inte tillgänglig för allmänheten, av juridiska eller kommersiella skäl.</p>"
+                }
+            }
+        },
+        "usage": {
+            "questions": {
+                "1": {
+                    "title": "Kan modellerna ange specifika källor för ett svar?",
+                    "desc": "<p> Nuvarande konversationsmodeller kan <strong>inte citera källorna</strong> de använde för att generera ett svar. De fungerar genom att förutsäga det mest sannolika nästa ordet baserat på den statistiska fördelningen av träningsdata. Informationen är en kombination av många olika källor, och metoden kan inte hålla reda på vilka källor som har påverkat ett visst svar.</p><p>Det finns dock tekniker som <strong>Retrieval Augmented Generation (RAG)</strong> som syftar till att övervinna denna begränsning. Med RAG kan modeller få tillgång till externa kunskapsbaser och <strong>tillhandahålla kontextualiserad information genom att citera källorna</strong> Denna metod är avgörande för att förbättra transparensen och tillförlitligheten hos modellgenererade svar.</p>"
+                },
+                "2": {
+                    "title": "Om jag ställer en fråga om aktuella händelser, kan modellen svara?",
+                    "desc": "<p><strong> Nej, \"råa\" konversationsbaserade AI-modeller kan inte svara på frågor om aktuella händelser.</strong>De är tränade på statiska datamängder och kan inte interagera med webben eller öppna länkar. De har inte möjlighet att uppdatera sig själva med händelser i världen. Informationen som modellen har tillgång till är begränsad till datumet för dess senaste träning.</p><p>Om du ställer en fråga om en nyhetshändelse kommer modellen därför att förlita sig på potentiellt föråldrad information och riskera att generera felaktiga svar.</p><p>När det gäller Perplexity, Copilot och ChatGPT kombineras de \"råa\" konversationsmodellerna med andra tekniska byggstenar som gör att de kan ansluta till internet för att få tillgång till information i realtid. Dessa kallas \"konversationsagenter\".</p>"
+                },
+                "3": {
+                    "title": "Om min fråga innehåller en länk, kan modellen komma åt den?",
+                    "desc": "<p>Språkmodeller bearbetar frågetexten men har inte möjlighet att interagera med webben eller öppna länkar. De tränas på en fast textdatauppsättning, och deras svar baseras på denna träningsdata. När en fråga ställs använder modellerna denna träning för att generera ett svar men kan inte komma åt ny information online.</p><p>Som jämförelse, föreställ dig en student som gör ett prov utan internetåtkomst. De kan använda sina förvärvade kunskaper för att svara på frågor, men kan inte besöka webbplatser för ytterligare information.</p>"
+                },
+                "4": {
+                    "title": "Varför tappar vissa modeller snabbt tråden i samtalet?",
+                    "desc": "<p>Varje modell har ett begränsat <strong>kontextfönster</strong>, som representerar hur mycket tidigare information modellen kan komma ihåg. I långa och komplexa konversationer kan kontextfönstret snabbt ta slut, så att modellen glömmer viktiga delar av konversationen, vilket leder till inkonsekventa svar. Ju mindre fönstret är, desto snabbare uppstår problemet.</p>"
+                },
+                "5": {
+                    "title": "Hur skriver man en effektiv prompt (fråga/uppmaning) till modellen?",
+                    "desc": "<p>För att få bästa resultat från en språkmodell är det viktigt att behärska konsten att skriva bra <em>prompter</em>, det vill säga förfrågningar eller instruktioner. <strong>Tydlighet är nyckeln</strong>:</p><ul><li>Använd enkelt och direkt språk och undvik frågor som är för långa eller komplexa. Dela upp förfrågningar i flera enklare frågor för mer exakta svar.</li><li><strong>Ange specifika formatbegränsningar om det behövs</strong>: Om du behöver ett svar i ett visst format (lista, tabell, sammanfattning etc.), ange det i prompten. Du kan också ange vilka steg som ska följas och andra kriterier.</li><li><strong>Specificera modellens roll</strong> Börja till exempel med \"Agera som en expert på...\" eller \"Tänk dig att du är lärare...\" för att bestämma tonen och perspektivet i svaret.</li><li><strong>Kontextualisera dina frågor</strong>. Ge om nödvändigt relevanta exempel för att vägleda modellen.</li><li><strong>Uppmuntra resonemang</strong>. Använd en tankekedja (<em>Chain-of-Thought Prompting</em>) för att be modellen förklara sitt resonemang, vilket gör svaren mer robusta.</li></ul><p>Konversationsmodeller är känsliga för variationer i formuleringar – enkelt språk, korta frågor och omformuleringar vid behov kan hjälpa till att vägleda modellen mot relevanta svar. Testa och förfina dina frågor för att hitta den mest effektiva formuleringen!</p>"
+                },
+                "6": {
+                    "title": "Vad är skillnaden mellan att ställa en fråga till en konversationsbaserad AI-modell och att söka på Google?",
+                    "desc": "<p>Konversations-AI svarar direkt genom att formulera meningar från en stor datamängd som modellen har tränats på, medan en sökmotor erbjuder länkar och resurser som användaren kan utforska på egen hand.</p>"
+                }
+            }
+        },
+        "title": "Vanliga frågor"
+    },
+    "footer": {
+        "backHome": "Tillbaka till startsidan",
+        "helpUs": "Hjälp oss att förbättra den här tjänsten!",
+        "license": {
+            "linkTitle": "Etalab-licens – nytt fönster",
+            "mention": "Innehållet på denna webbplats är tillgängligt under <a {linkProps}>etalab-2.0-licensen</a>, förutom där rättigheter som innehas av tredje part uttryckligen anges"
+        },
+        "links": {
+            "legal": "Rättsliga meddelanden",
+            "privacy": "Integritetspolicy",
+            "sources": "Källkod",
+            "tos": "Användarvillkor"
+        },
+        "writeUs": "Om du stöter på problem eller har kommentarer om jämförelseverktyget är du välkommen att skriva till oss med hjälp av <a {linkProps}>det här formuläret</a>. Vi läser alla meddelanden.<br />Tack!"
+    },
+    "general": {
+        "a11y": {
+            "desc": "Denna tillgänglighetspolicy gäller webbplatsen <strong>comparia.beta.gouv.fr</strong>.",
+            "disclaimer": "<strong> compar:IA </strong> åtar sig att göra sina digitala tjänster tillgängliga, i enlighet med artikel 47 i lag nr 2005-102 av den 11 februari 2005.",
+            "improveAdress": "Adress: DINUM, 20 avenue de Ségur, 75007 Paris",
+            "improveDelay": "Vi försöker svara inom 2 arbetsdagar.",
+            "improveDesc": "Om du har problem att komma åt innehåll eller tjänst kan du kontakta administratören för beta.gouv.fr, för att bli hänvisad till ett tillgängligt alternativ eller få innehållet i ett annat format.",
+            "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveTitle": "Feedback och kontakt",
+            "remedyAdvocate": "Skriv ett meddelande till <a {linkProps}>rättighetsförsvararen</a>",
+            "remedyAdvocateAdress": "Skicka ett brev med posten (gratis, inget frimärke behövs): Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07",
+            "remedyDelegateAdvocate": "Kontakta <a {linkProps}>representanten för rättighetsförsvararen i din region</a>",
+            "remedyDesc": "Denna procedur ska användas i följande fall: Du har rapporterat ett tillgänglighetsfel till webbplatsansvarig som hindrar dig från att komma åt innehåll eller en av portalens tjänster och du inte har fått ett tillfredsställande svar.",
+            "remedyList": "Du kan:",
+            "remedyTitle": "Överklaga",
+            "stateDesc": "Webbplatsen comparia.beta.gouv.fr uppfyller inte RGAA 4.1. Webbplatsen har ännu inte granskats. <strong>Den har dock utformats för att vara tillgänglig för så många som möjligt</strong>. Du bör därför kunna:",
+            "stateNavigate": "navigera på alla sidor på webbplatsen med hjälp av ett tangentbord",
+            "statePrefs": "anpassa webbplatsen efter dina preferenser (teckenstorlek, skärmzoom, ändring av typsnitt etc.) utan att innehåll förloras",
+            "stateScreenReader": "visa webbplatsen med en skärmläsare.",
+            "stateTitle": "Efterlevnad",
+            "title": "Tillgänglighetspolicy"
+        },
+        "legal": {
+            "a11yDesc": "Efterlevnad av digitala tillgänglighetsstandarder är ett framtida mål, men vi arbetar för att göra webbplatsen tillgänglig för alla.",
+            "a11yTitle": "Tillgänglighet",
+            "directorDesc": "Romain Delassus, chef för kulturministeriets digitala avdelning",
+            "directorTitle": "Publikationsansvarig",
+            "editorDesc": "Denna webbplats publiceras av franska kulturministeriet. Postadress: Ministère de la culture, 182 Rue Saint-Honoré, 75001 Paris",
+            "editorTitle": "Redaktör"
         }
     }
 }
