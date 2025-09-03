@@ -4,10 +4,23 @@ from typing import Literal
 from pydantic import BaseModel, RootModel
 from rich import print
 from pathlib import Path
-from build_models import Model, GENERATED_MODELS_PATH, MODELS_PATH
+from build_models import (
+    Model,
+    GENERATED_MODELS_PATH,
+    MODELS_PATH,
+    params_to_friendly_size,
+)
 from utils import read_json, write_json
 
 CURRENT_FOLDER = Path(__file__).parent
+
+size_desc = {
+    "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
+    "S": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
+    "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+    "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
+    "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
+}
 
 
 class OldModel(BaseModel):
@@ -90,6 +103,7 @@ def migrate_old_models_to_new_format():
                 "reasoning",
                 "quantization",
                 "url",
+                "fully_open_source",
             )
         }
         reformated_model["deactivated"] = "archived"
@@ -98,6 +112,10 @@ def migrate_old_models_to_new_format():
         )
         reformated_model["desc"] = model.get("excerpt")
         reformated_model["fyi"] = model.get("description")
+        friendly_size = model.get("friendly_size") or params_to_friendly_size(
+            reformated_model["params"]
+        )
+        reformated_model["size_desc"] = size_desc[friendly_size]
 
         orga["models"].append(
             NewModel(**reformated_model).model_dump(exclude_defaults=True)
