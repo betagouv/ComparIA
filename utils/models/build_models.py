@@ -229,11 +229,17 @@ def validate() -> None:
             i18n["models"][model["simple_name"]] = {
                 k: markdown.markdown(model[k]) for k in I18N_MODEL_KEYS
             }
-            license_data = (
-                dict_licenses[model["license"]]
-                if model["license"] != "proprietary"
-                else proprio_license_data
-            )
+            try:
+                license_data = (
+                    dict_licenses[model["license"]]
+                    if model["license"] != "proprietary"
+                    else proprio_license_data
+                )
+            except KeyError as e:
+                log.error(
+                    f"Incorrect or missing license data in 'licenses.json' for license '{model["license"]}'"
+                )
+                return
 
             # Enhance model data
             model_data = filter_dict(model, I18N_MODEL_KEYS)
