@@ -556,7 +556,7 @@
     "proprietary_reuse_specificities": "sauf pour distiller ou entraîner d’autres modèles sur les plateformes d’Amazon.",
     "models": [
       {
-        "deactivated": "missing_data",
+        "status": "missing_data",
         "simple_name": "Nova Lite",
         "license": "proprietary",
         "release_date": "12/2024",

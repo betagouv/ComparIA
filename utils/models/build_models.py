@@ -47,7 +47,7 @@ class License(BaseModel):
 
 
 class Model(BaseModel):
-    deactivated: Literal["archived", "missing_data"] | None = None
+    status: Literal["archived", "missing_data", "enabled"] | None = "enabled"
     id: str | None = None  # FIXME required?
     simple_name: str
     license: str
@@ -157,13 +157,13 @@ def validate() -> None:
     raw_orgas = read_json(MODELS_PATH)
     raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
 
-    # Filter out some models based on attr `deactivated`
+    # Filter out some models based on attr `status`
     for orga in raw_orgas:
         filtered_models = []
         for model in orga["models"]:
-            if model.get("deactivated", None) == "missing_data":
+            if model.get("status", None) == "missing_data":
                 log.warning(
-                    f"Model '{model["simple_name"]}' is deactivated  (reason={model["deactivated"]})"
+                    f"Model '{model["simple_name"]}' is deactivated (reason={model["status"]})"
                 )
             else:
                 filtered_models.append(model)

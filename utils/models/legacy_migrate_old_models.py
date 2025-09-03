@@ -45,7 +45,7 @@ class OldModel(BaseModel):
 
 # Equivalent of new 'Model' but with some optional field
 class NewModel(BaseModel):
-    deactivated: Literal["archived"]
+    status: Literal["archived"]
     id: str
     simple_name: str
     license: str
@@ -106,7 +106,7 @@ def migrate_old_models_to_new_format():
                 "fully_open_source",
             )
         }
-        reformated_model["deactivated"] = "archived"
+        reformated_model["status"] = "archived"
         reformated_model["params"] = model.get(
             "total_params", model.get("params", model.get("friendly_size"))
         )
