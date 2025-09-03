@@ -156,14 +156,14 @@ def migrate_api_endpoint_file():
                 None,
             )
 
-            model["endpoint"] = {}
-
             if not api_data:
                 print(
                     f"Missing endpoint data in `register-api-endpoint-file.json` for model '{model['id']}', skipping"
                 )
+                model["status"] = "missing_data"
                 continue
 
+            model["endpoint"] = {}
             model["endpoint"]["api_model_id"] = api_data["model_name"]
 
             if api_data.get("api_type") != "openai":
