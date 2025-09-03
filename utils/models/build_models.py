@@ -46,8 +46,15 @@ class License(BaseModel):
     commercial_use_specificities: str | None = None
 
 
+class Endpoint(BaseModel):
+    api_type: str | None = "openai"
+    api_base: str | None = None
+    api_model_id: str
+
 class Model(BaseModel):
-    status: Literal["archived", "missing_data", "enabled"] | None = "enabled"
+    status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
+        "enabled"
+    )
     id: str | None = None  # FIXME required?
     simple_name: str
     license: str
@@ -62,6 +69,7 @@ class Model(BaseModel):
     desc: str
     size_desc: str
     fyi: str
+    endpoint: Endpoint
 
 
 class Organisation(BaseModel):
