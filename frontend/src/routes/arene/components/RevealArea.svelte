@@ -169,7 +169,7 @@
       <!-- Remplacer par https://monitor.bunka.ai/compar:ia ? -->
       <Link
         native={false}
-        href="https://languia-metabase.stg.cloud.culture.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1"
+        href="https://metabase.comparia.beta.gouv.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1"
         target="_blank"
         text={m['reveal.feedback.moreOnVotes']()}
       />
