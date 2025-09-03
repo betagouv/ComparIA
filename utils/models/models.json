@@ -105,8 +105,22 @@
         "arch": "moe",
         "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
         "desc": "Très grand modèle conçu pour des tâches complexes : génération de code, utilisation d’outils, analyse de documents longs. Il peut traiter de nombreuses langues, mais il est particulièrement adapté à l’anglais et au chinois.",
-        "size_desc": "DeepSeek V3 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.\n\nLa fenêtre de contexte atteint 163 000 jetons, ce qui est utile pour l’analyse de longs documents.",
+        "size_desc": "DeepSeek V3 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.\n\nLa fenêtre de contexte atteint 128 000 jetons, ce qui est utile pour l’analyse de longs documents.",
         "fyi": "Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code."
+      },
+      {
+        "id": "deepseek-chat-v3.1",
+        "simple_name": "DeepSeek v3.1",
+        "license": "MIT",
+        "release_date": "08/2025",
+        "params": 685,
+        "active_params": 37,
+        "arch": "moe",
+        "reasoning": true,
+        "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
+        "desc": "Très grand modèle conçu pour des tâches complexes : génération de code, analyse de documents longs. Cette version est particulièrement forte en  utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.",
+        "size_desc": "DeepSeek V3.1 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.\n\nLa fenêtre de contexte atteint désormais 163 000 jetons, contre 128 000 dans la version précédente, ce qui améliore l’analyse de très longs documents.",
+        "fyi": "Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code. L’entraînement a recours au FP8 microscaling, ce qui réduit les coûts de calcul et de mémoire tout en maintenant la précision. Le modèle a été formé en deux phases : d’abord sur des séquences de 32 000 jetons, puis étendu à 163 000 jetons, permettant une meilleure stabilité et une performance accrue sur les contextes très longs."
       }
     ]
   },
@@ -147,7 +161,8 @@
         "arch": "dense",
         "desc": "Modèle de taille moyenne optimisé pour la synthèse, les questions générales, l’utilisation d’outils et efficace dans les systèmes de génération augmentée de récupération (RAG, retrieval augmented generation).",
         "size_desc": "Avec 35 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut être hébergé sur un serveur équipé d’une seule carte graphique puissante, ce qui contribue à limiter les coûts d’infrastructure.",
-        "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier « Attention Is All You Need » qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle a été évalué dans plus de 10 langues. Sa fenêtre de contexte atteint 128 000 jetons, ce qui facilite l’analyse de documents longs. Cette fenêtre a été doublée sur la version suivante du modèle (Command A)."
+        "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier « Attention Is All You Need » qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle a été évalué dans plus de 10 langues. Sa fenêtre de contexte atteint 128 000 jetons, ce qui facilite l’analyse de documents longs. Cette fenêtre a été doublée sur la version suivante du modèle (Command A).",
+        "deactivated": "missing_data"
       }
     ]
   },
@@ -284,7 +299,8 @@
         "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
         "desc": "Modèle de taille moyenne spécialisé en programmation et dans l’usage d’outils externes (recherches web, interactions avec des logiciels…).",
         "size_desc": "Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure.\n\nSa fenêtre de contexte de 128 000 jetons permet de traiter de longs documents.",
-        "fyi": "Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. \n\nGrâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques."
+        "fyi": "Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. \n\nGrâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques.",
+        "deactivated": "missing_data"
       },
       {
         "id": "qwen3-32b",
@@ -320,6 +336,20 @@
         "desc": "Très grand modèle de raisonnement spécialisé et très performant en mathématiques, code et résolution de problèmes logiques.",
         "size_desc": "Ce modèle propriétaire basé sur une **architecture MoE à grande échelle a été**entraîné sur **plus de 20 billions de jetons**. Il est conçu pour des tâches nécessitant plusieurs étapes de réflexion. \n\nLa fenêtre de contexte va jusqu’à 32 000 jetons.",
         "fyi": "La taille exacte du modèle n’est pas connue, mais c’est très probablement un très grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse."
+      },
+      {
+        "id": "Qwen3-Coder-480B-A35B-Instruct",
+        "simple_name": "Qwen3 Coder 480B A35B",
+        "license": "Apache 2.0",
+        "release_date": "07/2025",
+        "params": 480,
+        "active_params": 35,
+        "arch": "moe",
+        "reasoning": true,
+        "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
+        "desc": "Très grand modèle spécialisé dans la génération de code, analyse de dépôts entiers et résolution de problèmes multi-étapes. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale. ",
+        "size_desc": "Qwen3-Coder-480B-A35B-Instruct est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une fraction des paramètres (35 B sur 480 B), ce qui réduit considérablement l'impact environnemental et le coût par rapport à un modèle dense équivalent.\nLa fenêtre de contexte atteint nativement 256 000 jetons et peut être étendue jusqu’à 1 million grâce à des techniques d’extrapolation (YaRN), ce qui est idéal pour l’analyse de bases de code volumineuses.",
+        "fyi": "Ce modèle a été pré-entraîné sur 7,5 trillions de jetons (dont 70 % de code), et utilise un processus de post-entraînement avancée - Code RL (Hard to Solve, Easy to Verify) pour renforcer l’exécution correcte du code et Agent RL (long-horizon reinforcement learning) pour optimiser la résolution de tâches logicielles multi-tours, avec un environnement massivement parallèle (20 000 simulations en parallèle sur Alibaba Cloud)."
       }
     ]
   },
@@ -470,7 +500,8 @@
         "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
         "desc": "Grand modèle prévu pour traiter des questions et tâches complexes : par exemple génération de code, utilisation d’outils, analyse de documents longs ou compréhension précise du langage.",
         "size_desc": "Avec 123 milliards de paramètres, ce modèle appartient à la catégorie des grands modèles. Il nécessite un serveur équipé d’au moins une carte graphique puissante, ce qui implique un coût de fonctionnement important. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
-        "fyi": "Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes."
+        "fyi": "Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes.",
+        "deactivated": "missing_data"
       },
       {
         "id": "mistral-saba",
@@ -485,6 +516,7 @@
         "fyi": "L’entraînement a porté principalement sur des textes en arabe, tamoul et malayalam. Les corpus régionaux ont été sélectionnés pour refléter les usages authentiques, y compris la syntaxe, les registres et les variantes dialectales. Pour la tokenisation (découpage du texte en unités de base que le modèle peut traiter), une stratégie spécialisée adaptée aux langues à morphologie complexe comme l'arabe a été employée. Des optimisations visent à éviter la fragmentation excessive des mots et à maximiser la couverture du vocabulaire."
       },
       {
+        "id": "mistral-small-2506",
         "simple_name": "Mistral Small 3.2",
         "license": "Apache 2.0",
         "release_date": "06/2025",
@@ -505,12 +537,12 @@
         "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. Il a été entraîné avec de l’apprentissage par renforcement sur Mistral Medium 3 et n'a pas été distillé à partir de modèles de raisonnement existants. Ce modèle hérite des capacités multimodales de Mistral Medium 3 même si l'apprentissage par renforcement n'a été réalisé que sur du texte."
       },
       {
-        "simple_name": "Mistral Medium 2506",
+        "simple_name": "Mistral Medium 2508",
         "license": "proprietary",
-        "release_date": "06/2025",
+        "release_date": "08/2025",
         "params": "M",
         "arch": "maybe-dense",
-        "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est particulièrement intéressant pour des tâches de programmation ou des tâches de raisonnement, par exemple les mathématiques.",
+        "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est devenu particulièrement intéressant après une mise à jour en août 2025 avec des améliorations importantes de performance générale, un ton \"amélioré\" et une meilleure capacité de chercher des informations sur Internet. ",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
         "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement."
       },
@@ -546,7 +578,8 @@
         "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
         "desc": "Petit modèle multilingue conçu pour fonctionner sur un ordinateur portable sans connexion à un serveur, tout en offrant de bonnes capacités en synthèse de texte, réponses à des questions simples et utilisation d’outils.",
         "size_desc": "Avec ses 8 milliards de paramètres, ce modèle appartient à la catégorie des petits modèles (entre 7 et 20 milliards de paramètres). Il peut être déployé localement sur un ordinateur assez puissant, garantissant la confidentialité des données ou hébergé sur un serveur avec une seule carte graphique pour limiter les coûts d’infrastructure.",
-        "fyi": "Ce modèle utilise une méthode d'attention de requête groupée (GQA, grouped query attention) pour limiter le texte analysé à chaque étape de génération et gagner en vitesse et en mémoire: les temps de calculs sont réduits sans incidence sur la qualité. Le mécanisme d'attention est amélioré en appliquant des fenêtres de tailles différentes, ce qui permet de gérer de longs contextes (jusqu’à 128 000 jetons) tout en restant léger. Le tokenizer large (V3-Tekken) compresse mieux les langues et le code, ce qui améliore ses performances sur des tâches multilingues."
+        "fyi": "Ce modèle utilise une méthode d'attention de requête groupée (GQA, grouped query attention) pour limiter le texte analysé à chaque étape de génération et gagner en vitesse et en mémoire: les temps de calculs sont réduits sans incidence sur la qualité. Le mécanisme d'attention est amélioré en appliquant des fenêtres de tailles différentes, ce qui permet de gérer de longs contextes (jusqu’à 128 000 jetons) tout en restant léger. Le tokenizer large (V3-Tekken) compresse mieux les langues et le code, ce qui améliore ses performances sur des tâches multilingues.",
+        "deactivated": "missing_data"
       }
     ]
   },
@@ -580,7 +613,8 @@
         "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
         "desc": "Très grand modèle multimodal et multilingue, performant pour la génération de code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
-        "fyi": "Claude 4 Opus est la version la plus avancée de la famille Claude 4. Il est optimisé pour la puissance brute et les tâches complexes nécessitant un raisonnement soutenu sur de longues périodes : il peut par exemple travailler sur des tâches à long terme (Anthropic déclarent qu'il peut travailler jusqu'à sept heures de manière indépendante). En contrepartie, Opus est plus coûteux à utiliser, plus lent à répondre et nécessite davantage de ressources pour fonctionner.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été majoritairement entraîné sur des données mathématiques, mais adapté à des cas d’usage réels."
+        "fyi": "Claude 4 Opus est la version la plus avancée de la famille Claude 4. Il est optimisé pour la puissance brute et les tâches complexes nécessitant un raisonnement soutenu sur de longues périodes : il peut par exemple travailler sur des tâches à long terme (Anthropic déclarent qu'il peut travailler jusqu'à sept heures de manière indépendante). En contrepartie, Opus est plus coûteux à utiliser, plus lent à répondre et nécessite davantage de ressources pour fonctionner.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été majoritairement entraîné sur des données mathématiques, mais adapté à des cas d’usage réels.",
+        "deactivated": "missing_data"
       },
       {
         "simple_name": "Claude 4 Sonnet",
@@ -627,7 +661,18 @@
         "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
         "desc": "Très grand modèle réentraîné à partir du Llama 3.1 405B, ajusté pour mieux répondre aux demandes des utilisateurs et faciliter l’utilisation d’outils externes.",
         "size_desc": "Avec 405 milliards de paramètres, ce modèle fait partie des modèles de très grande taille. Il nécessite un serveur équipé de plusieurs cartes graphiques puissantes, ce qui entraîne un coût de fonctionnement important.",
-        "fyi": "Ce modèle est le résultat d’un réentraînement de l’ensemble des paramètres de Llama 3.1 405B pour rendre son comportement moins restreint et mieux prendre en compte les nuances du prompt utilisateur et système - l’utilisateur dispose ainsi d’un plus grand contrôle sur la “personnalité” et comportement du modèle. Des fonctions de raisonnement spécifiques telles que **`<SCRATCHPAD>`**, **`<REASONING>`**, **`<THINKING>`** ont été ajoutées pour simuler un raisonnement sur les tâches complexes. L'entraînement a utilisé un outil appelé AdamW (vitesse d'apprentissage de 3.5×10⁻⁶), qui aide le modèle à apprendre de manière efficace en ajustant progressivement ses paramètres. Ensuite, il a été affiné avec une méthode appelée DPO (direct preference optimisation), qui permet d'améliorer ses réponses en se basant sur des préférences spécifiques. Pour rendre cet entraînement plus léger et rapide, des adaptateurs LoRA ont été utilisés ; ce sont des modules plus petits qui modifient seulement une partie du modèle, ce qui évite de devoir retravailler tous les paramètres en même temps."
+        "fyi": "Ce modèle est le résultat d’un réentraînement de l’ensemble des paramètres de Llama 3.1 405B pour rendre son comportement moins restreint et mieux prendre en compte les nuances du prompt utilisateur et système - l’utilisateur dispose ainsi d’un plus grand contrôle sur la “personnalité” et comportement du modèle. Des fonctions de raisonnement spécifiques telles que **`<SCRATCHPAD>`**, **`<REASONING>`**, **`<THINKING>`** ont été ajoutées pour simuler un raisonnement sur les tâches complexes. L'entraînement a utilisé un outil appelé AdamW (vitesse d'apprentissage de 3.5×10⁻⁶), qui aide le modèle à apprendre de manière efficace en ajustant progressivement ses paramètres. Ensuite, il a été affiné avec une méthode appelée DPO (direct preference optimisation), qui permet d'améliorer ses réponses en se basant sur des préférences spécifiques. Pour rendre cet entraînement plus léger et rapide, des adaptateurs LoRA ont été utilisés ; ce sont des modules plus petits qui modifient seulement une partie du modèle, ce qui évite de devoir retravailler tous les paramètres en même temps.",
+        "deactivated": "missing_data"
+      },
+      {
+        "id": "hermes-4-70b",
+        "simple_name": "Hermes 4 70B",
+        "license": "Llama 3.1",
+        "release_date": "08/25",
+        "arch": "dense",
+        "desc": "Grand modèle réentraîné à partir du Llama 3.1 70B, ajusté pour mieux répondre aux demandes et instructions stylistiques des utilisateurs.",
+        "size_desc": "Hermes 4-70B est un modèle de très grande taille, nécessitant au moins une carte graphique puissante.\n\nLa fenêtre de contexte atteint 40 960 jetons en raisonnement et 32 768 jetons pour d’autres tâches, avec des mécanismes de fine-tuning qui ont été utilisés pour lui apprendre à “fermer” la séquence de réflexion vers 30k jetons. ",
+        "fyi": "Hermes 4-70B a été entraîné sur 56 milliards de tokens en combinant Fully Sharded Data Parallel (FSDP) et Tensor Parallelism pour gérer sa taille. Le modèle repose sur la base de Llama 3.1 70B, adaptée avec TorchTitan et enrichie par environ 19 milliards de tokens synthétiques centrés sur le raisonnement. Son entraînement suit une approche multi-phase, avec un supervised fine-tuning sur des chaînes de raisonnement pouvant dépasser les 30 000 jetons. Il exploite également l’environnement Atropos, utilisé pour générer et vérifier des trajectoires complexes (code, JSON, tâches agentiques), grâce à un rejection sampling massif qui garantit la qualité des données."
       }
     ]
   }
