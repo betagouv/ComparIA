@@ -4,7 +4,6 @@ import { m } from '$lib/i18n/messages'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
-
 export interface GradioPayload<T> extends Payload {
   type: 'data'
   endpoint: string
@@ -59,17 +58,10 @@ export const api = {
   async _connect() {
     if (this.client) return this.client
     console.debug('Connecting to Gradio at:', this.url + '/api')
-
-    const stickySessionCookie = api.getCookie("comparia-sticky-session");
-    const headers: Record<string, string> = {};
-    if (stickySessionCookie) {
-      headers["Cookie"] = `comparia-sticky-session=${stickySessionCookie}`;
-    }
-
     try {
-      this.client = await Client.connect(this.url + '/api', { events: ['data', 'status'], headers })
-      console.debug(`Successfully connected to Gradio (session hash: ${this.client.session_hash}`)
-
+      
+      this.client = await Client.connect(this.url + '/api', { events: ['data', 'status'] })
+      console.debug(`Successfully connected to Gradio (session hash: ${this.client.session_hash})`)
       return this.client
     } catch (error) {
       console.error('Failed to connect to Gradio:', error)
@@ -113,23 +105,5 @@ export const api = {
       console.error(message)
       throw new Error(message)
     })
-  },
-
-  getCookie(name: string) {
-    const nameEqual = name + '='
-
-    const ca = document.cookie.split(';')
-
-    for (let i = 0; i < ca.length; i++) {
-      let c = ca[i]
-      while (c.charAt(0) === ' ') {
-        c = c.substring(1, c.length)
-      }
-      if (c.indexOf(nameEqual) === 0) {
-        return c.substring(nameEqual.length, c.length)
-      }
-    }
-    return null
   }
-
 }
