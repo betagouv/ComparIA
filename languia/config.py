@@ -8,6 +8,11 @@ import datetime
 
 env_debug = os.getenv("LANGUIA_DEBUG")
 
+MAX_INPUT_CHARS_PER_HOUR = 200_000
+
+class RateLimitedError(Exception):
+    pass
+
 if env_debug:
     if env_debug.lower() == "true":
         debug = True
@@ -249,9 +254,7 @@ def get_model_system_prompt(model_name):
         return None
 
 
-BLIND_MODE_INPUT_CHAR_LEN_LIMIT = int(
-	os.getenv("FASTCHAT_BLIND_MODE_INPUT_CHAR_LEN_LIMIT", 60_000)
-)
+BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
 
 
 # unavailable models won't be sampled.
