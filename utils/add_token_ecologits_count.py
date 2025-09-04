@@ -98,28 +98,28 @@ def get_model_metadata(model_name):
 
 def get_model_params(model_meta):
     """Extract params from model metadata, returning total and active params."""
-    total_params = model_meta.get("total_params")
+    params = model_meta.get("params")
     active_params = model_meta.get("active_params")
 
-    if total_params is not None and active_params is not None:
+    if params is not None and active_params is not None:
         print(
-            f"  Model metadata contains 'total_params': {total_params} and 'active_params': {active_params}"
+            f"  Model metadata contains 'params': {params} and 'active_params': {active_params}"
         )
-        return float(total_params), float(active_params)
-    elif total_params is not None:
+        return float(params), float(active_params)
+    elif params is not None:
         print(
-            f"  Model metadata contains 'total_params': {total_params}. Assuming active_params = total_params for non-MoE."
+            f"  Model metadata contains 'params': {params}. Assuming active_params = params for non-MoE."
         )
-        return float(total_params), float(total_params)
+        return float(params), float(params)
     elif "params" in model_meta:
         params = model_meta.get("params")
         print(
-            f"  Model metadata contains 'params': {params}. Assuming total_params = active_params = params."
+            f"  Model metadata contains 'params': {params}. Assuming params = active_params = params."
         )
         return float(params), float(params)
     else:
         print(
-            f"  No 'params', 'total_params', or 'active_params' found in model metadata."
+            f"  No 'params', 'params', or 'active_params' found in model metadata."
         )
         friendly_size = model_meta.get("friendly_size")
         PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
@@ -219,18 +219,18 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 
                         # Get model parameters
                         print(f"  Getting parameters for model A: '{model_a_name}'")
-                        model_a_total_params, model_a_active_params = get_model_params(
+                        model_a_params, model_a_active_params = get_model_params(
                             model_a_meta
                         )
                         print(f"  Getting parameters for model B: '{model_b_name}'")
-                        model_b_total_params, model_b_active_params = get_model_params(
+                        model_b_params, model_b_active_params = get_model_params(
                             model_b_meta
                         )
                         print(
-                            f"  Model A total parameters: {model_a_total_params}, active parameters: {model_a_active_params}"
+                            f"  Model A total parameters: {model_a_params}, active parameters: {model_a_active_params}"
                         )
                         print(
-                            f"  Model B total parameters: {model_b_total_params}, active parameters: {model_b_active_params}"
+                            f"  Model B total parameters: {model_b_params}, active parameters: {model_b_active_params}"
                         )
 
                         print(
@@ -268,16 +268,16 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             WHERE id = %s
                             """
                         print(
-                            f"  Executing update query for conversation ID {conversation_id}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, model_a_total_params, model_a_active_params, model_b_total_params, model_b_active_params, total_conv_a_kwh, total_conv_b_kwh, conversation_id)).decode()}'"
+                            f"  Executing update query for conversation ID {conversation_id}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, model_a_params, model_a_active_params, model_b_params, model_b_active_params, total_conv_a_kwh, total_conv_b_kwh, conversation_id)).decode()}'"
                         )
                         cursor.execute(
                             update_query,
                             (
                                 total_conv_a_tokens,
                                 total_conv_b_tokens,
-                                model_a_total_params,
+                                model_a_params,
                                 model_a_active_params,
-                                model_b_total_params,
+                                model_b_params,
                                 model_b_active_params,
                                 total_conv_a_kwh,
                                 total_conv_b_kwh,
@@ -336,28 +336,28 @@ from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
 
 def get_llm_impact(model_extra_info, token_count: int):
-    print("Calculating LLM impact...")
+    print(f"Calculating LLM impact for {model_extra_info.get('id')}")
     model_active_parameter_count = None
     model_total_parameter_count = None
 
-    if "active_params" in model_extra_info and "total_params" in model_extra_info:
-        print("  Using 'active_params' and 'total_params' from model info.")
+    if "active_params" in model_extra_info:
+        print("  Using 'active_params' and 'params' from model info.")
         model_active_parameter_count = int(model_extra_info["active_params"])
-        model_total_parameter_count = int(model_extra_info["total_params"])
+        model_total_parameter_count = int(model_extra_info["params"])
         if (
             "quantization" in model_extra_info
             and model_extra_info.get("quantization", None) == "q8"
         ):
             print("  Applying q8 quantization.")
             model_active_parameter_count = int(model_extra_info["active_params"]) // 2
-            model_total_parameter_count = int(model_extra_info["total_params"]) // 2
+            model_total_parameter_count = int(model_extra_info["params"]) // 2
         elif (
             "quantization" in model_extra_info
             and model_extra_info.get("quantization", None) == "q4"
         ):
             print("  Applying q4 quantization.")
             model_active_parameter_count = int(model_extra_info["active_params"]) / 4
-            model_total_parameter_count = int(model_extra_info["total_params"]) / 4
+            model_total_parameter_count = int(model_extra_info["params"]) / 4
     elif "params" in model_extra_info:
         print("  Using 'params' from model info.")
         params = int(model_extra_info["params"])
