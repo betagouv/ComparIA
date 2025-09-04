@@ -10,9 +10,6 @@ env_debug = os.getenv("LANGUIA_DEBUG")
 
 MAX_INPUT_CHARS_PER_HOUR = 200_000
 
-class RateLimitedError(Exception):
-    pass
-
 if env_debug:
     if env_debug.lower() == "true":
         debug = True
