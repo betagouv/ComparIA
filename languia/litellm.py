@@ -9,7 +9,7 @@ from languia.config import GLOBAL_TIMEOUT
 import litellm
 import json
 
-from languia.utils import strip_metadata, get_user_info, ContextTooLongError
+from languia.utils import strip_metadata, ContextTooLongError
 
 # from langfuse import get_client, observe
 
