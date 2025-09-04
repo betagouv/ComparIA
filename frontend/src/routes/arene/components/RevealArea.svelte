@@ -177,7 +177,6 @@
 
     <dialog
       aria-labelledby="fr-modal-title-share-modal"
-      role="dialog"
       id="share-modal"
       class="fr-modal"
     >
