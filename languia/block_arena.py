@@ -17,11 +17,11 @@ from languia.utils import (
 )
 
 
-from custom_components.customchatbot import CustomChatbot
-from custom_components.customdropdown import (
+from languia.custom_components.customchatbot import CustomChatbot
+from languia.custom_components.customdropdown import (
     CustomDropdown,
 )
-from custom_components.customradiocard import (
+from languia.custom_components.customradiocard import (
     CustomRadioCard,
 )
 

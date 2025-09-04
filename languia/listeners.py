@@ -73,7 +73,7 @@ from languia.config import logger
 
 from languia import config
 
-from custom_components.customchatbot import (
+from languia.custom_components.customchatbot import (
     ChatMessage,
 )
 

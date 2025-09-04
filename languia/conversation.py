@@ -3,7 +3,7 @@ import gradio as gr
 from languia.litellm import litellm_stream_iter
 
 import time
-from custom_components.customchatbot import (
+from languia.custom_components.customchatbot import (
     ChatMessage,
 )
 
