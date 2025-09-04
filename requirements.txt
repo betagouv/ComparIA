@@ -7,6 +7,7 @@ langfuse==3.0.5
 # For db export, could be in dev image
 SQLAlchemy==2.0.38
 
+redis[hiredis]
 google-cloud-aiplatform
 huggingface-hub
 fastapi
