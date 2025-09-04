@@ -665,8 +665,10 @@ description = "Grand frère de la famille Phi3, ce modèle supporte un contexte 
 excerpt = "Optimisé pour le raisonnement logique, ce petit modèle supporte un contexte de 8000 tokens, adapté pour la génération de code et tâches complexes."
 organisation = "Microsoft"
 icon_path = "microsoft.png"
+params = 7
 
 ["Qwen1.5-32B-Chat"]
+params = 32
 simple_name = "Qwen1.5-32B"
 organisation = "Alibaba"
 icon_path = "qwen.png"
@@ -687,6 +689,8 @@ simple_name = "Qwen2-57B-A14B-Instruct"
 organisation = "Alibaba"
 icon_path = "qwen.png"
 license = "Apache 2.0"
+active_params = 14
+total_params = 57
 
 [Qwen2-72b-instruct]
 url = "https://huggingface.co/Qwen/Qwen2-72B-Instruct"
@@ -694,6 +698,7 @@ simple_name = "Qwen2-72b-instruct"
 organisation = "Alibaba"
 icon_path = "qwen.png"
 license = "Apache 2.0"
+params = 72
 
 [Qwen2-7B-instruct]
 url = "https://huggingface.co/Qwen/Qwen2-7B-Instruct"
