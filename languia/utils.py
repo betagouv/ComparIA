@@ -417,30 +417,12 @@ def get_model_extra_info(name: str, models_extra_info: list):
     return {"id": name}
 
 
-import json
-
-
 def get_model_names_list(api_endpoint_info):
     logger = logging.getLogger("languia")
 
     models = [model_dict.get("model_id") for model_dict in api_endpoint_info]
     logger.debug(f"All models: {models}")
     return models
-
-
-def is_limit_reached(model_name, ip):
-    # FIXME:
-    # monitor_url = "http://localhost:9090"
-    # try:
-    #     ret = requests.get(
-    #         f"{monitor_url}/is_limit_reached?model={model_name}&user_id={ip}", timeout=1
-    #     )
-    #     obj = ret.json()
-    #     return obj
-    # except Exception as e:
-    #     logging.info(f"monitor error: {e}")
-    return None
-
 
 def count_output_tokens(messages) -> int:
     """Count output tokens (assuming 4 letters per token)."""
