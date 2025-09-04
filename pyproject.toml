@@ -12,7 +12,6 @@ dependencies = [
     # [dev] necessary?
     "gradio-customchatbot",
     "gradio-customdropdown",
-    "gradio-frinput",
     "gradio-customradiocard",
     "fastapi>=0.115.12",
     "google-auth>=2.40.1",
@@ -33,5 +32,4 @@ dependencies = [
 [tool.uv.sources]
 gradio-customchatbot = { path = "custom_components/customchatbot" }
 gradio-customdropdown = { path = "custom_components/customdropdown" }
-gradio-frinput = { path = "custom_components/frinput" }
 gradio-customradiocard = { path = "custom_components/customradiocard" }

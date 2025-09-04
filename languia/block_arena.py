@@ -17,15 +17,13 @@ from languia.utils import (
 )
 
 
-from custom_components.customchatbot.backend.gradio_customchatbot import CustomChatbot
-from custom_components.customdropdown.backend.gradio_customdropdown import (
+from custom_components.customchatbot import CustomChatbot
+from custom_components.customdropdown import (
     CustomDropdown,
 )
-from custom_components.customradiocard.backend.gradio_customradiocard import (
+from custom_components.customradiocard import (
     CustomRadioCard,
 )
-
-from custom_components.frinput.backend.gradio_frinput import FrInput
 
 from languia import config
 
@@ -154,7 +152,7 @@ with gr.Blocks(
                         ],
                     )
 
-                    comments_a = FrInput(
+                    comments_a = gr.Textbox(
                         show_label=False,
                         visible=False,
                         lines=3,
@@ -190,7 +188,7 @@ with gr.Blocks(
                             ("Instructions non respectées", "instructions-not-followed"),
                         ],
                     )
-                    comments_b = FrInput(
+                    comments_b = gr.Textbox(
                         show_label=False,
                         visible=False,
                         lines=3,
@@ -206,7 +204,7 @@ with gr.Blocks(
             elem_classes="flex-md-row flex-col items-start",
             visible=True,
         ) as send_row:
-            textbox = FrInput(
+            textbox = gr.Textbox(
                 elem_id="main-textbox",
                 show_label=False,
                 lines=1,

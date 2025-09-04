@@ -45,8 +45,6 @@ Due to how Gradio's Custom Components work and because they haven't been publish
 
 ```bash
 pip install -r requirements.txt
-gradio cc install custom_components/frinput
-gradio cc build --no-generate-docs custom_components/frinput
 gradio cc install custom_components/customradiocard;gradio cc build --no-generate-docs custom_components/customradiocard
 gradio cc install custom_components/customdropdown;gradio cc build --no-generate-docs custom_components/customdropdown
 gradio cc install custom_components/customchatbot; npm install @gouvfr/dsfr;
@@ -78,8 +76,7 @@ But as it was easier to run models in vLLM Docker containers or by using externa
 ### Custom Components
 Our main focus with compar:IA is to invest heavily on overall design and UX/UI. Thanks to Gradio's [Custom Components](https://www.gradio.app/guides/custom-components-in-five-minutes) we can customize any Gradio component as a Svelte app, and control the user interface look and feel.
 
-We currently use 4 distinct (and sometimes poorly named) Custom Components:
-- `FrInput`: the [DSFR](https://www.systeme-de-design.gouv.fr/) input component
+We currently use 3 distinct (and sometimes poorly named) Custom Components:
 - `CustomDropdown`: encompasses most of the first screen, with mode selection, models selection, and initial textarea
 - `CustomRadioCard`: used in the first screen for suggestions and later for voting
 - `CustomChatbot`: a component crafted for the specific compar:IA experience, allowing you to compare two chatbots' response to one user message, and receive user's feedback
