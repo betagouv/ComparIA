@@ -69,7 +69,6 @@ export const api = {
     try {
       this.client = await Client.connect(this.url + '/api', { events: ['data', 'status'], headers })
       console.debug(`Successfully connected to Gradio (session hash: ${this.client.session_hash}`)
-      console.debug()
 
       return this.client
     } catch (error) {
