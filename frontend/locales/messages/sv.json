@@ -281,9 +281,9 @@
             "improveDesc": "Om du har problem att komma åt innehåll eller tjänst kan du kontakta administratören för beta.gouv.fr, för att bli hänvisad till ett tillgängligt alternativ eller få innehållet i ett annat format.",
             "improveMail": "E-post: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Feedback och kontakt",
-            "remedyAdvocate": "Skriv ett meddelande till <a {linkProps}>rättighetsförsvararen</a>",
+            "remedyAdvocate": "Skriv ett meddelande till <a {linkProps}>Frankrikes ombudsman för mänskliga rättigheter (le Défenseur des Droits)</a>",
             "remedyAdvocateAdress": "Skicka ett brev med posten (gratis, inget frimärke behövs): Défenseur des droits - Libre réponse 71120 75342 Paris CEDEX 07",
-            "remedyDelegateAdvocate": "Kontakta <a {linkProps}>representanten för rättighetsförsvararen i din region</a>",
+            "remedyDelegateAdvocate": "Kontakta <a {linkProps}>Frankrikes ombudsman för mänskliga rättigheter (le Défenseur des Droits)</a>",
             "remedyDesc": "Denna procedur ska användas i följande fall: Du har rapporterat ett tillgänglighetsfel till webbplatsansvarig som hindrar dig från att komma åt innehåll eller en av portalens tjänster och du inte har fått ett tillfredsställande svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Överklaga",
@@ -300,7 +300,279 @@
             "directorDesc": "Romain Delassus, chef för kulturministeriets digitala avdelning",
             "directorTitle": "Publikationsansvarig",
             "editorDesc": "Denna webbplats publiceras av franska kulturministeriet. Postadress: Ministère de la culture, 182 Rue Saint-Honoré, 75001 Paris",
-            "editorTitle": "Redaktör"
+            "editorTitle": "Redaktör",
+            "hostingDesc": "Denna webbplats drivs av OVH SAS (<a {linkProps}>https://www.ovh.com</a>) vars huvudkontor ligger på 2 rue Kellermann, 59100 Roubaix, Frankrike.",
+            "hostingTitle": "Servertjänst för sidan",
+            "reportA11y": "Om du träffar på ett tillgänglighetsproblem som hindrar dig från att komma åt innehåll eller funktioner på webbplatsen, meddela oss gärna.",
+            "reportA11yDesc": "För att läsa mer om Frankrikes policy för digital tillgänglighet: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
+            "reportDesc": "Om du inte får ett snabbt svar från oss har du rätt att skicka ditt klagomål eller en begäran om hänvisning till Frankrikes ombudsman för mänskliga rättigheter (le Défenseur des Droits).",
+            "reportTitle": "Rapportera ett problem",
+            "securityCertif": "Webbplatsen är skyddad av ett elektroniskt certifikat, som hjälper till att säkerställa konfidentialiteten för dina uppgifter. I de flesta webbläsare visas detta med en symbol i form av ett hänglås.",
+            "securityNoMail": "De tjänster som är kopplade till plattformen kommer inte att användas som källa för att skicka e-postmeddelanden med begäran om att ange personlig information.",
+            "securityTitle": "Säkerhet",
+            "sources": "Om inget annat anges är all text på denna webbplats licensierad under <a {etalabLinkProps}>Etalab Open 2.0-licensen</a>. Källkoden för denna applikation är fritt återanvändbar och tillgänglig på <a {githubLinkProps}>GitHub</a>.",
+            "title": "Rättsliga meddelanden"
+        },
+        "privacy": {
+            "cookiesBannerDesc": "Just det, du behövde inte klicka på ett block som täcker halva sidan för att säga att du godkänner cookies!",
+            "cookiesBannerNoNeed": "Inget speciellt, ingen specialbehandling i samband med .gouv.fr. Vi respekterar helt enkelt lagen, som anger att vissa verktyg för publikspårning, korrekt konfigurerade för att respektera integritet, är undantagna från förhandsgodkännande.",
+            "cookiesBannerTitle": "Den här webbplatsen visar ingen banner för samtycke till cookies, varför?",
+            "cookiesBannerTools": "För detta använder vi <a {matomoLinkProps}>Matomo</a>, ett <a {libreLinkProps}>gratis</a> verktyg, konfigurerat för att följa CNIL:s <a {cnilLinkProps}>rekommendation om cookies</a>. Det innebär att din IP-adress, till exempel, anonymiseras innan den registreras. Det är därför omöjligt att koppla dina besök på denna webbplats till dig personligen.",
+            "cookiesDesc": "Den här webbplatsen placerar en liten textfil (en \"cookie\") på din dator när du besöker den. Detta gör att vi kan mäta antalet besök och se vilka sidor som besöks mest.",
+            "cookiesDescMore": "Du kan välja bort att din aktivitet på den här webbplatsen spåras. Detta skyddar din integritet, men hindrar också sidans ägare från att sammanställa statistik som kan användas för att skapa en bättre upplevelse för dig och andra användare.",
+            "cookiesTitle": "Cookies och samtycke",
+            "dataAccessDatasets": "Data för användardialog och preferenser distribueras under Etalabs Open License 2.0 på Hugging Face-plattformen via franska kulturministeriets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDesc": "Självklart! Statistik över webbplatsens användning finns fritt tillgänglig på <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "Jag bidrar till att berika era data, kan jag få tillgång till dem?",
+            "dataExtraCountry": "Destinationsland: Frankrike",
+            "dataExtraHost": "Underleverantör: OVH",
+            "dataExtraTitle": "Vem hjälper oss att behandla uppgifterna?",
+            "dataExtraWarranty": "Garantier: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataRespDesc": "Franska kulturdepartementets digitala avdelning ansvarar för behandlingen av dina personuppgifter.",
+            "dataRespTitle": "Vem är ansvarig för databehandlingen?",
+            "dataTimeDesc": "Data som rör användare och deras samtal med modeller sparas när du anger vilken modell du föredrar.",
+            "dataTimeTitle": "Hur länge sparas dessa uppgifter?",
+            "dataUseDesc": "Utgivaren åtar sig att vidta åtgärder för att säkerställa anonymisering av dialogdata innan de görs tillgängliga för allmänheten.",
+            "dataUseTitle": "Vilken behandling utförs på konversationsdata?",
+            "desc": "Tjänsten publiceras av franska kulturministeriets digitala avdelning.",
+            "privacyData": "Uppgifterna som samlas in på webbplatsen är följande:",
+            "privacyDataArena": "Data relaterade till användarkonversationer med modeller: frågor ställda av användare, svar från modeller, och vilken av de två modellerna användaren föredrar",
+            "privacyDataForm": "Data relaterade till frågeformuläret ”Hjälp oss att förbättra compar:IA”.",
+            "privacyDesc": "Tjänsten behandlar inte personuppgifter enligt CNIL:s definition, nämligen information som rör en fysisk person som kan identifieras, direkt eller indirekt.",
+            "privacyResp": "Användaren ansvarar för de uppgifter eller det innehåll som de anger i de frågor som erbjuds av plattformen. Genom att acceptera <a {linkProps}>användarvillkoren</a> samtycker användaren till att inte överföra någon information som kan identifiera dem eller en tredje part.",
+            "privacyTitle": "Behandlar vi personuppgifter?",
+            "title": "Integritetspolicy"
+        },
+        "tos": {
+            "contactDesc": "Om du har frågor om tjänsten kan du skriva till <a {linkProps}>contact@comparia.beta.gouv.fr</a>.",
+            "contactTitle": "9. Kontakt",
+            "defsEditor": "”Utgivare” avser franska kulturministeriets digitala tjänst.",
+            "defsModels": "”Modeller” avser de stora språkmodeller (LLM) som används av plattformen inom ramen för sina licenser.",
+            "defsPlatform": "”Plattform” avser webbplatsen som gör tjänsterna tillgängliga.",
+            "defsServices": "”Tjänster” avser de funktioner som plattformen erbjuder för att uppfylla sina syften.",
+            "defsTitle": "2. Definitioner",
+            "defsUser": "”Användare” avser varje fysisk person som använder plattformen och drar nytta av dess tjänster.",
+            "descDatasets": "Dessa datamängder kommer att göras tillgängliga under en öppen licens, särskilt för att främja forskningsanvändning.",
+            "descEditor": "Tjänsten, som publiceras av kulturministeriets digitala avdelning, är en plattform för att jämföra konversationsmodeller riktade till allmänheten i syfte att (1) öka medborgarnas medvetenhet om stora språkmodeller (LLM), (2) samla in användarpreferenser för att skapa datamängder för jämförelse.",
+            "descTitle": "3. Beskrivning av plattformen",
+            "descUse": "Användaren ställer en fråga på ett givet språk och får svar från två anonyma stora språkmodeller (LLM). Denne röstar på den modell som de bedömer ger det bästa svaret, och får sedan reda på vilka modellerna var. Detta crowdsourcing-system, inspirerat av <a {linkProps}>\"chatbot arena\" (LMSYS)</a>-plattformen, möjliggör skapandet av datamängder av mänskliga preferenser för verkliga uppgifter, vilka kan användas för att förbättra modellerna.",
+            "dispoDesc": "Plattformen är tillgänglighetsanpassad, förutom i fall av force majeure eller händelser utanför utgivarens kontroll.",
+            "dispoResp": "Utgivaren kan därför inte hållas ansvarig för förluster eller skador, av något slag, som kan uppstå till följd av fel eller bristande tillgänglighet i tjänsten. Sådana situationer ger inte rätt till någon ekonomisk ersättning.",
+            "dispoRight": "Utgivaren förbehåller sig rätten att utan förvarning stänga av, avbryta eller begränsa åtkomsten till hela eller delar av tjänsterna, särskilt för underhållsåtgärder och uppdateringar som är nödvändiga för att tjänsten och relaterat material ska fungera korrekt, eller av andra skäl, särskilt tekniska.",
+            "dispoTitle": "7. Tjänsternas tillgänglighet",
+            "dispoWarranty": "Tjänsten garanteras inte vara fri från avvikelser eller fel. Tjänsten tillhandahålls därför utan någon garanti för dess tillgänglighet och prestanda.",
+            "evoDesc": "Användarvillkoren kan ändras eller kompletteras när som helst, utan förvarning, beroende på ändringar i tjänsterna, lagändringar eller av annan anledning som bedöms nödvändig.",
+            "evoDescMore": "Dessa ändringar och uppdateringar är bindande för användaren som därför regelbundet bör läsa detta avsnitt för att kontrollera villkoren.",
+            "evoTitle": "8. Ändringar av användarvillkoren",
+            "featuresDatasets": "Tjänsten samlar in data om användardialog och preferenser. Delade datamängder kommer att inkludera användarfrågor, svar från båda modellerna, röster och användarpreferenser.",
+            "featuresDatasetsMore": "Utgivaren förbehåller sig rätten att distribuera användardialog- och preferensdata under en öppen licens 2.0. Datamängden distribueras på Hugging Face-plattformen via franska kulturministeriets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "featuresDesc": "För att uppnå det tvåfaldiga målet att öka medborgarnas medvetenhet om stora språkmodeller och samla in användarpreferenser, tillhandahålls följande tjänster av plattformen utan åtkomstbegränsningar:",
+            "featuresDescMore": "Ett människa-maskin-gränssnitt som möjliggör samtidig dialog med två konversationsmodeller och val av det föredragna svaret.",
+            "featuresModels": "Modellerna som är integrerade i plattformen distribueras på inferensservrar hos de olika partnerna (Scaleway, OVH, Hugging Face, Google Cloud, Mistral AI). Standardiseringsvillkoren för inferens tillhandahålls på plattformen för att garantera transparens i användningen av modellerna.",
+            "featuresModelsMore": "Ett gränssnitt för modelljämförelse.",
+            "featuresTitle": "4. Funktioner",
+            "featuresVote": "Efter valprocessen kan användaren se listan över modeller som ingår i jämförelseverktyget och få tillgång till en lista med information om dessa modeller. Informationen som dokumenterar modellerna är hämtad från källor.",
+            "featuresVoteMore": "Dela och tillgängliggöra datamängder som är resultatet av insamling av användarpreferenser.",
+            "licenceCode": "Plattformens källkod är öppen och fritt tillgänglig här: <a {linkProps}>https://github.com/betagouv/languia</a>",
+            "licenceLLM": "De språkmodeller som används för att driva tjänsterna regleras av följande licenser:",
+            "licenceLLMEvolution": "Listan över språkmodeller som ingår i plattformen kan förändras över tid och uppdateras med varje modifiering.",
+            "licenceLLMLicence": "Licens",
+            "licenceLLMModel": "Konversationsbaserad AI-modell",
+            "licenceLLMNoticeLink": "Länk till modellernas licenser",
+            "licenceLLMUnavailable": "Inte tillgänglig",
+            "licenceTitle": "6. Kod och licenser",
+            "respEditor": "Generellt sett frånsäger sig utgivaren allt ansvar vid användning som inte överensstämmer med användarvillkoren.",
+            "respLegal": "Plattformen är inte avsedd att användas för att generera olagligt innehåll eller innehåll som strider mot allmän ordning, eller mer generellt, för någon generering som strider mot gällande rättsliga ramar.",
+            "respLegalMore": "I detta avseende anger användaren inte något innehåll eller information i prompten som strider mot gällande lagar och förordningar.",
+            "respPrivacy": "Eftersom de uppgifter som användaren anger på plattformen är avsedda att göras tillgängliga, förbinder sig denne att inte överföra information som kan identifiera denne eller en tredje part.",
+            "respPrivacyMore": "Under alla omständigheter åtar sig utgivaren att vidta åtgärder för att säkerställa anonymisering av dialogdata innan de görs tillgängliga.",
+            "respTitle": "5. Ansvar",
+            "respUser": "Användaren ansvarar för de uppgifter och det innehåll som denne anger i den prompt som plattformen erbjuder.",
+            "scopeDesc": "Åtkomst till plattformen är gratis, utan registrering, och medför tillämpning av specifika förbehåll, som anges i dessa användarvillkor.",
+            "scopeTitle": "1. Tillämpningsområde",
+            "title": "Användarvillkor"
+        }
+    },
+    "generated": {
+        "licenses": {
+            "os": {
+                "Apache 2.0": {
+                    "license_desc": "<p> Denna licens ger dig rätt att fritt använda, modifiera och distribuera modellen, inklusive för kommersiella ändamål. Förutom användningsfrihet garanterar den rättsligt skydd genom att inkludera en patentklausul som fungerar som en försäkring: om du använder modellen samtycker bidragsgivarna till att inte stämma dig för brott mot deras patent relaterade till projektet. Detta ömsesidiga skydd undviker juridiska konflikter mellan användare och utvecklare. Vid distribution av modifierade versioner måste betydande ändringar meddelas, vilket säkerställer transparens för användaren. </p>"
+                },
+                "CC-BY-NC-4.0": {
+                    "license_desc": "<p> Denna licens tillåter dig att fritt dela och anpassa innehållet så länge du anger upphovsmannen, men förbjuder all kommersiell användning. Den ger flexibilitet för icke-kommersiell användning samtidigt som skaparens rättigheter skyddas. </p>",
+                    "reuse_specificities": "men endast för icke-kommersiellt bruk"
+                },
+                "Gemma": {
+                    "license_desc": "<p>Denna licens är skapad för att uppmuntra att mjukvaran används, ändras och sprids, men innehåller en klausul som säger att alla ändrade versioner måste delas under samma licens, för att främja samarbete och transparens inom mjukvaruutveckling.</p>"
+                },
+                "Llama 3.1": {
+                    "commercial_use_specificities": "under 700 miljoner användare",
+                    "license_desc": "<p>Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad. Kod och genererat material får återanvändas för att träna eller utveckla modeller som bygger vidare på denna, så länge texten \"built with llama\" visas och ordet \"Llama\" ingår i titeln.</p>"
+                },
+                "Llama 3.3": {
+                    "commercial_use_specificities": "under 700 miljoner användare",
+                    "license_desc": "Denna <p><strong>icke-exklusiva, globala, royaltyfria</strong> licens tillåter dig att fritt använda, reproducera, modifiera och distribuera Llama 3.3 med tillhörande kod och material, så länge upphovsmannen nämns. Den tillåter specifikt återanvändning för att förbättra derivatmodeller, men sätter begränsningar för mycket storskaliga kommersiella verksamheter.</p>"
+                },
+                "Llama 4": {
+                    "commercial_use_specificities": "under 700 miljoner användare\n",
+                    "license_desc": "<p>Denna icke-exklusiva, globala, royaltyfria licens tillåter dig att använda, reproducera, modifiera och distribuera Llama 4-materialet (modeller och dokumentation) förutsatt att upphovsmannen nämns. Den sätter dock två huvudsakliga begränsningar: (1) företag med över 700 miljoner månatliga aktiva användare måste erhålla en särskild licens från Meta, och (2) <strong>totalt uteslutande</strong> av EU-invånare och företag med huvudkontor i EU från att direkt använda de multimodala modellerna, på grund av regulatoriska osäkerheter relaterade till den europeiska AI-lagen. Europeiska slutanvändare kan ändå få tillgång till tjänster som integrerar Llama 4, förutsatt att de tillhandahålls utanför EU.</p>"
+                },
+                "MIT": {
+                    "license_desc": "<p>MIT-licensen är en licens för fri programvara. Den tillåter att vem som helst återanvänder, ändrar eller sprider en modell, även för kommersiella ändamål, förutsatt att den ursprungliga licensen och upphovsrättstexten skickas med.</p>"
+                },
+                "Mistral AI Research License": {
+                    "license_desc": "<p>Denna icke-exklusiva, royaltyfria licens tillåter användning, kopiering, modifiering och distribution av Mistral-modeller och deras derivat (inklusive modifierade versioner). Den är dock strikt begränsad till forskningsändamål.</p>",
+                    "reuse_specificities": "men endast för icke-kommersiellt bruk"
+                }
+            },
+            "proprio": {
+                "Alibaba": {
+                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Alibabas företagsplattformar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                },
+                "Amazon": {
+                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via Amazon Bedrock, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur.",
+                    "reuse_specificities": "förutom för att destillera eller träna andra modeller på Amazons plattformar."
+                },
+                "Anthropic": {
+                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Anthropic-företagets eller partnerföretagens plattformar, vilket kräver en betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                },
+                "Google": {
+                    "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Googles företagsplattformar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur.",
+                    "reuse_specificities": "förutom för att träna andra modeller på Vertex AI"
+                },
+                "Mistral AI": {
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via Mistral API, Amazon Sagemaker, och flera andra värdar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                },
+                "OpenAI": {
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via API på OpenAI:s plattformar eller via Microsoft Azure-tjänster, vilket kräver en avgift per användning baserad på antalet bearbetade tokens eller den reserverade infrastrukturen."
+                },
+                "xAI": {
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via X och xAI, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur."
+                }
+            }
+        },
+        "models": {
+            "Aya Expanse 32B": {
+                "desc": "<p>Mellanstor flerspråkig modell, som klarar 23 språk.</p>",
+                "fyi": "<p>Cohere, det kanadensiska företaget bakom denna modell, grundades av tidigare Google Brain-forskare, inklusive Aidan Gomez, medförfattare till den berömda artikeln \"Attention Is All You Need\" som revolutionerade AI. Dess främsta särprägel ligger i dess exklusiva fokus på generativ AI för företag, särskilt reglerade sektorer som finans, sjukvård, tillverkning och energi, samt den offentliga sektorn. Företaget är också en pionjär inom flerspråkiga metoder och har ett ideellt forskningslabb för att stödja öppen innovation.\n</p><p>Denna modell utformades för att ge goda funktioner i vart och ett av de 23 språken i dess utbildningskorpus.</p>",
+                "size_desc": "<p>Med 32 miljarder parametrar faller den här modellen i medelstor kategori. Den kan hanteras på en server med ett enda kraftfullt grafikkort, vilket hjälper till att hålla nere infrastrukturkostnaderna.</p>\n<p>Den har ett kontextfönster på upp till 130 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+            },
+            "Claude 3.7 Sonnet": {
+                "desc": "<p>Mycket stor, multimodal och flerspråkig modell, effektiv för kodgenerering, med två svarslägen: Användaren kan välja mellan ett resonemangsläge, för mer djupgående svar, eller ett snabbläge, för att direkt generera det slutliga svaret.</p>",
+                "fyi": "<p>Claude 4 Opus är den mest avancerade versionen av Claude 4-familjen. Den är optimerad för rå kraft och komplexa uppgifter som kräver långvarigt resonemang. Den kan bland annat arbeta med långsiktiga uppgifter (Anthropic hävdar att den kan arbeta självständigt i upp till sju timmar). Å andra sidan är Opus dyrare att använda, svarar långsammare och kräver mer resurser för att köras. </p>\n<p> Modellen har två användningslägen: ett reflektionsläge med stegvis resonemang för komplexa problem, och ett snabbläge för direkta svar. Till skillnad från andra modeller tränades inte resonemanget primärt på matematiska data, utan anpassades till verkliga användningsfall. </p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en mycket stor modell som kräver servrar med flera kraftfulla grafikkort för att köras. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. Den har ett kontextfönster på upp till 200 000 tokens, vilket är lämpligt för att analysera långa dokument eller koddatabaser.</p>"
+            },
+            "Claude 4 Sonnet": {
+                "desc": "<p>Mycket stor multimodal och flerspråkig modell, med två svarsmetoder: användaren kan välja mellan ett resonemangsläge, för mer djupgående svar, eller ett snabbt läge, för att direkt generera det slutliga svaret.</p>",
+                "fyi": "<p>Claude 4 Sonnet är en mer kompakt version av Claude 4 Opus, optimerad för hastighet, effektivitet och tillgänglighet. Den är något mindre effektiv för uppgifter som kräver komplext resonemang i flera steg. Å andra sidan är den betydligt billigare, snabbare, kan generera längre texter och förbrukar mindre ström än Opus.</p>\n<p>Modellen erbjuder två användningslägen: ett reflektionsläge med stegvis resonemang för komplexa problem, och ett snabbläge för direkta svar. Till skillnad från andra modeller tränades inte resonemanget primärt på matematiska data, utan anpassades till verkliga användningsfall.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en mycket stor modell som kräver servrar med flera kraftfulla grafikkort för att köras. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. Den har ett kontextfönster på upp till 200 000 tokens, vilket är lämpligt för att analysera långa dokument eller koddatabaser.</p>"
+            },
+            "Command A": {
+                "desc": "<p>Stor modell, effektiv för programmering, användning av externa verktyg, och \"retrieval augmented generation\" (RAG).</p>",
+                "fyi": "<p>Cohere, det kanadensiska företaget bakom denna modell, grundades 2019 av tidigare Google Brain-forskare, inklusive Aidan Gomez, medförfattare till den berömda artikeln <a href=\"https://arxiv.org/abs/1706.03762\">\"Attention Is All You Need\"</a> som publicerades 2017 och som revolutionerade AI. Företaget utmärker sig för sitt exklusiva fokus på generativ AI för företag, särskilt reglerade sektorer som finans, sjukvård, tillverkningsindustri och energi, samt den offentliga sektorn. Företaget är också en pionjär inom flerspråkiga metoder och har ett ideellt forskningslabb för stödja öppen innovation.</p>\n<p>Denna modell är utformad för att fungera på fler än 23 språk och för att enkelt integreras i företagssystem. Det är en av få modeller som distribueras under <strong>CC-BY-NC 4.0-licensen, som tillåter delning och modifiering men förbjuder all kommersiell användning.</strong> Detta licensval återspeglar Coheres önskan att bidra till forskning och öppen källkod, samtidigt som man bibehåller kontrollen över kommersiell användning för att skydda sin affärsmodell. Detta utesluter till exempel integrationen av modellen i produkter eller tjänster som säljs av ett företag till kunder, men tillåter akademisk användning, testning eller interna projekt, begränsade till ett icke-kommersiellt ramverk.</p>",
+                "size_desc": "<p>Med 111 miljarder parametrar är den här modellen att betrakta som stor. Den kräver minst två kraftfulla grafikkort, vilket resulterar i betydande driftskostnader.</p>\n<p>Dess kontextfönster når 256 000 tokens, lämpligt för analysera stora mängder dokument eller kodbaser.</p>"
+            },
+            "Command R": {
+                "desc": "<p>Medelstor modell optimerad för syntes, allmänna frågor och verktygsanvändning, och effektiv i system för retrieval augmented generation (RAG).</p>",
+                "fyi": "<p>Cohere, det kanadensiska företaget bakom denna modell, grundades 2019 av tidigare Google Brain-forskare, inklusive Aidan Gomez, medförfattare till den berömda artikeln \"Attention Is All You Need\" som revolutionerade AI. Det som gör det unikt är dess exklusiva fokus på generativ AI för företag, särskilt reglerade sektorer som finans, sjukvård, tillverkningsindustri och energi, samt den offentliga sektorn. Företaget är också en pionjär inom flerspråkiga metoder och har ett ideellt forskningslabb för att stödja öppen innovation.</p>\n<p>Denna modell har utvärderats på över 10 språk. Dess kontextfönster når 128 000 tokens, vilket underlättar analysen av långa dokument. Detta fönster fördubblades i nästa version av modellen (Command A).</p>",
+                "size_desc": "<p>Med 35 miljarder parametrar faller den här modellen i kategorin medelstora modeller. Den kan hanteras på en server med ett enda kraftfullt grafikkort, vilket hjälper till att hålla nere infrastrukturkostnaderna.</p>"
+            },
+            "DeepSeek R1": {
+                "desc": "<p>Mycket stor modell med hög prestanda för matematiska, vetenskapliga och programmeringsrelaterade uppgifter, som simulerar ett resonemangssteg innan svaret genereras.</p>",
+                "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur med 61 lager. Den har totalt 671 miljarder parametrar, varav 37 miljarder är token-aktiverade. Träningen använde storskalig förstärkningsinlärning, med flera SFT-steg (<em>supervised fine-tuning</em>, där modellen lär sig av exempel på korrekta svar) och bootstrap-data.</p>",
+                "size_desc": "<p>Med 671 miljarder parametrar är DeepSeek R1 en mycket stor modell som kräver flera kraftfulla grafikkort för att köras. Resonemangsmodeller av den här typen tar längre tid att producera ett svar, vilket ökar energiförbrukningen. Arkitekturen Mixture of Experts aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiförbrukning. Kontextfönstret når 128 000 tokens, vilket är lämpligt för att analysera långa dokument.</p>"
+            },
+            "DeepSeek R1 Llama 70B": {
+                "desc": "<p>Stor modell baserad på Meta Llama 3.3 70B, omtränad med resonemangsexempel från DeepSeek R1-modellen. Den erbjuder bra matematik- och kodningsfunktioner.</p>",
+                "fyi": "<p>Modellen tränades inte från grunden. Den använder Llama 3.3 70B, omtränad med hjälp av resultat genererade av DeepSeek R1. Denna process ger Llama 3.3 70B möjligheten att simulera resonemang, utan att användaren kan välja om den här funktionen skulle aktiveras eller inte.</p>\n<p>I enlighet med Llama 3.3-licensen måste företaget behålla omnämnandet av källmodellen i modellens namn. Medellen faller under samma licensieringsregler.</p>",
+                "size_desc": "<p>Med 70 miljarder parametrar klassificeras denna modell som en stor modell. Den kräver flera kraftfulla grafikkort för att köras, vilket resulterar i höga driftskostnader. Resonemangsmodeller tar också längre tid att producera ett svar, vilket ökar deras energiförbrukning.</p>\n<p>Kontextfönstret är 16 000 tokens, vilket kan vara begränsande för att analysera mycket stora dokument.</p>"
+            },
+            "DeepSeek V3": {
+                "desc": "<p>Mycket stor modell utformad för komplexa uppgifter: kodgenerering, verktygsanvändning, och analys av långa dokument. Den kan hantera många språk, men är särskilt väl lämpad för engelska och kinesiska.</p>",
+                "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur med 671 miljarder parametrar, men aktiverar endast 37 miljarder per genererad token. Den är effektiv för verktygsanrop, generering av strukturerad utdata (JSON) och kodgenerering.</p>",
+                "size_desc": "<p>DeepSeek V3 är en mycket stor modell som kräver flera grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) tillåter dock bara att en del av parametrarna aktiveras, vilket minskar minneskraven jämfört med en tät modell av samma storlek.</p>\n<p> Kontextfönstret når 163 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+            },
+            "GLM 4.5": {
+                "desc": "<p>En mycket stor modell skapad av Zhipu AI, en kinesisk AI-modelltillverkare som grundades 2019 av professorer vid universitetet i Tsinghua och stöds av stora aktörer som Alibaba och Tencent. Modellen har två svarslägen: Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att direkt generera det slutliga svaret.</p>",
+                "fyi": "<p>Denna modell har goda agentfunktioner, vilket gör att den kan göra funktionsanrop med hög tillförlitlighet. Dess kodningsprestanda är hög, och modellen har en god förmåga att skapa kompletta webbapplikationer och generera artefakter, vilket är program med en enda fil som kan användas i gränssnitten för konversationsagenter. För träning utformades en specifik infrastruktur för förstärkningsinlärning, kallad slime, för att optimera prestandan för komplexa uppgifter och agentuppgifter genom att effektivt hantera långa arbetsflöden – modellen kan hantera komplexa och långvariga uppgifter, som att skapa en applikation från grunden, utnyttja sina verktyg på bästa sätt och förbli konsekvent från början till slut.</p>",
+                "size_desc": "<p>Med 355 miljarder parametrar faller den här modellen inom kategorin mycket stora modeller. Tack vare en Mixture of Experts (MoE)-arkitektur är den effektivare än vissa andra modeller av liknande storlek, men den kräver fortfarande en server med flera mycket kraftfulla grafikkort. Dess kontextfönster går upp till 128 000 tokens, vilket gör att den kan bearbeta ganska långa dokument.</p>"
+            },
+            "GPT 4.1 Nano": {
+                "desc": "<p>Mindre, lättare version av GPT 4.1-modellen, utformad för att hålla nere kostnaderna samtidigt som den förblir konkurrenskraftig på de flesta uppgifter. Modellen stöder mycket långa frågor, vilket gör den lämplig för användning vid exempelvis korpusanalys med långa dokument.</p>",
+                "fyi": "<p>Detta är en destillerad version av en större modell, med viss kunskapsöverföring. Den kan bearbeta text, bilder och ljud. Dess kontextfönster kan nå upp till 1 miljon tokens, vilket gör den särskilt lämplig för att analysera textkorpusar eller mycket långa koddatabaser.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en medelstor modell som kräver ett kraftfullt grafikkort för att fungera. Den förmodade arkitekturen Mixture of Experts (MoE) aktiverar dock endast en delmängd av parametrar vid varje token, vilket begränsar dess energiavtryck. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens.</p>"
+            },
+            "GPT 5": {
+                "desc": "<p>GPT-5 är inte en enda modell, utan ett enhetligt system som består av två separata modeller: en snabb modell (<code>gpt-5-main</code>) för vanliga frågor och en resonemangsmodell (<code>gpt-5-thinking</code>) för komplexa problem. Jämfört med dess föregångare hävdar OpenAI att den är mer användbar i verkliga frågor, med märkbara förbättringar inom områdena skrivande, kodning och hälsa. Den minskar också mängden hallucinationer. Tack vare sitt kontextfönster på 400 000 tokens kan den acceptera långa frågor, vilket gör det möjligt att analysera flera dokument samtidigt.</p>",
+                "fyi": "<p>Utvecklare som använder den här modellen kan konfigurera en utförlighetsparameter för att justera längden på resonemangsfasen. </p>\n<p> När det gäller säkerhet använder systemet en ny metod som kallas \"safe-completions\" för att förhindra obehörigt innehåll i svarsfasen snarare än när begäran görs. Modellens skapare använde också en \"resonemangsträningsfas\" för att göra den mer motståndskraftig mot försök att kringgå deras säkerhetsregler (<em>jailbreaking</em>).</p>",
+                "size_desc": "<p>GPT-5-systemet består av modeller i olika storlekar, men de exakta storlekarna är okända. Dess arkitektur är utformad för att inkludera flera modeller, sammankopplade av ett internt routingsystem, som väljer den minsta modellen som passar uppgiften för att optimera resonemangets hastighet och djup. Arkitekturen är sannolikt baserad på en \"mix of experts\" (MoE), vilket innebär att endast en del av parametrarna aktiveras för varje fråga. Detta möjliggör större energieffektivitet och hög prestanda. Tillgängliga uppskattningar av modellstorlekar baseras på offentlig information och indirekta index såsom inferenskostnader och svarslatens.</p>"
+            },
+            "GPT 5 Mini": {
+                "desc": "<p>GPT-5 Mini är en lättviktsversion av huvudmodellen för GPT-5. Den är utformad för användning i miljöer där kostnadsbegränsningar krävs, till exempel i stor skala. Dess resonemangsmodell presterar nästan lika bra som huvudmodellen (<code>gpt-5-thinking</code>) trots sin mindre storlek. Tack vare sitt kontextfönster med 400 000 tokens kan den hantera långa frågor, vilket gör det möjligt att analysera flera dokument samtidigt.</p>",
+                "fyi": "<p>Systemet använder en ny säkerhetsmetod som kallas \"safe-completions\" för att förhindra obehörigt innehåll i svarsfasen snarare än när förfrågan görs.</p>\n<p>Även om det är en mindre version är den mycket konkurrenskraftig mot den ledande GPT-5-modellen på många riktmärken, särskilt inom det medicinska området.</p>",
+                "size_desc": "<p>Mini-modellen är en mer kompakt (medelstor, enligt uppskattningar) version av GPT-5-systemet. Den är utformad för en bra balans mellan prestanda och kostnad, tack vare ett routingsystem som väljer metod för specifika uppgifter. Arkitekturen är sannolikt baserad på en \"mix of experts\" (MoE), vilket innebär att endast en del av parametrarna aktiveras för varje fråga. Modellerna är dock sannolikt mycket stora och kräver flera kraftfulla grafikkort för inferens.</p>"
+            },
+            "GPT 5 Nano": {
+                "desc": "<p>GPT-5 Nano är den minsta och snabbaste versionen av GPT-5s resonemangsmodell. Den är utformad för sammanhang där mycket låg latens eller kostnad krävs. Tack vare sitt kontextfönster på 400 000 tokens kan den acceptera långa frågor, vilket gör det möjligt att analysera flera dokument samtidigt.</p>",
+                "fyi": "<p>Systemet använder en ny säkerhetsmetod som kallas \"safe-completions\" för att förhindra obehörigt innehåll i svarsfasen snarare än när förfrågan görs.</p>",
+                "size_desc": "<p>Nano-modellen är den mest kompakta i GPT-5-familjen (den hamnar en ligt uppskattningar i kategorin små modeller). Den väljs av routingsystemet för frågor som kräver mycket låg latens och omedelbara svar. Dess arkitektur är sannolikt baserad på en \"Mixture of Experts\" (MoE), vilket möjliggör bättre energieffektivitet och prestanda, även på frågor som kräver snabba svar.</p>"
+            },
+            "GPT OSS-120B": {
+                "desc": "<p>Den större av OpenAI:s två första halvöppna modeller sedan GPT-2. Den skapades som svar på det växande antalet aktörer som använder öppen källkod, däribland Meta (LLaMA) och Mistral, och är en kraftfull resonemangsmodell, särskilt för komplexa uppgifter och i \"agentiska\" miljöer. </p>",
+                "fyi": "<p>Den här modellen kan köras på en enda 80 GB GPU (som NVIDIA H100). Den har ett kontextfönster på 131 000 tokens, vilket gör den lämplig för att analysera stora dokument.</p>\n<p> I modellkonfigurationerna är det möjligt att välja mellan tre resonemangsnivåer (<em>låg</em>, <em>medel</em> och <em>hög</em>) vilket avgör modellens utförlighet.</p>",
+                "size_desc": "<p>Arkitekturen är baserad på principen \"mixture of experts\" (MoE), vilket möjliggör större energieffektivitet genom att endast aktivera en del av parametrarna (5,1 miljarder per token) för varje fråga. Det är en resonemangsmodell, så dess energiförbrukning är högre eftersom den genererar en intern tankekedja innan den ger det slutgiltiga svaret. Den har ett kontextfönster på 131 000 tokens, vilket gör den lämplig för att analysera stora dokument.</p>"
+            },
+            "GPT OSS-20B": {
+                "desc": "<p>Den mindre av OpenAI:s två halvöppna modeller. Den designades som svar på konkurrens från öppen källkod och är avsedd för användningsfall som kräver låg latens samt lokala eller specialiserade fall.</p>",
+                "fyi": "<p>Den här modellen kan köras lokalt på en avancerad bärbar dator med endast 16 GB VRAM (eller system-RAM). Detta gör den till ett mycket tillgängligt alternativ för utvecklare.</p>\n<p> I modellkonfigurationen är det möjligt att välja mellan tre resonemangsnivåer (<em>låg</em>, <em>medel</em> och <em>hög</em>) vilket avgör modellens utförlighet.</p>",
+                "size_desc": "<p>Med 20 miljarder parametrar tillhör denna modell kategorin medelstora modeller. Arkitekturen är baserad på \"mixture of experts\" (MoE), vilket möjliggör större energieffektivitet genom att endast aktivera en del av parametrarna (3,6 miljarder per token) för varje fråga. Det är en resonemangsmodell, vilket resulterar i högre energiförbrukning eftersom den genererar en intern tankekedja innan den ger det slutgiltiga svaret. Den har ett kontextfönster på 131 000 tokens, vilket gör den lämplig för att analysera stora dokument.</p>"
+            },
+            "GPT-4.1 Mini": {
+                "desc": "<p>En lättviktsversion av GPT 4.1, men fortfarande i kategorin stora modeller, utformad för att hålla nere kostnaderna samtidigt som den förblir konkurrenskraftig på de flesta uppgifter. Modellen stöder mycket långa frågor, vilket gör den lämplig för användning vid dokumentkorpusanalys.</p>",
+                "fyi": "<p>Detta är en destillerad version av en större modell, med partiell kunskapsöverföring. Den kan bearbeta text, bilder och ljud. Dess kontextfönster kan nå upp till 1 miljon tokens, vilket gör den särskilt lämplig för att analysera mycket långa korpusar eller koddatabaser.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en medelstor modell som kräver ett kraftfullt grafikkort för att fungera. Den förmodade arkitekturen Mixture of Experts (MoE) aktiverar dock endast en delmängd av parametrar vid varje token, vilket begränsar dess energiavtryck. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens.</p>"
+            },
+            "Gemini 2.5 Flash": {
+                "desc": "<p>Stor multimodal och flerspråkig modell med två svarsmetoder: Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att generera det slutliga svaret direkt.</p>",
+                "fyi": "<p>Denna modell är baserad på en \"Mixture of Experts\"-arkitektur (MoE) och har destillerats genom att endast behålla en approximation av förutsägelserna från lärarmodellen – Gemini 2.5 Pro. Den har tränats på en TPUv5p-arkitektur som innehåller möjligheten att fortsätta träningen automatiskt även vid träningsfel, datakorruption eller minnesproblem.</p>\n<p>Gemini 2.5 Flash stöder kontexter med upp till 1 miljon tokens och tre timmar videoinnehåll. Optimerad bildbehandling möjliggör bearbetning av ungefär tre gånger längre video i samma kontextfönster; endast 66 visuella tokens behövs för att generera en bildruta, jämfört med 258 tidigare. Denna modell har också inbyggt stöd för att generera ljud för dialog och talsyntes.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en stor modell som kräver flera kraftfulla grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiförbrukning. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens. Dess kontextfönster sträcker sig upp till 1 miljon tokens, vilket gör att den kan bearbeta mycket stora dokumentkorpusar.</p>"
+            },
+            "Gemma 3 12B": {
+                "desc": "<p>Liten multimodal modell lämplig för vanliga uppgifter som frågor och svar, sammanfattningar och bildtolkning.</p>",
+                "fyi": "<p>Den bearbetar text och bilder och kan köras lokalt på kraftfulla bärbara datorer eller servrar med bara ett grafikkort. Den har tränats för att kunna interagera med externa verktyg (till exempel webbsökning) via funktionsanrop, vilket gör den användbar i agentsammanhang.</p>",
+                "size_desc": "<p>Med 12 miljarder parametrar är det en av de minsta modellerna. Den kan användas lokalt på en arbetsstation för att bevara datasekretessen, eller på en billig server för att begränsa kostnaderna jämfört med en större modell.</p>\n<p>Dess kontextfönster kan innehålla upp till 128 000 tokens, vilket gör det enkelt att bearbeta långa dokument.</p>"
+            },
+            "Gemma 3 27B": {
+                "desc": "<p>Medelstor, multimodal modell lämplig för vanliga uppgifter som frågor och svar, sammanfattningar och bildtolkning.</p>",
+                "fyi": "<p>Den kan bearbeta text och bilder på en server utrustad med ett enda kraftfullt grafikkort. Den har tränats för att kunna interagera med externa verktyg (internetsökning etc.) via funktionsanrop, vilket gör den användbar i agentsammanhang.</p>",
+                "size_desc": "<p>Med 27 miljarder parametrar tillhör den kategorin medelstora modeller. Den kan driftsättas på en server med ett enda grafikkort.</p>\n<p>Den accepterar kontexter på upp till 128 000 tokens, vilket gör den lämplig för att analysera långa dokument.</p>"
+            },
+            "Gemma 3 4B": {
+                "desc": "<p>Mycket liten, kompakt, multimodal modell lämplig för vanliga uppgifter som frågor och svar, sammanfattningar och bildtolkning.</p>",
+                "fyi": "<p>Den kan bearbeta text och bilder medan den körs på enheter med låg strömförbrukning, inklusive telefoner och läsplattor. Den har tränats att interagera med externa verktyg (till exempel webbsökning) via funktionsanrop, vilket gör den användbar i agentsammanhang.</p>",
+                "size_desc": "<p>Med 4 miljarder parametrar är det en av de allra minsta modellerna. Den kan användas lokalt för att bevara datasekretessen, eller på en server för att begränsa kostnaderna jämfört med en större modell.</p>\n<p>Dess kontextfönster kan nå 128 000 tokens, vilket gör att den kan analysera långa dokument.</p>"
+            },
+            "Gemma 3n 4B": {
+                "desc": "<p>Mycket liten, kompakt modell med flera lägen, utformad för att köras lokalt på en dator eller smartphone, utan behov av en server. Den kan anpassa sin strömförsörjning efter kapacitet och behov.</p>",
+                "fyi": "<p>Denna modell kan bearbeta text, bilder och ljud. Den är baserad på MatFormer-arkitekturen och ett PLE-cachesystem (per-layer embeddings), vilket endast aktiverar de användbara parametrarna beroende på uppgiften och anpassar sig till kapaciteten hos de maskiner som modellen körs på.</p>",
+                "size_desc": "<p>Med 4 miljarder parametrar är det en av de minsta modellerna som finns tillgängliga. Den kan användas lokalt på en dator eller smartphone för att upprätthålla datasekretessen, eller på en server för att begränsa kostnaderna jämfört med en större modell.</p>\n<p>Dess kontextfönster går upp till 32 000 tokens.</p>"
+            },
+            "Grok 3 Mini": {
+                "desc": "<p>En lättare version av Grok 3-modellen, vilket minskar kostnaderna samtidigt som den bibehåller god prestanda för många uppgifter. Den kan simulera en resonemangsfas innan den ger ett slutgiltigt svar.</p>",
+                "fyi": "<p>Grok 3 Mini är en destillerad version av Grok 3. Den är närliggande vad gäller funktioner, samtidigt som den är snabbare och billigare.\nModellen erbjuder två lägen: ett tankeläge med stegvis resonemang för komplexa problem, och ett snabbläge för omedelbara svar.\nDess kontextfönster når 131 000 tokens, vilket gör den lämplig för att analysera långa dokument.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Trots namnet är Grok 3 Mini sannolikt en mycket stor modell som kräver flera kraftfulla grafikkort för att köras. Dessutom innehåller den en valfri resonemangsfas som involverar längre genereringstider och därmed högre strömförbrukning. Den förmodade Mixture of Experts (MoE)-arkitekturen aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiavtryck. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens.</p>"
+            },
+            "Hermes 3 405B": {
+                "desc": "<p>Mycket stor modell omtränad från Llama 3.1 405B, justerad för att bättre möta användarnas krav och underlätta användningen av externa verktyg.</p>",
+                "fyi": "<p> Denna modell är resultatet av omträning av parameteruppsättningen för Llama 3.1 405B för att göra dess beteende mindre begränsat och bättre ta hänsyn till nyanserna i användar- och systemprompter, vilket ger användaren större kontroll över modellens \"personlighet\" och beteende. Specifika resonemangsfunktioner som <strong><code>&lt;SCRATCHPAD&gt;</code></strong>, <strong><code>&lt;REASONING&gt;</code></strong> och <strong><code>&lt;THINKING&gt;</code></strong> har lagts till för att simulera resonemang kring komplexa uppgifter. Träningen använde verktyget AdamW (inlärningshastighet på 3.5×10⁻⁶), vilket hjälper modellen att lära sig effektivt genom att gradvis justera dess parametrar. Sedan finjusterades den med en metod som kallas DPO (direkt preferensoptimering), vilket förbättrar dess svar baserat på specifika preferenser. För att göra denna träning enklare och snabbare användes LoRA-adaptrar; dessa är mindre moduler som bara modifierar en del av modellen, vilket undviker behovet av att omarbeta alla parametrar samtidigt.</p>",
+                "size_desc": "<p>Med 405 miljarder parametrar hamnar den här modellen i kategorin mycket stora modeller. Den kräver en server utrustad med flera kraftfulla grafikkort, vilket resulterar i betydande driftskostnader.</p>"
+            },
+            "Kimi K2": {
+                "desc": "<p>Kimi K2, som utvecklades av Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), ett Pekingbaserat företag, är en mycket stor kodorienterad och agentbaserad modell. Den är känd för utvecklingsuppgifter i agentiska sammanhang (t.ex. i Cursor eller Windsurf). Den har inte ett explicit \"resonemangsläge\", men för stora uppgifter delar den upp sitt svar i steg och växlar mellan åtgärder (verktygsanrop) och textskrivning.</p>",
+                "fyi": "<p>För att stabilisera träning i mycket stor skala introducerade Moonshot AI MuonClip, en \"hastighetsbegränsare\" för träningsfasen som möjliggör träning av en modell av denna storlek och på en samling av 15,5 biljoner tokens utan att träningen spårar ur.</p>\n<p>På datasidan har K2 ofta arbetat med en \"simulator\" med riktiga verktyg (webbläsare, terminal, kodexekverare, API:er etc.). På samma sätt som en pilot i en simulator lär sig modellen genom att planera, försöka, misslyckas, och försöka igen, och att kedja ihop flera åtgärder för att uppnå ett mål. Som ett resultat är den särskilt bra på att kombinera verktyg och utföra uppgifter i flera steg.</p>",
+                "size_desc": "<p>Med 1 biljon parametrar är den här modellen en av de största. Tack vare en Mixture of Experts-arkitektur (MoE) är den effektivare än vissa andra modeller av liknande storlek, men den kräver fortfarande en server med flera mycket kraftfulla grafikkort. Dess kontextfönster går upp till 128 000 tokens, vilket gör att den kan bearbeta ganska långa dokument.</p>"
+            }
         }
     },
     "header": {
