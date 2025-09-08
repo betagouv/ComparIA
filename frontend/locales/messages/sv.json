@@ -610,11 +610,97 @@
             },
             "Ministral": {
                 "desc": "<p>Liten flerspråkig modell utformad för att köras på en bärbar dator utan serveranslutning, samtidigt som den erbjuder bra funktioner för textsyntes, enkla frågor och verktygsanvändning.</p>",
-                "fyi": "<p>Denna modell använder en GQA-metod (Grouped query attention) för att begränsa den analyserade texten vid varje generationssteg och förbättra hastighet och minnesanvändning. Beräkningstiderna minskas utan att kvaliteten påverkas. Uppmärksamhetsmekanismen förbättras genom att man använder fönster i olika storlekar, vilket möjliggör hantering av stora kontexter (upp till 128 000 tokens) samtidigt som modellen förblir lättviktig. Den stora tokeniseraren (V3-Tekken) komprimerar språk och kod bättre, vilket förbättrar dess prestanda för flerspråkiga uppgifter.</p>"
+                "fyi": "<p>Denna modell använder en GQA-metod (Grouped query attention) för att begränsa den analyserade texten vid varje generationssteg och förbättra hastighet och minnesanvändning. Beräkningstiderna minskas utan att kvaliteten påverkas. Uppmärksamhetsmekanismen förbättras genom att man använder fönster i olika storlekar, vilket möjliggör hantering av stora kontexter (upp till 128 000 tokens) samtidigt som modellen förblir lättviktig. Den stora tokeniseraren (V3-Tekken) komprimerar språk och kod bättre, vilket förbättrar dess prestanda för flerspråkiga uppgifter.</p>",
+                "size_desc": "<p>Med sina 8 miljarder parametrar tillhör den här modellen kategorin små modeller (mellan 7 och 20 miljarder parametrar). Den kan köras lokalt på en ganska kraftfull dator, vilket säkerställer datakonfidentialitet, eller på en server med ett enda grafikkort för att begränsa infrastrukturkostnaderna.</p>"
+            },
+            "Mistral Large 2": {
+                "desc": "<p>Stor modell utformad för att hantera komplexa frågor och uppgifter, till exempel kodgenerering, verktygsanvändning, analys av långa dokument eller domänspecifik språkförståelse.</p>",
+                "fyi": "<p>Denna modell tränades med en hög andel koddata (över 80 programmeringsspråk) och matematik, vilket förbättrar dess förmåga att lösa komplexa problem och använda externa verktyg.</p>",
+                "size_desc": "<p>Med 123 miljarder parametrar tillhör den här modellen kategorin stora modeller. Den kräver en server utrustad med minst ett kraftfullt grafikkort, vilket innebär en betydande driftskostnad. Den har ett kontextfönster på upp till 128 000 tokens, användbart för att analysera långa dokument.</p>"
+            },
+            "Mistral Medium 2506": {
+                "desc": "<p>En medelstor, flerspråkig, multimodal modell som är billig jämfört med andra modeller som erbjuder liknande prestanda. Den är särskilt intressant för programmeringsuppgifter eller resonemangsuppgifter, såsom matematik.</p>",
+                "fyi": "<p>Denna modell utformades för att leverera stabil prestanda till en lägre kostnad än proprietära eller halvöppna modeller. Särskild uppmärksamhet ägnades åt professionell användningsdata under träningen. Den presterar särskilt bra jämfört med andra modeller av liknande storlek för kodgenerering och matematiska uppgifter.</p>\n<p> Denna modell användes som grund för träning av Magistral Medium, en resonemangsmodell.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en stor modell som kräver flera kraftfulla grafikkort för att fungera. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. </p>\n<p> Den har ett kontextfönster på upp till 128 000 tokens, vilket är användbart för att analysera långa dokument. </p>"
+            },
+            "Mistral Medium 3.1": {
+                "desc": "<p>En medelstor, flerspråkig, multimodal modell som är billig jämfört med andra modeller som erbjuder liknande prestanda. Den är särskilt intressant för programmeringsuppgifter eller resonemangsuppgifter, såsom matematik.</p>",
+                "fyi": "<p>Denna modell utformades för att leverera stabil prestanda till en lägre kostnad än proprietära eller halvöppna modeller. Särskild uppmärksamhet ägnades åt professionell användningsdata under träningen. Den presterar särskilt bra jämfört med andra modeller av liknande storlek för kodgenerering och matematiska uppgifter.</p>\n<p>Denna modell användes som grund för träning av Magistral Medium, en resonemangsmodell.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en stor modell som kräver flera kraftfulla grafikkort för att fungera. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens.</p>\n<p>Den har ett kontextfönster på upp till 128 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+            },
+            "Mistral Saba": {
+                "desc": "<p>Medelstor modell utformad för en detaljerad språklig och kulturell förståelse av språk i Mellanöstern och Sydasien, inklusive arabiska, tamil och malayalam.</p>",
+                "fyi": "<p>Träningen fokuserade främst på texter på arabiska, tamil och malayalam. Regionala korpusar valdes ut för att återspegla autentisk användning, inklusive syntax, register och dialektala varianter. För tokenisering (uppdelning av texten i grundläggande enheter som modellen kan bearbeta) användes en specialiserad strategi anpassad för språk med komplex morfologi som arabiska. Optimeringar syftar till att undvika överdriven ordfragmentering och maximera ordförrådstäckningen.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en medelstor modell som kräver åtminstone ett kraftfullt grafikkort. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens.</p>\n<p>Modellen har ett kontextfönster på upp till 128 000 tokens, lämpligt för att analysera långa dokument.</p>"
+            },
+            "Mistral Small 3.2": {
+                "desc": "<p>Trots namnet är detta en medelstor modell. Den är multimodal (kan bearbeta text och bilder) och utmärker sig genom sin noggranna frågebehandling och sin förmåga att använda avancerade verktyg.</p>",
+                "fyi": "<p>Version 3.2 av denna modell är optimerad för att generera strukturerad utdata, särskilt i JSON, samtidigt som den begränsar upprepning och oönskat beteende under långa genereringstider. Den bearbetar både text- och bilddata, vilket gör det möjligt att analysera dem tillsammans.</p>",
+                "size_desc": "<p>Med 32 miljarder parametrar anses denna modell medelstor. Den kan köras på en server med ett enda kraftfullt grafikkort, vilket begränsar infrastrukturkostnaderna. Den har ett kontextfönster på upp till 128 000 tokens, användbart för att analysera långa dokument.</p>"
+            },
+            "Nemotron Llama 3.1 70B": {
+                "desc": "<p>Stor modell baserad på Llama 3.1 70B. Denna omtränade (fine-tune) version är ofta mer detaljerad och ger mer strukturerade svar.</p>",
+                "fyi": "<p>Denna modell är baserad på omträning av Llama 3.1 70B, därav dess källmodell i namnet. Den introducerar förbättringar tack vare förstärkningsinlärning med mänsklig feedback (RLHF) och REINFORCE-algoritmen: Modellen utforskar olika svar, får feedback, och justerar sedan gradvis sina val för att bättre möta användarnas förväntningar. Denna anpassningsprocess används ofta när modellen är avsedd att anpassa sig till mänskliga preferenser eller för att optimera sina svar enligt specifika kriterier.</p>",
+                "size_desc": "<p>Med 70 miljarder parametrar tillhör den här modellen kategorin stora modeller. Den kräver flera kraftfulla grafikkort för att fungera, vilket resulterar i betydande driftskostnader.</p>"
+            },
+            "Phi-4": {
+                "desc": "<p>Liten, flerspråkig modell som kan använda verktyg och presterar bra på komplexa uppgifter som logik, matematik och kod, samtidigt som den förblir kompakt.</p>",
+                "fyi": "<p>Denna modell använder TikTok för tokenisering, vilket förbättrar dess kapacitet i ett flerspråkigt sammanhang. Den tränades på totalt 9,8 <strong>biljoner</strong> tokens, varav 400 miljarder specifikt hämtades från högkvalitativ syntetisk data och resten från filtrerad organisk data. Träningen ägde rum på 1 920 H100-grafikkort i 21 dagar. Innovativa tekniker som självbedömning – under vilken modellen kritiserar och skriver om sina svar – och instruktionsomvändning användes för att stärka dess förståelse av instruktioner och resonemangsförmåga.</p>",
+                "size_desc": "<p>Med 14 miljarder parametrar tillhör den här modellen kategorin små modeller. Den kan distribueras lokalt på en tillräckligt kraftfull dator, eller lagras på en server med ett enda grafikkort, vilket minskar infrastrukturkostnader. Kontextfönstret på 16 000 tokens kan vara begränsande för att analysera mycket långa dokument.</p>"
+            },
+            "Qwen 2.5 Coder 32B": {
+                "desc": "<p>Medelstor modell specialiserad på programmering och användning av externa verktyg (webbsökningar, interaktioner med programvara etc.).</p>",
+                "fyi": "<p>Denna modell har tränats på 5,5 biljoner tokens och över 92 programmeringsspråk, inklusive specialiserade kodningsspråk som Haskell och Racket.</p>\n<p>Tack vare sin kodprestanda kan den hantera anrop till externa verktyg väl, vilket är användbart för agentanvändning.</p>",
+                "size_desc": "<p>Med 32 miljarder parametrar betraktas den här modellen som medelstor. Den kan köras på en server utrustad med ett enda kraftfullt grafikkort, vilket begränsar infrastrukturkostnaderna.</p>\n<p>Dess kontextfönster på 128 000 tokens gör att den kan bearbeta långa dokument.</p>"
+            },
+            "Qwen 2.5 max 0125": {
+                "desc": "<p>Mycket stor, specialiserad resonemangsmodell med hög prestanda inom matematik, kodning och logisk problemlösning.</p>",
+                "fyi": "<p>Modellens exakta storlek är okänd, men det är troligtvis en mycket stor modell som kräver servrar utrustade med flera grafikkort. Arkitekturen Mixture of Experts (MoE) aktiverar dock bara en delmängd av parametrarna vid varje token, vilket begränsar dess energiavtryck. Storleksuppskattningar bygger på indirekta index som inferenskostnader och svarslatens.</p>",
+                "size_desc": "<p>Denna proprietära modell, baserad på en <strong>MoE-arkitektur</strong>, har tränats på <strong>mer än 20 biljoner tokens</strong>. Den är utformad för uppgifter som kräver flera tankesteg.</p>\n<p>Kontextfönstret går upp till 32 000 tokens.</p>"
+            },
+            "Qwen 3 30B A3B": {
+                "desc": "<p>Flerspråkig modell i medelstorlek.</p>",
+                "fyi": "<p>Denna MoE-modell (Mixture of Experts) har en konfiguration med totalt 128 experter, med endast 8 experter aktiverade per token, vilket möjliggör snabbare och effektivare inferens. Den använder ett system som kallas <em>global-batch</em> för att optimera arbetsfördelningen mellan experterna, så att de alla används på ett balanserat sätt.</p>\n<p>Till skillnad från andra modeller som Qwen 2.5-MoE, som återanvänder samma experter över flera lager i nätverket, tilldelar Qwen 3 30B A2B unika experter till varje lager. I praktiken innebär detta att experter från det första lagret aldrig återanvänds i efterföljande lager – varje nivå i modellen har sin egen uppsättning specialiserade experter. Denna arkitektur gör det möjligt för varje expert att fokusera uteslutande på uppgifter som är specifika för deras position i det neurala nätverket, vilket resulterar i mer detaljerad specialisering och optimerad prestanda för varje steg i informationsbearbetningen.</p>",
+                "size_desc": "<p>Med 30 miljarder parametrar faller den här modellen kategorin medelstora modeller. Den kan köras på en server med ett enda kraftfullt grafikkort, vilket begränsar infrastrukturkostnaderna. Dessutom aktiverar Mixture of Experts (MoE)-arkitekturen endast en del av parametrarna vid varje token, vilket begränsar dess energiavtryck.</p>"
+            },
+            "Qwen 3 32B": {
+                "desc": "<p>Medelstor flerspråkig modell med två svarsmetoder. Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att direkt generera det slutliga svaret.</p>",
+                "fyi": "<p>Denna modell tränades på en mycket stor datamängd: 36 biljoner tokens på 119 språk. Träningen genomfördes i tre steg. Modellen lärde sig först från 30 miljarder tokens med en kontext på 4 000 tokens. Sedan lades 5 miljarder tokens till för att stärka dess faktakunskaper. Slutligen exponerades den för en specifik korpus för att bättre hantera mycket långa texter. Som ett resultat har den ett kontextfönster på 128 000 tokens i slutet av träningen, vilket är användbart för att läsa och analysera långa dokument.</p>",
+                "size_desc": "<p>Med 32 miljarder parametrar tillhör den här modellen kategorin medelstora modeller. Den kan köras på en server utrustad med ett enda kraftfullt grafikkort, vilket begränsar infrastrukturkostnaderna.</p>\n<p>Dess kontextfönster med 128 000 tokens gör att den kan bearbeta långa dokument.</p>"
+            },
+            "o4 mini": {
+                "desc": "<p>Mycket stor resonemangsmodell, lämplig för komplexa vetenskapliga och tekniska uppgifter och frågor.</p>",
+                "fyi": "<p>Denna modell är mycket kraftfull för att analysera bilder och grafer. Den har också tränats att interagera med andra system via funktionsanrop, vilket gör den lämplig för agentiska användningsfall. Som en mycket kraftfull resonemangsmodell kan den användas för att distribuera uppgifter mellan flera mindre och/eller mer specialiserade modeller. Den har ett kontextfönster på upp till 200 000 tokens, vilket gör det enkelt att analysera långa dokument.</p>",
+                "size_desc": "<p>Trots namnet och det faktum att den exakta storleken är okänd är o4 mini troligtvis en stor modell, som kräver servrar utrustade med flera grafikkort. Resonemangsmodeller som o4 mini kräver mer tid att svara eftersom en resonemangsfas föregår genereringen av det slutliga resultatet, vilket ökar deras energiförbrukning. Den antagna Mixture of Experts (MoE)-arkitekturen aktiverar dock bara en delmängd av parametrarna för att generera varje token, vilket begränsar dess energiavtryck. Storleksuppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens.</p>"
+            },
+            "qwq 32B": {
+                "desc": "<p>Medelstor resonemangsmodell specialiserad på och mycket effektiv inom matematik, kodgenerering och logisk problemlösning.</p>",
+                "fyi": "<p>Denna modell tränades med en förstärkningsinlärningsmetod (RL) för att optimera hanteringen av matematiska problem och programmeringsuppgifter. Den använder flera nya tekniker för att förbättra kvaliteten på svaren. Till exempel gör RoPE-metoden (Rotary Position Embedding) det möjligt att bättre förstå ordföljden i en text. Aktiveringsfunktionen SwiGLU är ett mer effektivt sätt att hantera beräkningar inom det neurala nätverket, vilket hjälper modellen att producera mer tillförlitliga svar. Justeringsmetoden QKV (Query Key Value-bias) förbättrar hur modellen identifierar och väljer viktig information. Slutligen, tack vare YaRN (Yet another RoPE extensioN method), kan den bearbeta mycket långa texter på upp till 130 000 tokens, vilket gör att den kan arbeta med komplexa eller mycket detaljerade dokument.</p>",
+                "size_desc": "<p>Med 32 miljarder parametrar faller denna modell i kategorin medelstora modeller. Den kan köras på en server med ett enda kraftfullt grafikkort, vilket begränsar infrastrukturkostnaderna. Resonemangsmodeller av denna typ tar dock längre tid att producera ett svar eftersom en resonemangsfas föregår genereringen av det slutliga resultatet, vilket ökar energiförbrukningen.</p>"
             }
         }
     },
     "header": {
+        "banner": "Jämföraren finns nu tillgänglig på litauiska 🇱🇹, svenska 🇸🇪 och danska 🇩🇰!",
+        "chatbot": {
+            "newDiscussion": "Ny diskussion",
+            "step": "Steg",
+            "stepOne": {
+                "description": "Var uppmärksam på både innehåll och form, och utvärdera sedan varje svar",
+                "title": "Vad tycker du om svaren?"
+            },
+            "stepTwo": {
+                "description": "Upptäck vilken miljöpåverkan dina diskussioner har för varje modell",
+                "title": "Modellerna avslöjas!"
+            }
+        },
+        "help": {
+            "link": {
+                "content": "Hjälp oss att förbättra compar:IA",
+                "title": "Ge din åsikt om jämförelseprogrammet (öppnar ett nytt fönster)"
+            }
+        },
+        "homeTitle": "Hem – compar:IA",
         "subtitle": "Jämförelseverktyg för konversations-AI",
         "title": {
             "compar": "jämföra",
