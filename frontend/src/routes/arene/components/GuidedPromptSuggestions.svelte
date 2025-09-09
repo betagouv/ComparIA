@@ -112,7 +112,7 @@
 </script>
 
 <div class="fr-container px-0!">
-  <h4 class="text-dark-grey text-base! md:text-base! mb-4! md:mb-5!">
+  <h4 class="text-dark-grey text-[14px]! md:text-base! mb-4! md:mb-5!">
     <strong>{m['arenaHome.suggestions.title']()}</strong>
   </h4>
 

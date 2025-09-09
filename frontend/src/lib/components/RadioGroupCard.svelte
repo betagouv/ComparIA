@@ -22,6 +22,14 @@
     item,
     ...props
   }: RadioGroupCardProps = $props()
+
+  function onCardClick(e: MouseEvent, v: Value) {
+    // Deselect if already selected
+    if (value === v) {
+      value = undefined
+      ;(e.target as HTMLInputElement)?.blur()
+    }
+  }
 </script>
 
 <div {...props} {id} class={['grid gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-4', props.class]}>
@@ -36,12 +44,13 @@
       {disabled}
       class="sr-only"
       onchange={() => onChange?.(option.value)}
+      onclick={(e) => onCardClick(e, option.value)}
     />
 
     <label
       for="{id}-{option.value}"
       class={[
-        'cg-border rounded-sm! text-dark-grey! px-4! py-3! md:py-5! flex items-center bg-white md:flex-col md:items-start',
+        'cg-border text-dark-grey! px-4! py-3! md:py-5! flex items-center bg-white text-sm font-medium md:flex-col md:items-start',
         option.class
       ]}
     >
