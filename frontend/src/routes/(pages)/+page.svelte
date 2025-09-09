@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { Button, Icon, Link } from '$components/dsfr'
-  import FAQContent from '$components/FAQContent.svelte'
+  import { Accordion, AccordionGroup, Button, Icon, Link } from '$components/dsfr'
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
@@ -112,6 +111,20 @@
       sv: []
     } satisfies Record<Locale, HTMLImgAttributes[]>
   )[locale]
+
+  const reducedFAQ = (
+    [
+      { id: 'usage', index: '2' },
+      { id: 'models', index: '1' },
+      { id: 'datasets', index: '2' },
+      { id: 'ecology', index: '1' },
+      { id: 'i18n', index: '1' }
+    ] as const
+  ).map(({ id, index }) => ({
+    id,
+    title: m[`faq.${id}.questions.${index}.title`](),
+    desc: m[`faq.${id}.questions.${index}.desc`]()
+  }))
 </script>
 
 <main id="content" class="">
@@ -350,7 +363,13 @@
     <div class="fr-container">
       <h3 class="mb-8! lg:mb-10! text-center">{m['home.faq.title']()}</h3>
 
-      <FAQContent />
+      <AccordionGroup>
+        {#each reducedFAQ as q (q.id)}
+          <Accordion id={q.id} label={q.title}>
+            {@html sanitize(q.desc)}
+          </Accordion>
+        {/each}
+      </AccordionGroup>
 
       <div class="mt-8 text-center lg:mt-11">
         <Link button size="lg" href="/product/faq" text={m['home.faq.discover']()} />
