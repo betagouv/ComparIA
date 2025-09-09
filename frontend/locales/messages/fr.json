@@ -127,7 +127,6 @@
                 "systemSub": "Utilise les paramètres système"
             },
             "title": "Paramètres d'affichage"
-
         }
     },
     "datasets": {
@@ -184,7 +183,6 @@
         "unknown": "Une erreur est survenue"
     },
     "faq": {
-        
         "datasets": {
             "title": "Jeu de données",
             "questions": {
@@ -935,6 +933,7 @@
                 "subTitle": "Vous ne pouvez pas les réutiliser pour entraîner d’autres modèles",
                 "title": "Réutilisation des résultats générés"
             },
+            "title": "Conditions d'utilisation",
             "types": {
                 "allowed": "Autorisé",
                 "conditions": "Sous conditions",
