@@ -175,23 +175,19 @@
       />
     </div>
 
-    <dialog
-      aria-labelledby="fr-modal-title-share-modal"
-      id="share-modal"
-      class="fr-modal"
-    >
+    <dialog aria-labelledby="fr-modal-title-share-modal" id="share-modal" class="fr-modal">
       <div class="fr-container fr-container--fluid fr-container-md">
         <div class="fr-grid-row fr-grid-row--center">
           <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-            <div class="fr-modal__body">
+            <div class="fr-modal__body rounded-xl">
               <div class="fr-modal__header">
-                <button
-                  class="fr-btn--close fr-btn"
+                <Button
+                  variant="tertiary-no-outline"
+                  text={m['words.close']()}
                   title={m['closeModal']()}
                   aria-controls="share-modal"
-                >
-                  {m['words.close']()}
-                </button>
+                  class="fr-btn--close"
+                />
               </div>
               <div class="fr-modal__content">
                 <h6 class="mb-3! text-dark-grey!">

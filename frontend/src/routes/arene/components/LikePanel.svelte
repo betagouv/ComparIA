@@ -173,16 +173,16 @@
     <div class="fr-container fr-container--fluid fr-container-md">
       <div class="fr-grid-row fr-grid-row--center">
         <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-          <div class="fr-modal__body">
+          <div class="fr-modal__body rounded-xl">
             <div class="fr-modal__header">
-              <button
-                class="fr-btn--close fr-btn"
+              <Button
+                variant="tertiary-no-outline"
+                text={m['words.close']()}
                 title={m['closeModal']()}
                 aria-controls={modalId}
+                class="fr-btn--close"
                 onclick={() => onCommentChange(comment)}
-              >
-                {m['words.close']()}
-              </button>
+              />
             </div>
             <div class="fr-modal__content">
               <p id="{modalId}-label" class="modal-title">{m['vote.comment.add']()}</p>

@@ -118,15 +118,15 @@
         class:fr-col-md-10={showModelsSelection}
         class:fr-col-md-5={!showModelsSelection}
       >
-        <div class="fr-modal__body">
+        <div class="fr-modal__body rounded-xl">
           <div class="fr-modal__header">
-            <button
-              class="fr-btn--close fr-btn"
+            <Button
+              variant="tertiary-no-outline"
+              text={m['words.close']()}
               title={m['closeModal']()}
               aria-controls="modal-mode-selection"
-            >
-              {m['words.close']()}
-            </button>
+              class="fr-btn--close"
+            />
           </div>
           <div class="fr-modal__content pb-8!">
             {#if showModelsSelection == false}

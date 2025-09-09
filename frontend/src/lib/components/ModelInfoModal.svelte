@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge, Icon } from '$components/dsfr'
+  import { Badge, Button, Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
@@ -64,9 +64,13 @@
           class="fr-modal__body bg-light-grey! dark:border! dark:border-grey! lg:max-h-[90vh]! rounded-xl"
         >
           <div class="fr-modal__header pb-0!">
-            <button class="fr-btn--close fr-btn" title={m['closeModal']()} aria-controls={modalId}>
-              {m['words.close']()}
-            </button>
+            <Button
+              variant="tertiary-no-outline"
+              text={m['words.close']()}
+              title={m['closeModal']()}
+              aria-controls={modalId}
+              class="fr-btn--close"
+            />
           </div>
 
           {#if model}

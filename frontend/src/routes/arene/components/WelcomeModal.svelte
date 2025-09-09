@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from '$components/dsfr'
+  import { Button, Icon } from '$components/dsfr'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
 
@@ -28,17 +28,15 @@
   <div class="fr-container fr-container--fluid fr-container-md">
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-8 fr-col-lg-6">
-        <div class="fr-modal__body">
+        <div class="fr-modal__body rounded-xl">
           <div class="fr-modal__header">
-            <button
-              class="fr-btn--close fr-btn"
+            <Button
+              variant="tertiary-no-outline"
+              text={m['words.close']()}
               title={m['closeModal']()}
               aria-controls="fr-modal-welcome"
-              id="fr-modal-welcome-close"
-              onclick={onClose}
-            >
-              {m['words.close']()}
-            </button>
+              class="fr-btn--close"
+            />
           </div>
           <div class="fr-modal__content">
             <h1 id="fr-modal-title-modal-welcome" class="fr-modal__title">
