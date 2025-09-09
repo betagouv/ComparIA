@@ -701,10 +701,28 @@
             }
         },
         "homeTitle": "Hem – compar:IA",
+        "logoAlt": "Republiken Frankrike",
+        "menu": "Meny",
+        "startDiscussion": "Börja chatta",
         "subtitle": "Jämförelseverktyg för konversations-AI",
         "title": {
             "compar": "jämföra",
             "ia": "AI"
+        },
+        "votes": {
+            "count": "{count} röster",
+            "legend": "Teckenförklaring",
+            "objective": "Mål: {count}",
+            "tooltip": "Diskutera, rösta och hjälp oss att uppnå detta mål!<br /><strong>Dina röster är viktiga</strong> – de bidrar till compar:IA-datasetet som görs fritt tillgängligt för att förfina framtida modeller många olika språk.<br />Denna digitala allmänning bidrar till bästa <strong>respekt för den språkliga och kulturella mångfalden i framtida språkmodeller.</strong>"
+        }
+    },
+    "home": {
+        "europe": {
+            "desc": "Litauen, Sverige och Danmark ansluter sig till Frankrike genom att använda jämförelseprogrammet för att förfina framtida AI-modeller på sina nationella språk.",
+            "languages": {
+                "da": "på danska",
+                "fr": "på franska"
+            }
         }
     },
     "models": {
