@@ -119,7 +119,12 @@
         class:fr-col-md-5={!showModelsSelection}
       >
         <div class="fr-modal__body rounded-xl">
-          <div class="fr-modal__header">
+          <div
+            class={[
+              'fr-modal__header flex-col! bg-white',
+              { 'z-1 top-0 md:sticky': showModelsSelection }
+            ]}
+          >
             <Button
               variant="tertiary-no-outline"
               text={m['words.close']()}
@@ -127,57 +132,56 @@
               aria-controls="modal-mode-selection"
               class="fr-btn--close"
             />
-          </div>
-          <div class="fr-modal__content pb-8!">
-            {#if showModelsSelection == false}
-              <h6 id="modal-mode-selection-title" class="mb-3!">
-                {m['arenaHome.selectModels.question']()}
-              </h6>
-              <p class="mb-6!">{m['arenaHome.selectModels.help']()}</p>
 
+            <div class="mt-2 self-start">
+              {#if showModelsSelection == false}
+                <h6 id="modal-mode-selection-title" class="mb-3!">
+                  {m['arenaHome.selectModels.question']()}
+                </h6>
+                <p class="mb-6!">{m['arenaHome.selectModels.help']()}</p>
+              {:else}
+                <h6 id="modal-mode-selection" class="mb-3!">
+                  {m['arenaHome.compareModels.question']()}
+                </h6>
+                <p class="mb-0!">
+                  {m['arenaHome.compareModels.help']()}
+                </p>
+              {/if}
+            </div>
+          </div>
+          <div class="fr-modal__content pb-12! m-0!">
+            {#if showModelsSelection == false}
               <Dropdown
                 bind:mode
                 choices={modeChoices}
                 onOptionSelected={(mode) => (showModelsSelection = mode === 'custom')}
               />
             {:else}
-              <div in:fade>
-                <h6 id="modal-mode-selection" class="mb-3! flex flex-wrap gap-4 md:gap-6">
-                  {m['arenaHome.compareModels.question']()}
-                  <span class="text-primary">
-                    {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
-                  </span>
-                </h6>
-                <p class="mb-5! md:mb-8!">
-                  {m['arenaHome.compareModels.help']()}
-                </p>
-
-                <div>
-                  <ModelsSelection
-                    {models}
-                    bind:selection={modelsSelection}
-                    {toggleModelSelection}
-                  />
-                </div>
+              <div in:fade class="my-4">
+                <ModelsSelection {models} bind:selection={modelsSelection} {toggleModelSelection} />
               </div>
             {/if}
           </div>
           {#if showModelsSelection == true}
             <div class="fr-modal__footer p-4! md:px-5!">
-              <div
-                class="fr-btns-group fr-btns-group--right fr-btns-group--inline-lg fr-btns-group--icon-left"
-              >
+              <div class="flex w-full flex-col gap-4 md:flex-row">
                 <Button
                   text={m['words.back']()}
                   variant="tertiary"
-                  class="md:me-auto!"
+                  class="md:me-auto! w-full! md:w-auto!"
+                  icon="arrow-left-line"
                   onclick={() => (showModelsSelection = false)}
                 />
+
+                <p class="text-primary mb-0! font-bold md:self-center">
+                  {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
+                </p>
 
                 <Button
                   aria-controls="modal-mode-selection"
                   text={m['words.validate']()}
-                  class=""
+                  disabled={!modelsSelection.length}
+                  class="w-full! md:w-auto!"
                 />
               </div>
             </div>
