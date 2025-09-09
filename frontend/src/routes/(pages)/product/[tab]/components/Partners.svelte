@@ -1,6 +1,9 @@
 <script>
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
+
+  const locale = getLocale()
 </script>
 
 <div class="grid gap-8 lg:grid-cols-2">
@@ -10,21 +13,23 @@
       {m['product.partners.institution.title']()}
     </h2>
 
-    <div class="cl-logos">
-      <img
-        src="/orgs/cnnum.png"
-        alt="Conseil national du numérique"
-        title="Conseil national du numérique"
-        width="112px"
-      />
-      <img src="/orgs/etalab.svg" alt="Etalab" title="Etalab" width="240px" />
-      <img
-        src="/orgs/peren.svg"
-        alt="PEReN, Pôle d'expertise de la régulation numérique"
-        title="Pôle d'expertise de la régulation numérique (PEReN)"
-        width="240px"
-      />
-    </div>
+    {#if locale === 'fr'}
+      <div class="cl-logos">
+        <img
+          src="/orgs/cnnum.png"
+          alt="Conseil national du numérique"
+          title="Conseil national du numérique"
+          width="112px"
+        />
+        <img src="/orgs/etalab.svg" alt="Etalab" title="Etalab" width="240px" />
+        <img
+          src="/orgs/peren.svg"
+          alt="PEReN, Pôle d'expertise de la régulation numérique"
+          title="Pôle d'expertise de la régulation numérique (PEReN)"
+          width="240px"
+        />
+      </div>
+    {/if}
   </section>
 
   <section class="cg-border cl-card">
@@ -33,34 +38,36 @@
       {m['product.partners.diffusion.title']()}
     </h2>
 
-    <div class="cl-logos">
-      <img src="/orgs/cafe-ia.png" alt="Cafés de l'IA" title="Cafés IA" width="104px" />
-      <img
-        src="/orgs/latitudes.png"
-        alt="Latitudes"
-        title="Latitudes"
-        width="110px"
-        class="dark:invert"
-      />
-      <img src="/orgs/pix.svg" alt="Pix" title="Pix" width="60px" />
-      <img
-        src="/orgs/fresque-de-lia.png"
-        alt="Fresques de l'IA"
-        title="Fresques de l'IA"
-        width="94px"
-        class="dark:invert"
-      />
-    </div>
+    {#if locale === 'fr'}
+      <div class="cl-logos">
+        <img src="/orgs/cafe-ia.png" alt="Cafés de l'IA" title="Cafés IA" width="104px" />
+        <img
+          src="/orgs/latitudes.png"
+          alt="Latitudes"
+          title="Latitudes"
+          width="110px"
+          class="dark:invert"
+        />
+        <img src="/orgs/pix.svg" alt="Pix" title="Pix" width="60px" />
+        <img
+          src="/orgs/fresque-de-lia.png"
+          alt="Fresques de l'IA"
+          title="Fresques de l'IA"
+          width="94px"
+          class="dark:invert"
+        />
+      </div>
 
-    <p>{m['product.partners.diffusion.desc']()}</p>
-    <p><strong>{m['product.partners.diffusion.catch']()}</strong></p>
+      <p>{m['product.partners.diffusion.desc']()}</p>
+      <p><strong>{m['product.partners.diffusion.catch']()}</strong></p>
 
-    <Link
-      button
-      href="mailto:contact@comparia.beta.gouv.fr"
-      text={m['product.partners.diffusion.cta']()}
-      class="w-full! sm:w-auto!"
-    />
+      <Link
+        button
+        href="mailto:contact@comparia.beta.gouv.fr"
+        text={m['product.partners.diffusion.cta']()}
+        class="w-full! sm:w-auto!"
+      />
+    {/if}
   </section>
 
   <section class="cg-border cl-card">
@@ -69,19 +76,21 @@
       {m['product.partners.academy.title']()}
     </h2>
 
-    <div class="cl-logos">
-      <img src="/orgs/inria.png" alt="Inria" title="Inria" width="139px" />
-    </div>
+    {#if locale === 'fr'}
+      <div class="cl-logos">
+        <img src="/orgs/inria.png" alt="Inria" title="Inria" width="139px" />
+      </div>
 
-    <p>{m['product.partners.academy.desc']()}</p>
-    <p><strong>{m['product.partners.academy.catch']()}</strong></p>
+      <p>{m['product.partners.academy.desc']()}</p>
+      <p><strong>{m['product.partners.academy.catch']()}</strong></p>
 
-    <Link
-      button
-      href="mailto:contact@comparia.beta.gouv.fr"
-      text={m['actions.contactUs']()}
-      class="w-full! sm:w-auto!"
-    />
+      <Link
+        button
+        href="mailto:contact@comparia.beta.gouv.fr"
+        text={m['actions.contactUs']()}
+        class="w-full! sm:w-auto!"
+      />
+    {/if}
   </section>
 
   <section class="cg-border cl-card">
