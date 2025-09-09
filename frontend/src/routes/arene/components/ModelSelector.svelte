@@ -164,7 +164,7 @@
           </div>
           {#if showModelsSelection == true}
             <div class="fr-modal__footer p-4! md:px-5!">
-              <div class="flex w-full flex-col gap-4 md:flex-row">
+              <div class="flex w-full flex-col-reverse gap-4 md:flex-row">
                 <Button
                   text={m['words.back']()}
                   variant="tertiary"
@@ -173,16 +173,18 @@
                   onclick={() => (showModelsSelection = false)}
                 />
 
-                <p class="text-primary mb-0! font-bold md:self-center">
-                  {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
-                </p>
+                <div class="flex flex-col gap-4 md:flex-row">
+                  <p class="text-primary mb-0! font-bold md:self-center">
+                    {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
+                  </p>
 
-                <Button
-                  aria-controls="modal-mode-selection"
-                  text={m['words.validate']()}
-                  disabled={!modelsSelection.length}
-                  class="w-full! md:w-auto!"
-                />
+                  <Button
+                    aria-controls="modal-mode-selection"
+                    text={m['words.validate']()}
+                    disabled={!modelsSelection.length}
+                    class="w-full! md:w-auto!"
+                  />
+                </div>
               </div>
             </div>
           {/if}
