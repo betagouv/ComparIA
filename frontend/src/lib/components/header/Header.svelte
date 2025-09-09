@@ -9,13 +9,15 @@
     hideLanguageSelector = false,
     hideVoteGauge = false,
     hideDiscussBtn = false,
-    showHelpLink = false
+    showHelpLink = false,
+    small
   }: {
     hideNavigation?: boolean
     hideLanguageSelector?: boolean
     hideVoteGauge?: boolean
     hideDiscussBtn?: boolean
     showHelpLink?: boolean
+    small?: boolean
   } = $props()
 
   const locale = getLocale()
@@ -38,8 +40,10 @@
 <header id="main-header" class="fr-header overflow-hidden lg:overflow-visible">
   <div class="fr-header__body">
     <div class="fr-container">
-      <div class="fr-header__body-row fr-grid-row">
-        <div class="fr-header__brand fr-enlarge-link">
+      <div class={['fr-header__body-row', { 'lg:py-1!': small }]}>
+        <div
+          class={['fr-header__brand fr-enlarge-link', { 'lg:-translate-x-1/8 lg:scale-75': small }]}
+        >
           <div class="fr-header__brand-top w-auto!">
             <div class="fr-header__logo">
               {#if locale === 'fr' || locale === 'en'}

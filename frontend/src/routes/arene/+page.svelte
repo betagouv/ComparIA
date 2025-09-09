@@ -33,6 +33,7 @@
   hideVoteGauge={arena.currentScreen === 'prompt'}
   hideLanguageSelector={arena.currentScreen === 'chat'}
   showHelpLink={arena.currentScreen === 'prompt'}
+  small
 />
 
 {#if arena.currentScreen === 'chat' && arena.chat.step && mode}
