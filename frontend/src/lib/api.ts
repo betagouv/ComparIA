@@ -55,13 +55,42 @@ export const api = {
   url: env.PUBLIC_API_URL || 'http://localhost:8000',
   client: undefined as Client | undefined,
 
+  _getLoadBalancedEndpoint(): string {
+    const replicas = parseInt(env.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10);
+    
+    if (replicas <= 0) {
+      return '/api'
+    }
+    
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const storedEndpoint = localStorage.getItem('languia-api-endpoint')
+      
+      if (storedEndpoint) {
+        const endpointNum = parseInt(storedEndpoint, 10)
+        if (endpointNum >= 1 && endpointNum <= replicas) {
+          return `/api/${endpointNum}`
+        }
+      }
+      
+      const randomEndpoint = Math.floor(Math.random() * replicas) + 1
+      localStorage.setItem('languia-api-endpoint', randomEndpoint.toString())
+      
+      return `/api/${randomEndpoint}`
+    }
+    
+    return '/api/1'
+  },
+
   async _connect() {
     if (this.client) return this.client
-    console.debug('Connecting to Gradio at:', this.url + '/api')
+    
+    const endpoint = this._getLoadBalancedEndpoint()
+    const fullUrl = this.url + endpoint
+    
+    console.debug('Connecting to Gradio at:', fullUrl)
     try {
-      
-      this.client = await Client.connect(this.url + '/api', { events: ['data', 'status'] })
-      console.debug(`Successfully connected to Gradio (session hash: ${this.client.session_hash})`)
+      this.client = await Client.connect(fullUrl, { events: ['data', 'status'] })
+      console.debug(`Successfully connected to Gradio (session hash: ${this.client.session_hash}) using endpoint: ${endpoint}`)
       return this.client
     } catch (error) {
       console.error('Failed to connect to Gradio:', error)
