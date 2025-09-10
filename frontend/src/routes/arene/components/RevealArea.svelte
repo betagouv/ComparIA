@@ -24,22 +24,22 @@
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
   <div class="grid gap-5 lg:grid-cols-2 lg:gap-6">
     {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
-      {@const modelBadges = (['license', 'size', 'releaseDate', 'licenseName'] as const)
+      {@const modelBadges = (['size', 'releaseDate', 'licenseName'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
 
       <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
         <div>
-          {#if selected === side}
-            <div
-              class="bg-primary mb-3 inline-block text-nowrap rounded-[3.75rem] px-4 py-2 font-bold text-white"
-            >
-              {m['vote.yours']()}
-            </div>
-          {/if}
-          <h5 class="text-dark-grey! mb-4! flex items-center gap-2">
+          <h5 class="fr-h6 text-dark-grey! mb-4! flex items-center gap-2">
             <img src="/orgs/ai/{model.icon_path}" width="34" aria-hidden="true" alt="" />
             <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
+            {#if selected === side}
+              <div
+                class="bg-(--blue-france-975-75) text-primary border-primary ms-auto rounded-[3.75rem] border px-3 text-[14px] font-bold"
+              >
+                {m['vote.yours']()}
+              </div>
+            {/if}
           </h5>
           <ul class="fr-badges-group mb-4!">
             {#each modelBadges as badge, i}
@@ -50,7 +50,7 @@
           {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
         </div>
 
-        <h6 class="mt-auto! mb-5!">{m['reveal.impacts.title']()}</h6>
+        <h6 class="mt-auto! mb-5! text-base!">{m['reveal.impacts.title']()}</h6>
         <div class="flex">
           <div class="flex basis-1/2 flex-col md:basis-2/3 md:flex-row">
             <MiniCard
@@ -97,7 +97,7 @@
           </div>
         </div>
 
-        <h6 class="mt-9! mb-5!">{m['reveal.equivalent.title']()}</h6>
+        <h6 class="mt-9! mb-5! text-base!">{m['reveal.equivalent.title']()}</h6>
         <div class="grid grid-cols-3 gap-2">
           <MiniCard
             id="co2-{side}"
@@ -139,6 +139,7 @@
             text={m['actions.seeMore']()}
             data-fr-opened="false"
             aria-controls="modal-model-reveal-{model.id}"
+            size="sm"
           />
         </div>
       </div>
@@ -151,9 +152,10 @@
     <div class="fr-container md:max-w-[280px]! flex flex-col items-center gap-4">
       <Link
         button
+        icon="edit-line"
         href="../arene/?cgu_acceptees"
         text={m['header.chatbot.newDiscussion']()}
-        class="w-full!"
+        class="w-full! md:hidden!"
       />
 
       <!-- TODO missing share page, hide btn for now -->
@@ -165,14 +167,6 @@
         aria-controls="share-modal"
         class="w-full!"
       /> -->
-
-      <!-- Remplacer par https://monitor.bunka.ai/compar:ia ? -->
-      <Link
-        native={false}
-        href="https://metabase.comparia.beta.gouv.fr/public/dashboard/7dde3be2-6680-49ac-966b-ade9ad36dfcf?tab=29-tableau-1"
-        target="_blank"
-        text={m['reveal.feedback.moreOnVotes']()}
-      />
     </div>
 
     <dialog aria-labelledby="fr-modal-title-share-modal" id="share-modal" class="fr-modal">

@@ -58,11 +58,20 @@
     </div>
   {:else}
     <div class="hidden text-right md:block">
+      <!-- TODO missing share page, hide btn for now -->
+      <!-- <Button
+        icon="upload-2-line"
+        variant="secondary"
+        text={m['reveal.feedback.shareResult']()}
+        data-fr-opened="false"
+        aria-controls="share-modal"
+      /> -->
       <!--<a class="btn purple-btn" href="../arene/?cgu_acceptees" target="_blank"><svg width="21" height="20" viewBox="0 0 21 20" fill="none"
       xmlns="http://www.w3.org/2000/svg">
   </svg>&nbsp;Reposer ma question</a>-->
       <Link
         button
+        icon="edit-line"
         href="../arene/?cgu_acceptees"
         text={m['header.chatbot.newDiscussion']()}
         class="w-full! md:w-auto!"
