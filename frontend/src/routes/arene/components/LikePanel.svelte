@@ -125,7 +125,7 @@
       <label
         class:disabled
         class:selected={selection.includes(value)}
-        class="checkbox-btn cg-border bg-white!"
+        class="checkbox-btn cg-border bg-white! px-2! md:px-4! py-1!"
         aria-checked={selection.includes(value)}
         aria-disabled={disabled ? 'true' : 'false'}
         tabindex="0"
@@ -150,7 +150,7 @@
       <button
         {disabled}
         class:selected={comment !== ''}
-        class="checkbox-btn cg-border bg-white!"
+        class="checkbox-btn cg-border bg-white! px-2! md:px-4! py-1!"
         data-fr-opened="false"
         aria-controls={modalId}
       >
@@ -217,9 +217,6 @@
     display: none;
   }
 
-  label.checkbox-btn {
-    padding: 4px 10px;
-  }
   .checkbox-btn {
     display: inline-block;
     border-radius: 1.5rem !important;
@@ -227,13 +224,10 @@
     font-weight: 500;
     cursor: pointer;
   }
-  button.checkbox-btn {
-    padding: 3px 10px;
-  }
 
   .checkbox-btn.selected,
   .checkbox-btn:active {
-    background: var(--cg-light-grey) !important;
+    background: var(--blue-france-975-75) !important;
     color: var(--blue-france-main-525) !important;
     border: 1px var(--blue-france-main-525) solid !important;
   }

@@ -32,7 +32,7 @@
           class="sr-only"
         />
         <label
-          class="cg-border md:rounded-[56px]! flex h-full flex-col items-center justify-center px-3 py-4 text-center md:flex-row md:justify-center md:px-5"
+          class="cg-border md:rounded-[56px]! flex h-full flex-col items-center justify-center px-3 py-4 text-center md:flex-row md:justify-center font-medium"
           for="radio-{value}"
         >
           {#if value === 'both-equal'}
