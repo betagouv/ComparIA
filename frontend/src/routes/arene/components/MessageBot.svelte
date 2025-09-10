@@ -48,9 +48,11 @@
 </script>
 
 <div class="flex flex-col">
-  <div class="cg-border rounded-lg! flex h-full flex-col bg-white px-5 pb-3 pt-7">
+  <div
+    class="message-bot cg-border rounded-lg! relative flex h-full flex-col overflow-scroll bg-white px-5"
+  >
     <div>
-      <div class="mb-5 flex items-center">
+      <div class="z-1 sticky top-0 flex items-center bg-white pb-5 pt-7">
         <div class="c-bot-disk-{bot}"></div>
         <h3 class="mb-0! ms-2! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
@@ -92,7 +94,7 @@
       {/if}
     </div>
 
-    <div class="mt-auto flex">
+    <div class="sticky bottom-0 mt-auto flex bg-white py-3">
       <Copy value={message.content} />
 
       <div class="ms-auto flex gap-2">
@@ -120,3 +122,18 @@
     </div>
   {/if}
 </div>
+
+<style>
+  .message-bot {
+    --extra-margin: 2.5rem;
+    max-height: calc(
+      100vh - var(--second-header-size) - var(--footer-size) - var(--message-size) -
+        var(--extra-margin)
+    );
+  }
+  @media (min-width: 48em) {
+    .message-bot {
+      --extra-margin: 3.5rem;
+    }
+  }
+</style>

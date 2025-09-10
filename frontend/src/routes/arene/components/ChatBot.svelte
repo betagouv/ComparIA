@@ -5,7 +5,7 @@
   import { arena } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
   import { m } from '$lib/i18n/messages'
-  import { MessageBot, MessageUser } from '.'
+  import { GroupedMessages } from '.'
 
   let {
     pending,
@@ -49,15 +49,7 @@
   class="flex grow flex-col pb-7"
 >
   {#each groupedMessages as { user, bots }, i}
-    <div class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16" {@attach scrollTo}>
-      <MessageUser message={user} />
-
-      <div class="grid gap-10 md:grid-cols-2 md:gap-6">
-        {#each bots as botMessage, j}
-          <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
-        {/each}
-      </div>
-    </div>
+    <GroupedMessages {user} {bots} {generating} {disabled} {onReactionChange} />
   {/each}
 
   {#if pending}
@@ -125,7 +117,7 @@
 </div>
 
 <style>
-  :global(#chat-area:has(+ #send-area)) .grouped-messages:last-of-type {
+  :global(#chat-area:has(+ #send-area) .grouped-messages:last-of-type) {
     min-height: calc(100vh - var(--second-header-size) - var(--footer-size));
     scroll-margin-top: calc(var(--second-header-size));
   }

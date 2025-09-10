@@ -1,0 +1,35 @@
+<script lang="ts">
+  import type { ChatMessage, OnReactionFn } from '$lib/chatService.svelte'
+  import { scrollTo } from '$lib/helpers/attachments'
+  import { MessageBot, MessageUser } from '.'
+
+  let {
+    user,
+    bots,
+    generating,
+    disabled,
+    onReactionChange
+  }: {
+    user: ChatMessage<'user'>
+    bots: [ChatMessage<'assistant'>, ChatMessage<'assistant'>]
+    generating: boolean
+    disabled: boolean
+    onReactionChange: OnReactionFn
+  } = $props()
+
+  let userMessageSize = $state(0)
+</script>
+
+<div
+  class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16"
+  style="--message-size: {userMessageSize}px;"
+  {@attach scrollTo}
+>
+  <MessageUser bind:size={userMessageSize} message={user} />
+
+  <div class="grid gap-10 md:grid-cols-2 md:gap-6">
+    {#each bots as botMessage, j}
+      <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
+    {/each}
+  </div>
+</div>

@@ -1,6 +1,7 @@
 export { default as ChatBot } from './ChatBot.svelte'
 export { default as CopyAll } from './CopyAll.svelte'
 export { default as Dropdown } from './Dropdown.svelte'
+export { default as GroupedMessages } from './GroupedMessages.svelte'
 export { default as GuidedPromptSuggestions } from './GuidedPromptSuggestions.svelte'
 export { default as LikeDislike } from './LikeDislike.svelte'
 export { default as LikePanel } from './LikePanel.svelte'

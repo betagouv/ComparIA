@@ -75,7 +75,7 @@
   <div
     bind:this={secondHeader}
     id="second-header"
-    class="fr-container--fluid bg-light-grey drop-shadow-(--raised-shadow) z-1 sticky top-0 py-3 md:py-4"
+    class="fr-container--fluid bg-light-grey drop-shadow-(--raised-shadow) z-2 sticky top-0 py-3 md:py-4"
   >
     <div class="fr-container flex flex-col items-center gap-3 md:flex-row">
       <div class="flex basis-2/3 flex-col items-center gap-3 md:flex-row">
