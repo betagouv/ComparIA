@@ -16,8 +16,6 @@ from languia.block_arena import (
     negative_b,
     positive_a,
     positive_b,
-    results_area,
-    reveal_screen,
     send_area,
     send_btn,
     supervote_area,
@@ -48,6 +46,8 @@ from languia.utils import (
     to_threeway_chatbot,
     second_header_html,
 )
+
+from languia.session import increment_input_chars, redis_host, is_ratelimited
 
 from languia.reveal import (
     build_reveal_html,
@@ -175,6 +175,15 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
         )
 
+        ip = get_ip(request)
+
+        if (redis_host and is_ratelimited(ip)):
+            logger.error(
+                f"Too much text submitted for ip {ip}",
+                extra={"request": request},
+            )
+            raise gr.Error(f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures.")
+
         if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
             logger.info(
                 f"Conversation input exceeded character limit ({BLIND_MODE_INPUT_CHAR_LEN_LIMIT} chars). Truncated text: {text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]} ",
@@ -206,7 +215,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
         banner = second_header_html(1, mode)
 
-        text = gr.update(visible=True)
         app_state_scoped.awaiting_responses = True
 
         try:
@@ -281,6 +289,7 @@ document.getElementById("fr-modal-welcome-close").blur();
                     gr.update(visible=True, interactive=False),
                     gr.update(visible=True),
                 ]
+            increment_input_chars(ip, len(text))
 
         except Exception as e:
 
@@ -439,6 +448,16 @@ document.getElementById("fr-modal-welcome-close").blur();
             )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
+
+        ip = get_ip(request)
+
+        if (redis_host and is_ratelimited(ip)):
+            logger.error(
+                f"Too much text submitted for ip {ip}",
+                extra={"request": request},
+            )
+            raise gr.Error(f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures.")
+
         for i in range(config.num_sides):
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
@@ -450,6 +469,8 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
+        ip = get_ip(request)
+        increment_input_chars(ip, len(text))
 
         # FIXME running bot_response_multi directly here to receive messages on front
         yield from bot_response_multi(
