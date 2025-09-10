@@ -25,6 +25,8 @@ from languia.block_arena import (
     vote_area,
     which_model_radio,
     model_dropdown,
+    reveal_screen,
+    results_area
 )
 import traceback
 import os
