@@ -57,7 +57,7 @@
   }
 </script>
 
-<div class="flex flex-col gap-3 md:col-span-2 md:flex-row">
+<div class="flex flex-col gap-3 md:col-span-5 md:flex-row">
   <Button
     variant="secondary"
     native

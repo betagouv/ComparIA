@@ -14,17 +14,17 @@
   let disabled = $state(false)
 
   const models = getModelsContext()
-
-  const prompt = useLocalStorage('prompt', '', (parsed) => {
-    if (parsed !== '') {
-      tick().then(() => {
-        if (promptEl && typeof promptEl.select === 'function') {
-          promptEl.select()
-        }
-      })
-    }
-    return parsed
-  })
+  let prompt = $state('')
+  // const prompt = useLocalStorage('prompt', '', (parsed) => {
+  //   if (parsed !== '') {
+  //     tick().then(() => {
+  //       if (promptEl && typeof promptEl.select === 'function') {
+  //         promptEl.select()
+  //       }
+  //     })
+  //   }
+  //   return parsed
+  // })
   const mode = useLocalStorage<APIModeAndPromptData['mode']>('mode', 'random')
   const modelsSelection = useLocalStorage<string[]>('customModelsSelection', [], (parsed) => {
     if (Array.isArray(parsed) && parsed.every((item) => typeof item === 'string')) {
@@ -54,7 +54,7 @@
     onSubmit({
       mode: mode.value,
       custom_models_selection: modelsSelection.value,
-      prompt_value: prompt.value
+      prompt_value: prompt
     })
   }
 
@@ -63,9 +63,9 @@
     selectionStart?: number,
     selectionEnd?: number
   ): void {
-    prompt.value = text
+    prompt = text
     console.log(
-      `[Index] handlePromptSelected: Received promptselected. Text: "${prompt.value}", Start: ${selectionStart}, End: ${selectionEnd}`
+      `[Index] handlePromptSelected: Received promptselected. Text: "${prompt}", Start: ${selectionStart}, End: ${selectionEnd}`
     )
     if (promptEl && selectionStart !== undefined && selectionEnd !== undefined) {
       const performSelection = () => {
@@ -110,40 +110,42 @@
 </script>
 
 <div id="prompt-area" class="fr-container py-10 md:py-24">
-  <h3 class="mb-0! text-center">
-    {m['arenaHome.title']()}
-  </h3>
-  <div class="grid gap-3 py-10 md:grid-flow-row-dense md:grid-cols-3 md:pb-20 md:pt-12">
-    <div class="order-1 md:order-none md:col-span-3">
-      <TextPrompt
-        id="initial-prompt"
-        bind:el={promptEl}
-        bind:value={prompt.value}
-        label={m['arenaHome.prompt.label']()}
-        placeholder={m['arenaHome.prompt.placeholder']()}
+  <div class="fr-col-xl-8 m-auto">
+    <h3 class="mb-0! text-center">
+      {m['arenaHome.title']()}
+    </h3>
+    <div class="grid gap-3 py-10 md:grid-flow-row-dense md:grid-cols-6 md:pb-20 md:pt-12">
+      <div class="order-1 md:order-none md:col-span-full">
+        <TextPrompt
+          id="initial-prompt"
+          bind:el={promptEl}
+          bind:value={prompt}
+          label={m['arenaHome.prompt.label']()}
+          placeholder={m['arenaHome.prompt.placeholder']()}
+          {disabled}
+          hideLabel
+          rows={4}
+          onSubmit={dispatchSubmit}
+        />
+      </div>
+
+      <ModelSelector
+        bind:mode={mode.value}
+        bind:modelsSelection={modelsSelection.value}
+        {models}
         {disabled}
-        hideLabel
-        rows={4}
-        onSubmit={dispatchSubmit}
+      />
+
+      <Button
+        type="submit"
+        text={m['words.send']()}
+        disabled={prompt == '' || disabled}
+        class="w-full! md:w-auto! order-2 min-w-[130px] place-self-end md:order-none"
+        onclick={() => dispatchSubmit()}
       />
     </div>
-
-    <ModelSelector
-      bind:mode={mode.value}
-      bind:modelsSelection={modelsSelection.value}
-      {models}
-      {disabled}
-    />
-
-    <Button
-      type="submit"
-      text={m['words.send']()}
-      disabled={prompt.value == '' || disabled}
-      class="w-full! md:w-auto! order-2 min-w-[130px] place-self-end md:order-none"
-      onclick={() => dispatchSubmit()}
-    />
-  </div>
-  <div class="pb-10">
-    <GuidedPromptSuggestions onPromptSelected={handlePromptSelected} />
+    <div class="pb-10">
+      <GuidedPromptSuggestions onPromptSelected={handlePromptSelected} />
+    </div>
   </div>
 </div>
