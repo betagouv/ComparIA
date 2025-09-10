@@ -2,6 +2,7 @@ import { getContext, setContext } from 'svelte'
 import { m } from './i18n/messages'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
+export const ARCHS = ['moe', 'dense', 'matformer', 'maybe-moe', 'maybe-dense'] as const
 export const LICENSES = [
   'proprietary',
   'CC-BY-NC-4.0',
@@ -79,6 +80,7 @@ export const MODELS = [
 ] as const
 
 export type Sizes = (typeof SIZES)[number]
+export type Archs = (typeof ARCHS)[number]
 export type License = (typeof LICENSES)[number]
 export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
@@ -96,7 +98,7 @@ export interface APIBotModel {
   params: number
   active_params?: number
   friendly_size: Sizes
-  arch: string
+  arch: Archs
   reasoning: boolean | 'hybrid'
   quantization?: 'q4' | 'q8'
   required_ram: number
