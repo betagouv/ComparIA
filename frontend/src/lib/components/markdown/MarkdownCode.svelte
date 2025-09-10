@@ -164,7 +164,13 @@
   })
 </script>
 
-<span class:chatbot bind:this={el} class={["md", kind]} class:prose={render_markdown} class:dark:prose-invert={render_markdown}>
+<span
+  class:chatbot
+  bind:this={el}
+  class={['md', kind]}
+  class:prose={render_markdown}
+  class:dark:prose-invert={render_markdown}
+>
   {@html html}
 </span>
 
@@ -263,5 +269,36 @@
   }
   span.user :global(p) {
     font-weight: 500;
+  }
+
+  span.bot :global(h1),
+  span.bot :global(h2),
+  span.bot :global(h3) {
+    font-size: 1.375rem;
+    line-height: 1.5;
+  }
+  span.bot :global(h4) {
+    font-size: 1.25rem;
+    line-height: 1.5;
+  }
+  span.bot :global(h5),
+  span.bot :global(h6) {
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 48em) {
+    span.bot :global(h1),
+    span.bot :global(h2),
+    span.bot :global(h3) {
+      font-size: 1.5rem;
+    }
+    span.bot :global(h4) {
+      font-size: 1.375rem;
+    }
+    span.bot :global(h5),
+    span.bot :global(h6) {
+      font-size: 1.25rem;
+    }
   }
 </style>
