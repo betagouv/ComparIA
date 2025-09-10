@@ -121,12 +121,9 @@
                       <Icon icon="lightbulb-line" block class="text-yellow me-2" />
                       {m['models.arch.title']()}
                     </h6>
-                    <!-- FIXME -->
                     <Badge
-                      id="arch-badge"
-                      variant="yellow"
-                      text="arch"
-                      tooltip="arch"
+                      {...model.badges.arch}
+                      id={modalId + '-arch'}
                       size="sm"
                       class="self-center! ms-auto"
                     />

@@ -921,7 +921,25 @@
     },
     "models": {
         "arch": {
-            "title": "Le saviez-vous ?"
+            "title": "Le saviez-vous ?",
+            "types": {
+                "dense":{
+                    "title": "Architecture Dense",
+                    "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie."
+                },
+                "matformer": {
+                    "title": "Architecture Matformer",
+                    "desc": "Imaginez des **poupées russes** (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs **sous-modèles imbriqués** de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles."
+                },
+                "moe": {
+                    "title": "Architecture MOE",
+                    "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape."
+                },
+                "na": {
+                    "title": "Architecture N/A",
+                    "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques."
+                }
+            }
         },
         "conditions": {
             "commercialUse": {

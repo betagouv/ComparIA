@@ -176,8 +176,13 @@ export function parseModel(model: APIBotModel) {
         // FIXME need description and label for 'maybe-*'
         id: `model-arch-${model.id}`,
         variant: 'yellow' as const,
-        text: model.arch
-        // tooltip: ''
+        text: m[
+          `models.arch.types.${model.arch === 'maybe-moe' || model.arch === 'maybe-dense' ? 'na' : model.arch}.title`
+        ](),
+        tooltip:
+          m[
+            `models.arch.types.${model.arch === 'maybe-moe' || model.arch === 'maybe-dense' ? 'na' : model.arch}.desc`
+          ]()
       },
       reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
     }
