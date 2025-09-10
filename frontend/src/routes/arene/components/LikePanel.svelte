@@ -113,7 +113,10 @@
 >
   <p class="me-3! {mode === 'vote' ? 'mb-0! mt-1!' : 'mb-3!'}">
     <Icon icon={reaction.icon} class="text-primary" />
-    <span class="text-dark-grey ms-2 font-bold" class:sr-only={mode === 'vote'}>
+    <span
+      class="text-dark-grey ms-2 text-[14px] font-bold md:text-base"
+      class:sr-only={mode === 'vote'}
+    >
       {reaction.label}
     </span>
   </p>

@@ -19,6 +19,7 @@
   export let header_links = false
   export let allow_tags: string[] | boolean = false
   export let theme_mode: ThemeMode = 'system'
+  export let kind: 'bot' | 'user' = 'bot'
   let el: HTMLSpanElement
   let html: string
   let katex_loaded = false
@@ -163,7 +164,7 @@
   })
 </script>
 
-<span class:chatbot bind:this={el} class="md" class:prose={render_markdown} class:dark:prose-invert={render_markdown}>
+<span class:chatbot bind:this={el} class={["md", kind]} class:prose={render_markdown} class:dark:prose-invert={render_markdown}>
   {@html html}
 </span>
 
@@ -254,5 +255,13 @@
   span :global(pre) {
     overflow-x: auto;
     max-width: 100%;
+  }
+
+  /* CUSTOM */
+  span :global(p) {
+    font-size: 14px;
+  }
+  span.user :global(p) {
+    font-weight: 500;
   }
 </style>

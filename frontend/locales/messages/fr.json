@@ -80,7 +80,7 @@
         "title": "Comment puis-je vous aider aujourd'hui ?"
     },
     "chatbot": {
-        "continuePrompt": "Continuer à discuter avec les deux modèles d'IA",
+        "continuePrompt": "Continuer à discuter avec les modèles",
         "conversation": "Conversation",
         "errors": {
             "other": {
