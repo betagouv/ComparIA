@@ -696,7 +696,7 @@
         },
         "help": {
             "link": {
-                "content": "Hjälp oss att förbättra compar:IA",
+                "content": "Hjälp oss förbättra jämföraren",
                 "title": "Ge din åsikt om jämförelseprogrammet (öppnar ett nytt fönster)"
             }
         },
@@ -721,12 +721,130 @@
             "desc": "Litauen, Sverige och Danmark ansluter sig till Frankrike genom att använda jämförelseprogrammet för att förfina framtida AI-modeller på sina nationella språk.",
             "languages": {
                 "da": "på danska",
-                "fr": "på franska"
+                "fr": "på franska",
+                "lt": "på litauiska",
+                "sv": "på svenska"
+            },
+            "question": "Skulle du också vilja ha jämförelseverktyget på ditt språk?",
+            "title": "Jämföraren <span {props}>blir europeisk!</span>"
+        },
+        "faq": {
+            "discover": "Upptäck andra frågor",
+            "title": "Era vanligaste frågor"
+        },
+        "intro": {
+            "desc": "Chatta med två okända AI:er och utvärdera deras svar",
+            "steps": {
+                "a11yDesc": "1. Chatta med två anonyma AI:er: Chatta så länge du vill. 2. Ge din åsikt: Du bidrar till att förbättra AI-modeller. 3. Modellerna avslöjas: Lär dig mer om AI-modeller och deras egenskaper.",
+                "one": {
+                    "a": "Chatta så länge som",
+                    "b": "du vill",
+                    "title": "Jag chattar med två anonyma AI:er"
+                },
+                "three": {
+                    "a": "Läs mer om modellerna",
+                    "b": "AI och dess egenskaper",
+                    "title": "Modellerna avslöjas!"
+                },
+                "title": "Hur det fungerar",
+                "two": {
+                    "a": "Du bidrar därmed till",
+                    "b": "att förbättra AI-modeller",
+                    "title": "Jag ger min åsikt"
+                }
+            },
+            "title": "Lita inte på svaren från <span {props}>en enda AI</span>",
+            "tos": {
+                "accept": "Jag accepterar <a {linkProps}>användarvillkoren</a>",
+                "error": "Du måste acceptera användarvillkoren för att fortsätta",
+                "help": "Data delas för forskningsändamål"
             }
+        },
+        "origin": {
+            "project": {
+                "desc": "Jämföraren designades och utvecklades som en del av en statlig startup med stöd av franska kulturministeriet, och integrerades i <a {linkProps}>Beta.gouv.fr</a>-programmet inom det interministeriella digitala direktoratet (DINUM), vilket hjälper franska offentliga förvaltningar att bygga användbara, enkla och lättanvända digitala tjänster.",
+                "title": "Vilka står bakom projektet?"
+            },
+            "team": {
+                "desc": "Jämföraren stöds inom kulturministeriet av ett tvärvetenskapligt team som sammanför experter inom artificiell intelligens, utvecklare, driftsättningschefer och designers, med uppdraget att göra konversationsbaserad AI mer transparent och tillgänglig för alla.",
+                "title": "Vilka är vi?"
+            }
+        },
+        "usage": {
+            "desc": "Verktyget riktar sig även till AI-experter och utbildare för mer specifika användningsområden",
+            "educate": {
+                "desc": "Använd jämföraren som ett utbildningsverktyg för att öka medvetenheten om AI i din målgrupp",
+                "title": "Utbilda och öka medvetenheten"
+            },
+            "explore": {
+                "desc": "Se alla modellernas egenskaper och användarsvillkor på ett ställe",
+                "title": "Utforska modellerna"
+            },
+            "use": {
+                "desc": "Utvecklare, forskare, modellskapare – få tillgång till compar:IAs datamängder för att förbättra modeller",
+                "title": "Utnyttjande av data"
+            }
+        },
+        "use": {
+            "compare": {
+                "alt": "Jämför",
+                "desc": "Diskutera och utveckla ditt kritiska tänkande genom att ange dina preferenser",
+                "title": "Jämför svaren från olika AI-modeller"
+            },
+            "desc": "compar:IA är ett gratis verktyg som hjälper till att öka medvetenheten bland medborgare om generativ AI och dess utmaningar.",
+            "measure": {
+                "alt": "Mät",
+                "desc": "Upptäck vilken miljöpåverkan dina diskussioner har för varje modell",
+                "title": "Mätning av det ekologiska fotavtrycket från frågor som ställs till AI"
+            },
+            "test": {
+                "alt": "Testa",
+                "desc": "Testa olika modeller, proprietära eller ej, små eller stora...",
+                "title": "Testa de senaste AI-modellerna på ett enda ställe"
+            },
+            "title": "Vad används compar:IA till?"
+        },
+        "vote": {
+            "datasetAccess": "Åtkomst till datamängderna",
+            "desc": "Verktyget riktar sig även till AI-experter och utbildare för mer specifika användningsområden",
+            "steps": {
+                "datasets": {
+                    "desc": "Alla frågor som ställs och alla röster sammanställs och publiceras fritt efter anonymisering.",
+                    "title": "Datamängder efter språk"
+                },
+                "finetune": {
+                    "desc": "I slutändan kan företag och akademiker använda datamängderna för att utbilda nya modeller som är bättre anpassade för språklig och kulturell mångfald.",
+                    "title": "Språkspecifika förfinade modeller"
+                },
+                "prefs": {
+                    "desc": "Efter att ha diskuterat med AI-modellerna anger du vilken du föredrar enligt givna kriterier, såsom svarens relevans eller användbarhet.",
+                    "title": "Dina preferenser"
+                }
+            },
+            "title": "Varför är din röst viktig?"
         }
     },
     "models": {
-        "conditions": "Användarvillkor",
+        "arch": {
+            "title": "Visste du?"
+        },
+        "conditions": {
+            "commercialUse": {
+                "question": "Är kommersiell användning av modellen tillåten?",
+                "title": "Kommersiell användning"
+            },
+            "reuse": {
+                "question": "Kan jag använda modellens utdata för att träna andra modeller?",
+                "subTitle": "Du kan inte använda utdata för att träna andra modeller",
+                "title": "Användning av genererade resultat"
+            },
+            "title": "Användarvillkor",
+            "types": {
+                "allowed": "Tillåtet",
+                "conditions": "Villkorlig",
+                "forbidden": "Förbjuden"
+            }
+        },
         "extra": {
             "experts": {
                 "api-only": "För att lära dig mer, titta på <a {linkProps}>modellens officiella webbplats</a>",
@@ -772,6 +890,7 @@
                 "license": {
                     "legend": "Användarlicens"
                 },
+                "reset": "Rensa alla filter",
                 "size": {
                     "labels": {
                         "L": "70 till 150 miljarder",
@@ -779,7 +898,8 @@
                         "S": "7 till 20 miljarder",
                         "XL": "> 150 miljarder",
                         "XS": "< 7 miljarder"
-                    }
+                    },
+                    "legend": "Storlek (parametrar)"
                 }
             },
             "intro": "Utforska de olika konversationsbaserade AI-modellerna, deras specifikationer och licenser.",
@@ -846,9 +966,110 @@
         }
     },
     "modes": {
+        "big-vs-small": {
+            "altLabel": "David mot Goliat",
+            "description": "En liten modell mot en stor, båda valda slumpmässigt",
+            "label": "David mot Goliat",
+            "title": "David mot Goliat-läget"
+        },
+        "custom": {
+            "altLabel": "Manuellt val",
+            "description": "Kommer du att känna igen de två modellerna du valde?",
+            "label": "Manuellt val",
+            "title": "Manuellt val"
+        },
         "random": {
+            "altLabel": "Slumpmässigt val av modeller",
+            "description": "Två modeller utvalda slumpmässigt från hela listan",
             "label": "Slump",
             "title": "Slumpläge"
+        },
+        "reasoning": {
+            "altLabel": "Resonemangsmodeller",
+            "description": "Två modeller, optimerade för komplexa uppgifter, slumpmässigt utvalda",
+            "label": "Resonemang",
+            "title": "Resonemangsläge"
+        },
+        "small-models": {
+            "altLabel": "Sparsamma modeller",
+            "description": "Två slumpmässigt valda modeller, ur kategorin små modeller",
+            "label": "Sparsam",
+            "title": "Sparsamt läge"
+        }
+    },
+    "product": {
+        "comparator": {
+            "challenges": {
+                "bias": {
+                    "desc": "Belys AI-bias relaterat till underrepresentationen av data på andra språk än engelska och öka medvetenheten om dess konsekvenser.",
+                    "title": "Kulturell och språklig bias"
+                },
+                "impacts": {
+                    "desc": "Visa miljöeffekterna av generativ AI, som fortfarande till stor del är okända för allmänheten.",
+                    "title": "Miljöpåverkan"
+                },
+                "pluralism": {
+                    "desc": "Se till att befolkningen har tillgång till en mångfald av AI-modeller så att de kan fatta välgrundade val och utveckla en kritisk syn på dessa tekniker.",
+                    "title": "Mångfald av modeller"
+                },
+                "thinking": {
+                    "desc": "Uppmuntra kritiskt tänkande om generativ AI och dess plats i personliga och professionella praktiker (utbildning, arbete).",
+                    "title": "Kritiskt tänkande och samhällsfrågor"
+                },
+                "title": "Den utvecklade applikationen hanterar flera utmaningar"
+            },
+            "cta": "Åtkomst till jämföraren",
+            "europe": {
+                "adventure": "Sedan sommaren 2025 har Litauen, Sverige och Danmark anslutit sig till projektet!",
+                "catch": "Vill du ha jämförelseverktyget på ditt språk?",
+                "desc": "Jämförelsemodellen görs tillgänglig för medborgare i flera länder på deras nationella språk. Målet är att skapa datamängder för att förbättra framtida AI-modeller på dessa europeiska språk.",
+                "title": "Jämföraren <span {props}>blir europeisk</span>!"
+            },
+            "tabLabel": "Jämföraren",
+            "title": "Jämföraren låter dig skapa <span {props}>datamängder</span>, helst med fokus på <span {props}>verkliga användningsområden</span> uttryckta på <span {props}>europeiska språk</span>."
+        },
+        "faq": {
+            "tabLabel": "Vanliga frågor"
+        },
+        "history": {
+            "tabLabel": "Projekthistorik"
+        },
+        "partners": {
+            "academy": {
+                "catch": "Arbetar du på ett forskningsprojekt och har frågor eller förslag angående våra metoder och datamängder?",
+                "desc": "Vi strävar efter att de genererade datamängderna ska användas i tvärvetenskaplig forskning som kombinerar humaniora, samhällsvetenskap och datavetenskap.",
+                "title": "Akademiska partners"
+            },
+            "diffusion": {
+                "catch": "Vill du använda jämföraren för att möta ett affärsbehov?",
+                "cta": "Hör av dig",
+                "desc": "Vi skapar ett nätverk av partners som integrerar jämförelseverktyget i sina tjänste- och utbildningserbjudanden.",
+                "title": "Kommunikationspartners"
+            },
+            "institution": {
+                "title": "Institutionella partners"
+            },
+            "services": {
+                "desc": "Miljöpåverkansberäkningarna är baserade på ovanstående verktyg.",
+                "title": "Tjänster som används"
+            },
+            "tabLabel": "Partners"
+        },
+        "problem": {
+            "alignment": {
+                "alignment": {
+                    "a": "Anpassning sker efter en språkmodells förträningsfas, som ett \"efterbehandlings-\" eller \"poleringsfas\". Under förträningen lär sig modellen att förutsäga nästa ord och att generera sammanhängande text.",
+                    "b": "Anpassningssteget innebär att lära modellen att bättre möta mänskliga behov, dvs. att göra den mer <strong>relevant</strong> (modellen svarar \"bättre\"), <strong>ärlig</strong> (förmåga att anta \"att den inte vet hur den ska svara\" när det inte finns tillräckligt med data), och <strong>säker</strong> (undvika att generera farligt eller olämpligt innehåll).",
+                    "c": "<strong>Utan anpassning kan en språkmodell vara tekniskt skicklig men svår att använda i praktiken eftersom den inte förstår vad som förväntas av den i en konversation. </strong>",
+                    "title": "Anpassning, ett avgörande steg i modellinstruktion"
+                },
+                "datasets": {
+                    "a": "Anpassning använder mycket specifik data, speciellt skapad för att lära modellen hur den ska bete sig \"bra\".",
+                    "b": "<strong>Preferensdata</strong> utgör en speciell typ av anpassningsdata, tillsammans med <strong>demonstrationsdata</strong> (exempel på konversationer mellan människor och AI-assistenter, skrivna av experter på annotering enligt exakta riktlinjer för ton och stil), <strong>säkerhetsdata</strong> (specifika exempel som lär modellen att undvika farligt innehåll genom att visa hur man avvisar problematiska förfrågningar), eller <strong>specialiserad data</strong> som täcker specifika områden (medicin, juridik, utbildning, etc.).",
+                    "c": "Preferensdata presenterar flera möjliga svar på en enda fråga, rangordnade efter kvalitet av mänskliga utvärderare. Användare anger vilket svar som är bäst enligt givna kriterier, såsom relevans, användbarhet och skadlighet. När dessa datamängder har skapats används de för att träna modeller genom att justera dem enligt de preferenser som användarna uttrycker.",
+                    "title": "Specifika datamängder"
+                }
+            }
         }
     }
 }
