@@ -26,9 +26,19 @@
 
   const utilyCards = (
     [
-      { i18nKey: 'compare', src: '/home/comparer.svg', classes: '' },
-      { i18nKey: 'test', src: '/home/tester.png', classes: '' },
-      { i18nKey: 'measure', src: '/home/mesurer.svg', classes: 'px-14 py-5' }
+      {
+        i18nKey: 'compare',
+        src: '/home/comparer.svg',
+        srcDark: '/home/comparer-dark.jpg',
+        classes: ''
+      },
+      { i18nKey: 'test', src: '/home/tester.png', srcDark: '/home/tester-dark.jpg', classes: '' },
+      {
+        i18nKey: 'measure',
+        src: '/home/mesurer.svg',
+        srcDark: '/home/mesurer-dark.jpg',
+        classes: 'px-14 py-5'
+      }
     ] as const
   ).map(({ i18nKey, ...card }) => ({
     ...card,
@@ -179,7 +189,15 @@
               src={card.src}
               alt={card.alt}
               class={[
-                'fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey rounded-t-xl object-contain',
+                'fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey rounded-t-xl object-contain dark:hidden',
+                card.classes
+              ]}
+            />
+            <img
+              src={card.srcDark}
+              alt={card.alt}
+              class={[
+                'fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey hidden rounded-t-xl object-contain dark:block',
                 card.classes
               ]}
             />
@@ -194,7 +212,10 @@
   </section>
 
   <!-- TODO remove hidden -->
-  <section id="european" class="hidden fr-container--fluid bg-light-info pb-18 lg:pb-25 pt-10 lg:pt-20">
+  <section
+    id="european"
+    class="fr-container--fluid bg-light-info pb-18 lg:pb-25 hidden pt-10 lg:pt-20"
+  >
     <div class="fr-container max-w-[1150px]! flex flex-col gap-8 lg:flex-row lg:items-center">
       <div class="lg:max-w-[360px]">
         <h3 class="mb-4! fr-h2 max-w-[320px]">
