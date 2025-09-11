@@ -7,6 +7,12 @@
   mask-image: url('/icons/alignment-star.svg');
 }
 
+.fr-icon-association::before,
+.fr-icon-association::after {
+  -webkit-mask-image: url('/icons/association.svg');
+  mask-image: url('/icons/association.svg');
+}
+
 .fr-icon-book-open::before,
 .fr-icon-book-open::after {
   -webkit-mask-image: url('/icons/book-open-line.svg');
@@ -23,6 +29,13 @@
 .fr-icon-brain::after {
   -webkit-mask-image: url('/icons/brain.svg');
   mask-image: url('/icons/brain.svg');
+}
+
+/* TODO: should be available in dsfr at some point? */
+.fr-icon-building-4-line::before,
+.fr-icon-building-4-line::after {
+  -webkit-mask-image: url('/icons/building-4-line.svg');
+  mask-image: url('/icons/building-4-line.svg');
 }
 
 .fr-icon-chat-charts::before,
@@ -91,8 +104,21 @@
   mask-image: url('/icons/ruler.svg');
 }
 
+/* TODO: should be available in dsfr at some point? */
+.fr-icon-school-line::before,
+.fr-icon-school-line::after {
+  -webkit-mask-image: url('/icons/school-line.svg');
+  mask-image: url('/icons/school-line.svg');
+}
+
 .fr-icon-shuffle::before,
 .fr-icon-shuffle::after {
   -webkit-mask-image: url('/icons/shuffle.svg');
   mask-image: url('/icons/shuffle.svg');
+}
+
+.fr-icon-university::before,
+.fr-icon-university::after {
+  -webkit-mask-image: url('/icons/university.svg');
+  mask-image: url('/icons/university.svg');
 }
