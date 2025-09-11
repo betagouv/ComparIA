@@ -11,6 +11,7 @@
     initialId = tabs[0].id,
     noBorders = false,
     panelClass = '',
+    kind = 'tab',
     tab,
     ...props
   }: {
@@ -19,6 +20,7 @@
     initialId?: T['id']
     noBorders?: boolean
     panelClass?: ClassValue
+    kind?: 'tab' | 'nav'
     tab?: Snippet<[T]>
   } & SvelteHTMLElements['div'] = $props()
 
@@ -32,7 +34,7 @@
         role: 'tab',
         'aria-selected': tab.id === initialId ? true : false,
         'aria-controls': `tab-${tab.id}-panel`,
-        class: 'fr-tabs__tab',
+        class: kind === 'tab' ? 'fr-tabs__tab' : 'fr-nav__link',
         onclick: () => (currentTabId = tab.id)
       },
       ...tab
@@ -40,7 +42,14 @@
   )
 </script>
 
-<div {...props} class={['fr-tabs', { 'before:shadow-none! shadow-none!': noBorders }, props.class]}>
+<div
+  {...props}
+  class={[
+    'fr-tabs',
+    { 'tabs-nav': kind === 'nav', 'before:shadow-none! shadow-none!': noBorders },
+    props.class
+  ]}
+>
   <ul class="fr-tabs__list" role="tablist" aria-label={label}>
     {#each items as item}
       <li role="presentation">
@@ -87,6 +96,37 @@
         --border-active-blue-france: var(--blue-france-main-525);
         @apply text-primary;
       }
+    }
+  }
+
+  .tabs-nav {
+    .fr-tabs__list {
+      height: unset !important;
+      min-height: unset !important;
+    }
+  }
+
+  .fr-nav__link {
+    position: relative;
+    padding: 12px;
+    min-height: unset;
+
+    &[aria-selected='true'] {
+      &::before {
+        background-color: var(--border-active-blue-france);
+      }
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      margin-top: 0;
+      background-color: var(--border-default-grey);
     }
   }
 </style>

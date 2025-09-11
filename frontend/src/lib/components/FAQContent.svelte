@@ -47,7 +47,7 @@
   ]
 </script>
 
-<Tabs {tabs} noBorders label="Foire aux questions">
+<Tabs {tabs} noBorders kind="nav" label={m['faq.title']()}>
   {#snippet tab({ id })}
     {#each tabs as tab (tab.id)}
       {#if id === tab.id}
