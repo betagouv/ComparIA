@@ -9,6 +9,8 @@ r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 from languia.config import MAX_INPUT_CHARS_PER_HOUR
 
 def increment_input_chars(ip: str, input_chars: int):
+    if not redis_host:
+        return False
     r.incrby(f'ip:{ip}', input_chars)
     r.expire(f'ip:{ip}', 3600 * 2)
     return True
