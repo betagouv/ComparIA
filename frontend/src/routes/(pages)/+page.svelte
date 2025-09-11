@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Accordion, AccordionGroup, Button, Icon, Link } from '$components/dsfr'
+  import { Accordion, AccordionGroup, Button, Checkbox, Icon, Link } from '$components/dsfr'
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
@@ -10,17 +10,17 @@
 
   const locale = getLocale()
   const acceptTos = useLocalStorage('comparia:tos', false)
-  let showError = $state(false)
+  let tosError = $state<string>()
 
   $effect(() => {
-    if (acceptTos.value) showError = false
+    if (acceptTos.value) tosError = undefined
   })
 
   function handleRedirect() {
     if (acceptTos.value) {
       window.location.href = '/arene/?cgu_acceptees'
     } else {
-      showError = true
+      tosError = m['home.intro.tos.error']()
     }
   }
 
@@ -141,35 +141,15 @@
             <p>{m['home.intro.desc']()}</p>
           </div>
 
-          <div
-            class="fr-checkbox-group fr-checkbox-group--sm"
-            class:fr-checkbox-group--error={showError}
-          >
-            <input
-              aria-describedby="checkbox-error-messages"
-              id="accept_tos"
-              type="checkbox"
-              bind:checked={acceptTos.value}
-            />
-            <label class="fr-label fr-text--sm block!" for="accept_tos">
-              {@html sanitize(
-                m['home.intro.tos.accept']({
-                  linkProps: propsToAttrs({ href: '/modalites', target: '_blank' })
-                })
-              )}
-              <p class="fr-message">{m['home.intro.tos.help']()}</p>
-            </label>
-            <div
-              class="fr-messages-group"
-              id="checkbox-error-messages"
-              aria-live="assertive"
-              class:fr-hidden={!showError}
-            >
-              <p class="fr-message fr-message--error" id="checkbox-error-message-error">
-                {m['home.intro.tos.error']()}
-              </p>
-            </div>
-          </div>
+          <Checkbox
+            bind:checked={acceptTos.value}
+            id="tos-home"
+            label={m['home.intro.tos.accept']({
+              linkProps: propsToAttrs({ href: '/modalites', target: '_blank' })
+            })}
+            help={m['home.intro.tos.help']()}
+            error={tosError}
+          />
         </div>
 
         <Button
@@ -383,15 +363,6 @@
 </main>
 
 <style lang="postcss">
-  .fr-checkbox-group input[type='checkbox'] + label:before {
-    --border-action-high-blue-france: var(--blue-france-main-525);
-  }
-
-  .fr-checkbox-group input[type='checkbox']:checked + label:before {
-    --border-active-blue-france: var(--blue-france-main-525);
-    background-color: var(--blue-france-main-525);
-  }
-
   .arrow {
     height: 62px;
     width: 16px;

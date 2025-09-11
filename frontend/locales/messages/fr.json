@@ -851,7 +851,7 @@
             "tos": {
                 "accept": "J'accepte les <a {linkProps}>conditions générales d’utilisation</a>",
                 "error": "Vous devez accepter les modalités d'utilisation pour continuer",
-                "help": "Les données sont partagées à des fins de recherche"
+                "help": "Vos données sont partagées à des fins de recherche"
             }
         },
         "origin": {
