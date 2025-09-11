@@ -290,9 +290,7 @@
   @media (min-width: 48em) {
     span.bot :global(h1),
     span.bot :global(h2),
-    span.bot :global(h3) {
-      font-size: 1.5rem;
-    }
+    span.bot :global(h3),
     span.bot :global(h4) {
       font-size: 1.375rem;
     }
