@@ -39,7 +39,7 @@
 
 {#snippet desc()}
   <p class="text-grey text-sm! mb-0! leading-normal! mt-2! md:mt-0!">
-    {#if arena.chat.step == 2}
+    {#if arena.chat.step == 1}
       {m['header.chatbot.stepOne.description']()}
     {:else}
       {m['header.chatbot.stepTwo.description']()}
