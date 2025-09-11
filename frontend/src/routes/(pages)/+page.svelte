@@ -193,7 +193,8 @@
     </div>
   </section>
 
-  <section id="european" class="fr-container--fluid bg-light-info pb-18 lg:pb-25 pt-10 lg:pt-20">
+  <!-- TODO remove hidden -->
+  <section id="european" class="hidden fr-container--fluid bg-light-info pb-18 lg:pb-25 pt-10 lg:pt-20">
     <div class="fr-container max-w-[1150px]! flex flex-col gap-8 lg:flex-row lg:items-center">
       <div class="lg:max-w-[360px]">
         <h3 class="mb-4! fr-h2 max-w-[320px]">

@@ -62,14 +62,15 @@
           <div
             class="fr-header__service before:content-none! md:px-3! mx-1! sm:mx-3! flex w-1/2 grow sm:w-auto"
           >
-            <img
+            <!-- TODO readd -->
+            <!-- <img
               src="/orgs/comparia.svg"
               aria-hidden="true"
               alt=""
               width="66"
               height="47"
               class="me-3 hidden sm:block"
-            />
+            /> -->
             <div>
               <p class="fr-header__service-title mb-0! leading-normal!">
                 <a href="/" title={m['header.homeTitle']()}>

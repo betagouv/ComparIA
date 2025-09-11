@@ -6,7 +6,7 @@
   const navLinks = [
     { href: '/', label: m['seo.titles.home']() },
     { href: '/product', label: m['seo.titles.product']() },
-    { href: '/ranking', label: m['seo.titles.ranking']() },
+    // { href: '/ranking', label: m['seo.titles.ranking']() },
     { href: '/modeles', label: m['seo.titles.modeles']() },
     { href: '/datasets', label: m['seo.titles.datasets']() },
     // { href: '/news', label: m['seo.titles.news']() }

@@ -775,7 +775,7 @@
         }
     },
     "header": {
-        "banner": "Le comparateur est désormais disponible en lituanien 🇱🇹 en suédois 🇸🇪 et en danois 🇩🇰 !",
+        "banner": "Claude 4, GLM 4.5, GPT OSS et d’autres nouveaux modèles rejoignent l'arène…à tester !",
         "chatbot": {
             "newDiscussion": "Nouvelle discussion",
             "step": "Étape",
@@ -1133,9 +1133,9 @@
             },
             "cta": "Accéder au comparateur",
             "europe": {
-                "adventure": "Depuis l’été 2025, la Lituanie, la Suède et le Danemark rejoignent l’aventure !",
+                "adventure": "A partir de l’automne, la Lituanie, la Suède et le Danemark rejoignent l’aventure !",
                 "catch": "Vous souhaitez disposer du comparateur dans votre langue ?",
-                "desc": "Le comparateur est mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
+                "desc": "Le comparateur sera mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
                 "title": "Le comparateur <span {props}>devient européen</span> !"
             },
             "tabLabel": "Le comparateur",
