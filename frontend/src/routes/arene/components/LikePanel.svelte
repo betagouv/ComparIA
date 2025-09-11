@@ -125,7 +125,7 @@
       <label
         class:disabled
         class:selected={selection.includes(value)}
-        class="checkbox-btn cg-border bg-white! px-2! md:px-4! py-1!"
+        class="checkbox-btn cg-border bg-white! px-2! md:px-3! py-1! text-[14px]"
         aria-checked={selection.includes(value)}
         aria-disabled={disabled ? 'true' : 'false'}
         tabindex="0"
@@ -150,7 +150,7 @@
       <button
         {disabled}
         class:selected={comment !== ''}
-        class="checkbox-btn cg-border bg-white! px-2! md:px-4! py-1!"
+        class="checkbox-btn cg-border bg-white! px-2! md:px-3! py-1! text-[14px]!"
         data-fr-opened="false"
         aria-controls={modalId}
       >
