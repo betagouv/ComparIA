@@ -1349,12 +1349,15 @@
         "yours": "Votre vote"
     },
     "welcome": {
-        "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées",
+        "errors": "Les IA peuvent faire des erreurs : nous vous encourageons à vérifier les informations communiquées.",
         "go": "C'est parti",
-        "goodPractices": "Voici quelques bonnes pratiques :",
-        "privacy": "Ne communiquez pas d'informations personnelles comme votre nom, prénom ou adresse",
-        "title": "Bienvenue dans compar:IA !",
-        "use": "N'utilisez pas le comparateur à des fins illégales ou nuisibles"
+        "privacy": "Ne communiquez pas d’informations personnelles comme votre nom, prénom ou adresse.",
+        "title": "Bienvenue sur compar:IA !",
+        "tos": {
+            "desc": "Les conversations et les préférences que vous exprimez sur compar:IA sont utilisées de manière anonyme pour constituer des jeux de données représentatifs des langues et usages européens, afin de réduire les biais culturels et proposer de futurs modèles d’IA plus inclusifs.",
+            "moreInfos": "En savoir plus sur le projet."
+        },
+        "use": "N’utilisez pas l’arène à des fins illégales ou nuisibles."
     },
     "words": {
         "back": "Retour",
