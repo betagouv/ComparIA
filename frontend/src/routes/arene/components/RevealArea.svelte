@@ -24,7 +24,7 @@
 <div id="reveal-area" class="fr-container mt-8! md:mt-10!" {@attach scrollTo}>
   <div class="grid gap-5 lg:grid-cols-2 lg:gap-6">
     {#each modelsData as { model, side, kwh, co2, tokens, lightbulb, lightbulbUnit, streaming, streamingUnit } (side)}
-      {@const modelBadges = (['size', 'releaseDate', 'licenseName'] as const)
+      {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
 
@@ -105,7 +105,7 @@
             units="g"
             desc={m['reveal.equivalent.co2.label']()}
             icon="cloudy-2-fill"
-            iconClass="text-grey"
+            iconClass="text-(--grey-975-75-active)"
             tooltip={m['reveal.equivalent.co2.tooltip']()}
           />
 
