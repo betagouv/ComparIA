@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import { Button, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -73,7 +74,11 @@
             /> -->
             <div>
               <p class="fr-header__service-title mb-0! leading-normal!">
-                <a href="/" title={m['header.homeTitle']()}>
+                <a
+                  href="/"
+                  target={page.url.pathname.includes('arene') ? '_blank' : undefined}
+                  title={m['header.homeTitle']()}
+                >
                   {m['header.title.compar']()}:{m['header.title.ia']()}
                 </a>
               </p>
