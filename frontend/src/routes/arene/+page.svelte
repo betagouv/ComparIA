@@ -4,7 +4,7 @@
   import SeoHead from '$components/SEOHead.svelte'
   import { arena, modeInfos, runChatBots } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { ViewChat, ViewPrompt, WelcomeModal } from './components'
+  import { TOSModal, ViewChat, ViewPrompt } from './components'
 
   const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
   let toggled = $state(false)
@@ -26,7 +26,7 @@
 
 <SeoHead title={m['seo.titles.arene']()} />
 
-<WelcomeModal />
+<TOSModal />
 
 <Header
   hideNavigation
