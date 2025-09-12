@@ -1,24 +1,53 @@
 {
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "contact": "Contact us",
+        "contactUs": "Contact us",
+        "copyLink": {
+            "do": "Copy the link",
+            "done": "Link copied to clipboard"
+        },
+        "copyMessage": {
+            "do": "Copy the message",
+            "done": "Message copied"
+        },
+        "home": "Homepage",
+        "returnHome": "Return to homepage",
+        "seeMore": "See more",
+        "selectLanguage": "Select a language",
+        "vote": "Give feedback"
+    },
     "arenaHome": {
-        "title": "How can I help you today?",
+        "compareModels": {
+            "count": "{count}/2 models",
+            "help": "If you only choose one, the second will be selected randomly",
+            "question": "Which models would you like to compare?"
+        },
         "modelSelection": "Model selection",
         "prompt": {
             "label": "Write your first message",
             "placeholder": "Write your first message here"
         },
         "selectModels": {
-            "question": "Which models would you like to compare?",
-            "help": "Choose the comparison mode"
-        },
-        "compareModels": {
-            "question": "Which models would you like to compare?",
-            "count": "{count}/2 models",
-            "help": "If you only choose one, the second will be selected randomly"
+            "help": "Choose the comparison mode",
+            "question": "Which models would you like to compare?"
         },
         "suggestions": {
-            "title": "Suggested prompts",
-            "generateAnother": "Generate another prompt",
             "choices": {
+                "administrative": {
+                    "iconAlt": "Administrative",
+                    "title": "Write an administrative document"
+                },
+                "coach": {
+                    "iconAlt": "Advice",
+                    "title": "Give me advice on health and fitness"
+                },
+                "explanations": {
+                    "iconAlt": "Explanation",
+                    "title": "Explain a concept"
+                },
                 "iasummit": {
                     "iconAlt": "AI Action Summit",
                     "title": "Prompts from a citizen consultation on AI",
@@ -28,799 +57,372 @@
                     "iconAlt": "Ideas",
                     "title": "Generate new ideas"
                 },
-                "explanations": {
-                    "iconAlt": "Explanation",
-                    "title": "Explain a concept"
-                },
                 "languages": {
                     "iconAlt": "Translation",
                     "title": "Write in another language"
-                },
-                "administrative": {
-                    "iconAlt": "Administrative",
-                    "title": "Write an administrative document"
                 },
                 "recipes": {
                     "iconAlt": "Cooking",
                     "title": "Show me new recipes"
                 },
-                "coach": {
-                    "iconAlt": "Advice",
-                    "title": "Give me advice on health and fitness"
+                "recommendations": {
+                    "iconAlt": "Recommendations",
+                    "title": "Suggest films, books, music"
                 },
                 "stories": {
                     "iconAlt": "Stories",
                     "title": "Tell me a story"
-                },
-                "recommendations": {
-                    "iconAlt": "Recommendations",
-                    "title": "Suggest films, books, music"
                 }
+            },
+            "generateAnother": "Generate another prompt",
+            "title": "Suggested prompts"
+        },
+        "title": "How can I help you today?"
+    },
+    "chatbot": {
+        "continuePrompt": "Continue the chat with the AI models",
+        "conversation": "Chat",
+        "errors": {
+            "other": {
+                "message": "A temporary error has occurred.",
+                "retry": "You can retry to query the models again.",
+                "title": "Oops, temporary error",
+                "vote": "Or finish the experience by giving your preference on these models."
+            },
+            "tooLong": {
+                "message": "Each model is limited in the size of conversations it can handle.",
+                "retry": "You can restart a chat with two new models.",
+                "title": "Oops, the conversation is too long for one of the models.",
+                "vote": "You can still give your preference on these models or start a conversation with two new ones."
             }
-        }
+        },
+        "loading": "Loading answers",
+        "reasoning": {
+            "finished": "Reasoning completed",
+            "inProgress": "Reasoning in progress…"
+        },
+        "revealButton": "Reveal the models"
     },
     "closeModal": "Close the popup",
-    "models": {
-        "licenses": {
-            "type": {
-                "proprietary": "Proprietary",
-                "openSource": "Open source",
-                "semiOpen": "Semi-open"
-            },
-            "name": "License {licence}",
-            "commercial": "Commercial license",
-            "noDesc": "Licensing information has not been filled for this model.",
-            "descriptions": {
-                "MIT": "The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices.",
-                "Apache 2.0": "This license allows for free use, modification, and distribution, even for commercial purposes. In addition to freedom of use, it guarantees legal protection by including a non-infringement clause and transparency: all modifications must be documented and are therefore traceable.",
-                "Gemma": "This license is designed to encourage the use, modification, and redistribution of the software but includes a clause stating that all modified or improved versions must be shared with the community under the same license, thus promoting collaboration and transparency in software development.",
-                "Llama 3 Community": "This license allows the free use, modification, and distribution of the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users and prohibits the reuse of the code or generated content for training or improving competing models, thus protecting Meta's technology investments and brand.",
-                "Llama 3.1": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
-                "Llama 3.3": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
-                "Llama 4": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
-                "Jamba Open Model": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for organizations with over $50 million in annual revenue.",
-                "CC-BY-NC-4.0": "This license allows you to share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights.",
-                "propriétaire Gemini": "The model is available under a paid license and accessible via the Gemini API available on the Google AI Studio and Vertex AI platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
-                "propriétaire Mistral": "The model is available under a paid license and accessible via the Mistral and other partner APIs, requiring a pay-per-use fee based on the number of tokens processed.",
-                "propriétaire xAI": "The model is accessible via the xAI API, requiring pay-per-use based on the number of tokens processed or according to the company's terms.",
-                "propriétaire Liquid": "The model is available under a paid license and accessible via API on Liquid AI's platforms, requiring a pay-per-use fee based on the number of tokens processed.",
-                "propriétaire OpenAI": "The model is available under a paid license and accessible via API on OpenAI's platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
-                "propriétaire Anthropic": "The model is available under a paid license and accessible via API on Anthropic's platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
-                "Mistral AI Non-Production": "This license allows you to share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights."
-            }
+    "components": {
+        "pagination": {
+            "first": "First page",
+            "label": "Pages",
+            "last": "Last page",
+            "next": "Next page",
+            "nth": "Page {count}",
+            "previous": "Previous page"
         },
-        "release": "Released on {date}",
-        "size": {
-            "estimated": "Estimated size ({size})",
-            "title": "Size",
-            "descriptions": {
-                "XS": "Very small models, with fewer than 7 billion parameters, are the least complex and most resource-efficient, providing sufficient performance for simple tasks such as text classification.",
-                "S": "A small model is less complex and resource-intensive compared to larger models, while still providing sufficient performance for various tasks (summarization, translation, text classification, etc.)",
-                "M": "Medium sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.",
-                "L": "Large models require significant resources, but offer the best performance for advanced tasks like creative writing, dialogue modeling, and applications requiring a fine-grained understanding of context.",
-                "XL": "These models, with hundreds of billions of parameters, are the most complex and advanced in terms of performance and accuracy. The computing and memory resources required to deploy these models are such that they are intended for the most advanced applications and highly specialized environments."
-            }
+        "table": {
+            "linePerPage": "Number of lines per page",
+            "pageCount": "{count} lines per page",
+            "triage": "Sort"
         },
-        "parameters": "{number} parameters",
-        "names": {
-            "a": "Model A",
-            "b": "Model B"
-        },
-        "conditions": "Terms of Use",
-        "openWeight": {
-            "conditions": {
-                "free": "Permissive",
-                "copyleft": "Copyleft",
-                "restricted": "Conditional"
+        "theme": {
+            "legend": "Choose a theme to customize the appearance of the site.",
+            "options": {
+                "dark": "Dark theme",
+                "light": "Light theme",
+                "system": "System",
+                "systemSub": "Use system settings"
             },
-            "tooltips": {
-                "openSource": "The training data, code, and weights of this model (i.e., the parameters learned during its training) are fully downloadable and modifiable by the public, allowing them to run and modify the model on their own hardware. Whether a model is \"open source\" is more restrictive than \"open weights,\" in particular because of the need for transparency of the training corpus, and few models are considered \"open source.\"",
-                "openWeight": "A so-called \"open weights\" model whose weights, i.e. the parameters learned during training, are downloadable by the public, allowing them to run the model on their own hardware. Whether a model is \"open source\" is more restrictive (mainly in relation to the transparency of the training corpus), and few models are considered \"open source\".",
-                "params": "Parameters or weights, counted in billions, are the variables learned by a model during training that determine its responses. The greater the number of parameters, the more learning capacity they have.",
-                "free": "Once modified, the model may be redistributed under a different license than the source model.",
-                "copyleft": "Once modified, the model must be redistributed under the same license as the source model.",
-                "ram": "RAM (random access memory) stores data processed by an LLM in real time. The larger the model, the more RAM it needs to run."
-            },
-            "descriptions": {
-                "XS": "With {paramsCount} billion parameters, this model is part of the very small model category (less than 7 billion parameters).",
-                "S": "With {paramsCount} billion parameters, this model is part of the small model category (between 7 and 20 billion parameters).",
-                "M": "With {paramsCount} billion parameters, this model is part of the medium-sized model category (between 20 and 70 billion parameters).",
-                "L": "With {paramsCount} billion parameters, this model is part of the large model category (between 70 and 100 billion parameters).",
-                "XL": "With {paramsCount} billion parameters, this model is part of the very large model category."
-            },
-            "use": {
-                "commercial": "Commercial Use",
-                "modification": "Modification authorized",
-                "attribution": "Attribution required",
-                "licenseType": "License type",
-                "requiredRam": "RAM required"
-            }
-        },
-        "ram": "{min} to {max} GB",
-        "extra": {
-            "title": "To learn more",
-            "experts": {
-                "open-weights": "To dive deeper, check out the <a {linkProps}>model page on Hugging Face</a>",
-                "api-only": "To dive deeper, check out the <a {linkProps}>official model website</a>"
-            },
-            "impacts": "Environmental impact calculations are based on the <a {linkProps1}>EcoLogits</a> and <a {linkProps2}>Impact CO<sub>2</sub></a> projects."
-        },
-        "list": {
-            "title": "Discover the models",
-            "intro": "Explore the different conversational AI models available, their specifications, and licenses.",
-            "filters": {
-                "editor": {
-                    "legend": "Publisher"
+            "title": "Display settings"
+        }
+    },
+    "datasets": {
+        "access": {
+            "catch": "Model publishers, researchers, companies, now it's your turn!",
+            "desc": "The platform’s questions and preferences are primarily in French, Danish, Swedish and Lithuanian, capturing organic, real-world usage - not artificial prompts. These datasets are publicly available on <a {linkProps}>data.gouv.fr</a> and Hugging Face.",
+            "repos": {
+                "conversations": {
+                    "desc": "All the questions and answers",
+                    "title": "/conversations"
                 },
-                "size": {
-                    "legend": "Size (in billions of parameters)",
-                    "labels": {
-                        "XS": "< 7 billion",
-                        "S": "7 to 20 billion",
-                        "M": "20 to 70 billion",
-                        "L": "70 to 150 billion",
-                        "XL": "> 150 billion"
-                    }
+                "reactions": {
+                    "desc": "All the reactions to messages",
+                    "title": "/reactions"
                 },
-                "license": {
-                    "legend": "License"
-                },
-                "display": "Show filters"
-            },
-            "triage": {
-                "label": "Sort by",
-                "options": {
-                    "name-asc": "Model name (A to Z)",
-                    "date-desc": "Release date (newest to oldest)",
-                    "params-asc": "Size (smallest to largest)",
-                    "org-asc": "Publisher (A to Z)"
+                "votes": {
+                    "desc": "All the preferences expressed",
+                    "title": "/votes"
                 }
             },
-            "model": "model",
-            "models": "models",
-            "noresults": "No models match your search criteria."
+            "share": "Show us how you’re using the data",
+            "title": "Access compar:IA datasets"
+        },
+        "reuse": {
+            "bunka": {
+                "analyze": {
+                    "desc": "Analysis of user conversations with detection of tasks (creation, information search, etc.), topics (arts and culture, education, etc.), complex emotions (curiosity, enthusiasm, etc.), language tones (formal, professional, etc.)",
+                    "title": "Access the analysis"
+                },
+                "conversations": {
+                    "desc": "Interactive visualization of conversations where each cluster represents a recurring theme discussed by users (such as education, health, the environment, or even philosophy).",
+                    "title": "Explore the data visualization"
+                },
+                "desc": "The Bunka.ai team conducted a large-scale study of user-AI interactions on the chatbot arena, mapping out dominant themes, key tasks, and the balance between automation vs. human augmentation. Their analysis based on 25,000 real conversations offers rare empirical insight into how people actually use AI.",
+                "method": "Learn more about the methodology"
+            },
+            "desc": "Examples of compar:IA dataset reuses",
+            "title": "How is this data used?"
         }
     },
-    "modes": {
-        "random": {
-            "title": "Random mode",
-            "label": "Random",
-            "altLabel": "Random model selection",
-            "description": "Two models chosen randomly from the full list"
+    "errors": {
+        "404": {
+            "desc": "If you typed the URL into your browser, check if it's correct. The page may no longer be available. <br />You can continue by visiting our homepage. <br /> If you struggle to find a page you are looking for, contact us so we can redirect you to the correct URL.",
+            "error": "Error 404",
+            "sorry": "The page you are looking for cannot be found. We apologize for the inconvenience.",
+            "title": "Page not found"
         },
-        "custom": {
-            "title": "Manual selection mode",
-            "label": "Manual selection",
-            "altLabel": "Manual model selection",
-            "description": "Will you recognize the two models you chose?"
+        "unexpected": {
+            "desc": "Please try refreshing the page or try again later.",
+            "error": "Error {code}",
+            "sorry": "Our apologies, there is an issue with the service, we are working to resolve it as quickly as possible.",
+            "title": "Unexpected error"
         },
-        "small-models": {
-            "title": "Frugal mode",
-            "label": "Frugal",
-            "altLabel": "Frugal model selection",
-            "description": "Two small models chosen randomly"
-        },
-        "big-vs-small": {
-            "title": "David vs Goliath mode",
-            "label": "David vs Goliath",
-            "altLabel": "David vs Goliath model selection",
-            "description": "One small model against one big model, both chosen randomly"
-        },
-        "reasoning": {
-            "title": "Reasoning mode",
-            "label": "Reasoning",
-            "altLabel": "Reasoning model selection",
-            "description": "Two reasoning models chosen randomly"
-        }
+        "unknown": "An error has occurred"
     },
-    "vote": {
-        "title": "Which AI model do you prefer",
-        "bothEqual": "Both are equally good",
-        "comment": {
-            "add": "Add comments",
-            "placeholder": "You can add details about model {model}'s response"
-        },
-        "choices": {
-            "positive": {
-                "question": "What did you like about the answer?",
-                "useful": "Useful",
-                "complete": "Complete",
-                "creative": "Creative",
-                "clear-formatting": "Clear formatting"
+    "faq": {
+        "datasets": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Preference data is used to improve models during future training. </p> <p> By blindly comparing the responses of two models, compar:IA users express their preferences, indicating which responses are most relevant. This preference data can be used to improve model alignment—that is, to train them to generate responses that are more in line with user expectations and preferences. </p> <p> This is an iterative process, where the model gradually learns to generate better responses based on feedback from humans on the quality of the responses. By being exposed to preference data, models adjust their response style. </p>",
+                    "title": "Does preference data have an immediate effect on model performance?"
+                },
+                "2": {
+                    "desc": "<p> The uniqueness of the data collected on the compar:IA platform is that it is in lower ressourced languages and corresponds to real-life user tasks. This data reflects human preferences in specific linguistic and cultural contexts. This data allows us to adjust the models to make them more relevant, accurate, and adapted to user needs, while attempting to address any biases or gaps. </p>",
+                    "title": "Why are the votes on compar:IA useful?"
+                },
+                "3": {
+                    "desc": "<p> compar:IA positions itself as a low-ressourced language assessment and alignment tool for language models, focused on response quality and preference data collection, thus distinguishing itself from the global ranking approach of <a href='https://lmarena.ai/' target='_blank'> chatbot arena </a> developed by <a href='http://lmsys.org' target='_blank'> lmsys.org </a> and the ethical alignment of AI models of <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a> . </p>",
+                    "title": "What makes compar:IA different from other similar initiatives?"
+                }
             },
-            "negative": {
-                "question": "Why did you not like the answer",
-                "incorrect": "Incorrect",
-                "superficial": "Superficial",
-                "instructions-not-followed": "Instructions not followed"
+            "title": "Dataset"
+        },
+        "ecology": {
+            "questions": {
+                "1": {
+                    "desc": "<p> compar:AI uses the methodology developed by <a target='_blank' href='https://ecologits.ai/latest/'> <strong> Ecologits </strong> (GenAI Impact) </a> to provide an estimation for energy consumed that allows users to compare the environmental impact of different AI models for the same query. This transparency is essential to encourage the development and adoption of more eco-responsible AI models. </p> <p> Ecologits applies the principles of Life Cycle Assessment (LCA) in accordance with ISO 14044, focusing for the moment on the impact of <strong> inference </strong> (i.e., the use of models to answer queries) and the <strong> manufacturing of graphics cards </strong> (resource extraction, manufacturing, and transportation). </p> <p> The model's power consumption is estimated by taking into account various parameters such as the size of the AI model used, the location of the servers where the models are deployed, and the number of output tokens. The calculation of the global warming potential indicator expressed in CO2 equivalent is derived from the model's power consumption measurement. </p> <p> It is important to note that methodologies for assessing the environmental impact of AI are still under development. </p>",
+                    "title": "How are environmental metrics calculated?"
+                },
+                "2": {
+                    "desc": "<p> Data center locations play a very significant role in AI's carbon footprint. If a model is trained or used in a country heavily dependent on fossil fuels, its environmental impact will be greater than if it is hosted in a country that uses mostly renewable energy. </p> <p> The AI environmental impact analysis method developed by <a target='_blank' href='https://ecologits.ai/latest/'> Ecologits (from GenAI Impact) </a> incorporates data on the energy mix of the different countries where the servers are located. This allows for a more accurate and nuanced estimate of the actual carbon footprint of inference on different generative AI models. </p>",
+                    "title": "Do environmental metrics take into account the energy mix of different countries?"
+                },
+                "3": {
+                    "desc": "<p> Many environmental impact metrics focus primarily on the impact of <strong> inference </strong> , that is, the use of AI models to answer queries. This approach may give the illusion that inference is less energy-intensive than model training. However, <strong> the reality is more complex. </strong> Consider the car analogy: </p> <ul> <li> Building a car (training) is a one-time, resource-intensive process. </li> <li> Each car journey (inference) uses less energy, but these journeys are repeated daily, and their number is potentially immense. </li> </ul> <p> Similarly <strong> the cumulative impact of inference, across millions of users querying daily, is often signficantly greater than the impact of initial training <strong> This is why it is crucial that AI carbon footprint assessment tools consider the entire lifecycle </strong> models, from training to inference </strong>  </p>",
+                    "title": "Do environmental impact estimations take into account the resources used to train the models?"
+                }
             },
-            "altText": "{choice} for model {model}"
+            "title": "Environmental data"
         },
-        "introA": "Before finding out the identity of the models, we need your vote.",
-        "introB": "It allows us to improve the compar:IA datasets, the objective of which is to refine future AI models on less-resourced languages",
-        "qualify": {
-            "question": "How would you describe its answers?",
-            "placeholder": "The responses from the {model} model are...",
-            "addDetails": "Add details"
-        },
-        "like": {
-            "label": "I like",
-            "selectedLabel": "I like (selected)"
-        },
-        "dislike": {
-            "label": "I dislike",
-            "selectedLabel": "I dislike (selected)"
-        },
-        "yours": "Your vote"
-    },
-    "words": {
-        "back": "Back",
-        "close": "Close",
-        "random": "Random",
-        "regenerate": "Regenerate",
-        "send": "Send",
-        "validate": "Validate",
-        "reset": "Reset",
-        "restart": "Start again",
-        "retry": "Start again",
-        "tooltip": "Tooltip",
-        "loading": "Loading",
-        "NA": "N / A",
-        "search": "Search"
-    },
-    "a11y": {
-        "externalLink": "{text}"
-    },
-    "seo": {
-        "title": "compar:IA, the AI chatbot arena",
-        "desc": "compar:IA is a tool that enables the blind comparison of different conversational AI models, raising awareness of the issues surrounding generative AI (plurality, bias, environmental impact) and helping to build language preference datasets for less-resourced languages.",
-        "titles": {
-            "home": "Home",
-            "product": "Product and partners",
-            "modeles": "Model list",
-            "datasets": "Datasets",
-            "comparator": "The arena",
-            "problem": "The initial challenge",
-            "history": "Project history",
-            "faq": "FAQ",
-            "partners": "Partners",
-            "news": "News",
-            "mentions-legales": "Legal notice",
-            "modalites": "Terms of use",
-            "donnees-personnelles": "Privacy policy",
-            "accessibilite": "Accessibility statement",
-            "arene": "Chat",
-            "share": "My results",
-            "ranking": "Leaderboard"
-        }
-    },
-    "header": {
-        "subtitle": "The chatbot arena",
-        "homeTitle": "Home - compar:IA",
-        "logoAlt": "French Republic",
-        "startDiscussion": "Start the discussion",
-        "help": {
-            "link": {
-                "title": "Give feedback on the arena – opens a new window",
-                "content": "Help us improve compar:IA"
-            }
-        },
-        "banner": "The chatbot arena is now available in Lithuanian 🇱🇹, Swedish 🇸🇪, and Danish 🇩🇰!",
-        "votes": {
-            "count": "{count} votes",
-            "objective": "Goal: {count}",
-            "legend": "Legend",
-            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the compar:IA dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
-        },
-        "chatbot": {
-            "step": "Step",
-            "stepOne": {
-                "title": "What do you think of the answers?",
-                "description": "Pay attention to both content and form, then evaluate each response."
+        "i18n": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Yes, the internationalization of compar:AI is underway. We are starting with an expansion to three pilot countries: Lithuania, Sweden, and Denmark. This first phase will allow us to test the approach and adapt the interface to different European linguistic and cultural contexts. Eventually, the circle may expand to more European languages based on feedback from these pilot countries. The objective is to gradually build a true European digital common for human evaluation of conversational AI, with collaborative governance that remains to be defined between the different participating countries. </p>",
+                    "title": "compar:IA initially focused on French: are there plans for other European languages?"
+                },
+                "2": {
+                    "desc": "<p> The development of a European platform for comparing conversational AI models offers several concrete advantages. It allows for the collection of preference data reflecting the real needs of European users, thus improving the relevance of model answers for this userbase. The publication of the datasets guarantees better representation of European languages and cultures, often underrepresented in global datasets and evaluations dominated by English. It also ensures compliance with European regulations (GDPR, AI Act) and integrates evaluation criteria aligned with European priorities such as environmental impact reduction and algorithmic transparency. Finally, it fosters the emergence of a competitive and autonomous European AI ecosystem. </p>",
+                    "title": "What are the advantages of a specifically European preference collection platform?"
+                }
             },
-            "stepTwo": {
-                "title": "Models are revealed!",
-                "description": "Discover the environmental impact of your conversations with each model"
-            },
-            "newDiscussion": "New chat"
+            "title": "Internationalization"
         },
-        "menu": "Menu",
-        "title": {
-            "compar": "compar",
-            "ia": "AI"
+        "models": {
+            "questions": {
+                "1": {
+                    "desc": "<p> We choose models based on their popularity, diversity, and relevance to users. We pay particular attention to making <em> open weights </em> and different size models available. </p>",
+                    "title": "How do you choose the models present in the arena ?"
+                },
+                "2": {
+                    "desc": "<p> Costs related to inference, that is, the ability to query the models, are covered by the compar:IA project's budget. </p>",
+                    "title": "How do you manage to keep this service free?"
+                },
+                "3": {
+                    "desc": "<p> Quantized models are optimized to consume fewer resources by simplifying certain calculations while aiming for the best response quality. </p> <p> Quantization is an optimization technique that involves reducing the precision of the numbers used to represent the parameters of an AI model. This allows <strong> to reduce the size of the model </strong> and <strong> to speed up calculations </strong> , which is particularly advantageous for inference on resource-constrained machines. </p>",
+                    "title": "What are “quantized models” ?"
+                },
+                "4": {
+                    "desc": "<p> <strong> A model's ability to speak multiple languages is related to the linguistic diversity of its training data, not to the country it was developed in </strong> . <strong> LLMs use huge corpora of data with many languages </strong> , but the distribution of languages in the training data is not uniform. An overrepresentation of English can lead to limitations in other languages. These limitations are visible, for example, in <strong> anglicisms or the inability to generate content in certain languages classified as \"endangered\" by UNESCO </strong> . </p> <p> <strong> The accuracy and richness of a model's vocabulary depend on the data used for its training </strong> . </p>",
+                    "title": "Is there a link between the nationality of the company or lab that created the model and its ability to speak several languages?"
+                },
+                "5": {
+                    "desc": "<p> Few stakeholders are “transparent” about the data sources used in training corpora. This information is often confidential for legal and commercial reasons. </p>",
+                    "title": "Can we see the training data of the models?"
+                }
+            },
+            "title": "Models"
+        },
+        "title": "Frequently Asked Questions",
+        "usage": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Current conversational language models are <strong> unable to cite their sources </strong> they used to generate an answer. They work by predicting the most likely next token based on the statistical distribution of the training data. While they can synthesize information from various sources, they do not keep track of where that information comes from. </p> <p> However, there are techniques like <strong> Retrieval Augmented Generation (RAG) </strong> that aim to overcome this limitation. RAG allows models to access external knowledge bases and <strong> provide contextualized information by citing the sources </strong> . This approach is useful for improving the transparency and reliability of model answers. </p>",
+                    "title": "Can models cite their sources?"
+                },
+                "2": {
+                    "desc": "<p> Have you asked the question: “Explain to me the latest trendy cheesecake recipe and cite your sources” and been disappointed with the answers? That's normal... </p> <p> <strong> “Raw” conversational AI models cannot answer questions about the most recent news. </strong> They are trained on static datasets and cannot interact with the web or open links. They do not have the ability to update themselves in real time with events unfolding in the world. The information the model has access to is limited to the date of its last training. </p> <p> Therefore, if you ask a question about a recent news event, the model will rely on outdated information, risking generating inaccurate answers. </p> <p> In the case of Perplexity, Copilot, or ChatGPT, the so-called “raw” conversational AI models are combined with other system blocks that allow them to connect to the internet to access information in real time. These are called “conversational agents.” </p>",
+                    "title": "If I ask a question about the latest news, can the model answer?"
+                },
+                "3": {
+                    "desc": "<p> If you include a URL in a query, the conversational model will not be able to access it directly. Language models process the query text but do not have the ability to interact with the web or open links. They are trained on a fixed text dataset, and their answers are based on this training data. When a question is asked, the models use this training to generate an answer but cannot access new information online if they are not enabled to do so by a surrounding system. </p> <p> As an analogy, imagine a student taking an exam without internet access. They can use their acquired knowledge to answer questions, but cannot visit websites for additional information. </p>",
+                    "title": "If I include an URL in a query, can the model access it?"
+                },
+                "4": {
+                    "desc": "<p> Models sometimes lose track of a conversation due to their <strong> limited context window and the \"needle in the haystack\" problem. </strong> This \"window\" represents the amount of previous information the model can retain, acting like a short-term memory. The smaller the window, the more likely the model is to forget key parts of the conversation, leading to inconsistent responses. Long or complex conversations can quickly saturate the context window, increasing the risk of inconsistency. </p> <p> As an analogy, imagine a person who only remembers the last five sentences of a conversation. If the conversation is short, the person can keep up. But if the conversation becomes long, the person will forget crucial information, making their responses inconsistent. Similarly, an AI model with a small context window can \"lose track\" of a conversation when too much information is exchanged, missing key elements and producing responses that no longer make sense. </p>",
+                    "title": "Why do some models quickly lose the thread of the conversation?"
+                },
+                "5": {
+                    "desc": "<p> The wording of \"prompts,\" influences the answers significantly. To get the best results from a language model, it is essential to master the art of <em> prompting </em> , that is, the wording of requests or instructions. <strong> Clarity is key </strong> : </p> <ul> <li> Use simple and direct language, avoiding questions that are too long or complex. Break requests down into several simpler questions for more precise answers. </li> <li> <strong> Specify specific format constraints if necessary </strong> : If you need a response in a certain format (list, table, summary, etc.), specify it in the prompt. You can also specify the steps to follow and the desired quality criteria. </li> <li> <strong> Specify the role of the model </strong> For example, start with “Act like an expert in…” or “Imagine you are a teacher…” to guide the tone and perspective of the answer. </li> <li> <strong> Contextualize your questions </strong> If necessary, provide relevant examples to guide the model. </li> <li> <strong> Encourage reasoning </strong> Use chain-of-thought prompting ( <em> Chain-of-Thought Prompting </em> ) to ask the model to explain its reasoning, which makes the answers more robust. </li> </ul> <p> Conversational models are sensitive to variations in wording: simple language, short questions, and rephrasing when necessary can help guide the model toward relevant answers. Test and refine your prompts to find the most effective wording! </p>",
+                    "title": "What are the best practices for prompting?"
+                },
+                "6": {
+                    "desc": "<p> Raw conversational AI models answer directly by predicting tokens (words) based on their probability, while a search engine offers links and resources for the user to explore on their own. </p>",
+                    "title": "What's the difference between asking a question to a conversation AI model and searching on Google?"
+                }
+            },
+            "title": "Use"
         }
     },
     "footer": {
         "backHome": "Back to home - compar:IA",
         "helpUs": "Help us improve the product!",
-        "writeUs": "If you encounter a problem or have feedback on the chatbot arena, feel free to write to us <a {linkProps}>using this form</a> - we read every message.<br />Thank you!",
-        "links": {
-            "legal": "Legal notice",
-            "tos": "Terms of use",
-            "privacy": "Privacy policy",
-            "accessibility": "Accessibility: non-compliant",
-            "sources": "Source code"
-        },
         "license": {
-            "mention": "Unless otherwise explicitly stated as third-party intellectual property, the contents of this site are offered under the <a {linkProps}>Etalab 2.0 license</a>",
-            "linkTitle": "Etalab license - new window"
-        }
+            "linkTitle": "Etalab license - new window",
+            "mention": "Unless otherwise explicitly stated as third-party intellectual property, the contents of this site are offered under the <a {linkProps}>Etalab 2.0 license</a>"
+        },
+        "links": {
+            "accessibility": "Accessibility: non-compliant",
+            "legal": "Legal notice",
+            "privacy": "Privacy policy",
+            "sources": "Source code",
+            "tos": "Terms of use"
+        },
+        "writeUs": "If you encounter a problem or have feedback on the chatbot arena, feel free to write to us <a {linkProps}>using this form</a> - we read every message.<br />Thank you!"
     },
     "general": {
+        "a11y": {
+            "desc": "This accessibility statement applies to the website <strong> comparia.beta.gouv.fr </strong> .",
+            "disclaimer": "<strong> compar:IA </strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
+            "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
+            "improveDelay": "We try to respond within 2 business days.",
+            "improveDesc": "If you are unable to access any content or service, you can contact the manager of beta.gouv.fr to be directed to an accessible alternative or obtain the content in another format.",
+            "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
+            "improveTitle": "Improvement and contact",
+            "remedyAdvocate": "Write a message to the <a {linkProps}>Defender of Rights</a>",
+            "remedyAdvocateAdress": "Send a letter by post (free, do not put a stamp): Defender of Rights - Free response 71120 75342 Paris CEDEX 07",
+            "remedyDelegateAdvocate": "Contact the <a {linkProps}>Defender of Rights representative in your region</a>",
+            "remedyDesc": "This procedure is to be used in the following case: you have reported to the website manager an accessibility defect which prevents you from accessing content or one of the portal's services and you have not received a satisfactory response.",
+            "remedyList": "You can :",
+            "remedyTitle": "Appeal",
+            "stateDesc": "The comparia.beta.gouv.fr website is non-compliant with RGAA 4.1. The site has not yet been audited <strong>. However, it has been designed to be accessible to as many people as possible </strong> . You should therefore be able to:",
+            "stateNavigate": "navigate all pages of the site using a keyboard",
+            "statePrefs": "adapt the site to your preferences (font size, screen zoom, change of typography, etc.) without loss of content",
+            "stateScreenReader": "view the website with a screen reader.",
+            "stateTitle": "Compliance Status",
+            "title": "Accessibility statement"
+        },
         "legal": {
-            "title": "Legal notice",
-            "editorTitle": "Published",
-            "editorDesc": "This site is published by the French Ministry of Culture, 182 Rue Saint-Honoré, 75001 Paris",
-            "directorTitle": "Director of the publication",
-            "directorDesc": "Mr. Romain Delassus, Head of the Digital Department at the Ministry of Culture",
-            "hostingTitle": "Hosting of the site",
-            "hostingDesc": "This site is hosted by OVH SAS (<a {linkProps}>https://www.ovh.com</a>), whose registered office is located at 2 Rue Kellermann, 59100 Roubaix, France.",
-            "a11yTitle": "Accessibility",
             "a11yDesc": "Compliance with digital accessibility standards is a future goal, but we strive to make this site accessible to everyone.",
-            "reportTitle": "Report a problem",
+            "a11yTitle": "Accessibility",
+            "directorDesc": "Mr. Romain Delassus, Head of the Digital Department at the Ministry of Culture",
+            "directorTitle": "Director of the publication",
+            "editorDesc": "This site is published by the French Ministry of Culture, 182 Rue Saint-Honoré, 75001 Paris",
+            "editorTitle": "Published",
+            "hostingDesc": "This site is hosted by OVH SAS (<a {linkProps}>https://www.ovh.com</a>), whose registered office is located at 2 Rue Kellermann, 59100 Roubaix, France.",
+            "hostingTitle": "Hosting of the site",
             "reportA11y": "If you encounter an accessibility issue preventing you from accessing any content or functionality on the site, please let us know.",
-            "reportDesc": "If you do not receive a prompt response from us, you have the right to submit your complaint or a request for referral to the Defender of Rights.",
             "reportA11yDesc": "To learn more about the State’s digital accessibility policy: <a {linkProps}>references.modernisation.gouv.fr/accessibilite-numerique</a>",
-            "securityTitle": "Security",
+            "reportDesc": "If you do not receive a prompt response from us, you have the right to submit your complaint or a request for referral to the Defender of Rights.",
+            "reportTitle": "Report a problem",
             "securityCertif": "The site is protected by an electronic certificate, represented in most browsers by a padlock. This protection helps ensure the confidentiality of exchanges.",
             "securityNoMail": "Under no circumstances will the services associated with the platform be the source of emails asking for the input of personal information.",
-            "sources": "Unless otherwise stated, all texts on this site are under the <a {etalabLinkProps}>Etalab Open 2.0 license</a>. The source code of this application is freely reusable and accessible on <a {githubLinkProps}>GitHub</a>."
+            "securityTitle": "Security",
+            "sources": "Unless otherwise stated, all texts on this site are under the <a {etalabLinkProps}>Etalab Open 2.0 license</a>. The source code of this application is freely reusable and accessible on <a {githubLinkProps}>GitHub</a>.",
+            "title": "Legal notice"
+        },
+        "privacy": {
+            "cookiesBannerDesc": "It's true, you didn't have to click on a block covering half of the page to say that you agree to the use of cookies -even if you don't know what that means!",
+            "cookiesBannerNoNeed": "Nothing exceptional, no special treatment related to a .gouv.fr domain. We simply respect the law, which states that certain audience tracking tools, properly configured to respect privacy, are exempt from prior authorization.",
+            "cookiesBannerTitle": "Why doesn't this site display a cookie consent banner?",
+            "cookiesBannerTools": "We use <a {matomoLinkProps}>Matomo</a>, a <a {libreLinkProps}>free</a> tool, configured to comply with the CNIL's \"Cookies\" <a {cnilLinkProps}>recommendation</a>. This means that your IP address, for example, is anonymized before being recorded. It is therefore impossible to associate your visits to this site with your person.",
+            "cookiesDesc": "This website places a small text file (a \"cookie\") on your computer when you visit it. This allows us to measure the number of visits and understand which pages are the most viewed.",
+            "cookiesDescMore": "You can opt out of tracking your browsing on this website. This will protect your privacy, but it will also prevent the owner from learning from your actions and creating a better experience for you and other users.",
+            "cookiesTitle": "Cookies and Consent",
+            "dataAccessDatasets": "User dialogue and preference data are distributed under Etalab's Open License 2.0 on the Hugging Face platform as well as on Data.gouv.fr through the Ministry of Culture's account (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDesc": "Of course! The site's usage statistics are freely accessible at <a {linkProps}>stats.beta.gouv.fr</a>.",
+            "dataAccessTitle": "I contribute to enriching your data, can I access it?",
+            "dataExtraCountry": "Destination country: France",
+            "dataExtraHost": "Subcontractor: OVH",
+            "dataExtraTitle": "Who helps us process the data?",
+            "dataExtraWarranty": "Guarantees: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataExtraWhat": "Processing carried out: Accommodation",
+            "dataRespDesc": "The French Ministry of Culture's digital department is responsible for processing your personal data.",
+            "dataRespTitle": "Who is responsible for data processing?",
+            "dataTimeDesc": "Data relating to users and their conversations with models are retained from the time the preference vote is recorded.",
+            "dataTimeTitle": "How long do we keep this data?",
+            "dataUseDesc": "In any case, the publisher commits to implementing means to ensure the anonymization of dialogue data before making it publicly available.",
+            "dataUseTitle": "What processing is done on the conversation data?",
+            "desc": "The service is published by the Digital Department of the French Ministry of Culture.",
+            "privacyData": "The data collected on the site are as follows:",
+            "privacyDataArena": "Data related to user conversations with the models: questions asked by users, model responses, and user preferences expressed between the two models",
+            "privacyDataForm": "Data related to the questionnaire \"Help us improve compar:IA\".",
+            "privacyDesc": "The service does not process personal data as defined by the CNIL, meaning any information relating to an identifiable natural person, directly or indirectly.",
+            "privacyResp": "The user is responsible for the data or content they enter in the prompt provided by the platform. By accepting the <a {linkProps}>terms of use</a>, the user agrees not to transmit any information that could identify themselves or a third party.",
+            "privacyTitle": "Do we process personal data?",
+            "title": "Privacy policy"
         },
         "tos": {
-            "title": "Terms of use",
-            "scopeTitle": "1. Scope of application",
-            "scopeDesc": "Access to the platform is free, does not require registration, and entails the application of specific conditions, listed in these terms of use.",
+            "contactDesc": "For any questions about the service, you can write to <a {linkProps}>contact@comparia.beta.gouv.fr</a>.",
+            "contactTitle": "9. Contact",
+            "defsEditor": "“Publisher” refers to the Digital Department of the Ministry of Culture.",
+            "defsModels": "\"Models\" refers to the large language models (LLMs) reused under their usage license by the platform to fulfill its purposes.",
+            "defsPlatform": "“Platform” refers to the website that makes the services accessible.",
+            "defsServices": "\"Services\" refers to the features offered by the platform to fulfill its purposes.",
             "defsTitle": "2. Definitions",
             "defsUser": "“User” refers to any natural person consulting the platform and benefiting from its services.",
-            "defsEditor": "“Publisher” refers to the Digital Department of the Ministry of Culture.",
-            "defsPlatform": "“Platform” refers to the website that makes the services accessible.",
-            "defsModels": "\"Models\" refers to the large language models (LLMs) reused under their usage license by the platform to fulfill its purposes.",
-            "defsServices": "\"Services\" refers to the features offered by the platform to fulfill its purposes.",
-            "descTitle": "3. Platform description",
-            "descEditor": "Published by the Digital Department of the French Ministry of Culture, the arena is a platform for comparing conversational models aimed at the general public with the goal of (1) raising citizens' awareness of large language models (LLMs), and (2) collecting user preferences to create alignment datasets.",
-            "descUse": "The user asks a question in a given language and receives answers from two anonymous large language models (LLMs). They vote for the model that provides their preferred response and are then shown the identities of the models. This participatory production system, inspired by the \"<a {linkProps}>chatbot arena</a>\" platform (LMarena), allows for the creation of datasets of human preferences for real-world tasks in French, which can be used for model alignment.",
             "descDatasets": "These datasets will be made accessible under an open license, particularly to encourage research uses.",
-            "featuresTitle": "4. Features",
+            "descEditor": "Published by the Digital Department of the French Ministry of Culture, the arena is a platform for comparing conversational models aimed at the general public with the goal of (1) raising citizens' awareness of large language models (LLMs), and (2) collecting user preferences to create alignment datasets.",
+            "descTitle": "3. Platform description",
+            "descUse": "The user asks a question in a given language and receives answers from two anonymous large language models (LLMs). They vote for the model that provides their preferred response and are then shown the identities of the models. This participatory production system, inspired by the \"<a {linkProps}>chatbot arena</a>\" platform (LMarena), allows for the creation of datasets of human preferences for real-world tasks in French, which can be used for model alignment.",
+            "dispoDesc": "The platform is accessible, except in cases of force majeure or events beyond the control of its publisher.",
+            "dispoResp": "In this regard, the publisher cannot be held responsible for any losses or damages of any kind that may result from a malfunction or unavailability of the service. Such situations will not entitle any financial compensation.",
+            "dispoRight": "The publisher reserves the right to suspend, interrupt, or limit, without prior notice, access to all or part of the services, particularly for maintenance and update operations necessary for the proper functioning of the service and related equipment, or for any other reason, including technical reasons.",
+            "dispoTitle": "7. Service availability",
+            "dispoWarranty": "It is not guaranteed that the service will be free of anomalies or errors. Therefore, the service is provided without any warranty regarding its availability and performance.",
+            "evoDesc": "The terms of use may be modified or supplemented at any time without prior notice, depending on changes made to the services, changes in legislation, or for any other reason deemed necessary.",
+            "evoDescMore": "These modifications and updates are binding on the user, who should therefore regularly refer to this section to check the current general terms.",
+            "evoTitle": "8. Changes to the Terms of Use",
+            "featuresDatasets": "The service collects user dialogue and preference data. The shared datasets will include the user's questions, responses from the two models, the vote, and the user's preferences.",
+            "featuresDatasetsMore": "The publisher reserves the right to distribute the user's dialogue and preference data under an etalab 2.0 license. The dataset is disseminated on Data.gouv and the Hugging Face platform through the French Ministry of Culture's account (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
             "featuresDesc": "To meet the dual objective of raising citizen awareness about large language models and collecting user preferences, the platform provides the following services without access restrictions:",
             "featuresDescMore": "A human-machine interface that allows users to dialogue simultaneously with two conversational models and vote for the preferred response.",
             "featuresModels": "The models integrated into the platform are deployed on the inference servers of various partners (Scaleway, OVH, Hugging Face, Google Cloud, Mistral AI). The conditions for standardized inference are specified on the platform to ensure transparency in the use of the models.",
             "featuresModelsMore": "The model comparison interface.",
+            "featuresTitle": "4. Features",
             "featuresVote": "At the end of the voting process, the user can view the list of models integrated into the chatbot arena and access a list of information about these models. The information documenting the models is sourced.",
             "featuresVoteMore": "Sharing and providing access to datasets resulting from the collection of user preferences.",
-            "featuresDatasets": "The service collects user dialogue and preference data. The shared datasets will include the user's questions, responses from the two models, the vote, and the user's preferences.",
-            "featuresDatasetsMore": "The publisher reserves the right to distribute the user's dialogue and preference data under an etalab 2.0 license. The dataset is disseminated on Data.gouv and the Hugging Face platform through the French Ministry of Culture's account (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
-            "respTitle": "5. Responsabilities",
-            "respUser": "The user is responsible for the data or content they enter in the prompt provided by the platform.",
+            "licenceCode": "The platform's source code is open and available here: <a {linkProps}>https://github.com/betagouv/ComparIA</a>",
+            "licenceLLM": "The LLMs used to power the services are governed by the following licenses:",
+            "licenceLLMEvolution": "The list of language models integrated into the platform is subject to change over time and is updated with each modification.",
+            "licenceLLMLicence": "License",
+            "licenceLLMModel": "Conversational AI model",
+            "licenceLLMNoticeLink": "Link to the model licenses",
+            "licenceLLMUnavailable": "Not available",
+            "licenceTitle": "6. Code and licenses",
+            "respEditor": "In general, the publisher disclaims any liability in the event of non-compliance with the terms of use.",
             "respLegal": "The platform is not intended to be used for generating illegal content or content that is contrary to public order, and more generally, any generation that violates the current legal framework.",
             "respLegalMore": "In this regard, the user does not enter content or information in the prompt that is contrary to current legal and regulatory provisions.",
             "respPrivacy": "Since the data entered by the user on the platform is intended to be made available, they undertake not to transmit any information that could identify them or a third party.",
             "respPrivacyMore": "In any case, the publisher undertakes to implement means to ensure the anonymization of dialogue data before making it available.",
-            "respEditor": "In general, the publisher disclaims any liability in the event of non-compliance with the terms of use.",
-            "licenceTitle": "6. Code and licenses",
-            "licenceCode": "The platform's source code is open and available here: <a {linkProps}>https://github.com/betagouv/ComparIA</a>",
-            "licenceLLM": "The LLMs used to power the services are governed by the following licenses:",
-            "licenceLLMModel": "Conversational AI model",
-            "licenceLLMNoticeLink": "Link to the model licenses",
-            "licenceLLMLicence": "License",
-            "licenceLLMUnavailable": "Not available",
-            "licenceLLMEvolution": "The list of language models integrated into the platform is subject to change over time and is updated with each modification.",
-            "dispoTitle": "7. Service availability",
-            "dispoDesc": "The platform is accessible, except in cases of force majeure or events beyond the control of its publisher.",
-            "dispoRight": "The publisher reserves the right to suspend, interrupt, or limit, without prior notice, access to all or part of the services, particularly for maintenance and update operations necessary for the proper functioning of the service and related equipment, or for any other reason, including technical reasons.",
-            "dispoWarranty": "It is not guaranteed that the service will be free of anomalies or errors. Therefore, the service is provided without any warranty regarding its availability and performance.",
-            "dispoResp": "In this regard, the publisher cannot be held responsible for any losses or damages of any kind that may result from a malfunction or unavailability of the service. Such situations will not entitle any financial compensation.",
-            "evoTitle": "8. Changes to the Terms of Use",
-            "evoDesc": "The terms of use may be modified or supplemented at any time without prior notice, depending on changes made to the services, changes in legislation, or for any other reason deemed necessary.",
-            "evoDescMore": "These modifications and updates are binding on the user, who should therefore regularly refer to this section to check the current general terms.",
-            "contactTitle": "9. Contact",
-            "contactDesc": "For any questions about the service, you can write to <a {linkProps}>contact@comparia.beta.gouv.fr</a>."
-        },
-        "privacy": {
-            "title": "Privacy policy",
-            "desc": "The service is published by the Digital Department of the French Ministry of Culture.",
-            "cookiesTitle": "Cookies and Consent",
-            "cookiesDesc": "This website places a small text file (a \"cookie\") on your computer when you visit it. This allows us to measure the number of visits and understand which pages are the most viewed.",
-            "cookiesDescMore": "You can opt out of tracking your browsing on this website. This will protect your privacy, but it will also prevent the owner from learning from your actions and creating a better experience for you and other users.",
-            "cookiesBannerTitle": "Why doesn't this site display a cookie consent banner?",
-            "cookiesBannerDesc": "It's true, you didn't have to click on a block covering half of the page to say that you agree to the use of cookies -even if you don't know what that means!",
-            "cookiesBannerNoNeed": "Nothing exceptional, no special treatment related to a .gouv.fr domain. We simply respect the law, which states that certain audience tracking tools, properly configured to respect privacy, are exempt from prior authorization.",
-            "cookiesBannerTools": "We use <a {matomoLinkProps}>Matomo</a>, a <a {libreLinkProps}>free</a> tool, configured to comply with the CNIL's \"Cookies\" <a {cnilLinkProps}>recommendation</a>. This means that your IP address, for example, is anonymized before being recorded. It is therefore impossible to associate your visits to this site with your person.",
-            "dataAccessTitle": "I contribute to enriching your data, can I access it?",
-            "dataAccessDesc": "Of course! The site's usage statistics are freely accessible at <a {linkProps}>stats.beta.gouv.fr</a>.",
-            "dataAccessDatasets": "User dialogue and preference data are distributed under Etalab's Open License 2.0 on the Hugging Face platform as well as on Data.gouv.fr through the Ministry of Culture's account (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
-            "privacyTitle": "Do we process personal data?",
-            "privacyDesc": "The service does not process personal data as defined by the CNIL, meaning any information relating to an identifiable natural person, directly or indirectly.",
-            "privacyData": "The data collected on the site are as follows:",
-            "privacyDataArena": "Data related to user conversations with the models: questions asked by users, model responses, and user preferences expressed between the two models",
-            "privacyDataForm": "Data related to the questionnaire \"Help us improve compar:IA\".",
-            "privacyResp": "The user is responsible for the data or content they enter in the prompt provided by the platform. By accepting the <a {linkProps}>terms of use</a>, the user agrees not to transmit any information that could identify themselves or a third party.",
-            "dataUseTitle": "What processing is done on the conversation data?",
-            "dataUseDesc": "In any case, the publisher commits to implementing means to ensure the anonymization of dialogue data before making it publicly available.",
-            "dataTimeTitle": "How long do we keep this data?",
-            "dataTimeDesc": "Data relating to users and their conversations with models are retained from the time the preference vote is recorded.",
-            "dataRespTitle": "Who is responsible for data processing?",
-            "dataRespDesc": "The French Ministry of Culture's digital department is responsible for processing your personal data.",
-            "dataExtraTitle": "Who helps us process the data?",
-            "dataExtraHost": "Subcontractor: OVH",
-            "dataExtraCountry": "Destination country: France",
-            "dataExtraWhat": "Processing carried out: Accommodation",
-            "dataExtraWarranty": "Guarantees: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>"
-        },
-        "a11y": {
-            "disclaimer": "<strong> compar:IA </strong> is committed to making its digital services accessible, in accordance with Article 47 of Law No. 2005-102 of February 11, 2005.",
-            "title": "Accessibility statement",
-            "desc": "This accessibility statement applies to the website <strong> comparia.beta.gouv.fr </strong> .",
-            "stateTitle": "Compliance Status",
-            "stateDesc": "The comparia.beta.gouv.fr website is non-compliant with RGAA 4.1. The site has not yet been audited <strong>. However, it has been designed to be accessible to as many people as possible </strong> . You should therefore be able to:",
-            "stateNavigate": "navigate all pages of the site using a keyboard",
-            "stateScreenReader": "view the website with a screen reader.",
-            "statePrefs": "adapt the site to your preferences (font size, screen zoom, change of typography, etc.) without loss of content",
-            "improveTitle": "Improvement and contact",
-            "improveDesc": "If you are unable to access any content or service, you can contact the manager of beta.gouv.fr to be directed to an accessible alternative or obtain the content in another format.",
-            "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
-            "improveAdress": "Address: DINUM, 20 avenue de Ségur 75007 Paris",
-            "improveDelay": "We try to respond within 2 business days.",
-            "remedyTitle": "Appeal",
-            "remedyDesc": "This procedure is to be used in the following case: you have reported to the website manager an accessibility defect which prevents you from accessing content or one of the portal's services and you have not received a satisfactory response.",
-            "remedyList": "You can :",
-            "remedyAdvocate": "Write a message to the <a {linkProps}>Defender of Rights</a>",
-            "remedyDelegateAdvocate": "Contact the <a {linkProps}>Defender of Rights representative in your region</a>",
-            "remedyAdvocateAdress": "Send a letter by post (free, do not put a stamp): Defender of Rights - Free response 71120 75342 Paris CEDEX 07"
+            "respTitle": "5. Responsabilities",
+            "respUser": "The user is responsible for the data or content they enter in the prompt provided by the platform.",
+            "scopeDesc": "Access to the platform is free, does not require registration, and entails the application of specific conditions, listed in these terms of use.",
+            "scopeTitle": "1. Scope of application",
+            "title": "Terms of use"
         }
-    },
-    "welcome": {
-        "title": "Welcome to compar:IA!",
-        "goodPractices": "Here are some best practices:",
-        "errors": "AI can make mistakes: we encourage you to check the information provided",
-        "privacy": "Do not share personal information such as your name, surname or address",
-        "use": "Do not use the comparator for illegal or harmful purposes",
-        "go": "Here we go"
-    },
-    "home": {
-        "intro": {
-            "title": "Don't trust the answers <span {props}>of a single AI</span>",
-            "desc": "Have a blind discussion with two AIs and evaluate their answers",
-            "tos": {
-                "accept": "I accept the <a {linkProps}>terms of use</a>",
-                "help": "Data is shared for research purposes",
-                "error": "You must accept the terms of use to continue"
-            },
-            "steps": {
-                "title": "How it works",
-                "a11yDesc": "1. I chat with two hidden AIs: Chat for as long as you like. 2. I give my preference: By doing so, you'll help improve the AI models. 3. The model identities are revealed: Learn more about them and their characteristics.",
-                "one": {
-                    "title": "I chat with two hidden AIs",
-                    "a": "Chat as long as",
-                    "b": "as you like"
-                },
-                "two": {
-                    "title": "I give my preference",
-                    "a": "By doing so,",
-                    "b": "you'll help improve the AI models"
-                },
-                "three": {
-                    "title": "The model identities are revealed!",
-                    "a": "Learn more about them and their characteristics",
-                    "b": "of AI and their characteristics"
-                }
-            }
-        },
-        "use": {
-            "title": "What is compar:AI for?",
-            "desc": "compar:IA is a free tool that helps raise awareness among citizens about generative AI and its challenges.",
-            "compare": {
-                "title": "Compare the responses of different AI models",
-                "desc": "Discuss and develop your critical thinking by giving your preference",
-                "alt": "Compare"
-            },
-            "test": {
-                "title": "Test the latest AI in the ecosystem in one place",
-                "alt": "Test",
-                "desc": "Test different models: open, proprietary, small, large..."
-            },
-            "measure": {
-                "desc": "Discover the environmental impact of your conversations with each model",
-                "title": "Measure the environmental footprint of questions asked to AI",
-                "alt": "Measure"
-            }
-        },
-        "europe": {
-            "title": "The comparator <span {props}>becomes European!</span>",
-            "desc": "Lithuania, Sweden, and Denmark are joining France in adopting the comparator to refine future AI models in their national languages.",
-            "question": "Would you like to have the chatbot arena in your language?",
-            "languages": {
-                "da": "in Danish",
-                "fr": "in French",
-                "lt": "in Lithuanian",
-                "sv": "in Swedish"
-            }
-        },
-        "vote": {
-            "title": "Why is your vote important?",
-            "desc": "Your preferences enrich the compar:IA datasets, which aim to refine future AI models on French, Swedish, Lithuanian and Danish",
-            "steps": {
-                "prefs": {
-                    "title": "Your preferences",
-                    "desc": "After discussing with the AIs, you are invited to indicate your preference for a model on given criteria, such as the relevance or usefulness of the answers."
-                },
-                "datasets": {
-                    "title": "Datasets by language",
-                    "desc": "All questions and votes are compiled into datasets and published openly after anonymization."
-                },
-                "finetune": {
-                    "title": "Models fine-tuned for specific languages",
-                    "desc": "Companies and academia can use the datasets to train new models that are more respectful of linguistic and cultural diversity."
-                }
-            },
-            "datasetAccess": "Access the datasets"
-        },
-        "usage": {
-            "title": "Specifc use cases of compar:IA",
-            "desc": "The tool is also aimed at AI experts and educators for more specific use cases",
-            "use": {
-                "title": "Reuse the data",
-                "desc": "Developers, researchers, model publishers - access compar:IA’s datasets to enhance models for low-resource languages"
-            },
-            "explore": {
-                "title": "Explore the models",
-                "desc": "Find all model specifications and terms of use in one place"
-            },
-            "educate": {
-                "title": "Train and raise awareness",
-                "desc": "Use the chatbot arena as an educational tool to discuss AI with your audience"
-            }
-        },
-        "origin": {
-            "team": {
-                "title": "Who are we?",
-                "desc": "The chatbot arena is led within the French Ministry of Culture by a multidisciplinary team - AI experts, developers, deployment specialists, and designers - with a mission to make conversational AI more transparent and accessible to everyone."
-            },
-            "project": {
-                "title": "Who initiated the project?",
-                "desc": "The chatbot arena was designed and developed as part of a government startup led by the French Ministry of Culture, integrated into the <a {linkProps}>Beta.gouv.fr</a> program by the Interministerial Digital Directorate (DINUM). This initiative supports French public administrations in building useful, simple, and user-friendly digital services."
-            }
-        },
-        "faq": {
-            "title": "Your frequently asked questions",
-            "discover": "See other questions"
-        }
-    },
-    "product": {
-        "title": "Everything you need to know about the chatbot arena",
-        "comparator": {
-            "title": "The arena enables the creation of <span {props}>preference datasets</span> focused on <span {props}>real-world usage</span> in <span {props}>European languages</span>.",
-            "cta": "Access the arena",
-            "challenges": {
-                "title": "The platform addresses multiple challenges",
-                "bias": {
-                    "title": "Cultural and linguistic bias",
-                    "desc": "Highlight AI biases stemming from the underrepresentation of non-English data in models and raise awareness of their real-world impact."
-                },
-                "impacts": {
-                    "title": "Environmental impact",
-                    "desc": "Show the environmental impact of generative AI, still widely unknown to the general public."
-                },
-                "pluralism": {
-                    "title": "Model diversity",
-                    "desc": "Ensure citizens have access to a diverse range of AI models, empowering them to make informed choices and cultivate a critical understanding of these technologies."
-                },
-                "thinking": {
-                    "title": "Critical thinking and societal questions",
-                    "desc": "Encourage critical thinking on the role of generative AI in personal and professional practices."
-                }
-            },
-            "europe": {
-                "title": "The arena <span {props}>goes European</span>!",
-                "adventure": "As of summer 2025, Lithuania, Sweden, and Denmark are joining the initiative!",
-                "desc": "The arena is now available to their citizens in national languages, with a core mission: build preference datasets to improve future AI model performance in low-resource languages.",
-                "catch": "Would you like to have the chatbot arena in your language?"
-            },
-            "tabLabel": "The arena"
-        },
-        "problem": {
-            "title": "Do conversational AI models respect the <span {props}>diversity</span> of European languages?",
-            "diversity": {
-                "stereotypes": {
-                    "title": "Bias-reinforcing answers",
-                    "desc": "Conversational AI systems seem fluent in every language - but their outputs can still be stereotypical or discriminatory."
-                },
-                "english": {
-                    "title": "Training data overwhelmingly in English",
-                    "desc": "Conversational AI relies on large language models (LLMs) trained primarily on English data, creating linguistic and cultural biases in their outputs."
-                },
-                "diversity": {
-                    "title": "Overlooked cultural and linguistic diversity",
-                    "desc": "These biases can lead to incomplete or outright incorrect responses, sidelining the diversity of European languages and cultures."
-                }
-            },
-            "alignment": {
-                "title": "How can we reduce cultural and linguistic biases in these models?",
-                "desc": "Alignment: A bias-mitigation technique based on crowdsourcing user preferences to refine model behavior",
-                "alignment": {
-                    "title": "Alignment: a critical post-training phase",
-                    "a": "Alignment comes after a language model’s pre-training phase, acting as a final \"refinement\" or \"polishing\" step. During pre-training, the model learns to predict the next word, gaining the ability to generate coherent text - but alignment is what tailors it to human preferences.",
-                    "b": "The alignment phase trains the model to better meet human needs by making it <strong>more relevant</strong> (answering questions more accurately), <strong>more honest</strong> (admitting when it lacks sufficient data), and <strong>safer</strong> (avoiding harmful or inappropriate content).",
-                    "c": "<strong>Without alignment, an LLM might be technically capable yet impractical to use - failing to grasp what users truly expect in a conversation.</strong>"
-                },
-                "datasets": {
-                    "title": "Specific datasets",
-                    "a": "Alignment relies on highly specialized datasets, meticulously designed to teach the model \"proper\" behavior.",
-                    "b": "<strong>Preference data</strong> is a critical component of alignment, working alongside <strong>demonstration data</strong> (expert-crafted human-AI dialogues with precise tone/style guidelines), <strong>safety data</strong> (curated examples teaching models to reject harmful requests), and <strong>domain-specific datasets</strong> (tailored for fields like medicine, law, or education).",
-                    "c": "Preference data presents multiple potential answers to the same question, ranked by human evaluators based on criteria like relevance, usefulness, or harm potential. Users indicate which response performs best, and these curated datasets are then used to fine-tune models - aligning them with expressed human preferences."
-                },
-                "english": {
-                    "title": "European languages suffer from a shortage of preference data",
-                    "a": "Preference data is expensive to produce because <strong>each example requires skilled human evaluation</strong>. Platforms like chat.lmsys.org help crowdsource these datasets—but few users contribute in their native language, leaving low-resource languages underrepresented.",
-                    "b": "Preference datasets for European languages are scarce - or nonexistent. In LMSYS’s dataset, for instance, French queries represent less than 1% of the total.",
-                    "c": "compar:IA is a chatbot arena designed to gather multilingual conversations - capturing region-specific cultural references like daily tasks, local culinary traditions, education systems, or historical and literary touchstones."
-                },
-                "diversity": {
-                    "title": "Diversify data sources to reduce bias",
-                    "a": "To reflect the diversity of cultures and languages in model outputs, <strong>alignment datasets must incorporate a broad range of languages</strong>, contexts, and real-world user tasks. Diversifying alignment data ultimately improves a model’s performance in two key ways:",
-                    "b": "First, it <strong>reduces cultural bias</strong> by preventing a single - often Anglophone -perspective from dominating the AI’s responses. The model learns that valid answers vary by cultural context, recognizing multiple legitimate ways to address the same question.",
-                    "c": "Second, exposure to linguistic and cultural diversity enables context-aware responses: a French user gets advice tailored to France’s systems, while a Danish user receives information aligned with their national context.",
-                    "d": "The result? A more inclusive conversational AI - one that acknowledges and adapts to diverse cultural perspectives."
-                }
-            },
-            "tabLabel": "The initial problem"
-        },
-        "partners": {
-            "institution": {
-                "title": "Institutional partners"
-            },
-            "diffusion": {
-                "title": "Communication partners",
-                "desc": "We’re building a network of partners who integrate the chatbot arena into their services and training offerings.",
-                "catch": "Would you like to use the chatbot arena in a professional context?",
-                "cta": "Let us know"
-            },
-            "academy": {
-                "title": "Academic partners",
-                "desc": "We’re committed to ensuring the datasets we generate fuel multidisciplinary research, bridging humanities, social sciences, and data science.",
-                "catch": "Working on a research project? Have suggestions or need clarification on our methodology or datasets?"
-            },
-            "services": {
-                "title": "Services used",
-                "desc": "Environmental impact calculations are based on the tools above."
-            },
-            "tabLabel": "Partners"
-        },
-        "faq": {
-            "tabLabel": "FAQ"
-        },
-        "history": {
-            "tabLabel": "Project history"
-        }
-    },
-    "datasets": {
-        "access": {
-            "title": "Access compar:IA datasets",
-            "desc": "The platform’s questions and preferences are primarily in French, Danish, Swedish and Lithuanian, capturing organic, real-world usage - not artificial prompts. These datasets are publicly available on <a {linkProps}>data.gouv.fr</a> and Hugging Face.",
-            "catch": "Model publishers, researchers, companies, now it's your turn!",
-            "share": "Show us how you’re using the data",
-            "repos": {
-                "conversations": {
-                    "title": "/conversations",
-                    "desc": "All the questions and answers"
-                },
-                "reactions": {
-                    "title": "/reactions",
-                    "desc": "All the reactions to messages"
-                },
-                "votes": {
-                    "title": "/votes",
-                    "desc": "All the preferences expressed"
-                }
-            }
-        },
-        "reuse": {
-            "title": "How is this data used?",
-            "desc": "Examples of compar:IA dataset reuses",
-            "bunka": {
-                "desc": "The Bunka.ai team conducted a large-scale study of user-AI interactions on the chatbot arena, mapping out dominant themes, key tasks, and the balance between automation vs. human augmentation. Their analysis based on 25,000 real conversations offers rare empirical insight into how people actually use AI.",
-                "conversations": {
-                    "title": "Explore the data visualization",
-                    "desc": "Interactive visualization of conversations where each cluster represents a recurring theme discussed by users (such as education, health, the environment, or even philosophy)."
-                },
-                "analyze": {
-                    "title": "Access the analysis",
-                    "desc": "Analysis of user conversations with detection of tasks (creation, information search, etc.), topics (arts and culture, education, etc.), complex emotions (curiosity, enthusiasm, etc.), language tones (formal, professional, etc.)"
-                },
-                "method": "Learn more about the methodology"
-            }
-        }
-    },
-    "chatbot": {
-        "continuePrompt": "Continue the chat with the AI models",
-        "revealButton": "Reveal the models",
-        "conversation": "Chat",
-        "errors": {
-            "tooLong": {
-                "title": "Oops, the conversation is too long for one of the models.",
-                "message": "Each model is limited in the size of conversations it can handle.",
-                "vote": "You can still give your preference on these models or start a conversation with two new ones.",
-                "retry": "You can restart a chat with two new models."
-            },
-            "other": {
-                "title": "Oops, temporary error",
-                "message": "A temporary error has occurred.",
-                "vote": "Or finish the experience by giving your preference on these models.",
-                "retry": "You can retry to query the models again."
-            }
-        },
-        "loading": "Loading answers"
-    },
-    "reveal": {
-        "impacts": {
-            "title": "Energy consumption of the chat",
-            "size": {
-                "label": "model size",
-                "count": "billion param.",
-                "estimated": "(est.)",
-                "quantized": "(quantized)"
-            },
-            "tokens": {
-                "label": "text size",
-                "tooltip": "AI analyzes and generates sentences from words or parts of words of approximately four letters; this unit of text is called a token. The longer a text, the greater the number of tokens.",
-                "tokens": "tokens"
-            },
-            "energy": {
-                "label": "energy consumed",
-                "tooltip": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
-            }
-        },
-        "equivalent": {
-            "title": "Which corresponds to:",
-            "co2": {
-                "label": "CO <sub> 2 </sub> emitted",
-                "tooltip": "The CO <sub> 2 </sub> emitted is equivalent to the carbon dioxide emissions produced by the energy used to run the model. It reflects the environmental impact linked to energy consumption. The Watt-hour/CO <sub> 2 </sub> equivalence calculation differs depending on the energy mix of each country. However, the servers used for model inference are not all located in Europe. Thus, the equivalence calculation is based on the global average CO <sub> 2 </sub> emission rate per energy consumed."
-            },
-            "lightbulb": {
-                "label": "LED bulb",
-                "tooltip": "Data calculated based on the consumption of a standard 5W LED bulb (E14)"
-            },
-            "streaming": {
-                "label": "online videos",
-                "tooltip": "Data calculated based on the carbon impact of one hour of streamed video in high definition, on a television, with a Wi-Fi connection (source <a {linkProps}>ADEME</a>)"
-            }
-        },
-        "feedback": {
-            "shareResult": "Share your result",
-            "moreOnVotes": "Learn more about votes",
-            "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
-            "example": "Example of shared results"
-        }
-    },
-    "errors": {
-        "unknown": "An error has occurred",
-        "404": {
-            "title": "Page not found",
-            "error": "Error 404",
-            "sorry": "The page you are looking for cannot be found. We apologize for the inconvenience.",
-            "desc": "If you typed the URL into your browser, check if it's correct. The page may no longer be available. <br />You can continue by visiting our homepage. <br /> If you struggle to find a page you are looking for, contact us so we can redirect you to the correct URL."
-        },
-        "unexpected": {
-            "title": "Unexpected error",
-            "error": "Error {code}",
-            "sorry": "Our apologies, there is an issue with the service, we are working to resolve it as quickly as possible.",
-            "desc": "Please try refreshing the page or try again later."
-        }
-    },
-    "actions": {
-        "copyMessage": {
-            "do": "Copy the message",
-            "done": "Message copied"
-        },
-        "copyLink": {
-            "do": "Copy the link",
-            "done": "Link copied to clipboard"
-        },
-        "contact": "Contact us",
-        "contactUs": "Contact us",
-        "home": "Homepage",
-        "returnHome": "Return to homepage",
-        "seeMore": "See more",
-        "selectLanguage": "Select a language"
     },
     "generated": {
         "licenses": {
@@ -847,12 +449,12 @@
                     "commercial_use_specificities": "below 700 million users\n",
                     "license_desc": "<p> This non-exclusive, worldwide, royalty-free license allows you to use, reproduce, modify, and distribute the Llama 4 Materials (models and documentation) with attribution. However, it imposes two major restrictions: (1) companies exceeding 700 million monthly active users must obtain a special license from Meta, and (2) <strong> total exclusion </strong> of EU residents and companies headquartered in the EU from directly using the multimodal models, due to regulatory uncertainties related to the European AI Act. European end users may nevertheless access services integrating Llama 4, provided they are provided from outside the EU. </p>"
                 },
+                "MIT": {
+                    "license_desc": "<p> The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices. </p>"
+                },
                 "Mistral AI Research License": {
                     "license_desc": "<p> This non-exclusive, royalty-free license authorizes the use, copying, modification, and distribution of Mistral models and their derivatives (including modified or refined versions). However, it is strictly limited to research purposes. </p>",
                     "reuse_specificities": "but only for non-commercial uses"
-                },
-                "MIT": {
-                    "license_desc": "<p> The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices. </p>"
                 }
             },
             "proprio": {
@@ -882,6 +484,31 @@
             }
         },
         "models": {
+            "Aya Expanse 32B": {
+                "desc": "<p> Mid-sized multilingual model, trained to generate text in 23 languages. </p>",
+                "fyi": "<p> Cohere, the Canadian company that trained this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous “Attention Is All You Need” paper that revolutionized modern AI. Its main uniqueness lies in its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing, and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model was designed to provide good capabilities in each of the 23 languages in its training corpus. </p>",
+                "size_desc": "<p> With 32 billion parameters, this model falls is considered mid-sized. It can be hosted on a server with a single powerful graphics card, which helps keep infrastructure costs low. </p>\n <p> It has a context window of up to 130,000 tokens, useful for analyzing long documents. </p>"
+            },
+            "Claude 3.7 Sonnet": {
+                "desc": "<p> Very large, multimodal and multilingual model, efficient for code generation, with two response modes: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to directly generate the final answer. </p>",
+                "fyi": "<p> Claude 4 Opus is the most advanced model in the Claude 4 family. It is optimized for raw power and complex tasks requiring sustained reasoning over long periods of time: for example, it can work on long-term tasks (Anthropic claims it can work independently for up to seven hours). On the other hand, Opus is more expensive to use, slower to respond, and requires more resources to run. </p>\n <p> The model offers two modes of use: a reasoning mode with step-by-step reasoning for complex problems, and a quick mode for direct answers. Unlike other models, the reasoning mode was not primarily trained on mathematical data, but adapted to real-life use cases. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. It has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
+            },
+            "Claude 4 Sonnet": {
+                "desc": "<p> Very large multimodal and multilingual model, very powerful in code, with two response modes: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to directly generate the final answer. </p>",
+                "fyi": "<p> Claude 4 Sonnet is a more compact version of Claude 4 Opus optimized for speed, efficiency, and accessibility. It is slightly less adept at tasks requiring complex, multi-step reasoning. On the other hand, it is significantly less expensive, faster, can generate longer texts, and consumes less power than Opus. </p>\n <p> The model offers two modes of use: a reasoning mode with step-by-step reasoning for complex problems, and a rapid mode for direct answers. Unlike other models, the reasoning mode was not primarily trained on mathematical data, but adapted to real-life use cases. </p>",
+                "size_desc": "<p> The exact size is unknown. Evidence suggests that this is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. The model has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
+            },
+            "Command A": {
+                "desc": "<p> Large model, efficient for programming, use of tools, and “retrieval augmented generation” (RAG). </p>",
+                "fyi": "<p> Cohere, the Canadian company behind this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous paper <a href=\"https://arxiv.org/abs/1706.03762\"> \"Attention Is All You Need\" </a> published in 2017 and which revolutionized AI. The company stands out for its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model is designed to work in more than 23 languages and to integrate easily into enterprise systems. It is one of the few models distributed under <strong> CC-BY-NC 4.0 license, which allows sharing and modification but prohibits any commercial use. </strong> This choice of license reflects Cohere's desire to contribute to research and the open source community, while maintaining control over commercial uses to protect its business model... This excludes, for example, the integration of the model into products or services sold by a company to customers but allows academic use, testing, or internal projects, restricted to a non-commercial framework. </p>",
+                "size_desc": "<p> With 111 billion parameters, this model is considered large. It requires at least two powerful graphics cards to host, which results in significant running costs. </p>\n <p> Its context window reaches 256,000 tokens, suitable for analyzing large sets of documents or code bases. </p>"
+            },
+            "Command R": {
+                "desc": "<p> Medium-sized model optimized for summarization, general questions, tool usage, and efficient in retrieval augmented generation (RAG) systems. </p>",
+                "fyi": "<p> Cohere, the Canadian company that trained this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous “Attention Is All You Need” paper that revolutionized AI. Cohere's main uniqueness lies in its exclusive focus on generative AI for enterprise, particularly regulated sectors such as finance, healthcare, manufacturing, and energy, as well as the public sector. The company is also a pioneer in multilinguality and has a non-profit research lab focus on open innovation. </p>\n <p> This model has been evaluated in over 10 languages. Its context window reaches 128,000 tokens, which helps it the analyse long documents. This window is doubled in the next version of the model (Command A). </p>",
+                "size_desc": "<p> With 35 billion parameters, this model is mid-sized. It can be hosted on a server with a single powerful graphics card, which helps keep infrastructure costs down. </p>"
+            },
             "DeepSeek R1": {
                 "desc": "<p> Very large model with high performance on mathematical, scientific and programming tasks, which simulates a reasoning step before generating its answer. </p>",
                 "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture with 61 layers. It has a total of 671 billion parameters, 37 billion of which are token-activated. Training used large-scale reinforcement learning, with multiple SFT (supervised fine-tuning) steps where the model learns from examples of correct answers. </p>",
@@ -897,30 +524,10 @@
                 "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture, with 671 billion parameters but only activating 37 billion per generated token. It is well suited for tool calling, generating structured output (JSON), and code generation. </p>",
                 "size_desc": "<p> DeepSeek V3 is a very large model, requiring multiple graphics cards to run. The Mixture of Experts (MoE) architecture, however, allows only a portion of the parameters to be used for generating the next token, reducing the footprint compared to a dense model of the same size. </p>\n <p> The context window reaches 163,000 tokens, which is useful for analyzing long documents. </p>"
             },
-            "Gemini 2.5 Flash": {
-                "desc": "<p> Large multimodal and multilingual model with two response modalities: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to generate the final answer directly. </p>",
-                "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture and has been distilled by keeping only an approximation of the predictions of the teacher model - Gemini 2.5 Pro. It has been trained on a TPUv5p architecture incorporating advances such as the ability to continue training automatically even in the event of training errors, data corruption, or memory issues. </p>\n <p> Gemini 2.5 Flash supports contexts of up to 1 million tokens and three hours of video content. Optimized vision processing allows for approximately three times longer video to be processed in the same context window: only 66 visual tokens are needed to generate a frame, compared to 258 previously. This model also enables native audio generation for dialogue and speech synthesis. </p>",
-                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring multiple powerful graphics cards to run. However, the Mixture of Experts (MoE) architecture only activates a portion of the parameters to predict each new token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. Its context window extends up to 1 million tokens, which allows it to process very large document corpora. </p>"
-            },
-            "Gemma 3 12B": {
-                "desc": "<p> Small multimodal model suitable for common tasks such as question-and-answer, summarization, or image interpretation. </p>",
-                "fyi": "<p> It processes text and images and can run locally on powerful laptops or servers with a single graphics card. It has been trained to be able to interact with external tools (web search, etc.) via function calls, which makes it useful in agentic use cases. </p>",
-                "size_desc": "<p> With 12 billion parameters, it is one of the smallest models. It can be used locally on a personal computer to preserve data confidentiality, or on an inexpensive server to limit costs compared to a larger model. </p>\n <p> Its context window can hold up to 128,000 tokens, making it easy to process long documents. </p>"
-            },
-            "Gemma 3 27B": {
-                "desc": "<p> Medium-sized, multimodal model suitable for common tasks such as question-and-answering, summarization, or image interpretation. </p>",
-                "fyi": "<p> It can process text and images on a server equipped with a single powerful graphics card. It has been trained to be able to interact with external tools (internet search, etc.) via function calls, which makes it useful in agentic use cases. </p>",
-                "size_desc": "<p> With 27 billion parameters, it is a medium-sized model. It can be deployed on a server with a single graphics card (GPU). </p>\n <p> It accepts contexts of up to 128,000 tokens, making it suitable for parsing long documents. </p>"
-            },
-            "Gemma 3 4B": {
-                "desc": "<p> Very small, compact, multimodal model suitable for common tasks such as question-and-answer, summarization, or image interpretation. </p>",
-                "fyi": "<p> It can process text and images while running on less powerful computers, including smartphones and tablets. It has been trained to interact with external tools (web search, etc.) via function calls, making it usable in agentic use cases. </p>",
-                "size_desc": "<p> With 4 billion parameters, it is considered a very small model. It can be used locally to preserve data confidentiality, or on a server to limit costs compared to a larger model. </p>\n <p> Its context window can reach 128,000 tokens, allowing it to analyze long documents. </p>"
-            },
-            "Gemma 3n 4B": {
-                "desc": "<p> Very small, compact, multimodal model designed to run locally on a computer or smartphone, without the need for a server - it is capable of adapting its ressource consumption according to the capacity of the device it is running on. </p>",
-                "fyi": "<p> This model can process text, images, and audio. It is based on the MatFormer architecture and a PLE (per-layer embeddings) cache system, which activates only the useful parameters depending on the task, adapting to the capacity of the machines on which the model runs. </p>",
-                "size_desc": "<p> With 4 billion parameters, it is one of the smallest models available. It can be used locally on a computer or smartphone to maintain data confidentiality, or on a server to limit costs compared to a larger model. </p>\n <p> Its context window goes up to 32,000 tokens. </p>"
+            "GLM 4.5": {
+                "desc": "<p> A very large model created by Zhipu AI, a Chinese AI model maker founded in 2019 by professors at Tsinghua University and backed by major players like Alibaba and Tencent. The model has two response modes: a reasoning mode, for more in-depth answers, or a quick mode, to generate the final answer right-away. </p>",
+                "fyi": "<p> This model has good agentic capabilities, allowing it to make function calls with reliably. It offers solid coding performance, thus allowing the model to create complete web applications and generate artefacts, which are single-file programs that can be used within the interfaces of conversational agents. For training, a specific reinforcement learning infrastructure, named Slime, was designed to optimize performance on complex and agentic tasks by efficiently managing long workflows - thus the model is able to long-running tasks - making the best use of its tools and remaining consistent from start to finish. </p>",
+                "size_desc": "<p> With 355 billion parameters, this model is considered very large. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than dense models of similar size, but it still requires a server with several very powerful graphics cards to host. Its context window goes up to 128,000 tokens, which allows it to process fairly long documents. </p>"
             },
             "GPT 4.1 Nano": {
                 "desc": "<p> Smaller, lightweight version of the GPT 4.1 model, designed to keep costs down while remaining competitive on most tasks. The model supports very long queries, making it suitable for use in long document corpus analysis. </p>",
@@ -957,6 +564,31 @@
                 "fyi": "<p> This is a distilled version of a larger model, with partial knowledge transfer. It can process text, images, and audio. Its context window can reach up to 1 million tokens, making it particularly suitable for analyzing very long corpora or code repositories. </p>",
                 "size_desc": "<p> The exact size of the model is unknown. Indicators suggest that it is a large model, requiring a powerful graphics card to run. However, the supposed Mixture of Experts (MoE) architecture activates only a portion of the parameters at each token generation, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. </p>"
             },
+            "Gemini 2.5 Flash": {
+                "desc": "<p> Large multimodal and multilingual model with two response modalities: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to generate the final answer directly. </p>",
+                "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture and has been distilled by keeping only an approximation of the predictions of the teacher model - Gemini 2.5 Pro. It has been trained on a TPUv5p architecture incorporating advances such as the ability to continue training automatically even in the event of training errors, data corruption, or memory issues. </p>\n <p> Gemini 2.5 Flash supports contexts of up to 1 million tokens and three hours of video content. Optimized vision processing allows for approximately three times longer video to be processed in the same context window: only 66 visual tokens are needed to generate a frame, compared to 258 previously. This model also enables native audio generation for dialogue and speech synthesis. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring multiple powerful graphics cards to run. However, the Mixture of Experts (MoE) architecture only activates a portion of the parameters to predict each new token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. Its context window extends up to 1 million tokens, which allows it to process very large document corpora. </p>"
+            },
+            "Gemma 3 12B": {
+                "desc": "<p> Small multimodal model suitable for common tasks such as question-and-answer, summarization, or image interpretation. </p>",
+                "fyi": "<p> It processes text and images and can run locally on powerful laptops or servers with a single graphics card. It has been trained to be able to interact with external tools (web search, etc.) via function calls, which makes it useful in agentic use cases. </p>",
+                "size_desc": "<p> With 12 billion parameters, it is one of the smallest models. It can be used locally on a personal computer to preserve data confidentiality, or on an inexpensive server to limit costs compared to a larger model. </p>\n <p> Its context window can hold up to 128,000 tokens, making it easy to process long documents. </p>"
+            },
+            "Gemma 3 27B": {
+                "desc": "<p> Medium-sized, multimodal model suitable for common tasks such as question-and-answering, summarization, or image interpretation. </p>",
+                "fyi": "<p> It can process text and images on a server equipped with a single powerful graphics card. It has been trained to be able to interact with external tools (internet search, etc.) via function calls, which makes it useful in agentic use cases. </p>",
+                "size_desc": "<p> With 27 billion parameters, it is a medium-sized model. It can be deployed on a server with a single graphics card (GPU). </p>\n <p> It accepts contexts of up to 128,000 tokens, making it suitable for parsing long documents. </p>"
+            },
+            "Gemma 3 4B": {
+                "desc": "<p> Very small, compact, multimodal model suitable for common tasks such as question-and-answer, summarization, or image interpretation. </p>",
+                "fyi": "<p> It can process text and images while running on less powerful computers, including smartphones and tablets. It has been trained to interact with external tools (web search, etc.) via function calls, making it usable in agentic use cases. </p>",
+                "size_desc": "<p> With 4 billion parameters, it is considered a very small model. It can be used locally to preserve data confidentiality, or on a server to limit costs compared to a larger model. </p>\n <p> Its context window can reach 128,000 tokens, allowing it to analyze long documents. </p>"
+            },
+            "Gemma 3n 4B": {
+                "desc": "<p> Very small, compact, multimodal model designed to run locally on a computer or smartphone, without the need for a server - it is capable of adapting its ressource consumption according to the capacity of the device it is running on. </p>",
+                "fyi": "<p> This model can process text, images, and audio. It is based on the MatFormer architecture and a PLE (per-layer embeddings) cache system, which activates only the useful parameters depending on the task, adapting to the capacity of the machines on which the model runs. </p>",
+                "size_desc": "<p> With 4 billion parameters, it is one of the smallest models available. It can be used locally on a computer or smartphone to maintain data confidentiality, or on a server to limit costs compared to a larger model. </p>\n <p> Its context window goes up to 32,000 tokens. </p>"
+            },
             "Grok 3 Mini": {
                 "desc": "<p> A lighter version of the Grok 3 model, reducing costs while maintaining good performance for many tasks. It can go through a reasoning phase before providing a final answer. </p>",
                 "fyi": "<p> Grok 3 Mini is a distilled version of Grok 3: it is close to it in terms of capabilities, while being faster and less expensive.\n The model offers two modes: a thinking mode with step-by-step reasoning for complex problems, and a quick mode for immediate answers.\n Its context window reaches 131,000 tokens, making it suitable for analyzing long documents. </p>",
@@ -966,6 +598,11 @@
                 "desc": "<p> Very large model retrained from the Llama 3.1 405B, adjusted to better meet user prompts and improve it's capacity to use tools. </p>",
                 "fyi": "<p> This model is the result of retraining the Llama 3.1 405B parameter set to make its behavior less restricted and better account for the nuances of user and system prompts - thus giving the user greater control over the model's “personality” and behavior. Specific reasoning functions such as <strong> <code> &lt; SCRATCHPAD &gt; </code> </strong> , <strong> <code> &lt; REASONING &gt; </code> </strong> , <strong> <code> &lt; THINKING &gt; </code> </strong> have been added to simulate reasoning about complex tasks. The training used a tool called AdamW (learning rate of 3.5×10⁻⁶), which helps the model learn efficiently by gradually adjusting its parameters. Then, it was fine-tuned with a method called DPO (direct preference optimization), which improves its responses based on specific preferences. To make this training lighter and faster, LoRA adapters were used; these are smaller modules that modify only a part of the model, avoiding the need to rework all the parameters at once. </p>",
                 "size_desc": "<p> With 405 billion parameters, this model is considered to be very large. It requires a server equipped with several powerful graphics cards, which results in significant operating costs. </p>"
+            },
+            "Kimi K2": {
+                "desc": "<p> Developed by Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), a Beijing-based company, Kimi K2 is a very large code-oriented and agentic model. It is praised for its performance in programming in agentic contexts (e.g., in Cursor or Windsurf), particularly for its capacity to act as the orchestrator. It does not expose an explicit “reasoning mode,” but for large tasks it subdivides its response into steps and alternates between actions (tool calls) and text writing. </p>",
+                "fyi": "<p> To stabilize training at very large scales, Moonshot AI introduced MuonClip, a training “speed limiter” that allows training a model of this size and on a corpus of 15.5 trillion tokens without major derailing. </p>\n <p> On the data side, K2 has extensively used “simulations” with real tools (browser, terminal, code executors, APIs, etc.). Like a pilot on a simulator, he learns to plan, try, fail, then try again, and to chain several actions together to achieve a goal. As a result, the model is particularly good at orchestrating tools and successfully completing multi-step tasks. </p>",
+                "size_desc": "<p> With 1 trillion parameters, this model is one of the largest that exists. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than some other models, but it still requires a server with several very powerful graphics cards to host it. Its context window goes up to 128 000 tokens, which allows it to process fairly long documents. </p>"
             },
             "Llama 3.1 405B": {
                 "desc": "<p> Very large model designed for complex or specialized tasks. Often used as a “teacher model” for training more specialized models. </p>",
@@ -1017,6 +654,11 @@
                 "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
                 "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
             },
+            "Mistral Medium 3.1": {
+                "desc": "<p> A medium-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It is particularly useful for programming or reasoning tasks, such as mathematics. </p>",
+                "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
+            },
             "Mistral Saba": {
                 "desc": "<p> Medium-sized model designed for a detailed linguistic and cultural understanding of Middle Eastern and South Asian languages, including Arabic, Tamil, and Malayalam. </p>",
                 "fyi": "<p> Training focused primarily on texts in Arabic, Tamil, and Malayalam. Regional corpora were selected to reflect authentic usage, including syntax, registers, and dialectal variants. For tokenization (splitting the text into basic units that the model can process), a specialized strategy adapted to languages with complex morphology such as Arabic was used. Optimizations aimed to avoid excessive word fragmentation and maximize vocabulary coverage. </p>",
@@ -1031,11 +673,6 @@
                 "desc": "<p> Large model trained from Llama 3.1 70B. This retrained (fine-tune) version tends to detail more and provide more structured responses. </p>",
                 "fyi": "<p> This model is based on retraining the Llama 3.1 70B, hence the presence of its source model in its name. It introduces improvements achieved thanks to reinforcement learning with human feedback (RLHF) and the REINFORCE algorithm: the model explores different responses, receives feedback in the form of rewards, then gradually adjusts its choices to better meet user expectations. This alignment process is often used when the model is intended to adapt to human preferences or to optimize its responses according to specific criteria. </p>",
                 "size_desc": "<p> With 70 billion parameters, this model belongs to the large model category. It requires several powerful graphics cards to run, which results in significant operating costs. </p>"
-            },
-            "o4 mini": {
-                "desc": "<p> Very large reasoning model, suitable for complex scientific and technological tasks and questions. </p>",
-                "fyi": "<p> This model is very powerful for analyzing images and graphs. It has also been trained to interact with other tools via function calls, making it suitable for agentic use cases. As a very powerful reasoning model, it can be used to distribute tasks among several smaller and/or more specialized models. It has a context window of up to 200,000 tokens, making it easy to analyze long documents. </p>",
-                "size_desc": "<p> Despite its name and the fact that the exact size is unknown, o4 mini is most likely a large model requiring servers equipped with multiple graphics cards. Reasoning models like o4 mini require more time to respond because a reasoning phase precedes the generation of the final result, which increases their energy consumption. However, the assumed Mixture of Experts (MoE) architecture only activates a subset of the parameters to generate each token, thus limiting its energy footprint. Size estimates rely on indirect indices such as inference costs and response latency. </p>"
             },
             "Phi-4": {
                 "desc": "<p> Small, multilingual model that can use tools and performs well on complex tasks like logic, math, and code, while remaining compact. </p>",
@@ -1062,36 +699,441 @@
                 "fyi": "<p> This model was trained on a very large data set: 36 billion tokens in 119 languages. Training was done in three stages. The model first learned from 30 billion tokens with a context of 4,000 tokens. Then, 5 billion tokens were added to strengthen its factual knowledge. Finally, it was exposed to a specific corpus to help it better handle very long texts. As a result, it has a context window of 128,000 tokens at the end of training, which is useful for reading and analyzing long documents. </p>",
                 "size_desc": "<p> With 32 billion parameters, this model is considered mid-sized. It can run on a server equipped with a single powerful graphics card, which limits infrastructure costs. </p>\n <p> Its 128,000-token context window allows it to process long documents. </p>"
             },
+            "o4 mini": {
+                "desc": "<p> Very large reasoning model, suitable for complex scientific and technological tasks and questions. </p>",
+                "fyi": "<p> This model is very powerful for analyzing images and graphs. It has also been trained to interact with other tools via function calls, making it suitable for agentic use cases. As a very powerful reasoning model, it can be used to distribute tasks among several smaller and/or more specialized models. It has a context window of up to 200,000 tokens, making it easy to analyze long documents. </p>",
+                "size_desc": "<p> Despite its name and the fact that the exact size is unknown, o4 mini is most likely a large model requiring servers equipped with multiple graphics cards. Reasoning models like o4 mini require more time to respond because a reasoning phase precedes the generation of the final result, which increases their energy consumption. However, the assumed Mixture of Experts (MoE) architecture only activates a subset of the parameters to generate each token, thus limiting its energy footprint. Size estimates rely on indirect indices such as inference costs and response latency. </p>"
+            },
             "qwq 32B": {
                 "desc": "<p> Medium-sized reasoning model specialized and highly efficient in mathematics, code generation, and logical problem solving. </p>",
                 "fyi": "<p> This model was trained with a reinforcement learning (RL) method to optimize its handling of math problems and programming tasks. It uses several recent techniques to improve the quality of answers. For example, the RoPE (Rotary Position Embedding) method allows it to better understand the word order in a text. The SwiGLU activation function is a more efficient way of handling computations within the neural network, which helps the model produce more reliable answers. The QKV (Query Key Value-bias) adjustment method improves how the model identifies and selects important information. Finally, thanks to the YaRN (Yet another RoPE extensioN method), it can process very long texts of up to 130,000 tokens, allowing it to work on complex or very detailed documents. </p>",
                 "size_desc": "<p> With 32 billion parameters, this model falls into the mid-size category. It can run on a server with a single powerful graphics card, which limits infrastructure costs. However, reasoning models of this type take longer to produce an answer because a reasoning phase precedes the generation of the final result, which increases energy consumption. </p>"
-            },
-            "Aya Expanse 32B": {
-                "fyi": "<p> Cohere, the Canadian company that trained this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous “Attention Is All You Need” paper that revolutionized modern AI. Its main uniqueness lies in its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing, and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model was designed to provide good capabilities in each of the 23 languages in its training corpus. </p>",
-                "size_desc": "<p> With 32 billion parameters, this model falls is considered mid-sized. It can be hosted on a server with a single powerful graphics card, which helps keep infrastructure costs low. </p>\n <p> It has a context window of up to 130,000 tokens, useful for analyzing long documents. </p>"
-            },
-            "Claude 3.7 Sonnet": {
-                "desc": "<p> Very large, multimodal and multilingual model, efficient for code generation, with two response modes: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to directly generate the final answer. </p>",
-                "fyi": "<p> Claude 4 Opus is the most advanced model in the Claude 4 family. It is optimized for raw power and complex tasks requiring sustained reasoning over long periods of time: for example, it can work on long-term tasks (Anthropic claims it can work independently for up to seven hours). On the other hand, Opus is more expensive to use, slower to respond, and requires more resources to run. </p>\n <p> The model offers two modes of use: a reasoning mode with step-by-step reasoning for complex problems, and a quick mode for direct answers. Unlike other models, the reasoning mode was not primarily trained on mathematical data, but adapted to real-life use cases. </p>",
-                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. It has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
-            },
-            "Claude 4 Sonnet": {
-                "desc": "<p> Very large multimodal and multilingual model, very powerful in code, with two response modes: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to directly generate the final answer. </p>",
-                "fyi": "<p> Claude 4 Sonnet is a more compact version of Claude 4 Opus optimized for speed, efficiency, and accessibility. It is slightly less adept at tasks requiring complex, multi-step reasoning. On the other hand, it is significantly less expensive, faster, can generate longer texts, and consumes less power than Opus. </p>\n <p> The model offers two modes of use: a reasoning mode with step-by-step reasoning for complex problems, and a rapid mode for direct answers. Unlike other models, the reasoning mode was not primarily trained on mathematical data, but adapted to real-life use cases. </p>",
-                "size_desc": "<p> The exact size is unknown. Evidence suggests that this is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. The model has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
-            },
-            "Command A": {
-                "desc": "<p> Large model, efficient for programming, use of tools, and “retrieval augmented generation” (RAG). </p>",
-                "fyi": "<p> Cohere, the Canadian company behind this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous paper <a href=\"https://arxiv.org/abs/1706.03762\"> \"Attention Is All You Need\" </a> published in 2017 and which revolutionized AI. The company stands out for its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model is designed to work in more than 23 languages and to integrate easily into enterprise systems. It is one of the few models distributed under <strong> CC-BY-NC 4.0 license, which allows sharing and modification but prohibits any commercial use. </strong> This choice of license reflects Cohere's desire to contribute to research and the open source community, while maintaining control over commercial uses to protect its business model... This excludes, for example, the integration of the model into products or services sold by a company to customers but allows academic use, testing, or internal projects, restricted to a non-commercial framework. </p>",
-                "size_desc": "<p> With 111 billion parameters, this model is considered large. It requires at least two powerful graphics cards to host, which results in significant running costs. </p>\n <p> Its context window reaches 256,000 tokens, suitable for analyzing large sets of documents or code bases. </p>"
-            },
-            "Command R": {
-                "desc": "<p> Medium-sized model optimized for summarization, general questions, tool usage, and efficient in retrieval augmented generation (RAG) systems. </p>",
-                "fyi": "<p> Cohere, the Canadian company behind this model, was founded in 2019 by former Google Brain researchers, including Aidan Gomez, co-author of the famous “Attention Is All You Need” paper that revolutionized AI. Its main uniqueness lies in its exclusive focus on generative AI for businesses, particularly regulated sectors such as finance, healthcare, manufacturing, and energy, as well as the public sector. The company is also a pioneer in multilingual approaches and maintains a non-profit research lab to support open innovation. </p>\n <p> This model has been evaluated in over 10 languages. Its context window reaches 128,000 tokens, which facilitates the analysis of long documents. This window was doubled in the next version of the model (Command A). </p>",
-                "size_desc": "<p> With 35 billion parameters, this model is mid-sized. It can be hosted on a server with a single powerful graphics card, which helps keep infrastructure costs down. </p>"
             }
         }
+    },
+    "header": {
+        "banner": "The chatbot arena is now available in Lithuanian 🇱🇹, Swedish 🇸🇪, and Danish 🇩🇰!",
+        "chatbot": {
+            "newDiscussion": "New chat",
+            "step": "Step",
+            "stepOne": {
+                "description": "Pay attention to both content and form, then evaluate each response.",
+                "title": "What do you think of the answers?"
+            },
+            "stepTwo": {
+                "description": "Discover the environmental impact of your conversations with each model",
+                "title": "Models are revealed!"
+            }
+        },
+        "help": {
+            "link": {
+                "content": "Help us improve compar:IA",
+                "title": "Give feedback on the arena – opens a new window"
+            }
+        },
+        "homeTitle": "Home - compar:IA",
+        "logoAlt": "French Republic",
+        "menu": "Menu",
+        "startDiscussion": "Start the discussion",
+        "subtitle": "The chatbot arena",
+        "title": {
+            "compar": "compar",
+            "ia": "AI"
+        },
+        "votes": {
+            "count": "{count} votes",
+            "legend": "Legend",
+            "objective": "Goal: {count}",
+            "tooltip": "Discuss, vote, and help us reach this goal!<br /><strong>Your votes matter</strong>: they feed the compar:IA dataset, which is freely available to help refine future models in less-resourced languages.<br />This digital commons contributes to better <strong>respect for linguistic and cultural diversity in future language models.</strong>"
+        }
+    },
+    "home": {
+        "europe": {
+            "desc": "Lithuania, Sweden, and Denmark are joining France in adopting the comparator to refine future AI models in their national languages.",
+            "languages": {
+                "da": "in Danish",
+                "fr": "in French",
+                "lt": "in Lithuanian",
+                "sv": "in Swedish"
+            },
+            "question": "Would you like to have the chatbot arena in your language?",
+            "title": "The comparator <span {props}>becomes European!</span>"
+        },
+        "faq": {
+            "discover": "See other questions",
+            "title": "Your frequently asked questions"
+        },
+        "intro": {
+            "desc": "Have a blind discussion with two AIs and evaluate their answers",
+            "steps": {
+                "a11yDesc": "1. I chat with two hidden AIs: Chat for as long as you like. 2. I give my preference: By doing so, you'll help improve the AI models. 3. The model identities are revealed: Learn more about them and their characteristics.",
+                "one": {
+                    "a": "Chat as long as",
+                    "b": "as you like",
+                    "title": "I chat with two hidden AIs"
+                },
+                "three": {
+                    "a": "Learn more about them and their characteristics",
+                    "b": "of AI and their characteristics",
+                    "title": "The model identities are revealed!"
+                },
+                "title": "How it works",
+                "two": {
+                    "a": "By doing so,",
+                    "b": "you'll help improve the AI models",
+                    "title": "I give my preference"
+                }
+            },
+            "title": "Don't trust the answers <span {props}>of a single AI</span>",
+            "tos": {
+                "accept": "I accept the <a {linkProps}>terms of use</a>",
+                "error": "You must accept the terms of use to continue",
+                "help": "Data is shared for research purposes"
+            }
+        },
+        "origin": {
+            "project": {
+                "desc": "The chatbot arena was designed and developed as part of a government startup led by the French Ministry of Culture, integrated into the <a {linkProps}>Beta.gouv.fr</a> program by the Interministerial Digital Directorate (DINUM). This initiative supports French public administrations in building useful, simple, and user-friendly digital services.",
+                "title": "Who initiated the project?"
+            },
+            "team": {
+                "desc": "The chatbot arena is led within the French Ministry of Culture by a multidisciplinary team - AI experts, developers, deployment specialists, and designers - with a mission to make conversational AI more transparent and accessible to everyone.",
+                "title": "Who are we?"
+            }
+        },
+        "usage": {
+            "desc": "The tool is also aimed at AI experts and educators for more specific use cases",
+            "educate": {
+                "desc": "Use the chatbot arena as an educational tool to discuss AI with your audience",
+                "title": "Train and raise awareness"
+            },
+            "explore": {
+                "desc": "Find all model specifications and terms of use in one place",
+                "title": "Explore the models"
+            },
+            "title": "Specifc use cases of compar:IA",
+            "use": {
+                "desc": "Developers, researchers, model publishers - access compar:IA’s datasets to enhance models for low-resource languages",
+                "title": "Reuse the data"
+            }
+        },
+        "use": {
+            "compare": {
+                "alt": "Compare",
+                "desc": "Discuss and develop your critical thinking by giving your preference",
+                "title": "Compare the responses of different AI models"
+            },
+            "desc": "compar:IA is a free tool that helps raise awareness among citizens about generative AI and its challenges.",
+            "measure": {
+                "alt": "Measure",
+                "desc": "Discover the environmental impact of your conversations with each model",
+                "title": "Measure the environmental footprint of questions asked to AI"
+            },
+            "test": {
+                "alt": "Test",
+                "desc": "Test different models: open, proprietary, small, large...",
+                "title": "Test the latest AI in the ecosystem in one place"
+            },
+            "title": "What is compar:AI for?"
+        },
+        "vote": {
+            "datasetAccess": "Access the datasets",
+            "desc": "The tool is also useful to AI experts, developers and for educational purposes.",
+            "steps": {
+                "datasets": {
+                    "desc": "All questions and votes are compiled into datasets and published openly after anonymization.",
+                    "title": "Datasets by language"
+                },
+                "finetune": {
+                    "desc": "Companies and academia can use the datasets to train new models that are more respectful of linguistic and cultural diversity.",
+                    "title": "Models fine-tuned for specific languages"
+                },
+                "prefs": {
+                    "desc": "After discussing with the AIs, you are invited to indicate your preference for a model on given criteria, such as the relevance or usefulness of the answers.",
+                    "title": "Your preferences"
+                }
+            },
+            "title": "Why is your vote important?"
+        }
+    },
+    "models": {
+        "arch": {
+            "title": "Did you know?"
+        },
+        "conditions": {
+            "commercialUse": {
+                "question": "Is commercial use of the model allowed?",
+                "title": "Commercial use"
+            },
+            "reuse": {
+                "question": "Can I use the model outputs to train new models?",
+                "subTitle": "You cannot reuse outputs to train other models",
+                "title": "Reuse of generated outputs"
+            },
+            "types": {
+                "allowed": "Allowed",
+                "conditions": "Under conditions",
+                "forbidden": "Forbidden"
+            }
+        },
+        "extra": {
+            "experts": {
+                "api-only": "To dive deeper, check out the <a {linkProps}>official model website</a>",
+                "open-weights": "To dive deeper, check out the <a {linkProps}>model page on Hugging Face</a>"
+            },
+            "impacts": "Environmental impact calculations are based on the <a {linkProps1}>EcoLogits</a> and <a {linkProps2}>Impact CO<sub>2</sub></a> projects.",
+            "title": "To learn more"
+        },
+        "licenses": {
+            "commercial": "Commercial license",
+            "descriptions": {
+                "Apache 2.0": "This license allows for free use, modification, and distribution, even for commercial purposes. In addition to freedom of use, it guarantees legal protection by including a non-infringement clause and transparency: all modifications must be documented and are therefore traceable.",
+                "CC-BY-NC-4.0": "This license allows you to share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights.",
+                "Gemma": "This license is designed to encourage the use, modification, and redistribution of the software but includes a clause stating that all modified or improved versions must be shared with the community under the same license, thus promoting collaboration and transparency in software development.",
+                "Jamba Open Model": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for organizations with over $50 million in annual revenue.",
+                "Llama 3 Community": "This license allows the free use, modification, and distribution of the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users and prohibits the reuse of the code or generated content for training or improving competing models, thus protecting Meta's technology investments and brand.",
+                "Llama 3.1": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
+                "Llama 3.3": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
+                "Llama 4": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
+                "MIT": "The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices.",
+                "Mistral AI Non-Production": "This license allows you to share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights.",
+                "propriétaire Anthropic": "The model is available under a paid license and accessible via API on Anthropic's platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
+                "propriétaire Gemini": "The model is available under a paid license and accessible via the Gemini API available on the Google AI Studio and Vertex AI platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
+                "propriétaire Liquid": "The model is available under a paid license and accessible via API on Liquid AI's platforms, requiring a pay-per-use fee based on the number of tokens processed.",
+                "propriétaire Mistral": "The model is available under a paid license and accessible via the Mistral and other partner APIs, requiring a pay-per-use fee based on the number of tokens processed.",
+                "propriétaire OpenAI": "The model is available under a paid license and accessible via API on OpenAI's platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
+                "propriétaire xAI": "The model is accessible via the xAI API, requiring pay-per-use based on the number of tokens processed or according to the company's terms."
+            },
+            "name": "License {licence}",
+            "noDesc": "Licensing information has not been filled for this model.",
+            "type": {
+                "openSource": "Open source",
+                "proprietary": "Proprietary",
+                "semiOpen": "Semi-open"
+            }
+        },
+        "list": {
+            "filters": {
+                "display": "Show filters",
+                "editor": {
+                    "legend": "Publisher"
+                },
+                "license": {
+                    "legend": "License"
+                },
+                "reset": "Clear all filters",
+                "size": {
+                    "labels": {
+                        "L": "70 to 150 billion",
+                        "M": "20 to 70 billion",
+                        "S": "7 to 20 billion",
+                        "XL": "> 150 billion",
+                        "XS": "< 7 billion"
+                    },
+                    "legend": "Size (parameters)"
+                }
+            },
+            "intro": "Explore the different conversational AI models available, their specifications, and licenses.",
+            "model": "model",
+            "models": "models",
+            "noresults": "No models match your search criteria.",
+            "title": "Discover the models",
+            "triage": {
+                "label": "Sort by",
+                "options": {
+                    "date-desc": "Release date (newest to oldest)",
+                    "name-asc": "Model name (A to Z)",
+                    "org-asc": "Publisher (A to Z)",
+                    "params-asc": "Size (smallest to largest)"
+                }
+            }
+        },
+        "names": {
+            "a": "Model A",
+            "b": "Model B"
+        },
+        "openWeight": {
+            "conditions": {
+                "copyleft": "Copyleft",
+                "free": "Permissive",
+                "restricted": "Conditional"
+            },
+            "descriptions": {
+                "L": "With {paramsCount} billion parameters, this model is part of the large model category (between 70 and 100 billion parameters).",
+                "M": "With {paramsCount} billion parameters, this model is part of the medium-sized model category (between 20 and 70 billion parameters).",
+                "S": "With {paramsCount} billion parameters, this model is part of the small model category (between 7 and 20 billion parameters).",
+                "XL": "With {paramsCount} billion parameters, this model is part of the very large model category.",
+                "XS": "With {paramsCount} billion parameters, this model is part of the very small model category (less than 7 billion parameters)."
+            },
+            "tooltips": {
+                "copyleft": "Once modified, the model must be redistributed under the same license as the source model.",
+                "free": "Once modified, the model may be redistributed under a different license than the source model.",
+                "openSource": "The training data, code, and weights of this model (i.e., the parameters learned during its training) are fully downloadable and modifiable by the public, allowing them to run and modify the model on their own hardware. Whether a model is \"open source\" is more restrictive than \"open weights,\" in particular because of the need for transparency of the training corpus, and few models are considered \"open source.\"",
+                "openWeight": "A so-called \"open weights\" model whose weights, i.e. the parameters learned during training, are downloadable by the public, allowing them to run the model on their own hardware. Whether a model is \"open source\" is more restrictive (mainly in relation to the transparency of the training corpus), and few models are considered \"open source\".",
+                "params": "Parameters or weights, counted in billions, are the variables learned by a model during training that determine its responses. The greater the number of parameters, the more learning capacity they have.",
+                "ram": "RAM (random access memory) stores data processed by an LLM in real time. The larger the model, the more RAM it needs to run."
+            },
+            "use": {
+                "attribution": "Attribution required",
+                "commercial": "Commercial Use",
+                "licenseType": "License type",
+                "modification": "Modification authorized",
+                "requiredRam": "RAM required"
+            }
+        },
+        "parameters": "{number} parameters",
+        "ram": "{min} to {max} GB",
+        "release": "Released on {date}",
+        "size": {
+            "descriptions": {
+                "L": "Large models require significant resources, but offer the best performance for advanced tasks like creative writing, dialogue modeling, and applications requiring a fine-grained understanding of context.",
+                "M": "Medium sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.",
+                "S": "A small model is less complex and resource-intensive compared to larger models, while still providing sufficient performance for various tasks (summarization, translation, text classification, etc.)",
+                "XL": "These models, with hundreds of billions of parameters, are the most complex and advanced in terms of performance and accuracy. The computing and memory resources required to deploy these models are such that they are intended for the most advanced applications and highly specialized environments.",
+                "XS": "Very small models, with fewer than 7 billion parameters, are the least complex and most resource-efficient, providing sufficient performance for simple tasks such as text classification."
+            },
+            "estimated": "Estimated size ({size})",
+            "title": "Size"
+        }
+    },
+    "modes": {
+        "big-vs-small": {
+            "altLabel": "David vs Goliath model selection",
+            "description": "One small model against one big model, both chosen randomly",
+            "label": "David vs Goliath",
+            "title": "David vs Goliath mode"
+        },
+        "custom": {
+            "altLabel": "Manual model selection",
+            "description": "Will you recognize the two models you chose?",
+            "label": "Manual selection",
+            "title": "Manual selection mode"
+        },
+        "random": {
+            "altLabel": "Random model selection",
+            "description": "Two models chosen randomly from the full list",
+            "label": "Random",
+            "title": "Random mode"
+        },
+        "reasoning": {
+            "altLabel": "Reasoning model selection",
+            "description": "Two reasoning models chosen randomly",
+            "label": "Reasoning",
+            "title": "Reasoning mode"
+        },
+        "small-models": {
+            "altLabel": "Frugal model selection",
+            "description": "Two small models chosen randomly",
+            "label": "Frugal",
+            "title": "Frugal mode"
+        }
+    },
+    "product": {
+        "comparator": {
+            "challenges": {
+                "bias": {
+                    "desc": "Highlight AI biases stemming from the underrepresentation of non-English data in models and raise awareness of their real-world impact.",
+                    "title": "Cultural and linguistic bias"
+                },
+                "impacts": {
+                    "desc": "Show the environmental impact of generative AI, still widely unknown to the general public.",
+                    "title": "Environmental impact"
+                },
+                "pluralism": {
+                    "desc": "Ensure citizens have access to a diverse range of AI models, empowering them to make informed choices and cultivate a critical understanding of these technologies.",
+                    "title": "Model diversity"
+                },
+                "thinking": {
+                    "desc": "Encourage critical thinking on the role of generative AI in personal and professional practices.",
+                    "title": "Critical thinking and societal questions"
+                },
+                "title": "The platform addresses multiple challenges"
+            },
+            "cta": "Access the arena",
+            "europe": {
+                "adventure": "As of summer 2025, Lithuania, Sweden, and Denmark are joining the initiative!",
+                "catch": "Would you like to have the chatbot arena in your language?",
+                "desc": "The arena is now available to their citizens in national languages, with a core mission: build preference datasets to improve future AI model performance in low-resource languages.",
+                "title": "The arena <span {props}>goes European</span>!"
+            },
+            "tabLabel": "The arena",
+            "title": "The arena enables the creation of <span {props}>preference datasets</span> focused on <span {props}>real-world usage</span> in <span {props}>European languages</span>."
+        },
+        "faq": {
+            "tabLabel": "FAQ"
+        },
+        "history": {
+            "tabLabel": "Project history"
+        },
+        "partners": {
+            "academy": {
+                "catch": "Working on a research project? Have suggestions or need clarification on our methodology or datasets?",
+                "desc": "We’re committed to ensuring the datasets we generate fuel multidisciplinary research, bridging humanities, social sciences, and data science.",
+                "title": "Academic partners"
+            },
+            "diffusion": {
+                "catch": "Would you like to use the chatbot arena in a professional context?",
+                "cta": "Let us know",
+                "desc": "We’re building a network of partners who integrate the chatbot arena into their services and training offerings.",
+                "title": "Communication partners"
+            },
+            "institution": {
+                "title": "Institutional partners"
+            },
+            "services": {
+                "desc": "Environmental impact calculations are based on the tools above.",
+                "title": "Services used"
+            },
+            "tabLabel": "Partners"
+        },
+        "problem": {
+            "alignment": {
+                "alignment": {
+                    "a": "Alignment comes after a language model’s pre-training phase, acting as a final \"refinement\" or \"polishing\" step. During pre-training, the model learns to predict the next word, gaining the ability to generate coherent text - but alignment is what tailors it to human preferences.",
+                    "b": "The alignment phase trains the model to better meet human needs by making it <strong>more relevant</strong> (answering questions more accurately), <strong>more honest</strong> (admitting when it lacks sufficient data), and <strong>safer</strong> (avoiding harmful or inappropriate content).",
+                    "c": "<strong>Without alignment, an LLM might be technically capable yet impractical to use - failing to grasp what users truly expect in a conversation.</strong>",
+                    "title": "Alignment: a critical post-training phase"
+                },
+                "datasets": {
+                    "a": "Alignment relies on highly specialized datasets, meticulously designed to teach the model \"proper\" behavior.",
+                    "b": "<strong>Preference data</strong> is a critical component of alignment, working alongside <strong>demonstration data</strong> (expert-crafted human-AI dialogues with precise tone/style guidelines), <strong>safety data</strong> (curated examples teaching models to reject harmful requests), and <strong>domain-specific datasets</strong> (tailored for fields like medicine, law, or education).",
+                    "c": "Preference data presents multiple potential answers to the same question, ranked by human evaluators based on criteria like relevance, usefulness, or harm potential. Users indicate which response performs best, and these curated datasets are then used to fine-tune models - aligning them with expressed human preferences.",
+                    "title": "Specific datasets"
+                },
+                "desc": "Alignment: A bias-mitigation technique based on crowdsourcing user preferences to refine model behavior",
+                "diversity": {
+                    "a": "To reflect the diversity of cultures and languages in model outputs, <strong>alignment datasets must incorporate a broad range of languages</strong>, contexts, and real-world user tasks. Diversifying alignment data ultimately improves a model’s performance in two key ways:",
+                    "b": "First, it <strong>reduces cultural bias</strong> by preventing a single - often Anglophone -perspective from dominating the AI’s responses. The model learns that valid answers vary by cultural context, recognizing multiple legitimate ways to address the same question.",
+                    "c": "Second, exposure to linguistic and cultural diversity enables context-aware responses: a French user gets advice tailored to France’s systems, while a Danish user receives information aligned with their national context.",
+                    "d": "The result? A more inclusive conversational AI - one that acknowledges and adapts to diverse cultural perspectives.",
+                    "title": "Diversify data sources to reduce bias"
+                },
+                "english": {
+                    "a": "Preference data is expensive to produce because <strong>each example requires skilled human evaluation</strong>. Platforms like chat.lmsys.org help crowdsource these datasets—but few users contribute in their native language, leaving low-resource languages underrepresented.",
+                    "b": "Preference datasets for European languages are scarce - or nonexistent. In LMSYS’s dataset, for instance, French queries represent less than 1% of the total.",
+                    "c": "compar:IA is a chatbot arena designed to gather multilingual conversations - capturing region-specific cultural references like daily tasks, local culinary traditions, education systems, or historical and literary touchstones.",
+                    "title": "European languages suffer from a shortage of preference data"
+                },
+                "title": "How can we reduce cultural and linguistic biases in these models?"
+            },
+            "diversity": {
+                "diversity": {
+                    "desc": "These biases can lead to incomplete or outright incorrect responses, sidelining the diversity of European languages and cultures.",
+                    "title": "Overlooked cultural and linguistic diversity"
+                },
+                "english": {
+                    "desc": "Conversational AI relies on large language models (LLMs) trained primarily on English data, creating linguistic and cultural biases in their outputs.",
+                    "title": "Training data overwhelmingly in English"
+                },
+                "stereotypes": {
+                    "desc": "Conversational AI systems seem fluent in every language - but their outputs can still be stereotypical or discriminatory.",
+                    "title": "Bias-reinforcing answers"
+                }
+            },
+            "tabLabel": "The initial problem",
+            "title": "Do conversational AI models respect the <span {props}>diversity</span> of European languages?"
+        },
+        "title": "Everything you need to know about the chatbot arena"
     },
     "ranking": {
         "desc": "Find out how the best AI models stack up based on their preference scores, based on votes from the compar:AI community. To learn more, see our ranking methodology.",
@@ -1119,5 +1161,132 @@
             "totalVotes": "Total votes:"
         },
         "title": "Model leaderboard"
+    },
+    "reveal": {
+        "equivalent": {
+            "co2": {
+                "label": "CO <sub> 2 </sub> emitted",
+                "tooltip": "The CO <sub> 2 </sub> emitted is equivalent to the carbon dioxide emissions produced by the energy used to run the model. It reflects the environmental impact linked to energy consumption. The Watt-hour/CO <sub> 2 </sub> equivalence calculation differs depending on the energy mix of each country. However, the servers used for model inference are not all located in Europe. Thus, the equivalence calculation is based on the global average CO <sub> 2 </sub> emission rate per energy consumed."
+            },
+            "lightbulb": {
+                "label": "LED bulb",
+                "tooltip": "Data calculated based on the consumption of a standard 5W LED bulb (E14)"
+            },
+            "streaming": {
+                "label": "online videos",
+                "tooltip": "Data calculated based on the carbon impact of one hour of streamed video in high definition, on a television, with a Wi-Fi connection (source <a {linkProps}>ADEME</a>)"
+            },
+            "title": "Which corresponds to:"
+        },
+        "feedback": {
+            "description": "Share compar:AI with others by sharing the AI models you've interacted with! Only the names and energy impact of the discussion will be visible via this link, with no access to the messages in the conversation.",
+            "example": "Example of shared results",
+            "moreOnVotes": "Learn more about votes",
+            "shareResult": "Share your result"
+        },
+        "impacts": {
+            "energy": {
+                "label": "energy consumed",
+                "tooltip": "Measured in watt-hours, energy consumption represents the electricity used by the model to process a query and generate the corresponding response. Generally, the larger a model (in billions of parameters), the more energy is required to produce a token."
+            },
+            "size": {
+                "count": "billion param.",
+                "estimated": "(est.)",
+                "label": "model size",
+                "quantized": "(quantized)"
+            },
+            "title": "Energy consumption of the chat",
+            "tokens": {
+                "label": "text size",
+                "tokens": "tokens",
+                "tooltip": "AI analyzes and generates sentences from words or parts of words of approximately four letters; this unit of text is called a token. The longer a text, the greater the number of tokens."
+            }
+        }
+    },
+    "seo": {
+        "desc": "compar:IA is a tool that enables the blind comparison of different conversational AI models, raising awareness of the issues surrounding generative AI (plurality, bias, environmental impact) and helping to build language preference datasets for less-resourced languages.",
+        "title": "compar:IA, the AI chatbot arena",
+        "titles": {
+            "accessibilite": "Accessibility statement",
+            "arene": "Chat",
+            "comparator": "The arena",
+            "datasets": "Datasets",
+            "donnees-personnelles": "Privacy policy",
+            "faq": "FAQ",
+            "history": "Project history",
+            "home": "Home",
+            "mentions-legales": "Legal notice",
+            "modalites": "Terms of use",
+            "modeles": "Model list",
+            "news": "News",
+            "partners": "Partners",
+            "problem": "The initial challenge",
+            "product": "Product and partners",
+            "ranking": "Leaderboard",
+            "share": "My results"
+        }
+    },
+    "vote": {
+        "bothEqual": "Both are equally good",
+        "choices": {
+            "altText": "{choice} for model {model}",
+            "negative": {
+                "incorrect": "Incorrect",
+                "instructions-not-followed": "Instructions not followed",
+                "question": "Why did you not like the answer",
+                "superficial": "Superficial"
+            },
+            "positive": {
+                "clear-formatting": "Clear formatting",
+                "complete": "Complete",
+                "creative": "Creative",
+                "question": "What did you like about the answer?",
+                "useful": "Useful"
+            }
+        },
+        "comment": {
+            "add": "Add comments",
+            "placeholder": "You can add details about model {model}'s response"
+        },
+        "dislike": {
+            "label": "I dislike",
+            "selectedLabel": "I dislike (selected)"
+        },
+        "introA": "Before finding out the identity of the models, we need your vote.",
+        "introB": "It allows us to improve the compar:IA datasets, the objective of which is to refine future AI models on less-resourced languages",
+        "like": {
+            "label": "I like",
+            "selectedLabel": "I like (selected)"
+        },
+        "qualify": {
+            "addDetails": "Add details",
+            "placeholder": "The responses from the {model} model are...",
+            "question": "How would you describe its answers?"
+        },
+        "title": "Which AI model do you prefer",
+        "yours": "Your vote"
+    },
+    "welcome": {
+        "errors": "AI can make mistakes: we encourage you to check the information provided",
+        "go": "Here we go",
+        "goodPractices": "Here are some best practices:",
+        "privacy": "Do not share personal information such as your name, surname or address",
+        "title": "Welcome to compar:IA!",
+        "use": "Do not use the comparator for illegal or harmful purposes"
+    },
+    "words": {
+        "NA": "N / A",
+        "back": "Back",
+        "close": "Close",
+        "loading": "Loading",
+        "random": "Random",
+        "regenerate": "Regenerate",
+        "reset": "Reset",
+        "restart": "Start again",
+        "retry": "Start again",
+        "search": "Search",
+        "send": "Send",
+        "tooltip": "Tooltip",
+        "validate": "Validate"
     }
 }

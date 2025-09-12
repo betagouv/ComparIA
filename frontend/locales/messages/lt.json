@@ -1,38 +1,251 @@
 {
-    "header": {
-        "title": {
-            "compar": "palyginti",
-            "ia": "AI"
-        }
+    "a11y": {
+        "externalLink": "{text}"
+    },
+    "actions": {
+        "contact": "Kontaktai",
+        "copyLink": {
+            "do": "Kopijuoti nuorodą",
+            "done": "Nuoroda nukopijuota į iškarpinę"
+        },
+        "copyMessage": {
+            "do": "Kopijuoti žinutę",
+            "done": "Žinutė nukopijuota"
+        },
+        "home": "Pagrindinis puslapis",
+        "returnHome": "Grįžti į pagrindinį puslapį",
+        "seeMore": "Matyti daugiau",
+        "selectLanguage": "Pasirinkite kalbą",
+        "vote": "Pateikti savo nuomonę"
     },
     "arenaHome": {
-        "title": "Kaip galime Jums padėti?",
+        "compareModels": {
+            "count": "{count}/2 modeliai",
+            "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai",
+            "question": "Kuriuos modelius norėtumėte palyginti?"
+        },
         "modelSelection": "Modelių pasirinkimas",
         "prompt": {
             "label": "Parašykite savo pirmąją žinutę",
             "placeholder": "Rašykite savo žinutę čia"
         },
         "selectModels": {
-            "question": "Kuriuos modelius norėtumėte palyginti?",
-            "help": "Pasirinkite palyginimo tipą"
-        },
-        "compareModels": {
-            "question": "Kuriuos modelius norėtumėte palyginti?",
-            "count": "{count}/2 modeliai",
-            "help": "Jei pasirinksite tik vieną, antrasis bus pasirinktas atsitiktinai"
+            "help": "Pasirinkite palyginimo tipą",
+            "question": "Kuriuos modelius norėtumėte palyginti?"
         },
         "suggestions": {
-            "title": "Siūlomos užklausos",
-            "generateAnother": "Sukurti dar vieną užklausą",
             "choices": {
+                "administrative": {
+                    "iconAlt": "Administracinis",
+                    "title": "Administracinio dokumento rengimas"
+                },
+                "coach": {
+                    "iconAlt": "Patarimai",
+                    "title": "Gauti patarimus apie sveikatą ir sportą"
+                },
+                "explanations": {
+                    "iconAlt": "Paaiškinimas",
+                    "title": "Paaiškinti sąvoką"
+                },
                 "iasummit": {
                     "iconAlt": "„AI Action Summit“",
-                    "tooltip": "Šie klausimai yra visuomenės konsultacijos dėl dirbtinio intelekto, vykusios nuo 2024-09-16 iki 2024-11-08, rezultatas. Konsultacijos tikslas buvo plačiai įtraukti piliečius ir pilietinę visuomenę į „AI Action Summit“, surinkti jų idėjas, kaip padaryti DI galimybe visiems, kartu ribojant netinkamą ar piktavališką naudojimą."
+                    "title": "Pasiūlymai, gauti iš piliečių konsultacijų apie DI. ",
+                    "tooltip": "Šie klausimai yra visuomenės konsultacijos dėl dirbtinio intelekto, vykusios nuo 2024-09-16 iki 2024-11-08, rezultatas. Konsultacijos tikslas buvo plačiai įtraukti piliečius ir pilietinę visuomenę į „AI Action Summit“, surinkti jų idėjas, kaip padaryti DI pasiekiamu visiems, kartu ribojant netinkamą ar piktavališką naudojimą."
                 },
                 "ideas": {
-                    "iconAlt": "Idėjos"
+                    "iconAlt": "Idėjos",
+                    "title": "Generuoti naujas idėjas"
+                },
+                "languages": {
+                    "iconAlt": "Vertimas",
+                    "title": "Rašyti kita kalba"
+                },
+                "recipes": {
+                    "iconAlt": "Maisto ruošimas",
+                    "title": "Pasiūlyk naujų maisto ruošimo receptų"
+                },
+                "recommendations": {
+                    "iconAlt": "Rekomendacijos",
+                    "title": "Pasiūlykite filmų, knygų, muzikos"
+                },
+                "stories": {
+                    "iconAlt": "Istorijos",
+                    "title": "Papasakok istoriją"
                 }
+            },
+            "generateAnother": "Sukurti dar vieną užklausą",
+            "title": "Siūlomos užklausos"
+        },
+        "title": "Kaip galime Jums padėti?"
+    },
+    "chatbot": {
+        "continuePrompt": "Tęsti pokalbį su abiem AI modeliais",
+        "conversation": "Pokalbis",
+        "errors": {
+            "other": {
+                "message": "Įvyko laikina klaida.",
+                "retry": "Galite pabandyti dar kartą kreiptis į modelius.",
+                "title": "Oi, laikina klaida",
+                "vote": "Arba baigkite patirtį, nurodydami savo pasirinkimą iš šių modelių."
+            },
+            "tooLong": {
+                "message": "Kiekvienas modelis turi ribotą pokalbių, kuriuos jis gali apdoroti, skaičių.",
+                "retry": "Galite pradėti pokalbį su dviem naujais modeliais.",
+                "title": "Oi, pokalbis yra per ilgas vienam iš modelių.",
+                "vote": "Dar galite pareikšti savo nuomonę apie šiuos modelius arba pradėti pokalbį su dviem naujais."
             }
+        },
+        "loading": "Įkeliami atsakymai",
+        "reasoning": {
+            "finished": "Mąstymas baigtas",
+            "inProgress": "Mąstoma…"
+        },
+        "revealButton": "Atskleisti modelius"
+    },
+    "closeModal": "Uždaryti iškylantį langą",
+    "components": {
+        "pagination": {
+            "first": "Pirmasis puslapis",
+            "label": "Puslapiai",
+            "last": "Paskutinis puslapis",
+            "next": "Kitas puslapis",
+            "nth": "Puslapis {count}",
+            "previous": "Praeitas puslapis"
+        },
+        "table": {
+            "linePerPage": "Eilučių skaičius viename puslapyje",
+            "pageCount": "{count} Eilučių skaičius viename puslapyje",
+            "triage": "Rikiavimas"
+        },
+        "theme": {
+            "legend": "Pasirinkite norimą svetainės išvaizdą.",
+            "options": {
+                "dark": "Tamsus motyvas",
+                "light": "Šviesus motyvas",
+                "system": "Sistema",
+                "systemSub": "Naudoti sistemos nustatymus"
+            },
+            "title": "Ekrano nustatymai"
+        }
+    },
+    "datasets": {
+        "access": {
+            "catch": "Modelio leidėjai, tyrėjai, įmonės, dabar jūsų eilė!",
+            "desc": "Platformos klausimai ir pageidavimai yra pateikiami daugiausia prancūzų, danų, švedų ir lietuvių kalbomis, atspindintys natūralų, realaus naudojimo kontekstą, o ne dirbtinius užklausimus. Šie duomenų rinkiniai yra viešai prieinami <a {linkProps}>data.gouv.fr</a> ir Hugging Face.",
+            "repos": {
+                "conversations": {
+                    "desc": "Visi klausimai ir atsakymai",
+                    "title": "/pokalbiai"
+                },
+                "reactions": {
+                    "desc": "Visos reakcijos į žinutes",
+                    "title": "/reakcijos"
+                },
+                "votes": {
+                    "desc": "Visi išreikšti pasirinkimai",
+                    "title": "/balsai"
+                }
+            },
+            "share": "Parodyk mums, kaip panaudoji duomenis",
+            "title": "Prieiga prie compar:IA duomenų rinkinių"
+        },
+        "reuse": {
+            "bunka": {
+                "analyze": {
+                    "desc": "Vartotojų pokalbių analizė, apimanti užduočių (kūrimas, informacijos paieška ir kt.), temų (menas ir kultūra, švietimas ir kt.), sudėtingų emocijų (smalsumas, entuziazmas ir kt.), kalbos tono (formalus, profesionalus ir kt.) nustatymą",
+                    "title": "Prieiga prie analizės"
+                },
+                "conversations": {
+                    "desc": "Interaktyvus pokalbių vizualizavimas, kur kiekviena grupė atspindi pasikartojančią temą, kurią aptaria vartotojai (pavyzdžiui, švietimas, sveikata, aplinka ar net filosofija).",
+                    "title": "Ištyrinėkite duomenų vizualizaciją"
+                },
+                "desc": "Bunka.ai komanda atliko išsamų tyrimą apie Compar:IA platformos naudotojų ir AI modelių sąveiką, nagrinėdama populiariausias temas, pagrindines užduotis ir nustatydama, ar šie modeliai veikia pirmiausia kaip automatizavimo ar žmogaus gebėjimų didinimo įrankiai. Ši analizė pagrįsta dideliu 25 000 pokalbių imties dydžiu.",
+                "method": "Sužinokite daugiau apie metodiką"
+            },
+            "desc": "Pavyzdžiai, kaip pakartotinai naudojami compar:IA duomenų rinkiniai",
+            "title": "Kaip šie duomenys naudojami?"
+        }
+    },
+    "errors": {
+        "404": {
+            "desc": "Jei įvedėte interneto adresą naršyklėje, patikrinkite, ar jis teisingas. Galbūt puslapis nebeprieinamas. <br />Tokiu atveju, norėdami tęsti apsilankymą, galite apsilankyti mūsų pagrindiniame puslapyje. <br />Kitaip susisiekite su mumis, kad galėtume nukreipti jus į reikiamą puslapį.",
+            "error": "Klaida 404",
+            "sorry": "Jūsų ieškomas puslapis nerastas. Atsiprašome už nepatogumus.",
+            "title": "Puslapis nerastas"
+        },
+        "unexpected": {
+            "desc": "Pabandykite atnaujinti puslapį arba pabandykite vėliau.",
+            "error": "Klaida {code}",
+            "sorry": "Atsiprašome, yra problemų su paslauga, stengiamės jas kuo greičiau išspręsti.",
+            "title": "Nenumatyta klaida"
+        },
+        "unknown": "Įvyko klaida"
+    },
+    "faq": {
+        "datasets": {
+            "questions": {
+                "1": {
+                    "desc": "<p> Pasirinkimo duomenys naudojami modeliams tobulinti ateityje. </p> <p> Aklai lygindami dviejų modelių atsakymus, compar:IA naudotojai išreiškia savo pasirinkimus, nurodydami, kurie atsakymai yra labiausiai tinkami. Šie pasirinkimo duomenys gali būti naudojami modelių suderinimui tobulinti, t. y. juos mokyti generuoti atsakymus, kurie labiau atitinka naudotojų lūkesčius ir pasirinkimus. </p> <p> Tai yra pakartotinis procesas, kurio metu modelis palaipsniui mokosi generuoti geresnius atsakymus, remdamasis žmonių atsiliepimais apie atsakymų kokybę. Susipažindami su pasirinkimų duomenimis, modeliai koreguoja savo atsakymų stilių. </p>",
+                    "title": "Ar pasirinkimo duomenys turi tiesioginį poveikį modelio veikimui?"
+                },
+                "2": {
+                    "desc": "<p> Dialogai platformoje surinktų duomenų unikalumas yra tas, kad jie yra skirti mažiau išteklių turinčiomis kalbomis ir atitinka realias vartotojų užduotis. Šie duomenys atspindi žmonių pasirinkimus konkrečiame lingvistiniame ir kultūriniame kontekste. Šie duomenys leidžia mums pritaikyti modelius, kad jie būtų labiau aktualūs, tikslūs ir pritaikyti vartotojų poreikiams, tuo pačiu bandant pašalinti bet kokius šališkumus ar spragas. </p>",
+                    "title": "Kodėl balsavimas dialogai platformoje yra naudingas?"
+                },
+                "3": {
+                    "desc": "<p> dialogai pozicionuoja save kaip mažai išteklių reikalaujantį kalbos vertinimo ir suderinimo įrankį kalbos modeliams, orientuotą į atsakymų kokybę ir pasirinkimo duomenų rinkimą, taip išsiskirdamas nuo <a href='https://lmarena.ai/' target='_blank'> pokalbių arenos </a> sukurtos <a href='http://lmsys.org' target='_blank'> lmsys.org </a> ir etine atitiktimi nuo<a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'> Prism Alignment Project </a> . </p>",
+                    "title": "Kaip dialogai skiriasi nuo kitų panašių iniciatyvų?"
+                }
+            },
+            "title": "Duomenų rinkinys"
+        },
+        "ecology": {
+            "questions": {
+                "1": {
+                    "desc": "<p>Dialogai naudoja <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> sukurtą metodiką, kad pateiktų energijos suvartojimo įvertinimą, kuris leidžia vartotojams palyginti skirtingų AI modelių poveikį aplinkai, atliekant tą patį užklausimą. Šis skaidrumas yra būtinas, siekiant skatinti ekologiškesnių AI modelių kūrimą ir diegimą. </p> <p> Ecologits taiko gyvavimo ciklo vertinimo (LCA) principus pagal ISO 14044, šiuo metu sutelkdama dėmesį į <strong>išvadų</strong> (t. y. modelių naudojimo atsakymams į užklausas) ir <strong>grafikos plokščių gamybos</strong> (išteklių gavybos, gamybos ir transportavimo) poveikį. </p> <p> Modelio energijos suvartojimas apskaičiuojamas atsižvelgiant į įvairius parametrus, pvz., naudojamo DI modelio dydį, serverių, kuriuose modeliai yra diegiami, vietą ir išvesties žetonų skaičių. CO2 ekvivalentu išreikšto globalinio atšilimo potencialo rodiklio apskaičiavimas gaunamas iš modelio energijos suvartojimo matavimo. </p> <p> Svarbu pažymėti, kad DI poveikio aplinkai vertinimo metodikos vis dar yra tobulinamos. </p>",
+                    "title": "Kaip apskaičiuojamas poveikis aplinkai?"
+                },
+                "2": {
+                    "desc": "<p>Duomenų centrų vieta turi labai didelę įtaką DI CO2 pėdsakui. Jei modelis yra mokomas ar naudojamas šalyje, kuri labai priklauso nuo iškastinio kuro, jo poveikis aplinkai bus didesnis nei tuo atveju, jei jis būtų laikomas šalyje, kurioje daugiausia naudojama atsinaujinanti energija. <a target='_blank' href='https://ecologits.ai/latest/'> Ecologits (from GenAI Impact) </a> sukurta DI poveikio aplinkai analizės metodika apima duomenis apie energijos rūšių derinį skirtingose šalyse, kuriose yra serveriai. Tai leidžia tiksliau ir subtiliau įvertinti faktinį įvairių generatyvinių DI modelių panaudos CO2 pėdsaką. </p>",
+                    "title": "Ar poveikio aplinkai rodikliai atsižvelgia į skirtingų šalių energijos struktūras?"
+                },
+                "3": {
+                    "desc": "<p>Daugelis aplinkos poveikio rodiklių daugiausia dėmesio skiria <strong>išvadų</strong> poveikiui, t. y. DI modelių naudojimui atsakant į užklausas. Šis požiūris gali sukurti iliuziją, kad naudojimas suvartoja mažiau energijos nei modelių mokymas. Tačiau <strong>realybė yra sudėtingesnė. </strong> Pateiksime automobilio analogiją: </p> <ul> <li> Automobilio surinkimas (mokymas) yra vienkartinis, daug išteklių reikalaujantis procesas. </li> <li> Kiekviena kelionė automobiliu (išvados) sunaudoja mažiau energijos, tačiau šios kelionės kartojasi kasdien, o jų skaičius gali būti milžiniškas. </li> </ul> <p> Panašiai <strong> naudojimo kaupiamasis poveikis, kai kasdien užklausas pateikia milijonai vartotojų, dažnai yra žymiai didesnis nei pradinio mokymo poveikis. <strong> Todėl labai svarbu, kad DI CO2 pėdsako vertinimo įrankiai atsižvelgtų į visą modelių gyvavimo ciklą, nuo mokymo iki naudojimo. </strong>   </p>",
+                    "title": "Ar aplinkos poveikio vertinimuose atsižvelgiama į modelių mokymui naudojamus išteklius?"
+                }
+            },
+            "title": "Poveikio aplinkai duomenys"
+        },
+        "i18n": {
+            "questions": {
+                "1": {
+                    "desc": "<p>Taip, compar:AI internacionalizacija jau vyksta. Pradedame nuo plėtros į tris bandomąsias šalis: Lietuvą, Švediją ir Daniją. Pirmasis etapas leis mums išbandyti metodą ir pritaikyti sąsają prie skirtingų Europos kalbinių ir kultūrinių kontekstų. Galiausiai, remiantis šių bandomųjų šalių atsiliepimais, ratas gali išsiplėsti ir apimti daugiau Europos kalbų. Tikslas – palaipsniui sukurti tikrą Europos bendrąją erdvę, skirtą žmogaus atliekamam pokalbių AI vertinimui, su bendradarbiavimu pagrįstu valdymu, kuris bus apibrėžtas tarp skirtingų dalyvaujančių šalių.</p>",
+                    "title": "compar:IA iš pradžių daugiausia dėmesio skyrė prancūzų kalbai: ar yra planų įtraukti kitas Europos kalbas?"
+                },
+                "2": {
+                    "desc": "<p>Europos platformos, skirtos pokalbių su DI modeliais palyginimui, sukūrimas pateikia keletą konkrečių naudų. Ji leidžia rinkti pasirinkimų duomenis, atspindinčius tikruosius Europos vartotojų poreikius, taip pagerinant modelių atsakymų aktualumą šiai vartotojų grupei. Duomenų rinkinių paskelbimas užtikrina geresnį Europos kalbų ir kultūrų, kurios dažnai yra nepakankamai atstovaujamos pasauliniuose duomenų rinkiniuose ir vertinimuose, kuriuose dominuoja anglų kalba, atstovavimą. Tai taip pat užtikrina atitiktį Europos reglamentams (BDAR, DI aktas) ir integruoja vertinimo kriterijus, suderintus su Europos prioritetais, pvz., poveikio aplinkai mažinimu ir algoritmų skaidrumu. Galiausiai tai skatina konkurencingos ir autonomiškos Europos DI ekosistemos atsiradimą.</p>",
+                    "title": "Kokie yra būtent Europos DI pasirinkimo platformos privalumai?"
+                }
+            },
+            "title": "Tarptautiškumas"
+        },
+        "models": {
+            "questions": {
+                "1": {
+                    "desc": "<p>Modeliai atrenkami pagal jų populiarumą, įvairovę ir tinkamumą vartotojams. Ypatingą dėmesį skiriame tam, kad būtų prieinami vadinamieji <em>atviri modelių svoriai</em> ir įvairių dydžių modeliai.<p>",
+                    "title": "Kaip renkatės modelius, kurie pateikiami palyginimo lentelėje?"
+                },
+                "2": {
+                    "title": "Kaip jums pavyksta išlaikyti šią paslaugą nemokamą?"
+                }
+            },
+            "title": "Modeliai"
+        }
+    },
+    "header": {
+        "title": {
+            "compar": "palyginti",
+            "ia": "AI"
         }
     }
 }
