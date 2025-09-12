@@ -197,7 +197,7 @@
                     type="text"
                     id="share-link"
                     class="fr-col-md-8 fr-col-12 fr-input inline"
-                    value="https://www.comparia.beta.gouv.fr/share?i={shareB64Data}"
+                    value="https://comparia.beta.gouv.fr/share?i={shareB64Data}"
                   />
                   <Button
                     icon="links-fill"
