@@ -544,6 +544,16 @@
                     "license_desc": "<p>Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagées avec la communauté sous la même licence source, favorisant ainsi la collaboration et la transparence dans le développement logiciel.</p>",
                     "reuse_specificities": ""
                 },
+                "Jamba Open Model": {
+                    "commercial_use_specificities": "en dessous des 50 millions de dollars de revenus annuels",
+                    "license_desc": "<p>Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels.</p>",
+                    "reuse_specificities": ""
+                },
+                "Llama 3 Community": {
+                    "commercial_use_specificities": "en dessous des 700 millions d’utilisateurs",
+                    "license_desc": "<p>Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta.</p>",
+                    "reuse_specificities": ""
+                },
                 "Llama 3.1": {
                     "commercial_use_specificities": "en dessous des 700 millions d’utilisateurs",
                     "license_desc": "<p>Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.</p>",
@@ -571,6 +581,21 @@
                 }
             },
             "proprio": {
+                "01-ai": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Ai2": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "AI21": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "Alibaba": {
                     "commercial_use_specificities": "",
                     "license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
@@ -600,6 +625,16 @@
                     "commercial_use_specificities": "",
                     "license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
                     "reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI"
+                },
+                "jpacifico": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
+                "Liquid": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
+                    "reuse_specificities": ""
                 },
                 "Meta": {
                     "commercial_use_specificities": "",
@@ -649,10 +684,40 @@
             }
         },
         "models": {
+            "Aya 23 8B": {
+                "desc": "<p>Petit modèle multilingue, entraîné spécifiquement en grande proportion sur des langues généralement sous-représentées.</p>",
+                "fyi": "<p>Aya 23 8B de Cohere est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
             "Aya Expanse 32B": {
                 "desc": "<p>Modèle de taille moyenne multilingue, capable de traiter 23 langues.</p>",
                 "fyi": "<p>Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier « Attention Is All You Need » qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.</p>\n<p>Ce modèle a été conçu pour offrir de bonnes capacités dans chacune des 23 langues de son corpus d’entraînement.</p>",
                 "size_desc": "<p>Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut être hébergé sur un serveur équipé d’une seule carte graphique puissante, ce qui contribue à limiter les coûts d’infrastructure.</p>\n<p>Il dispose d’une fenêtre de contexte allant jusqu’à 130 000 jetons, utile pour l’analyse de documents longs.</p>"
+            },
+            "Aya Expanse 8B": {
+                "desc": "<p>Petit modèle multilingue, sencode itération de la série Aya, entraîné spécifiquement en grande proportion sur des langues généralement sous-représentées.</p>",
+                "fyi": "<p>Aya Expanse 8B de Cohere, entreprise canadienne, est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
+            "Aya23-35B": {
+                "desc": "<p>Modèle de taille moyenne multilingue, entraîné spécifiquement en grande proportion sur des langues généralement sous-représentées.</p>",
+                "fyi": "<p>Aya 23 35B de Cohere est un modèle de taille moyenne de la famille Command R qui a spécialement été entraîné sur un corpus multilingue.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Chocolatine 14B": {
+                "desc": "<p>Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française.</p>",
+                "fyi": "<p>Reposant sur le modèle Phi-3 Medium de Microsoft, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
+            "Chocolatine 2 14B": {
+                "desc": "<p>Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française.</p>",
+                "fyi": "<p>Reposant sur le modèle Qwen2.5 de la société Alibaba, ce modèle a été spécialisé sur la langue française. Le nom du modèle 'Chocolatine' est un clin d'oeil au projet CroissantLLM qui était une des première initiatives de création de modèle open-source de petite taille optimisé pour le français.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
+            "Claude 3.5 Sonnet v2": {
+                "desc": "<p>Modele tres performant en code, fait apres une amelioration de post-training par rapport au claude 3</p>",
+                "fyi": "<p>Meilleur modèle de la famille Claude 3.5, ce modèle est spécialisé dans la génération de textes littéraires et un ton plus naturel. La version v2 est sortie en octobre 2024.</p>",
+                "size_desc": "<p>Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.</p>"
             },
             "Claude 3.7 Sonnet": {
                 "desc": "<p>Très grand modèle multimodal et multilingue, performant pour la génération de code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.</p>",
@@ -674,6 +739,11 @@
                 "fyi": "<p>Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier « Attention Is All You Need » qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.</p>\n<p>Ce modèle a été évalué dans plus de 10 langues. Sa fenêtre de contexte atteint 128 000 jetons, ce qui facilite l’analyse de documents longs. Cette fenêtre a été doublée sur la version suivante du modèle (Command A).</p>",
                 "size_desc": "<p>Avec 35 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut être hébergé sur un serveur équipé d’une seule carte graphique puissante, ce qui contribue à limiter les coûts d’infrastructure.</p>"
             },
+            "Command R+": {
+                "desc": "<p>Modèle multilingue spécialisé sur 10 langues, spécialisé pour des cas d'usage business.</p>",
+                "fyi": "<p>Grand frère de la famille Command R de Cohere, ce modèle de langage est orienté pour l'usage professionnel et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations.</p>",
+                "size_desc": "<p>Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.</p>"
+            },
             "DeepSeek R1": {
                 "desc": "<p>Très grand modèle très performant sur les tâches mathématiques, scientifiques et de programmation, qui simule une étape de raisonnement avant de générer sa réponse.</p>",
                 "fyi": "<p>Ce modèle s’appuie sur une architecture de mélange d’experts (MoE, Mixture of Experts) avec 61 couches. Il totalise 671 milliards de paramètres, dont 37 milliards sont activés par jeton. L'entraînement a fait appel à un apprentissage par renforcement à grande échelle, avec plusieurs étapes d'ajustement SFT (<em>supervised fine-tuning</em> : un affinage supervisé où le modèle apprend à partir d'exemples de réponses correctes) et de données de démarrage.</p>",
@@ -689,15 +759,45 @@
                 "fyi": "<p>Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code.</p>",
                 "size_desc": "<p>DeepSeek V3 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.</p>\n<p>La fenêtre de contexte atteint 128 000 jetons, ce qui est utile pour l’analyse de longs documents.</p>"
             },
+            "DeepSeek v3": {
+                "desc": "<p>Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence.</p>",
+                "fyi": "<p>Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence.</p>",
+                "size_desc": "<p>Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.</p>"
+            },
             "DeepSeek v3.1": {
                 "desc": "<p>Très grand modèle conçu pour des tâches complexes : génération de code, analyse de documents longs. Cette version est particulièrement forte en  utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.</p>",
                 "fyi": "<p>Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code. L’entraînement a recours au FP8 microscaling, ce qui réduit les coûts de calcul et de mémoire tout en maintenant la précision. Le modèle a été formé en deux phases : d’abord sur des séquences de 32 000 jetons, puis étendu à 163 000 jetons, permettant une meilleure stabilité et une performance accrue sur les contextes très longs.</p>",
                 "size_desc": "<p>DeepSeek V3.1 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.</p>\n<p>La fenêtre de contexte atteint désormais 163 000 jetons, contre 128 000 dans la version précédente, ce qui améliore l’analyse de très longs documents.</p>"
             },
+            "Gemini 1.5 Pro": {
+                "desc": "<p>Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio.</p>",
+                "fyi": "<p>Sorti en février 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google.</p>",
+                "size_desc": "<p>Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.</p>"
+            },
+            "Gemini 2.0 Flash": {
+                "desc": "<p>Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés.</p>",
+                "fyi": "<p>Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
             "Gemini 2.5 Flash": {
                 "desc": "<p>Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.</p>",
                 "fyi": "<p>Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.</p>\n<p>Gemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale.</p>",
                 "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.</p>"
+            },
+            "Gemma 2 27B": {
+                "desc": "<p>Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.</p>",
+                "fyi": "<p>Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions. Le modèle sollicité ici est la version quantisée (q8).</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Gemma 2 2B": {
+                "desc": "<p>Très petit modèle qui offrait des performances très compétitives pour sa taille et la plupart des tâches.</p>",
+                "fyi": "<p>Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros.</p>",
+                "size_desc": "<p>Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.</p>"
+            },
+            "Gemma 2 9B": {
+                "desc": "<p>Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives.</p>",
+                "fyi": "<p>Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
             },
             "Gemma 3 12B": {
                 "desc": "<p>Petit modèle multimodal adapté aux tâches courantes comme les questions-réponses, les résumés ou l’interprétation d’images.</p>",
@@ -754,10 +854,25 @@
                 "fyi": "<p>Ce modèle peut être exécuté localement sur un ordinateur portable haut de gamme équipé de seulement 16 Go de VRAM (ou de RAM système). Cela en fait une option très accessible pour les développeurs. </p>\n<p>Dans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (<em>low</em>, <em>medium</em>, et <em>high</em>) qui déterminent la verbosité du modèle.</p>",
                 "size_desc": "<p>Avec 20 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. L'architecture est basée sur le « mélange d'experts » (MoE), ce qui permet une meilleure efficacité énergétique en n'activant qu'une partie des paramètres (3,6 milliards par jeton) pour chaque requête. Il s'agit d'un modèle de raisonnement, ce qui se traduit par une consommation d'énergie plus élevée car il génère une chaîne de pensée interne avant de fournir la réponse finale. Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux.</p>"
             },
+            "GPT-3.5": {
+                "desc": "<p>Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel.</p>",
+                "fyi": "<p>Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel.</p>",
+                "size_desc": "<p>Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.</p>"
+            },
             "GPT-4.1 Mini": {
                 "desc": "<p>Version allégée de GPT 4.1 mais qui reste tout de même de grande taille, conçue pour limiter les coûts tout en restant compétitif sur la plupart des tâches. Le modèle accepte de très longues requêtes, ce qui permet de l’utiliser par exemple pour l’analyse de corpus de documents.</p>",
                 "fyi": "<p>Il s'agit d'une version distillée d’un modèle plus grand, avec un transfert partiel de ses connaissances. Il peut traiter du texte, des images et de l’audio.  Sa fenêtre de contexte peut atteindre jusqu’à 1 million de jetons, ce qui le rend particulièrement adapté à l’analyse de corpus très longs ou de dépôts de code.</p>",
                 "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant une carte graphique puissante pour l’exécution. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>"
+            },
+            "GPT-4o": {
+                "desc": "<p>Le plus grand des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en août 2024.</p>",
+                "fyi": "<p>Modèle lancé en août 2024 et successeur de GPT-4, GPT-4o est une version améliorée de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA.</p>",
+                "size_desc": "<p>Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.</p>"
+            },
+            "GPT-4o mini": {
+                "desc": "<p>Le plus petit des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en juillet 2024.</p>",
+                "fyi": "<p>Modèle lancé en juillet 2024 et remplaçant GPT-3.5, GPT-4o mini est une version plus petite de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
             },
             "Grok 3 Mini": {
                 "desc": "<p>Version plus légère du modèle Grok 3, permettant de réduire les coûts tout en conservant de bonnes performances pour de nombreuses tâches. Il peut simuler une phase de raisonnement avant de fournir une réponse finale.</p>",
@@ -774,15 +889,40 @@
                 "fyi": "<p>Hermes 4-70B a été entraîné sur 56 milliards de tokens en combinant Fully Sharded Data Parallel (FSDP) et Tensor Parallelism pour gérer sa taille. Le modèle repose sur la base de Llama 3.1 70B, adaptée avec TorchTitan et enrichie par environ 19 milliards de tokens synthétiques centrés sur le raisonnement. Son entraînement suit une approche multi-phase, avec un supervised fine-tuning sur des chaînes de raisonnement pouvant dépasser les 30 000 jetons. Il exploite également l’environnement Atropos, utilisé pour générer et vérifier des trajectoires complexes (code, JSON, tâches agentiques), grâce à un rejection sampling massif qui garantit la qualité des données.</p>",
                 "size_desc": "<p>Hermes 4-70B est un modèle de très grande taille, nécessitant au moins une carte graphique puissante.</p>\n<p>La fenêtre de contexte atteint 40 960 jetons en raisonnement et 32 768 jetons pour d’autres tâches, avec des mécanismes de fine-tuning qui ont été utilisés pour lui apprendre à “fermer” la séquence de réflexion vers 30k jetons. </p>"
             },
+            "Jamba 1.5 Large": {
+                "desc": "<p>Sorti en août 2024, ce modèle de l'entreprise AI21 est un modèle de type particulier hybride dit 'SSM' et Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.</p>",
+                "fyi": "<p>Sorti en août 2024, ce modèle de l'entreprise AI21 est un modèle de type particulier hybride dit 'SSM' (State Space Models) et Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.</p>",
+                "size_desc": "<p>Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.</p>"
+            },
             "Kimi K2": {
                 "desc": "<p>Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte.</p>",
                 "fyi": "<p>Pour stabiliser l’entraînement à très grande échelle, Moonshot AI a introduit MuonClip, un “limiteur de vitesse” pour l’entraînement qui permet d’entraîner un modèle de cette taille et sur un corpus de 15,5 trillions de jetons sans dérailler dans l’apprentissage.</p>\n<p>Côté données, K2 a beaucoup pratiqué en “simulateur” avec de vrais outils (navigateur, terminal, exécuteurs de code, API…). Comme un pilote sur simulateur, il apprend à planifier, essayer, rater puis réessayer, et à enchaîner plusieurs actions pour atteindre un objectif. Résultat: il est particulièrement bon pour orchestrer des outils et réussir des tâches en plusieurs étapes.</p>",
                 "size_desc": "<p>Avec 1 billion de paramètres, ce modèle est un des plus grands modèles qui existe. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.</p>"
             },
+            "LFM 40B": {
+                "desc": "<p>Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.</p>",
+                "fyi": "<p>Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts (MoE), dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Llama 3 70B": {
+                "desc": "<p>Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens mais supporte un contexte relativement restreint de 8000 tokens.</p>",
+                "fyi": "<p>Lancé en avril 2024, ce modèle a été entrainé sur plus de 15 000 milliards de tokens, puis spécialisé pour le dialogue à partir de données d’instructions et d’annotations faites par des humains. Il supporte un contexte de 8000 tokens.</p>",
+                "size_desc": "<p>Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.</p>"
+            },
+            "Llama 3 8B": {
+                "desc": "<p>Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité.</p>",
+                "fyi": "<p>Petit frère de la famille Llama 3, ce modèle est optimisé pour les dialogues, avec une attention particulière portée sur l’efficacité et la sécurité.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
             "Llama 3.1 405B": {
                 "desc": "<p>Très grand modèle conçu pour des tâches complexes ou spécialisées. Souvent utilisé en tant que “modèle professeur” pour l’entraînement de modèles plus spécialisés.</p>",
                 "fyi": "<p>Le modèle a été entraîné sur un corpus de 15 billions de jetons avec 16 000 cartes graphiques H100 (une des cartes graphiques les plus puissantes sur le marché en 2025). L'entraînement a combiné génération de données synthétiques et optimisation par préférences directes (DPO). Ce modèle est lui-même souvent utilisé pour générer des données synthétiques pour entraîner de plus petits modèles. Le modèle utilise par défaut une compression 8-bit pour réduire les besoins en mémoire et permettre l'exécution sur un seul serveur très puissant.</p>",
                 "size_desc": "<p>Avec 405 milliards de paramètres, ce modèle fait partie des modèles de très grande taille. Il nécessite un serveur équipé de plusieurs cartes graphiques puissantes, ce qui entraîne un coût de fonctionnement important. Le modèle est doté d’une fenêtre de contexte jusqu’à 128 000 jetons, ce qui le rend intéressant pour des tâches d’analyse de longs documents.</p>"
+            },
+            "Llama 3.1 70B": {
+                "desc": "<p>Doté de 70 milliards de paramètres et sorti en avril 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues.</p>",
+                "fyi": "<p>Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps forts des Jeux olympiques de Paris 2024 ! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. </p>",
+                "size_desc": "<p>Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.</p>"
             },
             "Llama 3.1 8B": {
                 "desc": "<p>Petit modèle conçu pour un usage local sur ordinateur portable, tout en offrant de bonnes capacités pour la synthèse de texte et les réponses simples.</p>",
@@ -834,25 +974,80 @@
                 "fyi": "<p>Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.</p>\n<p>Ce modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.</p>",
                 "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>\n<p>Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.</p>"
             },
+            "Mistral Nemo": {
+                "desc": "<p>Optimisé pour un temps de réaction rapide, ce modèle est idéal pour des applications nécessitant des réponses immédiates et peut supporter un contexte de 128k tokens en plus de 100 langues. Sorti en juillet 2024.</p>",
+                "fyi": "<p>Sorti en juillet 2024, ce modèle de petit gabarit est entraîné pour des tâches de raisonnement, de connaissances générales et de programmation. Il utilise le tokenizer Tekken, efficace pour compresser des textes allant jusqu’à 128 000 tokens en plus de 100 langues.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
             "Mistral Saba": {
                 "desc": "<p>Modèle de taille moyenne conçu pour une compréhension linguistique et culturelle fine des langues du Moyen-Orient et d’Asie du Sud, notamment l’arabe, le tamoul et le malayalam.</p>",
                 "fyi": "<p>L’entraînement a porté principalement sur des textes en arabe, tamoul et malayalam. Les corpus régionaux ont été sélectionnés pour refléter les usages authentiques, y compris la syntaxe, les registres et les variantes dialectales. Pour la tokenisation (découpage du texte en unités de base que le modèle peut traiter), une stratégie spécialisée adaptée aux langues à morphologie complexe comme l'arabe a été employée. Des optimisations visent à éviter la fragmentation excessive des mots et à maximiser la couverture du vocabulaire.</p>",
                 "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de taille moyenne, nécessitant au moins une carte graphique puissante pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. </p>\n<p>Le modèle propose une fenêtre de contexte allant jusqu’à 128 000 jetons, adaptée à l’analyse de longs documents.</p>"
+            },
+            "Mistral Small 3": {
+                "desc": "<p>Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme et possède des capacités de raisonnement avancées.</p>",
+                "fyi": "<p>Sorti en janvier 2025, ce modèle est spécialisé dans le multilinguisme, possède un mode d'appel de fonction et un contexte de 32 000 tokens.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Mistral Small 3.1 24B": {
+                "desc": "<p>Mistral Small 3.1 24B Instruct est une variante améliorée du Mistral Small 3 (janvier 2025), dotée de 24 milliards de paramètres et de capacités multimodales avancées.</p>",
+                "fyi": "<p>Mistral Small 3.1 24B Instruct est un modèle multimodal qui offre des performances de pointe dans les tâches de raisonnement basées sur le texte et la vision, y compris l'analyse d'images, la programmation, le raisonnement mathématique et le soutien multilingue pour des dizaines de langues.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
             },
             "Mistral Small 3.2": {
                 "desc": "<p>Malgré son nom, c’est un modèle de taille moyenne. Il est multimodal (capable de traiter texte et images) et il se démarque par un respect précis des requêtes et sa capacité à utiliser des outils avancées.</p>",
                 "fyi": "<p>La version 3.2 de ce modèle est optimisée pour générer des sorties structurées, notamment en JSON, tout en limitant la répétitivité et les comportements indésirables lors de longues générations. Multimodal, il traite à la fois des entrées textuelles et des images, permettant une analyse conjointe.</p>",
                 "size_desc": "<p>Avec 32 milliards de paramètres, ce modèle est considéré comme un modèle de taille moyenne. Il peut être hébergé sur un serveur disposant d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.</p>"
             },
+            "Mistral Small 3.2 24B": {
+                "desc": "<p>Mistral Small 3.2 24B Instruct est une variante améliorée du Mistral Small 3.1 (mars 2025), dotée de 24 milliards de paramètres et de capacités multimodales avancées.</p>",
+                "fyi": "<p>Mistral Small 3.2 24B Instruct est un modèle multimodal qui offre des performances de pointe dans les tâches de raisonnement basées sur le texte et la vision, y compris l'analyse d'images, la programmation, le raisonnement mathématique et le soutien multilingue pour des dizaines de langues.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Mixtral 8x22B": {
+                "desc": "<p>Ce modèle multilingue sorti en avril 2024 a particulièrement été entraîné en anglais, français, allemand, italien et espagnol ainsi que sur des tâches de mathématiques, programmation et raisonnement.</p>",
+                "fyi": "<p>L’architecture SMoE (sparse mixture of experts) de ce modèle le rend plus rapide et optimise le rapport entre sa taille et son coût. Seuls 39Mds de paramètres sont actifs sur 141Mds. La fenêtre contextuelle de 64000 tokens permet de rappeler des informations précises à partir de grands documents. Sorti en avril 2024.</p>",
+                "size_desc": "<p>Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.</p>"
+            },
+            "Mixtral-8x7B": {
+                "desc": "<p>Ce modèle entraîné sur un corpus multilingue est efficace pour des tâches variées et peu complexes.</p>",
+                "fyi": "<p>Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol. Grâce à l’architecture SMoE (sparse mixture of experts), seule une fraction des paramètres est activée pour chaque inférence, réduisant ainsi les coûts et la latence.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
             "Nemotron Llama 3.1 70B": {
                 "desc": "<p>Grand modèle entraîné à partir de Llama 3.1 70B. Cette version réentraînée (fine-tune) a tendance à détailler davantage et fournir des réponses plus structurées.</p>",
                 "fyi": "<p>Ce modèle est issu d’un réentraînement du Llama 3.1 70B, d'où la présence de son modèle-source dans son nom ! Il introduit des améliorations grâce à l’apprentissage par renforcement avec retour humain (RLHF) et à l’algorithme REINFORCE : le modèle explore différentes réponses, reçoit des retours sous forme de récompenses, puis ajuste ses choix progressivement pour mieux répondre aux attentes des utilisateurs. Ce processus d'alignement est souvent utilisé quand on veut que le modèle s’adapte à des préférences humaines ou qu’il optimise ses réponses selon des critères spécifiques.</p>",
                 "size_desc": "<p>Avec 70 milliards de paramètres, ce modèle appartient à la catégorie des grands modèles. Il nécessite plusieurs cartes graphiques puissantes pour fonctionner, ce qui entraîne des coûts d’exploitation notables.</p>"
             },
+            "o3-mini": {
+                "desc": "<p>o3-mini est fait pour le raisonnement et le code. Il offre un bon équilibre entre performance, coût et latence, tout en étant plus petit que d'autres modèles de chez OpenAI.</p>",
+                "fyi": "<p>Modèle optimisé pour les tâches de raisonnement STEM (science, technologie, ingénierie, mathématiques) et l'écriture de code. Il se démarque dans les domaines scientifiques, mathématiques et de la programmation.</p>",
+                "size_desc": "<p>Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.</p>"
+            },
             "o4 mini": {
                 "desc": "<p>Très grand modèle de raisonnement, adapté pour des tâches et questions scientifiques et technologiques complexes.</p>",
                 "fyi": "<p>Ce modèle est très performant pour l’analyse d’images et de graphiques. Il a aussi été entraîné pour interagir avec d’autres systèmes via des appels de fonctions, ce qui rend possible son utilisation pour des cas d’usage agentiques. En tant que modèle très puissant de raisonnement, il peut notamment être utilisé pour répartir des tâches entre plusieurs modèles plus petits et/ou plus spécialisés.  Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, ce qui facilite l’analyse de longs documents.</p>",
                 "size_desc": "<p>Malgré son nom et le fait que la taille exacte n’est pas connue, o4 mini est très probablement un grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Les modèles de raisonnement comme o4 mini nécessitent plus de temps pour répondre, car une phase de raisonnement précède la génération du résultat final, ce qui accroit leur consommation énergétique. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres pour générer chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>"
+            },
+            "OLMo-2 32B": {
+                "desc": "<p>OLMo 2 32B est un modèle entièrement open source (corpus et code d'entraînement inclus) créé par l'Allen AI Institute (Ai2), publié en mars 2025. </p>",
+                "fyi": "<p>OLMo 2 32B est un modèle entièrement open source : le corpus et le code d'entraînement sont entièrement accessibles. Cette famille de modèle OLMo a été conçue par l'Allen Institute for AI (Ai2).</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Phi-3-Mini": {
+                "desc": "<p>Performant pour des tâches de génération de code, et de résumé, ce modèle compact supporte un contexte restreint de 4000 tokens.</p>",
+                "fyi": "<p>Petit frère de la famille Phi3, ce modèle supporte un contexte de 4000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.</p>",
+                "size_desc": "<p>Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.</p>"
+            },
+            "Phi-3-small-8k-Instruct": {
+                "desc": "<p>Optimisé pour le raisonnement logique, ce petit modèle supporte un contexte de 8000 tokens, adapté pour la génération de code et tâches complexes.</p>",
+                "fyi": "<p>Grand frère de la famille Phi3, ce modèle supporte un contexte de 8000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
+            "Phi-3.5-mini": {
+                "desc": "<p>Performant pour des tâches de génération de code et de résumé, ce modèle gère un grand contexte de 128k tokens.</p>",
+                "fyi": "<p>Petit modèle de la famille Phi, remplaçant Phi-3-mini, ce modèle supporte un grand contexte de 128 000 tokens et a été entrainé sur des jeux de données synthétiques et issus du web filtré.</p>",
+                "size_desc": "<p>Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.</p>"
             },
             "Phi-4": {
                 "desc": "<p>Petit modèle multilingue, capable d’utiliser des outils et performant sur des tâches complexes comme la logique, les mathématiques et le code, tout en restant compact.</p>",
@@ -879,6 +1074,36 @@
                 "fyi": "<p>Ce modèle a été entraîné sur un très grand volume de données : 36 billions de jetons, en 119 langues. L'entraînement s’est fait en trois étapes. Le modèle a d'abord appris à partir de 30 billions de jetons avec un contexte de 4 000 jetons. Ensuite, 5 billions de jetons ont été ajoutés pour renforcer ses connaissances factuelles. Enfin, il a été exposé à un corpus spécifique pour l’aider à mieux gérer les très longs textes. Résultat : il dispose en fin d'entrainement d'une fenêtre de contexte de 128 000 jetons, ce qui est utile pour lire et analyser de longs documents.</p>",
                 "size_desc": "<p>Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure.</p>\n<p>Sa fenêtre de contexte de 128 000 jetons permet de traiter de longs documents.</p>"
             },
+            "Qwen1.5-32B": {
+                "desc": "<p>Modèle de taille moyenne avec un processus d'entraînement très ciblé sur l'alignement aux préférences des utilisateurs.</p>",
+                "fyi": "<p>Le modèle a traversé une phase d'alignement avec les préférences des utilisateurs via des techniques telles que le DPO (Direct Preference Optimization) et PPO (Proximal policy optimization). En plus de ces techniques, très innovantes au moment de la conception du modèle, les équipes d'Alibaba ont aussi optimisé les données d'entraînement pour les rendre très multilingues, notamment sur des langues européennes, d'Asie de l'Est et Sud-Est.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Qwen2-57B-A14B-Instruct": {
+                "desc": "<p>Modèle de taille moyenne avec une architecture de mix d'experts, performant en code, mathématiques et tâches multilingues.</p>",
+                "fyi": "<p>Cette itération des modèles Qwen a des fenêtres de contexte plus longues.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Qwen2-72b-instruct": {
+                "desc": "<p>Grand modèle performant en code, mathématiques et tâches multilingues.</p>",
+                "fyi": "<p>Cette itération des modèles Qwen a des fenêtres de contexte plus longues.</p>",
+                "size_desc": "<p>Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.</p>"
+            },
+            "Qwen2-7B": {
+                "desc": "<p>Supportant un contexte de 130k tokens, ce petit modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement.</p>",
+                "fyi": "<p>Petit frère de la famille Qwen2 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
+            "Qwen2.5-32B": {
+                "desc": "<p>Supportant un contexte de 130k tokens, ce modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement.</p>",
+                "fyi": "<p>Modèle intermédiaire de la famille Qwen2.5 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes.</p>",
+                "size_desc": "<p>Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.</p>"
+            },
+            "Qwen2.5-7B": {
+                "desc": "<p>Supportant un contexte de 130k tokens, ce modèle multilingue et polyvalent est performant pour des tâches de traduction, de résumé, d’analyse et de raisonnement.</p>",
+                "fyi": "<p>Petit modèle de la famille Qwen2.5 et produit par l'entreprise chinoise Alibaba, ce modèle peut prendre en charge jusqu’à 130 000 tokens pour traiter de longs textes.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
+            },
             "Qwen3 Coder 480B A35B": {
                 "desc": "<p>Très grand modèle spécialisé dans la génération de code, analyse de dépôts entiers et résolution de problèmes multi-étapes. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale. </p>",
                 "fyi": "<p>Ce modèle a été pré-entraîné sur 7,5 trillions de jetons (dont 70 % de code), et utilise un processus de post-entraînement avancée - Code RL (Hard to Solve, Easy to Verify) pour renforcer l’exécution correcte du code et Agent RL (long-horizon reinforcement learning) pour optimiser la résolution de tâches logicielles multi-tours, avec un environnement massivement parallèle (20 000 simulations en parallèle sur Alibaba Cloud).</p>",
@@ -888,6 +1113,11 @@
                 "desc": "<p>Modèle de raisonnement de taille moyenne spécialisé et très performant en mathématiques, génération de code, et résolution de problèmes logiques.</p>",
                 "fyi": "<p>Ce modèle a été entraîné avec une méthode d’apprentissage par renforcement (RL) pour optimiser la gestion des problèmes de mathématiques et des tâches de programmation. Il utilise plusieurs techniques récentes pour améliorer la qualité des réponses. Par exemple, la méthode RoPE (Rotary Position Embedding) lui permet de mieux comprendre l’ordre des mots dans un texte. La fonction d'activation SwiGLU est une manière plus efficace de gérer les calculs au sein du réseau de neurones qui aide le modèle à produire des réponses plus fiables. La méthode d'ajustement QKV (Query Key Value-biais) améliore la manière dont le modèle repère et sélectionne les informations importantes. Enfin, grâce à la méthode YaRN (Yet another RoPE extensioN method), il peut traiter de très longs textes allant jusqu’à 130 000 jetons, ce qui lui permet de travailler sur des documents complexes ou très détaillés.</p>",
                 "size_desc": "<p>Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. Néanmoins, les modèles de raisonnement de ce type fonctionnent plus longtemps pour produire une réponse car une phase de raisonnement précède la génération du résultat final, ce qui augmente la consommation énergétique.</p>"
+            },
+            "Yi-1.5 9B": {
+                "desc": "<p>Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en code, maths, raisonnement, suivi d'instructions, avec une solide compréhension du langage.</p>",
+                "fyi": "<p>Yi 1.5 est un modèle de l'entreprise chinoise 01-ai, spécialisé en code, maths, raisonnement, suivi d'instructions, avec une solide compréhension du langage.</p>",
+                "size_desc": "<p>Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)</p>"
             }
         }
     },
