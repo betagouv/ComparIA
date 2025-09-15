@@ -1110,6 +1110,12 @@
         },
         "list": {
             "filters": {
+                "archived": {
+                    "checkedLabel": "Visibles",
+                    "help": "Par défaut, seuls les modèles actifs dans le comparateur sont visibles.",
+                    "label": "Modèles archivés",
+                    "uncheckedLabel": "Non visibles"
+                },
                 "display": "Afficher les filtres",
                 "editor": {
                     "legend": "Éditeur"

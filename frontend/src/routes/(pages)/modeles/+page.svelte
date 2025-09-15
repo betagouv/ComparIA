@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Accordion, AccordionGroup, Button, CheckboxGroup } from '$components/dsfr'
-  import ModelInfoModal from '$components/ModelInfoModal.svelte'
+  import { Accordion, AccordionGroup, Button, CheckboxGroup, Toggle } from '$components/dsfr'
   import ModelCard from '$components/ModelCard.svelte'
+  import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
   import type { License, Organisation, Sizes } from '$lib/models'
@@ -49,13 +49,16 @@
   let sizes = $state<Sizes[]>([])
   let licenses = $state<License[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
+  let showArchived = $state(false)
+
   const filteredModels = $derived(
     models
       .filter((model) => {
         const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
         const orgMatch = editors.length === 0 || editors.includes(model.organisation)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
-        return sizeMatch && orgMatch && licenseMatch
+        const archivedMatch = model.status === 'enabled' || showArchived
+        return sizeMatch && orgMatch && licenseMatch && archivedMatch
       })
       .sort((a, b) => {
         switch (sortingMethod) {
@@ -122,7 +125,17 @@
             {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
           <form class="mt-8 md:mt-0">
-            <AccordionGroup class="mb-6">
+            <Toggle
+              id="archived"
+              bind:value={showArchived}
+              label={m['models.list.filters.archived.label']()}
+              help={m['models.list.filters.archived.help']()}
+              checkedLabel={m['models.list.filters.archived.checkedLabel']()}
+              uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
+              class="w-full! ms-auto"
+            />
+
+            <AccordionGroup class="mb-6 mt-6">
               <Accordion id="field-editors" label={editorFilter.legend}>
                 <div class="p-4">
                   <CheckboxGroup
