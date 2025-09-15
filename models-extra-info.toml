@@ -493,7 +493,7 @@ icon_path = "meta.svg"
 excerpt = "Doté de 70 milliards de paramètres et sorti en avril 2024, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues."
 description = "Comme les autres modèles de la famille Llama 3.1, ce modèle sorti en avril 2024 a été entraîné sur des données qui remontent au mois de décembre 2023. Inutile de l'interroger sur les temps forts des Jeux olympiques de Paris 2024 ! Avec 70 milliards de paramètres, ce modèle est performant pour générer et comprendre des textes complexes dans diverses langues. "
 license = "Llama 3.1"
-release_date = "04/2024"
+release_date = "07/2024"
 
 ["llama-3.3-70b"]
 url = "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct"
