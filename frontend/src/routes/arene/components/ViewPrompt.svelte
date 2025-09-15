@@ -13,7 +13,7 @@
   let promptEl = $state<HTMLTextAreaElement>()
   let disabled = $state(false)
 
-  const models = getModelsContext()
+  const models = getModelsContext().filter((model) => model.status === 'enabled')
   let prompt = $state('')
   // const prompt = useLocalStorage('prompt', '', (parsed) => {
   //   if (parsed !== '') {

@@ -4,7 +4,7 @@
   import { getModelsContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
-  const models = getModelsContext()
+  const models = getModelsContext().filter((model) => model.status === 'enabled')
 </script>
 
 <SeoHead title={m['seo.titles.modalites']()} />
@@ -86,9 +86,13 @@
           <tr>
             <td>{model['simple_name']}</td>
             <td>
-              <a href={model.url ?? '#'} target="_blank" rel="noopener external">
-                {model.url ?? m['general.tos.licenceLLMUnavailable']()}
-              </a>
+              {#if model.url}
+                <a href={model.url} target="_blank" rel="noopener external">
+                  {model.url}
+                </a>
+              {:else}
+                {m['general.tos.licenceLLMUnavailable']()}
+              {/if}
             </td>
             <td>{model['license']}</td>
           </tr>
