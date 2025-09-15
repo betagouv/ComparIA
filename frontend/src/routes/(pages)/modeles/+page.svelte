@@ -111,14 +111,14 @@
         >
           {m['models.list.filters.display']()}
           {#if filterCount}
-            <span class="fr-badge bg-primary! fr-badge--sm rounded-full! ms-2 text-white">
+            <span class="fr-badge bg-primary! fr-badge--sm rounded-full! text-white! ms-2">
               {filterCount}
             </span>
           {/if}
         </button>
         <div class="fr-collapse" id="fr-modal-filters-section">
           <p class="fr-h5 mb-5! hidden md:block">
-            {models.length}
+            {filteredModels.length}
             {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
           <form class="mt-8 md:mt-0">
