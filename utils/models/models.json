@@ -153,6 +153,7 @@
         "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier [« Attention Is All You Need »](https://arxiv.org/abs/1706.03762) paru en 2017 et qui a révolutionné l'IA. L'entreprise se démarque par sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle est conçu pour fonctionner dans plus de 23 langues et pour s’intégrer facilement dans les systèmes d’entreprise.  Il fait partie des rares modèles distribués sous licence **CC-BY-NC 4.0 qui autorise le partage et la modification mais interdit toute utilisation commerciale.** Ce choix de licence reflète la volonté de Cohere de contribuer à la recherche et la communauté open source, tout en gardant le contrôle sur les usages commerciaux pour protéger son modèle économique... Cela exclut par exemple l’intégration du modèle dans des produits ou services vendus par une entreprise à des clients mais autorise un usage académique, des tests ou des projets internes, restreints à un cadre non-commercial."
       },
       {
+        "status": "disabled",
         "id": "c4ai-command-r-08-2024",
         "simple_name": "Command R",
         "license": "CC-BY-NC-4.0",
@@ -161,8 +162,7 @@
         "arch": "dense",
         "desc": "Modèle de taille moyenne optimisé pour la synthèse, les questions générales, l’utilisation d’outils et efficace dans les systèmes de génération augmentée de récupération (RAG, retrieval augmented generation).",
         "size_desc": "Avec 35 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut être hébergé sur un serveur équipé d’une seule carte graphique puissante, ce qui contribue à limiter les coûts d’infrastructure.",
-        "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier « Attention Is All You Need » qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle a été évalué dans plus de 10 langues. Sa fenêtre de contexte atteint 128 000 jetons, ce qui facilite l’analyse de documents longs. Cette fenêtre a été doublée sur la version suivante du modèle (Command A).",
-        "status": "disabled"
+        "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier « Attention Is All You Need » qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle a été évalué dans plus de 10 langues. Sa fenêtre de contexte atteint 128 000 jetons, ce qui facilite l’analyse de documents longs. Cette fenêtre a été doublée sur la version suivante du modèle (Command A)."
       }
     ]
   },
@@ -290,6 +290,7 @@
         "fyi": "Ce modèle a été entraîné avec une méthode d’apprentissage par renforcement (RL) pour optimiser la gestion des problèmes de mathématiques et des tâches de programmation. Il utilise plusieurs techniques récentes pour améliorer la qualité des réponses. Par exemple, la méthode RoPE (Rotary Position Embedding) lui permet de mieux comprendre l’ordre des mots dans un texte. La fonction d'activation SwiGLU est une manière plus efficace de gérer les calculs au sein du réseau de neurones qui aide le modèle à produire des réponses plus fiables. La méthode d'ajustement QKV (Query Key Value-biais) améliore la manière dont le modèle repère et sélectionne les informations importantes. Enfin, grâce à la méthode YaRN (Yet another RoPE extensioN method), il peut traiter de très longs textes allant jusqu’à 130 000 jetons, ce qui lui permet de travailler sur des documents complexes ou très détaillés."
       },
       {
+        "status": "disabled",
         "id": "qwen2.5-coder-32b-instruct",
         "simple_name": "Qwen 2.5 Coder 32B",
         "license": "Apache 2.0",
@@ -299,8 +300,7 @@
         "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
         "desc": "Modèle de taille moyenne spécialisé en programmation et dans l’usage d’outils externes (recherches web, interactions avec des logiciels…).",
         "size_desc": "Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure.\n\nSa fenêtre de contexte de 128 000 jetons permet de traiter de longs documents.",
-        "fyi": "Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. \n\nGrâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques.",
-        "status": "disabled"
+        "fyi": "Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. \n\nGrâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques."
       },
       {
         "id": "qwen3-32b",
@@ -360,12 +360,12 @@
       {
         "id": "kimi-k2",
         "simple_name": "Kimi K2",
-        "params": 1000,
-        "reasoning": true,
         "license": "MIT",
         "release_date": "11/2025",
+        "params": 1000,
         "active_params": 32,
         "arch": "moe",
+        "reasoning": true,
         "desc": "Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte.",
         "size_desc": "Avec 1 billion de paramètres, ce modèle est un des plus grands modèles qui existe. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.",
         "fyi": "Pour stabiliser l’entraînement à très grande échelle, Moonshot AI a introduit MuonClip, un “limiteur de vitesse” pour l’entraînement qui permet d’entraîner un modèle de cette taille et sur un corpus de 15,5 trillions de jetons sans dérailler dans l’apprentissage.\n\nCôté données, K2 a beaucoup pratiqué en “simulateur” avec de vrais outils (navigateur, terminal, exécuteurs de code, API…). Comme un pilote sur simulateur, il apprend à planifier, essayer, rater puis réessayer, et à enchaîner plusieurs actions pour atteindre un objectif. Résultat: il est particulièrement bon pour orchestrer des outils et réussir des tâches en plusieurs étapes."
@@ -491,6 +491,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "status": "disabled",
         "id": "mistral-large-2411",
         "simple_name": "Mistral Large 2",
         "license": "Mistral AI Research License",
@@ -500,8 +501,7 @@
         "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
         "desc": "Grand modèle prévu pour traiter des questions et tâches complexes : par exemple génération de code, utilisation d’outils, analyse de documents longs ou compréhension précise du langage.",
         "size_desc": "Avec 123 milliards de paramètres, ce modèle appartient à la catégorie des grands modèles. Il nécessite un serveur équipé d’au moins une carte graphique puissante, ce qui implique un coût de fonctionnement important. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
-        "fyi": "Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes.",
-        "status": "disabled"
+        "fyi": "Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes."
       },
       {
         "id": "mistral-saba",
@@ -569,6 +569,7 @@
         "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. \n\nL'entraînement s'est fait en deux phases. La première, dite de raisonnement *cold-start* par distillation (de Mistral Medium 3 et OpenThoughts/OpenR1) permet au modèle d'acquérir des capacités de base en raisonnement à partir de données d'instruction générale (10%). La seconde est une phase d'apprentissage par renforcement (RL, *renforcement learning*) à haute entropie, où le modèle est encouragé à explorer des solutions diverses et variées plutôt que de converger vers une seule réponse, et à générer des complétions longues (jusqu'à 32 000 jetons), ce qui permet de développer des capacités de raisonnement qui dépassent celles du modèle enseignant."
       },
       {
+        "status": "disabled",
         "id": "ministral-8b-instruct-2410",
         "simple_name": "Ministral",
         "license": "Mistral AI Research License",
@@ -578,8 +579,7 @@
         "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
         "desc": "Petit modèle multilingue conçu pour fonctionner sur un ordinateur portable sans connexion à un serveur, tout en offrant de bonnes capacités en synthèse de texte, réponses à des questions simples et utilisation d’outils.",
         "size_desc": "Avec ses 8 milliards de paramètres, ce modèle appartient à la catégorie des petits modèles (entre 7 et 20 milliards de paramètres). Il peut être déployé localement sur un ordinateur assez puissant, garantissant la confidentialité des données ou hébergé sur un serveur avec une seule carte graphique pour limiter les coûts d’infrastructure.",
-        "fyi": "Ce modèle utilise une méthode d'attention de requête groupée (GQA, grouped query attention) pour limiter le texte analysé à chaque étape de génération et gagner en vitesse et en mémoire: les temps de calculs sont réduits sans incidence sur la qualité. Le mécanisme d'attention est amélioré en appliquant des fenêtres de tailles différentes, ce qui permet de gérer de longs contextes (jusqu’à 128 000 jetons) tout en restant léger. Le tokenizer large (V3-Tekken) compresse mieux les langues et le code, ce qui améliore ses performances sur des tâches multilingues.",
-        "status": "disabled"
+        "fyi": "Ce modèle utilise une méthode d'attention de requête groupée (GQA, grouped query attention) pour limiter le texte analysé à chaque étape de génération et gagner en vitesse et en mémoire: les temps de calculs sont réduits sans incidence sur la qualité. Le mécanisme d'attention est amélioré en appliquant des fenêtres de tailles différentes, ce qui permet de gérer de longs contextes (jusqu’à 128 000 jetons) tout en restant léger. Le tokenizer large (V3-Tekken) compresse mieux les langues et le code, ce qui améliore ses performances sur des tâches multilingues."
       }
     ]
   },
@@ -604,6 +604,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "status": "disabled",
         "id": "claude-3-7-sonnet",
         "simple_name": "Claude 3.7 Sonnet",
         "license": "proprietary",
@@ -613,8 +614,7 @@
         "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
         "desc": "Très grand modèle multimodal et multilingue, performant pour la génération de code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
-        "fyi": "Claude 4 Opus est la version la plus avancée de la famille Claude 4. Il est optimisé pour la puissance brute et les tâches complexes nécessitant un raisonnement soutenu sur de longues périodes : il peut par exemple travailler sur des tâches à long terme (Anthropic déclarent qu'il peut travailler jusqu'à sept heures de manière indépendante). En contrepartie, Opus est plus coûteux à utiliser, plus lent à répondre et nécessite davantage de ressources pour fonctionner.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été majoritairement entraîné sur des données mathématiques, mais adapté à des cas d’usage réels.",
-        "status": "disabled"
+        "fyi": "Claude 4 Opus est la version la plus avancée de la famille Claude 4. Il est optimisé pour la puissance brute et les tâches complexes nécessitant un raisonnement soutenu sur de longues périodes : il peut par exemple travailler sur des tâches à long terme (Anthropic déclarent qu'il peut travailler jusqu'à sept heures de manière indépendante). En contrepartie, Opus est plus coûteux à utiliser, plus lent à répondre et nécessite davantage de ressources pour fonctionner.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été majoritairement entraîné sur des données mathématiques, mais adapté à des cas d’usage réels."
       },
       {
         "simple_name": "Claude 4 Sonnet",
@@ -635,10 +635,10 @@
       {
         "id": "glm-4.5",
         "simple_name": "GLM 4.5",
-        "params": 355,
         "license": "MIT",
-        "active_params": 32,
         "release_date": "07/2025",
+        "params": 355,
+        "active_params": 32,
         "arch": "moe",
         "reasoning": true,
         "desc": "Très grand modèle créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
@@ -652,6 +652,7 @@
     "icon_path": "nous.webp",
     "models": [
       {
+        "status": "disabled",
         "id": "hermes-3-llama-3.1-405b",
         "simple_name": "Hermes 3 405B",
         "license": "Llama 3.1",
@@ -661,8 +662,7 @@
         "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
         "desc": "Très grand modèle réentraîné à partir du Llama 3.1 405B, ajusté pour mieux répondre aux demandes des utilisateurs et faciliter l’utilisation d’outils externes.",
         "size_desc": "Avec 405 milliards de paramètres, ce modèle fait partie des modèles de très grande taille. Il nécessite un serveur équipé de plusieurs cartes graphiques puissantes, ce qui entraîne un coût de fonctionnement important.",
-        "fyi": "Ce modèle est le résultat d’un réentraînement de l’ensemble des paramètres de Llama 3.1 405B pour rendre son comportement moins restreint et mieux prendre en compte les nuances du prompt utilisateur et système - l’utilisateur dispose ainsi d’un plus grand contrôle sur la “personnalité” et comportement du modèle. Des fonctions de raisonnement spécifiques telles que **`<SCRATCHPAD>`**, **`<REASONING>`**, **`<THINKING>`** ont été ajoutées pour simuler un raisonnement sur les tâches complexes. L'entraînement a utilisé un outil appelé AdamW (vitesse d'apprentissage de 3.5×10⁻⁶), qui aide le modèle à apprendre de manière efficace en ajustant progressivement ses paramètres. Ensuite, il a été affiné avec une méthode appelée DPO (direct preference optimisation), qui permet d'améliorer ses réponses en se basant sur des préférences spécifiques. Pour rendre cet entraînement plus léger et rapide, des adaptateurs LoRA ont été utilisés ; ce sont des modules plus petits qui modifient seulement une partie du modèle, ce qui évite de devoir retravailler tous les paramètres en même temps.",
-        "status": "disabled"
+        "fyi": "Ce modèle est le résultat d’un réentraînement de l’ensemble des paramètres de Llama 3.1 405B pour rendre son comportement moins restreint et mieux prendre en compte les nuances du prompt utilisateur et système - l’utilisateur dispose ainsi d’un plus grand contrôle sur la “personnalité” et comportement du modèle. Des fonctions de raisonnement spécifiques telles que **`<SCRATCHPAD>`**, **`<REASONING>`**, **`<THINKING>`** ont été ajoutées pour simuler un raisonnement sur les tâches complexes. L'entraînement a utilisé un outil appelé AdamW (vitesse d'apprentissage de 3.5×10⁻⁶), qui aide le modèle à apprendre de manière efficace en ajustant progressivement ses paramètres. Ensuite, il a été affiné avec une méthode appelée DPO (direct preference optimisation), qui permet d'améliorer ses réponses en se basant sur des préférences spécifiques. Pour rendre cet entraînement plus léger et rapide, des adaptateurs LoRA ont été utilisés ; ce sont des modules plus petits qui modifient seulement une partie du modèle, ce qui évite de devoir retravailler tous les paramètres en même temps."
       },
       {
         "id": "hermes-4-70b",
