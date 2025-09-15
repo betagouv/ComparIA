@@ -14,6 +14,7 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Aya Expanse 32B",
+    "status": "enabled",
     "url": "https://huggingface.co/CohereForAI/aya-expanse-32b"
   },
   "c4ai-command-r-08-2024": {
@@ -33,6 +34,7 @@
     "required_ram": 35,
     "reuse": true,
     "simple_name": "Command R",
+    "status": "disabled",
     "total_votes": 5427,
     "trust_range": [
       45,
@@ -54,6 +56,7 @@
     "required_ram": 200,
     "reuse": false,
     "simple_name": "Claude 3.7 Sonnet",
+    "status": "disabled",
     "url": "https://www.anthropic.com/news/claude-3-7-sonnet"
   },
   "claude-4-sonnet": {
@@ -70,7 +73,8 @@
     "release_date": "05/2025",
     "required_ram": 200,
     "reuse": false,
-    "simple_name": "Claude 4 Sonnet"
+    "simple_name": "Claude 4 Sonnet",
+    "status": "enabled"
   },
   "command-a": {
     "arch": "dense",
@@ -89,12 +93,32 @@
     "required_ram": 111,
     "reuse": true,
     "simple_name": "Command A",
+    "status": "enabled",
     "total_votes": 3457,
     "trust_range": [
       22,
       46
     ],
     "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025"
+  },
+  "deepseek-chat-v3.1": {
+    "active_params": 37,
+    "arch": "moe",
+    "commercial_use": true,
+    "distribution": "open-weights",
+    "friendly_size": "XL",
+    "icon_path": "deepseek.png",
+    "id": "deepseek-chat-v3.1",
+    "license": "MIT",
+    "organisation": "DeepSeek",
+    "params": 685,
+    "reasoning": true,
+    "release_date": "08/2025",
+    "required_ram": 685,
+    "reuse": true,
+    "simple_name": "DeepSeek v3.1",
+    "status": "enabled",
+    "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1"
   },
   "deepseek-r1": {
     "active_params": 37,
@@ -114,6 +138,7 @@
     "required_ram": 671,
     "reuse": true,
     "simple_name": "DeepSeek R1",
+    "status": "enabled",
     "total_votes": 3278,
     "trust_range": [
       68,
@@ -138,6 +163,7 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "DeepSeek R1 Llama 70B",
+    "status": "enabled",
     "total_votes": 2394,
     "trust_range": [
       67,
@@ -161,6 +187,7 @@
     "required_ram": 685,
     "reuse": true,
     "simple_name": "DeepSeek V3",
+    "status": "enabled",
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324"
   },
   "gemini-2.5-flash": {
@@ -177,7 +204,8 @@
     "release_date": "06/2025",
     "required_ram": 70,
     "reuse": false,
-    "simple_name": "Gemini 2.5 Flash"
+    "simple_name": "Gemini 2.5 Flash",
+    "status": "enabled"
   },
   "gemma-3-12b": {
     "arch": "dense",
@@ -196,6 +224,7 @@
     "required_ram": 12,
     "reuse": true,
     "simple_name": "Gemma 3 12B",
+    "status": "enabled",
     "total_votes": 3477,
     "trust_range": [
       57,
@@ -220,6 +249,7 @@
     "required_ram": 27,
     "reuse": true,
     "simple_name": "Gemma 3 27B",
+    "status": "enabled",
     "total_votes": 3944,
     "trust_range": [
       19,
@@ -244,6 +274,7 @@
     "required_ram": 4,
     "reuse": true,
     "simple_name": "Gemma 3 4B",
+    "status": "enabled",
     "total_votes": 4407,
     "trust_range": [
       35,
@@ -266,7 +297,8 @@
     "release_date": "05/2025",
     "required_ram": 8,
     "reuse": true,
-    "simple_name": "Gemma 3n 4B"
+    "simple_name": "Gemma 3n 4B",
+    "status": "enabled"
   },
   "glm-4.5": {
     "active_params": 32,
@@ -283,7 +315,8 @@
     "release_date": "07/2025",
     "required_ram": 355,
     "reuse": true,
-    "simple_name": "GLM 4.5"
+    "simple_name": "GLM 4.5",
+    "status": "enabled"
   },
   "gpt-4.1-mini": {
     "arch": "maybe-moe",
@@ -300,6 +333,7 @@
     "required_ram": 70,
     "reuse": false,
     "simple_name": "GPT-4.1 Mini",
+    "status": "enabled",
     "url": "https://openai.com/index/gpt-4-1/"
   },
   "gpt-4.1-nano": {
@@ -317,6 +351,7 @@
     "required_ram": 35,
     "reuse": false,
     "simple_name": "GPT 4.1 Nano",
+    "status": "enabled",
     "url": "https://openai.com/index/gpt-4-1/"
   },
   "gpt-5": {
@@ -333,7 +368,8 @@
     "release_date": "08/2025",
     "required_ram": 200,
     "reuse": false,
-    "simple_name": "GPT 5"
+    "simple_name": "GPT 5",
+    "status": "enabled"
   },
   "gpt-5-mini": {
     "arch": "maybe-moe",
@@ -349,7 +385,8 @@
     "release_date": "08/2025",
     "required_ram": 200,
     "reuse": false,
-    "simple_name": "GPT 5 Mini"
+    "simple_name": "GPT 5 Mini",
+    "status": "enabled"
   },
   "gpt-5-nano": {
     "arch": "maybe-moe",
@@ -365,7 +402,8 @@
     "release_date": "04/2025",
     "required_ram": 70,
     "reuse": false,
-    "simple_name": "GPT 5 Nano"
+    "simple_name": "GPT 5 Nano",
+    "status": "enabled"
   },
   "gpt-oss-120b": {
     "active_params": 5.1,
@@ -382,7 +420,8 @@
     "release_date": "08/2025",
     "required_ram": 117,
     "reuse": true,
-    "simple_name": "GPT OSS-120B"
+    "simple_name": "GPT OSS-120B",
+    "status": "enabled"
   },
   "gpt-oss-20b": {
     "active_params": 3.6,
@@ -399,7 +438,8 @@
     "release_date": "08/2025",
     "required_ram": 21,
     "reuse": true,
-    "simple_name": "GPT OSS-20B"
+    "simple_name": "GPT OSS-20B",
+    "status": "enabled"
   },
   "grok-3-mini-beta": {
     "arch": "maybe-moe",
@@ -416,6 +456,7 @@
     "required_ram": 200,
     "reuse": false,
     "simple_name": "Grok 3 Mini",
+    "status": "enabled",
     "url": "https://x.ai/news/grok-3"
   },
   "hermes-3-llama-3.1-405b": {
@@ -435,12 +476,30 @@
     "required_ram": 405,
     "reuse": true,
     "simple_name": "Hermes 3 405B",
+    "status": "disabled",
     "total_votes": 6238,
     "trust_range": [
       47,
       26
     ],
     "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B"
+  },
+  "hermes-4-70b": {
+    "arch": "dense",
+    "commercial_use": true,
+    "distribution": "open-weights",
+    "friendly_size": "L",
+    "icon_path": "nous.webp",
+    "id": "hermes-4-70b",
+    "license": "Llama 3.1",
+    "organisation": "Nous",
+    "params": 70,
+    "reasoning": false,
+    "release_date": "08/2025",
+    "required_ram": 70,
+    "reuse": true,
+    "simple_name": "Hermes 4 70B",
+    "status": "enabled"
   },
   "kimi-k2": {
     "active_params": 32,
@@ -457,7 +516,8 @@
     "release_date": "11/2025",
     "required_ram": 1000,
     "reuse": true,
-    "simple_name": "Kimi K2"
+    "simple_name": "Kimi K2",
+    "status": "enabled"
   },
   "llama-3.1-405b": {
     "arch": "dense",
@@ -476,6 +536,7 @@
     "required_ram": 405,
     "reuse": true,
     "simple_name": "Llama 3.1 405B",
+    "status": "enabled",
     "total_votes": 9226,
     "trust_range": [
       8,
@@ -500,6 +561,7 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Llama 3.1 8B",
+    "status": "enabled",
     "total_votes": 7277,
     "trust_range": [
       71,
@@ -524,6 +586,7 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Nemotron Llama 3.1 70B",
+    "status": "enabled",
     "total_votes": 6004,
     "trust_range": [
       7,
@@ -548,6 +611,7 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Llama 3.3 70B",
+    "status": "enabled",
     "total_votes": 5853,
     "trust_range": [
       43,
@@ -571,6 +635,7 @@
     "required_ram": 109,
     "reuse": true,
     "simple_name": "Llama 4 Scout",
+    "status": "enabled",
     "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct"
   },
   "llama-maverick": {
@@ -587,7 +652,8 @@
     "release_date": "04/2025",
     "required_ram": 400,
     "reuse": true,
-    "simple_name": "Llama Maverick"
+    "simple_name": "Llama Maverick",
+    "status": "enabled"
   },
   "magistral-medium": {
     "arch": "maybe-dense",
@@ -603,7 +669,8 @@
     "release_date": "06/2025",
     "required_ram": 35,
     "reuse": false,
-    "simple_name": "Magistral Medium"
+    "simple_name": "Magistral Medium",
+    "status": "enabled"
   },
   "magistral-small-2506": {
     "arch": "dense",
@@ -619,7 +686,8 @@
     "release_date": "06/2025",
     "required_ram": 24,
     "reuse": true,
-    "simple_name": "Magistral Small"
+    "simple_name": "Magistral Small",
+    "status": "enabled"
   },
   "ministral-8b-instruct-2410": {
     "arch": "dense",
@@ -638,6 +706,7 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Ministral",
+    "status": "disabled",
     "total_votes": 8619,
     "trust_range": [
       40,
@@ -662,6 +731,7 @@
     "required_ram": 123,
     "reuse": true,
     "simple_name": "Mistral Large 2",
+    "status": "disabled",
     "total_votes": 8177,
     "trust_range": [
       72,
@@ -669,21 +739,22 @@
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
   },
-  "mistral-medium-2506": {
+  "mistral-medium-2508": {
     "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
     "friendly_size": "M",
     "icon_path": "mistral.png",
-    "id": "mistral-medium-2506",
+    "id": "mistral-medium-2508",
     "license": "proprietary",
     "organisation": "Mistral AI",
     "params": 35,
     "reasoning": false,
-    "release_date": "06/2025",
+    "release_date": "08/2025",
     "required_ram": 35,
     "reuse": false,
-    "simple_name": "Mistral Medium 2506"
+    "simple_name": "Mistral Medium 2508",
+    "status": "enabled"
   },
   "mistral-medium-3.1": {
     "arch": "maybe-dense",
@@ -699,7 +770,8 @@
     "release_date": "08/2025",
     "required_ram": 35,
     "reuse": false,
-    "simple_name": "Mistral Medium 3.1"
+    "simple_name": "Mistral Medium 3.1",
+    "status": "enabled"
   },
   "mistral-saba": {
     "arch": "maybe-dense",
@@ -716,15 +788,16 @@
     "required_ram": 35,
     "reuse": false,
     "simple_name": "Mistral Saba",
+    "status": "enabled",
     "url": "https://mistral.ai/news/mistral-saba"
   },
-  "mistral-small-3-2": {
+  "mistral-small-2506": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
     "friendly_size": "M",
     "icon_path": "mistral.png",
-    "id": "mistral-small-3-2",
+    "id": "mistral-small-2506",
     "license": "Apache 2.0",
     "organisation": "Mistral AI",
     "params": 24,
@@ -732,7 +805,8 @@
     "release_date": "06/2025",
     "required_ram": 24,
     "reuse": true,
-    "simple_name": "Mistral Small 3.2"
+    "simple_name": "Mistral Small 3.2",
+    "status": "enabled"
   },
   "o4-mini": {
     "arch": "maybe-moe",
@@ -749,6 +823,7 @@
     "required_ram": 200,
     "reuse": false,
     "simple_name": "o4 mini",
+    "status": "enabled",
     "url": "https://openai.com/index/introducing-o3-and-o4-mini/"
   },
   "phi-4": {
@@ -768,6 +843,7 @@
     "required_ram": 14,
     "reuse": true,
     "simple_name": "Phi-4",
+    "status": "enabled",
     "total_votes": 7071,
     "trust_range": [
       79,
@@ -789,7 +865,8 @@
     "release_date": "04/2025",
     "required_ram": 200,
     "reuse": false,
-    "simple_name": "Qwen 2.5 max 0125"
+    "simple_name": "Qwen 2.5 max 0125",
+    "status": "enabled"
   },
   "qwen2.5-coder-32b-instruct": {
     "arch": "dense",
@@ -808,6 +885,7 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Qwen 2.5 Coder 32B",
+    "status": "disabled",
     "total_votes": 6839,
     "trust_range": [
       104,
@@ -830,7 +908,8 @@
     "release_date": "05/2025",
     "required_ram": 30,
     "reuse": true,
-    "simple_name": "Qwen 3 30B A3B"
+    "simple_name": "Qwen 3 30B A3B",
+    "status": "enabled"
   },
   "qwen3-32b": {
     "arch": "dense",
@@ -847,7 +926,27 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Qwen 3 32B",
+    "status": "enabled",
     "url": "https://huggingface.co/Qwen/Qwen3-32B"
+  },
+  "Qwen3-Coder-480B-A35B-Instruct": {
+    "active_params": 35,
+    "arch": "moe",
+    "commercial_use": true,
+    "distribution": "open-weights",
+    "friendly_size": "XL",
+    "icon_path": "qwen.png",
+    "id": "Qwen3-Coder-480B-A35B-Instruct",
+    "license": "Apache 2.0",
+    "organisation": "Alibaba",
+    "params": 480,
+    "reasoning": true,
+    "release_date": "07/2025",
+    "required_ram": 480,
+    "reuse": true,
+    "simple_name": "Qwen3 Coder 480B A35B",
+    "status": "enabled",
+    "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct"
   },
   "qwq-32b": {
     "arch": "dense",
@@ -866,6 +965,7 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "qwq 32B",
+    "status": "enabled",
     "total_votes": 1484,
     "trust_range": [
       58,
