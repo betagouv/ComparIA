@@ -162,7 +162,7 @@
         "desc": "Modèle de taille moyenne optimisé pour la synthèse, les questions générales, l’utilisation d’outils et efficace dans les systèmes de génération augmentée de récupération (RAG, retrieval augmented generation).",
         "size_desc": "Avec 35 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut être hébergé sur un serveur équipé d’une seule carte graphique puissante, ce qui contribue à limiter les coûts d’infrastructure.",
         "fyi": "Cohere, l'entreprise canadienne derrière ce modèle, a été fondée en 2019 par d'anciens chercheurs de Google Brain, notamment Aidan Gomez, co-auteur du fameux papier « Attention Is All You Need » qui a révolutionné l'IA. Sa spécificité principale réside dans sa focalisation exclusive sur l'IA générative pour les entreprises, particulièrement les secteurs réglementés comme la finance, la santé, la manufacture et l'énergie, ainsi que le secteur public. L'entreprise est également pionnière dans les approches multilingues et maintient un laboratoire de recherche à but non lucratif pour soutenir l'innovation ouverte.\n\nCe modèle a été évalué dans plus de 10 langues. Sa fenêtre de contexte atteint 128 000 jetons, ce qui facilite l’analyse de documents longs. Cette fenêtre a été doublée sur la version suivante du modèle (Command A).",
-        "deactivated": "missing_data"
+        "status": "disabled"
       }
     ]
   },
@@ -300,7 +300,7 @@
         "desc": "Modèle de taille moyenne spécialisé en programmation et dans l’usage d’outils externes (recherches web, interactions avec des logiciels…).",
         "size_desc": "Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure.\n\nSa fenêtre de contexte de 128 000 jetons permet de traiter de longs documents.",
         "fyi": "Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. \n\nGrâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques.",
-        "deactivated": "missing_data"
+        "status": "disabled"
       },
       {
         "id": "qwen3-32b",
@@ -501,7 +501,7 @@
         "desc": "Grand modèle prévu pour traiter des questions et tâches complexes : par exemple génération de code, utilisation d’outils, analyse de documents longs ou compréhension précise du langage.",
         "size_desc": "Avec 123 milliards de paramètres, ce modèle appartient à la catégorie des grands modèles. Il nécessite un serveur équipé d’au moins une carte graphique puissante, ce qui implique un coût de fonctionnement important. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
         "fyi": "Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes.",
-        "deactivated": "missing_data"
+        "status": "disabled"
       },
       {
         "id": "mistral-saba",
@@ -579,7 +579,7 @@
         "desc": "Petit modèle multilingue conçu pour fonctionner sur un ordinateur portable sans connexion à un serveur, tout en offrant de bonnes capacités en synthèse de texte, réponses à des questions simples et utilisation d’outils.",
         "size_desc": "Avec ses 8 milliards de paramètres, ce modèle appartient à la catégorie des petits modèles (entre 7 et 20 milliards de paramètres). Il peut être déployé localement sur un ordinateur assez puissant, garantissant la confidentialité des données ou hébergé sur un serveur avec une seule carte graphique pour limiter les coûts d’infrastructure.",
         "fyi": "Ce modèle utilise une méthode d'attention de requête groupée (GQA, grouped query attention) pour limiter le texte analysé à chaque étape de génération et gagner en vitesse et en mémoire: les temps de calculs sont réduits sans incidence sur la qualité. Le mécanisme d'attention est amélioré en appliquant des fenêtres de tailles différentes, ce qui permet de gérer de longs contextes (jusqu’à 128 000 jetons) tout en restant léger. Le tokenizer large (V3-Tekken) compresse mieux les langues et le code, ce qui améliore ses performances sur des tâches multilingues.",
-        "deactivated": "missing_data"
+        "status": "disabled"
       }
     ]
   },
@@ -614,7 +614,7 @@
         "desc": "Très grand modèle multimodal et multilingue, performant pour la génération de code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
         "fyi": "Claude 4 Opus est la version la plus avancée de la famille Claude 4. Il est optimisé pour la puissance brute et les tâches complexes nécessitant un raisonnement soutenu sur de longues périodes : il peut par exemple travailler sur des tâches à long terme (Anthropic déclarent qu'il peut travailler jusqu'à sept heures de manière indépendante). En contrepartie, Opus est plus coûteux à utiliser, plus lent à répondre et nécessite davantage de ressources pour fonctionner.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été majoritairement entraîné sur des données mathématiques, mais adapté à des cas d’usage réels.",
-        "deactivated": "missing_data"
+        "status": "disabled"
       },
       {
         "simple_name": "Claude 4 Sonnet",
@@ -662,7 +662,7 @@
         "desc": "Très grand modèle réentraîné à partir du Llama 3.1 405B, ajusté pour mieux répondre aux demandes des utilisateurs et faciliter l’utilisation d’outils externes.",
         "size_desc": "Avec 405 milliards de paramètres, ce modèle fait partie des modèles de très grande taille. Il nécessite un serveur équipé de plusieurs cartes graphiques puissantes, ce qui entraîne un coût de fonctionnement important.",
         "fyi": "Ce modèle est le résultat d’un réentraînement de l’ensemble des paramètres de Llama 3.1 405B pour rendre son comportement moins restreint et mieux prendre en compte les nuances du prompt utilisateur et système - l’utilisateur dispose ainsi d’un plus grand contrôle sur la “personnalité” et comportement du modèle. Des fonctions de raisonnement spécifiques telles que **`<SCRATCHPAD>`**, **`<REASONING>`**, **`<THINKING>`** ont été ajoutées pour simuler un raisonnement sur les tâches complexes. L'entraînement a utilisé un outil appelé AdamW (vitesse d'apprentissage de 3.5×10⁻⁶), qui aide le modèle à apprendre de manière efficace en ajustant progressivement ses paramètres. Ensuite, il a été affiné avec une méthode appelée DPO (direct preference optimisation), qui permet d'améliorer ses réponses en se basant sur des préférences spécifiques. Pour rendre cet entraînement plus léger et rapide, des adaptateurs LoRA ont été utilisés ; ce sont des modules plus petits qui modifient seulement une partie du modèle, ce qui évite de devoir retravailler tous les paramètres en même temps.",
-        "deactivated": "missing_data"
+        "status": "disabled"
       },
       {
         "id": "hermes-4-70b",
