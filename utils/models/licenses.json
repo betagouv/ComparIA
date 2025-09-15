@@ -21,6 +21,22 @@
     "license_desc": "Cette licence permet d'utiliser, modifier et distribuer librement le modèle, y compris à des fins commerciales. Outre la liberté d'utilisation, elle garantit la protection juridique en incluant une clause de concession de brevets qui fonctionne comme une assurance : si vous utilisez ce modèle, les contributeurs s'engagent à ne pas vous poursuivre pour violation de leurs brevets liés au projet. Cette protection mutuelle évite les conflits juridiques entre utilisateurs et développeurs. Lors de la distribution de versions modifiées, les changements significatifs doivent être signalés par des mentions appropriées, garantissant la transparence pour l'utilisateur."
   },
   {
+    "license": "Jamba Open Model",
+    "distribution": "open-weights",
+    "reuse": true,
+    "commercial_use": true,
+    "commercial_use_specificities": "en dessous des 50 millions de dollars de revenus annuels",
+    "license_desc": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels."
+  },
+  {
+    "license": "Llama 3 Community",
+    "distribution": "open-weights",
+    "reuse": false,
+    "commercial_use": true,
+    "commercial_use_specificities": "en dessous des 700 millions d’utilisateurs",
+    "license_desc": "Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta."
+  },
+  {
     "license": "Llama 3.1",
     "distribution": "open-weights",
     "reuse": true,
