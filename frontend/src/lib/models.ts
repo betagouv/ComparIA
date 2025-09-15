@@ -12,6 +12,8 @@ export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
 
 export interface APIBotModel {
+  new: boolean
+  status: 'archived' | 'enabled'
   id: string
   simple_name: Model
   organisation: Organisation

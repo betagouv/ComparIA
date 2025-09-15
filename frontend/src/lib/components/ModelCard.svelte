@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import { Badge } from './dsfr'
@@ -17,7 +18,12 @@
   const badges = [license, releaseDate, size].filter((b) => !!b)
 </script>
 
-<div class="fr-card fr-enlarge-link cg-border bg-none! rounded-xl">
+<div
+  class={[
+    'fr-card fr-enlarge-link cg-border bg-none! rounded-xl',
+    { 'border-primary!': model.new }
+  ]}
+>
   <div class="fr-card__body">
     <div class="fr-card__content px-5! md:px-4! md:pt-4!">
       <h6
@@ -47,6 +53,16 @@
 
       <div class="fr-card__start order-2!">
         <ul class="fr-badges-group">
+          {#if model.status === 'archived' || model.new}
+            <li
+              class={[
+                'px-4! py-1! absolute bottom-[1.75rem] rounded-[3.75rem] text-[14px] font-bold',
+                model.new ? 'bg-primary text-white' : 'bg-(--grey-900-175) text-dark-grey'
+              ]}
+            >
+              {m[model.new ? 'words.new' : 'words.archived']()}
+            </li>
+          {/if}
           {#each badges as badge, i}
             <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
           {/each}
@@ -54,5 +70,4 @@
       </div>
     </div>
   </div>
-  <div class="fr-card__header"></div>
 </div>
