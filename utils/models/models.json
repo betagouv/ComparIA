@@ -17,6 +17,7 @@
         "fyi": "Ce modèle a été codistillé avec Behemoth, ce qui veut dire qu’il a appris en même temps que le modèle géant, et non après comme dans une distillation classique. Il a été entraîné sur 30 billions de jetons, combinant texte en 200 langues et images  pour obtenir des capacités multimodales natives . L’architecture repose sur un système de mix d’experts (MoE - Mixture of Experts), avec 17 milliards de paramètres actifs, 16 experts et 109 milliards de paramètres totaux. Afin d'équilibrer performances multimodales, raisonnement et qualité conversationnelle, l'équipe Meta a développé une stratégie de post-entraînement progressive, combinant filtrage adaptatif des données (pour ne garder que les plus complexes et intéressantes), fine-tuning ciblé et apprentissage par renforcement avec des environnements en ligne (online reinforcement learning) - le modèle apprenait donc en essayant de réaliser des tâches en ligne de manière autonome. Grâce à l’architecture iRoPE (version optimisée de l’encodage positionnel), il peut gérer des fenêtres de contexte très longues, jusqu’à 10 millions de jetons et peut traiter jusqu’à 8 images simultanément. \n\nLe modèle a été bien reçu à son lancement, notamment pour sa fenêtre de contexte impressionnante, une première dans le domaine, ainsi que pour son rapport qualité-prix sur des tâches comme le résumé, l’appel d’outils et la génération augmentée (RAG). Cela en fait un choix adapté pour les pipelines automatisés."
       },
       {
+        "id": "llama-maverick",
         "simple_name": "Llama Maverick",
         "license": "Llama 4",
         "release_date": "04/2025",
@@ -342,6 +343,7 @@
         "fyi": "Ce modèle a été entraîné sur un très grand volume de données : 36 billions de jetons, en 119 langues. L'entraînement s’est fait en trois étapes. Le modèle a d'abord appris à partir de 30 billions de jetons avec un contexte de 4 000 jetons. Ensuite, 5 billions de jetons ont été ajoutés pour renforcer ses connaissances factuelles. Enfin, il a été exposé à un corpus spécifique pour l’aider à mieux gérer les très longs textes. Résultat : il dispose en fin d'entrainement d'une fenêtre de contexte de 128 000 jetons, ce qui est utile pour lire et analyser de longs documents."
       },
       {
+        "id": "qwen-2.5-max-0125",
         "simple_name": "Qwen 2.5 max 0125",
         "license": "proprietary",
         "release_date": "04/2025",
@@ -396,6 +398,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "id": "gpt-oss-120b",
         "simple_name": "GPT OSS-120B",
         "license": "Apache 2.0",
         "release_date": "08/2025",
@@ -407,6 +410,7 @@
         "fyi": "Ce modèle peut fonctionner sur une seule GPU de 80 Go (comme la NVIDIA H100). Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (*low*, *medium*, et *high*) qui déterminent la verbosité du modèle."
       },
       {
+        "id": "gpt-oss-20b",
         "simple_name": "GPT OSS-20B",
         "license": "Apache 2.0",
         "release_date": "08/2025",
@@ -418,6 +422,7 @@
         "fyi": "Ce modèle peut être exécuté localement sur un ordinateur portable haut de gamme équipé de seulement 16 Go de VRAM (ou de RAM système). Cela en fait une option très accessible pour les développeurs. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (*low*, *medium*, et *high*) qui déterminent la verbosité du modèle."
       },
       {
+        "id": "gpt-5",
         "simple_name": "GPT 5",
         "license": "proprietary",
         "release_date": "08/2025",
@@ -428,6 +433,7 @@
         "fyi": "Les développeurs qui utilisent ce modèle peuvent configurer un paramètre de verbosité pour ajuster la longueur de la phase de raisonnement.\n\nEn matière de sécurité, le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête. Les créateurs du modèle ont aussi utilisé la phase d’entraînement au “raisonnement” pour le rendre plus “résistant” aux tentatives de contournement de leurs règles de sécurité (*jailbreaking*)."
       },
       {
+        "id": "gpt-5-mini",
         "simple_name": "GPT 5 Mini",
         "license": "proprietary",
         "release_date": "08/2025",
@@ -438,6 +444,7 @@
         "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.\n\nBien qu'il soit une version plus petite, il se montre très compétitif face au modèle GPT-5 principal sur de nombreux benchmarks, en particulier dans le domaine médical."
       },
       {
+        "id": "gpt-5-nano",
         "simple_name": "GPT 5 Nano",
         "license": "proprietary",
         "release_date": "04/2025",
@@ -491,6 +498,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "id": "mistral-medium-2508",
         "simple_name": "Mistral Medium 2508",
         "license": "proprietary",
         "release_date": "08/2025",
@@ -523,6 +531,7 @@
         "fyi": "La version 3.2 de ce modèle est optimisée pour générer des sorties structurées, notamment en JSON, tout en limitant la répétitivité et les comportements indésirables lors de longues générations. Multimodal, il traite à la fois des entrées textuelles et des images, permettant une analyse conjointe."
       },
       {
+        "id": "magistral-medium",
         "simple_name": "Magistral Medium",
         "license": "proprietary",
         "release_date": "06/2025",
@@ -589,6 +598,7 @@
     "proprietary_reuse_specificities": "sauf pour distiller ou entraîner d’autres modèles sur les plateformes d’Amazon.",
     "models": [
       {
+        "id": "nova-lite",
         "status": "missing_data",
         "simple_name": "Nova Lite",
         "license": "proprietary",
@@ -604,6 +614,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
+        "id": "claude-4-sonnet",
         "simple_name": "Claude 4 Sonnet",
         "license": "proprietary",
         "release_date": "05/2025",

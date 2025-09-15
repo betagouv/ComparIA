@@ -55,7 +55,7 @@ class Model(BaseModel):
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
         "enabled"
     )
-    id: str | None = None  # FIXME required?
+    id: str
     simple_name: str
     license: str
     fully_open_source: bool | None = None
@@ -259,14 +259,12 @@ def validate() -> None:
                 # We suppose from q4 to fp16
                 model_data["required_ram"] = model_data["params"]
 
-            # FIXME to remove, should be required
-            model_id = model["id"] if "id" in model else slugify(model["simple_name"])
-
             model_extra_data = next(
                 (
                     m
                     for m in raw_extra_data
-                    if m["model_name"] == model_id or m["name"] == model["simple_name"]
+                    if m["model_name"] == model["id"]
+                    or m["name"] == model["simple_name"]
                 ),
                 None,
             )
@@ -284,14 +282,13 @@ def validate() -> None:
                 }
 
             # Build complete model data (license + model) without translatable keys
-            generated_models[model_id] = sort_dict(
+            generated_models[model["id"]] = sort_dict(
                 {
                     "organisation": orga["name"],
                     "icon_path": orga["icon_path"],
                     **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
                     **(model_extra_data or {}),
-                    "id": model_id,
                 }
             )
 

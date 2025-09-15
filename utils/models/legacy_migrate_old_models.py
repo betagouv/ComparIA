@@ -177,5 +177,5 @@ def migrate_api_endpoint_file():
 
 if __name__ == "__main__":
     migrate_old_models_to_new_format()
-    migrate_models_id()
+    # migrate_models_id() # migrated: 15/09/2025
     migrate_api_endpoint_file()
