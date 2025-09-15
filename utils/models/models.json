@@ -669,6 +669,7 @@
         "simple_name": "Hermes 4 70B",
         "license": "Llama 3.1",
         "release_date": "08/25",
+        "params": 70,
         "arch": "dense",
         "desc": "Grand modèle réentraîné à partir du Llama 3.1 70B, ajusté pour mieux répondre aux demandes et instructions stylistiques des utilisateurs.",
         "size_desc": "Hermes 4-70B est un modèle de très grande taille, nécessitant au moins une carte graphique puissante.\n\nLa fenêtre de contexte atteint 40 960 jetons en raisonnement et 32 768 jetons pour d’autres tâches, avec des mécanismes de fine-tuning qui ont été utilisés pour lui apprendre à “fermer” la séquence de réflexion vers 30k jetons. ",
