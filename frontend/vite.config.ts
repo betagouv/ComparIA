@@ -11,11 +11,11 @@ export default defineConfig({
     paraglideVitePlugin({
       project: './locales',
       outdir: './src/lib/i18n',
-      strategy: ['localStorage', 'cookie', 'preferredLanguage', 'baseLocale']
+      strategy: ['cookie', 'preferredLanguage', 'baseLocale']
     })
   ],
   optimizeDeps: {
-    include: ['@gradio/client'],
+    include: ['@gradio/client']
   },
 
   server: {
