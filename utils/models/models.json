@@ -668,7 +668,7 @@
         "id": "hermes-4-70b",
         "simple_name": "Hermes 4 70B",
         "license": "Llama 3.1",
-        "release_date": "08/25",
+        "release_date": "08/2025",
         "params": 70,
         "arch": "dense",
         "desc": "Grand modèle réentraîné à partir du Llama 3.1 70B, ajusté pour mieux répondre aux demandes et instructions stylistiques des utilisateurs.",
