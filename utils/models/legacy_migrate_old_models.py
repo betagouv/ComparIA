@@ -130,9 +130,10 @@ def migrate_models_id():
     orgas = read_json(MODELS_PATH)
 
     for orga in orgas:
-        for model in orga["models"]:
-            if not model.get("id"):
-                model["id"] = slugify(model["simple_name"])
+        orga["models"] = [
+            model if model.get("id") else {"id": slugify(model["simple_name"]), **model}
+            for model in orga["models"]
+        ]
 
     write_json(MODELS_PATH, orgas)
 
