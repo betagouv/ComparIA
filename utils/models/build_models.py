@@ -17,13 +17,13 @@ logging.basicConfig(
 log = logging.getLogger("models")
 
 CURRENT_FOLDER = Path(__file__).parent
+FRONTEND_FOLDER = CURRENT_FOLDER.parent.parent / "frontend"
 LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
 MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
 GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
-I18N_PATH = (
-    CURRENT_FOLDER.parent.parent / "frontend" / "locales" / "messages" / "fr.json"
-)
+I18N_PATH = FRONTEND_FOLDER / "locales" / "messages" / "fr.json"
+TS_DATA_PATH = FRONTEND_FOLDER / "src" / "lib" / "generated.ts"
 
 I18N_OS_LICENSE_KEYS = [
     "license_desc",
@@ -301,6 +301,13 @@ def validate() -> None:
     # Integrate translatable content to frontend locales
     frontend_i18n = read_json(I18N_PATH)
     frontend_i18n["generated"] = sort_dict(i18n)
+
+    TS_DATA_PATH.write_text(
+        f"""export const LICENSES = {[license["license"] for license in dumped_licenses]} as const
+export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
+export const MODELS = {[model["simple_name"] for model in generated_models.values()]} as const
+"""
+    )
 
     write_json(I18N_PATH, frontend_i18n, indent=4)
     write_json(GENERATED_MODELS_PATH, sort_dict(generated_models))
