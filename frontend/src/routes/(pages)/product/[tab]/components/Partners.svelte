@@ -13,7 +13,7 @@
       {m['product.partners.institution.title']()}
     </h2>
 
-    {#if locale === 'fr'}
+    {#if locale === 'fr' || locale === 'en'}
       <div class="cl-logos">
         <img
           src="/orgs/cnnum.png"
@@ -38,7 +38,7 @@
       {m['product.partners.diffusion.title']()}
     </h2>
 
-    {#if locale === 'fr'}
+    {#if locale === 'fr' || locale === 'en'}
       <div class="cl-logos">
         <img src="/orgs/cafe-ia.png" alt="Cafés de l'IA" title="Cafés IA" width="104px" />
         <img
@@ -76,7 +76,7 @@
       {m['product.partners.academy.title']()}
     </h2>
 
-    {#if locale === 'fr'}
+    {#if locale === 'fr' || locale === 'en'}
       <div class="cl-logos">
         <img src="/orgs/inria.png" alt="Inria" title="Inria" width="139px" />
       </div>

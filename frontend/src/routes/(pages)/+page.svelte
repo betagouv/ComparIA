@@ -120,7 +120,7 @@
       lt: [],
       sv: []
     } satisfies Record<Locale, HTMLImgAttributes[]>
-  )[locale]
+  )[locale === 'en' ? 'fr' : locale]
 
   const reducedFAQ = (
     [
