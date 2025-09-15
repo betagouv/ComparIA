@@ -489,19 +489,16 @@
                 "title": "How it works",
                 "a11yDesc": "1. I chat with two hidden AIs: Chat for as long as you like. 2. I give my preference: By doing so, you'll help improve the AI models. 3. The model identities are revealed: Learn more about them and their characteristics.",
                 "one": {
-                    "title": "I chat with two hidden AIs",
-                    "a": "Chat as long as",
-                    "b": "as you like"
+                    "desc": "Chat as long as you like",
+                    "title": "I chat with two hidden AIs"
                 },
                 "two": {
-                    "title": "I give my preference",
-                    "a": "By doing so,",
-                    "b": "you'll help improve the AI models"
+                    "desc": "By doing so, you'll help improve the AI models",
+                    "title": "I give my preference"
                 },
                 "three": {
-                    "title": "The model identities are revealed!",
-                    "a": "Learn more about them and their characteristics",
-                    "b": "of AI and their characteristics"
+                    "desc": "Learn more about AI models and their characteristics",
+                    "title": "The model identities are revealed!"
                 }
             }
         },

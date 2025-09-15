@@ -933,19 +933,16 @@
             "steps": {
                 "a11yDesc": "1. Je discute avec deux IA anonymes : échangez aussi longtemps que vous le souhaitez. 2. Je donne mon avis : vous contribuez ainsi à l'amélioration des modèles d’IA. 3. Les modèles sont démasqués : apprenez-en plus sur les modèles d’IA et leurs caractéristiques.",
                 "one": {
-                    "a": "Échangez aussi longtemps que",
-                    "b": "vous le souhaitez",
+                    "desc": "Échangez aussi longtemps que vous le souhaitez",
                     "title": "Je discute avec deux IA anonymes"
                 },
                 "three": {
-                    "a": "Apprenez en plus sur les modèles",
-                    "b": "d’IA et leurs caractéristiques",
+                    "desc": "Apprenez en plus sur les modèles d’IA et leurs caractéristiques",
                     "title": "Les modèles sont démasqués !"
                 },
                 "title": "Comment ça marche",
                 "two": {
-                    "a": "Vous contribuez ainsi à",
-                    "b": "l'amélioration des modèles d’IA",
+                    "desc": "Vous contribuez ainsi à l'amélioration des modèles d’IA",
                     "title": "Je donne mon avis"
                 }
             },

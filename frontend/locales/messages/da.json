@@ -485,19 +485,16 @@
                 "title": "Sådan fungerer det",
                 "a11yDesc": "1. Jeg chatter med to skjulte AI'er: Chat så længe du vil. 2. Jeg angiver mine præferencer: Dermed hjælper du med at forbedre AI-modellerne. 3. Modellernes identiteter afsløres: Få mere at vide om dem og deres egenskaber.",
                 "one": {
-                    "title": "Jeg chatter med to skjulte AI'er",
-                    "a": "Chat så længe",
-                    "b": "som du vil"
+                    "desc": "Chat så længe som du vil",
+                    "title": "Jeg chatter med to skjulte AI'er"
                 },
                 "two": {
-                    "title": "Jeg giver min præference",
-                    "a": "Ved at gøre dette,",
-                    "b": "hjælper du med at forbedre AI modellerne"
+                    "desc": "Ved at gøre dette, hjælper du med at forbedre AI modellerne",
+                    "title": "Jeg giver min præference"
                 },
                 "three": {
-                    "title": "Modellernes identiteter afsløres!",
-                    "a": "Lær mere om dem og deres egenskaber",
-                    "b": "om AI og deres egenskaber"
+                    "desc": "Lær mere om AI-modeller og deres egenskaber",
+                    "title": "Modellernes identiteter afsløres!"
                 }
             }
         },
