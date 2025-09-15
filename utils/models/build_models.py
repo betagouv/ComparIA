@@ -116,9 +116,13 @@ def validate_licenses(raw_licenses: Any) -> list[Any] | None:
         return None
 
 
-def validate_orgas_and_models(raw_orgas: Any) -> list[Any] | None:
+def validate_orgas_and_models(
+    raw_orgas: Any, exclude_defaults=False
+) -> list[Any] | None:
     try:
-        return Orgas(raw_orgas).model_dump(exclude_none=True)
+        return Orgas(raw_orgas).model_dump(
+            exclude_none=True, exclude_defaults=exclude_defaults
+        )
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
