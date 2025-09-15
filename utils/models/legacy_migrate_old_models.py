@@ -16,6 +16,8 @@ from utils import read_json, write_json
 CURRENT_FOLDER = Path(__file__).parent
 ROOT_FOLDER = Path(__file__).parent.parent.parent
 
+OLD_MODELS_PATH = ROOT_FOLDER / "models-extra-info.toml"
+
 size_desc = {
     "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
     "S": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
@@ -68,9 +70,8 @@ OldModels = RootModel[list[OldModel]]
 
 
 def migrate_old_models_to_new_format():
-    fp = ROOT_FOLDER / "models-extra-info.toml"
     new_models = read_json(GENERATED_MODELS_PATH)
-    raw_old_models = tomli.loads(fp.read_text())
+    raw_old_models = tomli.loads(OLD_MODELS_PATH.read_text())
     filtered_raw_old_models = []
 
     for model_id, raw_model in raw_old_models.items():
@@ -138,6 +139,19 @@ def migrate_models_id():
     write_json(MODELS_PATH, orgas)
 
 
+def add_new_attr():
+    orgas = read_json(MODELS_PATH)
+    raw_old_models = tomli.loads(OLD_MODELS_PATH.read_text())
+
+    for orga in orgas:
+        orga["models"] = [
+            model if model["id"] in raw_old_models else {"new": True, **model}
+            for model in orga["models"]
+        ]
+
+    write_json(MODELS_PATH, orgas)
+
+
 def migrate_api_endpoint_file():
     register_api_endpoint_file_path = ROOT_FOLDER / "register-api-endpoint-file.json"
     models_api_data = read_json(register_api_endpoint_file_path)
@@ -178,4 +192,5 @@ def migrate_api_endpoint_file():
 if __name__ == "__main__":
     # migrate_old_models_to_new_format() # migrated: 15/09/2025
     # migrate_models_id() # migrated: 15/09/2025
+    # add_new_attr() # migrated: 15/09/2025
     migrate_api_endpoint_file()

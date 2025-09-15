@@ -52,6 +52,7 @@ class Endpoint(BaseModel):
     api_model_id: str
 
 class Model(BaseModel):
+    new: bool = False
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
         "enabled"
     )
