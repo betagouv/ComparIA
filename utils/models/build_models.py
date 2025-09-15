@@ -3,7 +3,7 @@ import rich
 import logging
 import markdown
 from pathlib import Path
-from pydantic import BaseModel, RootModel, ValidationError
+from pydantic import BaseModel, Field, RootModel, ValidationError
 from rich import print
 from rich.logging import RichHandler
 from slugify import slugify
@@ -59,17 +59,17 @@ class Model(BaseModel):
     simple_name: str
     license: str
     fully_open_source: bool | None = None
-    release_date: str
+    release_date: str = Field(pattern=r"^[0-9]{2}/[0-9]{4}$")
     params: int | float | Literal["XS", "S", "M", "L", "XL"]
     active_params: int | float | None = None
     arch: str
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
     url: str | None = None  # FIXME required?
+    endpoint: Endpoint
     desc: str
     size_desc: str
     fyi: str
-    endpoint: Endpoint
 
 
 class Organisation(BaseModel):
