@@ -324,7 +324,13 @@ async def not_found_handler(request, exc):
 
 @app.get("/available_models", response_class=JSONResponse)
 async def available_models():
-    return JSONResponse(config.models_extra_info)
+    return JSONResponse(
+        [
+            model
+            for model in config.all_models_extra_info_toml.values()
+            if model["status"] in ("enabled", "archived")
+        ]
+    )
 
 
 @app.get("/counter", response_class=JSONResponse)
