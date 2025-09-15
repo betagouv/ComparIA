@@ -181,6 +181,15 @@ def validate() -> None:
                 filtered_models.append(model)
         orga["models"] = filtered_models
 
+        # Check if icon is available
+        if (
+            orga.get("icon_path")
+            and not Path(
+                FRONTEND_FOLDER / "static" / "orgs" / "ai" / orga["icon_path"]
+            ).exists()
+        ):
+            log.warning(f"Missing icon '{orga["icon_path"]}'")
+
     dumped_licenses = validate_licenses(raw_licenses)
     dumped_orgas = validate_orgas_and_models(raw_orgas)
 
