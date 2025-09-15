@@ -1475,9 +1475,11 @@
         "use": "N’utilisez pas l’arène à des fins illégales ou nuisibles."
     },
     "words": {
+        "activated": "Activé",
         "archived": "Archivé",
         "back": "Retour",
         "close": "Fermer",
+        "deactivated": "Désactivé",
         "loading": "Chargement",
         "NA": "N/A",
         "new": "Nouveau",
