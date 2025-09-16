@@ -155,6 +155,106 @@
             "title": "Hur används dessa uppgifter?"
         }
     },
+    "duel": {
+        "1": {
+            "desc": "Organisera en <strong>AI-duell</strong> i din institution, din förening eller ditt företag genom att bli facilitator",
+            "title": "Vill du öka <span {props}>medvetenheten bland din publik</span> om miljöpåverkan från generativ AI?"
+        },
+        "2": {
+            "list": {
+                "1": "Tid: 45 till 90 minuter",
+                "2": "Personligen eller onlineformat",
+                "3": "Tillgång till compar:IA och det material som tillhandahålls",
+                "4": "Tillgänglig och interaktiv workshop, klar att använda"
+            },
+            "title": "<span {props}>AI-duellerna</span>: ett <span {props}>workshopformat</span> öppet för alla, för att gå bakom kulisserna på generativ AI och reflektera över dess <span {props}>miljöpåverkan</span>."
+        },
+        "3": {
+            "cards": {
+                "1": {
+                    "desc": "För att gå bakom kulisserna på AI.",
+                    "title": "Högskolor och gymnasieskolor"
+                },
+                "2": {
+                    "desc": "För att berika diskussioner om innovation och hållbar utveckling.",
+                    "title": "Universitet"
+                },
+                "3": {
+                    "desc": "Att debattera en samhällsfråga baserat på ett verkligt exempel.",
+                    "title": "Föreningar, Digital medling"
+                },
+                "4": {
+                    "desc": "Att tänka på en mer ansvarsfull användning av digitala verktyg.",
+                    "title": "Företag"
+                }
+            },
+            "desc": "Denna workshop är öppen för alla, oavsett kunskapsnivå.",
+            "title": "För vilka målgrupper?"
+        },
+        "4": {
+            "desc": "Ungefärlig tid: 60 minuter",
+            "list": {
+                "1": {
+                    "desc": "En snabb översikt över generativ AI och compar:AI-plattformen så att alla börjar från samma punkt, oavsett förkunskaper.",
+                    "duration": "(10 min)",
+                    "title": "Introduktion"
+                },
+                "2": {
+                    "desc": "Deltagarna ställer samma fråga till två anonyma AI-modeller – en ”stor” och en ”liten” modell.",
+                    "duration": "(10–15 min)",
+                    "title": "Duellen"
+                },
+                "3": {
+                    "desc": "Tid för diskussion för att reflektera över svarens relevans med avseende på användarnas behov.",
+                    "duration": "(10 min)",
+                    "title": "Jämförelse och omröstning"
+                },
+                "4": {
+                    "desc": "Pedagogisk chock och upptäckten av modellernas tekniska egenskaper – den modell som ger det bästa svaret är inte alltid den mest miljövänliga!",
+                    "duration": "(10 min)",
+                    "title": "Modellerna avslöjas"
+                },
+                "5": {
+                    "desc": "Gemensam tid för att reflektera över avvägningarna mellan användning och miljöpåverkan.",
+                    "duration": "(10–15 min)",
+                    "title": "Slutdiskussion"
+                },
+                "6": {
+                    "desc": "Utlärning av några enkla åtgärder för att minska miljöeffekterna av AI-användning.",
+                    "duration": "(5 min)",
+                    "title": ""
+                }
+            },
+            "title": "Typiskt workshopschema"
+        },
+        "5": {
+            "list": {
+                "1": "Detaljerad guide med hela processen förklarad",
+                "2": "Färdiga slides för presentation",
+                "3": "Vanliga frågor och ordlista för att enkelt besvara frågor",
+                "4": "Chrome-tillägg för att ha all denna information nära till hands"
+            },
+            "title": "Handledarguide"
+        },
+        "6": {
+            "cta": "Kontakta oss för att få veta mer",
+            "questions": {
+                "1": {
+                    "desc": "Vi har lett sessioner med allt ifrån fem till 300 personer. Ju större gruppen är, desto mindre möjligheter har varje person att uttrycka sig individuellt. Med det sagt är workshoppen mycket flexibel – allt beror på handledarens förmåga att hantera publiken. Med en liten grupp blir upplevelsen mer personlig, och med ett stort antal deltagare är energin och dynamiken särskilt intressant.",
+                    "title": "Hur många personer kan delta i en AI-duellsession?"
+                },
+                "2": {
+                    "desc": "Inte alls! Handledningen är utformad för att hjälpa alla som är intresserade av att leda en duell. Den ger de viktigaste delarna för att förstå ämnet, problemen och de verktyg som behövs för att genomföra övningen smidigt. Naturligtvis kan det vara bra att redan ha experimenterat lite med språkmodeller, men det är inte på något sätt nödvändigt.",
+                    "title": "Behöver man vara expert på ämnet för att handleda en AI-duell?"
+                },
+                "3": {
+                    "desc": "De kortaste sessionerna vi har haft har varat 20 till 30 minuter, men detta begränsar interaktiviteten något. Ofta tar en bra duell cirka 45 minuter. Och om du har 1,5 timmar är det ännu bättre – det gör att flera dueller kan kedjas samman och möjliggör mer djupgående diskussioner.",
+                    "title": "Hur länge varar en duellsession?"
+                }
+            },
+            "title": "Vanliga frågor"
+        }
+    },
     "errors": {
         "404": {
             "desc": "Om du skrev in webbadressen i din webbläsare, kontrollera att den är korrekt. Sidan kanske inte längre är tillgänglig. <br /> I så fall kan du gå tillbaka till startsidan. <br />Kontakta oss så hjälper vi dig hitta rätt information.",
@@ -681,7 +781,7 @@
         }
     },
     "header": {
-        "banner": "Jämföraren finns nu tillgänglig på litauiska 🇱🇹, svenska 🇸🇪 och danska 🇩🇰!",
+        "banner": "Claude 4, GLM 4.5, GPT OSS och andra nya modeller ansluter sig till arenan!",
         "chatbot": {
             "newDiscussion": "Ny diskussion",
             "step": "Steg",
@@ -826,7 +926,25 @@
     },
     "models": {
         "arch": {
-            "title": "Visste du?"
+            "title": "Visste du?",
+            "types": {
+                "dense": {
+                    "desc": "Tät arkitektur hänvisar till en typ av neuralt nätverk där varje neuron i ett lager är kopplad till alla neuroner i nästa lager. Detta gör att alla parametrar i lagret kan bidra till beräkningen av utdata.",
+                    "title": "Tät arkitektur"
+                },
+                "matformer": {
+                    "desc": "Föreställ dig ryska dockor (matrjosjkor → matrjosjkatransformator → Matformer): Varje block innehåller flera inkapslade delmodeller av ökande storlek, som delar samma parametrar. Detta gör det möjligt att för varje begäran välja en modell med anpassad kapacitet, beroende på tillgängligt minne eller latens, utan att behöva omträna olika modeller.",
+                    "title": "Matformer-arkitektur"
+                },
+                "moe": {
+                    "desc": "Arkitekturen Mixture of Experts (MoE) använder en routingmekanism för att, beroende på indata, endast aktivera vissa specialiserade delmängder (\"experter\") av det neurala nätverket. Detta möjliggör konstruktion av mycket stora modeller samtidigt som beräkningskostnaderna hålls nere, eftersom endast en del av nätverket används i varje steg.",
+                    "title": "MOE-arkitektur"
+                },
+                "na": {
+                    "desc": "Utgivaren har inte offentliggjort information om modellens arkitektur.",
+                    "title": "Okänd arkitektur"
+                }
+            }
         },
         "conditions": {
             "commercialUse": {
@@ -1020,7 +1138,7 @@
             },
             "cta": "Åtkomst till jämföraren",
             "europe": {
-                "adventure": "Sedan sommaren 2025 har Litauen, Sverige och Danmark anslutit sig till projektet!",
+                "adventure": "Sedan hösten 2025 har Litauen, Sverige och Danmark anslutit sig till projektet!",
                 "catch": "Vill du ha jämförelseverktyget på ditt språk?",
                 "desc": "Jämförelsemodellen görs tillgänglig för medborgare i flera länder på deras nationella språk. Målet är att skapa datamängder för att förbättra framtida AI-modeller på dessa europeiska språk.",
                 "title": "Jämföraren <span {props}>blir europeisk</span>!"
@@ -1068,8 +1186,126 @@
                     "b": "<strong>Preferensdata</strong> utgör en speciell typ av anpassningsdata, tillsammans med <strong>demonstrationsdata</strong> (exempel på konversationer mellan människor och AI-assistenter, skrivna av experter på annotering enligt exakta riktlinjer för ton och stil), <strong>säkerhetsdata</strong> (specifika exempel som lär modellen att undvika farligt innehåll genom att visa hur man avvisar problematiska förfrågningar), eller <strong>specialiserad data</strong> som täcker specifika områden (medicin, juridik, utbildning, etc.).",
                     "c": "Preferensdata presenterar flera möjliga svar på en enda fråga, rangordnade efter kvalitet av mänskliga utvärderare. Användare anger vilket svar som är bäst enligt givna kriterier, såsom relevans, användbarhet och skadlighet. När dessa datamängder har skapats används de för att träna modeller genom att justera dem enligt de preferenser som användarna uttrycker.",
                     "title": "Specifika datamängder"
+                },
+                "desc": "Alignment: En teknik för att minska bias som bygger på att samla in användarpreferenser",
+                "diversity": {
+                    "a": "För att återspegla mångfalden av kulturer och språk i de resultat som genereras av modeller, bör <strong>alignment dataset</strong> innehålla en mängd olika språk, sammanhang och exempel från vanliga användare. Att diversifiera alignment data förbättrar i slutändan modellens prestanda på två sätt:",
+                    "b": "För det första <strong>minskas kulturell bias</strong> genom att man förhindrar att ett enda perspektiv – ofta från engelskspråkiga länder – dominerar AI:ns svar. Modellen lär sig därmed att inse att det finns flera giltiga sätt att närma sig samma fråga beroende på det kulturella sammanhanget.",
+                    "c": "För det andra uppmuntrar denna exponering för mångfalden av språk och kulturer anpassning av svar till specifika sammanhang: En fransk användare får råd anpassade till det franska systemet, medan en dansk användare får information som motsvarar deras nationella sammanhang.",
+                    "d": "Resultatet är en mer inkluderande konversationsbaserad AI-modell, som kan ta hänsyn till olika kulturer.",
+                    "title": "Diversifiera data för att minska partiskhet"
+                },
+                "english": {
+                    "a": "Preferensdata är dyra att producera eftersom det kräver <strong>kvalificerad mänsklig arbetskraft</strong> för varje exempel. Plattformar som https://chat.lmsys.org/ tillåter skapandet av dessa preferensdataset, men få användare använder dem på sitt modersmål.",
+                    "b": "Preferensdataset är sällsynta, om inte obefintliga, på europeiska språk. Andelen frågor som ställs på franska i LMSYS-datasetet är till exempel mindre än 1%.",
+                    "c": "comparIA kan samla in samtal på flera språk, och kulturella referenser specifika för varje region eller land – vanliga uppgifter, lokala kulinariska traditioner, utbildningssystem, historiska eller litterära referenser, etc.",
+                    "title": "Bristande preferensdata för europeiska språk"
+                },
+                "title": "Hur kan vi minska kulturella och språkliga bias i dessa modeller?"
+            },
+            "diversity": {
+                "diversity": {
+                    "desc": "Kulturell bias kan också resultera i ofullständiga eller till och med felaktiga svar som försummar mångfalden av språk och kulturer.",
+                    "title": "Försummad kulturell och språklig mångfald"
+                },
+                "english": {
+                    "desc": "Konversationsbaserade AI:er förlitar sig på stora språkmodeller (LLM) som ofta huvudsakligen tränas på engelsk data, vilket skapar språklig och kulturell bias i de resultat de producerar.",
+                    "title": "Träningsdata mestadels på engelska"
+                },
+                "stereotypes": {
+                    "desc": "Konversationsbaserade AI-system verkar tala många språk, men resultaten de genererar är ibland stereotypa eller diskriminerande.",
+                    "title": "Stereotypa svar"
                 }
+            },
+            "tabLabel": "Det inledande problemet",
+            "title": "Respekterar konversationsbaserade AI-modeller <span {props}>mångfalden</span> av europeiska språk?"
+        },
+        "title": "Allt du behöver veta om jämföraren"
+    },
+    "ranking": {
+        "desc": "Ta reda på hur de bästa AI-modellerna står sig baserat på deras nöjdhetspoäng, baserat på röster från compar:AI-communityn. För att lära dig mer, se vår rankningsmetodik.",
+        "graphs": {
+            "title": "Grafer"
+        },
+        "table": {
+            "data": {
+                "cols": {
+                    "consumption_wh": "Energi<br>(1000 tokens)",
+                    "elo": "Nöjdhetspoäng",
+                    "license": "Licens",
+                    "name": "Modell",
+                    "organisation": "Organisation",
+                    "rank": "Rang",
+                    "release": "Utgivningsdatum",
+                    "size": "Storlek<br>(aktiva parametrar)",
+                    "total_votes": "Totalt antal röster",
+                    "trust_range": "Konfidens (±)"
+                }
+            },
+            "lastUpdate": "Uppdaterat {datum}",
+            "search": "Sök modell",
+            "totalModels": "Totalt antal modeller:",
+            "totalVotes": "Totalt antal röster:"
+        },
+        "title": "Modellrankning"
+    },
+    "reveal": {
+        "equivalent": {
+            "co2": {
+                "label": "Mängd koldioxid",
+                "tooltip": "Med mängden koldioxid menar vi de koldioxidutsläpp som globalt motsvaras av den energi som används för att köra modellen. Den återspeglar miljöpåverkan kopplad till energiförbrukningen. De verkliga utsläppen skiljer sig beroende på energiproduktionen i varje land, och de servrar som används för beräkningarna finns i olika länder. Ekvivalensberäkningen baseras på den globala genomsnittliga CO<sub>2</sub>-utsläppsmängden per förbrukad energi."
+            },
+            "lightbulb": {
+                "label": "LED-lampa",
+                "tooltip": "Baserat på förbrukningen av en vanlig 5W LED-lampa (E14)"
+            },
+            "streaming": {
+                "label": "onlinevideor",
+                "tooltip": "Data beräknad baserat på koldioxidutsläpp från en timmes onlinevideo i hög upplösning, på en TV, med Wi-Fi-anslutning (källa <a {linkProps}>ADEME</a>)"
+            },
+            "title": "Vilket motsvarar:"
+        },
+        "feedback": {
+            "description": "Dela compar:AI med andra genom att dela AI-modellerna du har interagerat med! Endast namnen och energipåverkan från diskussionen kommer att synas via den här länken – din text visas inte.",
+            "example": "Exempel på delade resultat",
+            "moreOnVotes": "Läs mer om att rösta",
+            "shareResult": "Dela ditt resultat"
+        },
+        "impacts": {
+            "energy": {
+                "label": "energiförbrukning",
+                "tooltip": "Mätt i wattimmar representerar strömförbrukningen den elektricitet som modellen använder för att bearbeta en fråga och generera motsvarande svar. Ju större en modell är (i antal parametrar), desto mer energi krävs för att producera varje token."
+            },
+            "size": {
+                "count": "miljarder parametrar",
+                "estimated": "(ca)",
+                "label": "modellstorlek",
+                "quantized": "(kvantiserad)"
+            },
+            "title": "Diskussionens energiförbrukning",
+            "tokens": {
+                "label": "textstorlek",
+                "tokens": "tokens",
+                "tooltip": "AI analyserar och genererar meningar från ord eller orddelar på ungefär fyra bokstäver. Denna textenhet kallas token. Ju längre text, desto fler tokens."
             }
+        }
+    },
+    "seo": {
+        "desc": "compar:IA är ett verktyg för att jämföra olika konversationsbaserade AI-modeller, för att öka medvetenheten om utmaningarna med generativ AI (bias, miljöpåverkan) och för att skapa datamängder för språk med begränsade resurser.",
+        "title": "compar:IA, jämförelseverktyget för konversations-AI",
+        "titles": {
+            "accessibilite": "Tillgänglighetspolicy",
+            "arene": "Chat",
+            "comparator": "Jämföraren",
+            "datasets": "Datamängder",
+            "donnees-personnelles": "Integritetspolicy",
+            "duel": "AI-duell-workshop",
+            "faq": "Vanliga frågor",
+            "history": "Projekthistorik",
+            "home": "Startsida",
+            "mentions-legales": "Rättsliga meddelanden",
+            "modalites": "Användarvillkor",
+            "modeles": "Lista över modeller"
         }
     }
 }
