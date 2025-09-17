@@ -37,7 +37,7 @@
         "suggestions": {
             "choices": {
                 "administrative": {
-                    "iconAlt": "Administrativ",
+                    "iconAlt": "Administrativt",
                     "title": "Skriv ett administrativt dokument"
                 },
                 "coach": {
@@ -107,6 +107,7 @@
     "components": {
         "pagination": {
             "first": "Första sidan",
+            "label": "Sidnummer",
             "last": "Sista sidan",
             "next": "Nästa sida",
             "nth": "Sida {count}",
@@ -122,8 +123,10 @@
             "options": {
                 "dark": "Mörkt tema",
                 "light": "Ljust tema",
-                "system": "System"
-            }
+                "system": "System",
+                "systemSub": "Använd systeminställningar"
+            },
+            "title": "Visningsinställningar"
         }
     },
     "datasets": {
@@ -136,8 +139,12 @@
                 },
                 "reactions": {
                     "desc": "Alla reaktioner"
+                },
+                "votes": {
+                    "desc": "Alla uttryckta preferenser"
                 }
             },
+            "share": "Visa hur du använder datan",
             "title": "Åtkomst till datauppsättningar från compar:IA"
         },
         "reuse": {
@@ -1305,7 +1312,79 @@
             "home": "Startsida",
             "mentions-legales": "Rättsliga meddelanden",
             "modalites": "Användarvillkor",
-            "modeles": "Lista över modeller"
+            "modeles": "Lista över modeller",
+            "news": "Nyheter",
+            "partners": "Partners",
+            "problem": "Det inledande problemet",
+            "product": "Produkt och partners",
+            "ranking": "Rankning",
+            "share": "Mina resultat"
         }
+    },
+    "vote": {
+        "bothEqual": "Båda är lika bra",
+        "choices": {
+            "altText": "{choice} för modellen {model}",
+            "negative": {
+                "incorrect": "Fel",
+                "instructions-not-followed": "Instruktioner följdes inte",
+                "question": "Varför var du inte nöjd med svaret?",
+                "superficial": "Ytligt"
+            },
+            "positive": {
+                "clear-formatting": "Rensa formatering",
+                "complete": "Komplett",
+                "creative": "Kreativt",
+                "question": "Vad tyckte du om med svaret?",
+                "useful": "Användbart"
+            }
+        },
+        "comment": {
+            "add": "Lägg till kommentarer",
+            "placeholder": "Du kan lägga till detaljer i svaret för modellen {model}"
+        },
+        "dislike": {
+            "label": "Jag uppskattar inte",
+            "selectedLabel": "Jag gillar inte (vald)"
+        },
+        "introA": "Innan vi tar avslöjar vilka modellerna var behöver vi dina preferenser.",
+        "introB": "Det gör det möjligt för oss att berika compar:IA-datauppsättningarna, vars mål är att förfina framtida AI-modeller på språk med begränsade resurser",
+        "like": {
+            "label": "Jag uppskattar",
+            "selectedLabel": "Jag uppskattar (vald)"
+        },
+        "qualify": {
+            "addDetails": "Lägg till detaljer",
+            "placeholder": "Svaren från modellen {model} är...",
+            "question": "Hur betygsätter du svaren?"
+        },
+        "title": "Vilken AI-modell föredrar du?",
+        "yours": "Din röst"
+    },
+    "welcome": {
+        "errors": "AI kan göra misstag! Vi uppmuntrar dig att verifiera information du får från AI-modellerna.",
+        "go": "Nu kör vi",
+        "privacy": "Dela inte personlig information som förnamn, efternamn eller adress.",
+        "title": "Välkommen till compar:IA!",
+        "tos": {
+            "desc": "Dina konversationer på compar:IA och de preferenser du uttrycker används anonymt för att skapa datamängder som är representativa för europeiska språk och språkbruk, i syfte att minska kulturell bias och skapa mer inkluderande framtida AI-modeller.",
+            "moreInfos": "Läs mer om projektet."
+        },
+        "use": "Använd inte verktyget för olagliga eller skadliga ändamål."
+    },
+    "words": {
+        "NA": "--",
+        "back": "Tillbaka",
+        "close": "Stäng",
+        "loading": "Laddar",
+        "random": "Slump",
+        "regenerate": "Regenerera",
+        "reset": "Återställ",
+        "restart": "Börja om",
+        "retry": "Börja om",
+        "search": "Sök",
+        "send": "Skicka",
+        "tooltip": "Tips",
+        "validate": "Validera"
     }
 }
