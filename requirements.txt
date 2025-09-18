@@ -1,4 +1,4 @@
-gradio==5.34.1
+gradio==5.31.0
 ecologits==0.6.1
 
 litellm==1.72.1

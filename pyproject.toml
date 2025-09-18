@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "ecologits==0.6.1",
-    "gradio==5.25.0",
+    "gradio==5.31.0",
     "litellm==1.68.1",
     "langfuse==3.0.5",
     # [dev] necessary?
