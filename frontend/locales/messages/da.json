@@ -346,22 +346,7 @@
             "desc": "Før en blind samtale med to AI'er og vurdér deres svar",
             "steps": {
                 "a11yDesc": "1. Jeg chatter med to skjulte AI'er: Chat så længe du vil. 2. Jeg angiver mine præferencer: Dermed hjælper du med at forbedre AI-modellerne. 3. Modellernes identiteter afsløres: Få mere at vide om dem og deres egenskaber.",
-                "one": {
-                    "a": "Chat så længe",
-                    "b": "som du vil",
-                    "title": "Jeg chatter med to skjulte AI'er"
-                },
-                "three": {
-                    "a": "Lær mere om dem og deres egenskaber",
-                    "b": "om AI og deres egenskaber",
-                    "title": "Modellernes identiteter afsløres!"
-                },
-                "title": "Sådan fungerer det",
-                "two": {
-                    "a": "Ved at gøre dette,",
-                    "b": "hjælper du med at forbedre AI modellerne",
-                    "title": "Jeg giver min præference"
-                }
+                "title": "Sådan fungerer det"
             },
             "title": "Stol ikke på svarene <span {props}>fra en enkelt AI</span>",
             "tos": {
