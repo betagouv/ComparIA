@@ -5,6 +5,28 @@
   import { getLocale } from '$lib/i18n/runtime'
   import { getModelsContext } from '$lib/models'
 
+  type ColKind =
+    | 'rank'
+    | 'name'
+    | 'elo'
+    | 'trust_range'
+    | 'total_votes'
+    | 'consumption_wh'
+    | 'size'
+    | 'release'
+    | 'organisation'
+    | 'license'
+
+  let {
+    initialOrderCol = 'elo',
+    includedCols,
+    hideTotal = false
+  }: {
+    initialOrderCol?: ColKind
+    includedCols?: ColKind[]
+    hideTotal?: boolean
+  } = $props()
+
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
 
   const modelsData = getModelsContext()
@@ -26,12 +48,14 @@
       { id: 'organisation', orderable: true },
       { id: 'license' }
     ] as const
-  ).map((col) => ({
-    ...col,
-    label: m[`ranking.table.data.cols.${col.id}`]()
-  }))
+  )
+    .filter((col) => (includedCols ? includedCols.includes(col.id) : true))
+    .map((col) => ({
+      ...col,
+      label: m[`ranking.table.data.cols.${col.id}`]()
+    }))
 
-  let orderingCol = $state<(typeof cols)[number]['id']>('elo')
+  let orderingCol = $state<ColKind>(initialOrderCol)
   let search = $state('')
 
   function sortIfDefined(a: Record<string, any>, b: Record<string, any>, key: string) {
@@ -81,8 +105,9 @@
             return a.id.localeCompare(b.id)
           case 'elo':
           case 'total_votes':
-          case 'consumption_wh':
             return sortIfDefined(a, b, orderingCol)
+          case 'consumption_wh':
+            return sortIfDefined(b, a, orderingCol)
           case 'size':
             return b.params - a.params
           case 'release':
@@ -99,17 +124,19 @@
 <Table {cols} rows={sortedRows} bind:orderingCol caption={m['ranking.title']()} hideCaption>
   {#snippet header()}
     <div class="flex flex-wrap items-center gap-5">
-      <div class="flex gap-5">
-        <div class="cg-border rounded-sm! bg-white px-4 py-2">
-          <strong>{m['ranking.table.totalModels']()}</strong>
-          <span class="text-grey">{rows.length}</span>
-        </div>
+      {#if !hideTotal}
+        <div class="flex gap-5">
+          <div class="cg-border rounded-sm! bg-white px-4 py-2">
+            <strong>{m['ranking.table.totalModels']()}</strong>
+            <span class="text-grey">{rows.length}</span>
+          </div>
 
-        <div class="cg-border rounded-sm! bg-white px-4 py-2">
-          <strong>{m['ranking.table.totalVotes']()}</strong>
-          <span class="text-grey">{totalVotes}</span>
+          <div class="cg-border rounded-sm! bg-white px-4 py-2">
+            <strong>{m['ranking.table.totalVotes']()}</strong>
+            <span class="text-grey">{totalVotes}</span>
+          </div>
         </div>
-      </div>
+      {/if}
 
       <div class="fr-table__detail mb-0! flex gap-5">
         <p class="mb-0! text-[14px]!">
