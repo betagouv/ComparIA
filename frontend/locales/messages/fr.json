@@ -1568,9 +1568,21 @@
         "title": "Tout savoir sur le comparateur"
     },
     "ranking": {
-        "desc": "Découvrez comment les meilleurs modèles d’IA se positionnent à travers leur <strong>score de satisfaction</strong> issus des votes de la communauté compar:IA. Pour en savoir plus, consultez <a {linkProps}>notre méthodologie de classement</a>.",
+        "energy": {
+            "tabLabel": "Focus énergie"
+        },
         "graphs": {
             "title": "Graphiques"
+        },
+        "methodology": {
+            "tabLabel": "Méthodologie"
+        },
+        "preferences": {
+            "tabLabel": "Focus préférences"
+        },
+        "ranking": {
+            "desc": "Merci pour vos contributions ! Vos votes alimentent un classement Elo et que nous vous rendons transparent.<br>Ce score de satisfaction Elo,  construit en partenariat avec le PEReN, repose sur vos votes, vos réactions d’approbation et désapprobation.",
+            "tabLabel": "Classement"
         },
         "table": {
             "data": {
@@ -1582,7 +1594,7 @@
                     "organisation": "Organisation",
                     "rank": "Rang",
                     "release": "Date sortie",
-                    "size": "Taille<br>(paramètres actifs)",
+                    "size": "Taille<br>(paramètres)",
                     "total_votes": "Total votes",
                     "trust_range": "Confiance (±)"
                 }
@@ -1592,7 +1604,7 @@
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
-        "title": "Classement des modèles"
+        "title": "Des votes… au classement"
     },
     "reveal": {
         "equivalent": {
