@@ -3,64 +3,41 @@ compar:IA's main code
 Users chat with two anonymous models.
 """
 
-from languia.themes.dsfr import DSFR
-
 import gradio as gr
 
 # from gradio_modal import Modal
 
 from languia.utils import (
-    header_html,
-    welcome_modal_html,
-    footer_html,
     AppState,
 )
 
 
 from languia.custom_components.customchatbot import CustomChatbot
-from languia.custom_components.customdropdown import (
-    CustomDropdown,
-)
-from languia.custom_components.customradiocard import (
-    CustomRadioCard,
-)
+from languia.custom_components.customdropdown import CustomDropdown
+from languia.custom_components.customradiocard import CustomRadioCard
 
 from languia import config
 
 with gr.Blocks(
     title="Discussion - compar:IA, le comparateur d'IA conversationnelles",
-    theme=DSFR(),
-    css=config.css,
-    head=config.arena_head_js,
     analytics_enabled=False,
-    # scroll_to_output = True,
-    js=config.arena_js,
-    # Doesn't work with uvicorn
-    # delete_cache=(1, 1) if config.debug else None,
 ) as demo:
 
     app_state = gr.State(value=AppState())
 
     conv_a = gr.State()
     conv_b = gr.State()
-    # model_selectors = [None] * num_sides
+    welcome_modal = gr.HTML("", elem_id="welcome-modal-html")
+    header = gr.HTML("", elem_id="header-html")
 
-    # TODO: check cookies on load!
-    # tos_cookie = check_for_tos_cookie(request)
-    welcome_modal = gr.HTML(welcome_modal_html, elem_id="welcome-modal-html")
-
-    header = gr.HTML(header_html, elem_id="header-html")
-
-        # TODO: rename component, it includes textbox
     model_dropdown = CustomDropdown(
+        models=config.models,
+        # ignored, hardcoded in custom component
+        choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
+        # ignored, hardcoded in custom component
+        interactive=True,
+    )
 
-            models=config.models_extra_info,
-            # ignored, hardcoded in custom component
-            choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
-            # ignored, hardcoded in custom component
-            interactive=True,
-        )
-      
     with gr.Group(
         elem_id="chat-area",
         visible=False,
@@ -81,19 +58,13 @@ with gr.Blocks(
             # autoscroll=True
         )
         reaction_json = gr.JSON(visible=False)
-        
+
         with gr.Column(
             # h-screen
             visible=False,
             elem_classes="fr-container min-h-screen fr-pt-4w",
             elem_id="vote-area",
         ) as vote_area:
-            gr.HTML(
-                elem_classes="text-center",
-                value="""
-                <h4 class="fr-mt-2w fr-mb-1v">Quel modèle d’IA préférez-vous ?</h4>
-                <p class="text-grey fr-text--sm">Avant de découvrir l’identité des modèles, nous avons besoin de votre préférence.<br />Elle permet d'enrichir les jeux de données compar:IA dont l’objectif est d’affiner les futurs modèles d’IA sur le français</p>""",
-            )
 
             which_model_radio = CustomRadioCard(
                 min_columns=1,
@@ -148,7 +119,10 @@ with gr.Blocks(
                         choices=[
                             ("Incorrectes", "incorrect"),
                             ("Superficielles", "superficial"),
-                            ("Instructions non respectées", "instructions-not-followed"),
+                            (
+                                "Instructions non respectées",
+                                "instructions-not-followed",
+                            ),
                         ],
                     )
 
@@ -185,7 +159,10 @@ with gr.Blocks(
                         choices=[
                             ("Incorrectes", "incorrect"),
                             ("Superficielles", "superficial"),
-                            ("Instructions non respectées", "instructions-not-followed"),
+                            (
+                                "Instructions non respectées",
+                                "instructions-not-followed",
+                            ),
                         ],
                     )
                     comments_b = gr.Textbox(
@@ -198,7 +175,9 @@ with gr.Blocks(
                     elem_classes="link fr-mt-1w", value="Ajouter des détails"
                 )
 
-    with gr.Column(elem_id="send-area", elem_classes="fr-pt-1w", visible=False) as send_area:
+    with gr.Column(
+        elem_id="send-area", elem_classes="fr-pt-1w", visible=False
+    ) as send_area:
 
         with gr.Row(
             elem_classes="flex-md-row flex-col items-start",
@@ -232,7 +211,6 @@ with gr.Blocks(
                 interactive=False,
             )
 
-
     with gr.Column(
         elem_classes="fr-container--fluid fr-py-2w fr-grid-row",
         elem_id="buttons-footer",
@@ -250,25 +228,10 @@ with gr.Blocks(
         elem_id="reveal-screen", visible=False, elem_classes="min-h-screen fr-pt-4w"
     ) as reveal_screen:
 
-        results_area = gr.HTML(visible=True)
+        results_area = gr.HTML()
 
-        footer_area = gr.HTML(visible=True, value=footer_html)
+        footer_area = gr.HTML()
 
-    # Modals
-    #     with Modal(elem_id="retry-modal") as retry_modal:
-    #         gr.HTML(
-    #             """<h1 class="fr-modal__title"><span class="fr-icon-arrow-right-line fr-icon--lg"></span> Etes-vous sûr·e de quitter sans voter ?</h1>
-    # <p>Vous êtes sur le point de recommencer une nouvelle conversation sans avoir voté sur celle-ci qui est en cours.</p>"""
-    #         )
-    #         with gr.Row():
-    #             close_retry_modal_btn = gr.Button(
-    #                 value="Non, annuler", elem_classes="fr-btn fr-btn--secondary", scale=1
-    #             )
-    #             retry_btn = gr.Button(
-    #                 value="Oui, recommencer une conversation",
-    #                 elem_classes="fr-btn",
-    #                 scale=1,
-    #             )
 
     available_models = gr.JSON(visible=False)
     reveal_data = gr.JSON(visible=False)

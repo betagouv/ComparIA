@@ -1,5 +1,5 @@
 import logging
-from languia.utils import get_model_extra_info, get_chosen_model, messages_to_dict_list
+from languia.utils import get_chosen_model, messages_to_dict_list
 
 from litellm import token_counter
 
@@ -123,12 +123,12 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
         return int(streaming_hours * 60 * 60), "s"
 
 def build_reveal_dict(conv_a, conv_b, chosen_model):
-    from languia.config import models_extra_info
+    from languia.config import all_models
 
     logger = logging.getLogger("languia")
 
-    model_a = get_model_extra_info(conv_a.model_name, models_extra_info)
-    model_b = get_model_extra_info(conv_b.model_name, models_extra_info)
+    model_a = all_models.get(conv_a.model_name)
+    model_b = all_models.get(conv_b.model_name)
 
     if conv_a.output_tokens and conv_a.output_tokens != 0:
         model_a_tokens = conv_a.output_tokens
@@ -212,13 +212,6 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         lightbulb_a_unit=lightbulb_a_unit,
         lightbulb_b=lightbulb_b,
         lightbulb_b_unit=lightbulb_b_unit)
-
-def build_reveal_html(conv_a, conv_b, which_model_radio):
-    env = Environment(loader=FileSystemLoader("templates"))
-    template = env.get_template("reveal.html")
-    chosen_model = get_chosen_model(which_model_radio)
-    reveal_dict = build_reveal_dict(conv_a, conv_b, chosen_model)
-    return template.render(**reveal_dict)
 
 
 def determine_choice_badge(reactions):

@@ -50,7 +50,6 @@ from languia.utils import (
 from languia.session import increment_input_chars, redis_host, is_ratelimited
 
 from languia.reveal import (
-    build_reveal_html,
     get_chosen_model,
     build_reveal_dict,
     determine_choice_badge,
@@ -85,7 +84,6 @@ def register_listeners():
 
     def enter_arena(request: gr.Request):
 
-
         # TODO: actually check for it
         # tos_accepted = request...
         # if tos_accepted:
@@ -93,7 +91,7 @@ def register_listeners():
             f"init_arene, session_hash: {request.session_hash}, IP: {get_ip(request)}, cookie: {(get_matomo_tracker_from_cookies(request.cookies))}",
             extra={"request": request},
         )
-        return config.models_extra_info
+        return config.models
 
     gr.on(
         triggers=[demo.load],
@@ -102,20 +100,6 @@ def register_listeners():
         outputs=available_models,
         api_name="enter_arena",
         show_progress="hidden",
-        # concurrency_limit=None
-        js="""(args) => {
-setTimeout(() => {
-
-const cookieExists = document.cookie.includes('comparia_already_visited');
-document.cookie = 'comparia_already_visited=true; SameSite=Strict; Secure; Path=/;'
-if (!cookieExists) {
-    const modal = document.getElementById("fr-modal-welcome");
-    dsfr(modal).modal.disclose();
-}
-document.getElementById("fr-modal-welcome-close").blur();
-}, 500);
-
-}""",
     )
 
     # Step 1
@@ -177,12 +161,14 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         ip = get_ip(request)
 
-        if (redis_host and is_ratelimited(ip)):
+        if redis_host and is_ratelimited(ip):
             logger.error(
                 f"Too much text submitted for ip {ip}",
                 extra={"request": request},
             )
-            raise gr.Error(f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures.")
+            raise gr.Error(
+                f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures."
+            )
 
         if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
             logger.info(
@@ -305,10 +291,16 @@ document.getElementById("fr-modal-welcome-close").blur();
 
                 sentry_sdk.capture_exception(e)
 
-            error_reason = f"error_first_text: {error_with_model}, {error_with_endpoint}, {e}"
+            error_reason = (
+                f"error_first_text: {error_with_model}, {error_with_endpoint}, {e}"
+            )
             print(error_reason)
             try:
-                requests.post(f"{config.controller_url}/models/{error_with_model}/error", json={"error": error_reason}, timeout=1)
+                requests.post(
+                    f"{config.controller_url}/models/{error_with_model}/error",
+                    json={"error": error_reason},
+                    timeout=1,
+                )
             except:
                 pass
 
@@ -451,12 +443,14 @@ document.getElementById("fr-modal-welcome-close").blur();
 
         ip = get_ip(request)
 
-        if (redis_host and is_ratelimited(ip)):
+        if redis_host and is_ratelimited(ip):
             logger.error(
                 f"Too much text submitted for ip {ip}",
                 extra={"request": request},
             )
-            raise gr.Error(f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures.")
+            raise gr.Error(
+                f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures."
+            )
 
         for i in range(config.num_sides):
             conversations[i].messages.append(ChatMessage(role="user", content=text))
@@ -481,7 +475,7 @@ document.getElementById("fr-modal-welcome-close").blur();
             text,
             request,
         )
-    
+
     @gr.on(
         inputs=[app_state] + [conv_a] + [conv_b],
         outputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [textbox],
@@ -617,9 +611,15 @@ document.getElementById("fr-modal-welcome-close").blur();
                 # TODO: only capture model name to sort more easily in sentry
                 sentry_sdk.capture_exception(e)
 
-            error_reason = f"error_during_convo: {error_with_model}, {error_with_endpoint}, {e}"
+            error_reason = (
+                f"error_during_convo: {error_with_model}, {error_with_endpoint}, {e}"
+            )
             try:
-                requests.post(f"{config.controller_url}/models/{error_with_model}/error", json={"error": error_reason}, timeout=1)
+                requests.post(
+                    f"{config.controller_url}/models/{error_with_model}/error",
+                    json={"error": error_reason},
+                    timeout=1,
+                )
             except:
                 pass
 
@@ -697,39 +697,6 @@ document.getElementById("fr-modal-welcome-close").blur();
         + [send_area],
         show_progress="hidden",
         # TODO: refacto possible with .success() and more explicit error state
-    ).then(
-        fn=enable_conclude,
-        inputs=[app_state, textbox, conv_a],
-        outputs=[textbox, conclude_btn, send_btn],
-        js="""(args) => {
-setTimeout(() => {
-
-  function adjustFooter() {
-    const footer = document.getElementById('send-area');
-    const chatArea = document.getElementById('chat-area');
-
-    const footerHeight = footer.offsetHeight;
-    // Add bottom padding to the chatArea equal to footer height so it's not hidden
-    chatArea.style.paddingBottom = `${footerHeight}px`;
-  }
-  window.addEventListener('load', adjustFooter);
-  window.addEventListener('resize', adjustFooter);
-  window.addEventListener('click', adjustFooter);
-  adjustFooter();
-
-  
-  console.log("scrolling to bot responses");
-  var botRows = document.querySelectorAll('.bot-row');
-    var lastBotRow = botRows.item(botRows.length - 1);
-    lastBotRow.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-, 500);
-}""",
-        show_progress="hidden",
-        api_name=False,
     )
 
     gr.on(
@@ -745,24 +712,6 @@ setTimeout(() => {
         # scroll_to_output=True,
         show_progress="hidden",
     ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
-        js="""(args) => {
-setTimeout(() => {
-  console.log("scrolling to last user row if there are at least 2 user rows");
-  var userRows = document.querySelectorAll('.user-row');
-  if (userRows.length >= 2) {
-    var lastUserRow = userRows.item(userRows.length - 1);
-    lastUserRow.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-}, 500);
-}""",
-        show_progress="hidden",
-    ).then(
         # gr.on(triggers=[chatbots[0].change,chatbots[1].change],
         fn=bot_response_multi,
         # inputs=conversations + [temperature, top_p, max_output_tokens],
@@ -772,23 +721,6 @@ setTimeout(() => {
         show_progress="hidden",
         # scroll_to_output=True,
         # TODO: refacto possible with .success() and more explicit error state
-    ).then(
-        fn=enable_conclude,
-        inputs=[app_state, textbox, conv_a],
-        outputs=[textbox, conclude_btn, send_btn],
-        js="""(args) => {
-setTimeout(() => {
-  console.log("scrolling to bot responses");
-  var botRows = document.querySelectorAll('.bot-row');
-    var lastBotRow = botRows.item(botRows.length - 1);
-    lastBotRow.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
-  }
-, 500);
-}""",
-        show_progress="hidden",
     )
 
     def force_vote_or_reveal(
@@ -835,37 +767,6 @@ setTimeout(() => {
         api_name="reveal",
         fn=force_vote_or_reveal,
         # scroll_to_output=True,
-        show_progress="hidden",
-    ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
-        js="""(args) => {
-        console.log("args:")
-        console.log(args)
-setTimeout(() => {
-console.log("scrolling to .next-screen");
-const chatbotArea = document.getElementById('main-chatbot');
-const chatArea = document.getElementById('chat-area');
-chatArea.style.paddingBottom = `0px`;
-
-let secondHeader = document.getElementById('second-header');
-const secondHeaderHeight = secondHeader.offsetHeight;
-console.log("secondHeader.offsetHeight");
-console.log(secondHeader.offsetHeight);
-
-
-console.log("chatbotArea.offsetHeight");
-console.log(chatbotArea.offsetHeight);
-
-
-// const nextScreen = document.querySelector('.next-screen');
-window.scrollTo({
-  top: chatbotArea.offsetHeight + secondHeaderHeight,
-  left: 0,
-  behavior: 'smooth',
-  });}, 500);
-}""",
         show_progress="hidden",
     )
 
@@ -933,7 +834,10 @@ window.scrollTo({
 
             # re-add comment if select a pref after commenting
 
-            if app_state_scoped.reactions[event._data["index"]] and "comment" in app_state_scoped.reactions[event._data["index"]]:
+            if (
+                app_state_scoped.reactions[event._data["index"]]
+                and "comment" in app_state_scoped.reactions[event._data["index"]]
+            ):
                 event._data["comment"] = app_state_scoped.reactions[
                     event._data["index"]
                 ]["comment"]
@@ -1036,23 +940,5 @@ window.scrollTo({
         # outputs=[quiz_modal],
         api_name="chatbot_vote",
         # scroll_to_output=True,
-        show_progress="hidden",
-    ).then(
-        fn=(lambda: None),
-        inputs=None,
-        outputs=None,
-        js="""(args) => {
-setTimeout(() => {
-console.log("scrolling to #reveal-screen");
-
-const voteArea = document.getElementById('vote-area');
-voteArea.classList.remove("min-h-screen");
-
-const revealScreen = document.getElementById('reveal-screen');
-revealScreen.scrollIntoView({
-  behavior: 'smooth',
-  block: 'start'
-});}, 500);
-}""",
         show_progress="hidden",
     )
