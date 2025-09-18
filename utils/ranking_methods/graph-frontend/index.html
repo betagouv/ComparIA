@@ -1,0 +1,17 @@
+<!-- SPDX-FileCopyrightText: 2023 Lena Jaskov <<https://observablehq.com/@yaslena>
+SPDX-License-Identifier: MIT -->
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Dynamic Network Graph</title>
+<link rel="stylesheet" type="text/css" href="./inspector.css">
+<body>
+<script type="module">
+
+import define from "./index.js";
+import {Runtime, Library, Inspector} from "./runtime.js";
+
+const runtime = new Runtime();
+const main = runtime.module(define, Inspector.into(document.body));
+
+</script>

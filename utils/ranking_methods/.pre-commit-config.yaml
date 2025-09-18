@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+#
+# SPDX-License-Identifier: CC0-1.0
+
+# Ref: https://pre-commit.com/#pre-commit-configyaml---top-level
+
+default_install_hook_types: [pre-commit, pre-push]
+default_stages: [pre-commit]
+
+repos:
+  - repo: local
+    hooks:
+      # pre-commit
+      - id: isort
+        name: isort
+        language: system
+        types_or: [python, pyi]
+        entry: "poetry run isort --check"
+      - id: black
+        name: black
+        language: system
+        entry: "poetry run black --check"
+        require_serial: true
+        types_or: [python, pyi, jupyter]
+      - id: flake8
+        name: flake8
+        language: system
+        entry: "poetry run flake8"
+        types_or: [python, pyi]
+      - id: pyright
+        name: pyright
+        language: system
+        entry: "poetry run pyright"
+        types_or: [python, pyi]
+      # pre-push only
+      - id: pylint
+        name: pylint
+        language: system
+        stages: [pre-push]  # pylint is slow, so we only run before a push
+        types: [python]
+        entry: "poetry run pylint -rn -sn"
+      - id: licensecheck
+        name: licensecheck
+        language: system
+        stages: [pre-push]
+        entry: "poetry run licensecheck"
+        files: "^(.*/)?pyproject\\.toml$"
+        pass_filenames: false
+      - id: reuse
+        name: reuse
+        language: system
+        entry: "poetry run reuse lint"
+        stages: [pre-push]
+        pass_filenames: false

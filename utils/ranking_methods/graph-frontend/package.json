@@ -1,0 +1,14 @@
+{
+  "name": "@yaslena/dynamic-network-graph",
+  "main": "845501cdfbbf1a83@462.js",
+  "version": "462.0.0",
+  "homepage": "https://observablehq.com/@yaslena/dynamic-network-graph",
+  "author": {
+    "name": "yaslena",
+    "url": "https://observablehq.com/@yaslena"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}
