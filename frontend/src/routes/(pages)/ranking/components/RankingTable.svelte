@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge, Search, Table } from '$components/dsfr'
+  import { Badge, Link, Search, Table } from '$components/dsfr'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -111,9 +111,22 @@
         </div>
       </div>
 
-      <p class="fr-table__detail mb-0!">
-        {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
-      </p>
+      <div class="fr-table__detail mb-0! flex gap-5">
+        <p class="mb-0! text-[14px]!">
+          {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
+        </p>
+
+        <!-- FIXME 404 -->
+        <Link
+          native={false}
+          href="/data/ranking.csv"
+          download="true"
+          text={m['ranking.table.downloadData']()}
+          icon="download-line"
+          iconPos="right"
+          class="text-[14px]!"
+        />
+      </div>
     </div>
 
     <Search id="model-search" bind:value={search} label={m['ranking.table.search']()} />

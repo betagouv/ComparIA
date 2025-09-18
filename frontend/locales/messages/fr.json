@@ -1599,6 +1599,7 @@
                     "trust_range": "Confiance (±)"
                 }
             },
+            "downloadData": "Télécharger les données",
             "lastUpdate": "Mise à jour le {date}",
             "search": "Rechercher un modèle",
             "totalModels": "Total modèles :",
