@@ -21,6 +21,11 @@
     "arch": "dense",
     "commercial_use": false,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
+      "api_model_id": "c4ai-aya-expanse-32b",
+      "api_type": "openai"
+    },
     "friendly_size": "M",
     "icon_path": "cohere.png",
     "id": "aya-expanse-32b",
@@ -246,6 +251,10 @@
     "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "anthropic/claude-sonnet-4",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "anthropic.png",
     "id": "claude-4-sonnet",
@@ -266,6 +275,10 @@
     "consumption_wh": 18,
     "distribution": "open-weights",
     "elo": 1106,
+    "endpoint": {
+      "api_model_id": "cohere/command-a",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "cohere.png",
     "id": "command-a",
@@ -331,6 +344,10 @@
     "consumption_wh": 47,
     "distribution": "open-weights",
     "elo": 1040,
+    "endpoint": {
+      "api_model_id": "deepseek/deepseek-r1",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "deepseek.png",
     "id": "deepseek-r1",
@@ -357,6 +374,10 @@
     "consumption_wh": 12,
     "distribution": "open-weights",
     "elo": 944,
+    "endpoint": {
+      "api_model_id": "deepseek/deepseek-r1-distill-llama-70b",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "deepseek.png",
     "id": "deepseek-r1-distill-llama-70b",
@@ -382,6 +403,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "deepseek/deepseek-chat-v3-0324",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "deepseek.png",
     "id": "deepseek-v3-0324",
@@ -534,6 +559,10 @@
     "arch": "moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "gemini-2.5-flash",
+      "api_type": "vertex_ai"
+    },
     "friendly_size": "L",
     "icon_path": "google.png",
     "id": "gemini-2.5-flash",
@@ -625,6 +654,10 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 1108,
+    "endpoint": {
+      "api_model_id": "google/gemma-3-12b-it",
+      "api_type": "openrouter"
+    },
     "friendly_size": "S",
     "icon_path": "google.png",
     "id": "gemma-3-12b",
@@ -651,6 +684,10 @@
     "consumption_wh": 6,
     "distribution": "open-weights",
     "elo": 1144,
+    "endpoint": {
+      "api_model_id": "google/gemma-3-27b-it",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "google.png",
     "id": "gemma-3-27b",
@@ -677,6 +714,10 @@
     "consumption_wh": 3,
     "distribution": "open-weights",
     "elo": 1077,
+    "endpoint": {
+      "api_model_id": "google/gemma-3-4b-it",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XS",
     "icon_path": "google.png",
     "id": "gemma-3-4b",
@@ -702,6 +743,10 @@
     "arch": "matformer",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "google/gemma-3n-e4b-it",
+      "api_type": "openrouter"
+    },
     "friendly_size": "S",
     "icon_path": "google.png",
     "id": "gemma-3n-e4b-it",
@@ -721,6 +766,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "z-ai/glm-4.5",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "zhipu.svg",
     "id": "glm-4.5",
@@ -758,6 +807,10 @@
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "openai/gpt-4.1-mini",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "openai.svg",
     "id": "gpt-4.1-mini",
@@ -777,6 +830,10 @@
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "openai/gpt-4.1-nano",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "openai.svg",
     "id": "gpt-4.1-nano",
@@ -896,6 +953,10 @@
     "arch": "maybe-moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "openai/gpt-oss-120b",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "openai.svg",
     "id": "gpt-oss-120b",
@@ -915,6 +976,10 @@
     "arch": "maybe-moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "openai/gpt-oss-20b",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "openai.svg",
     "id": "gpt-oss-20b",
@@ -933,6 +998,10 @@
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "x-ai/grok-3-mini-beta",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "xai.svg",
     "id": "grok-3-mini-beta",
@@ -1024,6 +1093,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "moonshotai/kimi-k2",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "moonshot-ai.webp",
     "id": "kimi-k2",
@@ -1070,6 +1143,10 @@
     "consumption_wh": 238,
     "distribution": "open-weights",
     "elo": 976,
+    "endpoint": {
+      "api_model_id": "meta/llama3-405b-instruct-maas",
+      "api_type": "vertex_ai"
+    },
     "friendly_size": "XL",
     "icon_path": "meta.svg",
     "id": "llama-3.1-405b",
@@ -1122,6 +1199,11 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 943,
+    "endpoint": {
+      "api_base": "https://albert.api.etalab.gouv.fr/v1/",
+      "api_model_id": "meta-llama/Llama-3.1-8B-Instruct",
+      "api_type": "openai"
+    },
     "friendly_size": "S",
     "icon_path": "meta.svg",
     "id": "llama-3.1-8b",
@@ -1148,6 +1230,10 @@
     "consumption_wh": 12,
     "distribution": "open-weights",
     "elo": 1090,
+    "endpoint": {
+      "api_model_id": "nvidia/llama-3.1-nemotron-70b-instruct",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "nvidia.svg",
     "id": "llama-3.1-nemotron-70b-instruct",
@@ -1174,6 +1260,10 @@
     "consumption_wh": 12,
     "distribution": "open-weights",
     "elo": 994,
+    "endpoint": {
+      "api_model_id": "meta-llama/llama-3.3-70b-instruct",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "meta.svg",
     "id": "llama-3.3-70b",
@@ -1199,6 +1289,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "meta-llama/llama-4-scout",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "meta.svg",
     "id": "llama-4-scout",
@@ -1254,6 +1348,10 @@
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "mistralai/magistral-small-2506",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "magistral-small-2506",
@@ -1422,6 +1520,10 @@
     "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "mistralai/mistral-saba",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mistral-saba",
@@ -1693,6 +1795,10 @@
     "consumption_wh": 5,
     "distribution": "open-weights",
     "elo": 1022,
+    "endpoint": {
+      "api_model_id": "microsoft/phi-4",
+      "api_type": "openrouter"
+    },
     "friendly_size": "S",
     "icon_path": "microsoft.png",
     "id": "phi-4",
@@ -1889,6 +1995,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "qwen/qwen3-30b-a3b",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "qwen3-30b-a3b",
@@ -1907,6 +2017,10 @@
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "qwen/qwen3-32b",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "qwen3-32b",
@@ -1948,6 +2062,10 @@
     "consumption_wh": 7,
     "distribution": "open-weights",
     "elo": 935,
+    "endpoint": {
+      "api_model_id": "qwen/qwq-32b",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "qwq-32b",
