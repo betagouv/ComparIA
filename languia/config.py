@@ -131,14 +131,7 @@ all_models = json5.loads(
     Path("./utils/models/generated-models.json").read_text()
 )
 
-def filter_enabled_models(models: dict[str, Model]):
-    models = {}
-    for model_id, model_dict in models:
-        if model_dict.get("status") == "enabled":
-            if isinstance(model_dict.get("endpoint"), Endpoint):
-                models[model_id] = model_dict 
-    return models
-
+from languia.utils import filter_enabled_models
 
 models = filter_enabled_models(all_models)
 

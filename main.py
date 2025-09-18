@@ -94,6 +94,10 @@ async def available_models():
     )
 
 
+# @app.get("/enabled_models", response_class=JSONResponse)
+# async def enabled_models():
+#     return JSONResponse(dict(config.models))
+
 @app.get("/counter", response_class=JSONResponse)
 async def counter():
     return JSONResponse({"count": get_gauge_count(), "objective": config.objective})

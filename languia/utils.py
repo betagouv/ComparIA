@@ -26,6 +26,17 @@ class EmptyResponseError(RuntimeError):
         return msg
 
 
+def filter_enabled_models(models: dict[str, Model]):
+    enabled_models = {}
+    for model_id, model_dict in models.items():
+        if model_dict.get("status") == "enabled":
+            try:
+                if Endpoint.model_validate(model_dict.get("endpoint")):
+                    enabled_models[model_id] = model_dict
+            except:
+                continue
+    return enabled_models
+
 def get_ip(request: Request):
     # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
     if "cloud-protector-client-ip" in request.headers:
@@ -144,15 +155,6 @@ def get_user_info(request):
     return user_id, session_id
 
 
-def get_endpoint(model_id):
-    from languia.config import api_endpoint_info
-
-    for endpoint in api_endpoint_info:
-        if endpoint.get("model_id", "").lower() == model_id.lower():
-            return endpoint
-
-    return None
-
 
 class AppState:
     def __init__(
@@ -176,14 +178,13 @@ class AppState:
     #     return self.__dict__.copy()
 
 
-# TODO: refacto to expose "all_models" to choose from them if constraints can't be respected
 def choose_among(
     models,
     excluded,
 ):
-    all_models = models
+    enabled_models = models
     models_pool = [
-        model_name for model_name in all_models if model_name not in excluded
+        model_name for model_name in enabled_models if model_name not in excluded
     ]
     logger = logging.getLogger("languia")
     logger.debug("chosing from:" + str(models_pool))
@@ -191,7 +192,7 @@ def choose_among(
     if len(models_pool) == 0:
         # TODO: tell user in a toast notif that we couldn't respect prefs
         logger.warning("Couldn't respect exclusion prefs")
-        if len(all_models) == 0:
+        if len(enabled_models) == 0:
             logger.critical("No model to choose from")
 
             raise gr.Error(
@@ -199,7 +200,7 @@ def choose_among(
                 message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
             )
         else:
-            models_pool = all_models
+            models_pool = enabled_models
 
     chosen_idx = np.random.choice(len(models_pool), p=None)
     chosen_model_name = models_pool[chosen_idx]
@@ -210,29 +211,29 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     from languia.config import models
 
     reasoning_models = [
-        model["id"] for model in models if model.get("reasoning", False)
+        id for id, model in models.items() if model.get("reasoning", False)
     ]
     # print(f"reasoning_models: {reasoning_models}")
     random_pool = [
-        model["id"]
-        for model in models
-        if model["id"] not in reasoning_models
+        id
+        for id, model in models.items()
+        if id not in reasoning_models
     ]
 
     small_models = [
-        model["id"]
-        for model in models
+        id
+        for id, model in models.items()
         if model["friendly_size"] in ["XS", "S", "M"]
-        and model["id"] not in unavailable_models
-        and model["id"] not in reasoning_models
+        and id not in unavailable_models
+        and id not in reasoning_models
     ]
 
     big_models = [
-        model["id"]
-        for model in models
-        if model["friendly_size"] in ["L", "XL"]
-        and model["id"] not in unavailable_models
-        and model["id"] not in reasoning_models
+         id
+        for id, model in models.items()
+        if model["friendly_size"] in ["L", "XL", "XXL"]
+        and id not in unavailable_models
+        and id not in reasoning_models
     ]
 
     import random
