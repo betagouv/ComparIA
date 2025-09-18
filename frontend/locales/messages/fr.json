@@ -1569,7 +1569,34 @@
     },
     "ranking": {
         "energy": {
-            "tabLabel": "Focus énergie"
+            "desc": "Explorez le graphique qui met en perspective le score de satisfaction d’un modèle (axe des ordonnées) avec sa consommation énergétique (axe des abscisses).",
+            "tabLabel": "Focus énergie",
+            "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
+            "views": {
+                "graph": {
+                    "desc": "Sélectionnez un modèle pour connaitre son score de satisfaction et sa consommation énergétique",
+                    "faq": {
+                        "1": {
+                            "desc": "Nous prenons le parti d’afficher en grisé (non analysés) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture.",
+                            "title": "Pourquoi certains modèles sont signalés comme non analysés ?"
+                        }
+                    },
+                    "infos": {
+                        "list": {
+                            "1": "Les modèles qui plaisent et optimisent la consommation d’énergie sont situés en haut à gauche",
+                            "2": "Les modèles situés en bas à gauche sont ceux les moins appréciés mais qui consomment le moins d’énergie.",
+                            "3": "Plus un modèle est situé sur la droite du graphique, plus il consomme d’énergie."
+                        },
+                        "title": "Exemples de lecture :"
+                    },
+                    "tabLabel": "Vue graphique"
+                },
+                "legend": "Choisissez un mode de représentation",
+                "table": {
+                    "tabLabel": "Vue tableau"
+                },
+                "title": "Score de satisfaction VS Consommation moyenne par match"
+            }
         },
         "graphs": {
             "title": "Graphiques"
@@ -1605,7 +1632,7 @@
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },
-        "title": "Des votes… au classement"
+        "title": "Des votes… au classement des modèles"
     },
     "reveal": {
         "equivalent": {
