@@ -13,6 +13,13 @@
   mask-image: url('/icons/association.svg');
 }
 
+/* TODO: should be available in dsfr at some point? */
+.fr-icon-bar-chart-2-line::before,
+.fr-icon-bar-chart-2-line::after {
+  -webkit-mask-image: url('/icons/bar-chart-2-line.svg');
+  mask-image: url('/icons/bar-chart-2-line.svg');
+}
+
 .fr-icon-book-open::before,
 .fr-icon-book-open::after {
   -webkit-mask-image: url('/icons/book-open-line.svg');
