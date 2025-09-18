@@ -193,4 +193,5 @@ if __name__ == "__main__":
     # migrate_old_models_to_new_format() # migrated: 15/09/2025
     # migrate_models_id() # migrated: 15/09/2025
     # add_new_attr() # migrated: 15/09/2025
-    migrate_api_endpoint_file()
+    # migrate_api_endpoint_file() # migrated: 18/09/2025
+    print("Skipping: all migrations have already been ran")
