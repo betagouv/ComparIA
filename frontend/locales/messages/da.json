@@ -436,7 +436,6 @@
         }
     },
     "models": {
-        "conditions": "Brugsbetingelser",
         "extra": {
             "experts": {
                 "api-only": "For at læse mere, se den <a {linkProps}>officielle modelhjemmeside</a>",

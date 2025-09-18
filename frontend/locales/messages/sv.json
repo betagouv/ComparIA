@@ -839,19 +839,16 @@
             "steps": {
                 "a11yDesc": "1. Chatta med två anonyma AI:er: Chatta så länge du vill. 2. Ge din åsikt: Du bidrar till att förbättra AI-modeller. 3. Modellerna avslöjas: Lär dig mer om AI-modeller och deras egenskaper.",
                 "one": {
-                    "a": "Chatta så länge som",
-                    "b": "du vill",
+                    "desc": "Chatta så länge som du vill",
                     "title": "Jag chattar med två anonyma AI:er"
                 },
                 "three": {
-                    "a": "Läs mer om modellerna",
-                    "b": "AI och dess egenskaper",
+                    "desc": "Läs mer om modellerna AI och dess egenskaper",
                     "title": "Modellerna avslöjas!"
                 },
                 "title": "Hur det fungerar",
                 "two": {
-                    "a": "Du bidrar därmed till",
-                    "b": "att förbättra AI-modeller",
+                    "desc": "Du bidrar därmed till att förbättra AI-modeller",
                     "title": "Jag ger min åsikt"
                 }
             },
