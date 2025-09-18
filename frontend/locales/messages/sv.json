@@ -1210,7 +1210,6 @@
         "title": "Allt du behöver veta om jämföraren"
     },
     "ranking": {
-        "desc": "Ta reda på hur de bästa AI-modellerna står sig baserat på deras nöjdhetspoäng, baserat på röster från compar:AI-communityn. För att lära dig mer, se vår rankningsmetodik.",
         "graphs": {
             "title": "Grafer"
         },
