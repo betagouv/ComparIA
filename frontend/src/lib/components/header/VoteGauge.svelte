@@ -7,7 +7,7 @@
 
   let { id }: { id: string } = $props()
 
-  const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
+  const NumberFormater = new Intl.NumberFormat(getLocale())
   const votesData = getVotesContext()
   const votes = $derived({
     count: NumberFormater.format(votesData.count),
