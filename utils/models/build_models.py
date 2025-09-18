@@ -67,7 +67,7 @@ class Model(BaseModel):
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
     url: str | None = None  # FIXME required?
-    endpoint: Endpoint
+    endpoint: Endpoint | None = None  # FIXME required?
     desc: str
     size_desc: str
     fyi: str
