@@ -42,7 +42,7 @@
   }
 
   const rows = $derived.by(() => {
-    const models = modelsData.sort((a, b) => sortIfDefined(a, b, 'elo'))
+    const models = modelsData.filter((m) => !!m.elo).sort((a, b) => sortIfDefined(a, b, 'elo'))
     const highestElo = models[0].elo!
     const lowestElo = models.reduce((a, m) => (m?.elo && m.elo < a ? m.elo : a), highestElo)
     const highestConso = models.reduce(
@@ -96,14 +96,7 @@
   })
 </script>
 
-<Table
-  {cols}
-  rows={sortedRows}
-  bind:orderingCol
-  caption={m['ranking.title']()}
-  hideCaption
-  class="mt-15!"
->
+<Table {cols} rows={sortedRows} bind:orderingCol caption={m['ranking.title']()} hideCaption>
   {#snippet header()}
     <div class="flex flex-wrap items-center gap-5">
       <div class="flex gap-5">
