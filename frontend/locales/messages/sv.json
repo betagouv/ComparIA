@@ -1229,7 +1229,7 @@
                     "trust_range": "Konfidens (±)"
                 }
             },
-            "lastUpdate": "Uppdaterat {datum}",
+            "lastUpdate": "Uppdaterat {date}",
             "search": "Sök modell",
             "totalModels": "Totalt antal modeller:",
             "totalVotes": "Totalt antal röster:"
