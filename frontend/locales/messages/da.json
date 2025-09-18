@@ -327,26 +327,6 @@
         }
     },
     "home": {
-        
-        "use": {
-            "title": "Hvad bruges compar:IA til?",
-            "desc": "compar:IA er et gratis værktøj, der hjælper med at øge borgernes bevidsthed om generativ AI og dens udfordringer.",
-            "compare": {
-                "title": "Sammenlign svarene fra forskellige AI-modeller",
-                "desc": "Diskuter og udvikl din kritiske tænkning ved at give udtryk for dine præferencer",
-                "alt": "Sammenlign"
-            },
-            "test": {
-                "title": "Test de nyeste AI i økosystemet på ét sted",
-                "alt": "Test",
-                "desc": "Test forskellige modeller: åbne, proprietære, små, store..."
-            },
-            "measure": {
-                "desc": "Opdag den miljømæssige påvirkning af dine samtaler med hver model",
-                "title": "Mål det miljømæssige fodaftryk af spørgsmål stillet til AI",
-                "alt": "Mål"
-            }
-        },
         "europe": {
             "desc": "Litauen, Sverige og Danmark slutter sig til Frankrig i at indføre sammenligningsværktøjet for at forbedre fremtidige AI-modeller på deres nationale sprog.",
             "languages": {
@@ -363,28 +343,31 @@
             "title": "Dine ofte stillede spørgsmål"
         },
         "intro": {
-            "title": "Stol ikke på svarene <span {props}>fra en enkelt AI</span>",
             "desc": "Før en blind samtale med to AI'er og vurdér deres svar",
-            "tos": {
-                "accept": "Jeg accepterer <a {linkProps}>brugsbetingelserne</a>",
-                "help": "Data deles til forskningsformål",
-                "error": "Du skal acceptere brugsbetingelserne for at fortsætte"
-            },
             "steps": {
-                "title": "Sådan fungerer det",
                 "a11yDesc": "1. Jeg chatter med to skjulte AI'er: Chat så længe du vil. 2. Jeg angiver mine præferencer: Dermed hjælper du med at forbedre AI-modellerne. 3. Modellernes identiteter afsløres: Få mere at vide om dem og deres egenskaber.",
                 "one": {
-                    "desc": "Chat så længe som du vil",
+                    "a": "Chat så længe",
+                    "b": "som du vil",
                     "title": "Jeg chatter med to skjulte AI'er"
                 },
-                "two": {
-                    "desc": "Ved at gøre dette, hjælper du med at forbedre AI modellerne",
-                    "title": "Jeg giver min præference"
-                },
                 "three": {
-                    "desc": "Lær mere om AI-modeller og deres egenskaber",
+                    "a": "Lær mere om dem og deres egenskaber",
+                    "b": "om AI og deres egenskaber",
                     "title": "Modellernes identiteter afsløres!"
+                },
+                "title": "Sådan fungerer det",
+                "two": {
+                    "a": "Ved at gøre dette,",
+                    "b": "hjælper du med at forbedre AI modellerne",
+                    "title": "Jeg giver min præference"
                 }
+            },
+            "title": "Stol ikke på svarene <span {props}>fra en enkelt AI</span>",
+            "tos": {
+                "accept": "Jeg accepterer <a {linkProps}>brugsbetingelserne</a>",
+                "error": "Du skal acceptere brugsbetingelserne for at fortsætte",
+                "help": "Data deles til forskningsformål"
             }
         },
         "origin": {
