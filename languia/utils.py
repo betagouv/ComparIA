@@ -208,34 +208,8 @@ def choose_among(
 
 
 def pick_models(mode, custom_models_selection, unavailable_models):
-    from languia.config import models
 
-    reasoning_models = [
-        id for id, model in models.items() if model.get("reasoning", False)
-    ]
-    # print(f"reasoning_models: {reasoning_models}")
-    random_pool = [
-        id
-        for id, model in models.items()
-        if id not in reasoning_models
-    ]
-
-    small_models = [
-        id
-        for id, model in models.items()
-        if model["friendly_size"] in ["XS", "S", "M"]
-        and id not in unavailable_models
-        and id not in reasoning_models
-    ]
-
-    big_models = [
-         id
-        for id, model in models.items()
-        if model["friendly_size"] in ["L", "XL", "XXL"]
-        and id not in unavailable_models
-        and id not in reasoning_models
-    ]
-
+    from languia.config import big_models, small_models, reasoning_models, random_pool
     import random
 
     if mode == "big-vs-small":

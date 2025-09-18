@@ -35,6 +35,7 @@ from pydantic import BaseModel
 class ErrorData(BaseModel):
     error: str
 
+
 @app.get("/models/{model_id}/error", status_code=201)
 @app.post("/models/{model_id}/error", status_code=201)
 def report_model(model_id: str, error: ErrorData | None = None) -> bool:
@@ -59,7 +60,9 @@ def get_models() -> List[str]:  # Return type hint
 )
 def index(request: Request):
     # error_count = Dict()
-    error_count = dict.fromkeys([models.keys()], 0)
+    from languia.config import big_models, small_models, reasoning_models, random_pool
+
+    error_count = dict.fromkeys(models, 0)
     for model_id, _date, _details in models_errors:
         if model_id in error_count:
             error_count[model_id] += 1
@@ -70,6 +73,10 @@ def index(request: Request):
             "models_errors": models_errors,
             "error_count": error_count,
             "models": models,
+            "big_models": big_models,
+            "small_models": small_models,
+            "reasoning_models": reasoning_models,
+            "random_pool": random_pool,
             "request": request,
             "now": int(time.time()),
         },

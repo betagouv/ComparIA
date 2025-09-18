@@ -39,6 +39,7 @@
                 <th>Nom</th>
                 <th>Modèle</th>
                 <th>API</th>
+                <th>Pools</th>
                 <th>Stats</th>
             </tr>
             {% for key, model in models.items() %}
@@ -46,6 +47,14 @@
                 <td>{{ key }}</td>
                 <td>{{ key }}</td>
                 <td>{{ model["api_base"] | string | truncate(100, True) }}</td>
+                <td>
+                    {% set pools = [] %}
+                    {% if key in big_models %}{% set pools = pools + ["big models"] %}{% endif %}
+                    {% if key in small_models %}{% set pools = pools + ["small models"] %}{% endif %}
+                    {% if key in reasoning_models %}{% set pools = pools + ["reasoning models"] %}{% endif %}
+                    {% if key in random_pool %}{% set pools = pools + ["random pool"] %}{% endif %}
+                    {{ pools | join(", ") }}
+                </td>
                 <td>{{ error_count[model["model_id"]] | string }}</td>
             </tr>
             {% endfor %}

@@ -135,6 +135,30 @@ from languia.utils import filter_enabled_models
 
 models = filter_enabled_models(all_models)
 
+reasoning_models = [
+    id for id, model in models.items() if model.get("reasoning", False)
+]
+
+random_pool = [
+    id
+    for id, _model in models.items()
+    if id not in reasoning_models
+]
+
+small_models = [
+    id
+    for id, model in models.items()
+    if model["friendly_size"] in ["XS", "S", "M"]
+    and id not in reasoning_models
+]
+
+big_models = [
+        id
+    for id, model in models.items()
+    if model["friendly_size"] in ["L", "XL", "XXL"]
+    and id not in reasoning_models
+]
+
 headers = {"User-Agent": "FastChat Client"}
 
 if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
