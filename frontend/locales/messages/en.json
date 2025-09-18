@@ -649,11 +649,6 @@
                 "fyi": "<p> This model was trained with a high proportion of code data (over 80 programming languages) and mathematics, which improves its ability to solve complex problems and use tools. </p>",
                 "size_desc": "<p> With 123 billion parameters, this model is considered large. It requires a server equipped with at least one powerful graphics card, which implies a significant operating cost. It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
             },
-            "Mistral Medium 2506": {
-                "desc": "<p> A medium-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It is particularly interesting for programming tasks or reasoning tasks, such as mathematics. </p>",
-                "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
-                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
-            },
             "Mistral Medium 3.1": {
                 "desc": "<p> A medium-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It is particularly useful for programming or reasoning tasks, such as mathematics. </p>",
                 "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
