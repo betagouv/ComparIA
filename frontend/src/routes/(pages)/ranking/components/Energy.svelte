@@ -2,6 +2,7 @@
   import { Accordion, AccordionGroup, Alert, Segmented } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
+  import { RankingTable } from '.'
 
   const views = ([{ id: 'graph' }, { id: 'table' }] as const).map((view) => ({
     ...view,
@@ -62,6 +63,12 @@
           </Accordion>
         {/each}
       </AccordionGroup>
-    {:else}{/if}
+    {:else}
+      <RankingTable
+        initialOrderCol="consumption_wh"
+        includedCols={['name', 'elo', 'consumption_wh', 'size', 'organisation', 'license']}
+        hideTotal
+      />
+    {/if}
   </div>
 </div>
