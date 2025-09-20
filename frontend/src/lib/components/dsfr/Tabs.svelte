@@ -1,9 +1,10 @@
 <script
   lang="ts"
-  generics="T extends { id: string; label: string; href?: string; content?: string }"
+  generics="T extends { id: string; label: string; href?: string; content?: string, icon?: string }"
 >
   import type { Snippet } from 'svelte'
   import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
+  import { Icon } from '.'
 
   let {
     tabs,
@@ -50,7 +51,7 @@
     props.class
   ]}
 >
-  <ul class="fr-tabs__list" role="tablist" aria-label={label}>
+  <ul class={['fr-tabs__list', { 'px-0!': kind === 'nav' }]} role="tablist" aria-label={label}>
     {#each items as item}
       <li role="presentation">
         {#if item.href}
@@ -59,7 +60,7 @@
           </a>
         {:else}
           <button {...item.props} type="button">
-            {item.label}
+            {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
           </button>
         {/if}
       </li>
@@ -72,10 +73,10 @@
       aria-labelledby={`tab-${item.id}`}
       tabindex="0"
       class={[
-        'fr-tabs__panel bg-white',
+        'fr-tabs__panel',
         {
           'fr-tabs__panel--selected': item.id === initialId,
-          'px-4! py-5!': noBorders,
+          'px-0! py-5!': noBorders,
           'transition-none! visibility-none!': item.href && item.id !== currentTabId
         },
         panelClass

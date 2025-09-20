@@ -15,6 +15,7 @@
     caption: string
     cols: Col[]
     rows: Row[]
+    pagination?: boolean
     orderingCol?: Col['id']
     hideCaption?: boolean
     cell: Snippet<[Row, Col]>
@@ -25,6 +26,7 @@
     caption,
     cols,
     rows,
+    pagination = false,
     orderingCol = $bindable(),
     hideCaption = false,
     cell,
@@ -43,7 +45,9 @@
   let page = $state(0)
   let maxRows = $state(10)
 
-  const displayedRows = $derived(rows.slice(page * maxRows, page * maxRows + maxRows))
+  const displayedRows = $derived(
+    pagination ? rows.slice(page * maxRows, page * maxRows + maxRows) : rows
+  )
   const maxRowsOptions = [10, 25, 50].map((value) => ({
     value,
     label: m['components.table.pageCount']({ count: value })
@@ -103,21 +107,23 @@
     </div>
   </div>
 
-  <div class="fr-table__footer">
-    <div class="fr-table__footer--start">
-      <Select
-        bind:selected={maxRows}
-        id="max-row-select"
-        options={maxRowsOptions}
-        label={m['components.table.linePerPage']()}
-        hideLabel
-      />
-    </div>
+  {#if pagination}
+    <div class="fr-table__footer">
+      <div class="fr-table__footer--start">
+        <Select
+          bind:selected={maxRows}
+          id="max-row-select"
+          options={maxRowsOptions}
+          label={m['components.table.linePerPage']()}
+          hideLabel
+        />
+      </div>
 
-    <div class="fr-table__footer--middle">
-      <Pagination itemCount={rows.length} bind:page maxItemPerPage={maxRows} />
+      <div class="fr-table__footer--middle">
+        <Pagination itemCount={rows.length} bind:page maxItemPerPage={maxRows} />
+      </div>
     </div>
-  </div>
+  {/if}
 </div>
 
 <style>

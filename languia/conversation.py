@@ -9,8 +9,8 @@ from languia.custom_components.customchatbot import (
 
 from languia.utils import (
     EmptyResponseError,
-    get_endpoint,
     messages_to_dict_list,
+    get_api_key
 )
 from languia import config
 
@@ -18,6 +18,7 @@ import logging
 
 from uuid import uuid4
 
+from languia.config import models
 
 class Conversation:
     def __init__(
@@ -36,7 +37,7 @@ class Conversation:
         self.output_tokens = None
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = get_endpoint(model_name)
+        self.endpoint = models.get(model_name)['endpoint']
 
 
 logger = logging.getLogger("languia")
@@ -126,14 +127,16 @@ def bot_response(
 
     messages_dict = messages_to_dict_list(state.messages)
     litellm_model_name = (
-        endpoint.get("api_type", "openai") + "/" + endpoint["model_name"]
+        endpoint.get("api_type", "openai") + "/" + endpoint.get("api_model_id", state.model_name)
     )
+
+    api_key = get_api_key(endpoint)
 
     stream_iter = litellm_stream_iter(
         model_name=litellm_model_name,
         messages=messages_dict,
         temperature=temperature,
-        api_key=endpoint.get("api_key", "F4K3-4P1-K3Y"),
+        api_key=api_key,
         api_base=endpoint.get("api_base", None),
         api_version=endpoint.get("api_version", None),
         # stream=model_api_dict.get("stream", True),

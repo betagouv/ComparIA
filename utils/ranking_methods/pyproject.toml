@@ -1,0 +1,127 @@
+# SPDX-FileCopyrightText: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+#
+# SPDX-License-Identifier: MIT
+
+[tool.poetry]
+name = "rank-comparia"
+version = "0.1"
+description = "Calcule des rangs pour le projet comparia"
+authors = ["Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>"]
+license = "MIT"
+packages = [
+    { include = "rank_comparia", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+polars = "^1.26.0"
+datasets = "^3.6.0"
+ipywidgets = "^8.1.7"
+scikit-learn = "^1.6.1"
+altair = "^5.5.0"
+vl-convert-python = "^1.8.0"
+networkx = "^3.5"
+
+[tool.poetry.group.dev.dependencies]
+flake8 = "^7.1"
+black = { extras = ["jupyter"], version = "^24.10" }
+pylint = "^3.3"
+# pylint-pydantic = "^0"  # Uncomment if you use pydantic
+pytest = "^8.3"
+pytest-cov = "^5.0"
+pre-commit = "^3.8"
+licensecheck = "^2025.1.0"
+reuse = "^3.0"
+pyright = {extras = ["nodejs"], version = "^1.1"}
+isort = "^5.13.2"
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 120
+
+[tool.licensecheck]
+format = "ansi"
+zero = true
+# TODO[squelette]: Whitelist packages which have been reviewed and do not come with a license or
+# that are incorrectly flagged as incompatible.
+ignore_packages = [
+    "pylint",  # GPL but used as an external tool (not imported)
+    "reuse",  # Used as an external tool
+]
+ignore_licenses = [
+  "MPL"  # See https://github.com/FHPythonUtils/LicenseCheck/issues/86
+]
+
+[tool.pylint.main]
+fail-under = 9.0
+output-format = "colorized"
+# extension-pkg-allow-list = "pydantic"  # Uncomment if you use pydantic
+load-plugins = [
+#   "pylint_pydantic",  # Uncomment if you use pydantic
+  "pylint.extensions.check_elif",
+  "pylint.extensions.bad_builtin",
+  "pylint.extensions.docparams",
+  "pylint.extensions.for_any_all",
+  "pylint.extensions.set_membership",
+  "pylint.extensions.code_style",
+  "pylint.extensions.overlapping_exceptions",
+  "pylint.extensions.typing",
+  "pylint.extensions.redefined_variable_type",
+  "pylint.extensions.comparison_placement",
+  "pylint.extensions.broad_try_clause",
+  "pylint.extensions.dict_init_mutate",
+  "pylint.extensions.consider_refactoring_into_while_condition",
+]
+ignore = [".git", "__pycache__", ".venv", ".cache"]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.messages_control]
+# extension-pkg-allow-list = "pydantic"  # Uncomment if you use pydantic
+disable = [
+  "R",  # refactor
+  "C",  # convention
+  "fixme",
+]
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s,%(msecs)03d:%(name)s:%(levelname)s:%(filename)s@%(lineno)s:%(message)s"
+log_cli_date_format = "%F|%T"
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+exclude_also = [
+  # Don't complain about missing debug-only code:
+  "def __repr__",
+  # Don't complain if tests don't hit defensive assertion code:
+  "raise NotImplementedError",
+  # Don't complain about abstract methods, they aren't run:
+  "@(abc\\.)?abstractmethod",
+  # Don't complain for main code:
+  'if __name__ == "__main__":',
+]
+
+[tool.pyright]
+# ref: https://github.com/microsoft/pyright/blob/main/docs/configuration.md
+# TODO[squelette]: Uncomment the following line to activate strict type checking (recommended)
+# typeCheckingMode = "strict"
+
+[tool.isort]
+profile = "black"
+line_length = 120
+no_lines_before = ["LOCALFOLDER"]
+extend_skip = [".cache"]
+lines_after_imports = 2
+
+[project]
+name = "rank-comparia"
+version = "0.0.1"

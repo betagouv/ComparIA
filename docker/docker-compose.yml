@@ -3,7 +3,6 @@ services:
     env_file: .env
     environment:
       LOGDIR: /data
-      LANGUIA_REGISTER_API_ENDPOINT_FILE: "/register-api-endpoint-file.json"
       LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
       PUBLIC_API_URL: "http://languia:8001"
     build:
@@ -14,7 +13,6 @@ services:
       - "8001:80"
     volumes:
       - ../data:/data
-      - ../register-api-endpoint-file.json:/register-api-endpoint-file.json
       # Dev config
       - ../:/app
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]

@@ -33,20 +33,29 @@
             </tr>
             {% endfor %}
         </table>
-        <h3 class="fr-h3">Endpoints</h3>
+        <h3 class="fr-h3">Modèles</h3>
         <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
             <tr>
                 <th>Nom</th>
                 <th>Modèle</th>
                 <th>API</th>
+                <th>Pools</th>
                 <th>Stats</th>
             </tr>
-            {% for endpoint in endpoints %}
+            {% for key, model in models.items() %}
             <tr>
-                <td>{{ endpoint['model_id'] }}</td>
-                <td>{{ endpoint['model_id'] }}</td>
-                <td>{{ endpoint["api_base"] | string | truncate(100, True) }}</td>
-                <td>{{ error_count[endpoint["model_id"]] | string }}</td>
+                <td>{{ key }}</td>
+                <td>{{ key }}</td>
+                <td>{{ model["api_base"] | string | truncate(100, True) }}</td>
+                <td>
+                    {% set pools = [] %}
+                    {% if key in big_models %}{% set pools = pools + ["big models"] %}{% endif %}
+                    {% if key in small_models %}{% set pools = pools + ["small models"] %}{% endif %}
+                    {% if key in reasoning_models %}{% set pools = pools + ["reasoning models"] %}{% endif %}
+                    {% if key in random_pool %}{% set pools = pools + ["random pool"] %}{% endif %}
+                    {{ pools | join(", ") }}
+                </td>
+                <td>{{ error_count[model["model_id"]] | string }}</td>
             </tr>
             {% endfor %}
         </table>

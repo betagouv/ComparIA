@@ -1,0 +1,52 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Contact: Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+
+Files: poetry.lock
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: CC0-1.0
+
+Files: renovate.json
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: CC0-1.0
+
+Files: graph-frontend/package-lock.json
+Copyright: 2023 Lena Jaskov <<https://observablehq.com/@yaslena>
+License: CC0-1.0
+
+Files: graph-frontend/package.json
+Copyright: 2023 Lena Jaskov <<https://observablehq.com/@yaslena>
+License: CC0-1.0
+
+Files: data/models_data.json
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: etalab-2.0
+
+Files: data/models_data_augmented.json
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: etalab-2.0
+
+Files: data/comparIA_graph.json
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: etalab-2.0
+
+Files: notebooks/*.ipynb
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: MIT
+
+Files: tests/data/test_data.parquet
+Copyright: 2025 Ministère de la Culture
+License: etalab-2.0
+Comment: Ce jeu de données test est dérivé du jeu de données ComparIA : https://huggingface.co/ministere-culture
+
+Files: graph-frontend/files/*.json
+Copyright: 2025 Ministère de la Culture
+License: etalab-2.0
+Comment: Ces jeux de données sont dérivés du jeu de données ComparIA : https://huggingface.co/ministere-culture
+
+Files: tests/data/test_data_frugal.parquet
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: etalab-2.0
+
+Files: figures/topics_bert.jpg
+Copyright: 2025 Pôle d'Expertise de la Régulation Numérique <contact@peren.gouv.fr>
+License: etalab-2.0

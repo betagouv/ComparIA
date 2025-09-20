@@ -2,9 +2,10 @@ import os
 import sentry_sdk
 import json5
 import sys
-from languia.utils import get_model_names_list, get_matomo_js, build_model_extra_info
 import datetime
 from pathlib import Path
+
+from languia.models import Model, Endpoint
 
 env_debug = os.getenv("LANGUIA_DEBUG")
 
@@ -126,121 +127,37 @@ if os.getenv("SENTRY_DSN"):
     )
 
 
-# TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
-if os.getenv("SENTRY_FRONT_DSN"):
-    sentry_head_js = f"""
- <script type="text/javascript" 
-   src="../assets/bundle.tracing.replay.min.js"
- ></script>"""
-else:
-    sentry_head_js = ""
-
-
-if os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE"):
-    register_api_endpoint_file = os.getenv("LANGUIA_REGISTER_API_ENDPOINT_FILE")
-else:
-    register_api_endpoint_file = "register-api-endpoint-file.json"
-
-enable_moderation = False
-use_remote_storage = False
-
-# TODO: https://docs.sentry.io/platforms/javascript/install/loader/#custom-configuration
-if os.getenv("SENTRY_FRONT_DSN"):
-    sentry_head_js = f"""
- <script type="text/javascript" 
-   src="../assets/bundle.tracing.replay.min.js"
- ></script>"""
-else:
-    sentry_head_js = ""
-
-if os.getenv("MATOMO_ID") and os.getenv("MATOMO_URL"):
-    matomo_js = get_matomo_js(os.getenv("MATOMO_URL"), os.getenv("MATOMO_ID"))
-else:
-    matomo_js = ""
-
-# we can also load js normally (no in <head>)
-arena_head_js = (
-    sentry_head_js
-    + """
-<script type="module" src="../assets/dsfr/dsfr.module.js"></script>
-<script type="text/javascript" nomodule src="../assets/dsfr/dsfr.nomodule.js"></script>
-<script type="text/javascript">
-function createSnackbar(message) {
-    const snackbar = document.getElementById('snackbar');
-    const messageText = snackbar.querySelector('.message');
-    messageText.textContent = message;
-
-    snackbar.classList.add('show');
-
-    setTimeout(() => {
-        snackbar.classList.remove('show');
-    }, 2000);
-}
-function closeSnackbar() {
-    const snackbar = document.getElementById('snackbar');
-    snackbar.classList.remove('show');
-}
-
-function copie() {
-    const copyText = document.getElementById("share-link");
-    copyText.select();
-    copyText.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(copyText.value);
-    createSnackbar("Lien copié dans le presse-papiers");
-}
-</script>
-"""
-    + matomo_js
-)
-
-site_head_js = (
-    """
-<script type="module" src="assets/dsfr/dsfr.module.js"></script>
-<script type="text/javascript" nomodule src="assets/dsfr/dsfr.nomodule.js"></script>
-"""
-    + matomo_js
-)
-
-with open("./assets/arena.js", encoding="utf-8") as js_file:
-    arena_js = js_file.read()
-
-    if os.getenv("GIT_COMMIT"):
-        git_commit = os.getenv("GIT_COMMIT")
-        arena_js = arena_js.replace("__GIT_COMMIT__", os.getenv("GIT_COMMIT"))
-
-    if os.getenv("SENTRY_FRONT_DSN"):
-        arena_js = arena_js.replace(
-            "__SENTRY_FRONT_DSN__", os.getenv("SENTRY_FRONT_DSN")
-        )
-    if os.getenv("SENTRY_ENV"):
-        arena_js = arena_js.replace("__SENTRY_ENV__", os.getenv("SENTRY_ENV"))
-
-with open("./assets/dsfr-arena.css", encoding="utf-8") as css_file:
-    css_dsfr = css_file.read()
-with open("./assets/custom-arena.css", encoding="utf-8") as css_file:
-    custom_css = css_file.read()
-with open("./assets/dark.css", encoding="utf-8") as css_file:
-    darkfixes_css = css_file.read()
-
-# css = custom_css + darkfixes_css
-css = css_dsfr + custom_css + darkfixes_css
-
-
-api_endpoint_info = json5.load(open(register_api_endpoint_file))
-
-models = get_model_names_list(api_endpoint_info)
-
-all_models_extra_info_toml = json5.loads(
+all_models = json5.loads(
     Path("./utils/models/generated-models.json").read_text()
 )
-# TODO: refacto?
-models_extra_info = [
-    all_models_extra_info_toml[model]
-    for model in models
-    if model is not None and all_models_extra_info_toml.get(model)
+
+from languia.utils import filter_enabled_models
+
+models = filter_enabled_models(all_models)
+
+reasoning_models = [
+    id for id, model in models.items() if model.get("reasoning", False)
 ]
 
-models_extra_info.sort(key=lambda x: x["simple_name"])
+random_pool = [
+    id
+    for id, _model in models.items()
+    if id not in reasoning_models
+]
+
+small_models = [
+    id
+    for id, model in models.items()
+    if model["friendly_size"] in ["XS", "S", "M"]
+    and id not in reasoning_models
+]
+
+big_models = [
+        id
+    for id, model in models.items()
+    if model["friendly_size"] in ["L", "XL", "XXL"]
+    and id not in reasoning_models
+]
 
 headers = {"User-Agent": "FastChat Client"}
 
@@ -248,9 +165,6 @@ if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
     controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
 else:
     controller_url = "http://localhost:21001"
-
-enable_moderation = False
-use_remote_storage = False
 
 
 def get_model_system_prompt(model_name):
@@ -265,4 +179,3 @@ BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
 
 # unavailable models won't be sampled.
 unavailable_models = []
-

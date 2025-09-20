@@ -6,6 +6,8 @@ import gradio as gr
 
 import logging
 
+from languia.models import Model, Endpoint
+
 
 class ContextTooLongError(ValueError):
     def __str__(self):
@@ -23,6 +25,17 @@ class EmptyResponseError(RuntimeError):
         msg = "Empty response"
         return msg
 
+
+def filter_enabled_models(models: dict[str, Model]):
+    enabled_models = {}
+    for model_id, model_dict in models.items():
+        if model_dict.get("status") == "enabled":
+            try:
+                if Endpoint.model_validate(model_dict.get("endpoint")):
+                    enabled_models[model_id] = model_dict
+            except:
+                continue
+    return enabled_models
 
 def get_ip(request: Request):
     # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
@@ -126,19 +139,6 @@ def messages_to_dict_list(
     ]
 
 
-with open("./templates/welcome-modal.html", encoding="utf-8") as welcome_modal_file:
-    welcome_modal_html = welcome_modal_file.read()
-
-with open("./templates/header-arena.html", encoding="utf-8") as header_file:
-    header_html = header_file.read()
-    if os.getenv("GIT_COMMIT"):
-        git_commit = os.getenv("GIT_COMMIT")
-        header_html += f"<!-- Git commit: {git_commit} -->"
-
-with open("./templates/footer.html", encoding="utf-8") as footer_file:
-    footer_html = footer_file.read()
-
-
 def get_user_info(request):
     if request:
         if hasattr(request, "cookies"):
@@ -154,15 +154,6 @@ def get_user_info(request):
         user_id = None
     return user_id, session_id
 
-
-def get_endpoint(model_id):
-    from languia.config import api_endpoint_info
-
-    for endpoint in api_endpoint_info:
-        if endpoint.get("model_id", "").lower() == model_id.lower():
-            return endpoint
-
-    return None
 
 
 class AppState:
@@ -187,14 +178,13 @@ class AppState:
     #     return self.__dict__.copy()
 
 
-# TODO: refacto to expose "all_models" to choose from them if constraints can't be respected
 def choose_among(
     models,
     excluded,
 ):
-    all_models = models
+    enabled_models = models
     models_pool = [
-        model_name for model_name in all_models if model_name not in excluded
+        model_name for model_name in enabled_models if model_name not in excluded
     ]
     logger = logging.getLogger("languia")
     logger.debug("chosing from:" + str(models_pool))
@@ -202,7 +192,7 @@ def choose_among(
     if len(models_pool) == 0:
         # TODO: tell user in a toast notif that we couldn't respect prefs
         logger.warning("Couldn't respect exclusion prefs")
-        if len(all_models) == 0:
+        if len(enabled_models) == 0:
             logger.critical("No model to choose from")
 
             raise gr.Error(
@@ -210,7 +200,7 @@ def choose_among(
                 message="Le comparateur a un problème et aucun des modèles parmi les sélectionnés n'est disponible, veuillez réessayer un autre mode ou revenir plus tard.",
             )
         else:
-            models_pool = all_models
+            models_pool = enabled_models
 
     chosen_idx = np.random.choice(len(models_pool), p=None)
     chosen_model_name = models_pool[chosen_idx]
@@ -218,34 +208,8 @@ def choose_among(
 
 
 def pick_models(mode, custom_models_selection, unavailable_models):
-    from languia.config import models_extra_info
 
-    reasoning_models = [
-        model["id"] for model in models_extra_info if model.get("reasoning", False)
-    ]
-    # print(f"reasoning_models: {reasoning_models}")
-    random_pool = [
-        model["id"]
-        for model in models_extra_info
-        if model["id"] not in reasoning_models
-    ]
-
-    small_models = [
-        model["id"]
-        for model in models_extra_info
-        if model["friendly_size"] in ["XS", "S", "M"]
-        and model["id"] not in unavailable_models
-        and model["id"] not in reasoning_models
-    ]
-
-    big_models = [
-        model["id"]
-        for model in models_extra_info
-        if model["friendly_size"] in ["L", "XL"]
-        and model["id"] not in unavailable_models
-        and model["id"] not in reasoning_models
-    ]
-
+    from languia.config import big_models, small_models, reasoning_models, random_pool
     import random
 
     if mode == "big-vs-small":
@@ -297,32 +261,19 @@ def pick_models(mode, custom_models_selection, unavailable_models):
 
     return [model_left_name, model_right_name]
 
+def get_api_key(endpoint: Endpoint):
 
-def get_matomo_js(matomo_url, matomo_id):
-    js = """
-    <!-- Matomo -->
-<script>
-  var _paq = window._paq = window._paq || [];
-  /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
-  _paq.push(['setConsentGiven']);
-  _paq.push(['enableLinkTracking']);
-  _paq.push(['HeatmapSessionRecording::enable']);
-  _paq.push(['trackPageView']);
-  (function() {"""
-    js += f"""
-    var u="{matomo_url}/";
-    _paq.push(['setTrackerUrl', u+'matomo.php']);
-    _paq.push(['setSiteId', '{os.getenv("MATOMO_ID")}']);
-    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-    g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);"""
-    js += """           
-  })();
-</script>"""
-    js += f"""
-<noscript><p><img referrerpolicy="no-referrer-when-downgrade" src="{matomo_url}/matomo.php?idsite={matomo_id}&amp;rec=1" style="border:0;" alt="" /></p></noscript>
-<!-- End Matomo Code -->
-    """
-    return js
+    # // "api_type": "huggingface/cohere",
+    # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
+
+    # "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
+    if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get("api_base"):
+        return os.environ("ALBERT_KEY")
+    if endpoint.get("api_base") and "huggingface.co" in endpoint.get("api_base"):
+        return os.environ("HF_INFERENCE_KEY")
+    # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value
+    # And no need for Vertex, handled differently
+    return None
 
 
 def params_to_friendly_size(params):
@@ -360,69 +311,6 @@ def get_distrib_clause_from_license(license_name):
     else:
         return "open-weights"
 
-
-def build_model_extra_info(name: str, all_models_extra_info_toml: dict):
-
-    std_name = name.lower()
-    model = all_models_extra_info_toml.get(std_name, {"id": std_name})
-
-    model["id"] = model.get("id", std_name)
-    model["simple_name"] = model.get("simple_name", std_name)
-    model["icon_path"] = model.get("icon_path", "huggingface.svg")
-    # model["release_date"] = model.get("release_date", None)
-
-    model["license"] = model.get("license", "MIT")
-    model["distribution"] = get_distrib_clause_from_license(model["license"])
-    model["conditions"] = get_conditions_from_license(model["license"])
-
-    # TODO: dict for organisation = "DeepSeek" => icon_path = "deepseek.webp"
-
-    if not any(model.get(key) for key in ("friendly_size", "params", "total_params")):
-        model["params"] = 100
-
-    # Determine params if not listed explicitly
-    if "params" not in model:
-        PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-        model["params"] = model.get(
-            "total_params",
-            PARAMS_SIZE_MAP.get(model.get("friendly_size"), 100),
-        )
-
-    # Determine friendly size if not listed explicitly
-    model["friendly_size"] = model.get(
-        "friendly_size", params_to_friendly_size(model["params"])
-    )
-
-    if "excerpt" not in model and "description" in model:
-        if len(model["description"]) > 190:
-            model["excerpt"] = model["description"][0:190] + "[…]"
-        else:
-            model["excerpt"] = model["description"]
-
-    if model.get("quantization", None) == "q8":
-        model["required_ram"] = model["params"] * 2
-    else:
-        # We suppose from q4 to fp16
-        model["required_ram"] = model["params"]
-
-    return model
-
-
-def get_model_extra_info(name: str, models_extra_info: list):
-    std_name = name.lower()
-    for model in models_extra_info:
-        if model["id"] == std_name:
-            return model
-    # if not found return minimalistic dict
-    return {"id": name}
-
-
-def get_model_names_list(api_endpoint_info):
-    logger = logging.getLogger("languia")
-
-    models = [model_dict.get("model_id") for model_dict in api_endpoint_info]
-    logger.debug(f"All models: {models}")
-    return models
 
 def count_output_tokens(messages) -> int:
     """Count output tokens (assuming 4 letters per token)."""

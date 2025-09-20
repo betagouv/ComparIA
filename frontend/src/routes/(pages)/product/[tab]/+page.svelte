@@ -27,7 +27,12 @@
   <div class="fr-container">
     <h1 class="fr-h3 mb-10!">{m['product.title']()}</h1>
 
-    <Tabs {tabs} initialId={data.tab} label={m['product.title']()} panelClass="px-4! md:p-10!">
+    <Tabs
+      {tabs}
+      initialId={data.tab}
+      label={m['product.title']()}
+      panelClass="bg-white px-4! md:p-10!"
+    >
       {#snippet tab({ id })}
         {#if id === 'comparator'}
           <Comparator />
