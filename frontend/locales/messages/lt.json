@@ -4,6 +4,7 @@
     },
     "actions": {
         "contact": "Kontaktai",
+        "contactUs": "Susisiekite su mumis",
         "copyLink": {
             "do": "Kopijuoti nuorodą",
             "done": "Nuoroda nukopijuota į iškarpinę"
@@ -219,7 +220,31 @@
                     "desc": "Diskusija, skirta apmąstyti atsakymų tinkamumą atsižvelgiant į naudotojų poreikius.",
                     "duration": "(10min)",
                     "title": "Palyginimas ir balsavimas"
+                },
+                "4": {
+                    "desc": "Pedagoginis šokas ir modelių techninių savybių atradimas : « geriausias atsakymas » ne visada rimuojasi su « aplinkosauginiu taupumu »!",
+                    "duration": "(10min)",
+                    "title": "Modelių atskleidimas"
+                },
+                "5": {
+                    "desc": "Laikas apmąstyti pasirinkimus tarp naudojimo ir poveikio aplinkai.",
+                    "duration": "(10-15min)",
+                    "title": "Baigamosios diskusijos"
+                },
+                "6": {
+                    "desc": "Pasidalijimas keliais paprastais veiksmais, kurie padeda sumažinti su dirbtinio intelekto naudojimu susijusį poveikį.",
+                    "duration": "(5min)",
+                    "title": "Išvados ir perspektyvos"
                 }
+            },
+            "title": "Tipinė dirbtuvių eiga"
+        },
+        "5": {
+            "cta": "Gauti fasilitatoriaus rinkinį",
+            "list": {
+                "1": "Išsamus vadovas, kuriame paaiškinta visa eiga",
+                "2": "Paruoštos skaidrės",
+                "3": "DUK ir žodynėlis, skirti lengvai atsakyti į klausimus"
             }
         }
     },
