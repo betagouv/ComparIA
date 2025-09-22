@@ -1589,13 +1589,15 @@
                         },
                         "title": "Exemples de lecture :"
                     },
-                    "tabLabel": "Vue graphique"
+                    "tabLabel": "Vue graphique",
+                    "xLabel": "Consommation moyenne pour 1000 tokens",
+                    "yLabel": "Score de satisfaction"
                 },
                 "legend": "Choisissez un mode de représentation",
                 "table": {
                     "tabLabel": "Vue tableau"
                 },
-                "title": "Score de satisfaction VS Consommation moyenne par match"
+                "title": "Score de satisfaction VS Consommation moyenne pour 1000 tokens"
             }
         },
         "graphs": {
