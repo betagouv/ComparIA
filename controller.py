@@ -66,7 +66,7 @@ def index(request: Request):
     for model_id, _date, _details in models_errors:
         if model_id in error_count:
             error_count[model_id] += 1
-    print(str(error_count))
+    # print(str(error_count))
     return templates.TemplateResponse(
         "models_errors.html",
         {
