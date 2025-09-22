@@ -1590,6 +1590,10 @@
                         "title": "Exemples de lecture :"
                     },
                     "tabLabel": "Vue graphique",
+                    "tooltip": {
+                        "conso": "Conso. moyenne (Wh)",
+                        "elo": "Score satisfaction"
+                    },
                     "xLabel": "Consommation moyenne pour 1000 tokens",
                     "yLabel": "Score de satisfaction"
                 },
