@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Badge, Link, Search, Table } from '$components/dsfr'
+  import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
@@ -18,10 +19,12 @@
     | 'license'
 
   let {
+    id,
     initialOrderCol = 'elo',
     includedCols,
     hideTotal = false
   }: {
+    id: string
     initialOrderCol?: ColKind
     includedCols?: ColKind[]
     hideTotal?: boolean
@@ -34,6 +37,8 @@
   const totalVotes = $derived(NumberFormater.format(votesData.count))
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
+  let selectedModel = $state<string>()
+  const selectedModelData = $derived(modelsData.find((m) => m.id === selectedModel))
 
   const cols = (
     [
@@ -121,7 +126,7 @@
   })
 </script>
 
-<Table {cols} rows={sortedRows} bind:orderingCol caption={m['ranking.title']()} hideCaption>
+<Table {id} {cols} rows={sortedRows} bind:orderingCol caption={m['ranking.title']()} hideCaption>
   {#snippet header()}
     <div class="flex flex-wrap items-center gap-5">
       {#if !hideTotal}
@@ -169,7 +174,13 @@
         width="20"
         class="me-1 inline-block"
       />
-      {model.id}
+      <a
+        href="#{model.id}"
+        data-fr-opened="false"
+        aria-controls="{id}-modal-model"
+        class="text-black!"
+        onclick={() => (selectedModel = model.id)}>{model.id}</a
+      >
     {:else if col.id === 'size'}
       <strong>{model.friendly_size}</strong> -
       {#if model.distribution === 'api-only'}
@@ -203,3 +214,5 @@
     {/if}
   {/snippet}
 </Table>
+
+<ModelInfoModal model={selectedModelData} modalId="{id}-modal-model" />

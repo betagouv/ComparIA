@@ -31,7 +31,7 @@
             {@html sanitize(m['ranking.ranking.desc']())}
           </p>
 
-          <RankingTable />
+          <RankingTable id="ranking-table" />
         {:else if id === 'energy'}
           <Energy />
         {:else if id === 'preferences'}

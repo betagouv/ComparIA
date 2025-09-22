@@ -65,6 +65,7 @@
       </AccordionGroup>
     {:else}
       <RankingTable
+        id="energy-table"
         initialOrderCol="consumption_wh"
         includedCols={['name', 'elo', 'consumption_wh', 'size', 'organisation', 'license']}
         hideTotal
