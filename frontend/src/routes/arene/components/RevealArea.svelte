@@ -27,6 +27,7 @@
       {@const modelBadges = (['license', 'size', 'releaseDate'] as const)
         .map((k) => model.badges[k])
         .filter((b) => !!b)}
+      {@const wh = kwh * 1000}
 
       <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
         <div>
@@ -86,7 +87,7 @@
 
             <MiniCard
               id="energy-{side}"
-              value={kwh.toFixed(kwh < 2 ? 2 : 0)}
+              value={wh.toFixed(wh < 2 ? 2 : 0)}
               units="Wh"
               desc={m['reveal.impacts.energy.label']()}
               icon="flashlight-fill"
