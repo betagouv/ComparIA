@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
-from typing import List, Dict, Union  # Added Union for return types
+from typing import List, Dict
 from datetime import datetime
 import logging
 from fastapi.templating import Jinja2Templates
@@ -66,7 +66,7 @@ def index(request: Request):
     for model_id, _date, _details in models_errors:
         if model_id in error_count:
             error_count[model_id] += 1
-
+    print(str(error_count))
     return templates.TemplateResponse(
         "models_errors.html",
         {
