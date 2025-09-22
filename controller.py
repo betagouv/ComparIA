@@ -13,7 +13,6 @@ from languia.config import models
 templates = Jinja2Templates(directory="templates")
 
 app = FastAPI()
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
 
 # model_id, now, outage_details
 models_errors: List = []
