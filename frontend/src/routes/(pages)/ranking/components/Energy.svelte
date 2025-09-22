@@ -1,8 +1,11 @@
 <script lang="ts">
   import { Accordion, AccordionGroup, Alert, Segmented } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import type { BotModel } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
+
+  let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
 
   const views = ([{ id: 'graph' }, { id: 'table' }] as const).map((view) => ({
     ...view,
@@ -48,7 +51,7 @@
     </div>
 
     {#if view === 'graph'}
-      <EnergyGraph />
+      <EnergyGraph {data} {onDownloadData} />
 
       <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10">
         <ul>
@@ -68,9 +71,11 @@
     {:else}
       <RankingTable
         id="energy-table"
+        {data}
         initialOrderCol="consumption_wh"
         includedCols={['name', 'elo', 'consumption_wh', 'size', 'organisation', 'license']}
         hideTotal
+        {onDownloadData}
       />
     {/if}
   </div>

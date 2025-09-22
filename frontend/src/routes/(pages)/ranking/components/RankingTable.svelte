@@ -4,7 +4,7 @@
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { getModelsContext } from '$lib/models'
+  import type { BotModel } from '$lib/models'
 
   type ColKind =
     | 'rank'
@@ -20,25 +20,28 @@
 
   let {
     id,
+    data,
     initialOrderCol = 'elo',
     includedCols,
+    onDownloadData,
     hideTotal = false
   }: {
     id: string
+    data: BotModel[]
     initialOrderCol?: ColKind
     includedCols?: ColKind[]
+    onDownloadData: () => void
     hideTotal?: boolean
   } = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
 
-  const modelsData = getModelsContext()
   const votesData = getVotesContext()
   const totalVotes = $derived(NumberFormater.format(votesData.count))
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
   let selectedModel = $state<string>()
-  const selectedModelData = $derived(modelsData.find((m) => m.id === selectedModel))
+  const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
 
   const cols = (
     [
@@ -71,7 +74,7 @@
   }
 
   const rows = $derived.by(() => {
-    const models = modelsData.filter((m) => !!m.elo).sort((a, b) => sortIfDefined(a, b, 'elo'))
+    const models = data.sort((a, b) => sortIfDefined(a, b, 'elo'))
     const highestElo = models[0].elo!
     const lowestElo = models.reduce((a, m) => (m?.elo && m.elo < a ? m.elo : a), highestElo)
     const highestConso = models.reduce(
@@ -151,12 +154,13 @@
         <!-- FIXME 404 -->
         <Link
           native={false}
-          href="/data/ranking.csv"
+          href="#"
           download="true"
           text={m['ranking.table.downloadData']()}
           icon="download-line"
           iconPos="right"
           class="text-[14px]!"
+          onclick={() => onDownloadData()}
         />
       </div>
     </div>

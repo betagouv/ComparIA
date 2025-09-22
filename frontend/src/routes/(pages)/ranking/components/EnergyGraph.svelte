@@ -1,29 +1,27 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import { getModelsContext, SIZES } from '$lib/models'
+  import { SIZES, type BotModel } from '$lib/models'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
   import { onMount } from 'svelte'
 
-  const modelsData = getModelsContext()
+  let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
 
   const models = $derived(
-    modelsData
-      .filter((m) => !!m.elo)
-      .map((m) => ({
-        id: m.id,
-        x: m.consumption_wh!,
-        y: m.elo!,
-        class: m.license === 'proprietary' ? 'proprietary' : m.friendly_size
-      }))
+    data.map((m) => ({
+      id: m.id,
+      x: m.consumption_wh!,
+      y: m.elo!,
+      class: m.license === 'proprietary' ? 'proprietary' : m.friendly_size
+    }))
   )
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
 
   let hoveredModel = $state<string>()
   let tooltipPos = $state({ x: 0, y: 0 })
-  const hoveredModelData = $derived(modelsData.find((m) => m.id === hoveredModel))
+  const hoveredModelData = $derived(data.find((m) => m.id === hoveredModel))
 
   let svg = $state<SVGSVGElement>()
   let width = $state(1100)
@@ -166,12 +164,13 @@
   <!-- FIXME 404 -->
   <Link
     native={false}
-    href="/data/ranking.csv"
+    href="#"
     download="true"
     text={m['ranking.table.downloadData']()}
     icon="download-line"
     iconPos="right"
     class="text-[14px]!"
+    onclick={() => onDownloadData()}
   />
 </div>
 

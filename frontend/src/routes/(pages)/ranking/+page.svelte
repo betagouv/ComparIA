@@ -2,6 +2,7 @@
   import { Tabs } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getModelsContext } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import { Energy, Preferences, RankingTable } from './components'
 
@@ -16,6 +17,11 @@
     ...tab,
     label: m[`ranking.${tab.id}.tabLabel`]()
   }))
+
+  const modelsData = getModelsContext().filter((m) => !!m.elo)
+
+  function onDownloadData(kind: 'ranking' | 'energy') {
+  }
 </script>
 
 <SeoHead title={m['seo.titles.ranking']()} />
@@ -31,9 +37,13 @@
             {@html sanitize(m['ranking.ranking.desc']())}
           </p>
 
-          <RankingTable id="ranking-table" />
+          <RankingTable
+            id="ranking-table"
+            data={modelsData}
+            onDownloadData={() => onDownloadData('ranking')}
+          />
         {:else if id === 'energy'}
-          <Energy />
+          <Energy data={modelsData} onDownloadData={() => onDownloadData('energy')} />
         {:else if id === 'preferences'}
           <Preferences />
         {/if}
