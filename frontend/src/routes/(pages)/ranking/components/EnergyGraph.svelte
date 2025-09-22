@@ -13,7 +13,8 @@
       .filter((m) => !!m.elo)
       .map((m) => ({
         x: m.consumption_wh!,
-        y: m.elo!
+        y: m.elo!,
+        size: m.license === 'proprietary' ? 'proprietary' : m.friendly_size
       }))
   )
   // FIXME retrieve info from backend
@@ -76,7 +77,7 @@
 
       <!-- data -->
       {#each points as point}
-        <circle cx={xScale(point.x)} cy={yScale(point.y)} r="5" />
+        <circle cx={xScale(point.x)} cy={yScale(point.y)} r="5" class={point.size} />
       {/each}
     </svg>
     <div class="text-center">
@@ -126,6 +127,27 @@
 
     .y-axis text {
       text-anchor: end;
+    }
+
+    circle {
+      &.proprietary {
+        fill: #cecece;
+      }
+      &.XS {
+        fill: var(--green-emeraude-main-632);
+      }
+      &.S {
+        fill: var(--green-emeraude-850-200);
+      }
+      &.M {
+        fill: var(--red-marianne-850-200);
+      }
+      &.L {
+        fill: var(--orange-terre-battue-main-645);
+      }
+      &.XL {
+        fill: var(--red-marianne-main-472);
+      }
     }
   }
 </style>
