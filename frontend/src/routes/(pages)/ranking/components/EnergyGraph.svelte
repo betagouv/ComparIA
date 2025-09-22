@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import { getModelsContext } from '$lib/models'
+  import { getModelsContext, SIZES } from '$lib/models'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
   import { onMount } from 'svelte'
@@ -58,13 +58,13 @@
 
 <svelte:window onresize={resize} />
 
-<div class="flex items-center gap-2">
+<div id="energy-graph" class="flex items-center gap-2">
   <div class="h-6 w-6 translate-y-[95px] -rotate-90 overflow-visible whitespace-nowrap text-center">
     <Icon icon="thumb-up-line" class="text-primary" />
     <strong>{m['ranking.energy.views.graph.yLabel']()}</strong>
   </div>
   <div class="relative flex-grow">
-    <svg id="energy-graph" bind:this={svg}>
+    <svg bind:this={svg}>
       <!-- y axis -->
       <g class="axis y-axis">
         {#each yTicks as tick}
@@ -132,6 +132,25 @@
       </div>
     {/if}
 
+    <div
+      id="graph-legend"
+      class="cg-border rounded-md! absolute max-w-[190px] border-dashed bg-white p-4 text-[12px] leading-normal"
+    >
+      <strong>{m['models.list.filters.size.legend']()}</strong>
+      <ul class="p-0! list-none! font-medium">
+        {#each SIZES as size}
+          <li class="p-0! mb-2 flex items-center">
+            <div class="me-2 h-4 w-4 rounded-full {size}"></div>
+            {size} : {m[`models.list.filters.size.labels.${size}`]()}
+          </li>
+        {/each}
+        <li class="p-0! flex items-center">
+          <div class="proprietary me-2 min-h-4 min-w-4 rounded-full"></div>
+          {m['ranking.energy.views.graph.legendProprietary']()}
+        </li>
+      </ul>
+    </div>
+
     <div class="text-center">
       <Icon icon="flashlight-line" class="text-primary" />
       <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
@@ -158,7 +177,7 @@
 
 <style lang="postcss">
   #energy-graph {
-    & {
+    svg {
       width: 100%;
       height: 700px;
     }
@@ -181,25 +200,30 @@
       text-anchor: end;
     }
 
-    circle {
-      &.proprietary {
-        fill: #cecece;
-      }
-      &.XS {
-        fill: var(--green-emeraude-main-632);
-      }
-      &.S {
-        fill: var(--green-emeraude-850-200);
-      }
-      &.M {
-        fill: var(--red-marianne-850-200);
-      }
-      &.L {
-        fill: var(--orange-terre-battue-main-645);
-      }
-      &.XL {
-        fill: var(--red-marianne-main-472);
-      }
+    /* Dots color */
+    .proprietary {
+      fill: #cecece;
+      background-color: #cecece;
+    }
+    .XS {
+      fill: var(--green-emeraude-main-632);
+      background-color: var(--green-emeraude-main-632);
+    }
+    .S {
+      fill: var(--green-emeraude-850-200);
+      background-color: var(--green-emeraude-850-200);
+    }
+    .M {
+      fill: var(--red-marianne-850-200);
+      background-color: var(--red-marianne-850-200);
+    }
+    .L {
+      fill: var(--orange-terre-battue-main-645);
+      background-color: var(--orange-terre-battue-main-645);
+    }
+    .XL {
+      fill: var(--red-marianne-main-472);
+      background-color: var(--red-marianne-main-472);
     }
   }
 
@@ -207,5 +231,10 @@
     top: var(--y);
     left: var(--x);
     transform: translate(-50%, calc(-100% - 0.75rem));
+  }
+
+  #graph-legend {
+    right: 0px;
+    bottom: 75px;
   }
 </style>

@@ -1589,6 +1589,7 @@
                         },
                         "title": "Exemples de lecture :"
                     },
+                    "legendProprietary": "Taille estimée d’un modèle propriétaire (non communiquée)",
                     "tabLabel": "Vue graphique",
                     "tooltip": {
                         "conso": "Conso. moyenne (Wh)",
