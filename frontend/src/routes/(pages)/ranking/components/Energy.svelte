@@ -2,7 +2,7 @@
   import { Accordion, AccordionGroup, Alert, Segmented } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
-  import { RankingTable } from '.'
+  import { EnergyGraph, RankingTable } from '.'
 
   const views = ([{ id: 'graph' }, { id: 'table' }] as const).map((view) => ({
     ...view,
@@ -48,6 +48,8 @@
     </div>
 
     {#if view === 'graph'}
+      <EnergyGraph />
+
       <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10">
         <ul>
           {#each ['1', '2', '3'] as const as n}
