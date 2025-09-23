@@ -38,7 +38,7 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Aya Expanse 32B",
-    "status": "enabled",
+    "status": "disabled",
     "url": "https://huggingface.co/CohereForAI/aya-expanse-32b"
   },
   "aya-expanse-8b": {
@@ -1216,7 +1216,7 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Llama 3.1 8B",
-    "status": "enabled",
+    "status": "disabled",
     "total_votes": 7277,
     "trust_range": [
       71,
