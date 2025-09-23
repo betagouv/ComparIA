@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Icon, Link, Select } from '$components/dsfr'
-  import Checkbox from '$components/dsfr/Checkbox.svelte'
   import { m } from '$lib/i18n/messages'
   import { SIZES, type BotModel } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
@@ -13,7 +12,6 @@
   let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
 
   let dotMode = $state<'arch' | 'size' | 'params'>('size')
-  let useActiveParams = $state(false)
   const dotModeOpts = [
     { value: 'size' as const, label: 'ELO / Conso (taille)' },
     { value: 'arch' as const, label: 'ELO / Conso (arch)' },
@@ -32,14 +30,19 @@
   const models = $derived(
     data
       .sort((a, b) => sortIfDefined(a, b, 'params'))
-      .filter((m) => (dotMode === 'params' && useActiveParams ? !!m.active_params : true))
+      .filter((m) => {
+        if (dotMode !== 'params') return true
+        return m.license === 'proprietary' ? true : !!m.active_params
+      })
       .map((m) => {
         const radius = dotMode === 'arch' ? dotSizes[m.friendly_size] : 5
         const klass =
           dotMode === 'arch'
-            ? m.license === 'proprietary' ? 'proprietary' : m.arch
+            ? m.license === 'proprietary'
+              ? 'proprietary'
+              : m.arch
             : dotMode === 'params'
-              ? getConsoClass(m.active_params!)
+              ? getConsoClass(m.active_params ?? m.params)
               : m.license === 'proprietary'
                 ? 'proprietary'
                 : m.friendly_size
@@ -148,9 +151,6 @@
     groupClass="flex items-end gap-3"
     class="w-auto!"
   />
-  {#if dotMode === 'params'}
-    <Checkbox id="active-params" bind:checked={useActiveParams} label="Utiliser active_params" />
-  {/if}
 </div>
 
 <div id="energy-graph" class="flex items-center gap-2">
@@ -265,7 +265,7 @@
 
     <div class="text-center">
       {#if dotMode === 'params'}
-        <strong>Nombre de paramètres {useActiveParams ? 'actifs' : 'totaux'}</strong>
+        <strong>Nombre de paramètres actifs</strong>
       {:else}
         <Icon icon="flashlight-line" class="text-primary" />
         <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
