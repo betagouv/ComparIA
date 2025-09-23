@@ -23,6 +23,7 @@
     id,
     data,
     initialOrderCol = 'elo',
+    initialOrderMethod = 'descending',
     includedCols,
     onDownloadData,
     hideTotal = false
@@ -30,6 +31,7 @@
     id: string
     data: BotModel[]
     initialOrderCol?: ColKind
+    initialOrderMethod?: 'ascending' | 'descending'
     includedCols?: ColKind[]
     onDownloadData: () => void
     hideTotal?: boolean
@@ -64,7 +66,8 @@
       label: m[`ranking.table.data.cols.${col.id}`]()
     }))
 
-  let orderingCol = $state<ColKind>(initialOrderCol)
+  let orderingCol = $state(initialOrderCol)
+  let orderingMethod = $state(initialOrderMethod)
   let search = $state('')
 
   const rows = $derived.by(() => {
@@ -101,7 +104,9 @@
 
     return rows
       .filter((m) => (!_search ? true : m.search.includes(_search)))
-      .sort((a, b) => {
+      .sort((ma, mb) => {
+        const [a, b] = orderingMethod === 'ascending' ? [mb, ma] : [ma, mb]
+
         switch (orderingCol) {
           case 'name':
             return a.id.localeCompare(b.id)
@@ -109,7 +114,7 @@
           case 'total_votes':
             return sortIfDefined(a, b, orderingCol)
           case 'consumption_wh':
-            return sortIfDefined(b, a, orderingCol)
+            return sortIfDefined(a, b, orderingCol)
           case 'size':
             return b.params - a.params
           case 'release':
@@ -123,7 +128,15 @@
   })
 </script>
 
-<Table {id} {cols} rows={sortedRows} bind:orderingCol caption={m['ranking.title']()} hideCaption>
+<Table
+  {id}
+  {cols}
+  rows={sortedRows}
+  bind:orderingCol
+  bind:orderingMethod
+  caption={m['ranking.title']()}
+  hideCaption
+>
   {#snippet header()}
     <div class="flex flex-wrap items-center gap-5">
       {#if !hideTotal}

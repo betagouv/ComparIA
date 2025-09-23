@@ -17,6 +17,7 @@
     rows: Row[]
     pagination?: boolean
     orderingCol?: Col['id']
+    orderingMethod?: 'ascending' | 'descending'
     hideCaption?: boolean
     cell: Snippet<[Row, Col]>
     header?: Snippet
@@ -28,6 +29,7 @@
     rows,
     pagination = false,
     orderingCol = $bindable(),
+    orderingMethod = $bindable(),
     hideCaption = false,
     cell,
     header,
@@ -36,8 +38,14 @@
   }: TableProps = $props()
 
   function onOrderingColClick(col: Col) {
-    if (orderingCol === col.id) orderingCol = undefined
-    else orderingCol = col.id
+    if (orderingCol === col.id) {
+      if (!orderingMethod) orderingMethod = 'descending'
+      else if (orderingMethod === 'descending') orderingMethod = 'ascending'
+      else orderingCol = undefined
+    } else {
+      orderingCol = col.id
+      orderingMethod = 'descending'
+    }
     // Also return to page 1
     page = 0
   }
@@ -79,10 +87,15 @@
                     {#if col.orderable}
                       <Button
                         text={m['components.table.triage']()}
-                        icon="arrow-up-down-line"
+                        icon={col.id === orderingCol
+                          ? orderingMethod === 'ascending'
+                            ? 'sort-asc'
+                            : 'sort-desc'
+                          : 'arrow-up-down-line'}
                         size="xs"
                         variant="tertiary-no-outline"
                         iconOnly
+                        aria-sort={col.id === orderingCol ? orderingMethod : undefined}
                         class={['ms-1!', { 'text-dark-grey!': orderingCol !== col.id }]}
                         onclick={() => onOrderingColClick(col)}
                       />
