@@ -52,6 +52,7 @@
         }
       })
   )
+  const ELOMedian = data[Math.floor(data.length / 2)].elo!
 
   const legend = $derived.by(() => {
     if (dotMode === 'arch')
@@ -128,7 +129,7 @@
 
 <svelte:window onresize={resize} />
 
-<div class="mb-10 flex gap-4 items-center">
+<div class="mb-10 flex items-center gap-4">
   <Select
     id="dot-mode"
     label="Représentation des points"
@@ -167,6 +168,11 @@
             <text y={height - padding.bottom + 20}>{tick}</text>
           </g>
         {/each}
+      </g>
+
+      <!-- median -->
+      <g transform="translate(0, {yScale(ELOMedian)})">
+        <line class="elo-median" x1={padding.left} x2={xScale(minMaxX[1])} />
       </g>
 
       <!-- data -->
@@ -296,6 +302,11 @@
 
     .y-axis text {
       text-anchor: end;
+    }
+
+    .elo-median {
+      stroke: var(--grey-625-425);
+      stroke-dasharray: 5;
     }
 
     /* Dots color */
