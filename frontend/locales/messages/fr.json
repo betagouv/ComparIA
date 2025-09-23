@@ -1593,10 +1593,10 @@
                     "tabLabel": "Vue graphique",
                     "tooltip": {
                         "conso": "Conso. moyenne (Wh)",
-                        "elo": "Score satisfaction"
+                        "elo": "Score ELO"
                     },
-                    "xLabel": "Consommation moyenne pour 1000 tokens",
-                    "yLabel": "Score de satisfaction"
+                    "xLabel": "Énergie moyenne consommée pour 1000 tokens (en Wh)",
+                    "yLabel": "Score ELO"
                 },
                 "legend": "Choisissez un mode de représentation",
                 "table": {
@@ -1622,7 +1622,7 @@
             "data": {
                 "cols": {
                     "consumption_wh": "Énergie<br>(1000 tokens)",
-                    "elo": "Score satisfaction",
+                    "elo": "Score ELO",
                     "license": "Licence",
                     "name": "Modèle",
                     "organisation": "Organisation",

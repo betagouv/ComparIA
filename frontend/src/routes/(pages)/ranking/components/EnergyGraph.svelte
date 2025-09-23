@@ -1,20 +1,42 @@
 <script lang="ts">
-  import { Icon, Link } from '$components/dsfr'
+  import { Icon, Link, Select } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { SIZES, type BotModel } from '$lib/models'
+  import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
   import { onMount } from 'svelte'
 
+  type ModelGraphData = (typeof models)[number]
+
   let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
 
+  let dotMode = $state<'arch' | 'size'>('arch')
+  let dotModeOpts = [
+    { value: 'arch' as const, label: 'Architecture' },
+    { value: 'size' as const, label: 'Taille' }
+  ]
+
   const models = $derived(
-    data.map((m) => ({
-      id: m.id,
-      x: m.consumption_wh!,
-      y: m.elo!,
-      class: m.license === 'proprietary' ? 'proprietary' : m.friendly_size
-    }))
+    data
+      .sort((a, b) => sortIfDefined(a, b, 'params'))
+      .map((m) => {
+        const radius =
+          dotMode === 'arch' ? ({ XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const)[m.friendly_size] : 5
+        const klass =
+          dotMode === 'arch'
+            ? m.arch.replace('maybe-', '')
+            : m.license === 'proprietary'
+              ? 'proprietary'
+              : m.friendly_size
+        return {
+          id: m.id,
+          x: m.consumption_wh!,
+          y: m.elo!,
+          radius,
+          class: klass
+        }
+      })
   )
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
@@ -48,13 +70,23 @@
     ;({ width, height } = svg!.getBoundingClientRect())
   }
 
-  function onModelHover(model: (typeof models)[number]) {
+  function onModelHover(model: ModelGraphData) {
     hoveredModel = model.id
     tooltipPos = { x: xScale(model.x), y: yScale(model.y) }
   }
 </script>
 
 <svelte:window onresize={resize} />
+
+<div class="mb-10 flex">
+  <Select
+    id="dot-mode"
+    label="Représentation des points"
+    bind:selected={dotMode}
+    options={dotModeOpts}
+    class="w-auto!"
+  />
+</div>
 
 <div id="energy-graph" class="flex items-center gap-2">
   <div class="h-6 w-6 translate-y-[95px] -rotate-90 overflow-visible whitespace-nowrap text-center">
@@ -88,7 +120,7 @@
         <circle
           cx={xScale(m.x)}
           cy={yScale(m.y)}
-          r="5"
+          r={m.radius}
           class={m.class}
           onpointerenter={() => onModelHover(m)}
           onpointerleave={() => (hoveredModel = undefined)}
@@ -134,19 +166,31 @@
       id="graph-legend"
       class="cg-border rounded-md! absolute max-w-[190px] border-dashed bg-white p-4 text-[12px] leading-normal"
     >
-      <strong>{m['models.list.filters.size.legend']()}</strong>
-      <ul class="p-0! list-none! font-medium">
-        {#each SIZES as size}
-          <li class="p-0! mb-2 flex items-center">
-            <div class="me-2 h-4 w-4 rounded-full {size}"></div>
-            {size} : {m[`models.list.filters.size.labels.${size}`]()}
+      {#if dotMode === 'size'}
+        <strong>{m['models.list.filters.size.legend']()}</strong>
+        <ul class="p-0! list-none! font-medium">
+          {#each SIZES as size}
+            <li class="p-0! mb-2 flex items-center">
+              <div class="me-2 h-4 w-4 rounded-full {size}"></div>
+              {size} : {m[`models.list.filters.size.labels.${size}`]()}
+            </li>
+          {/each}
+          <li class="p-0! flex items-center">
+            <div class="proprietary me-2 min-h-4 min-w-4 rounded-full"></div>
+            {m['ranking.energy.views.graph.legendProprietary']()}
           </li>
-        {/each}
-        <li class="p-0! flex items-center">
-          <div class="proprietary me-2 min-h-4 min-w-4 rounded-full"></div>
-          {m['ranking.energy.views.graph.legendProprietary']()}
-        </li>
-      </ul>
+        </ul>
+      {:else if dotMode === 'arch'}
+        <strong>Architectures</strong>
+        <ul class="p-0! list-none! font-medium">
+          {#each ['moe', 'dense', 'matformer'] as arch}
+            <li class="p-0! mb-2 flex items-center">
+              <div class="me-2 h-4 w-4 rounded-full {arch}"></div>
+              {arch}
+            </li>
+          {/each}
+        </ul>
+      {/if}
     </div>
 
     <div class="text-center">
@@ -204,7 +248,8 @@
       fill: #cecece;
       background-color: #cecece;
     }
-    .XS {
+    .XS,
+    .moe {
       fill: var(--green-emeraude-main-632);
       background-color: var(--green-emeraude-main-632);
     }
@@ -216,11 +261,13 @@
       fill: var(--red-marianne-850-200);
       background-color: var(--red-marianne-850-200);
     }
-    .L {
+    .L,
+    .dense {
       fill: var(--orange-terre-battue-main-645);
       background-color: var(--orange-terre-battue-main-645);
     }
-    .XL {
+    .XL,
+    .matformer {
       fill: var(--red-marianne-main-472);
       background-color: var(--red-marianne-main-472);
     }
