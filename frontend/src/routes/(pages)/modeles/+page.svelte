@@ -132,6 +132,7 @@
               help={m['models.list.filters.archived.help']()}
               checkedLabel={m['models.list.filters.archived.checkedLabel']()}
               uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
+              groupClass="mx-4 md:mx-0"
               class="w-full! ms-auto"
             />
 
@@ -207,7 +208,7 @@
       <p class="fr-text--lead">{m['models.list.intro']()}</p> -->
 
       <p class="fr-h6 mb-4! md:hidden">
-        {models.length}
+        {filteredModels.length}
         {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
       </p>
 

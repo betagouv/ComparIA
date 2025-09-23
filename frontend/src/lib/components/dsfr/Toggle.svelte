@@ -9,6 +9,7 @@
     help?: string
     checkedLabel?: string
     uncheckedLabel?: string
+    groupClass?: string
   }
 
   let {
@@ -18,11 +19,12 @@
     help,
     checkedLabel = m['words.activated'](),
     uncheckedLabel = m['words.deactivated'](),
+    groupClass,
     ...props
   }: ToggleProps & SvelteHTMLElements['label'] = $props()
 </script>
 
-<div class="fr-toggle">
+<div class={["fr-toggle", groupClass]}>
   <input
     type="checkbox"
     class="fr-toggle__input"
