@@ -5,6 +5,7 @@
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import type { BotModel } from '$lib/models'
+  import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
     | 'rank'
@@ -65,13 +66,6 @@
 
   let orderingCol = $state<ColKind>(initialOrderCol)
   let search = $state('')
-
-  function sortIfDefined(a: Record<string, any>, b: Record<string, any>, key: string) {
-    if (a[key] !== undefined && b[key] !== undefined) return b[key] - a[key]
-    if (a[key] !== undefined) return -1
-    if (b[key] !== undefined) return 1
-    return a.id.localeCompare(b.id)
-  }
 
   const rows = $derived.by(() => {
     const models = data.sort((a, b) => sortIfDefined(a, b, 'elo'))
