@@ -19,6 +19,7 @@
     { value: 'arch' as const, label: 'ELO / Conso (arch)' },
     { value: 'params' as const, label: 'ELO / Paramètres (conso)' }
   ]
+  const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
 
   function getConsoClass(c: number) {
     if (c > 200) return 'XL'
@@ -33,8 +34,7 @@
       .sort((a, b) => sortIfDefined(a, b, 'params'))
       .filter((m) => (dotMode === 'params' && useActiveParams ? !!m.active_params : true))
       .map((m) => {
-        const radius =
-          dotMode === 'arch' ? ({ XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const)[m.friendly_size] : 5
+        const radius = dotMode === 'arch' ? dotSizes[m.friendly_size] : 5
         const klass =
           dotMode === 'arch'
             ? m.license === 'proprietary' ? 'proprietary' : m.arch
@@ -54,14 +54,24 @@
   )
   const ELOMedian = data[Math.floor(data.length / 2)].elo!
 
-  const legend = $derived.by(() => {
+  const legend = $derived.by<{
+    legend: string
+    elems: { class: string; label: string; radius?: number }[]
+  }>(() => {
     if (dotMode === 'arch')
       return {
         legend: 'Architectures',
-        elems: ['moe', 'dense', 'matformer', 'proprietary'].map((arch) => ({
-          class: arch,
-          label: arch
-        }))
+        elems: [
+          ...['moe', 'dense', 'matformer', 'proprietary'].map((arch) => ({
+            class: arch,
+            label: arch
+          })),
+          ...(['XS', 'S', 'M', 'L', 'XL'] as const).map((size) => ({
+            class: 'bg-dark-grey',
+            radius: dotSizes[size],
+            label: `${size} : ${m[`models.list.filters.size.labels.${size}`]()}`
+          }))
+        ]
       }
     if (dotMode === 'params')
       return {
@@ -243,7 +253,10 @@
       <ul class="p-0! list-none! font-medium">
         {#each legend.elems as elem}
           <li class="p-0! mb-2 flex items-center">
-            <div class="me-2 min-h-4 min-w-4 rounded-full {elem.class}"></div>
+            <div
+              class={['dot me-2 rounded-full', elem.class]}
+              style={`--size: ${(elem.radius ?? 8) * 2}px`}
+            ></div>
             {elem.label}
           </li>
         {/each}
@@ -358,5 +371,10 @@
   #graph-legend {
     right: 0px;
     bottom: 75px;
+
+    .dot {
+      min-width: var(--size);
+      min-height: var(--size);
+    }
   }
 </style>
