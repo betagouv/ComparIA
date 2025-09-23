@@ -4,3 +4,11 @@ export function sortIfDefined(a: Record<string, any>, b: Record<string, any>, ke
   if (b[key] !== undefined) return 1
   return a.id.localeCompare(b.id)
 }
+
+export function downloadTextFile(data: string, filename: string) {
+  const blob = new Blob([data], { type: 'text/csv' })
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = filename + '.csv'
+  a.click()
+}
