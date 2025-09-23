@@ -1589,13 +1589,20 @@
                         },
                         "title": "Exemples de lecture :"
                     },
-                    "tabLabel": "Vue graphique"
+                    "legendProprietary": "Taille estimée d’un modèle propriétaire (non communiquée)",
+                    "tabLabel": "Vue graphique",
+                    "tooltip": {
+                        "conso": "Conso. moyenne (Wh)",
+                        "elo": "Score satisfaction"
+                    },
+                    "xLabel": "Consommation moyenne pour 1000 tokens",
+                    "yLabel": "Score de satisfaction"
                 },
                 "legend": "Choisissez un mode de représentation",
                 "table": {
                     "tabLabel": "Vue tableau"
                 },
-                "title": "Score de satisfaction VS Consommation moyenne par match"
+                "title": "Score de satisfaction VS Consommation moyenne pour 1000 tokens"
             }
         },
         "graphs": {

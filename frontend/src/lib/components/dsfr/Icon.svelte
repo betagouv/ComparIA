@@ -3,7 +3,7 @@
 
   type IconProps = {
     icon: string
-    size?: 'xs' | 'sm' | 'md' | 'lg'
+    size?: 'xxs' | 'xs' | 'sm' | 'md' | 'lg'
     block?: boolean
   } & SvelteHTMLElements['span']
 
@@ -16,6 +16,12 @@
 
 <style>
   /* set icon-size on element itself for div to set its size in block mode */
+  .fr-icon--xxs,
+  .fr-icon--xxs::before,
+  .fr-icon--xxs::after {
+    /* overridden */
+    --icon-size: 0.75rem;
+  }
   .fr-icon--xs,
   .fr-icon--xs::before,
   .fr-icon--xs::after {

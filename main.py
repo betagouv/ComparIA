@@ -1,10 +1,6 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse, FileResponse, JSONResponse
-from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+from fastapi import FastAPI
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 
@@ -13,8 +9,6 @@ from languia.block_arena import demo
 import gradio as gr
 
 from languia import config
-
-from languia.reveal import size_desc, license_desc, license_attrs
 
 app = FastAPI()
 
@@ -33,12 +27,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/assets", StaticFiles(directory="assets"), name="assets")
-
-templates = Jinja2Templates(directory="templates")
-
-# TODO: use gr.set_static_paths(paths=["test/test_files/"])?
-gr.set_static_paths(paths=[config.assets_absolute_path])
 
 demo = demo.queue(
     max_size=None,
@@ -56,12 +44,6 @@ app = gr.mount_gradio_app(
     path="/api",
     root_path="/api",
     # allowed_paths=[config.assets_absolute_path],
-    allowed_paths=[
-        config.assets_absolute_path,
-        "/tmp",
-        "/tmp/gradio",
-        "custom_components",
-    ],
     show_error=config.debug,
 )
 
@@ -72,15 +54,6 @@ objective = config.objective
 @app.exception_handler(500)
 async def http_exception_handler(request, exc):
     return FileResponse("templates/50x.html", status_code=500)
-
-
-@app.exception_handler(StarletteHTTPException)
-async def not_found_handler(request, exc):
-    return templates.TemplateResponse(
-        "404.html",
-        {"title": "Page non trouvée", "request": request, "config": config},
-        status_code=404,
-    )
 
 
 @app.get("/available_models", response_class=JSONResponse)

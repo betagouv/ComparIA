@@ -44,7 +44,6 @@ from languia.utils import (
     get_matomo_tracker_from_cookies,
     pick_models,
     to_threeway_chatbot,
-    second_header_html,
 )
 
 from languia.session import increment_input_chars, redis_host, is_ratelimited
@@ -199,7 +198,6 @@ def register_listeners():
         # record for questions only dataset and stats on ppl abandoning before generation completion
         record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
-        banner = second_header_html(1, mode)
 
         app_state_scoped.awaiting_responses = True
 
@@ -262,7 +260,8 @@ def register_listeners():
                     # 1 chatbot
                     chatbot,
                     text,
-                    banner,
+                    # banner
+                    gr.skip(),
                     # textbox
                     new_textbox,
                     # custom_dropdown
@@ -391,7 +390,8 @@ def register_listeners():
                 # 1 chatbot
                 chatbot,
                 text,
-                banner,
+                # banner
+                gr.skip(),
                 # textbox
                 gr.skip(),
                 # model_dropdown

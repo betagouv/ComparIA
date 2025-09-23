@@ -19,5 +19,4 @@ COPY controller.py main.py demo.py models-extra-info.toml /app/
 # Useful for export scripts
 COPY utils /app/utils
 COPY templates /app/templates
-COPY assets /app/assets
 COPY languia /app/languia
