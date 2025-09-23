@@ -20,7 +20,10 @@ export default ts.config(
     languageOptions: {
       globals: { ...globals.browser, ...globals.node }
     },
-    rules: { 'no-undef': 'off' }
+    rules: {
+      'no-undef': 'off', // FIXME rm?
+      '@typescript-eslint/no-explicit-any': 'warn'
+    }
   },
   {
     files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
