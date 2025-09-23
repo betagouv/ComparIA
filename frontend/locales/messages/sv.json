@@ -135,13 +135,16 @@
             "desc": "Frågorna som ställs på plattformen är mestadels på franska och återspeglar verklig användning utan restriktioner. Dessa datamängder finns tillgängliga på <a {linkProps}>data.gouv</a> och Hugging Face.",
             "repos": {
                 "conversations": {
-                    "desc": "Frågor och svar"
+                    "desc": "Frågor och svar",
+                    "title": "/konversationer"
                 },
                 "reactions": {
-                    "desc": "Alla reaktioner"
+                    "desc": "Alla reaktioner",
+                    "title": "/reaktioner"
                 },
                 "votes": {
-                    "desc": "Alla uttryckta preferenser"
+                    "desc": "Alla uttryckta preferenser",
+                    "title": "/röster"
                 }
             },
             "share": "Visa hur du använder datan",
@@ -164,6 +167,7 @@
     },
     "duel": {
         "1": {
+            "cta": "Skicka handledarverktyg",
             "desc": "Organisera en <strong>AI-duell</strong> i din institution, din förening eller ditt företag genom att bli facilitator",
             "title": "Vill du öka <span {props}>medvetenheten bland din publik</span> om miljöpåverkan från generativ AI?"
         },
@@ -229,12 +233,13 @@
                 "6": {
                     "desc": "Utlärning av några enkla åtgärder för att minska miljöeffekterna av AI-användning.",
                     "duration": "(5 min)",
-                    "title": ""
+                    "title": "Sammanfattning"
                 }
             },
             "title": "Typiskt workshopschema"
         },
         "5": {
+            "cta": "Beställ handledarverktygen",
             "list": {
                 "1": "Detaljerad guide med hela processen förklarad",
                 "2": "Färdiga slides för presentation",
@@ -280,6 +285,9 @@
     "faq": {
         "datasets": {
             "questions": {
+                "2": {
+                    "desc": "<p>Det unika med data som samlas in på compar:IA-plattformen är att de använder språk med mindre resurser, och motsvarar verkliga användaruppgifter. Denna data återspeglar mänskliga preferenser i ett specifikt språkligt och kulturellt sammanhang. Den gör det möjligt att justera modellerna för att göra dem mer relevanta, korrekta och anpassade till användarnas behov, samtidigt som vi åtgärdar eventuell bias eller luckor i nuvarande modeller.</p>"
+                },
                 "3": {
                     "title": "Vad skiljer compar:IA från andra liknande initiativ?"
                 }
@@ -361,7 +369,8 @@
                     "desc": "<p>Konversations-AI svarar direkt genom att formulera meningar från en stor datamängd som modellen har tränats på, medan en sökmotor erbjuder länkar och resurser som användaren kan utforska på egen hand.</p>",
                     "title": "Vad är skillnaden mellan att ställa en fråga till en konversationsbaserad AI-modell och att söka på Google?"
                 }
-            }
+            },
+            "title": "Användning"
         }
     },
     "footer": {
@@ -372,6 +381,7 @@
             "mention": "Innehållet på denna webbplats är tillgängligt under <a {linkProps}>etalab-2.0-licensen</a>, förutom där rättigheter som innehas av tredje part uttryckligen anges"
         },
         "links": {
+            "accessibility": "Brister i tillgänglighet",
             "legal": "Rättsliga meddelanden",
             "privacy": "Integritetspolicy",
             "sources": "Källkod",
@@ -435,6 +445,7 @@
             "dataExtraHost": "Underleverantör: OVH",
             "dataExtraTitle": "Vem hjälper oss att behandla uppgifterna?",
             "dataExtraWarranty": "Garantier: <a {linkProps}>https://storage.gra.cloud.ovh.net/v1/AUTH_325716a587c64897acbef9a4a4726e38/contracts/9e74492-OVH_Data_Protection_Agreement-FR-6.0.pdf</a>",
+            "dataExtraWhat": "Utförd process: Ackommodering",
             "dataRespDesc": "Franska kulturdepartementets digitala avdelning ansvarar för behandlingen av dina personuppgifter.",
             "dataRespTitle": "Vem är ansvarig för databehandlingen?",
             "dataTimeDesc": "Data som rör användare och deras samtal med modeller sparas när du anger vilken modell du föredrar.",
@@ -867,6 +878,7 @@
                 "desc": "Se alla modellernas egenskaper och användarsvillkor på ett ställe",
                 "title": "Utforska modellerna"
             },
+            "title": "Specifika användningsområden för compar:IA",
             "use": {
                 "desc": "Utvecklare, forskare, modellskapare – få tillgång till compar:IAs datamängder för att förbättra modeller",
                 "title": "Utnyttjande av data"
