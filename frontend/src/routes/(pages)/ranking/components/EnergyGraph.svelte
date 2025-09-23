@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Icon, Link, Select } from '$components/dsfr'
+  import Checkbox from '$components/dsfr/Checkbox.svelte'
   import { m } from '$lib/i18n/messages'
   import { SIZES, type BotModel } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
@@ -11,33 +12,82 @@
 
   let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
 
-  let dotMode = $state<'arch' | 'size'>('arch')
-  let dotModeOpts = [
-    { value: 'arch' as const, label: 'Architecture' },
-    { value: 'size' as const, label: 'Taille' }
+  let dotMode = $state<'arch' | 'size' | 'params'>('size')
+  let useActiveParams = $state(false)
+  const dotModeOpts = [
+    { value: 'size' as const, label: 'ELO / Conso (taille)' },
+    { value: 'arch' as const, label: 'ELO / Conso (arch)' },
+    { value: 'params' as const, label: 'ELO / Paramètres (conso)' }
   ]
+
+  function getConsoClass(c: number) {
+    if (c > 200) return 'XL'
+    if (c >= 100) return 'L'
+    if (c > 25) return 'M'
+    if (c > 5) return 'S'
+    return 'XS'
+  }
 
   const models = $derived(
     data
       .sort((a, b) => sortIfDefined(a, b, 'params'))
+      .filter((m) => (dotMode === 'params' && useActiveParams ? !!m.active_params : true))
       .map((m) => {
         const radius =
           dotMode === 'arch' ? ({ XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const)[m.friendly_size] : 5
         const klass =
           dotMode === 'arch'
             ? m.arch.replace('maybe-', '')
-            : m.license === 'proprietary'
-              ? 'proprietary'
-              : m.friendly_size
+            : dotMode === 'params'
+              ? getConsoClass(m.active_params!)
+              : m.license === 'proprietary'
+                ? 'proprietary'
+                : m.friendly_size
         return {
           id: m.id,
-          x: m.consumption_wh!,
+          x: dotMode === 'params' ? m.params : m.consumption_wh!,
           y: m.elo!,
           radius,
           class: klass
         }
       })
   )
+
+  const legend = $derived.by(() => {
+    if (dotMode === 'arch')
+      return {
+        legend: 'Architectures',
+        elems: ['moe', 'dense', 'matformer'].map((arch) => ({
+          class: arch,
+          label: arch
+        }))
+      }
+    if (dotMode === 'params')
+      return {
+        legend: 'Consommation (wh)',
+        elems: [
+          { class: 'XL', label: 'XL : > 200Wh' },
+          { class: 'L', label: 'L : >= 100Wh' },
+          { class: 'M', label: 'M : > 25Wh' },
+          { class: 'S', label: 'S : > 5Wh' },
+          { class: 'XS', label: 'XS : <= 5Wh' }
+        ]
+      }
+    return {
+      legend: m['models.list.filters.size.legend'](),
+      elems: [
+        ...SIZES.map((size) => ({
+          class: size,
+          label: `${size} : ${m[`models.list.filters.size.labels.${size}`]()}`
+        })),
+        {
+          class: 'proprietary',
+          label: m['ranking.energy.views.graph.legendProprietary']()
+        }
+      ]
+    }
+  })
+
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
 
@@ -78,14 +128,18 @@
 
 <svelte:window onresize={resize} />
 
-<div class="mb-10 flex">
+<div class="mb-10 flex gap-4 items-center">
   <Select
     id="dot-mode"
     label="Représentation des points"
     bind:selected={dotMode}
     options={dotModeOpts}
+    groupClass="flex items-end gap-3"
     class="w-auto!"
   />
+  {#if dotMode === 'params'}
+    <Checkbox id="active-params" bind:checked={useActiveParams} label="Utiliser active_params" />
+  {/if}
 </div>
 
 <div id="energy-graph" class="flex items-center gap-2">
@@ -131,7 +185,7 @@
     {#if hoveredModelData}
       <div
         id="graph-tooltip"
-        class="cg-border rounded-sm! absolute bg-white p-3"
+        class="cg-border rounded-sm! absolute min-w-[175px] bg-white p-3"
         style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
       >
         <div class="flex">
@@ -158,6 +212,19 @@
             </p>
             <strong class="ms-auto">{hoveredModelData.consumption_wh}</strong>
           </div>
+
+          <div class="mt-4 flex gap-1 leading-relaxed">
+            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">arch</p>
+            <strong class="ms-auto">{hoveredModelData.arch}</strong>
+          </div>
+          <div class="flex gap-1 leading-relaxed">
+            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">paramètres</p>
+            <strong class="ms-auto">{hoveredModelData.params}</strong>
+          </div>
+          <div class="flex gap-1 leading-relaxed">
+            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">paramètres actifs</p>
+            <strong class="ms-auto">{hoveredModelData.active_params ?? 'N/A'}</strong>
+          </div>
         </div>
       </div>
     {/if}
@@ -166,36 +233,24 @@
       id="graph-legend"
       class="cg-border rounded-md! absolute max-w-[190px] border-dashed bg-white p-4 text-[12px] leading-normal"
     >
-      {#if dotMode === 'size'}
-        <strong>{m['models.list.filters.size.legend']()}</strong>
-        <ul class="p-0! list-none! font-medium">
-          {#each SIZES as size}
-            <li class="p-0! mb-2 flex items-center">
-              <div class="me-2 h-4 w-4 rounded-full {size}"></div>
-              {size} : {m[`models.list.filters.size.labels.${size}`]()}
-            </li>
-          {/each}
-          <li class="p-0! flex items-center">
-            <div class="proprietary me-2 min-h-4 min-w-4 rounded-full"></div>
-            {m['ranking.energy.views.graph.legendProprietary']()}
+      <strong>{legend.legend}</strong>
+      <ul class="p-0! list-none! font-medium">
+        {#each legend.elems as elem}
+          <li class="p-0! mb-2 flex items-center">
+            <div class="me-2 min-h-4 min-w-4 rounded-full {elem.class}"></div>
+            {elem.label}
           </li>
-        </ul>
-      {:else if dotMode === 'arch'}
-        <strong>Architectures</strong>
-        <ul class="p-0! list-none! font-medium">
-          {#each ['moe', 'dense', 'matformer'] as arch}
-            <li class="p-0! mb-2 flex items-center">
-              <div class="me-2 h-4 w-4 rounded-full {arch}"></div>
-              {arch}
-            </li>
-          {/each}
-        </ul>
-      {/if}
+        {/each}
+      </ul>
     </div>
 
     <div class="text-center">
-      <Icon icon="flashlight-line" class="text-primary" />
-      <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
+      {#if dotMode === 'params'}
+        <strong>Nombre de paramètres {useActiveParams ? 'actifs' : 'totaux'}</strong>
+      {:else}
+        <Icon icon="flashlight-line" class="text-primary" />
+        <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
+      {/if}
     </div>
   </div>
 </div>
@@ -253,21 +308,21 @@
       fill: var(--green-emeraude-main-632);
       background-color: var(--green-emeraude-main-632);
     }
-    .S {
+    .S,
+    .dense {
       fill: var(--green-emeraude-850-200);
       background-color: var(--green-emeraude-850-200);
     }
-    .M {
+    .M,
+    .matformer {
       fill: var(--red-marianne-850-200);
       background-color: var(--red-marianne-850-200);
     }
-    .L,
-    .dense {
+    .L {
       fill: var(--orange-terre-battue-main-645);
       background-color: var(--orange-terre-battue-main-645);
     }
-    .XL,
-    .matformer {
+    .XL {
       fill: var(--red-marianne-main-472);
       background-color: var(--red-marianne-main-472);
     }
