@@ -37,7 +37,7 @@
           dotMode === 'arch' ? ({ XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const)[m.friendly_size] : 5
         const klass =
           dotMode === 'arch'
-            ? m.arch.replace('maybe-', '')
+            ? m.license === 'proprietary' ? 'proprietary' : m.arch
             : dotMode === 'params'
               ? getConsoClass(m.active_params!)
               : m.license === 'proprietary'
@@ -58,7 +58,7 @@
     if (dotMode === 'arch')
       return {
         legend: 'Architectures',
-        elems: ['moe', 'dense', 'matformer'].map((arch) => ({
+        elems: ['moe', 'dense', 'matformer', 'proprietary'].map((arch) => ({
           class: arch,
           label: arch
         }))
@@ -314,18 +314,15 @@
       fill: #cecece;
       background-color: #cecece;
     }
-    .XS,
-    .moe {
+    .XS {
       fill: var(--green-emeraude-main-632);
       background-color: var(--green-emeraude-main-632);
     }
-    .S,
-    .dense {
+    .S {
       fill: var(--green-emeraude-850-200);
       background-color: var(--green-emeraude-850-200);
     }
-    .M,
-    .matformer {
+    .M {
       fill: var(--red-marianne-850-200);
       background-color: var(--red-marianne-850-200);
     }
@@ -336,6 +333,19 @@
     .XL {
       fill: var(--red-marianne-main-472);
       background-color: var(--red-marianne-main-472);
+    }
+
+    .moe {
+      fill: var(--yellow-tournesol-850-200);
+      background-color: var(--yellow-tournesol-850-200);
+    }
+    .dense {
+      fill: var(--info-425-625);
+      background-color: var(--info-425-625);
+    }
+    .matformer {
+      fill: var(--red-marianne-850-200);
+      background-color: var(--red-marianne-850-200);
     }
   }
 
