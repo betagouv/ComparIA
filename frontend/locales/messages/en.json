@@ -167,33 +167,6 @@
             "title": "How is this data used?"
         }
     },
-    "duel": {
-        "1": {
-            "cta": "Receive the facilitator kit",
-            "desc": "Organize an AI Duel in your <strong> organization, association, or company </strong> by becoming a facilitator",
-            "title": "Do you want to <span {props}>raise awareness among your audience</span> about the environmental impact of generative AI?"
-        },
-        "2": {
-            "list": {
-                "1": "Duration: 45 min to 1h30",
-                "2": "In-person or online format",
-                "3": "Access to compar:IA and the materials provided",
-                "4": "Accessible and interactive workshop"
-            },
-            "title": "The <span {props}>AI Duels</span>: a <span {props}>workshop</span> format open to all, allowing to discover the behind-the-scenes of generative AI and reflect on its <span {props}>environmental impact</span>."
-        },
-        "3": {
-            "cards": {
-                "1": {
-                    "desc": "To discover the behind-the-scenes of AI.",
-                    "title": "Colleges and High Schools"
-                }
-            }
-        },
-        "6": {
-            "title": "Frequently Asked Questions"
-        }
-    },
     "errors": {
         "404": {
             "desc": "If you typed the URL into your browser, check if it's correct. The page may no longer be available. <br />You can continue by visiting our homepage. <br /> If you struggle to find a page you are looking for, contact us so we can redirect you to the correct URL.",
