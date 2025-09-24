@@ -124,6 +124,20 @@
   mask-image: url('/icons/shuffle.svg');
 }
 
+/* TODO: should be available in dsfr at some point? */
+.fr-icon-sort-asc::before,
+.fr-icon-sort-asc::after {
+  -webkit-mask-image: url('/icons/sort-asc.svg');
+  mask-image: url('/icons/sort-asc.svg');
+}
+
+/* TODO: should be available in dsfr at some point? */
+.fr-icon-sort-desc::before,
+.fr-icon-sort-desc::after {
+  -webkit-mask-image: url('/icons/sort-desc.svg');
+  mask-image: url('/icons/sort-desc.svg');
+}
+
 .fr-icon-university::before,
 .fr-icon-university::after {
   -webkit-mask-image: url('/icons/university.svg');

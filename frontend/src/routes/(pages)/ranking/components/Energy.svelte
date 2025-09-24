@@ -72,7 +72,6 @@
       <RankingTable
         id="energy-table"
         {data}
-        initialOrderCol="consumption_wh"
         includedCols={['name', 'elo', 'consumption_wh', 'size', 'organisation', 'license']}
         hideTotal
         {onDownloadData}

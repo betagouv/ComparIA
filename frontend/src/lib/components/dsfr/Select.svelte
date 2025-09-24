@@ -2,7 +2,7 @@
   lang="ts"
   generics="Value extends number | string, Option extends { value: Value, label: string }"
 >
-  import type { HTMLSelectAttributes } from 'svelte/elements'
+  import type { ClassValue, HTMLSelectAttributes } from 'svelte/elements'
 
   type SelectProps = {
     id: string
@@ -10,6 +10,7 @@
     label: string
     options: Option[]
     hideLabel?: boolean
+    groupClass?: ClassValue
   } & HTMLSelectAttributes
 
   let {
@@ -18,16 +19,17 @@
     label,
     options,
     hideLabel = false,
+    groupClass,
     ...props
   }: SelectProps = $props()
 </script>
 
-<div class="fr-select-group">
+<div class={["fr-select-group", groupClass]}>
   <label class={['fr-label', { 'fr-sr-only': hideLabel }]} for={id}>
     {label}
   </label>
 
-  <select {...props} bind:value={selected} class="fr-select" {id} name="table-footer-select-7847">
+  <select {...props} {id} bind:value={selected} class={["fr-select", props.class]}>
     {#each options as option}
       <option value={option.value}>{option.label}</option>
     {/each}

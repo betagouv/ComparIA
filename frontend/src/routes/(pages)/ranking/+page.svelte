@@ -4,6 +4,7 @@
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
+  import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Preferences, RankingTable } from './components'
 
   const tabs = (
@@ -20,7 +21,39 @@
 
   const modelsData = getModelsContext().filter((m) => !!m.elo)
 
+  const csvCols = [
+    { key: 'rank' as const, label: 'rank' },
+    { key: 'id' as const, label: 'id', energy: true },
+    { key: 'elo' as const, label: 'elo', energy: true },
+    { key: 'trust_range' as const, label: 'trust range' },
+    { key: 'total_votes' as const, label: 'total votes' },
+    { key: 'consumption_wh' as const, label: 'consumption (wh)', energy: true },
+    { key: 'friendly_size' as const, label: 'size', energy: true },
+    { key: 'params' as const, label: 'parameters', energy: true },
+    { key: 'release_date' as const, label: 'release' },
+    { key: 'organisation' as const, label: 'organisation', energy: true },
+    { key: 'distribution' as const, label: 'distribution', energy: true }
+  ]
+
   function onDownloadData(kind: 'ranking' | 'energy') {
+    const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
+    const data = [
+      cols.map((col) => col.label).join(','),
+      ...modelsData
+        .sort((a, b) => sortIfDefined(a, b, 'elo'))
+        .map((m, i) => {
+          return cols
+            .map((col) => {
+              if (col.key === 'rank') return i.toString()
+              if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
+              if (col.key === 'trust_range') return `+${m.trust_range![0]}/-${m.trust_range![1]}`
+              return m[col.key]
+            })
+            .join(',')
+        })
+    ].join('\n')
+
+    downloadTextFile(data, kind)
   }
 </script>
 

@@ -1,21 +1,107 @@
 <script lang="ts">
-  import { Icon, Link } from '$components/dsfr'
+  import { Icon, Link, Select } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { SIZES, type BotModel } from '$lib/models'
+  import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
   import { onMount } from 'svelte'
 
+  type ModelGraphData = (typeof models)[number]
+
   let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
 
+  let dotMode = $state<'arch' | 'size' | 'params'>('size')
+  const dotModeOpts = [
+    { value: 'size' as const, label: 'ELO / Conso (taille)' },
+    { value: 'arch' as const, label: 'ELO / Conso (arch)' },
+    { value: 'params' as const, label: 'ELO / Paramètres (conso)' }
+  ]
+  const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
+
+  function getConsoClass(c: number) {
+    if (c > 200) return 'XL'
+    if (c >= 100) return 'L'
+    if (c > 25) return 'M'
+    if (c > 5) return 'S'
+    return 'XS'
+  }
+
   const models = $derived(
-    data.map((m) => ({
-      id: m.id,
-      x: m.consumption_wh!,
-      y: m.elo!,
-      class: m.license === 'proprietary' ? 'proprietary' : m.friendly_size
-    }))
+    data
+      .sort((a, b) => sortIfDefined(a, b, 'params'))
+      .filter((m) => {
+        if (dotMode !== 'params') return true
+        return m.license === 'proprietary' ? true : !!m.active_params
+      })
+      .map((m) => {
+        const radius = dotMode === 'arch' ? dotSizes[m.friendly_size] : 5
+        const klass =
+          dotMode === 'arch'
+            ? m.license === 'proprietary'
+              ? 'proprietary'
+              : m.arch
+            : dotMode === 'params'
+              ? getConsoClass(m.active_params ?? m.params)
+              : m.license === 'proprietary'
+                ? 'proprietary'
+                : m.friendly_size
+        return {
+          id: m.id,
+          x: dotMode === 'params' ? m.params : m.consumption_wh!,
+          y: m.elo!,
+          radius,
+          class: klass
+        }
+      })
   )
+  const ELOMedian = data[Math.floor(data.length / 2)].elo!
+
+  const legend = $derived.by<{
+    legend: string
+    elems: { class: string; label: string; radius?: number }[]
+  }>(() => {
+    if (dotMode === 'arch')
+      return {
+        legend: 'Architectures',
+        elems: [
+          ...['moe', 'dense', 'matformer', 'proprietary'].map((arch) => ({
+            class: arch,
+            label: arch
+          })),
+          ...(['XS', 'S', 'M', 'L', 'XL'] as const).map((size) => ({
+            class: 'bg-dark-grey',
+            radius: dotSizes[size],
+            label: `${size} : ${m[`models.list.filters.size.labels.${size}`]()}`
+          }))
+        ]
+      }
+    if (dotMode === 'params')
+      return {
+        legend: 'Consommation (wh)',
+        elems: [
+          { class: 'XL', label: 'XL : > 200Wh' },
+          { class: 'L', label: 'L : >= 100Wh' },
+          { class: 'M', label: 'M : > 25Wh' },
+          { class: 'S', label: 'S : > 5Wh' },
+          { class: 'XS', label: 'XS : <= 5Wh' }
+        ]
+      }
+    return {
+      legend: m['models.list.filters.size.legend'](),
+      elems: [
+        ...SIZES.map((size) => ({
+          class: size,
+          label: `${size} : ${m[`models.list.filters.size.labels.${size}`]()}`
+        })),
+        {
+          class: 'proprietary',
+          label: m['ranking.energy.views.graph.legendProprietary']()
+        }
+      ]
+    }
+  })
+
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
 
@@ -48,13 +134,24 @@
     ;({ width, height } = svg!.getBoundingClientRect())
   }
 
-  function onModelHover(model: (typeof models)[number]) {
+  function onModelHover(model: ModelGraphData) {
     hoveredModel = model.id
     tooltipPos = { x: xScale(model.x), y: yScale(model.y) }
   }
 </script>
 
 <svelte:window onresize={resize} />
+
+<div class="mb-10 flex items-center gap-4">
+  <Select
+    id="dot-mode"
+    label="Représentation des points"
+    bind:selected={dotMode}
+    options={dotModeOpts}
+    groupClass="flex items-end gap-3"
+    class="w-auto!"
+  />
+</div>
 
 <div id="energy-graph" class="flex items-center gap-2">
   <div class="h-6 w-6 translate-y-[95px] -rotate-90 overflow-visible whitespace-nowrap text-center">
@@ -83,12 +180,17 @@
         {/each}
       </g>
 
+      <!-- median -->
+      <g transform="translate(0, {yScale(ELOMedian)})">
+        <line class="elo-median" x1={padding.left} x2={xScale(minMaxX[1])} />
+      </g>
+
       <!-- data -->
       {#each models as m}
         <circle
           cx={xScale(m.x)}
           cy={yScale(m.y)}
-          r="5"
+          r={m.radius}
           class={m.class}
           onpointerenter={() => onModelHover(m)}
           onpointerleave={() => (hoveredModel = undefined)}
@@ -99,7 +201,7 @@
     {#if hoveredModelData}
       <div
         id="graph-tooltip"
-        class="cg-border rounded-sm! absolute bg-white p-3"
+        class="cg-border rounded-sm! absolute min-w-[175px] bg-white p-3"
         style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
       >
         <div class="flex">
@@ -126,6 +228,19 @@
             </p>
             <strong class="ms-auto">{hoveredModelData.consumption_wh}</strong>
           </div>
+
+          <div class="mt-4 flex gap-1 leading-relaxed">
+            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">arch</p>
+            <strong class="ms-auto">{hoveredModelData.arch}</strong>
+          </div>
+          <div class="flex gap-1 leading-relaxed">
+            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">paramètres</p>
+            <strong class="ms-auto">{hoveredModelData.params}</strong>
+          </div>
+          <div class="flex gap-1 leading-relaxed">
+            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">paramètres actifs</p>
+            <strong class="ms-auto">{hoveredModelData.active_params ?? 'N/A'}</strong>
+          </div>
         </div>
       </div>
     {/if}
@@ -134,24 +249,27 @@
       id="graph-legend"
       class="cg-border rounded-md! absolute max-w-[190px] border-dashed bg-white p-4 text-[12px] leading-normal"
     >
-      <strong>{m['models.list.filters.size.legend']()}</strong>
+      <strong>{legend.legend}</strong>
       <ul class="p-0! list-none! font-medium">
-        {#each SIZES as size}
+        {#each legend.elems as elem}
           <li class="p-0! mb-2 flex items-center">
-            <div class="me-2 h-4 w-4 rounded-full {size}"></div>
-            {size} : {m[`models.list.filters.size.labels.${size}`]()}
+            <div
+              class={['dot me-2 rounded-full', elem.class]}
+              style={`--size: ${(elem.radius ?? 8) * 2}px`}
+            ></div>
+            {elem.label}
           </li>
         {/each}
-        <li class="p-0! flex items-center">
-          <div class="proprietary me-2 min-h-4 min-w-4 rounded-full"></div>
-          {m['ranking.energy.views.graph.legendProprietary']()}
-        </li>
       </ul>
     </div>
 
     <div class="text-center">
-      <Icon icon="flashlight-line" class="text-primary" />
-      <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
+      {#if dotMode === 'params'}
+        <strong>Nombre de paramètres actifs</strong>
+      {:else}
+        <Icon icon="flashlight-line" class="text-primary" />
+        <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
+      {/if}
     </div>
   </div>
 </div>
@@ -199,6 +317,11 @@
       text-anchor: end;
     }
 
+    .elo-median {
+      stroke: var(--grey-625-425);
+      stroke-dasharray: 5;
+    }
+
     /* Dots color */
     .proprietary {
       fill: #cecece;
@@ -224,6 +347,19 @@
       fill: var(--red-marianne-main-472);
       background-color: var(--red-marianne-main-472);
     }
+
+    .moe {
+      fill: var(--yellow-tournesol-850-200);
+      background-color: var(--yellow-tournesol-850-200);
+    }
+    .dense {
+      fill: var(--info-425-625);
+      background-color: var(--info-425-625);
+    }
+    .matformer {
+      fill: var(--red-marianne-850-200);
+      background-color: var(--red-marianne-850-200);
+    }
   }
 
   #graph-tooltip {
@@ -235,5 +371,10 @@
   #graph-legend {
     right: 0px;
     bottom: 75px;
+
+    .dot {
+      min-width: var(--size);
+      min-height: var(--size);
+    }
   }
 </style>
