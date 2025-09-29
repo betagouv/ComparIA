@@ -268,9 +268,9 @@ def get_api_key(endpoint: Endpoint):
 
     # "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
     if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get("api_base"):
-        return os.environ("ALBERT_KEY")
+        return os.getenv("ALBERT_KEY")
     if endpoint.get("api_base") and "huggingface.co" in endpoint.get("api_base"):
-        return os.environ("HF_INFERENCE_KEY")
+        return os.getenv("HF_INFERENCE_KEY")
     # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value
     # And no need for Vertex, handled differently
     return None
