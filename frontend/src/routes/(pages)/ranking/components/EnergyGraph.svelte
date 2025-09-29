@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CheckboxGroup, Icon, Link } from '$components/dsfr'
+  import { CheckboxGroup, Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Sizes } from '$lib/models'
   import { SIZES } from '$lib/models'
@@ -10,7 +10,7 @@
 
   type ModelGraphData = (typeof models)[number]
 
-  let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
+  let { data }: { data: BotModel[] } = $props()
 
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
   const archs = ['moe', 'dense', 'matformer', 'na'] as const
@@ -39,9 +39,6 @@
       })
   )
   const ELOMedian = data[Math.floor(data.length / 2)].elo!
-
-  // FIXME retrieve info from backend
-  let lastUpdateDate = new Date()
 
   let hoveredModel = $state<string>()
   let tooltipPos = $state({ x: 0, y: 0 })
@@ -205,24 +202,6 @@
       <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
     </div>
   </div>
-</div>
-
-<div class="flex gap-3 pb-9 pt-6">
-  <p class="mb-0! text-[14px]! text-grey">
-    {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
-  </p>
-
-  <!-- FIXME 404 -->
-  <Link
-    native={false}
-    href="#"
-    download="true"
-    text={m['ranking.table.downloadData']()}
-    icon="download-line"
-    iconPos="right"
-    class="text-[14px]!"
-    onclick={() => onDownloadData()}
-  />
 </div>
 
 <style lang="postcss">

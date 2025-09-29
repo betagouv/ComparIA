@@ -1504,6 +1504,7 @@
                         "sizeSub": "(milliards de paramètres)"
                     },
                     "tabLabel": "Vue graphique",
+                    "title": "Score ELO VS Consommation moyenne pour 1000 tokens",
                     "tooltip": {
                         "conso": "Conso. moyenne (Wh)",
                         "elo": "Score ELO"
@@ -1511,11 +1512,10 @@
                     "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
                     "yLabel": "Score ELO"
                 },
-                "legend": "Choisissez un mode de représentation",
+                "legend": "Sélectionnez un modèle pour connaitre son score ELO et sa consommation énergétique",
                 "table": {
-                    "tabLabel": "Vue tableau"
-                },
-                "title": "Score de satisfaction VS Consommation moyenne pour 1000 tokens"
+                    "title": "Données du graphique en tableau"
+                }
             }
         },
         "graphs": {
