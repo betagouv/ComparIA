@@ -1586,6 +1586,7 @@
         "table": {
             "data": {
                 "cols": {
+                    "arch": "Architecture",
                     "consumption_wh": "Conso moyenne<br>(1000 tokens)",
                     "elo": "Score ELO",
                     "license": "Licence",

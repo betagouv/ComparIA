@@ -56,7 +56,7 @@
       <RankingTable
         id="energy-table"
         {data}
-        includedCols={['name', 'elo', 'consumption_wh', 'size', 'organisation', 'license']}
+        includedCols={['name', 'elo', 'consumption_wh', 'size', 'arch', 'organisation', 'license']}
         hideTotal
         {onDownloadData}
       />

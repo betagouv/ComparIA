@@ -15,6 +15,7 @@
     | 'total_votes'
     | 'consumption_wh'
     | 'size'
+    | 'arch'
     | 'release'
     | 'organisation'
     | 'license'
@@ -55,6 +56,7 @@
       { id: 'total_votes', orderable: true },
       { id: 'consumption_wh', orderable: true, tooltip: m['reveal.impacts.energy.tooltip']() },
       { id: 'size', orderable: true, tooltip: m['ranking.table.data.tooltips.size']() },
+      { id: 'arch' },
       { id: 'release', orderable: true },
       { id: 'organisation', orderable: true },
       { id: 'license' }
@@ -91,6 +93,10 @@
 
       return {
         ...model,
+        arch:
+          model.license === 'proprietary'
+            ? ('na' as const)
+            : (model.arch as 'moe' | 'dense' | 'matformer'),
         release_date: new Date([month, '01', year].join('/')),
         rank: i + 1,
         eloRangeWidth: model.elo
@@ -227,6 +233,8 @@
       <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
         <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
       </div>
+    {:else if col.id === 'arch'}
+      {m[`models.arch.types.${model.arch}.name`]()}
     {:else}
       {model[col.id]}
     {/if}
