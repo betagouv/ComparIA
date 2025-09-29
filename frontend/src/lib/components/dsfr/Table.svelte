@@ -24,6 +24,7 @@
   } & HTMLTableAttributes
 
   let {
+    id,
     caption,
     cols,
     rows,
@@ -72,7 +73,7 @@
   <div class="fr-table__wrapper">
     <div class="fr-table__container">
       <div class="fr-table__content">
-        <table {...props}>
+        <table {id} {...props}>
           <caption>{caption}</caption>
 
           <thead>
@@ -82,7 +83,7 @@
                   <div class="text-dark-grey! flex items-center text-xs font-medium">
                     <span>{@html sanitize(col.label)}</span>
                     {#if col.tooltip}
-                      <Tooltip id={col.id} text={col.tooltip} size="xs" class="ms-1" />
+                      <Tooltip id="{id}-{col.id}" text={col.tooltip} size="xs" class="ms-1" />
                     {/if}
                     {#if col.orderable}
                       <Button
