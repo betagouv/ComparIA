@@ -34,7 +34,7 @@ class Conversation:
         self.output_tokens = None
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = models.get(model_name).get('endpoint', {})
+        self.endpoint = models.get(model_name, {}).get('endpoint', {})
 
 
 logger = logging.getLogger("languia")
