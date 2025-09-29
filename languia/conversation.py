@@ -7,11 +7,7 @@ from languia.custom_components.customchatbot import (
     ChatMessage,
 )
 
-from languia.utils import (
-    EmptyResponseError,
-    messages_to_dict_list,
-    get_api_key
-)
+from languia.utils import EmptyResponseError, messages_to_dict_list, get_api_key
 from languia import config
 
 import logging
@@ -19,6 +15,7 @@ import logging
 from uuid import uuid4
 
 from languia.config import models
+
 
 class Conversation:
     def __init__(
@@ -37,7 +34,7 @@ class Conversation:
         self.output_tokens = None
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = models.get(model_name)['endpoint']
+        self.endpoint = models.get(model_name).get('endpoint', {})
 
 
 logger = logging.getLogger("languia")
@@ -95,8 +92,6 @@ def bot_response(
     # top_p = float(top_p)
     # max_new_tokens = int(max_new_tokens)
 
-    # TODO: apply rate limit by ip
-
     if not state.endpoint:
         logger.critical(
             "No endpoint for model name: " + str(state.model_name),
@@ -112,15 +107,6 @@ def bot_response(
         extra={"request": request},
     )
     include_reasoning = False
-    if use_recommended_config:
-        recommended_config = endpoint.get("recommended_config", None)
-        if recommended_config is not None:
-            temperature = recommended_config.get("temperature", float(temperature))
-            # top_p = recommended_config.get("top_p", float(top_p))
-            max_new_tokens = recommended_config.get(
-                "max_new_tokens", int(max_new_tokens)
-            )
-            include_reasoning = recommended_config.get("include_reasoning", False)
 
     start_tstamp = time.time()
     # print("start: " + str(start_tstamp))
