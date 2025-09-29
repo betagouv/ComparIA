@@ -335,7 +335,11 @@
     "reuse": true,
     "simple_name": "DeepSeek v3.1",
     "status": "enabled",
-    "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1"
+    "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
+    "endpoint": {
+      "api_model_id": "deepseek/deepseek-chat-v3.1",
+      "api_type": "openrouter"
+    }
   },
   "deepseek-r1": {
     "active_params": 37,
@@ -910,7 +914,11 @@
     "required_ram": 200,
     "reuse": false,
     "simple_name": "GPT 5",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "openai/gpt-5",
+      "api_type": "openrouter"
+    }
   },
   "gpt-5-mini": {
     "arch": "maybe-moe",
@@ -928,7 +936,11 @@
     "required_ram": 200,
     "reuse": false,
     "simple_name": "GPT 5 Mini",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "openai/gpt-5",
+      "api_type": "openrouter"
+    }
   },
   "gpt-5-nano": {
     "arch": "maybe-moe",
@@ -946,7 +958,11 @@
     "required_ram": 70,
     "reuse": false,
     "simple_name": "GPT 5 Nano",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "openai/gpt-5-nano",
+      "api_type": "openrouter"
+    }
   },
   "gpt-oss-120b": {
     "active_params": 5.1,
@@ -1059,7 +1075,11 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Hermes 4 70B",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "nousresearch/hermes-4-70b",
+      "api_type": "openrouter"
+    }
   },
   "jamba-1.5-large": {
     "active_params": 94,
@@ -1324,7 +1344,11 @@
     "required_ram": 400,
     "reuse": true,
     "simple_name": "Llama Maverick",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "meta-llama/llama-4-maverick",
+      "api_type": "openrouter"
+    }
   },
   "magistral-medium": {
     "arch": "maybe-dense",
@@ -1342,7 +1366,11 @@
     "required_ram": 35,
     "reuse": false,
     "simple_name": "Magistral Medium",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "mistralai/magistral-medium-2506",
+      "api_type": "openrouter"
+    }
   },
   "magistral-small-2506": {
     "arch": "dense",
@@ -1470,7 +1498,7 @@
     "required_ram": 35,
     "reuse": false,
     "simple_name": "Mistral Medium 2508",
-    "status": "enabled"
+    "status": "disabled"
   },
   "mistral-medium-3.1": {
     "arch": "maybe-dense",
@@ -1488,7 +1516,11 @@
     "required_ram": 35,
     "reuse": false,
     "simple_name": "Mistral Medium 3.1",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "mistralai/mistral-medium-3.1",
+      "api_type": "openrouter"
+    }
   },
   "mistral-nemo-2407": {
     "arch": "dense",
@@ -1574,7 +1606,11 @@
     "required_ram": 24,
     "reuse": true,
     "simple_name": "Mistral Small 3.2",
-    "status": "enabled"
+    "status": "enabled",
+    "endpoint": {
+      "api_model_id": "mistralai/mistral-small-3.2-24b-instruct",
+      "api_type": "openrouter"
+    }
   },
   "mistral-small-3.1-24b": {
     "arch": "dense",
@@ -1704,7 +1740,11 @@
     "reuse": false,
     "simple_name": "o4 mini",
     "status": "enabled",
-    "url": "https://openai.com/index/introducing-o3-and-o4-mini/"
+    "url": "https://openai.com/index/introducing-o3-and-o4-mini/",
+    "endpoint": {
+      "api_model_id": "openai/o4-mini",
+      "api_type": "openrouter"
+    }
   },
   "olmo-2-0325-32b": {
     "arch": "dense",
@@ -1835,7 +1875,7 @@
     "required_ram": 200,
     "reuse": false,
     "simple_name": "Qwen 2.5 max 0125",
-    "status": "enabled"
+    "status": "disabled"
   },
   "Qwen1.5-32B-Chat": {
     "arch": "dense",
@@ -2054,6 +2094,10 @@
     "reuse": true,
     "simple_name": "Qwen3 Coder 480B A35B",
     "status": "enabled",
+    "endpoint": {
+      "api_model_id": "qwen/qwen3-coder",
+      "api_type": "openrouter"
+    },
     "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct"
   },
   "qwq-32b": {
