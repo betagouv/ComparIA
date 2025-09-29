@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, RootModel, ValidationError
+from pydantic import BaseModel, Field, RootModel, ValidationError, model_validator
 from typing import Any, Literal, Tuple, get_args, Annotated
 
 
@@ -33,11 +33,16 @@ class Model(BaseModel):
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
     url: str | None = None  # FIXME required?
-    endpoint: Endpoint | None = None  # FIXME required?
+    endpoint: Endpoint | None = None
     desc: str
     size_desc: str
     fyi: str
 
+    @model_validator(mode='after')
+    def check_endpoint(self):
+        if self.status == "enabled" and not self.endpoint:
+            raise ValidationError('Model is enabled but no endpoint has been found.')
+        return self
 
 class Organisation(BaseModel):
     name: str
