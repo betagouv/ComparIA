@@ -1520,9 +1520,6 @@
                 }
             }
         },
-        "graphs": {
-            "title": "Graphiques"
-        },
         "methodo": {
             "desc": {
                 "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
@@ -1591,6 +1588,11 @@
                     "size": "Taille<br>(paramètres)",
                     "total_votes": "Total votes",
                     "trust_range": "Confiance (±)"
+                },
+                "tooltips": {
+                    "elo": "Score reflétant la probabilité qu'un modèle soit préféré à un autre lors de comparaisons directes entre leurs réponses. Un écart de 400 points signifie qu'un modèle est environ 10 fois plus susceptible d'être préféré.",
+                    "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
+                    "trust_range": "Intervalle indiquant la fiabilité du score: plus l'intervalle est étroit, plus l'estimation du score est fiable. Il y a 95% de chances que le vrai score du modèle soit dans cette plage."
                 }
             },
             "lastUpdate": "Mise à jour le {date}",
