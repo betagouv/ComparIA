@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { Icon, Link } from '$components/dsfr'
+  import { CheckboxGroup, Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import { SIZES, type BotModel } from '$lib/models'
+  import type { BotModel, Sizes } from '$lib/models'
+  import { SIZES } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
@@ -13,9 +14,20 @@
 
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
   const archs = ['moe', 'dense', 'matformer', 'na'] as const
+  let sizes = $state<Sizes[]>([])
+  const sizeFilter = {
+    id: 'size',
+    legend: m['models.list.filters.size.legend'](),
+    options: SIZES.map((value) => ({
+      value,
+      label: m[`models.size.count.${value}`]()
+    }))
+  }
+
   const models = $derived(
     data
       .sort((a, b) => sortIfDefined(a, b, 'params'))
+      .filter((m) => sizes.length === 0 || sizes.includes(m.friendly_size))
       .map((m) => {
         return {
           id: m.id,
@@ -39,7 +51,7 @@
   let width = $state(1100)
   let height = $state(570)
 
-  const padding = { top: 0, right: 5, bottom: 35, left: 40 }
+  const padding = { top: 5, right: 10, bottom: 35, left: 40 }
 
   const minMaxX = $derived.by(() => {
     const [min, max] = extent(models, (m) => m.x) as [number, number]
@@ -158,7 +170,7 @@
         </p>
         <ul class="p-0! list-none! mb-10! font-medium">
           {#each archs as arch}
-            <li class="p-0! mb-3 flex items-center">
+            <li class="p-0! mb-2 flex items-center">
               <div class={['dot me-2 rounded-full', arch]}></div>
               {m[`models.arch.types.${arch}.name`]()}
             </li>
@@ -169,17 +181,22 @@
           <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
           <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
         </p>
-        <ul class="p-0! list-none! font-medium">
-          {#each SIZES as size}
-            <li class="p-0! mb-3 flex items-center">
-              <div
-                class={['dot border-dark-grey me-2 rounded-full border']}
-                style="--size: {dotSizes[size] * 2}px"
-              ></div>
-              {m[`models.size.count.${size}`]()}
-            </li>
-          {/each}
-        </ul>
+
+        <CheckboxGroup
+          {...sizeFilter}
+          bind:value={sizes}
+          legendClass="sr-only"
+          labelClass="flex-nowrap!"
+          class="mb-0!"
+        >
+          {#snippet labelSlot({ option })}
+            <div
+              class={['dot border-dark-grey me-2 rounded-full border']}
+              style="--size: {dotSizes[option.value] * 2}px"
+            ></div>
+            <span class="text-dark-grey text-[12px] font-medium">{option.label}</span>
+          {/snippet}
+        </CheckboxGroup>
       </div>
     </div>
 
