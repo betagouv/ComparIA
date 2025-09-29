@@ -1498,7 +1498,7 @@
     "required_ram": 35,
     "reuse": false,
     "simple_name": "Mistral Medium 2508",
-    "status": "disabled"
+    "status": "missing-data"
   },
   "mistral-medium-3.1": {
     "arch": "maybe-dense",
@@ -1875,7 +1875,7 @@
     "required_ram": 200,
     "reuse": false,
     "simple_name": "Qwen 2.5 max 0125",
-    "status": "disabled"
+    "status": "missing-data"
   },
   "Qwen1.5-32B-Chat": {
     "arch": "dense",
