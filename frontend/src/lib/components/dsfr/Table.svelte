@@ -87,11 +87,9 @@
                     {#if col.orderable}
                       <Button
                         text={m['components.table.triage']()}
-                        icon={col.id === orderingCol
-                          ? orderingMethod === 'ascending'
-                            ? 'sort-asc'
-                            : 'sort-desc'
-                          : 'arrow-up-down-line'}
+                        icon={col.id === orderingCol && orderingMethod === 'ascending'
+                          ? 'sort-asc'
+                          : 'sort-desc'}
                         size="xs"
                         variant="tertiary-no-outline"
                         iconOnly
