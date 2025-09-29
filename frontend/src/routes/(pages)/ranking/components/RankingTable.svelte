@@ -170,7 +170,7 @@
           native={false}
           href="#"
           download="true"
-          text={m['ranking.table.downloadData']()}
+          text={m['actions.downloadData']()}
           icon="download-line"
           iconPos="right"
           class="text-[14px]!"

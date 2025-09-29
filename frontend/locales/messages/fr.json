@@ -3,6 +3,7 @@
         "externalLink": "{text}"
     },
     "actions": {
+        "accessData": "Accéder aux données",
         "contact": "Contactez-nous",
         "contactUs": "Nous contacter",
         "copyLink": {
@@ -13,6 +14,7 @@
             "do": "Copier le message",
             "done": "Message copié"
         },
+        "downloadData": "Télécharger les données",
         "home": "Page d'accueil",
         "returnHome": "Revenir à l'accueil",
         "seeMore": "Voir plus",
@@ -1521,8 +1523,53 @@
         "graphs": {
             "title": "Graphiques"
         },
-        "methodology": {
-            "tabLabel": "Méthodologie"
+        "methodo": {
+            "desc": {
+                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
+                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le système ELO</strong>, élaboré en collaboration avec les <strong>équipes du PEReN</strong>, à partir des votes et préférences collectés sur la plateforme. Pour aller plus loin, consultez notre <a {linkProps}>carnet méthodologique</a>."
+            },
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": "Le <strong>système Elo</strong>, lui, ne nécessite pas toutes les confrontations possibles : il met à jour le score après chaque match en fonction de la difficulté de l’adversaire, ce qui permet d’obtenir un classement dynamique, même avec un ensemble de matchs partiel et évolutif."
+                    },
+                    "title": "Classement selon le taux de victoire des modèles estimé selon le score ELO "
+                },
+                "title": "Impact du choix de la méthode sur le classement des modèles",
+                "winrate": {
+                    "desc": {
+                        "1": "En se basant uniquement sur le <strong>taux de victoire moyen</strong>, on peut obtenir un classement global, mais ce calcul suppose que chaque modèle ait joué contre tous les autres.",
+                        "2": "Cette méthode n'est pas idéale car elle nécessite les données de toutes les combinaisons de modèles et ès qu’on augmente le nombre de modèles, cela devient vite coûteux et lourd à maintenir."
+                    },
+                    "title": "Classement selon le taux de victoire des modèles"
+                }
+            },
+            "methods": {
+                "cons": "Problèmes principaux",
+                "def": "",
+                "elo": {
+                    "def": "<strong>Définition</strong> : Système de classement où le gain ou la perte de points dépend du résultat (victoire/défaite/nul) <strong>et</strong> du niveau estimé de l’adversaire : si un joueur plus faible bat un joueur plus fort, sa progression dans le classement est plus importante.",
+                    "list": {
+                        "1": "<strong>Modèle probabiliste</strong> : on estime la chance qu’un modèle a de gagner contre un autre. Cela rend les scores interprétables et comparables statistiquement. Par exemple, un écart de 200 points Elo correspond à environ 75% de chances de victoire pour le joueur le mieux classé.",
+                        "2": "<strong>Modèle dynamique</strong> : Les scores Elo évoluent après chaque match en fonction du résultat attendu.",
+                        "3": "<strong>Modèle adaptatif</strong> : battre un modèle mieux classé rapporte davantage. "
+                    },
+                    "title": "Classement Elo"
+                },
+                "pros": "Avantages",
+                "title": "Deux manières de classer les modèles",
+                "winrate": {
+                    "def": "<strong>Définition</strong> : Classement des modèles uniquement selon le pourcentage de parties gagnées",
+                    "list": {
+                        "1": "<strong>Biais du nombre de parties</strong> : un modèle ayant remporté trois victoires sur trois comparaisons affiche un taux de victoire de 100 %, mais ce score reste peu significatif avec si peu de données",
+                        "2": "<strong>Aucune prise en compte de la difficulté</strong> : battre un débutant ou un expert compte pareil.",
+                        "3": "<strong>Stagnation</strong> : à long terme, beaucoup de bons joueurs finissent autour de 50 % de taux de victoire car ils affrontent des modèles de leur niveau, ce qui rend le classement peu discriminant."
+                    },
+                    "title": "Classement par taux de victoire"
+                }
+            },
+            "tabLabel": "Méthodologie",
+            "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "preferences": {
             "tabLabel": "Focus préférences"
@@ -1546,7 +1593,6 @@
                     "trust_range": "Confiance (±)"
                 }
             },
-            "downloadData": "Télécharger les données",
             "lastUpdate": "Mise à jour le {date}",
             "search": "Rechercher un modèle",
             "totalModels": "Total modèles :",
