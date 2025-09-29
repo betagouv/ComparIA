@@ -1519,7 +1519,7 @@
         "table": {
             "data": {
                 "cols": {
-                    "consumption_wh": "Énergie<br>(1000 tokens)",
+                    "consumption_wh": "Conso moyenne<br>(1000 tokens)",
                     "elo": "Score ELO",
                     "license": "Licence",
                     "name": "Modèle",

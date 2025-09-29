@@ -53,8 +53,8 @@
       { id: 'elo', orderable: true, tooltip: 'FIXME' },
       { id: 'trust_range', tooltip: 'FIXME' },
       { id: 'total_votes', orderable: true },
-      { id: 'consumption_wh', orderable: true },
-      { id: 'size', orderable: true, tooltip: 'FIXME' },
+      { id: 'consumption_wh', orderable: true, tooltip: m['reveal.impacts.energy.tooltip']() },
+      { id: 'size', orderable: true, tooltip: m['models.openWeight.tooltips.params']() },
       { id: 'release', orderable: true },
       { id: 'organisation', orderable: true },
       { id: 'license' }
@@ -69,6 +69,13 @@
   let orderingCol = $state(initialOrderCol)
   let orderingMethod = $state(initialOrderMethod)
   let search = $state('')
+
+  $effect(() => {
+    if (orderingCol === undefined) {
+      orderingCol = initialOrderCol
+      orderingMethod = initialOrderMethod
+    }
+  })
 
   const rows = $derived.by(() => {
     const models = data.sort((a, b) => sortIfDefined(a, b, 'elo'))
