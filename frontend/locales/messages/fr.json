@@ -1167,18 +1167,22 @@
             "types": {
                 "dense": {
                     "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie.",
+                    "name": "Dense",
                     "title": "Architecture Dense"
                 },
                 "matformer": {
                     "desc": "Imaginez des **poupées russes** (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs **sous-modèles imbriqués** de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles.",
+                    "name": "Matformer",
                     "title": "Architecture Matformer"
                 },
                 "moe": {
                     "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
+                    "name": "MOE",
                     "title": "Architecture MOE"
                 },
                 "na": {
                     "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
+                    "name": "Propriétaire",
                     "title": "Architecture N/A"
                 }
             }
@@ -1315,6 +1319,13 @@
         "ram": "{min} à {max} Go",
         "release": "Sortie {date}",
         "size": {
+            "count": {
+                "L": "70 à 150 mds",
+                "M": "20 à 70 mds",
+                "S": "7 à 20 mds",
+                "XL": ">150 mds",
+                "XS": "<7 mds"
+            },
             "descriptions": {
                 "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
                 "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
@@ -1487,13 +1498,17 @@
                         },
                         "title": "Exemples de lecture :"
                     },
-                    "legendProprietary": "Taille estimée d’un modèle propriétaire (non communiquée)",
+                    "legends": {
+                        "arch": "Architecture du modèle",
+                        "size": "Filtre par taille",
+                        "sizeSub": "(milliards de paramètres)"
+                    },
                     "tabLabel": "Vue graphique",
                     "tooltip": {
                         "conso": "Conso. moyenne (Wh)",
                         "elo": "Score ELO"
                     },
-                    "xLabel": "Énergie moyenne consommée pour 1000 tokens (en Wh)",
+                    "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
                     "yLabel": "Score ELO"
                 },
                 "legend": "Choisissez un mode de représentation",

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon, Link, Select } from '$components/dsfr'
+  import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { SIZES, type BotModel } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
@@ -11,96 +11,22 @@
 
   let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
 
-  let dotMode = $state<'arch' | 'size' | 'params'>('size')
-  const dotModeOpts = [
-    { value: 'size' as const, label: 'ELO / Conso (taille)' },
-    { value: 'arch' as const, label: 'ELO / Conso (arch)' },
-    { value: 'params' as const, label: 'ELO / Paramètres (conso)' }
-  ]
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
-
-  function getConsoClass(c: number) {
-    if (c > 200) return 'XL'
-    if (c >= 100) return 'L'
-    if (c > 25) return 'M'
-    if (c > 5) return 'S'
-    return 'XS'
-  }
-
+  const archs = ['moe', 'dense', 'matformer', 'na'] as const
   const models = $derived(
     data
       .sort((a, b) => sortIfDefined(a, b, 'params'))
-      .filter((m) => {
-        if (dotMode !== 'params') return true
-        return m.license === 'proprietary' ? true : !!m.active_params
-      })
       .map((m) => {
-        const radius = dotMode === 'arch' ? dotSizes[m.friendly_size] : 5
-        const klass =
-          dotMode === 'arch'
-            ? m.license === 'proprietary'
-              ? 'proprietary'
-              : m.arch
-            : dotMode === 'params'
-              ? getConsoClass(m.active_params ?? m.params)
-              : m.license === 'proprietary'
-                ? 'proprietary'
-                : m.friendly_size
         return {
           id: m.id,
-          x: dotMode === 'params' ? m.params : m.consumption_wh!,
+          x: m.consumption_wh!,
           y: m.elo!,
-          radius,
-          class: klass
+          radius: dotSizes[m.friendly_size],
+          class: m.license === 'proprietary' ? 'na' : m.arch
         }
       })
   )
   const ELOMedian = data[Math.floor(data.length / 2)].elo!
-
-  const legend = $derived.by<{
-    legend: string
-    elems: { class: string; label: string; radius?: number }[]
-  }>(() => {
-    if (dotMode === 'arch')
-      return {
-        legend: 'Architectures',
-        elems: [
-          ...['moe', 'dense', 'matformer', 'proprietary'].map((arch) => ({
-            class: arch,
-            label: arch
-          })),
-          ...(['XS', 'S', 'M', 'L', 'XL'] as const).map((size) => ({
-            class: 'bg-dark-grey',
-            radius: dotSizes[size],
-            label: `${size} : ${m[`models.list.filters.size.labels.${size}`]()}`
-          }))
-        ]
-      }
-    if (dotMode === 'params')
-      return {
-        legend: 'Consommation (wh)',
-        elems: [
-          { class: 'XL', label: 'XL : > 200Wh' },
-          { class: 'L', label: 'L : >= 100Wh' },
-          { class: 'M', label: 'M : > 25Wh' },
-          { class: 'S', label: 'S : > 5Wh' },
-          { class: 'XS', label: 'XS : <= 5Wh' }
-        ]
-      }
-    return {
-      legend: m['models.list.filters.size.legend'](),
-      elems: [
-        ...SIZES.map((size) => ({
-          class: size,
-          label: `${size} : ${m[`models.list.filters.size.labels.${size}`]()}`
-        })),
-        {
-          class: 'proprietary',
-          label: m['ranking.energy.views.graph.legendProprietary']()
-        }
-      ]
-    }
-  })
 
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
@@ -111,9 +37,9 @@
 
   let svg = $state<SVGSVGElement>()
   let width = $state(1100)
-  let height = $state(700)
+  let height = $state(570)
 
-  const padding = { top: 0, right: 0, bottom: 35, left: 40 }
+  const padding = { top: 0, right: 5, bottom: 35, left: 40 }
 
   const minMaxX = $derived.by(() => {
     const [min, max] = extent(models, (m) => m.x) as [number, number]
@@ -142,134 +68,124 @@
 
 <svelte:window onresize={resize} />
 
-<div class="mb-10 flex items-center gap-4">
-  <Select
-    id="dot-mode"
-    label="Représentation des points"
-    bind:selected={dotMode}
-    options={dotModeOpts}
-    groupClass="flex items-end gap-3"
-    class="w-auto!"
-  />
-</div>
-
 <div id="energy-graph" class="flex items-center gap-2">
   <div class="h-6 w-6 translate-y-[95px] -rotate-90 overflow-visible whitespace-nowrap text-center">
     <Icon icon="thumb-up-line" class="text-primary" />
     <strong>{m['ranking.energy.views.graph.yLabel']()}</strong>
   </div>
+
   <div class="relative flex-grow">
-    <svg bind:this={svg}>
-      <!-- y axis -->
-      <g class="axis y-axis">
-        {#each yTicks as tick}
-          <g transform="translate(0, {yScale(tick)})">
-            <line x1={padding.left} x2={xScale(minMaxX[1])} />
-            <text x={padding.left - 8} y="+4">{tick}</text>
-          </g>
-        {/each}
-      </g>
+    <div class="flex">
+      <svg bind:this={svg}>
+        <!-- y axis -->
+        <g class="axis y-axis">
+          {#each yTicks as tick}
+            <g transform="translate(0, {yScale(tick)})">
+              <line x1={padding.left} x2={xScale(minMaxX[1])} />
+              <text x={padding.left - 8} y="+4">{tick}</text>
+            </g>
+          {/each}
+        </g>
 
-      <!-- x axis -->
-      <g class="axis x-axis">
-        {#each xTicks as tick}
-          <g transform="translate({xScale(tick)},0)">
-            <line y1={yScale(minMaxY[0])} y2={yScale(minMaxY[1])} />
-            <text y={height - padding.bottom + 20}>{tick}</text>
-          </g>
-        {/each}
-      </g>
+        <!-- x axis -->
+        <g class="axis x-axis">
+          {#each xTicks as tick}
+            <g transform="translate({xScale(tick)},0)">
+              <line y1={yScale(minMaxY[0])} y2={yScale(minMaxY[1])} />
+              <text y={height - padding.bottom + 20}>{tick}</text>
+            </g>
+          {/each}
+        </g>
 
-      <!-- median -->
-      <g transform="translate(0, {yScale(ELOMedian)})">
-        <line class="elo-median" x1={padding.left} x2={xScale(minMaxX[1])} />
-      </g>
+        <!-- median -->
+        <g transform="translate(0, {yScale(ELOMedian)})">
+          <line class="elo-median" x1={padding.left} x2={xScale(minMaxX[1])} />
+        </g>
 
-      <!-- data -->
-      {#each models as m}
-        <circle
-          cx={xScale(m.x)}
-          cy={yScale(m.y)}
-          r={m.radius}
-          class={m.class}
-          onpointerenter={() => onModelHover(m)}
-          onpointerleave={() => (hoveredModel = undefined)}
-        />
-      {/each}
-    </svg>
-
-    {#if hoveredModelData}
-      <div
-        id="graph-tooltip"
-        class="cg-border rounded-sm! absolute min-w-[175px] bg-white p-3"
-        style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
-      >
-        <div class="flex">
-          <img
-            src="/orgs/ai/{hoveredModelData.icon_path}"
-            alt={hoveredModelData.organisation}
-            class="me-1 w-[14px] object-contain"
+        <!-- data -->
+        {#each models as m}
+          <circle
+            cx={xScale(m.x)}
+            cy={yScale(m.y)}
+            r={m.radius}
+            class={m.class}
+            onpointerenter={() => onModelHover(m)}
+            onpointerleave={() => (hoveredModel = undefined)}
           />
-          <strong class="text-[12px]">{hoveredModelData.id}</strong>
-        </div>
-
-        <div class="mt-1 text-[10px]">
-          <div class="flex gap-1 leading-relaxed">
-            <Icon icon="thumb-up-line" size="xxs" class="text-primary" />
-            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
-              {m['ranking.energy.views.graph.tooltip.elo']()}
-            </p>
-            <strong class="ms-auto">{hoveredModelData.elo}</strong>
-          </div>
-          <div class="flex gap-1 leading-relaxed">
-            <Icon icon="flashlight-line" size="xxs" class="text-primary" />
-            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
-              {m['ranking.energy.views.graph.tooltip.conso']()}
-            </p>
-            <strong class="ms-auto">{hoveredModelData.consumption_wh}</strong>
-          </div>
-
-          <div class="mt-4 flex gap-1 leading-relaxed">
-            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">arch</p>
-            <strong class="ms-auto">{hoveredModelData.arch}</strong>
-          </div>
-          <div class="flex gap-1 leading-relaxed">
-            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">paramètres</p>
-            <strong class="ms-auto">{hoveredModelData.params}</strong>
-          </div>
-          <div class="flex gap-1 leading-relaxed">
-            <p class="mb-0! text-[10px]! text-grey leading-relaxed!">paramètres actifs</p>
-            <strong class="ms-auto">{hoveredModelData.active_params ?? 'N/A'}</strong>
-          </div>
-        </div>
-      </div>
-    {/if}
-
-    <div
-      id="graph-legend"
-      class="cg-border rounded-md! absolute max-w-[190px] border-dashed bg-white p-4 text-[12px] leading-normal"
-    >
-      <strong>{legend.legend}</strong>
-      <ul class="p-0! list-none! font-medium">
-        {#each legend.elems as elem}
-          <li class="p-0! mb-2 flex items-center">
-            <div
-              class={['dot me-2 rounded-full', elem.class]}
-              style={`--size: ${(elem.radius ?? 8) * 2}px`}
-            ></div>
-            {elem.label}
-          </li>
         {/each}
-      </ul>
+      </svg>
+
+      {#if hoveredModelData}
+        <div
+          id="graph-tooltip"
+          class="cg-border rounded-sm! absolute min-w-[175px] bg-white p-3"
+          style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
+        >
+          <div class="flex">
+            <img
+              src="/orgs/ai/{hoveredModelData.icon_path}"
+              alt={hoveredModelData.organisation}
+              class="me-1 w-[14px] object-contain"
+            />
+            <strong class="text-[12px]">{hoveredModelData.id}</strong>
+          </div>
+
+          <div class="mt-1 text-[10px]">
+            <div class="flex gap-1 leading-relaxed">
+              <Icon icon="thumb-up-line" size="xxs" class="text-primary" />
+              <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                {m['ranking.energy.views.graph.tooltip.elo']()}
+              </p>
+              <strong class="ms-auto">{hoveredModelData.elo}</strong>
+            </div>
+            <div class="flex gap-1 leading-relaxed">
+              <Icon icon="flashlight-line" size="xxs" class="text-primary" />
+              <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                {m['ranking.energy.views.graph.tooltip.conso']()}
+              </p>
+              <strong class="ms-auto">{hoveredModelData.consumption_wh}</strong>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      <div
+        id="graph-legend"
+        class="cg-border rounded-md! bg-very-light-grey h-[535px] w-[220px] p-4 text-[12px] leading-normal"
+      >
+        <p class="mb-4! text-[13px]!">
+          <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
+        </p>
+        <ul class="p-0! list-none! mb-10! font-medium">
+          {#each archs as arch}
+            <li class="p-0! mb-3 flex items-center">
+              <div class={['dot me-2 rounded-full', arch]}></div>
+              {m[`models.arch.types.${arch}.name`]()}
+            </li>
+          {/each}
+        </ul>
+
+        <p class="mb-4! text-[13px]! leading-tight!">
+          <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
+          <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
+        </p>
+        <ul class="p-0! list-none! font-medium">
+          {#each SIZES as size}
+            <li class="p-0! mb-3 flex items-center">
+              <div
+                class={['dot border-dark-grey me-2 rounded-full border']}
+                style="--size: {dotSizes[size] * 2}px"
+              ></div>
+              {m[`models.size.count.${size}`]()}
+            </li>
+          {/each}
+        </ul>
+      </div>
     </div>
 
     <div class="text-center">
-      {#if dotMode === 'params'}
-        <strong>Nombre de paramètres actifs</strong>
-      {:else}
-        <Icon icon="flashlight-line" class="text-primary" />
-        <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
-      {/if}
+      <Icon icon="flashlight-line" class="text-primary" />
+      <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
     </div>
   </div>
 </div>
@@ -296,7 +212,7 @@
   #energy-graph {
     svg {
       width: 100%;
-      height: 700px;
+      height: 570px;
     }
 
     .axis {
@@ -323,42 +239,21 @@
     }
 
     /* Dots color */
-    .proprietary {
+    .na {
       fill: #cecece;
       background-color: #cecece;
     }
-    .XS {
-      fill: var(--green-emeraude-main-632);
-      background-color: var(--green-emeraude-main-632);
-    }
-    .S {
-      fill: var(--green-emeraude-850-200);
-      background-color: var(--green-emeraude-850-200);
-    }
-    .M {
-      fill: var(--red-marianne-850-200);
-      background-color: var(--red-marianne-850-200);
-    }
-    .L {
-      fill: var(--orange-terre-battue-main-645);
-      background-color: var(--orange-terre-battue-main-645);
-    }
-    .XL {
-      fill: var(--red-marianne-main-472);
-      background-color: var(--red-marianne-main-472);
-    }
-
     .moe {
       fill: var(--yellow-tournesol-850-200);
       background-color: var(--yellow-tournesol-850-200);
     }
     .dense {
-      fill: var(--info-425-625);
-      background-color: var(--info-425-625);
+      fill: #0a76f6;
+      background-color: #0a76f6;
     }
     .matformer {
-      fill: var(--red-marianne-850-200);
-      background-color: var(--red-marianne-850-200);
+      fill: var(--green-menthe-850-200);
+      background-color: var(--green-menthe-850-200);
     }
   }
 
@@ -369,12 +264,9 @@
   }
 
   #graph-legend {
-    right: 0px;
-    bottom: 75px;
-
     .dot {
-      min-width: var(--size);
-      min-height: var(--size);
+      min-width: var(--size, 16px);
+      min-height: var(--size, 16px);
     }
   }
 </style>
