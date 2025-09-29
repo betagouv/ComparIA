@@ -1569,7 +1569,15 @@
             "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "preferences": {
-            "tabLabel": "Focus préférences"
+            "desc": "Quand vous votez, vous pouvez qualifier votre préférence selon différentes catégories positives et négatives. Comparez leur répartition d’un modèle à l’autre.",
+            "tabLabel": "Focus préférences",
+            "table": {
+                "cols": {
+                    "positive_prefs_ratio": "Répartition des préférences",
+                    "total_prefs": "Total préférences"
+                }
+            },
+            "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
         "ranking": {
             "desc": "Merci pour vos contributions ! Vos votes alimentent un classement Elo et que nous vous rendons transparent.<br>Ce score de satisfaction Elo,  construit en partenariat avec le PEReN, repose sur vos votes, vos réactions d’approbation et désapprobation.",

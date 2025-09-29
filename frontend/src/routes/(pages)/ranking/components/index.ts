@@ -1,4 +1,6 @@
 export { default as Energy } from './Energy.svelte'
 export { default as EnergyGraph } from './EnergyGraph.svelte'
+export { default as Methodology } from './Methodology.svelte'
 export { default as Preferences } from './Preferences.svelte'
+export { default as PreferencesTable } from './PreferencesTable.svelte'
 export { default as RankingTable } from './RankingTable.svelte'

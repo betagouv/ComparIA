@@ -35,7 +35,10 @@
     { key: 'distribution' as const, label: 'distribution', energy: true }
   ]
 
-  function onDownloadData(kind: 'ranking' | 'energy') {
+  function onDownloadData(kind: 'ranking' | 'energy' | 'preferences') {
+    // FIXME
+    if (kind === 'preferences') return ''
+
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
       cols.map((col) => col.label).join(','),
@@ -78,7 +81,7 @@
         {:else if id === 'energy'}
           <Energy data={modelsData} onDownloadData={() => onDownloadData('energy')} />
         {:else if id === 'preferences'}
-          <Preferences />
+          <Preferences data={modelsData} onDownloadData={() => onDownloadData('energy')} />
         {:else if id === 'methodo'}
           <Methodology />
         {/if}
