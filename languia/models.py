@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, RootModel, ValidationError, model_validator
+from pydantic_core import PydanticCustomError
 from typing import Any, Literal, Tuple, get_args, Annotated
 
 
@@ -16,6 +17,7 @@ class Endpoint(BaseModel):
     api_type: str | None = "openai"
     api_base: str | None = None
     api_model_id: str
+
 
 class Model(BaseModel):
     new: bool = False
@@ -38,11 +40,14 @@ class Model(BaseModel):
     size_desc: str
     fyi: str
 
-    @model_validator(mode='after')
+    @model_validator(mode="after")
     def check_endpoint(self):
         if self.status == "enabled" and not self.endpoint:
-            raise ValidationError('Model is enabled but no endpoint has been found.')
+            raise PydanticCustomError(
+                "endpoint", "Model is enabled but no endpoint has been found."
+            )
         return self
+
 
 class Organisation(BaseModel):
     name: str
