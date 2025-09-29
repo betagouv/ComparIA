@@ -8,8 +8,8 @@ from rich import print
 from rich.logging import RichHandler
 from slugify import slugify
 from typing import Any, Literal, Tuple, get_args, Annotated
-from utils import Obj, read_json, write_json, filter_dict, sort_dict
-
+from .utils import Obj, read_json, write_json, filter_dict, sort_dict
+from languia.models import License, Organisation, Endpoint, Model
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
@@ -87,7 +87,7 @@ def validate_orgas_and_models(
                 key = err["loc"][1]
             elif "models" in err["loc"]:
                 name = f"model '{orga["models"][err["loc"][2]]["simple_name"]}'"
-                key = err["loc"][3]
+                key = err["type"] if err["type"] == "endpoint" else err["loc"][3]
 
             if name not in errors:
                 errors[name] = []
