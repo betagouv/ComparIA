@@ -52,7 +52,7 @@
     class="message-bot cg-border rounded-lg! relative flex h-full flex-col overflow-scroll bg-white px-5"
   >
     <div>
-      <div class="z-1 sticky top-0 flex items-center bg-white pb-5 pt-7">
+      <div class="z-2 sticky top-0 flex items-center bg-white pb-5 pt-7">
         <div class="c-bot-disk-{bot}"></div>
         <h3 class="mb-0! ms-2! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
