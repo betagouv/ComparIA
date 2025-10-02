@@ -938,7 +938,7 @@
         "params": "XL",
         "arch": "maybe-moe",
         "endpoint": {
-          "api_model_id": "openai/gpt-5",
+          "api_model_id": "openai/gpt-5-mini",
           "api_type": "openrouter"
         },
         "desc": "Le GPT-5 Mini est une version allégée du modèle GPT-5 principal. Il est conçu pour être utilisé dans des environnements où il est nécessaire de limiter les coûts, par exemple à grande échelle. Son modèle de raisonnement est presque aussi performant que celui du modèle principal (`gpt-5-thinking`) malgré sa taille plus petite. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",

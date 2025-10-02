@@ -1035,7 +1035,7 @@
     "commercial_use": null,
     "distribution": "api-only",
     "endpoint": {
-      "api_model_id": "openai/gpt-5",
+      "api_model_id": "openai/gpt-5-mini",
       "api_type": "openrouter"
     },
     "friendly_size": "XL",
