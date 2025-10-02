@@ -57,3 +57,4 @@ utils/results-output/
 litellm_config.yml
 results-output/
 venv.bak
+cache/
