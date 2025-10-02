@@ -882,6 +882,7 @@
       {
         "new": true,
         "id": "gpt-oss-120b",
+        "reasoning": true,
         "simple_name": "GPT OSS-120B",
         "license": "Apache 2.0",
         "release_date": "08/2025",
@@ -903,6 +904,7 @@
         "license": "Apache 2.0",
         "release_date": "08/2025",
         "params": 21,
+        "reasoning": true,
         "active_params": 3.6,
         "arch": "moe",
         "endpoint": {
