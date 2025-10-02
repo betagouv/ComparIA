@@ -108,7 +108,7 @@ class RankingPipeline:
 
         models_info_dict = (json.loads(open(self.models_data).read()))
 
-        models_info = [{"model_name": k, "name": v["simple_name"], "organization": v["organisation"], **v} for k, v in models_info_dict.items()]
+        models_info = [{"model_name": k, **v, "name": v["simple_name"], "organization": v["organisation"]} for k, v in models_info_dict.items()]
         models_info = pl.DataFrame(models_info)
 
 
