@@ -82,6 +82,14 @@ def get_reactions_preferences() -> pl.DataFrame:
     return compute_total_and_ratio(data)
 
 
+def get_merged_votes_and_reactions_preferences(
+    votes_preferences: pl.DataFrame, reactions_preferences: pl.DataFrame
+) -> pl.DataFrame:
+    return compute_total_and_ratio(
+        pl.concat([votes_preferences, reactions_preferences]).group_by("model_name").sum().sort(by="model_name")
+    )
+
+
 if __name__ == "__main__":
     OUTPUT_PATH = Path(__file__).parent.parent.parent / "output"
     votes_preferences = get_votes_preferences()
@@ -89,3 +97,6 @@ if __name__ == "__main__":
 
     reactions_preferences = get_reactions_preferences()
     reactions_preferences.write_json(OUTPUT_PATH / "preferences-reactions.json")
+
+    merged_preferences = get_merged_votes_and_reactions_preferences(votes_preferences, reactions_preferences)
+    merged_preferences.write_json(OUTPUT_PATH / "preferences.json")
