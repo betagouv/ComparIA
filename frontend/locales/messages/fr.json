@@ -3,6 +3,7 @@
         "externalLink": "{text}"
     },
     "actions": {
+        "accessData": "Accéder aux données",
         "contact": "Contactez-nous",
         "contactUs": "Nous contacter",
         "copyLink": {
@@ -13,6 +14,7 @@
             "do": "Copier le message",
             "done": "Message copié"
         },
+        "downloadData": "Télécharger les données",
         "home": "Page d'accueil",
         "returnHome": "Revenir à l'accueil",
         "seeMore": "Voir plus",
@@ -862,11 +864,6 @@
                 "fyi": "<p>Ce modèle a été entraîné avec une forte proportion de données en code (plus de 80 langages de programmation) et de mathématiques, ce qui améliore sa capacité à résoudre des problèmes complexes et à utiliser des outils externes.</p>",
                 "size_desc": "<p>Avec 123 milliards de paramètres, ce modèle appartient à la catégorie des grands modèles. Il nécessite un serveur équipé d’au moins une carte graphique puissante, ce qui implique un coût de fonctionnement important. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.</p>"
             },
-            "Mistral Medium 2508": {
-                "desc": "<p>Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est devenu particulièrement intéressant après une mise à jour en août 2025 avec des améliorations importantes de performance générale, un ton \"amélioré\" et une meilleure capacité de chercher des informations sur Internet. </p>",
-                "fyi": "<p>Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.</p>\n<p>Ce modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.</p>",
-                "size_desc": "<p>La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>\n<p>Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.</p>"
-            },
             "Mistral Medium 3.1": {
                 "desc": "<p>Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est particulièrement intéressant pour des tâches de programmation ou des tâches de raisonnement, par exemple les mathématiques.</p>",
                 "fyi": "<p>Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.</p>\n<p>Ce modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.</p>",
@@ -956,11 +953,6 @@
                 "desc": "<p>Modèle de taille moyenne spécialisé en programmation et dans l’usage d’outils externes (recherches web, interactions avec des logiciels…).</p>",
                 "fyi": "<p>Ce modèle a été entraîné sur 5.5 bilions de jetons et plus de 92 langages de programmation, y compris des langages de code spécialisés comme Haskell ou Racket. </p>\n<p>Grâce à ses performances en code, il est  capable de bien gérer les appels à des outils externes, ce qui est utile pour des usages agentiques.</p>",
                 "size_desc": "<p>Avec 32 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure.</p>\n<p>Sa fenêtre de contexte de 128 000 jetons permet de traiter de longs documents.</p>"
-            },
-            "Qwen 2.5 max 0125": {
-                "desc": "<p>Très grand modèle de raisonnement spécialisé et très performant en mathématiques, code et résolution de problèmes logiques.</p>",
-                "fyi": "<p>La taille exacte du modèle n’est pas connue, mais c’est très probablement un très grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.</p>",
-                "size_desc": "<p>Ce modèle propriétaire basé sur une <strong>architecture MoE à grande échelle a été</strong>entraîné sur <strong>plus de 20 billions de jetons</strong>. Il est conçu pour des tâches nécessitant plusieurs étapes de réflexion. </p>\n<p>La fenêtre de contexte va jusqu’à 32 000 jetons.</p>"
             },
             "Qwen 3 30B A3B": {
                 "desc": "<p>Modèle de taille moyenne multilingue.</p>",
@@ -1167,18 +1159,22 @@
             "types": {
                 "dense": {
                     "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie.",
+                    "name": "Dense",
                     "title": "Architecture Dense"
                 },
                 "matformer": {
                     "desc": "Imaginez des **poupées russes** (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs **sous-modèles imbriqués** de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles.",
+                    "name": "Matformer",
                     "title": "Architecture Matformer"
                 },
                 "moe": {
                     "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
+                    "name": "MOE",
                     "title": "Architecture MOE"
                 },
                 "na": {
                     "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
+                    "name": "Propriétaire",
                     "title": "Architecture N/A"
                 }
             }
@@ -1315,6 +1311,13 @@
         "ram": "{min} à {max} Go",
         "release": "Sortie {date}",
         "size": {
+            "count": {
+                "L": "70 à 150 mds",
+                "M": "20 à 70 mds",
+                "S": "7 à 20 mds",
+                "XL": ">150 mds",
+                "XS": "<7 mds"
+            },
             "descriptions": {
                 "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
                 "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
@@ -1487,30 +1490,84 @@
                         },
                         "title": "Exemples de lecture :"
                     },
-                    "legendProprietary": "Taille estimée d’un modèle propriétaire (non communiquée)",
+                    "legends": {
+                        "arch": "Architecture du modèle",
+                        "size": "Filtre par taille",
+                        "sizeSub": "(milliards de paramètres)"
+                    },
                     "tabLabel": "Vue graphique",
+                    "title": "Score ELO VS Consommation moyenne pour 1000 tokens",
                     "tooltip": {
                         "conso": "Conso. moyenne (Wh)",
                         "elo": "Score ELO"
                     },
-                    "xLabel": "Énergie moyenne consommée pour 1000 tokens (en Wh)",
+                    "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
                     "yLabel": "Score ELO"
                 },
-                "legend": "Choisissez un mode de représentation",
+                "legend": "Sélectionnez un modèle pour connaitre son score ELO et sa consommation énergétique",
                 "table": {
-                    "tabLabel": "Vue tableau"
-                },
-                "title": "Score de satisfaction VS Consommation moyenne pour 1000 tokens"
+                    "title": "Données du graphique en tableau"
+                }
             }
         },
-        "graphs": {
-            "title": "Graphiques"
-        },
-        "methodology": {
-            "tabLabel": "Méthodologie"
+        "methodo": {
+            "desc": {
+                "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
+                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le système ELO</strong>, élaboré en collaboration avec les <strong>équipes du PEReN</strong>, à partir des votes et préférences collectés sur la plateforme. Pour aller plus loin, consultez notre <a {linkProps}>carnet méthodologique</a>."
+            },
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": "Le <strong>système Elo</strong>, lui, ne nécessite pas toutes les confrontations possibles : il met à jour le score après chaque match en fonction de la difficulté de l’adversaire, ce qui permet d’obtenir un classement dynamique, même avec un ensemble de matchs partiel et évolutif."
+                    },
+                    "title": "Classement selon le taux de victoire des modèles estimé selon le score ELO "
+                },
+                "title": "Impact du choix de la méthode sur le classement des modèles",
+                "winrate": {
+                    "desc": {
+                        "1": "En se basant uniquement sur le <strong>taux de victoire moyen</strong>, on peut obtenir un classement global, mais ce calcul suppose que chaque modèle ait joué contre tous les autres.",
+                        "2": "Cette méthode n'est pas idéale car elle nécessite les données de toutes les combinaisons de modèles et ès qu’on augmente le nombre de modèles, cela devient vite coûteux et lourd à maintenir."
+                    },
+                    "title": "Classement selon le taux de victoire des modèles"
+                }
+            },
+            "methods": {
+                "cons": "Problèmes principaux",
+                "def": "",
+                "elo": {
+                    "def": "<strong>Définition</strong> : Système de classement où le gain ou la perte de points dépend du résultat (victoire/défaite/nul) <strong>et</strong> du niveau estimé de l’adversaire : si un joueur plus faible bat un joueur plus fort, sa progression dans le classement est plus importante.",
+                    "list": {
+                        "1": "<strong>Modèle probabiliste</strong> : on estime la chance qu’un modèle a de gagner contre un autre. Cela rend les scores interprétables et comparables statistiquement. Par exemple, un écart de 200 points Elo correspond à environ 75% de chances de victoire pour le joueur le mieux classé.",
+                        "2": "<strong>Modèle dynamique</strong> : Les scores Elo évoluent après chaque match en fonction du résultat attendu.",
+                        "3": "<strong>Modèle adaptatif</strong> : battre un modèle mieux classé rapporte davantage. "
+                    },
+                    "title": "Classement Elo"
+                },
+                "pros": "Avantages",
+                "title": "Deux manières de classer les modèles",
+                "winrate": {
+                    "def": "<strong>Définition</strong> : Classement des modèles uniquement selon le pourcentage de parties gagnées",
+                    "list": {
+                        "1": "<strong>Biais du nombre de parties</strong> : un modèle ayant remporté trois victoires sur trois comparaisons affiche un taux de victoire de 100 %, mais ce score reste peu significatif avec si peu de données",
+                        "2": "<strong>Aucune prise en compte de la difficulté</strong> : battre un débutant ou un expert compte pareil.",
+                        "3": "<strong>Stagnation</strong> : à long terme, beaucoup de bons joueurs finissent autour de 50 % de taux de victoire car ils affrontent des modèles de leur niveau, ce qui rend le classement peu discriminant."
+                    },
+                    "title": "Classement par taux de victoire"
+                }
+            },
+            "tabLabel": "Méthodologie",
+            "title": "Comment choisir la méthode de classement des modèles ?"
         },
         "preferences": {
-            "tabLabel": "Focus préférences"
+            "desc": "Quand vous votez, vous pouvez qualifier votre préférence selon différentes catégories positives et négatives. Comparez leur répartition d’un modèle à l’autre.",
+            "tabLabel": "Focus préférences",
+            "table": {
+                "cols": {
+                    "positive_prefs_ratio": "Répartition des préférences",
+                    "total_prefs": "Total préférences"
+                }
+            },
+            "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
         "ranking": {
             "desc": "Merci pour vos contributions ! Vos votes alimentent un classement Elo et que nous vous rendons transparent.<br>Ce score de satisfaction Elo,  construit en partenariat avec le PEReN, repose sur vos votes, vos réactions d’approbation et désapprobation.",
@@ -1519,7 +1576,8 @@
         "table": {
             "data": {
                 "cols": {
-                    "consumption_wh": "Énergie<br>(1000 tokens)",
+                    "arch": "Architecture",
+                    "consumption_wh": "Conso moyenne<br>(1000 tokens)",
                     "elo": "Score ELO",
                     "license": "Licence",
                     "name": "Modèle",
@@ -1529,9 +1587,13 @@
                     "size": "Taille<br>(paramètres)",
                     "total_votes": "Total votes",
                     "trust_range": "Confiance (±)"
+                },
+                "tooltips": {
+                    "elo": "Score reflétant la probabilité qu'un modèle soit préféré à un autre lors de comparaisons directes entre leurs réponses. Un écart de 400 points signifie qu'un modèle est environ 10 fois plus susceptible d'être préféré.",
+                    "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
+                    "trust_range": "Intervalle indiquant la fiabilité du score: plus l'intervalle est étroit, plus l'estimation du score est fiable. Il y a 95% de chances que le vrai score du modèle soit dans cette plage."
                 }
             },
-            "downloadData": "Télécharger les données",
             "lastUpdate": "Mise à jour le {date}",
             "search": "Rechercher un modèle",
             "totalModels": "Total modèles :",

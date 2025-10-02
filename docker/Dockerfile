@@ -1,10 +1,15 @@
-FROM public.ecr.aws/docker/library/python:3.11-slim AS base
+FROM public.ecr.aws/docker/library/python:3.13-slim AS base
 
 # Debug tools
 RUN apt-get update -y && apt-get install -y curl postgresql-client git
-COPY ./requirements.txt /requirements.txt
-RUN pip3 install -r requirements.txt
+
+ADD https://astral.sh/uv/install.sh /uv-installer.sh
+RUN sh /uv-installer.sh && rm /uv-installer.sh
+ENV PATH="/root/.local/bin/:$PATH"
+
+COPY ./pyproject.toml /app/pyproject.toml
 WORKDIR /app
+RUN uv sync
 
 VOLUME /data
 

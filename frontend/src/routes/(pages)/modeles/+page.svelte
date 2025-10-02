@@ -133,7 +133,6 @@
               checkedLabel={m['models.list.filters.archived.checkedLabel']()}
               uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
               groupClass="mx-4 md:mx-0"
-              class="w-full! ms-auto"
             />
 
             <AccordionGroup class="mb-6 mt-6">

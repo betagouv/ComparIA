@@ -24,7 +24,7 @@
   }: ToggleProps & SvelteHTMLElements['label'] = $props()
 </script>
 
-<div class={["fr-toggle", groupClass]}>
+<div class={['fr-toggle', groupClass]}>
   <input
     type="checkbox"
     class="fr-toggle__input"
@@ -37,12 +37,15 @@
     for={id}
     data-fr-checked-label={checkedLabel}
     data-fr-unchecked-label={uncheckedLabel}
-    class={['fr-toggle__label before:whitespace-nowrap', props.class]}
+    class={['fr-toggle__label', props.class]}
   >
-    <div class="ms-auto block">{label}</div>
+    <div class="block">{label}</div>
   </label>
+  <div aria-hidden="true" class="w-full text-end text-sm text-[#3A3A3A]">
+    {value ? checkedLabel : uncheckedLabel}
+  </div>
   {#if help}
-    <p class="fr-hint-text" id="toggle-hint-{id}">{help}</p>
+    <p class="fr-hint-text mt-1!" id="toggle-hint-{id}">{help}</p>
   {/if}
 </div>
 
@@ -56,7 +59,15 @@
     }
 
     label::before {
+      position: absolute;
+      right: 0;
+      margin-right: 0 !important;
+      content: '' !important;
       --data-uri-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='%233a3a3a' height='24' fill='transparent' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E");
+    }
+    label::after {
+      left: unset;
+      right: 1rem;
     }
     input[type='checkbox']:checked ~ .fr-toggle__label::before {
       --data-uri-svg: url("data:image/svg+xml;charset=utf-8,%3Csvg width='40' stroke='%233a3a3a' height='24' fill='%23000091' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%23DDDDDD' x='.5' y='.5' width='39' height='23' rx='11.5'/%3E%3C/svg%3E");

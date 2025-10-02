@@ -22,7 +22,7 @@ pipeline = RankingPipeline(
     mean_how="token",
     batch=False,
     export_path=Path("output"),
-    models_data=Path("./data/models_data.json")
+    models_data=Path("./utils/models/generated-models.json")
 )
 
 #ranker = pipeline.ranker

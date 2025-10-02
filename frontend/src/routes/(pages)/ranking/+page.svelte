@@ -5,14 +5,14 @@
   import { getModelsContext } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
-  import { Energy, Preferences, RankingTable } from './components'
+  import { Energy, Methodology, Preferences, RankingTable } from './components'
 
   const tabs = (
     [
       { id: 'ranking', icon: 'trophy-line' },
       { id: 'energy', icon: 'bar-chart-2-line' },
       { id: 'preferences', icon: 'bar-chart-2-line' },
-      { id: 'methodology' }
+      { id: 'methodo' }
     ] as const
   ).map((tab) => ({
     ...tab,
@@ -35,7 +35,10 @@
     { key: 'distribution' as const, label: 'distribution', energy: true }
   ]
 
-  function onDownloadData(kind: 'ranking' | 'energy') {
+  function onDownloadData(kind: 'ranking' | 'energy' | 'preferences') {
+    // FIXME
+    if (kind === 'preferences') return ''
+
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
       cols.map((col) => col.label).join(','),
@@ -78,7 +81,9 @@
         {:else if id === 'energy'}
           <Energy data={modelsData} onDownloadData={() => onDownloadData('energy')} />
         {:else if id === 'preferences'}
-          <Preferences />
+          <Preferences data={modelsData} onDownloadData={() => onDownloadData('energy')} />
+        {:else if id === 'methodo'}
+          <Methodology />
         {/if}
       {/snippet}
     </Tabs>

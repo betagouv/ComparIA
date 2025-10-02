@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
+import json
+
 import polars as pl
 
 from rank_comparia.elo import ELORanker
@@ -73,12 +75,14 @@ class RankingPipeline:
         self._export(scores)
         return scores
 
+
     def _export(self, scores: pl.DataFrame) -> None:
         if self.export_path is None:
             return
         # plot
         self.export_path.mkdir(parents=True, exist_ok=True)
         scores.write_csv(file=self.export_path / f"{self.method}_scores.csv", separator=";")
+        scores.write_json(file=self.export_path / f"{self.method}_scores.json")
         if self.top_results and int(self.top_results):
             scores = scores.sort("median", descending=True)
             scores = scores.head(self.top_results)
@@ -101,7 +105,12 @@ class RankingPipeline:
         plot_winrate_count(heatmap_data).save(self.export_path / f"{self.method}_winrate_count.svg")
         plot_winrate_count(heatmap_data).save(self.export_path / f"{self.method}_winrate_count.json")
 
-        models_info = pl.read_json(source=self.models_data)
+
+        models_info_dict = (json.loads(open(self.models_data).read()))
+
+        models_info = [{"model_name": k, "license": v["license"], "organization": v["organisation"]} for k, v in models_info_dict.items()]
+        models_info = pl.DataFrame(models_info)
+
 
         draw_frugality_chart(scores, models_info, self.mean_how, log=True).save(
             fp=self.export_path / f"{self.method}_elo_score_conso.html", format="html"

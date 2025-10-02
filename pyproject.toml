@@ -3,23 +3,18 @@ name = "languia"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dependencies = [
-    "ecologits==0.6.1",
-    "gradio==5.25.0",
-    "litellm==1.68.1",
-    "langfuse==3.0.5",
-    # [dev] necessary?
-    "gradio-customchatbot",
-    "gradio-customdropdown",
-    "gradio-customradiocard",
-    "fastapi>=0.115.12",
+    "ecologits==0.8.2",
+    "gradio==5.48.0",
+    "litellm==1.77.5",
+    "langfuse>=3.6.0",
+    "fastapi>=0.118.0",
     "google-auth>=2.40.1",
     "google-cloud-aiplatform>=1.93.0",
-    "gradio-modal>=0.0.4",
-    "huggingface-hub>=0.31.2",
+    "huggingface-hub>0.31.2",
     "json5>=0.12.0",
-    "openai>=1.75.0",
+    "openai>=2.0.1",
     "pandas>=2.2.3",
     "psycopg2-binary>=2.9.10",
     "pyarrow>=20.0.0",
@@ -27,9 +22,8 @@ dependencies = [
     "tiktoken>=0.9.0",
     "tomli>=2.2.1",
     "redis[hiredis]>=6.4.0",
+    "markdown>=3.9",
+    "python-slugify>=8.0.4",
+    "uvicorn>=0.34.2",
+    "sqlalchemy>=2.0.43",
 ]
-
-[tool.uv.sources]
-gradio-customchatbot = { path = "custom_components/customchatbot" }
-gradio-customdropdown = { path = "custom_components/customdropdown" }
-gradio-customradiocard = { path = "custom_components/customradiocard" }

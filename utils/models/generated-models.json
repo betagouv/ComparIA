@@ -38,7 +38,7 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Aya Expanse 32B",
-    "status": "disabled",
+    "status": "enabled",
     "url": "https://huggingface.co/CohereForAI/aya-expanse-32b"
   },
   "aya-expanse-8b": {
@@ -322,6 +322,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "deepseek/deepseek-chat-v3.1",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "deepseek.png",
     "id": "deepseek-chat-v3.1",
@@ -898,6 +902,10 @@
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "openai/gpt-5",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "openai.svg",
     "id": "gpt-5",
@@ -916,6 +924,10 @@
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "openai/gpt-5",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "openai.svg",
     "id": "gpt-5-mini",
@@ -934,6 +946,10 @@
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "openai/gpt-5-nano",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "openai.svg",
     "id": "gpt-5-nano",
@@ -1047,6 +1063,10 @@
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "nousresearch/hermes-4-70b",
+      "api_type": "openrouter"
+    },
     "friendly_size": "L",
     "icon_path": "nous.webp",
     "id": "hermes-4-70b",
@@ -1216,7 +1236,7 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Llama 3.1 8B",
-    "status": "disabled",
+    "status": "enabled",
     "total_votes": 7277,
     "trust_range": [
       71,
@@ -1312,6 +1332,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "meta-llama/llama-4-maverick",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "meta.svg",
     "id": "llama-maverick",
@@ -1330,6 +1354,10 @@
     "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "mistralai/magistral-medium-2506",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "magistral-medium",
@@ -1454,28 +1482,14 @@
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
   },
-  "mistral-medium-2508": {
-    "arch": "maybe-dense",
-    "commercial_use": null,
-    "distribution": "api-only",
-    "friendly_size": "M",
-    "icon_path": "mistral.png",
-    "id": "mistral-medium-2508",
-    "license": "proprietary",
-    "new": true,
-    "organisation": "Mistral AI",
-    "params": 35,
-    "reasoning": false,
-    "release_date": "08/2025",
-    "required_ram": 35,
-    "reuse": false,
-    "simple_name": "Mistral Medium 2508",
-    "status": "enabled"
-  },
   "mistral-medium-3.1": {
     "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "mistralai/mistral-medium-3.1",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mistral-medium-3.1",
@@ -1562,6 +1576,10 @@
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "mistralai/mistral-small-3.2-24b-instruct",
+      "api_type": "openrouter"
+    },
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mistral-small-2506",
@@ -1691,6 +1709,10 @@
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "openai/o4-mini",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "openai.svg",
     "id": "o4-mini",
@@ -1818,24 +1840,6 @@
       44
     ],
     "url": "https://huggingface.co/microsoft/Phi-4"
-  },
-  "qwen-2.5-max-0125": {
-    "arch": "moe",
-    "commercial_use": null,
-    "distribution": "api-only",
-    "friendly_size": "XL",
-    "icon_path": "qwen.png",
-    "id": "qwen-2.5-max-0125",
-    "license": "proprietary",
-    "new": true,
-    "organisation": "Alibaba",
-    "params": 200,
-    "reasoning": false,
-    "release_date": "04/2025",
-    "required_ram": 200,
-    "reuse": false,
-    "simple_name": "Qwen 2.5 max 0125",
-    "status": "enabled"
   },
   "Qwen1.5-32B-Chat": {
     "arch": "dense",
@@ -2041,6 +2045,10 @@
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "qwen/qwen3-coder",
+      "api_type": "openrouter"
+    },
     "friendly_size": "XL",
     "icon_path": "qwen.png",
     "id": "Qwen3-Coder-480B-A35B-Instruct",

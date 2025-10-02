@@ -1,17 +1,11 @@
 <script lang="ts">
-  import { Accordion, AccordionGroup, Alert, Segmented } from '$components/dsfr'
+  import { Accordion, AccordionGroup, Alert } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
 
   let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
-
-  const views = ([{ id: 'graph' }, { id: 'table' }] as const).map((view) => ({
-    ...view,
-    value: view.id,
-    label: m[`ranking.energy.views.${view.id}.tabLabel`]()
-  }))
 
   const faq = [
     {
@@ -25,35 +19,22 @@
       desc: m['ranking.energy.views.graph.faq.1.desc']()
     }
   ] as const
-
-  let view = $state<(typeof views)[number]['id']>('graph')
 </script>
 
 <div id="ranking-energy">
-  <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
+  <h2 class="fr-h6 text-primary! mb-1!">{m['ranking.energy.title']()}</h2>
   <p class="mb-8! text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
 
   <div class="rounded bg-white p-8">
-    <div class="text-center">
-      <Segmented
-        id="energy-view"
-        bind:value={view}
-        legend={m['ranking.energy.views.legend']()}
-        options={views}
-        hideLegend
-        size="sm"
-      />
-      <h3 class="text-lg! mt-3! mb-1!">{m['ranking.energy.views.title']()}</h3>
-
-      {#if view === 'graph'}
+    <section>
+      <div class="mb-10 text-center">
+        <h3 class="text-lg! mt-3! mb-0!">{m['ranking.energy.views.graph.title']()}</h3>
         <p class="text-grey! text-sm!">{m['ranking.energy.views.graph.desc']()}</p>
-      {/if}
-    </div>
+      </div>
 
-    {#if view === 'graph'}
-      <EnergyGraph {data} {onDownloadData} />
+      <EnergyGraph {data} />
 
-      <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10">
+      <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10 mt-12">
         <ul>
           {#each ['1', '2', '3'] as const as n}
             <li>{m[`ranking.energy.views.graph.infos.list.${n}`]()}</li>
@@ -68,14 +49,17 @@
           </Accordion>
         {/each}
       </AccordionGroup>
-    {:else}
+    </section>
+
+    <section class="mt-25">
+      <h3 class="text-lg! mb-0!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
         {data}
-        includedCols={['name', 'elo', 'consumption_wh', 'size', 'organisation', 'license']}
+        includedCols={['name', 'elo', 'consumption_wh', 'size', 'arch', 'organisation', 'license']}
         hideTotal
         {onDownloadData}
       />
-    {/if}
+    </section>
   </div>
 </div>

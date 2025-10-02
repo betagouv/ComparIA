@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field, RootModel, ValidationError
+from pydantic import BaseModel, Field, RootModel, ValidationError, model_validator
+from pydantic_core import PydanticCustomError
 from typing import Any, Literal, Tuple, get_args, Annotated
 
 
@@ -17,6 +18,7 @@ class Endpoint(BaseModel):
     api_base: str | None = None
     api_model_id: str
 
+
 class Model(BaseModel):
     new: bool = False
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
@@ -33,10 +35,18 @@ class Model(BaseModel):
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
     url: str | None = None  # FIXME required?
-    endpoint: Endpoint | None = None  # FIXME required?
+    endpoint: Endpoint | None = None
     desc: str
     size_desc: str
     fyi: str
+
+    @model_validator(mode="after")
+    def check_endpoint(self):
+        if self.status == "enabled" and not self.endpoint:
+            raise PydanticCustomError(
+                "endpoint", "Model is enabled but no endpoint has been found."
+            )
+        return self
 
 
 class Organisation(BaseModel):

@@ -15,6 +15,7 @@
     | 'total_votes'
     | 'consumption_wh'
     | 'size'
+    | 'arch'
     | 'release'
     | 'organisation'
     | 'license'
@@ -50,11 +51,12 @@
     [
       { id: 'rank' },
       { id: 'name', orderable: true },
-      { id: 'elo', orderable: true, tooltip: 'FIXME' },
-      { id: 'trust_range', tooltip: 'FIXME' },
+      { id: 'elo', orderable: true, tooltip: m['ranking.table.data.tooltips.elo']() },
+      { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
       { id: 'total_votes', orderable: true },
-      { id: 'consumption_wh', orderable: true },
-      { id: 'size', orderable: true, tooltip: 'FIXME' },
+      { id: 'consumption_wh', orderable: true, tooltip: m['reveal.impacts.energy.tooltip']() },
+      { id: 'size', orderable: true, tooltip: m['ranking.table.data.tooltips.size']() },
+      { id: 'arch' },
       { id: 'release', orderable: true },
       { id: 'organisation', orderable: true },
       { id: 'license' }
@@ -70,6 +72,13 @@
   let orderingMethod = $state(initialOrderMethod)
   let search = $state('')
 
+  $effect(() => {
+    if (orderingCol === undefined) {
+      orderingCol = initialOrderCol
+      orderingMethod = initialOrderMethod
+    }
+  })
+
   const rows = $derived.by(() => {
     const models = data.sort((a, b) => sortIfDefined(a, b, 'elo'))
     const highestElo = models[0].elo!
@@ -84,6 +93,10 @@
 
       return {
         ...model,
+        arch:
+          model.license === 'proprietary'
+            ? ('na' as const)
+            : (model.arch as 'moe' | 'dense' | 'matformer'),
         release_date: new Date([month, '01', year].join('/')),
         rank: i + 1,
         eloRangeWidth: model.elo
@@ -163,7 +176,7 @@
           native={false}
           href="#"
           download="true"
-          text={m['ranking.table.downloadData']()}
+          text={m['actions.downloadData']()}
           icon="download-line"
           iconPos="right"
           class="text-[14px]!"
@@ -220,6 +233,8 @@
       <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
         <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
       </div>
+    {:else if col.id === 'arch'}
+      {m[`models.arch.types.${model.arch}.name`]()}
     {:else}
       {model[col.id]}
     {/if}
