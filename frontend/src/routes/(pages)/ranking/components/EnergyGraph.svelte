@@ -106,11 +106,6 @@
           {/each}
         </g>
 
-        <!-- median -->
-        <g transform="translate(0, {yScale(ELOMedian)})">
-          <line class="elo-median" x1={padding.left} x2={xScale(minMaxX[1])} />
-        </g>
-
         <!-- data -->
         {#each models as m}
           <circle
