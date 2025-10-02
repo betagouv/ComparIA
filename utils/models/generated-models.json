@@ -966,7 +966,7 @@
   },
   "gpt-oss-120b": {
     "active_params": 5.1,
-    "arch": "maybe-moe",
+    "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
     "endpoint": {
@@ -989,7 +989,7 @@
   },
   "gpt-oss-20b": {
     "active_params": 3.6,
-    "arch": "maybe-moe",
+    "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
     "endpoint": {
