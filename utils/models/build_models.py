@@ -239,8 +239,8 @@ def validate() -> None:
                         round(model_extra_data["p97.5"] - model_extra_data["median"]),
                     ],
                     "total_votes": model_extra_data["n_match"],
-                    "consumption_wh": 
-                        model_extra_data["mean_conso_per_token"] * 1000 * 1000
+                    "consumption_wh": round(
+                        model_extra_data["mean_conso_per_token"] * 1000 * 1000)
                     ,
                 }
 
