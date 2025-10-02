@@ -17,12 +17,12 @@ pipeline = RankingPipeline(
     method="elo_random",
     include_votes=True,
     include_reactions=True,
-    bootstrap_samples=1,
+    bootstrap_samples=1000,
     top_results=None,
     mean_how="token",
     batch=False,
     export_path=Path("output"),
-    models_data=Path("./utils/models/models.json")
+    models_data=Path("./utils/models/generated-models.json")
 )
 
 #ranker = pipeline.ranker
