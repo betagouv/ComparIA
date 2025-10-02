@@ -19,7 +19,14 @@
 
 <div class={['fr-search-bar', classes]} role="search">
   <label class="fr-label" for={id}>{label}</label>
-  <input bind:value {...props} class="fr-input" {placeholder} {id} type="search" />
+  <input
+    bind:value
+    {...props}
+    class="fr-input placeholder:overflow-visible"
+    {placeholder}
+    {id}
+    type="search"
+  />
   <Button text={m['words.search']()} title={m['words.search']()} iconOnly />
 </div>
 
