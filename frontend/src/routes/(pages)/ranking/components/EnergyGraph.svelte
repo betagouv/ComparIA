@@ -43,6 +43,11 @@
   let hoveredModel = $state<string>()
   let tooltipPos = $state({ x: 0, y: 0 })
   const hoveredModelData = $derived(data.find((m) => m.id === hoveredModel))
+  const tooltipExtraData = $derived(
+    hoveredModelData?.license === 'proprietary'
+      ? (['arch'] as const)
+      : (['arch', 'params', 'active_params'] as const)
+  )
 
   let svg = $state<SVGSVGElement>()
   let width = $state(1100)
@@ -122,7 +127,7 @@
       {#if hoveredModelData}
         <div
           id="graph-tooltip"
-          class="cg-border rounded-sm! absolute min-w-[175px] bg-white p-3"
+          class="cg-border rounded-sm! absolute min-w-[175px] bg-white p-3 drop-shadow-md"
           style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
         >
           <div class="flex">
@@ -135,19 +140,35 @@
           </div>
 
           <div class="mt-1 text-[10px]">
-            <div class="flex gap-1 leading-relaxed">
-              <Icon icon="thumb-up-line" size="xxs" class="text-primary" />
-              <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
-                {m['ranking.energy.views.graph.tooltip.elo']()}
-              </p>
-              <strong class="ms-auto">{hoveredModelData.elo}</strong>
-            </div>
-            <div class="flex gap-1 leading-relaxed">
-              <Icon icon="flashlight-line" size="xxs" class="text-primary" />
-              <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
-                {m['ranking.energy.views.graph.tooltip.conso']()}
-              </p>
-              <strong class="ms-auto">{hoveredModelData.consumption_wh}</strong>
+            {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item}
+              <div class="flex gap-1 leading-relaxed">
+                <Icon icon={item.icon} size="xxs" class="text-primary" />
+                <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                  {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
+                </p>
+                <strong class="ms-auto">{hoveredModelData.elo}</strong>
+              </div>
+            {/each}
+
+            <div class="mt-4">
+              {#each tooltipExtraData as key}
+                {#if hoveredModelData[key]}
+                  <div class="flex gap-1 leading-relaxed">
+                    <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                      {m[`ranking.energy.views.graph.tooltip.${key}`]()}
+                    </p>
+                    <strong class="ms-auto">
+                      {#if key === 'arch'}
+                        {m[
+                          `models.arch.types.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as (typeof archs)[number])}.name`
+                        ]()}
+                      {:else}
+                        {hoveredModelData[key]}
+                      {/if}
+                    </strong>
+                  </div>
+                {/if}
+              {/each}
             </div>
           </div>
         </div>
