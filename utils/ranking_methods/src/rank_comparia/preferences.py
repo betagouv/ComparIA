@@ -13,7 +13,27 @@ POSITIVE_REACTIONS = [
 NEGATIVE_REACTIONS = ["incorrect", "superficial", "instructions_not_followed"]
 
 
-def get_votes_preferences():
+def compute_total_and_ratio(data: pl.DataFrame) -> pl.DataFrame:
+    data = data.with_columns(
+        total_prefs=pl.fold(
+            acc=pl.lit(0),
+            function=operator.add,
+            exprs=pl.col(*POSITIVE_REACTIONS, *NEGATIVE_REACTIONS),
+        )
+    )
+    data = data.with_columns(
+        positive_prefs_ratio=pl.fold(
+            acc=pl.lit(0),
+            function=operator.add,
+            exprs=pl.col(*POSITIVE_REACTIONS),
+        )
+        / pl.col("total_prefs")
+    )
+
+    return data
+
+
+def get_votes_preferences() -> pl.DataFrame:
     data = load_comparia("ministere-culture/comparia-votes")
     data = (
         pl.concat(
@@ -39,26 +59,33 @@ def get_votes_preferences():
         .sort(by="model_name")
         .drop_nulls()
     )
-    data = data.with_columns(
-        total_prefs=pl.fold(
-            acc=pl.lit(0),
-            function=operator.add,
-            exprs=pl.col(*POSITIVE_REACTIONS, *NEGATIVE_REACTIONS),
+
+    return compute_total_and_ratio(data)
+
+
+def get_reactions_preferences() -> pl.DataFrame:
+    data = load_comparia("ministere-culture/comparia-reactions")
+    data = (
+        data.select(
+            model_name=pl.col("refers_to_model"),
+            **{
+                **{reaction: pl.col("liked") & pl.col(reaction) for reaction in POSITIVE_REACTIONS},
+                **{reaction: pl.col("disliked") & pl.col(reaction) for reaction in NEGATIVE_REACTIONS},
+            },
         )
-    )
-    data = data.with_columns(
-        positive_prefs_ratio=pl.fold(
-            acc=pl.lit(0),
-            function=operator.add,
-            exprs=pl.col(*POSITIVE_REACTIONS),
-        )
-        / pl.col("total_prefs")
+        .group_by("model_name")
+        .sum()
+        .sort(by="model_name")
+        .drop_nulls()
     )
 
-    return data
+    return compute_total_and_ratio(data)
 
 
 if __name__ == "__main__":
     OUTPUT_PATH = Path(__file__).parent.parent.parent / "output"
     votes_preferences = get_votes_preferences()
-    votes_preferences.write_json(Path("output") / "preferences-votes.json")
+    votes_preferences.write_json(OUTPUT_PATH / "preferences-votes.json")
+
+    reactions_preferences = get_reactions_preferences()
+    reactions_preferences.write_json(OUTPUT_PATH / "preferences-reactions.json")
