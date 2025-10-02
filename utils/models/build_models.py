@@ -227,7 +227,7 @@ def validate() -> None:
                     m
                     for m in raw_extra_data
                     if m["model_name"] == model["id"]
-                    or m["name"] == model["simple_name"]
+                    # or m["name"] == model["simple_name"]
                 ),
                 None,
             )
@@ -235,12 +235,12 @@ def validate() -> None:
                 model_extra_data = {
                     "elo": round(model_extra_data["median"]),
                     "trust_range": [
-                        round(model_extra_data["median_minus_p2.5"]),
-                        round(model_extra_data["p97.5_minus_median"]),
+                        round(model_extra_data["median"] - model_extra_data["p2.5"]),
+                        round(model_extra_data["p97.5"] - model_extra_data["median"]),
                     ],
                     "total_votes": model_extra_data["n_match"],
                     "consumption_wh": round(
-                        model_extra_data["mean_wh_per_thousand_token"]
+                        model_extra_data["mean_conso_per_token"] * 1000
                     ),
                 }
 
