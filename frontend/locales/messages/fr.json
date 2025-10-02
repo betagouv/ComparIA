@@ -1475,7 +1475,7 @@
             "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
             "views": {
                 "graph": {
-                    "desc": "Sélectionnez un modèle pour connaitre son score de satisfaction et sa consommation énergétique",
+                    "desc": "Sélectionnez un modèle pour connaitre son score ELO et sa consommation énergétique",
                     "faq": {
                         "1": {
                             "desc": "Nous prenons le parti d’afficher en grisé (non analysés) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture.",
