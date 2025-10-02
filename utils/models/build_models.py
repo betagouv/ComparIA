@@ -266,6 +266,7 @@ def validate() -> None:
         f"""export const LICENSES = {[license["license"] for license in dumped_licenses]} as const
 export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
 export const MODELS = {[model["simple_name"] for model in generated_models.values()]} as const
+export const ARCHS = {list(set([model["arch"] for model in generated_models.values()]))} as const
 """
     )
 
