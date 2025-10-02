@@ -15,7 +15,7 @@ VOLUME /data
 
 EXPOSE 80
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 
 ARG GIT_COMMIT
 ENV GIT_COMMIT=$GIT_COMMIT
