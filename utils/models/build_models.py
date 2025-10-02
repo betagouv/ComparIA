@@ -21,6 +21,7 @@ FRONTEND_FOLDER = CURRENT_FOLDER.parent.parent / "frontend"
 LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
 MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
+MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
 GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
 I18N_PATH = FRONTEND_FOLDER / "locales" / "messages" / "fr.json"
 TS_DATA_PATH = FRONTEND_FOLDER / "src" / "lib" / "generated.ts"
@@ -34,8 +35,6 @@ I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
 I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
 
 PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-
-from languia.models import License, Organisation, Endpoint, Model
 
 Licenses = RootModel[list[License]]
 Orgas = RootModel[list[Organisation]]
@@ -122,6 +121,7 @@ def validate() -> None:
     raw_licenses = read_json(LICENSES_PATH)
     raw_orgas = read_json(MODELS_PATH)
     raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
+    raw_preferences_data = read_json(MODELS_PREFERENCES_PATH)
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
@@ -231,6 +231,7 @@ def validate() -> None:
                 ),
                 None,
             )
+            # FIXME check whos missing
             if model_extra_data is not None:
                 model_extra_data = {
                     "elo": round(model_extra_data["median"]),
@@ -240,8 +241,18 @@ def validate() -> None:
                     ],
                     "total_votes": model_extra_data["n_match"],
                     "consumption_wh": round(
-                        model_extra_data["mean_conso_per_token"] * 1000 * 1000)
-                    ,
+                        model_extra_data["mean_conso_per_token"] * 1000 * 1000
+                    ),
+                }
+
+            model_preferences_data = next(
+                (m for m in raw_preferences_data if m["model_name"] == model["id"]),
+                None,
+            )
+            # FIXME check whos missing
+            if model_preferences_data is not None:
+                model_preferences_data = {
+                    k: v for k, v in model_preferences_data.items() if k != "model_name"
                 }
 
             # Build complete model data (license + model) without translatable keys
@@ -252,6 +263,7 @@ def validate() -> None:
                     **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
                     **(model_extra_data or {}),
+                    "prefs": model_preferences_data,
                 }
             )
 
@@ -262,6 +274,7 @@ def validate() -> None:
     frontend_i18n = read_json(I18N_PATH)
     frontend_i18n["generated"] = sort_dict(i18n)
 
+    # FIXME add ARCHS
     TS_DATA_PATH.write_text(
         f"""export const LICENSES = {[license["license"] for license in dumped_licenses]} as const
 export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
