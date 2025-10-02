@@ -1,14 +1,18 @@
 <script lang="ts">
-  import { Badge, Link, Search, Table } from '$components/dsfr'
+  import { Link, Search, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
-  import { negativeReactions, positiveReactions, type ReactionPref } from '$lib/chatService.svelte'
-  import { getVotesContext } from '$lib/global.svelte'
+  import {
+    APINegativeReactions,
+    APIPositiveReactions,
+    negativeReactions,
+    positiveReactions,
+    type APIReactionPref
+  } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getLocale } from '$lib/i18n/runtime'
   import type { BotModel } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
-  type ColKind = 'name' | 'total_prefs' | 'positive_prefs_ratio' | ReactionPref
+  type ColKind = 'name' | 'total_prefs' | 'positive_prefs_ratio' | APIReactionPref
 
   let {
     id,
@@ -24,8 +28,6 @@
     onDownloadData: () => void
   } = $props()
 
-  const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
-
   // FIXME retrieve info from backend
   let lastUpdateDate = new Date()
   let selectedModel = $state<string>()
@@ -40,12 +42,12 @@
         label: m['ranking.preferences.table.cols.positive_prefs_ratio'](),
         tooltip: 'FIXME'
       },
-      ...positiveReactions.map((reaction) => ({
-        id: reaction,
+      ...positiveReactions.map((reaction, i) => ({
+        id: APIPositiveReactions[i],
         label: m[`vote.choices.positive.${reaction}`]()
       })),
-      ...negativeReactions.map((reaction) => ({
-        id: reaction,
+      ...negativeReactions.map((reaction, i) => ({
+        id: APINegativeReactions[i],
         label: m[`vote.choices.negative.${reaction}`]()
       }))
     ] as const
@@ -65,28 +67,21 @@
     }
   })
 
-  function getRandomInt(min: number, max: number) {
-    min = Math.ceil(min)
-    max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min + 1)) + min
-  }
-
   const rows = $derived.by(() => {
-    const models = data.sort((a, b) => sortIfDefined(a, b, 'elo'))
+    const models = data.filter((m) => !!m.prefs)
+    const reactions = [...APINegativeReactions, ...APIPositiveReactions]
 
     return models.map((model) => {
-      // FIXME fake data
-      const positiveCount = positiveReactions.map(() => getRandomInt(50, 150))
-      const negativeCount = negativeReactions.map(() => getRandomInt(20, 50))
-      const p = positiveCount.reduce((acc, n) => acc + n, 0)
-      const n = negativeCount.reduce((acc, n) => acc + n, 0)
-      const t = p + n
       return {
-        ...model,
-        total_prefs: t,
-        positive_prefs_ratio: p / t,
-        ...Object.fromEntries(positiveReactions.map((r, i) => [r, positiveCount[i] / t])),
-        ...Object.fromEntries(negativeReactions.map((r, i) => [r, negativeCount[i] / t])),
+        id: model.id,
+        simple_name: model.simple_name,
+        icon_path: model.icon_path,
+        organisation: model.organisation,
+        total_prefs: model.prefs!.total_prefs,
+        positive_prefs_ratio: model.prefs!.positive_prefs_ratio,
+        ...(Object.fromEntries(
+          reactions.map((r) => [r, model.prefs![r] / model.prefs!.total_prefs])
+        ) as Record<APIReactionPref, number>),
         search: (['id', 'simple_name', 'organisation'] as const)
           .map((key) => model[key].toLowerCase())
           .join(' ')
@@ -106,7 +101,6 @@
   })
 </script>
 
-FIXME FAUSSE DATA
 <Table
   {id}
   {cols}

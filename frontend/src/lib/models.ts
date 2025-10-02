@@ -1,3 +1,4 @@
+import type { APIReactionPref } from '$lib/chatService.svelte'
 import { getContext, setContext } from 'svelte'
 import { LICENSES, MODELS, ORGANISATIONS } from './generated'
 import { m } from './i18n/messages'
@@ -37,6 +38,12 @@ export interface APIBotModel {
   trust_range?: [number, number]
   total_votes?: number
   consumption_wh?: number
+  prefs:
+    | (Record<APIReactionPref, number> & {
+        total_prefs: number
+        positive_prefs_ratio: number
+      })
+    | null
 }
 export type BotModel = ReturnType<typeof parseModel>
 
