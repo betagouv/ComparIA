@@ -100,3 +100,4 @@ if __name__ == "__main__":
 
     merged_preferences = get_merged_votes_and_reactions_preferences(votes_preferences, reactions_preferences)
     merged_preferences.write_json(OUTPUT_PATH / "preferences.json")
+    merged_preferences.write_json(OUTPUT_PATH.parent.parent / "models" / "generated-preferences.json")
