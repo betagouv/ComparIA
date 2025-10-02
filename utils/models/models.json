@@ -797,6 +797,7 @@
       },
       {
         "simple_name": "Qwen 3 Max",
+        "status": "missing_data",
         "license": "proprietary",
         "id": "qwen3-max-2025-09-23",
         "release_date": "09/2025",
@@ -809,7 +810,9 @@
       },
       {
         "simple_name": "Qwen 3 8B",
+        "status": "missing_data",
         "license": "Apache 2.0",
+        "params": 8,
         "id": "qwen-3-8b",
         "arch": "dense",
         "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
