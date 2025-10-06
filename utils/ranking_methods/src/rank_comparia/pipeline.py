@@ -76,6 +76,7 @@ class RankingPipeline:
         # plot
         self.export_path.mkdir(parents=True, exist_ok=True)
         scores.write_csv(file=self.export_path / f"{self.method}_scores.csv", separator=";")
+        scores.write_json(file=self.export_path / f"{self.method}_scores.json")
 
         plot_scores_with_confidence(scores).save(self.export_path / f"{self.method}_scores_confidence.png", ppi=300)
         heatmap_data = format_matches_for_heatmap(self.matches)
