@@ -256,12 +256,12 @@
       background-color: #cecece;
     }
     .moe {
-      fill: var(--yellow-tournesol-850-200);
-      background-color: var(--yellow-tournesol-850-200);
+      fill: var(--blue-france-main-525);
+      background-color: var(--blue-france-main-525);
     }
     .dense {
-      fill: #0a76f6;
-      background-color: #0a76f6;
+      fill: var(--cg-orange);
+      background-color: var(--cg-orange);
     }
     .matformer {
       fill: var(--green-menthe-850-200);
