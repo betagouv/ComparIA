@@ -430,27 +430,6 @@
             "title": "For at lære mere"
         },
         "licenses": {
-            "commercial": "Kommerciel licens",
-            "descriptions": {
-                "Apache 2.0": "Denne licens tillader gratis brug, ændring og distribution, selv til kommercielle formål. Ud over friheden til brug garanterer den juridisk beskyttelse ved at indeholde en klausul om ikke-krænkelse og gennemsigtighed: alle ændringer skal dokumenteres og er derfor sporbare.",
-                "CC-BY-NC-4.0": "Denne licens giver dig ret til at dele og tilpasse indholdet, så længe du angiver forfatteren, men forbyder enhver kommerciel brug. Den giver fleksibilitet til ikke-kommerciel brug, samtidig med at forfatterens rettigheder beskyttes.",
-                "Gemma": "Denne licens er udformet med henblik på at fremme brugen, ændringen og videredistributionen af softwaren, men indeholder en klausul, der fastslår, at alle ændrede eller forbedrede versioner skal deles med fællesskabet under samme licens, hvilket fremmer samarbejde og gennemsigtighed i softwareudviklingen.",
-                "Jamba Open Model": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for organisationer med en årlig omsætning på over 50 millioner dollars.",
-                "Llama 3 Community": "Denne licens tillader gratis brug, ændring og distribution af koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere, og forbyder genbrug af koden eller genereret indhold til træning eller forbedring af konkurrerende modeller, hvilket beskytter Metas teknologiinvesteringer og brand.",
-                "Llama 3.1": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere. Genbrug af koden eller genereret indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at du angiver \"bygget med llama\" og inkluderer \"Llama\" i navnet for enhver distribution.",
-                "Llama 3.3": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere. Genbrug af koden eller genereret indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at du angiver \"bygget med llama\" og inkluderer \"Llama\" i navnet for enhver distribution.",
-                "Llama 4": "Denne licens giver dig ret til frit at bruge, reproducere, ændre og distribuere koden med angivelse af kilde, men pålægger begrænsninger for operationer, der overstiger 700 millioner månedlige brugere. Genbrug af koden eller genereret indhold til træning eller forbedring af afledte modeller er tilladt, forudsat at du angiver \"bygget med llama\" og inkluderer \"Llama\" i navnet for enhver distribution.",
-                "MIT": "MIT-licensen er en fri softwarelicens: Den giver enhver ret til at genbruge, ændre og distribuere modellen, selv til kommercielle formål, forudsat at den originale licens og copyright-meddelelser medtages.",
-                "Mistral AI Non-Production": "Denne licens giver dig ret til at dele og tilpasse indholdet, så længe du angiver forfatteren, men forbyder enhver kommerciel brug. Den giver fleksibilitet til ikke-kommerciel brug, samtidig med at forfatterens rettigheder beskyttes.",
-                "propriétaire Anthropic": "Modellen er tilgængelig under en betalt licens og kan tilgås via API på Anthropics platforme, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår.",
-                "propriétaire Gemini": "Modellen er tilgængelig under en betalt licens og kan tilgås via Gemini API, der er tilgængelig på Google AI Studio- og Vertex AI-platformene. Der opkræves et gebyr pr. brug baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår.",
-                "propriétaire Liquid": "Modellen er tilgængelig under en betalt licens og kan tilgås via API på Liquid AI's platforme, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens.",
-                "propriétaire Mistral": "Modellen er tilgængelig under en betalt licens og kan tilgås via Mistral og andre partner-API'er, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens.",
-                "propriétaire OpenAI": "Modellen er tilgængelig under en betalt licens og kan tilgås via API på OpenAI's platforme, hvor der opkræves en brugsafgift baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår.",
-                "propriétaire xAI": "Modellen er tilgængelig via xAI API og kræver betaling pr. brug baseret på antallet af behandlede tokens eller i henhold til virksomhedens vilkår."
-            },
-            "name": "Licens {license}",
-            "noDesc": "Licensoplysninger er ikke udfyldt for denne model.",
             "type": {
                 "openSource": "Open source",
                 "proprietary": "Ophavsretligt beskyttet",
@@ -497,18 +476,6 @@
             "b": "Model B"
         },
         "openWeight": {
-            "conditions": {
-                "copyleft": "Copyleft",
-                "free": "Permissiv",
-                "restricted": "Betinget"
-            },
-            "descriptions": {
-                "L": "Med {paramsCount} milliarder parametre hører denne model til kategorien store modeller (mellem 70 og 100 milliarder parametre).",
-                "M": "Med {paramsCount} milliarder parametre hører denne model til kategorien mellemstore modeller (mellem 20 og 70 milliarder parametre).",
-                "S": "Med {paramsCount} milliarder parametre hører denne model til kategorien små modeller (mellem 7 og 20 milliarder parametre).",
-                "XL": "Med {paramsCount} milliarder parametre hører denne model til kategorien meget store modeller.",
-                "XS": "Med {paramsCount} milliarder parametre hører denne model til kategorien meget små modeller (mindre end 7 milliarder parametre)."
-            },
             "tooltips": {
                 "copyleft": "Når modellen er ændret, skal den distribueres på ny under samme licens som kildemodellen.",
                 "free": "Når modellen er ændret, kan den distribueres under en anden licens end kildemodellen.",
@@ -516,26 +483,12 @@
                 "openWeight": "En såkaldt \"open weights\"-model, hvor vægtene, dvs. de parametre, der er lært under træningen, kan downloades af offentligheden, så de kan køre modellen på deres egen hardware. Om en model er \"open source\" er mere restriktivt (hovedsageligt i relation til gennemsigtigheden af træningskorpuset). Få modeller betragtes som \"open source\".",
                 "params": "Parametre eller vægte, talt i milliarder, er de variabler, som en model lærer under træningen, og som bestemmer dens svar. Jo større antallet af parametre er, jo større er deres læringsevne.",
                 "ram": "RAM (random access memory) gemmer data, der behandles af en LLM i realtid. Jo større modellen er, jo mere RAM kræver den for at køre."
-            },
-            "use": {
-                "attribution": "Kildeangivelse påkrævet",
-                "commercial": "Kommerciel brug",
-                "licenseType": "Licenstype",
-                "modification": "Ændringer er tilladt",
-                "requiredRam": "RAM nødvendig"
             }
         },
         "parameters": "{number} parametre",
         "ram": "{min} til {max} GB",
         "release": "Udgivet {date}",
         "size": {
-            "descriptions": {
-                "L": "Store modeller kræver betydelige ressourcer, men tilbyder den bedste ydeevne til avancerede opgaver som kreativ skrivning, dialogmodellering og applikationer, der kræver en detaljeret forståelse af konteksten.",
-                "M": "Mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og ydeevne: De er langt mindre ressourcekrævende end store modeller, men kan stadig håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnement.",
-                "S": "En lille model er mindre kompleks og ressourcekrævende sammenlignet med større modeller, men fungerer ofte tilstrækkeligt effektivt til forskellige opgaver (opsummering, oversættelse, tekstklassificering osv.)",
-                "XL": "Disse modeller, med billioner af parametre, er de mest komplekse og avancerede med hensyn til ydeevne og nøjagtighed. De beregnings- og hukommelsesressourcer, der kræves for at implementere disse modeller, er af en sådan karakter, at de er beregnet til de mest avancerede applikationer og højt specialiserede miljøer.",
-                "XS": "Meget små modeller med færre end 7 milliarder parametre er de mindst komplekse og mest ressourceeffektive og leverer tilstrækkelig ydeevne til enkle opgaver såsom tekstklassificering."
-            },
             "estimated": "Estimeret størrelse ({size})",
             "title": "Størrelse"
         }

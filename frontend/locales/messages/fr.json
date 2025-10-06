@@ -1220,27 +1220,6 @@
             "title": "Pour aller plus loin"
         },
         "licenses": {
-            "commercial": "Licence commerciale",
-            "descriptions": {
-                "Apache 2.0": "Cette licence permet d'utiliser, modifier et distribuer librement, même à des fins commerciales. Outre la liberté d’utilisation, elle garantit la protection juridique en incluant une clause de non-atteinte aux brevets et la transparence : toutes les modifications doivent être documentées et sont donc traçables.",
-                "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
-                "Gemma": "Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagée avec la communauté sous la même licence, favorisant ainsi la collaboration et la transparence dans le développement logiciel.",
-                "Jamba Open Model": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels.",
-                "Llama 3 Community": "Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta.",
-                "Llama 3.1": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
-                "Llama 3.3": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
-                "Llama 4": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
-                "Mistral AI Non-Production": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
-                "MIT": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur.",
-                "propriétaire Anthropic": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-                "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-                "propriétaire Liquid": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
-                "propriétaire Mistral": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
-                "propriétaire OpenAI": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-                "propriétaire xAI": "Le modèle est accessible via API xAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise."
-            },
-            "name": "Licence {licence}",
-            "noDesc": "Les informations de licence n'ont pas été remplies pour ce modèle.",
             "type": {
                 "openSource": "Open source",
                 "proprietary": "Propriétaire",
@@ -1294,18 +1273,6 @@
             "b": "Modèle B"
         },
         "openWeight": {
-            "conditions": {
-                "copyleft": "Copyleft (gauche d'auteur)",
-                "free": "Permissive",
-                "restricted": "Sous conditions"
-            },
-            "descriptions": {
-                "L": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des grands modèles (entre 70 et 100 milliards de paramètres).",
-                "M": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des moyens modèles (entre 20 et 70 milliards de paramètres).",
-                "S": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des petits modèles (entre 7 et 20 milliards de paramètres).",
-                "XL": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des très grands modèles.",
-                "XS": "Doté de {paramsCount} milliards de paramètres, ce modèle fait partie de la classe des modèles très petits (moins de 7 milliards de paramètres)."
-            },
             "tooltips": {
                 "copyleft": "Une fois modifié, le modèle doit être redistribué sous la même licence que celle du modèle source.",
                 "free": "Une fois modifié, le modèle peut être redistribué sous une licence différente du modèle source.",
@@ -1313,13 +1280,6 @@
                 "openWeight": "Modèle dit « open weights » dont les poids, c’est-à-dire les paramètres appris pendant son entraînement, sont téléchargeables par le public, lui permettant de faire fonctionner le modèle sur son propre matériel. Qu'un modèle soit « open source » est plus contraignant (principalement par rapport à la transparence du corpus d'entraînement), et rares sont les modèles qui sont considérés « open source ».",
                 "params": "Les paramètres ou les poids, comptés en milliards, sont les variables, apprises par un modèle au cours de son entrainement, qui déterminent ses réponses. Plus le nombre de paramètres est important, plus il a besoin de ressources pour fonctionner.",
                 "ram": "La mémoire vive stocke les données traitées par un LLM en temps réel. Plus le modèle est grand, plus il a besoin de mémoire vive pour fonctionner."
-            },
-            "use": {
-                "attribution": "Attribution requise",
-                "commercial": "Utilisation commerciale",
-                "licenseType": "Type de licence",
-                "modification": "Modification autorisée",
-                "requiredRam": "RAM nécessaire"
             }
         },
         "parameters": "{number} mds de paramètres",
@@ -1332,13 +1292,6 @@
                 "S": "7 à 20 mds",
                 "XL": ">150 mds",
                 "XS": "<7 mds"
-            },
-            "descriptions": {
-                "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
-                "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-                "S": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
-                "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
-                "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte."
             },
             "estimated": "Taille estimée ({size})",
             "title": "Taille"

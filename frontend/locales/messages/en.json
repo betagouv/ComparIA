@@ -1112,27 +1112,6 @@
             "title": "To learn more"
         },
         "licenses": {
-            "commercial": "Commercial license",
-            "descriptions": {
-                "Apache 2.0": "This license allows for free use, modification, and distribution, even for commercial purposes. In addition to freedom of use, it guarantees legal protection by including a non-infringement clause and transparency: all modifications must be documented and are therefore traceable.",
-                "CC-BY-NC-4.0": "This license allows you to share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights.",
-                "Gemma": "This license is designed to encourage the use, modification, and redistribution of the software but includes a clause stating that all modified or improved versions must be shared with the community under the same license, thus promoting collaboration and transparency in software development.",
-                "Jamba Open Model": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for organizations with over $50 million in annual revenue.",
-                "Llama 3 Community": "This license allows the free use, modification, and distribution of the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users and prohibits the reuse of the code or generated content for training or improving competing models, thus protecting Meta's technology investments and brand.",
-                "Llama 3.1": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
-                "Llama 3.3": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
-                "Llama 4": "This license allows you to freely use, reproduce, modify, and distribute the code with attribution, but imposes restrictions for operations exceeding 700 million monthly users. Reuse of the code or generated content for training or improving derivative models is permitted provided that you display “built with llama” and include “Llama” in their name for any distribution.",
-                "MIT": "The MIT License is a permissive free software license: it allows anyone to reuse, modify, and distribute the model, even for commercial purposes, provided they include the original license and copyright notices.",
-                "Mistral AI Non-Production": "This license allows you to share and adapt the content as long as you credit the author, but prohibits any commercial use. It provides flexibility for non-commercial uses while protecting the author's rights.",
-                "propriétaire Anthropic": "The model is available under a paid license and accessible via API on Anthropic's platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
-                "propriétaire Gemini": "The model is available under a paid license and accessible via the Gemini API available on the Google AI Studio and Vertex AI platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
-                "propriétaire Liquid": "The model is available under a paid license and accessible via API on Liquid AI's platforms, requiring a pay-per-use fee based on the number of tokens processed.",
-                "propriétaire Mistral": "The model is available under a paid license and accessible via the Mistral and other partner APIs, requiring a pay-per-use fee based on the number of tokens processed.",
-                "propriétaire OpenAI": "The model is available under a paid license and accessible via API on OpenAI's platforms, requiring a pay-per-use fee based on the number of tokens processed or according to the company's terms.",
-                "propriétaire xAI": "The model is accessible via the xAI API, requiring pay-per-use based on the number of tokens processed or according to the company's terms."
-            },
-            "name": "License {licence}",
-            "noDesc": "Licensing information has not been filled for this model.",
             "type": {
                 "openSource": "Open source",
                 "proprietary": "Proprietary",
@@ -1186,18 +1165,6 @@
             "b": "Model B"
         },
         "openWeight": {
-            "conditions": {
-                "copyleft": "Copyleft",
-                "free": "Permissive",
-                "restricted": "Conditional"
-            },
-            "descriptions": {
-                "L": "With {paramsCount} billion parameters, this model is part of the large model category (between 70 and 100 billion parameters).",
-                "M": "With {paramsCount} billion parameters, this model is part of the medium-sized model category (between 20 and 70 billion parameters).",
-                "S": "With {paramsCount} billion parameters, this model is part of the small model category (between 7 and 20 billion parameters).",
-                "XL": "With {paramsCount} billion parameters, this model is part of the very large model category.",
-                "XS": "With {paramsCount} billion parameters, this model is part of the very small model category (less than 7 billion parameters)."
-            },
             "tooltips": {
                 "copyleft": "Once modified, the model must be redistributed under the same license as the source model.",
                 "free": "Once modified, the model may be redistributed under a different license than the source model.",
@@ -1205,26 +1172,12 @@
                 "openWeight": "A so-called \"open weights\" model whose weights, i.e. the parameters learned during training, are downloadable by the public, allowing them to run the model on their own hardware. Whether a model is \"open source\" is more restrictive (mainly in relation to the transparency of the training corpus), and few models are considered \"open source\".",
                 "params": "Parameters or weights, counted in billions, are the variables learned by a model during training that determine its responses. The greater the number of parameters, the more learning capacity they have.",
                 "ram": "RAM (random access memory) stores data processed by an LLM in real time. The larger the model, the more RAM it needs to run."
-            },
-            "use": {
-                "attribution": "Attribution required",
-                "commercial": "Commercial Use",
-                "licenseType": "License type",
-                "modification": "Modification authorized",
-                "requiredRam": "RAM required"
             }
         },
         "parameters": "{number} parameters",
         "ram": "{min} to {max} GB",
         "release": "Released on {date}",
         "size": {
-            "descriptions": {
-                "L": "Large models require significant resources, but offer the best performance for advanced tasks like creative writing, dialogue modeling, and applications requiring a fine-grained understanding of context.",
-                "M": "Medium sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.",
-                "S": "A small model is less complex and resource-intensive compared to larger models, while still providing sufficient performance for various tasks (summarization, translation, text classification, etc.)",
-                "XL": "These models, with hundreds of billions of parameters, are the most complex and advanced in terms of performance and accuracy. The computing and memory resources required to deploy these models are such that they are intended for the most advanced applications and highly specialized environments.",
-                "XS": "Very small models, with fewer than 7 billion parameters, are the least complex and most resource-efficient, providing sufficient performance for simple tasks such as text classification."
-            },
             "estimated": "Estimated size ({size})",
             "title": "Size"
         }
