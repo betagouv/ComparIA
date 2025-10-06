@@ -4,8 +4,6 @@
   import {
     APINegativeReactions,
     APIPositiveReactions,
-    negativeReactions,
-    positiveReactions,
     type APIReactionPref
   } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
@@ -35,24 +33,19 @@
 
   const cols = (
     [
-      { id: 'name', label: m['ranking.table.data.cols.name']() },
-      { id: 'total_prefs', label: m['ranking.preferences.table.cols.total_prefs']() },
-      {
-        id: 'positive_prefs_ratio',
-        label: m['ranking.preferences.table.cols.positive_prefs_ratio'](),
-        tooltip: 'FIXME'
-      },
-      ...positiveReactions.map((reaction, i) => ({
-        id: APIPositiveReactions[i],
-        label: m[`vote.choices.positive.${reaction}`]()
+      { id: 'name' },
+      { id: 'total_prefs' },
+      { id: 'positive_prefs_ratio', tooltip: 'FIXME' },
+      ...APIPositiveReactions.map((reaction, i) => ({
+        id: reaction
       })),
-      ...negativeReactions.map((reaction, i) => ({
-        id: APINegativeReactions[i],
-        label: m[`vote.choices.negative.${reaction}`]()
+      ...APINegativeReactions.map((reaction, i) => ({
+        id: reaction
       }))
     ] as const
   ).map((col) => ({
     ...col,
+    label: m[`ranking.preferences.table.cols.${col.id}`](),
     orderable: col.id !== 'total_prefs'
   }))
 
@@ -118,7 +111,7 @@
         </p>
 
         <!-- FIXME 404 -->
-        <Link
+        <!-- <Link
           native={false}
           href="#"
           download="true"
@@ -127,7 +120,7 @@
           iconPos="right"
           class="text-[14px]!"
           onclick={() => onDownloadData()}
-        />
+        /> -->
       </div>
     </div>
 

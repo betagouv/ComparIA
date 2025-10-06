@@ -1581,8 +1581,16 @@
             "tabLabel": "Focus préférences",
             "table": {
                 "cols": {
+                    "clear_formatting": "Mise en forme<br> claire",
+                    "complete": "Complète",
+                    "creative": "Créative",
+                    "incorrect": "Incorrecte",
+                    "instructions_not_followed": "Instructions non suivies",
+                    "name": "Modèle",
                     "positive_prefs_ratio": "Répartition des préférences",
-                    "total_prefs": "Total préférences"
+                    "superficial": "Superficielle",
+                    "total_prefs": "Total préférences",
+                    "useful": "Utile"
                 }
             },
             "title": "Comment se répartissent les préférences des utilisateurs ?"
