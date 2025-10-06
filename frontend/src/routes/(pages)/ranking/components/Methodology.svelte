@@ -12,7 +12,10 @@
   <p class="text-[14px]! text-dark-grey">
     {@html sanitize(
       m['ranking.methodo.desc.2']({
-        linkProps: externalLinkProps({ href: 'FIXME', class: 'text-primary!' })
+        linkProps: externalLinkProps({
+          href: 'https://github.com/betagouv/ComparIA/blob/develop/utils/ranking_methods/notebooks/graph.ipynb',
+          class: 'text-primary!'
+        })
       })
     )}
   </p>
