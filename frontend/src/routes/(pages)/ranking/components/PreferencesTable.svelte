@@ -37,10 +37,12 @@
       { id: 'total_prefs' },
       { id: 'positive_prefs_ratio', tooltip: 'FIXME' },
       ...APIPositiveReactions.map((reaction, i) => ({
-        id: reaction
+        id: reaction,
+        colHeaderClass: 'bg-(--green-emeraude-975-75)!'
       })),
       ...APINegativeReactions.map((reaction, i) => ({
-        id: reaction
+        id: reaction,
+        colHeaderClass: 'bg-(--warning-950-100)!'
       }))
     ] as const
   ).map((col) => ({
