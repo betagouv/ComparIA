@@ -147,7 +147,7 @@
     {:else if col.id === 'total_prefs'}
       <strong>{model.total_prefs}</strong>
     {:else if col.id === 'positive_prefs_ratio'}
-      {@const size = Math.ceil(model[col.id] * 100)}
+      {@const size = Math.round(model[col.id] * 100)}
       <div class="flex h-[25px] w-full rounded-sm border border-[#cecece] text-[12px] font-bold">
         <div
           class="w-(--width) bg-(--green-emeraude-975-75) text-(--green-emeraude-sun-425-moon-753) rounded-s-sm ps-1"
