@@ -23,7 +23,7 @@
     "commercial_use": false,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 1006,
+    "elo": 996,
     "endpoint": {
       "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
       "api_model_id": "c4ai-aya-expanse-32b",
@@ -47,15 +47,17 @@
       "total_prefs": 2327,
       "useful": 643
     },
+    "rank_p2.5": 13,
+    "rank_p97.5": 63,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Aya Expanse 32B",
     "status": "enabled",
-    "total_votes": 3459,
+    "total_votes": 3552,
     "trust_range": [
-      104,
+      89,
       94
     ],
     "url": "https://huggingface.co/CohereForAI/aya-expanse-32b"
@@ -65,7 +67,7 @@
     "commercial_use": false,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 986,
+    "elo": 980,
     "friendly_size": "S",
     "icon_path": "cohere.png",
     "id": "aya-expanse-8b",
@@ -84,6 +86,8 @@
       "total_prefs": 938,
       "useful": 243
     },
+    "rank_p2.5": 16,
+    "rank_p97.5": 66,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 8,
@@ -93,7 +97,7 @@
     "total_votes": 1302,
     "trust_range": [
       96,
-      98
+      102
     ]
   },
   "Aya23-35B": {
@@ -120,7 +124,7 @@
     "commercial_use": false,
     "consumption_wh": 8,
     "distribution": "open-weights",
-    "elo": 934,
+    "elo": 935,
     "friendly_size": "M",
     "icon_path": "cohere.png",
     "id": "c4ai-command-r-08-2024",
@@ -139,6 +143,8 @@
       "total_prefs": 4267,
       "useful": 1077
     },
+    "rank_p2.5": 27,
+    "rank_p97.5": 69,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 35,
@@ -147,8 +153,8 @@
     "status": "disabled",
     "total_votes": 5999,
     "trust_range": [
-      102,
-      107
+      89,
+      103
     ]
   },
   "chocolatine-14b-instruct-dpo-v1.2": {
@@ -176,7 +182,7 @@
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 756,
+    "elo": 750,
     "friendly_size": "S",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-14b-instruct-dpo-v1.2-q4",
@@ -196,6 +202,8 @@
       "useful": 83
     },
     "quantization": "q4",
+    "rank_p2.5": 66,
+    "rank_p97.5": 74,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 14,
@@ -204,8 +212,8 @@
     "status": "archived",
     "total_votes": 309,
     "trust_range": [
-      122,
-      121
+      115,
+      126
     ],
     "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF"
   },
@@ -234,7 +242,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 831,
+    "elo": 821,
     "friendly_size": "S",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-2-14b-instruct-v2.0.3-q8",
@@ -254,6 +262,8 @@
       "useful": 280
     },
     "quantization": "q8",
+    "rank_p2.5": 60,
+    "rank_p97.5": 74,
     "reasoning": false,
     "release_date": "02/2025",
     "required_ram": 28,
@@ -262,8 +272,8 @@
     "status": "archived",
     "total_votes": 1796,
     "trust_range": [
-      106,
-      107
+      99,
+      104
     ],
     "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3"
   },
@@ -273,7 +283,7 @@
     "commercial_use": null,
     "consumption_wh": 134,
     "distribution": "api-only",
-    "elo": 985,
+    "elo": 979,
     "friendly_size": "XL",
     "icon_path": "anthropic.png",
     "id": "claude-3-5-sonnet-v2",
@@ -292,6 +302,8 @@
       "total_prefs": 4171,
       "useful": 1303
     },
+    "rank_p2.5": 15,
+    "rank_p97.5": 66,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 300,
@@ -300,8 +312,8 @@
     "status": "archived",
     "total_votes": 5685,
     "trust_range": [
-      104,
-      101
+      98,
+      106
     ],
     "url": "https://www.anthropic.com/news/3-5-models-and-computer-use"
   },
@@ -310,7 +322,7 @@
     "commercial_use": null,
     "consumption_wh": 134,
     "distribution": "api-only",
-    "elo": 1068,
+    "elo": 1061,
     "friendly_size": "XL",
     "icon_path": "anthropic.png",
     "id": "claude-3-7-sonnet",
@@ -329,6 +341,8 @@
       "total_prefs": 3333,
       "useful": 1003
     },
+    "rank_p2.5": 3,
+    "rank_p97.5": 52,
     "reasoning": false,
     "release_date": "02/2025",
     "required_ram": 200,
@@ -337,8 +351,8 @@
     "status": "disabled",
     "total_votes": 3909,
     "trust_range": [
-      100,
-      101
+      102,
+      99
     ],
     "url": "https://www.anthropic.com/news/claude-3-7-sonnet"
   },
@@ -371,7 +385,7 @@
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
-    "elo": 1070,
+    "elo": 1063,
     "endpoint": {
       "api_model_id": "anthropic/claude-sonnet-4",
       "api_type": "openrouter"
@@ -394,15 +408,17 @@
       "total_prefs": 449,
       "useful": 119
     },
+    "rank_p2.5": 3,
+    "rank_p97.5": 51,
     "reasoning": false,
     "release_date": "05/2025",
     "required_ram": 200,
     "reuse": false,
     "simple_name": "Claude 4 Sonnet",
     "status": "enabled",
-    "total_votes": 983,
+    "total_votes": 1092,
     "trust_range": [
-      92,
+      97,
       95
     ]
   },
@@ -411,7 +427,7 @@
     "commercial_use": false,
     "consumption_wh": 18,
     "distribution": "open-weights",
-    "elo": 1083,
+    "elo": 1075,
     "endpoint": {
       "api_model_id": "cohere/command-a",
       "api_type": "openrouter"
@@ -434,16 +450,18 @@
       "total_prefs": 3673,
       "useful": 994
     },
+    "rank_p2.5": 2,
+    "rank_p97.5": 49,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 111,
     "reuse": true,
     "simple_name": "Command A",
     "status": "enabled",
-    "total_votes": 4302,
+    "total_votes": 4415,
     "trust_range": [
-      92,
-      95
+      98,
+      98
     ],
     "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025"
   },
@@ -497,7 +515,7 @@
     "commercial_use": true,
     "consumption_wh": 47,
     "distribution": "open-weights",
-    "elo": 1043,
+    "elo": 1036,
     "endpoint": {
       "api_model_id": "deepseek/deepseek-r1",
       "api_type": "openrouter"
@@ -520,16 +538,18 @@
       "total_prefs": 3084,
       "useful": 846
     },
+    "rank_p2.5": 6,
+    "rank_p97.5": 57,
     "reasoning": true,
     "release_date": "01/2025",
     "required_ram": 671,
     "reuse": true,
     "simple_name": "DeepSeek R1",
     "status": "archived",
-    "total_votes": 3515,
+    "total_votes": 3799,
     "trust_range": [
-      97,
-      97
+      95,
+      105
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1"
   },
@@ -563,7 +583,7 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 965,
+    "elo": 959,
     "endpoint": {
       "api_model_id": "deepseek/deepseek-r1-distill-llama-70b",
       "api_type": "openrouter"
@@ -586,16 +606,18 @@
       "total_prefs": 1915,
       "useful": 476
     },
+    "rank_p2.5": 23,
+    "rank_p97.5": 68,
     "reasoning": true,
     "release_date": "01/2025",
     "required_ram": 70,
     "reuse": true,
     "simple_name": "DeepSeek R1 Llama 70B",
     "status": "enabled",
-    "total_votes": 2552,
+    "total_votes": 2559,
     "trust_range": [
-      101,
-      101
+      96,
+      95
     ],
     "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b"
   },
@@ -605,7 +627,7 @@
     "commercial_use": true,
     "consumption_wh": 47,
     "distribution": "open-weights",
-    "elo": 1106,
+    "elo": 1104,
     "endpoint": {
       "api_model_id": "deepseek/deepseek-chat-v3-0324",
       "api_type": "openrouter"
@@ -628,16 +650,18 @@
       "total_prefs": 4199,
       "useful": 1160
     },
+    "rank_p2.5": 1,
+    "rank_p97.5": 39,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 685,
     "reuse": true,
     "simple_name": "DeepSeek V3",
     "status": "archived",
-    "total_votes": 4755,
+    "total_votes": 4832,
     "trust_range": [
-      95,
-      98
+      100,
+      96
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324"
   },
@@ -647,7 +671,7 @@
     "commercial_use": true,
     "consumption_wh": 47,
     "distribution": "open-weights",
-    "elo": 1097,
+    "elo": 1096,
     "friendly_size": "XL",
     "icon_path": "deepseek.png",
     "id": "deepseek-v3-chat",
@@ -666,6 +690,8 @@
       "total_prefs": 5055,
       "useful": 1331
     },
+    "rank_p2.5": 2,
+    "rank_p97.5": 44,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 671,
@@ -675,7 +701,7 @@
     "total_votes": 5394,
     "trust_range": [
       104,
-      97
+      86
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3"
   },
@@ -685,7 +711,7 @@
     "commercial_use": null,
     "consumption_wh": 133,
     "distribution": "api-only",
-    "elo": 1075,
+    "elo": 1069,
     "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-1.5-pro-001",
@@ -704,6 +730,8 @@
       "total_prefs": 3606,
       "useful": 971
     },
+    "rank_p2.5": 2,
+    "rank_p97.5": 53,
     "reasoning": false,
     "release_date": "02/2024",
     "required_ram": 440,
@@ -712,8 +740,8 @@
     "status": "archived",
     "total_votes": 2360,
     "trust_range": [
-      118,
-      97
+      116,
+      108
     ],
     "url": "https://ai.google.dev/gemini-api"
   },
@@ -723,7 +751,7 @@
     "commercial_use": null,
     "consumption_wh": 134,
     "distribution": "api-only",
-    "elo": 1035,
+    "elo": 1030,
     "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-1.5-pro-002",
@@ -742,6 +770,8 @@
       "total_prefs": 4108,
       "useful": 1148
     },
+    "rank_p2.5": 6,
+    "rank_p97.5": 58,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 440,
@@ -750,8 +780,8 @@
     "status": "archived",
     "total_votes": 5035,
     "trust_range": [
-      95,
-      98
+      92,
+      105
     ],
     "url": "https://ai.google.dev/gemini-api"
   },
@@ -760,7 +790,7 @@
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
-    "elo": 1116,
+    "elo": 1108,
     "friendly_size": "M",
     "icon_path": "google.png",
     "id": "gemini-2.0-flash-001",
@@ -779,6 +809,8 @@
       "total_prefs": 5134,
       "useful": 1350
     },
+    "rank_p2.5": 1,
+    "rank_p97.5": 40,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 40,
@@ -787,7 +819,7 @@
     "status": "archived",
     "total_votes": 5903,
     "trust_range": [
-      92,
+      104,
       96
     ],
     "url": "https://ai.google.dev/gemini-api"
@@ -797,7 +829,7 @@
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
-    "elo": 1129,
+    "elo": 1124,
     "friendly_size": "M",
     "icon_path": "google.png",
     "id": "gemini-2.0-flash-exp",
@@ -816,6 +848,8 @@
       "total_prefs": 2658,
       "useful": 782
     },
+    "rank_p2.5": 1,
+    "rank_p97.5": 31,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 40,
@@ -824,7 +858,7 @@
     "status": "archived",
     "total_votes": 2816,
     "trust_range": [
-      103,
+      94,
       98
     ],
     "url": "https://ai.google.dev/gemini-api"
@@ -834,7 +868,7 @@
     "commercial_use": null,
     "consumption_wh": 12,
     "distribution": "api-only",
-    "elo": 1143,
+    "elo": 1134,
     "endpoint": {
       "api_model_id": "gemini-2.5-flash",
       "api_type": "vertex_ai"
@@ -857,16 +891,18 @@
       "total_prefs": 433,
       "useful": 107
     },
+    "rank_p2.5": 1,
+    "rank_p97.5": 28,
     "reasoning": false,
     "release_date": "06/2025",
     "required_ram": 70,
     "reuse": false,
     "simple_name": "Gemini 2.5 Flash",
     "status": "enabled",
-    "total_votes": 745,
+    "total_votes": 812,
     "trust_range": [
-      101,
-      107
+      96,
+      99
     ]
   },
   "gemma-2-27b-it-q8": {
@@ -874,7 +910,7 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1014,
+    "elo": 1012,
     "friendly_size": "M",
     "icon_path": "google.png",
     "id": "gemma-2-27b-it-q8",
@@ -893,6 +929,8 @@
       "total_prefs": 1081,
       "useful": 318
     },
+    "rank_p2.5": 7,
+    "rank_p97.5": 65,
     "reasoning": false,
     "release_date": "06/2024",
     "required_ram": 27,
@@ -901,8 +939,8 @@
     "status": "archived",
     "total_votes": 762,
     "trust_range": [
-      103,
-      108
+      119,
+      113
     ],
     "url": "https://huggingface.co/google/gemma-2-27b-it"
   },
@@ -931,7 +969,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 968,
+    "elo": 964,
     "friendly_size": "S",
     "icon_path": "google.png",
     "id": "gemma-2-9b-it",
@@ -950,6 +988,8 @@
       "total_prefs": 4865,
       "useful": 1250
     },
+    "rank_p2.5": 23,
+    "rank_p97.5": 68,
     "reasoning": false,
     "release_date": "06/2024",
     "required_ram": 9,
@@ -958,8 +998,8 @@
     "status": "archived",
     "total_votes": 5116,
     "trust_range": [
-      99,
-      102
+      101,
+      93
     ],
     "url": "https://huggingface.co/google/gemma-2-9b-it"
   },
@@ -968,7 +1008,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 1090,
+    "elo": 1085,
     "endpoint": {
       "api_model_id": "google/gemma-3-12b-it",
       "api_type": "openrouter"
@@ -991,16 +1031,18 @@
       "total_prefs": 3808,
       "useful": 949
     },
+    "rank_p2.5": 2,
+    "rank_p97.5": 48,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 12,
     "reuse": true,
     "simple_name": "Gemma 3 12B",
     "status": "enabled",
-    "total_votes": 4423,
+    "total_votes": 4522,
     "trust_range": [
-      102,
-      97
+      105,
+      93
     ],
     "url": "https://huggingface.co/google/gemma-3-12b-it"
   },
@@ -1009,7 +1051,7 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1118,
+    "elo": 1108,
     "endpoint": {
       "api_model_id": "google/gemma-3-27b-it",
       "api_type": "openrouter"
@@ -1032,16 +1074,18 @@
       "total_prefs": 4329,
       "useful": 1128
     },
+    "rank_p2.5": 1,
+    "rank_p97.5": 37,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 27,
     "reuse": true,
     "simple_name": "Gemma 3 27B",
     "status": "enabled",
-    "total_votes": 4781,
+    "total_votes": 4859,
     "trust_range": [
-      100,
-      80
+      97,
+      101
     ],
     "url": "https://huggingface.co/google/gemma-3-27b-it"
   },
@@ -1050,7 +1094,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1066,
+    "elo": 1057,
     "endpoint": {
       "api_model_id": "google/gemma-3-4b-it",
       "api_type": "openrouter"
@@ -1073,16 +1117,18 @@
       "total_prefs": 4204,
       "useful": 1014
     },
+    "rank_p2.5": 4,
+    "rank_p97.5": 54,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 4,
     "reuse": true,
     "simple_name": "Gemma 3 4B",
     "status": "enabled",
-    "total_votes": 5240,
+    "total_votes": 5382,
     "trust_range": [
-      100,
-      106
+      99,
+      99
     ],
     "url": "https://huggingface.co/google/gemma-3-4b-it"
   },
@@ -1092,7 +1138,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1070,
+    "elo": 1019,
     "endpoint": {
       "api_model_id": "google/gemma-3n-e4b-it",
       "api_type": "openrouter"
@@ -1115,16 +1161,18 @@
       "total_prefs": 350,
       "useful": 81
     },
+    "rank_p2.5": 7,
+    "rank_p97.5": 60,
     "reasoning": false,
     "release_date": "05/2025",
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Gemma 3n 4B",
     "status": "enabled",
-    "total_votes": 662,
+    "total_votes": 1087,
     "trust_range": [
-      101,
-      93
+      93,
+      106
     ]
   },
   "glm-4.5": {
@@ -1133,7 +1181,7 @@
     "commercial_use": true,
     "consumption_wh": 157,
     "distribution": "open-weights",
-    "elo": 1104,
+    "elo": 1099,
     "endpoint": {
       "api_model_id": "z-ai/glm-4.5",
       "api_type": "openrouter"
@@ -1156,16 +1204,18 @@
       "total_prefs": 170,
       "useful": 60
     },
+    "rank_p2.5": 2,
+    "rank_p97.5": 38,
     "reasoning": true,
     "release_date": "07/2025",
     "required_ram": 355,
     "reuse": true,
     "simple_name": "GLM 4.5",
     "status": "enabled",
-    "total_votes": 120,
+    "total_votes": 127,
     "trust_range": [
-      89,
-      91
+      88,
+      90
     ]
   },
   "gpt-3.5-turbo-0301": {
@@ -1193,7 +1243,7 @@
     "commercial_use": null,
     "consumption_wh": 12,
     "distribution": "api-only",
-    "elo": 1051,
+    "elo": 1045,
     "endpoint": {
       "api_model_id": "openai/gpt-4.1-mini",
       "api_type": "openrouter"
@@ -1216,16 +1266,18 @@
       "total_prefs": 3961,
       "useful": 1153
     },
+    "rank_p2.5": 5,
+    "rank_p97.5": 56,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 70,
     "reuse": false,
     "simple_name": "GPT-4.1 Mini",
     "status": "enabled",
-    "total_votes": 5608,
+    "total_votes": 5695,
     "trust_range": [
-      95,
-      99
+      99,
+      102
     ],
     "url": "https://openai.com/index/gpt-4-1/"
   },
@@ -1234,7 +1286,7 @@
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
-    "elo": 989,
+    "elo": 982,
     "endpoint": {
       "api_model_id": "openai/gpt-4.1-nano",
       "api_type": "openrouter"
@@ -1257,16 +1309,18 @@
       "total_prefs": 2790,
       "useful": 838
     },
+    "rank_p2.5": 13,
+    "rank_p97.5": 65,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 35,
     "reuse": false,
     "simple_name": "GPT 4.1 Nano",
     "status": "enabled",
-    "total_votes": 4214,
+    "total_votes": 4300,
     "trust_range": [
-      99,
-      97
+      94,
+      108
     ],
     "url": "https://openai.com/index/gpt-4-1/"
   },
@@ -1275,7 +1329,7 @@
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
-    "elo": 978,
+    "elo": 973,
     "friendly_size": "XL",
     "icon_path": "openai.svg",
     "id": "gpt-4o-2024-08-06",
@@ -1294,6 +1348,8 @@
       "total_prefs": 4048,
       "useful": 1230
     },
+    "rank_p2.5": 18,
+    "rank_p97.5": 67,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 200,
@@ -1303,7 +1359,7 @@
     "total_votes": 5900,
     "trust_range": [
       98,
-      102
+      97
     ],
     "url": "https://platform.openai.com/docs/models/gpt#gpt-4o"
   },
@@ -1312,7 +1368,7 @@
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
-    "elo": 997,
+    "elo": 990,
     "friendly_size": "M",
     "icon_path": "openai.svg",
     "id": "gpt-4o-mini-2024-07-18",
@@ -1331,6 +1387,8 @@
       "total_prefs": 5029,
       "useful": 1492
     },
+    "rank_p2.5": 14,
+    "rank_p97.5": 65,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 35,
@@ -1340,7 +1398,7 @@
     "total_votes": 6994,
     "trust_range": [
       102,
-      94
+      100
     ],
     "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini"
   },
@@ -1419,7 +1477,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1106,
+    "elo": 1089,
     "endpoint": {
       "api_model_id": "openai/gpt-oss-120b",
       "api_type": "openrouter"
@@ -1442,16 +1500,18 @@
       "total_prefs": 478,
       "useful": 97
     },
+    "rank_p2.5": 2,
+    "rank_p97.5": 45,
     "reasoning": true,
     "release_date": "08/2025",
     "required_ram": 117,
     "reuse": true,
     "simple_name": "GPT OSS-120B",
     "status": "enabled",
-    "total_votes": 788,
+    "total_votes": 842,
     "trust_range": [
-      102,
-      92
+      103,
+      97
     ]
   },
   "gpt-oss-20b": {
@@ -1460,7 +1520,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1046,
+    "elo": 1033,
     "endpoint": {
       "api_model_id": "openai/gpt-oss-20b",
       "api_type": "openrouter"
@@ -1483,16 +1543,18 @@
       "total_prefs": 382,
       "useful": 77
     },
+    "rank_p2.5": 6,
+    "rank_p97.5": 58,
     "reasoning": true,
     "release_date": "08/2025",
     "required_ram": 21,
     "reuse": true,
     "simple_name": "GPT OSS-20B",
     "status": "enabled",
-    "total_votes": 745,
+    "total_votes": 1085,
     "trust_range": [
-      106,
-      110
+      98,
+      97
     ]
   },
   "grok-3-mini-beta": {
@@ -1500,7 +1562,7 @@
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
-    "elo": 1079,
+    "elo": 1071,
     "endpoint": {
       "api_model_id": "x-ai/grok-3-mini-beta",
       "api_type": "openrouter"
@@ -1523,16 +1585,18 @@
       "total_prefs": 1455,
       "useful": 421
     },
+    "rank_p2.5": 2,
+    "rank_p97.5": 50,
     "reasoning": true,
     "release_date": "04/2025",
     "required_ram": 200,
     "reuse": false,
     "simple_name": "Grok 3 Mini",
     "status": "archived",
-    "total_votes": 1560,
+    "total_votes": 1572,
     "trust_range": [
-      94,
-      96
+      97,
+      99
     ],
     "url": "https://x.ai/news/grok-3"
   },
@@ -1565,7 +1629,7 @@
     "commercial_use": true,
     "consumption_wh": 238,
     "distribution": "open-weights",
-    "elo": 953,
+    "elo": 948,
     "friendly_size": "XL",
     "icon_path": "nous.webp",
     "id": "hermes-3-llama-3.1-405b",
@@ -1584,6 +1648,8 @@
       "total_prefs": 5046,
       "useful": 1451
     },
+    "rank_p2.5": 25,
+    "rank_p97.5": 69,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 405,
@@ -1592,8 +1658,8 @@
     "status": "disabled",
     "total_votes": 6782,
     "trust_range": [
-      100,
-      99
+      98,
+      100
     ],
     "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B"
   },
@@ -1626,7 +1692,7 @@
     "commercial_use": true,
     "consumption_wh": 48,
     "distribution": "open-weights",
-    "elo": 986,
+    "elo": 980,
     "friendly_size": "XL",
     "icon_path": "ai21.webp",
     "id": "jamba-1.5-large",
@@ -1645,6 +1711,8 @@
       "total_prefs": 162,
       "useful": 44
     },
+    "rank_p2.5": 14,
+    "rank_p97.5": 67,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 400,
@@ -1653,8 +1721,8 @@
     "status": "archived",
     "total_votes": 172,
     "trust_range": [
-      100,
-      106
+      107,
+      108
     ],
     "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large"
   },
@@ -1664,7 +1732,7 @@
     "commercial_use": true,
     "consumption_wh": 57,
     "distribution": "open-weights",
-    "elo": 1044,
+    "elo": 1051,
     "endpoint": {
       "api_model_id": "moonshotai/kimi-k2",
       "api_type": "openrouter"
@@ -1687,16 +1755,18 @@
       "total_prefs": 168,
       "useful": 69
     },
+    "rank_p2.5": 5,
+    "rank_p97.5": 56,
     "reasoning": true,
     "release_date": "11/2025",
     "required_ram": 1000,
     "reuse": true,
     "simple_name": "Kimi K2",
     "status": "enabled",
-    "total_votes": 148,
+    "total_votes": 154,
     "trust_range": [
-      100,
-      101
+      105,
+      93
     ]
   },
   "lfm-40b": {
@@ -1704,7 +1774,7 @@
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
-    "elo": 889,
+    "elo": 884,
     "friendly_size": "M",
     "icon_path": "liquid.svg",
     "id": "lfm-40b",
@@ -1723,6 +1793,8 @@
       "total_prefs": 3125,
       "useful": 841
     },
+    "rank_p2.5": 41,
+    "rank_p97.5": 72,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 40,
@@ -1731,8 +1803,8 @@
     "status": "archived",
     "total_votes": 3578,
     "trust_range": [
-      97,
-      106
+      108,
+      111
     ],
     "url": "https://www.liquid.ai/liquid-foundation-models"
   },
@@ -1741,7 +1813,7 @@
     "commercial_use": true,
     "consumption_wh": 238,
     "distribution": "open-weights",
-    "elo": 969,
+    "elo": 964,
     "endpoint": {
       "api_model_id": "meta/llama3-405b-instruct-maas",
       "api_type": "vertex_ai"
@@ -1764,16 +1836,18 @@
       "total_prefs": 8445,
       "useful": 2234
     },
+    "rank_p2.5": 19,
+    "rank_p97.5": 67,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 405,
     "reuse": true,
     "simple_name": "Llama 3.1 405B",
     "status": "archived",
-    "total_votes": 10025,
+    "total_votes": 10102,
     "trust_range": [
-      103,
-      106
+      97,
+      103
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct"
   },
@@ -1782,7 +1856,7 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 987,
+    "elo": 981,
     "friendly_size": "L",
     "icon_path": "meta.svg",
     "id": "llama-3.1-70b",
@@ -1801,6 +1875,8 @@
       "total_prefs": 5510,
       "useful": 1532
     },
+    "rank_p2.5": 13,
+    "rank_p97.5": 66,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 70,
@@ -1810,7 +1886,7 @@
     "total_votes": 5584,
     "trust_range": [
       103,
-      104
+      112
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct"
   },
@@ -1819,7 +1895,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 930,
+    "elo": 927,
     "endpoint": {
       "api_base": "https://albert.api.etalab.gouv.fr/v1/",
       "api_model_id": "meta-llama/Llama-3.1-8B-Instruct",
@@ -1843,16 +1919,18 @@
       "total_prefs": 6099,
       "useful": 1465
     },
+    "rank_p2.5": 30,
+    "rank_p97.5": 70,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Llama 3.1 8B",
     "status": "enabled",
-    "total_votes": 7761,
+    "total_votes": 8257,
     "trust_range": [
-      90,
-      100
+      93,
+      105
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct"
   },
@@ -1861,7 +1939,7 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 1061,
+    "elo": 1056,
     "endpoint": {
       "api_model_id": "nvidia/llama-3.1-nemotron-70b-instruct",
       "api_type": "openrouter"
@@ -1884,13 +1962,15 @@
       "total_prefs": 5840,
       "useful": 1541
     },
+    "rank_p2.5": 5,
+    "rank_p97.5": 53,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Nemotron Llama 3.1 70B",
     "status": "archived",
-    "total_votes": 6756,
+    "total_votes": 6838,
     "trust_range": [
       95,
       90
@@ -1902,7 +1982,7 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 996,
+    "elo": 991,
     "endpoint": {
       "api_model_id": "meta-llama/llama-3.3-70b-instruct",
       "api_type": "openrouter"
@@ -1925,16 +2005,18 @@
       "total_prefs": 4698,
       "useful": 1331
     },
+    "rank_p2.5": 12,
+    "rank_p97.5": 65,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Llama 3.3 70B",
     "status": "enabled",
-    "total_votes": 6659,
+    "total_votes": 6738,
     "trust_range": [
-      100,
-      99
+      93,
+      102
     ],
     "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct"
   },
@@ -1944,7 +2026,7 @@
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 1029,
+    "elo": 1024,
     "endpoint": {
       "api_model_id": "meta-llama/llama-4-scout",
       "api_type": "openrouter"
@@ -1967,16 +2049,18 @@
       "total_prefs": 2322,
       "useful": 606
     },
+    "rank_p2.5": 8,
+    "rank_p97.5": 59,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 109,
     "reuse": true,
     "simple_name": "Llama 4 Scout",
     "status": "enabled",
-    "total_votes": 3210,
+    "total_votes": 3273,
     "trust_range": [
-      105,
-      96
+      94,
+      88
     ],
     "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct"
   },
@@ -2032,7 +2116,7 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1081,
+    "elo": 1066,
     "endpoint": {
       "api_model_id": "mistralai/magistral-small-2506",
       "api_type": "openrouter"
@@ -2055,16 +2139,18 @@
       "total_prefs": 407,
       "useful": 114
     },
+    "rank_p2.5": 3,
+    "rank_p97.5": 49,
     "reasoning": false,
     "release_date": "06/2025",
     "required_ram": 24,
     "reuse": true,
     "simple_name": "Magistral Small",
     "status": "enabled",
-    "total_votes": 816,
+    "total_votes": 1037,
     "trust_range": [
       96,
-      93
+      95
     ]
   },
   "Meta-Llama-3-70B-Instruct": {
@@ -2110,7 +2196,7 @@
     "commercial_use": false,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 979,
+    "elo": 974,
     "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "ministral-8b-instruct-2410",
@@ -2129,6 +2215,8 @@
       "total_prefs": 7332,
       "useful": 1800
     },
+    "rank_p2.5": 19,
+    "rank_p97.5": 67,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 8,
@@ -2137,8 +2225,8 @@
     "status": "disabled",
     "total_votes": 9388,
     "trust_range": [
-      102,
-      98
+      101,
+      95
     ],
     "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410"
   },
@@ -2147,7 +2235,7 @@
     "commercial_use": false,
     "consumption_wh": 20,
     "distribution": "open-weights",
-    "elo": 1035,
+    "elo": 1033,
     "friendly_size": "L",
     "icon_path": "mistral.png",
     "id": "mistral-large-2411",
@@ -2166,6 +2254,8 @@
       "total_prefs": 6525,
       "useful": 1904
     },
+    "rank_p2.5": 6,
+    "rank_p97.5": 58,
     "reasoning": false,
     "release_date": "11/2024",
     "required_ram": 123,
@@ -2174,8 +2264,8 @@
     "status": "disabled",
     "total_votes": 8880,
     "trust_range": [
-      95,
-      102
+      96,
+      94
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
   },
@@ -2207,7 +2297,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 858,
+    "elo": 854,
     "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-nemo-2407",
@@ -2226,6 +2316,8 @@
       "total_prefs": 5218,
       "useful": 1414
     },
+    "rank_p2.5": 51,
+    "rank_p97.5": 73,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 12,
@@ -2234,8 +2326,8 @@
     "status": "archived",
     "total_votes": 6253,
     "trust_range": [
-      94,
-      106
+      101,
+      107
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407"
   },
@@ -2244,7 +2336,7 @@
     "commercial_use": null,
     "consumption_wh": 6,
     "distribution": "api-only",
-    "elo": 1013,
+    "elo": 1002,
     "endpoint": {
       "api_model_id": "mistralai/mistral-saba",
       "api_type": "openrouter"
@@ -2267,16 +2359,18 @@
       "total_prefs": 2441,
       "useful": 653
     },
+    "rank_p2.5": 11,
+    "rank_p97.5": 63,
     "reasoning": false,
     "release_date": "02/2025",
     "required_ram": 35,
     "reuse": false,
     "simple_name": "Mistral Saba",
     "status": "enabled",
-    "total_votes": 3490,
+    "total_votes": 3572,
     "trust_range": [
-      100,
-      97
+      94,
+      98
     ],
     "url": "https://mistral.ai/news/mistral-saba"
   },
@@ -2285,7 +2379,7 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1000,
+    "elo": 992,
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mistral-small-24b-instruct-2501",
@@ -2304,6 +2398,8 @@
       "total_prefs": 2674,
       "useful": 745
     },
+    "rank_p2.5": 13,
+    "rank_p97.5": 65,
     "reasoning": false,
     "release_date": "01/2025",
     "required_ram": 24,
@@ -2312,7 +2408,7 @@
     "status": "archived",
     "total_votes": 3319,
     "trust_range": [
-      100,
+      98,
       98
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501"
@@ -2345,7 +2441,7 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1024,
+    "elo": 1018,
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mistral-small-3.1-24b",
@@ -2364,6 +2460,8 @@
       "total_prefs": 3897,
       "useful": 1110
     },
+    "rank_p2.5": 8,
+    "rank_p97.5": 62,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 24,
@@ -2372,8 +2470,8 @@
     "status": "archived",
     "total_votes": 5104,
     "trust_range": [
-      97,
-      94
+      102,
+      96
     ],
     "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503"
   },
@@ -2403,7 +2501,7 @@
     "commercial_use": true,
     "consumption_wh": 18,
     "distribution": "open-weights",
-    "elo": 847,
+    "elo": 840,
     "friendly_size": "XL",
     "icon_path": "mistral.png",
     "id": "mixtral-8x22b-instruct-v0.1",
@@ -2422,6 +2520,8 @@
       "total_prefs": 4284,
       "useful": 1117
     },
+    "rank_p2.5": 57,
+    "rank_p97.5": 73,
     "reasoning": false,
     "release_date": "04/2024",
     "required_ram": 176,
@@ -2430,8 +2530,8 @@
     "status": "archived",
     "total_votes": 5458,
     "trust_range": [
-      101,
-      115
+      97,
+      101
     ],
     "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1"
   },
@@ -2441,7 +2541,7 @@
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 895,
+    "elo": 890,
     "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mixtral-8x7b-instruct-v0.1",
@@ -2460,6 +2560,8 @@
       "total_prefs": 2573,
       "useful": 727
     },
+    "rank_p2.5": 38,
+    "rank_p97.5": 72,
     "reasoning": false,
     "release_date": "12/2023",
     "required_ram": 56,
@@ -2468,8 +2570,8 @@
     "status": "archived",
     "total_votes": 2560,
     "trust_range": [
-      102,
-      111
+      105,
+      118
     ],
     "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1"
   },
@@ -2478,7 +2580,7 @@
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
-    "elo": 998,
+    "elo": 995,
     "friendly_size": "XL",
     "icon_path": "openai.svg",
     "id": "o3-mini",
@@ -2497,6 +2599,8 @@
       "total_prefs": 1129,
       "useful": 350
     },
+    "rank_p2.5": 12,
+    "rank_p97.5": 64,
     "reasoning": true,
     "release_date": "11/2024",
     "required_ram": 200,
@@ -2505,8 +2609,8 @@
     "status": "archived",
     "total_votes": 1620,
     "trust_range": [
-      99,
-      93
+      97,
+      100
     ],
     "url": "https://openai.com/index/openai-o3-mini/"
   },
@@ -2515,7 +2619,7 @@
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
-    "elo": 1017,
+    "elo": 1016,
     "endpoint": {
       "api_model_id": "openai/o4-mini",
       "api_type": "openrouter"
@@ -2538,16 +2642,18 @@
       "total_prefs": 1542,
       "useful": 489
     },
+    "rank_p2.5": 9,
+    "rank_p97.5": 61,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 200,
     "reuse": false,
     "simple_name": "o4 mini",
     "status": "enabled",
-    "total_votes": 2032,
+    "total_votes": 2088,
     "trust_range": [
-      97,
-      102
+      96,
+      92
     ],
     "url": "https://openai.com/index/introducing-o3-and-o4-mini/"
   },
@@ -2616,7 +2722,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 872,
+    "elo": 867,
     "friendly_size": "XS",
     "icon_path": "microsoft.png",
     "id": "phi-3.5-mini-instruct",
@@ -2635,6 +2741,8 @@
       "total_prefs": 3049,
       "useful": 636
     },
+    "rank_p2.5": 47,
+    "rank_p97.5": 73,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 3.8,
@@ -2643,8 +2751,8 @@
     "status": "archived",
     "total_votes": 2535,
     "trust_range": [
-      112,
-      109
+      120,
+      110
     ],
     "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct"
   },
@@ -2653,7 +2761,7 @@
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 981,
+    "elo": 975,
     "endpoint": {
       "api_model_id": "microsoft/phi-4",
       "api_type": "openrouter"
@@ -2676,16 +2784,18 @@
       "total_prefs": 5768,
       "useful": 1552
     },
+    "rank_p2.5": 14,
+    "rank_p97.5": 66,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 14,
     "reuse": true,
     "simple_name": "Phi-4",
     "status": "enabled",
-    "total_votes": 7930,
+    "total_votes": 8003,
     "trust_range": [
-      97,
-      103
+      95,
+      107
     ],
     "url": "https://huggingface.co/microsoft/Phi-4"
   },
@@ -2753,7 +2863,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 748,
+    "elo": 742,
     "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen2-7b-instruct",
@@ -2772,6 +2882,8 @@
       "total_prefs": 89,
       "useful": 19
     },
+    "rank_p2.5": 68,
+    "rank_p97.5": 74,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 7,
@@ -2780,8 +2892,8 @@
     "status": "archived",
     "total_votes": 80,
     "trust_range": [
-      119,
-      113
+      116,
+      118
     ],
     "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct"
   },
@@ -2790,7 +2902,7 @@
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 975,
+    "elo": 972,
     "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "qwen2.5-32b-instruct",
@@ -2809,6 +2921,8 @@
       "total_prefs": 217,
       "useful": 52
     },
+    "rank_p2.5": 14,
+    "rank_p97.5": 68,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 32,
@@ -2817,8 +2931,8 @@
     "status": "archived",
     "total_votes": 142,
     "trust_range": [
-      123,
-      113
+      119,
+      109
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct"
   },
@@ -2827,7 +2941,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 941,
+    "elo": 933,
     "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen2.5-7b-instruct",
@@ -2846,6 +2960,8 @@
       "total_prefs": 1692,
       "useful": 402
     },
+    "rank_p2.5": 26,
+    "rank_p97.5": 70,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 7,
@@ -2854,8 +2970,8 @@
     "status": "archived",
     "total_votes": 1420,
     "trust_range": [
-      118,
-      116
+      105,
+      112
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct"
   },
@@ -2864,7 +2980,7 @@
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 936,
+    "elo": 932,
     "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "qwen2.5-coder-32b-instruct",
@@ -2883,6 +2999,8 @@
       "total_prefs": 5506,
       "useful": 1380
     },
+    "rank_p2.5": 30,
+    "rank_p97.5": 69,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 32,
@@ -2891,8 +3009,8 @@
     "status": "disabled",
     "total_votes": 7330,
     "trust_range": [
-      95,
-      97
+      90,
+      99
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct"
   },
@@ -2902,7 +3020,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 996,
+    "elo": 1000,
     "endpoint": {
       "api_model_id": "qwen/qwen3-30b-a3b",
       "api_type": "openrouter"
@@ -2925,16 +3043,18 @@
       "total_prefs": 110,
       "useful": 33
     },
+    "rank_p2.5": 11,
+    "rank_p97.5": 64,
     "reasoning": false,
     "release_date": "05/2025",
     "required_ram": 30,
     "reuse": true,
     "simple_name": "Qwen 3 30B A3B",
     "status": "enabled",
-    "total_votes": 355,
+    "total_votes": 416,
     "trust_range": [
-      100,
-      97
+      98,
+      100
     ]
   },
   "qwen3-32b": {
@@ -2942,7 +3062,7 @@
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 1053,
+    "elo": 1051,
     "endpoint": {
       "api_model_id": "qwen/qwen3-32b",
       "api_type": "openrouter"
@@ -2965,16 +3085,18 @@
       "total_prefs": 797,
       "useful": 228
     },
+    "rank_p2.5": 5,
+    "rank_p97.5": 53,
     "reasoning": true,
     "release_date": "04/2025",
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Qwen 3 32B",
     "status": "enabled",
-    "total_votes": 741,
+    "total_votes": 748,
     "trust_range": [
       91,
-      87
+      90
     ],
     "url": "https://huggingface.co/Qwen/Qwen3-32B"
   },
@@ -3008,7 +3130,7 @@
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 964,
+    "elo": 958,
     "endpoint": {
       "api_model_id": "qwen/qwq-32b",
       "api_type": "openrouter"
@@ -3031,16 +3153,18 @@
       "total_prefs": 1348,
       "useful": 295
     },
+    "rank_p2.5": 20,
+    "rank_p97.5": 68,
     "reasoning": true,
     "release_date": "04/2025",
     "required_ram": 32,
     "reuse": true,
     "simple_name": "qwq 32B",
     "status": "archived",
-    "total_votes": 1586,
+    "total_votes": 1596,
     "trust_range": [
-      107,
-      94
+      98,
+      109
     ],
     "url": "https://huggingface.co/Qwen/QwQ-32B"
   },
@@ -3049,7 +3173,7 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 787,
+    "elo": 784,
     "friendly_size": "S",
     "icon_path": "yi.svg",
     "id": "Yi-1.5-9B-Chat",
@@ -3068,6 +3192,8 @@
       "total_prefs": 97,
       "useful": 16
     },
+    "rank_p2.5": 65,
+    "rank_p97.5": 74,
     "reasoning": false,
     "release_date": "05/2024",
     "required_ram": 9,
@@ -3076,8 +3202,8 @@
     "status": "archived",
     "total_votes": 65,
     "trust_range": [
-      114,
-      114
+      113,
+      108
     ],
     "url": "https://huggingface.co/01-ai/Yi-1.5-9B-Chat"
   }
