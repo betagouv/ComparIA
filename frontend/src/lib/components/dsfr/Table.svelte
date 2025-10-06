@@ -1,7 +1,7 @@
 <script
   lang="ts"
   generics="
-    Col extends { id: string, label: string, orderable?: boolean, tooltip?: string }, 
+    Col extends { id: string, label: string, orderable?: boolean, tooltip?: string, colHeaderClass?: ClassValue }, 
     Row extends { id: string }
   "
 >
@@ -9,7 +9,7 @@
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import type { Snippet } from 'svelte'
-  import type { HTMLTableAttributes } from 'svelte/elements'
+  import type { ClassValue, HTMLTableAttributes } from 'svelte/elements'
 
   type TableProps = {
     caption: string
@@ -79,7 +79,7 @@
           <thead>
             <tr>
               {#each cols as col (col.id)}
-                <th>
+                <th class={col.colHeaderClass}>
                   <div class="text-dark-grey! flex items-center text-xs font-medium">
                     <span>{@html sanitize(col.label)}</span>
                     {#if col.tooltip}
