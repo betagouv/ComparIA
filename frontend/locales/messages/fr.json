@@ -1499,8 +1499,8 @@
                     },
                     "infos": {
                         "list": {
-                            "1": "Les modèles qui plaisent et optimisent la consommation d’énergie sont situés en haut à gauche",
-                            "2": "Les modèles situés en bas à gauche sont ceux les moins appréciés mais qui consomment le moins d’énergie.",
+                            "1": "En haut à gauche se trouvent les modèles qui plaisent et qui consomment peu d’énergie.",
+                            "2": "En bas à gauche figurent les modèles les moins appréciés, mais qui consomment également peu d’énergie.",
                             "3": "Plus un modèle est situé sur la droite du graphique, plus il consomme d’énergie."
                         },
                         "title": "Exemples de lecture :"
