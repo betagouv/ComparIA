@@ -67,26 +67,23 @@ def get_winrates(winners: pl.DataFrame) -> pl.DataFrame:
     Returns:
         pl.DataFrame: Winrates DataFrame.
     """
-    winners_len = winners.group_by("model_name").len().with_columns(wins=pl.col("len")).drop("len")
+    winners_len = winners.group_by("model_name").len().rename({"len": "wins"})
+
     all_matches = (
         pl.concat(
             [
-                winners.group_by("model_a_name")
-                .len()
-                .with_columns(model_name=pl.col("model_a_name"))
-                .drop("model_a_name"),
-                winners.group_by("model_b_name")
-                .len()
-                .with_columns(model_name=pl.col("model_b_name"))
-                .drop("model_b_name"),
+                winners.group_by("model_a_name").len().rename({"model_a_name": "model_name"}),
+                winners.group_by("model_b_name").len().rename({"model_b_name": "model_name"}),
             ]
         )
         .group_by("model_name")
         .sum()
-        .sort("len", descending=True)
+        .rename({"len": "matches"})
     )
+
     return (
-        all_matches.join(winners_len, on="model_name")
-        .with_columns(winrate=100 * pl.col("wins") / pl.col("len"))
-        .sort("len", descending=True)
+        all_matches.join(winners_len, on="model_name", how="left")
+        .fill_null(0)
+        .with_columns(winrate=(100 * pl.col("wins") / pl.col("matches")))
+        .sort("matches", descending=True)
     )

@@ -111,7 +111,11 @@ class Ranker(ABC):
         results = pl.DataFrame(aggregated)
 
         bootstrap_column_names = [f"column_{index}" for index in range(self.bootstrap_samples)]
-        return (
+        # we want to get ranks from 1..N based on score bootstrap estimates
+        # and confidence interval at 95% on ranks. For this we compute ranks for each
+        # bootstrap sample and derive these confidence intervals from the
+        # bootstrap rank distributions
+        final_results = (
             results.transpose(include_header=True)
             .select(model_name="column", value_array=pl.concat_list(*bootstrap_column_names))
             .with_columns(
@@ -128,5 +132,26 @@ class Ranker(ABC):
                 ]
             )
             .drop("value_array")
-            .sort("median", descending=True)
+            .with_columns(pl.col("median").rank("ordinal", descending=True).alias("rank"))
         )
+
+        return final_results.join(
+            (
+                results.transpose(include_header=True)
+                .unpivot(
+                    index=["column"],
+                    variable_name="sample",
+                    value_name="score",
+                )
+                .with_columns(pl.col("score").rank("ordinal", descending=True).over("sample").alias("rank"))
+                .group_by("column")
+                .agg(
+                    [
+                        pl.quantile("rank", 0.025).cast(pl.Int64).alias("rank_p2.5"),
+                        pl.quantile("rank", 0.975).cast(pl.Int64).alias("rank_p97.5"),
+                    ]
+                )
+            ),
+            left_on="model_name",
+            right_on="column",
+        ).sort("rank")
