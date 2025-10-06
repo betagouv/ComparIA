@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CheckboxGroup, Icon } from '$components/dsfr'
+  import { CheckboxGroup, Icon, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Sizes } from '$lib/models'
   import { SIZES } from '$lib/models'
@@ -186,6 +186,12 @@
             <li class="p-0! mb-2 flex items-center">
               <div class={['dot me-2 rounded-full', arch]}></div>
               {m[`models.arch.types.${arch}.name`]()}
+              <Tooltip
+                id="arch-type-{arch}"
+                text={m[`models.arch.types.${arch}.desc`]()}
+                size="xs"
+                class="ms-1"
+              />
             </li>
           {/each}
         </ul>
