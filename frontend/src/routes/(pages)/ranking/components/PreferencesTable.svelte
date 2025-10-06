@@ -35,7 +35,10 @@
     [
       { id: 'name' },
       { id: 'total_prefs' },
-      { id: 'positive_prefs_ratio', tooltip: 'FIXME' },
+      {
+        id: 'positive_prefs_ratio',
+        tooltip: m['ranking.preferences.table.tooltips.positive_prefs_ratio']()
+      },
       ...APIPositiveReactions.map((reaction, i) => ({
         id: reaction,
         colHeaderClass: 'bg-(--green-emeraude-975-75)!'

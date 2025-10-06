@@ -1544,6 +1544,9 @@
                     "superficial": "Superficielle",
                     "total_prefs": "Total préférences",
                     "useful": "Utile"
+                },
+                "tooltips": {
+                    "positive_prefs_ratio": "Lors du vote, des badges permettaient de préciser les raisons de votre préférence. Cette colonne présente la répartition en pourcentage de ces badges (positifs ou négatifs) pour l'ensemble des votes."
                 }
             },
             "title": "Comment se répartissent les préférences des utilisateurs ?"
@@ -1568,7 +1571,7 @@
                     "trust_range": "Confiance (±)"
                 },
                 "tooltips": {
-                    "elo": "Score reflétant la probabilité qu'un modèle soit préféré à un autre lors de comparaisons directes entre leurs réponses. Un écart de 400 points signifie qu'un modèle est environ 10 fois plus susceptible d'être préféré.",
+                    "elo": "Score reflétant la probabilité qu'un modèle soit préféré à un autre, établi à partir de l’ensemble des votes et réactions des utilisateurs,. Un écart de 400 points entre deux modèles signifie qu'un modèle est environ 10 fois plus susceptible d'être préféré à l’autre modèle.",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
                     "trust_range": "Intervalle indiquant la fiabilité du score: plus l'intervalle est étroit, plus l'estimation du score est fiable. Il y a 95% de chances que le vrai score du modèle soit dans cette plage."
                 }
