@@ -1564,11 +1564,11 @@
                 "pros": "Avantages",
                 "title": "Deux manières de classer les modèles",
                 "winrate": {
-                    "def": "<strong>Définition</strong> : Classement des modèles uniquement selon le pourcentage de parties gagnées",
+                    "def": "<strong>Définition</strong> : Système de classement empirique des modèles reposant sur le pourcentage de parties gagnées par un modèle contre tous les autres modèles.",
                     "list": {
-                        "1": "<strong>Biais du nombre de parties</strong> : un modèle ayant remporté trois victoires sur trois comparaisons affiche un taux de victoire de 100 %, mais ce score reste peu significatif avec si peu de données",
-                        "2": "<strong>Aucune prise en compte de la difficulté</strong> : battre un débutant ou un expert compte pareil.",
-                        "3": "<strong>Stagnation</strong> : à long terme, beaucoup de bons joueurs finissent autour de 50 % de taux de victoire car ils affrontent des modèles de leur niveau, ce qui rend le classement peu discriminant."
+                        "1": "<strong>Biais du nombre de parties</strong> : un modèle ayant remporté trois victoires sur trois “matchs” affiche un taux de victoire de 100 %, mais ce score est peu significatif étant basé sur très peu de données.",
+                        "2": "<strong>Aucune prise en compte de la difficulté</strong> : battre un “débutant” ou un “expert” compte pareil.",
+                        "3": "<strong>Stagnation</strong> : à long terme, beaucoup de bons modèles finissent autour de 50 % de taux de victoire car ils affrontent des modèles de leur niveau, ce qui rend le classement peu discriminant."
                     },
                     "title": "Classement par taux de victoire"
                 }
