@@ -210,7 +210,7 @@
         "params": 671,
         "active_params": 37,
         "arch": "moe",
-        "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
+        "url": "https://huggingface.co/deepseek/DeepSeek-V3",
         "desc": "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence.",
         "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
         "fyi": "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
@@ -230,7 +230,7 @@
         "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "deepseek-ai/DeepSeek-R1-0528"
+          "api_model_id": "deepseek/deepseek-r1-0528"
         }
       }
     ]
