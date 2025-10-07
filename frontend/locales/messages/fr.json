@@ -1560,7 +1560,7 @@
                 "cols": {
                     "arch": "Architecture",
                     "consumption_wh": "Conso moyenne<br>(1000 tokens)",
-                    "elo": "Score ELO",
+                    "elo": "Score BT",
                     "license": "Licence",
                     "name": "Modèle",
                     "organisation": "Organisation",
@@ -1571,7 +1571,7 @@
                     "trust_range": "Confiance (±)"
                 },
                 "tooltips": {
-                    "elo": "Score reflétant la probabilité qu'un modèle soit préféré à un autre, établi à partir de l’ensemble des votes et réactions des utilisateurs,. Un écart de 400 points entre deux modèles signifie qu'un modèle est environ 10 fois plus susceptible d'être préféré à l’autre modèle.",
+                    "elo": "Score estimé selon le modèle statistique Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre, calculé à partir de l'ensemble des votes et réactions des utilisateurs",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
                     "trust_range": "Intervalle indiquant la fiabilité du score: plus l'intervalle est étroit, plus l'estimation du score est fiable. Il y a 95% de chances que le vrai score du modèle soit dans cette plage."
                 }
