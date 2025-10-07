@@ -1443,7 +1443,7 @@
             "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
             "views": {
                 "graph": {
-                    "desc": "Sélectionnez un modèle pour connaitre son score ELO et sa consommation énergétique",
+                    "desc": "Sélectionnez un modèle pour connaitre son Score BT et sa consommation énergétique",
                     "faq": {
                         "1": {
                             "desc": "Nous prenons le parti d’afficher en grisé (non analysés) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture.",
@@ -1464,18 +1464,18 @@
                         "sizeSub": "(milliards de paramètres)"
                     },
                     "tabLabel": "Vue graphique",
-                    "title": "Score ELO VS Consommation moyenne pour 1000 tokens",
+                    "title": "Score BT VS Consommation moyenne pour 1000 tokens",
                     "tooltip": {
                         "active_params": "Paramètres actifs (mds)",
                         "arch": "Architecture",
                         "consumption_wh": "Conso. moyenne (Wh)",
-                        "elo": "Score ELO",
+                        "elo": "Score BT",
                         "params": "Paramètres (mds)"
                     },
                     "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
-                    "yLabel": "Score ELO"
+                    "yLabel": "Score BT"
                 },
-                "legend": "Sélectionnez un modèle pour connaitre son score ELO et sa consommation énergétique",
+                "legend": "Sélectionnez un modèle pour connaitre son Score BT et sa consommation énergétique",
                 "table": {
                     "title": "Données du graphique en tableau"
                 }
@@ -1484,14 +1484,14 @@
         "methodo": {
             "desc": {
                 "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
-                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le système ELO</strong>, élaboré en collaboration avec les <strong>équipes du PEReN</strong>, à partir des votes et préférences collectés sur la plateforme. Pour aller plus loin, consultez notre <a {linkProps}>carnet méthodologique</a>."
+                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (PEReN)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {linkProps}>carnet méthodologique</a>."
             },
             "impacts": {
                 "elo": {
                     "desc": {
-                        "1": "Le <strong>système Elo</strong>, lui, ne nécessite pas toutes les confrontations possibles : il met à jour le score après chaque match en fonction de la difficulté de l’adversaire, ce qui permet d’obtenir un classement dynamique, même avec un ensemble de matchs partiel et évolutif."
+                        "1": "Le modèle <strong>Bradley-Terry</strong> transforme un ensemble de comparaisons locales et potentiellement incomplètes en un système de classement global cohérent et statistiquement robuste, là où le taux de victoire empirique reste limité aux observations directes."
                     },
-                    "title": "Classement selon le taux de victoire des modèles estimé selon le score ELO "
+                    "title": "Classement selon le taux de victoire des modèles estimé selon le score BT"
                 },
                 "title": "Impact du choix de la méthode sur le classement des modèles",
                 "winrate": {
@@ -1506,13 +1506,13 @@
                 "cons": "Problèmes principaux",
                 "def": "",
                 "elo": {
-                    "def": "<strong>Définition</strong> : Système de classement où le gain ou la perte de points dépend du résultat (victoire/défaite/nul) <strong>et</strong> du niveau estimé de l’adversaire : si un joueur plus faible bat un joueur plus fort, sa progression dans le classement est plus importante.",
+                    "def": "<strong>Définition</strong> : Système de classement où le gain ou la perte de points dépend du résultat (victoire/défaite/nul <strong>et</strong> du niveau estimé de l’adversaire : si un modèle plus faible bat un modèle plus fort, sa progression dans le classement est plus importante.",
                     "list": {
-                        "1": "<strong>Modèle probabiliste</strong> : on estime la chance qu’un modèle a de gagner contre un autre. Cela rend les scores interprétables et comparables statistiquement. Par exemple, un écart de 200 points Elo correspond à environ 75% de chances de victoire pour le joueur le mieux classé.",
-                        "2": "<strong>Modèle dynamique</strong> : Les scores Elo évoluent après chaque match en fonction du résultat attendu.",
-                        "3": "<strong>Modèle adaptatif</strong> : battre un modèle mieux classé rapporte davantage. "
+                        "1": "<strong>Modèle probabiliste</strong> : on peut estimer le résultat probable de n'importe quelle confrontation, même entre des modèles n'ayant jamais été directement comparés.",
+                        "2": "<strong>Prise en compte de la difficulté des matchs</strong> : les scores estimés à partir du modèle Bradley Terry tiennent compte du niveau des adversaires rencontrés, permettant une comparaison équitable entre modèles.",
+                        "3": "<strong>Meilleure gestion de l’incertitude</strong> : l'intervalle de confiance intègre l'ensemble du réseau de comparaisons. Cela permet une estimation plus précise de l'incertitude, surtout pour les modèles ayant peu de confrontations directes mais beaucoup d'adversaires communs."
                     },
-                    "title": "Classement Elo"
+                    "title": "Classement Bradley-Terry (BT)"
                 },
                 "pros": "Avantages",
                 "title": "Deux manières de classer les modèles",
@@ -1520,7 +1520,7 @@
                     "def": "<strong>Définition</strong> : Système de classement empirique des modèles reposant sur le pourcentage de parties gagnées par un modèle contre tous les autres modèles.",
                     "list": {
                         "1": "<strong>Biais du nombre de parties</strong> : un modèle ayant remporté trois victoires sur trois “matchs” affiche un taux de victoire de 100 %, mais ce score est peu significatif étant basé sur très peu de données.",
-                        "2": "<strong>Aucune prise en compte de la difficulté</strong> : battre un “débutant” ou un “expert” compte pareil.",
+                        "2": "<strong>Aucune prise en compte de la difficulté des matchs</strong> : battre un modèle “débutant” ou un “expert” compte pareil. Les taux de victoire ne sont pas équitables puisqu’ils ne tiennent pas compte de la difficulté des matchs.",
                         "3": "<strong>Stagnation</strong> : à long terme, beaucoup de bons modèles finissent autour de 50 % de taux de victoire car ils affrontent des modèles de leur niveau, ce qui rend le classement peu discriminant."
                     },
                     "title": "Classement par taux de victoire"
