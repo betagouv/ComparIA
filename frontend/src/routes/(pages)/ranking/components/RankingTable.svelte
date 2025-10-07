@@ -90,20 +90,15 @@
 
     return models.map((model, i) => {
       const [month, year] = model.release_date.split('/')
-      const rank = i + 1
 
       return {
         ...model,
+        rank: i + 1,
         arch:
           model.license === 'proprietary'
             ? ('na' as const)
             : (model.arch as 'moe' | 'dense' | 'matformer'),
         release_date: new Date([month, '01', year].join('/')),
-        rank,
-        trust_range: [
-          rank - model["rank_p2.5"]!,
-          model["rank_p97.5"]! - rank
-        ],
         eloRangeWidth: model.elo
           ? Math.ceil(((model.elo - lowestElo) / (highestElo - lowestElo)) * 100)
           : null,
