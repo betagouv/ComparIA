@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CheckboxGroup, Icon, Tooltip } from '$components/dsfr'
+  import { CheckboxGroup, Icon, Search, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel, Sizes } from '$lib/models'
   import { SIZES } from '$lib/models'
@@ -14,6 +14,25 @@
 
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
   const archs = ['moe', 'dense', 'matformer', 'na'] as const
+
+  const models = $derived(
+    data
+      .sort((a, b) => sortIfDefined(a, b, 'params'))
+      .map((m) => {
+        return {
+          ...m,
+          x: m.consumption_wh!,
+          y: m.elo!,
+          radius: dotSizes[m.friendly_size],
+          class: m.license === 'proprietary' ? 'na' : m.arch,
+          search: (['id', 'simple_name', 'organisation'] as const)
+            .map((key) => m[key].toLowerCase())
+            .join(' ')
+        }
+      })
+  )
+
+  let search = $state('')
   let sizes = $state<Sizes[]>([])
   const sizeFilter = {
     id: 'size',
@@ -24,24 +43,18 @@
     }))
   }
 
-  const models = $derived(
-    data
-      .sort((a, b) => sortIfDefined(a, b, 'params'))
-      .filter((m) => sizes.length === 0 || sizes.includes(m.friendly_size))
-      .map((m) => {
-        return {
-          ...m,
-          x: m.consumption_wh!,
-          y: m.elo!,
-          radius: dotSizes[m.friendly_size],
-          class: m.license === 'proprietary' ? 'na' : m.arch
-        }
-      })
-  )
+  const filteredModels = $derived.by(() => {
+    const _search = search.toLowerCase()
+    return models.filter((m) => {
+      const sizeMatch = sizes.length === 0 || sizes.includes(m.friendly_size)
+      const searchMatch = !_search || m.search.includes(_search)
+      return sizeMatch && searchMatch
+    })
+  })
 
   let hoveredModel = $state<string>()
   let tooltipPos = $state({ x: 0, y: 0 })
-  const hoveredModelData = $derived(models.find((m) => m.id === hoveredModel))
+  const hoveredModelData = $derived(filteredModels.find((m) => m.id === hoveredModel))
   const tooltipExtraData = $derived(
     hoveredModelData?.license === 'proprietary'
       ? (['arch'] as const)
@@ -55,11 +68,11 @@
   const padding = { top: 5, right: 10, bottom: 35, left: 72 }
 
   const minMaxX = $derived.by(() => {
-    const [min, max] = extent(models, (m) => m.x) as [number, number]
+    const [min, max] = extent(filteredModels, (m) => m.x) as [number, number]
     return [min - 5, max + 15] as const
   })
   const minMaxY = $derived.by(() => {
-    const [min, max] = extent(models, (m) => m.y) as [number, number]
+    const [min, max] = extent(filteredModels, (m) => m.y) as [number, number]
     return [min - 5, max + 35] as const
   })
   const xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))
@@ -80,6 +93,15 @@
 </script>
 
 <svelte:window onresize={resize} />
+
+<div class="mb-4 flex">
+  <Search
+    id="energy-graph-model-search"
+    bind:value={search}
+    label={m['ranking.table.search']()}
+    class="ms-auto"
+  />
+</div>
 
 <div id="energy-graph" class="flex items-center gap-2">
   <div
@@ -130,7 +152,7 @@
         {/if}
 
         <!-- data -->
-        {#each models as m}
+        {#each filteredModels as m}
           <circle
             cx={xScale(m.x)}
             cy={yScale(m.y)}
