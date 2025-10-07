@@ -230,7 +230,7 @@
         "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "deepseek-ai/DeepSeek-R1-0528"
+          "api_model_id": "deepseek/DeepSeek-R1-0528"
         }
       }
     ]
