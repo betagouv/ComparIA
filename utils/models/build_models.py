@@ -235,12 +235,11 @@ def validate() -> None:
             if model_extra_data is not None:
                 model_extra_data = {
                     "elo": round(model_extra_data["median"]),
+                    # trust range based on computed median rank and interval
                     "trust_range": [
-                        round(model_extra_data["median"] - model_extra_data["p2.5"]),
-                        round(model_extra_data["p97.5"] - model_extra_data["median"]),
+                        model_extra_data["rank"] - model_extra_data["rank_p2.5"],
+                        model_extra_data["rank_p97.5"] - model_extra_data["rank"],
                     ],
-                    "rank_p2.5": model_extra_data["rank_p2.5"],
-                    "rank_p97.5": model_extra_data["rank_p97.5"],
                     "total_votes": model_extra_data["n_match"],
                     "consumption_wh": round(
                         model_extra_data["mean_conso_per_token"] * 1000 * 1000
