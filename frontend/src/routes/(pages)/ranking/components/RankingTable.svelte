@@ -192,19 +192,23 @@
     {#if col.id === 'rank'}
       <span class="font-medium">{model.rank}</span>
     {:else if col.id === 'name'}
-      <img
-        src="/orgs/ai/{model.icon_path}"
-        alt={model.organisation}
-        width="20"
-        class="me-1 inline-block"
-      />
-      <a
-        href="#{model.id}"
-        data-fr-opened="false"
-        aria-controls="{id}-modal-model"
-        class="text-black!"
-        onclick={() => (selectedModel = model.id)}>{model.id}</a
+      <div
+        class="max-w-[205px] overflow-hidden overflow-ellipsis sm:max-w-none sm:overflow-visible"
       >
+        <img
+          src="/orgs/ai/{model.icon_path}"
+          alt={model.organisation}
+          width="20"
+          class="me-1 inline-block"
+        />
+        <a
+          href="#{model.id}"
+          data-fr-opened="false"
+          aria-controls="{id}-modal-model"
+          class="text-black!"
+          onclick={() => (selectedModel = model.id)}>{model.id}</a
+        >
+      </div>
     {:else if col.id === 'size'}
       <strong>{model.friendly_size}</strong> -
       {#if model.distribution === 'api-only'}
