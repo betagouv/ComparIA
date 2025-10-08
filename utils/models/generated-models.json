@@ -539,7 +539,7 @@
     "commercial_use": true,
     "distribution": "open-weights",
     "endpoint": {
-      "api_model_id": "deepseek-ai/DeepSeek-R1-0528",
+      "api_model_id": "deepseek/DeepSeek-R1-0528",
       "api_type": "openrouter"
     },
     "friendly_size": "XL",
