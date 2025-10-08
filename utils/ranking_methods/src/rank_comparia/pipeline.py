@@ -8,8 +8,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
-import json
-
 import polars as pl
 
 from rank_comparia.elo import ELORanker
@@ -20,9 +18,9 @@ from rank_comparia.plot import (
     format_matches_for_heatmap,
     plot_elo_against_frugal_elo,
     plot_match_counts,
+    plot_score_mean_win_proba,
     plot_scores_with_confidence,
-    # plot_winrate_heatmap,
-    plot_winrate_count
+    plot_winrate_heatmap,
 )
 from rank_comparia.ranker import Match, MatchScore, Ranker
 from rank_comparia.utils import categories, load_comparia
@@ -33,16 +31,14 @@ class RankingPipeline:
     """
     Ranking pipeline class.
     """
+
     method: Literal["elo_ordered", "elo_random", "ml"]  # score computation method used
     include_votes: bool  # whether to include votes dataset in raw match data
     include_reactions: bool  # whether to include reactions dataset in raw match data
     bootstrap_samples: int  # number of bootstrap samples
-    batch: bool  # whether or not to batch matches together before computing score
-    mean_how: Literal["match", "token"]  # Precise how to mean if mean=True, None if mean = False
+    mean_how: Literal["match", "token"]  # Precise how to mean
     export_path: Path | None = None  # path to export graphs, if None does not export
     ranker: Ranker = field(init=False)  # ranker
-    models_data: Path = Path(".").resolve().parent / "data" / "models_data.json"
-    top_results: None | int = 20
 
     def __post_init__(self):
         if not (self.include_votes | self.include_reactions):
@@ -68,13 +64,11 @@ class RankingPipeline:
 
         n_match = get_n_match(self.matches)
 
-        # frugality = calculate_frugality_score(self.matches, n_match=n_match, mean=self.mean)
         frugality = calculate_frugality_score(self.matches, n_match=n_match)
         scores = scores.join(frugality, on="model_name")
 
         self._export(scores)
         return scores
-
 
     def _export(self, scores: pl.DataFrame) -> None:
         if self.export_path is None:
@@ -83,41 +77,21 @@ class RankingPipeline:
         self.export_path.mkdir(parents=True, exist_ok=True)
         scores.write_csv(file=self.export_path / f"{self.method}_scores.csv", separator=";")
         scores.write_json(file=self.export_path / f"{self.method}_scores.json")
-        if self.top_results and int(self.top_results):
-            scores = scores.sort("median", descending=True)
-            scores = scores.head(self.top_results)
-        plot_scores_with_confidence(scores).save(self.export_path / f"{self.method}_scores_confidence.svg")
-        plot_scores_with_confidence(scores).save(self.export_path / f"{self.method}_scores_confidence.json")
-        
-        
+
+        plot_scores_with_confidence(scores).save(self.export_path / f"{self.method}_scores_confidence.png", ppi=300)
         heatmap_data = format_matches_for_heatmap(self.matches)
+        plot_match_counts(heatmap_data).save(self.export_path / f"{self.method}_count_heatmap.png", ppi=300)
+        plot_winrate_heatmap(heatmap_data).save(self.export_path / f"{self.method}_winrate_heatmap.png", ppi=300)
 
-        if self.top_results and int(self.top_results):
-            top_n_models = scores.sort("median", descending=True).head(self.top_results).get_column("model_name").to_list()
-
-            heatmap_data = heatmap_data.filter(
-            pl.col("model_a").is_in(top_n_models) & pl.col("model_b").is_in(top_n_models)
-            )
-
-        plot_match_counts(heatmap_data).save(self.export_path / f"{self.method}_count_heatmap.svg")
-        plot_match_counts(heatmap_data).save(self.export_path / f"{self.method}_count_heatmap.json")
-
-        plot_winrate_count(heatmap_data).save(self.export_path / f"{self.method}_winrate_count.svg")
-        plot_winrate_count(heatmap_data).save(self.export_path / f"{self.method}_winrate_count.json")
-
-
-        models_info_dict = (json.loads(open(self.models_data).read()))
-
-        models_info = [{"model_name": k, **v, "name": v["simple_name"], "organization": v["organisation"]} for k, v in models_info_dict.items()]
-        models_info = pl.DataFrame(models_info)
-
-
-        draw_frugality_chart(scores, models_info, self.mean_how, log=True).save(
+        plot_score_mean_win_proba(scores).save(
+            fp=self.export_path / f"{self.method}_scores_vs_mean_win_proba.html", format="html"
+        )
+        draw_frugality_chart(scores, self.mean_how, log=True).save(
             fp=self.export_path / f"{self.method}_elo_score_conso.html", format="html"
         )
 
         plot_elo_against_frugal_elo(
-            frugal_log_score=get_normalized_log_cost(scores, mean=self.mean_how), bootstraped_scores=scores, models_info=models_info
+            frugal_log_score=get_normalized_log_cost(scores, mean=self.mean_how), bootstraped_scores=scores
         ).save(fp=self.export_path / f"{self.method}_elo_frugal.html", format="html")
 
         return

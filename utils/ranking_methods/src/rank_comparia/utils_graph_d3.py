@@ -3,13 +3,14 @@
 # SPDX-License-Identifier: MIT
 
 import json
+from typing import Literal
 
 import networkx as nx
 import polars as pl
 from networkx.readwrite import json_graph
 
 
-def get_df_source_sink_timestamp(df, year):
+def get_df_source_sink_timestamp(df: pl.DataFrame, year: Literal[2024, 2025] | None) -> pl.DataFrame:
     """
     Restructures the data in order to have sink (a model who won a match) and
     source (a model who lost a match) nodes to plot
@@ -18,7 +19,7 @@ def get_df_source_sink_timestamp(df, year):
     Args:
         df (pl.DataFrame): Votes DataFrame with columns "id", "timestamp",
         "model_a_name", "model_b_name", "chosen_model_name".
-        year: 2024 or 2025 to filter data.
+        year (str): 2024, 2025 or None to filter data.
     Returns:
         df: pl.DataFrame with two new columns  "sink_node_model_winner",
         "source_node_model_loser".
@@ -69,7 +70,7 @@ def get_df_source_sink_timestamp(df, year):
     return df
 
 
-def create_graph(df, var_1_source, var_2_sink):
+def create_graph(df: pl.DataFrame, var_1_source: str, var_2_sink: str) -> nx.Graph:
     """
     Creates a graph, where the models in ComparIA are nodes and a link from
     model A to model B means that model A won a match (received a vote from
@@ -78,8 +79,8 @@ def create_graph(df, var_1_source, var_2_sink):
     Args:
         df (pl.DataFrame): Votes DataFrame with columns "id", "timestamp",
         "sink_node_model_winner","source_node_model_loser", "month", "day", "year".
-        var_1_source: column name with source node.
-        var_2_sink: column name with sink node.
+        var_1_source (str): column name with source node.
+        var_2_sink (str): column name with sink node.
     Returns:
         G: Networkx graph object. Nodes and links have attributes: start_date
         (timestamp of the match) and end_date (max of timestamps).
@@ -120,16 +121,16 @@ def create_graph(df, var_1_source, var_2_sink):
     return G
 
 
-def create_graph_json(df, title, var1, var2):
+def create_graph_json(df: pl.DataFrame, title: str, var1: str, var2: str):
     """
     Saves a networkx graph object into a json file.
 
     Args:
         df (pl.DataFrame): Votes DataFrame with columns "id", "timestamp",
         "sink_node_model_winner","source_node_model_loser", "month", "day", "year".
-        title: name of the json file.
-        var1: column name with source node.
-        var2: column name with sink node.
+        title (str): name of the json file.
+        var1 (str): column name with source node.
+        var2 (str): column name with sink node.
     Returns:
         json file with nodes and edges.
     """

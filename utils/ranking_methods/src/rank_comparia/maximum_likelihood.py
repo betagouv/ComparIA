@@ -42,7 +42,7 @@ class MaximumLikelihoodRanker(Ranker):
         Aggregate a list of matches in a polars DataFrame.
 
         Args:
-            list[Match]: List of matches.
+            matches (list[Match]): List of matches.
 
         Returns:
             pl.DataFrame: DataFrame with the number of wins on each side for all pairwise combinations of models.
