@@ -310,9 +310,11 @@
     }
 
     circle {
+      stroke-width: 2px;
+      stroke: var(--color-white);
+
       &.hovered {
         stroke: var(--color-dark-grey);
-        stroke-width: 2px;
       }
 
       &.blurred {
