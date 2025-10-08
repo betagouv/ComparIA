@@ -94,178 +94,186 @@
 
 <svelte:window onresize={resize} />
 
-<div class="mb-4 flex">
-  <Search
-    id="energy-graph-model-search"
-    bind:value={search}
-    label={m['ranking.table.search']()}
-    class="ms-auto"
-  />
-</div>
-
-<div id="energy-graph" class="flex items-center gap-2">
+{#snippet legend()}
   <div
-    class="-me-8 h-6 w-6 translate-y-[95px] -rotate-90 overflow-visible whitespace-nowrap text-center"
+    id="graph-legend"
+    class="cg-border rounded-md! bg-very-light-grey h-full p-4 text-[12px] leading-normal"
   >
-    <Icon icon="thumb-up-line" class="text-primary" />
-    <strong>{m['ranking.energy.views.graph.yLabel']()}</strong>
+    <p class="mb-4! text-[13px]!">
+      <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
+    </p>
+    <ul class="p-0! list-none! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
+      {#each archs as arch}
+        <li class="p-0! mb-2 flex items-center">
+          <div class={['dot me-2 rounded-full', arch]}></div>
+          {m[`models.arch.types.${arch}.name`]()}
+          <Tooltip
+            id="arch-type-{arch}"
+            text={m[`models.arch.types.${arch}.desc`]()}
+            size="xs"
+            class="ms-1"
+          />
+        </li>
+      {/each}
+    </ul>
+
+    <p class="mb-4! text-[13px]! leading-tight!">
+      <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
+      <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
+    </p>
+
+    <CheckboxGroup {...sizeFilter} bind:value={sizes} legendClass="sr-only" row class="mb-0!">
+      {#snippet labelSlot({ option })}
+        <div class="flex items-center">
+          <div
+            class={['dot border-dark-grey me-2 rounded-full border']}
+            style="--size: {dotSizes[option.value] * 2}px"
+          ></div>
+          <span class="text-dark-grey text-[12px] font-medium">{option.label}</span>
+        </div>
+      {/snippet}
+    </CheckboxGroup>
+  </div>
+{/snippet}
+
+<div id="energy-graph">
+  <div class="mb-4 flex">
+    <Search
+      id="energy-graph-model-search"
+      bind:value={search}
+      label={m['ranking.table.search']()}
+      class="ms-auto"
+    />
   </div>
 
-  <div class="relative flex-grow">
-    <div class="flex">
-      <svg bind:this={svg}>
-        <!-- y axis -->
-        <g class="axis y-axis">
-          {#each yTicks as tick}
-            <g transform="translate(0, {yScale(tick)})">
-              <line x1={padding.left} x2={xScale(minMaxX[1])} />
-              <text x={padding.left - 8} y="+4">{tick}</text>
-            </g>
-          {/each}
-        </g>
+  <div class="flex items-center gap-2">
+    <div
+      class="-me-8 h-6 w-6 translate-y-[35px] -rotate-90 overflow-visible whitespace-nowrap text-center"
+    >
+      <Icon icon="thumb-up-line" class="text-primary" />
+      <strong>{m['ranking.energy.views.graph.yLabel']()}</strong>
+    </div>
 
-        <!-- x axis -->
-        <g class="axis x-axis">
-          {#each xTicks as tick}
-            <g transform="translate({xScale(tick)},0)">
-              <line y1={yScale(minMaxY[0])} y2={yScale(minMaxY[1])} />
-              <text y={height - padding.bottom + 20}>{tick}</text>
-            </g>
-          {/each}
-        </g>
-
-        <!-- target lines -->
-        {#if hoveredModelData}
+    <div class="relative flex-grow">
+      <div class="flex">
+        <svg bind:this={svg}>
           <!-- y axis -->
-          <g class="target-line" transform="translate(0, {yScale(hoveredModelData.y)})">
-            <line x1={padding.left} x2={xScale(hoveredModelData.x)} />
-            <rect y="-15" x={padding.left - 72} width="78" height="30" rx="4" ry="4" />
-            <text x={padding.left - 32} y="+4">{hoveredModelData.y} BT</text>
+          <g class="axis y-axis">
+            {#each yTicks as tick}
+              <g transform="translate(0, {yScale(tick)})">
+                <line x1={padding.left} x2={xScale(minMaxX[1])} />
+                <text x={padding.left - 8} y="+4">{tick}</text>
+              </g>
+            {/each}
           </g>
 
           <!-- x axis -->
-          <g class="target-line" transform="translate({xScale(hoveredModelData.x)},0)">
-            <line y1={yScale(minMaxY[0])} y2={yScale(hoveredModelData.y)} />
-            <rect y={height - padding.bottom} x="-35" width="70" height="30" rx="4" ry="4" />
-            <text y={height - padding.bottom + 20}>{hoveredModelData.x} WH</text>
-          </g>
-        {/if}
-
-        <!-- data -->
-        {#each filteredModels as m}
-          <circle
-            cx={xScale(m.x)}
-            cy={yScale(m.y)}
-            r={m.radius}
-            class={[
-              m.class,
-              { hovered: hoveredModel === m.id, blurred: hoveredModel && hoveredModel !== m.id }
-            ]}
-            onpointerenter={() => onModelHover(m)}
-            onpointerleave={() => (hoveredModel = undefined)}
-          />
-        {/each}
-      </svg>
-
-      {#if hoveredModelData}
-        <div
-          id="graph-tooltip"
-          class="cg-border rounded-sm! z-1 absolute min-w-[175px] bg-white p-3 drop-shadow-md"
-          style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
-        >
-          <div class="flex">
-            <img
-              src="/orgs/ai/{hoveredModelData.icon_path}"
-              alt={hoveredModelData.organisation}
-              class="me-1 w-[14px] object-contain"
-            />
-            <strong class="text-[12px] leading-normal">{hoveredModelData.id}</strong>
-          </div>
-
-          <div class="mt-1 text-[10px]">
-            {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item}
-              <div class="flex gap-1 leading-relaxed">
-                <Icon icon={item.icon} size="xxs" class="text-primary" />
-                <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
-                  {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
-                </p>
-                <strong class="ms-auto">{hoveredModelData[item.key]}</strong>
-              </div>
+          <g class="axis x-axis">
+            {#each xTicks as tick}
+              <g transform="translate({xScale(tick)},0)">
+                <line y1={yScale(minMaxY[0])} y2={yScale(minMaxY[1])} />
+                <text y={height - padding.bottom + 20}>{tick}</text>
+              </g>
             {/each}
+          </g>
 
-            <div class="mt-4">
-              {#each tooltipExtraData as key}
-                {#if hoveredModelData[key]}
-                  <div class="flex gap-1 leading-relaxed">
-                    <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
-                      {m[`ranking.energy.views.graph.tooltip.${key}`]()}
-                    </p>
-                    <strong class="ms-auto">
-                      {#if key === 'arch'}
-                        {m[
-                          `models.arch.types.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as (typeof archs)[number])}.name`
-                        ]()}
-                      {:else}
-                        {hoveredModelData[key]}
-                      {/if}
-                    </strong>
-                  </div>
-                {/if}
+          <!-- target lines -->
+          {#if hoveredModelData}
+            <!-- y axis -->
+            <g class="target-line" transform="translate(0, {yScale(hoveredModelData.y)})">
+              <line x1={padding.left} x2={xScale(hoveredModelData.x)} />
+              <rect y="-15" x={padding.left - 72} width="78" height="30" rx="4" ry="4" />
+              <text x={padding.left - 32} y="+4">{hoveredModelData.y} BT</text>
+            </g>
+
+            <!-- x axis -->
+            <g class="target-line" transform="translate({xScale(hoveredModelData.x)},0)">
+              <line y1={yScale(minMaxY[0])} y2={yScale(hoveredModelData.y)} />
+              <rect y={height - padding.bottom} x="-35" width="70" height="30" rx="4" ry="4" />
+              <text y={height - padding.bottom + 20}>{hoveredModelData.x} WH</text>
+            </g>
+          {/if}
+
+          <!-- data -->
+          {#each filteredModels as m}
+            <circle
+              cx={xScale(m.x)}
+              cy={yScale(m.y)}
+              r={m.radius}
+              class={[
+                m.class,
+                { hovered: hoveredModel === m.id, blurred: hoveredModel && hoveredModel !== m.id }
+              ]}
+              onpointerenter={() => onModelHover(m)}
+              onpointerleave={() => (hoveredModel = undefined)}
+            />
+          {/each}
+        </svg>
+
+        {#if hoveredModelData}
+          <div
+            id="graph-tooltip"
+            class="cg-border rounded-sm! z-1 absolute min-w-[175px] bg-white p-3 drop-shadow-md"
+            style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
+          >
+            <div class="flex">
+              <img
+                src="/orgs/ai/{hoveredModelData.icon_path}"
+                alt={hoveredModelData.organisation}
+                class="me-1 w-[14px] object-contain"
+              />
+              <strong class="text-[12px] leading-normal">{hoveredModelData.id}</strong>
+            </div>
+
+            <div class="mt-1 text-[10px]">
+              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item}
+                <div class="flex gap-1 leading-relaxed">
+                  <Icon icon={item.icon} size="xxs" class="text-primary" />
+                  <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                    {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
+                  </p>
+                  <strong class="ms-auto">{hoveredModelData[item.key]}</strong>
+                </div>
               {/each}
+
+              <div class="mt-4">
+                {#each tooltipExtraData as key}
+                  {#if hoveredModelData[key]}
+                    <div class="flex gap-1 leading-relaxed">
+                      <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                        {m[`ranking.energy.views.graph.tooltip.${key}`]()}
+                      </p>
+                      <strong class="ms-auto">
+                        {#if key === 'arch'}
+                          {m[
+                            `models.arch.types.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as (typeof archs)[number])}.name`
+                          ]()}
+                        {:else}
+                          {hoveredModelData[key]}
+                        {/if}
+                      </strong>
+                    </div>
+                  {/if}
+                {/each}
+              </div>
             </div>
           </div>
+        {/if}
+
+        <div class="hidden h-[535px] w-[220px] md:block">
+          {@render legend()}
         </div>
-      {/if}
+      </div>
 
-      <div
-        id="graph-legend"
-        class="cg-border rounded-md! bg-very-light-grey h-[535px] w-[220px] p-4 text-[12px] leading-normal"
-      >
-        <p class="mb-4! text-[13px]!">
-          <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
-        </p>
-        <ul class="p-0! list-none! mb-10! font-medium">
-          {#each archs as arch}
-            <li class="p-0! mb-2 flex items-center">
-              <div class={['dot me-2 rounded-full', arch]}></div>
-              {m[`models.arch.types.${arch}.name`]()}
-              <Tooltip
-                id="arch-type-{arch}"
-                text={m[`models.arch.types.${arch}.desc`]()}
-                size="xs"
-                class="ms-1"
-              />
-            </li>
-          {/each}
-        </ul>
-
-        <p class="mb-4! text-[13px]! leading-tight!">
-          <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
-          <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
-        </p>
-
-        <CheckboxGroup
-          {...sizeFilter}
-          bind:value={sizes}
-          legendClass="sr-only"
-          labelClass="flex-nowrap!"
-          class="mb-0!"
-        >
-          {#snippet labelSlot({ option })}
-            <div
-              class={['dot border-dark-grey me-2 rounded-full border']}
-              style="--size: {dotSizes[option.value] * 2}px"
-            ></div>
-            <span class="text-dark-grey text-[12px] font-medium">{option.label}</span>
-          {/snippet}
-        </CheckboxGroup>
+      <div class="text-center">
+        <Icon icon="flashlight-line" class="text-primary" />
+        <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
       </div>
     </div>
+  </div>
 
-    <div class="text-center">
-      <Icon icon="flashlight-line" class="text-primary" />
-      <strong>{m['ranking.energy.views.graph.xLabel']()}</strong>
-    </div>
+  <div class="mt-6 md:hidden">
+    {@render legend()}
   </div>
 </div>
 
@@ -354,8 +362,8 @@
 
   #graph-legend {
     .dot {
-      min-width: var(--size, 16px);
-      min-height: var(--size, 16px);
+      width: var(--size, 16px);
+      height: var(--size, 16px);
     }
   }
 </style>
