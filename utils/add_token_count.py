@@ -1,9 +1,7 @@
 import tiktoken
 import psycopg2
 import json
-import tomli
-from psycopg2 import sql
-from psycopg2.extras import Json, DictCursor
+from psycopg2.extras import DictCursor
 
 
 def count_tokens(text):
@@ -79,6 +77,7 @@ def process_conversation(conversation):
         )
     return enriched_conversation, total_assistant_output_tokens
 
+
 def process_unprocessed_conversations(dsn, batch_size=10):
     """Process conversations in batches that don't have token counts."""
     print("Starting process_unprocessed_conversations...")
@@ -131,12 +130,6 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     conversation_id = conv["id"]
                     print(f"Processing conversation with ID: {conversation_id}")
                     try:
-                        model_a_name = conv["model_a_name"].lower()
-                        model_b_name = conv["model_b_name"].lower()
-                        print(f"  Getting metadata for model A: '{model_a_name}'")
-                        model_a_meta = get_model_metadata(model_a_name)
-                        print(f"  Getting metadata for model B: '{model_b_name}'")
-                        model_b_meta = get_model_metadata(model_b_name)
 
                         # Process conversations
                         conv_a_raw = conv["conversation_a"]
@@ -167,60 +160,22 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             f"  Conversation B (ID: {conversation_id}) processed. Total output tokens: {total_conv_b_tokens}"
                         )
 
-                        # Get model parameters
-                        print(f"  Getting parameters for model A: '{model_a_name}'")
-                        model_a_params, model_a_active_params = get_model_params(
-                            model_a_meta
-                        )
-                        print(f"  Getting parameters for model B: '{model_b_name}'")
-                        model_b_params, model_b_active_params = get_model_params(
-                            model_b_meta
-                        )
-                        print(
-                            f"  Model A total parameters: {model_a_params}, active parameters: {model_a_active_params}"
-                        )
-                        print(
-                            f"  Model B total parameters: {model_b_params}, active parameters: {model_b_active_params}"
-                        )
-
-                        print(
-                            f"  Calculating LLM impact for conversation A (ID: {conversation_id})..."
-                        )
-                        # FIXME: only for model...
-                        # total_conv_a_kwh = get_llm_impact(
-                        #     model_a_meta, total_conv_a_tokens
-                        # )
-                        # print(
-                        #     f"  LLM impact for conversation A (ID: {conversation_id}): {total_conv_a_kwh} kWh"
-                        # )
-
-                        # print(
-                        #     f"  Calculating LLM impact for conversation B (ID: {conversation_id})..."
-                        # )
-                        # # FIXME: only for model...
-
-                        # total_conv_b_kwh = get_llm_impact(
-                        #     model_b_meta, total_conv_b_tokens
-                        # )
-                        # print(
-                        #     f"  LLM impact for conversation B (ID: {conversation_id}): {total_conv_b_kwh} kWh"
-                        # )
-
-# FIXME: refacto
                         # Update conversation with token counts and model metadata
                         update_query = """
                             UPDATE conversations
                             SET
                                 total_conv_a_output_tokens = %s,
                                 total_conv_b_output_tokens = %s,
+                                conv_a = %s,
+                                conv_b = %s
                             WHERE id = %s
                             """
-                                # model_a_total_params = %s,
-                                # model_a_active_params = %s,
-                                # model_b_total_params = %s,
-                                # model_b_active_params = %s,
-                                # total_conv_a_kwh = %s,
-                                # total_conv_b_kwh = %s
+                        # model_a_total_params = %s,
+                        # model_a_active_params = %s,
+                        # model_b_total_params = %s,
+                        # model_b_active_params = %s,
+                        # total_conv_a_kwh = %s,
+                        # total_conv_b_kwh = %s
                         print(
                             f"  Executing update query for conversation ID {conversation_id}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, model_a_params, model_a_active_params, model_b_params, model_b_active_params, total_conv_a_kwh, total_conv_b_kwh, conversation_id)).decode()}'"
                         )
@@ -229,13 +184,8 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             (
                                 total_conv_a_tokens,
                                 total_conv_b_tokens,
-                                # FIXME:
-                                # model_a_params,
-                                # model_a_active_params,
-                                # model_b_params,
-                                # model_b_active_params,
-                                # total_conv_a_kwh,
-                                # total_conv_b_kwh,
+                                enriched_conv_a,
+                                enriched_conv_b,
                                 conversation_id,
                             ),
                         )
@@ -285,7 +235,6 @@ def process_unprocessed_conversations(dsn, batch_size=10):
     print(f"\n--- Batch Processing Summary ---")
     print(f"Total conversations processed: {processed_count}")
     print(f"Total errors encountered: {error_count}")
-
 
 
 if __name__ == "__main__":
