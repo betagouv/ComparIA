@@ -148,14 +148,14 @@ random_pool = [
 small_models = [
     id
     for id, model in models.items()
-    if model["friendly_size"] in ["XS", "S", "M"]
+    if model["params"] <= 60
     and id not in reasoning_models
 ]
 
 big_models = [
         id
     for id, model in models.items()
-    if model["friendly_size"] in ["L", "XL", "XXL"]
+    if model["params"] >= 100
     and id not in reasoning_models
 ]
 
