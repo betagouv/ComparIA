@@ -1552,7 +1552,7 @@
             "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
         "ranking": {
-            "desc": "Merci pour vos contributions ! Vos votes alimentent un classement Elo et que nous vous rendons transparent.<br>Ce score de satisfaction Elo,  construit en partenariat avec le PEReN, repose sur vos votes, vos réactions d’approbation et désapprobation.",
+            "desc": "Merci pour vos contributions ! Vos votes alimentent un classement Bradley-Terry (BT) et que nous vous rendons transparent.<br>Ce score de satisfaction BT, construit en partenariat avec le PEReN, repose sur vos votes, vos réactions d’approbation et désapprobation.",
             "tabLabel": "Classement"
         },
         "table": {
