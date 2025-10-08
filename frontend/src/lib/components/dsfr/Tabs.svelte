@@ -53,7 +53,7 @@
 >
   <ul class={['fr-tabs__list', { 'px-0!': kind === 'nav' }]} role="tablist" aria-label={label}>
     {#each items as item}
-      <li role="presentation">
+      <li role="presentation" class="whitespace-nowrap">
         {#if item.href}
           <a {...item.props} href={item.href}>
             {item.label}
