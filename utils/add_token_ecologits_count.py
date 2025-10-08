@@ -6,15 +6,6 @@ from psycopg2 import sql
 from psycopg2.extras import Json, DictCursor
 
 
-# Load model metadata from file (assuming TOML format)
-print("Loading model metadata from models-extra-info.toml...")
-with open("models-extra-info.toml", "rb") as f:
-    MODELS_RAW = tomli.load(f)
-    MODELS = dict((k.lower(), v) for k, v in MODELS_RAW.items())
-
-print(f"Model metadata loaded successfully. Found {len(MODELS)} model entries.")
-
-
 def count_tokens(text):
     """Counts the number of tokens in a given text using tiktoken."""
     num_tokens = len(tiktoken.get_encoding("cl100k_base").encode(text))
@@ -87,47 +78,6 @@ def process_conversation(conversation):
             "DEBUG: process_conversation returned 0 total assistant tokens for an unanswered."
         )
     return enriched_conversation, total_assistant_output_tokens
-
-
-def get_model_metadata(model_name):
-    """Get metadata for a specific model from the models file."""
-    metadata = MODELS.get(model_name, {})
-    print(f"Getting metadata for model: '{model_name}' - Found metadata: {metadata}")
-    return metadata
-
-
-def get_model_params(model_meta):
-    """Extract params from model metadata, returning total and active params."""
-    params = model_meta.get("params")
-    active_params = model_meta.get("active_params")
-
-    if params is not None and active_params is not None:
-        print(
-            f"  Model metadata contains 'params': {params} and 'active_params': {active_params}"
-        )
-        return float(params), float(active_params)
-    elif params is not None:
-        print(
-            f"  Model metadata contains 'params': {params}. Assuming active_params = params for non-MoE."
-        )
-        return float(params), float(params)
-    elif "params" in model_meta:
-        params = model_meta.get("params")
-        print(
-            f"  Model metadata contains 'params': {params}. Assuming params = active_params = params."
-        )
-        return float(params), float(params)
-    else:
-        print(
-            f"  No 'params', 'params', or 'active_params' found in model metadata."
-        )
-        friendly_size = model_meta.get("friendly_size")
-        PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-        if friendly_size and friendly_size in PARAMS_SIZE_MAP:
-            params = PARAMS_SIZE_MAP[friendly_size]
-            return float(params), float(params)
-        return None, None  # Return None for both if no params information found
-
 
 def process_unprocessed_conversations(dsn, batch_size=10):
     """Process conversations in batches that don't have token counts."""
@@ -236,37 +186,41 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                         print(
                             f"  Calculating LLM impact for conversation A (ID: {conversation_id})..."
                         )
-                        total_conv_a_kwh = get_llm_impact(
-                            model_a_meta, total_conv_a_tokens
-                        )
-                        print(
-                            f"  LLM impact for conversation A (ID: {conversation_id}): {total_conv_a_kwh} kWh"
-                        )
+                        # FIXME: only for model...
+                        # total_conv_a_kwh = get_llm_impact(
+                        #     model_a_meta, total_conv_a_tokens
+                        # )
+                        # print(
+                        #     f"  LLM impact for conversation A (ID: {conversation_id}): {total_conv_a_kwh} kWh"
+                        # )
 
-                        print(
-                            f"  Calculating LLM impact for conversation B (ID: {conversation_id})..."
-                        )
-                        total_conv_b_kwh = get_llm_impact(
-                            model_b_meta, total_conv_b_tokens
-                        )
-                        print(
-                            f"  LLM impact for conversation B (ID: {conversation_id}): {total_conv_b_kwh} kWh"
-                        )
+                        # print(
+                        #     f"  Calculating LLM impact for conversation B (ID: {conversation_id})..."
+                        # )
+                        # # FIXME: only for model...
 
+                        # total_conv_b_kwh = get_llm_impact(
+                        #     model_b_meta, total_conv_b_tokens
+                        # )
+                        # print(
+                        #     f"  LLM impact for conversation B (ID: {conversation_id}): {total_conv_b_kwh} kWh"
+                        # )
+
+# FIXME: refacto
                         # Update conversation with token counts and model metadata
                         update_query = """
                             UPDATE conversations
                             SET
                                 total_conv_a_output_tokens = %s,
                                 total_conv_b_output_tokens = %s,
-                                model_a_total_params = %s,
-                                model_a_active_params = %s,
-                                model_b_total_params = %s,
-                                model_b_active_params = %s,
-                                total_conv_a_kwh = %s,
-                                total_conv_b_kwh = %s
                             WHERE id = %s
                             """
+                                # model_a_total_params = %s,
+                                # model_a_active_params = %s,
+                                # model_b_total_params = %s,
+                                # model_b_active_params = %s,
+                                # total_conv_a_kwh = %s,
+                                # total_conv_b_kwh = %s
                         print(
                             f"  Executing update query for conversation ID {conversation_id}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, model_a_params, model_a_active_params, model_b_params, model_b_active_params, total_conv_a_kwh, total_conv_b_kwh, conversation_id)).decode()}'"
                         )
@@ -275,12 +229,13 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             (
                                 total_conv_a_tokens,
                                 total_conv_b_tokens,
-                                model_a_params,
-                                model_a_active_params,
-                                model_b_params,
-                                model_b_active_params,
-                                total_conv_a_kwh,
-                                total_conv_b_kwh,
+                                # FIXME:
+                                # model_a_params,
+                                # model_a_active_params,
+                                # model_b_params,
+                                # model_b_active_params,
+                                # total_conv_a_kwh,
+                                # total_conv_b_kwh,
                                 conversation_id,
                             ),
                         )
@@ -331,103 +286,6 @@ def process_unprocessed_conversations(dsn, batch_size=10):
     print(f"Total conversations processed: {processed_count}")
     print(f"Total errors encountered: {error_count}")
 
-
-from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
-
-
-def get_llm_impact(model_extra_info, token_count: int):
-    print(f"Calculating LLM impact for {model_extra_info.get('id')}")
-    model_active_parameter_count = None
-    model_total_parameter_count = None
-
-    if "active_params" in model_extra_info:
-        print("  Using 'active_params' and 'params' from model info.")
-        model_active_parameter_count = int(model_extra_info["active_params"])
-        model_total_parameter_count = int(model_extra_info["params"])
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
-            print("  Applying q8 quantization.")
-            model_active_parameter_count = int(model_extra_info["active_params"]) // 2
-            model_total_parameter_count = int(model_extra_info["params"]) // 2
-        elif (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q4"
-        ):
-            print("  Applying q4 quantization.")
-            model_active_parameter_count = int(model_extra_info["active_params"]) / 4
-            model_total_parameter_count = int(model_extra_info["params"]) / 4
-    elif "params" in model_extra_info:
-        print("  Using 'params' from model info.")
-        params = int(model_extra_info["params"])
-        model_active_parameter_count = params
-        model_total_parameter_count = params
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
-            print("  Applying q8 quantization.")
-            model_active_parameter_count //= 2
-            model_total_parameter_count //= 2
-        elif (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q4"
-        ):
-            print("  Applying q4 quantization.")
-            model_active_parameter_count //= 4
-            model_total_parameter_count //= 4
-    elif "friendly_size" in model_extra_info:
-        print("  No parameter information found in model info. Friendly size used.")
-        friendly_size = model_extra_info.get("friendly_size")
-        PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-        if friendly_size and friendly_size in PARAMS_SIZE_MAP:
-            params = PARAMS_SIZE_MAP[friendly_size]
-            model_total_parameter_count = params
-            model_active_parameter_count = params
-
-    if model_active_parameter_count is None or model_total_parameter_count is None:
-        input("WARNING: Missing ecological impact due to missing parameter information")
-        return None
-
-    # TODO: move to config.py
-    electricity_mix_zone = "WOR"
-    print(f"  Using electricity mix zone: {electricity_mix_zone}")
-    electricity_mix = electricity_mixes.find_electricity_mix(zone=electricity_mix_zone)
-    if_electricity_mix_adpe = electricity_mix.adpe
-    if_electricity_mix_pe = electricity_mix.pe
-    if_electricity_mix_gwp = electricity_mix.gwp
-    print(
-        f"  Found electricity mix - ADPE: {if_electricity_mix_adpe}, PE: {if_electricity_mix_pe}, GWP: {if_electricity_mix_gwp}"
-    )
-
-    print("  Computing LLM impacts using ecologits...")
-    impact = compute_llm_impacts(
-        model_active_parameter_count=model_active_parameter_count,
-        model_total_parameter_count=model_total_parameter_count,
-        output_token_count=token_count,
-        if_electricity_mix_adpe=if_electricity_mix_adpe,
-        if_electricity_mix_pe=if_electricity_mix_pe,
-        if_electricity_mix_gwp=if_electricity_mix_gwp,
-        request_latency=None,
-    )
-    kwh = convert_range_to_value(impact.energy.value)
-    print(f"  Calculated LLM impact (kWh): {kwh}")
-    return kwh
-    # co2 = convert_range_to_value(model_a_impact.gwp.value)
-
-
-def convert_range_to_value(value_or_range):
-    print("Converting range to value...")
-    if hasattr(value_or_range, "min"):
-        value = (value_or_range.min + value_or_range.max) / 2
-        print(f"  Value is a range: {value_or_range}. Returning the average: {value}")
-        return value
-    else:
-        print(
-            f"  Value is not a range: {value_or_range}. Returning the value directly."
-        )
-        return value_or_range
 
 
 if __name__ == "__main__":
