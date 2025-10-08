@@ -37,6 +37,7 @@ def filter_enabled_models(models: dict[str, Model]):
                 continue
     return enabled_models
 
+
 def get_ip(request: Request):
     # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
     if "cloud-protector-client-ip" in request.headers:
@@ -155,7 +156,6 @@ def get_user_info(request):
     return user_id, session_id
 
 
-
 class AppState:
     def __init__(
         self,
@@ -261,13 +261,16 @@ def pick_models(mode, custom_models_selection, unavailable_models):
 
     return [model_left_name, model_right_name]
 
+
 def get_api_key(endpoint: Endpoint):
 
     # // "api_type": "huggingface/cohere",
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
 
     # "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
-    if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get("api_base"):
+    if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get(
+        "api_base"
+    ):
         return os.getenv("ALBERT_KEY")
     if endpoint.get("api_base") and "huggingface.co" in endpoint.get("api_base"):
         return os.getenv("HF_INFERENCE_KEY")
@@ -292,13 +295,11 @@ def get_distrib_clause_from_license(license_name):
         return "open-weights"
 
 
-def count_output_tokens(messages) -> int:
-    """Count output tokens (assuming 4 letters per token)."""
-
-    total_messages = sum(
-        len(msg.content) for msg in messages if msg.role == "assistant"
+def sum_tokens(messages) -> int:
+    total_output_tokens = sum(
+        msg.metadata.output_tokens for msg in messages if msg.role == "assistant"
     )
-    return int(total_messages / 4)
+    return total_output_tokens
 
 
 def shuffle_prompt(guided_cards, request):
@@ -319,6 +320,7 @@ def gen_prompt(category):
     # for category in get_categories(prompts_pool):
     # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
     return prompts[np.random.randint(len(prompts))]
+
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
@@ -365,6 +367,7 @@ def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as dsn
+
     cursor = None
     conn = None
     result = 55000
@@ -394,4 +397,3 @@ AS total_approx;
         if conn:
             conn.close()
         return result
-

@@ -1,7 +1,5 @@
 import logging
-from languia.utils import messages_to_dict_list
-
-from litellm import token_counter
+from languia.utils import sum_tokens
 
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
@@ -85,32 +83,14 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
     model_a = all_models.get(conv_a.model_name)
     model_b = all_models.get(conv_b.model_name)
 
-    if conv_a.output_tokens and conv_a.output_tokens != 0:
-        model_a_tokens = conv_a.output_tokens
-        logger.debug("output_tokens (model a): " + str(model_a_tokens))
-    else:
-        model_a_tokens = token_counter(
-            messages=messages_to_dict_list(
-                conv_a.messages, strip_metadata=True, concat_reasoning_with_content=True
-            ),
-            model=conv_a.model_name,
-        )
-        logger.debug(
-            "output_tokens (model a) (litellm tokenizer): " + str(model_a_tokens)
+    model_a_tokens = sum_tokens(conv_a.messages)
+    logger.debug(
+            "output_tokens (model a): " + str(model_a_tokens)
         )
 
-    if conv_b.output_tokens and conv_b.output_tokens != 0:
-        model_b_tokens = conv_b.output_tokens
-        logger.debug("output_tokens (model b): " + str(model_b_tokens))
-    else:
-        model_b_tokens = token_counter(
-            messages=messages_to_dict_list(
-                conv_b.messages, strip_metadata=True, concat_reasoning_with_content=True
-            ),
-            model=conv_b.model_name,
-        )
-        logger.debug(
-            "output_tokens (model b) (litellm tokenizer): " + str(model_b_tokens)
+    model_b_tokens = sum_tokens(conv_b.messages)
+    logger.debug(
+            "output_tokens (model b): " + str(model_b_tokens)
         )
 
     # TODO:
