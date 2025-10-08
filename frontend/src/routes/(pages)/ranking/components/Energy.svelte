@@ -22,7 +22,7 @@
 </script>
 
 <div id="ranking-energy">
-  <h2 class="fr-h6 text-primary! mb-1!">{m['ranking.energy.title']()}</h2>
+  <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
   <p class="mb-8! text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
 
   <div class="rounded bg-white p-8">
