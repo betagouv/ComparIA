@@ -279,21 +279,6 @@ def get_api_key(endpoint: Endpoint):
     return None
 
 
-def get_conditions_from_license(license_name):
-    if "propriétaire" in license_name:
-        return "restricted"
-    elif license_name in ["Gemma", "CC-BY-NC-4.0"]:
-        return "copyleft"
-    else:
-        return "free"
-
-
-def get_distrib_clause_from_license(license_name):
-    if "propriétaire" in license_name:
-        return "api-only"
-    else:
-        return "open-weights"
-
 
 def sum_tokens(messages) -> int:
     total_output_tokens = sum(
@@ -301,25 +286,6 @@ def sum_tokens(messages) -> int:
     )
     return total_output_tokens
 
-
-def shuffle_prompt(guided_cards, request):
-    logger = logging.getLogger("languia")
-    prompt = gen_prompt(guided_cards)
-    logger.info(
-        f"shuffle: {prompt}",
-        extra={"request": request},
-    )
-    return prompt
-
-
-def gen_prompt(category):
-    from languia.config import prompts_table
-
-    prompts = prompts_table[category]
-    # [category]
-    # for category in get_categories(prompts_pool):
-    # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
-    return prompts[np.random.randint(len(prompts))]
 
 
 def to_threeway_chatbot(conversations):
