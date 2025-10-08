@@ -276,26 +276,6 @@ def get_api_key(endpoint: Endpoint):
     return None
 
 
-def params_to_friendly_size(params):
-    """
-    Converts a parameter value to a friendly size description.
-
-    Args:
-        param (int): The parameter value
-
-    Returns:
-        str: The friendly size description
-    """
-    intervals = [(0, 7), (7, 20), (20, 70), (70, 150), (150, float("inf"))]
-    sizes = ["XS", "S", "M", "L", "XL"]
-
-    for i, (lower, upper) in enumerate(intervals):
-        if lower <= params < upper:
-            return sizes[i]
-
-    return "M"
-
-
 def get_conditions_from_license(license_name):
     if "propriétaire" in license_name:
         return "restricted"
