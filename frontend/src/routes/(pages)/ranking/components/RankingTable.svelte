@@ -166,7 +166,7 @@
         </div>
       {/if}
 
-      <div class="fr-table__detail mb-0! flex gap-5">
+      <div class="fr-table__detail mb-0! flex flex-col gap-3 md:flex-row md:gap-5">
         <p class="mb-0! text-[14px]!">
           {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
         </p>
