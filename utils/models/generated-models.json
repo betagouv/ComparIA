@@ -268,8 +268,8 @@
     "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3"
   },
   "claude-3-5-sonnet-v2": {
-    "active_params": 100,
-    "arch": "maybe-dense",
+    "active_params": 137.5,
+    "arch": "maybe-moe",
     "commercial_use": null,
     "consumption_wh": 134,
     "distribution": "api-only",
@@ -280,7 +280,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "Anthropic",
-    "params": 300,
+    "params": 440,
     "prefs": {
       "clear_formatting": 906,
       "complete": 721,
@@ -294,7 +294,7 @@
     },
     "reasoning": false,
     "release_date": "10/2024",
-    "required_ram": 300,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "Claude 3.5 Sonnet v2",
     "status": "archived",
@@ -306,7 +306,8 @@
     "url": "https://www.anthropic.com/news/3-5-models-and-computer-use"
   },
   "claude-3-7-sonnet": {
-    "arch": "maybe-dense",
+    "active_params": 137.5,
+    "arch": "maybe-moe",
     "commercial_use": null,
     "consumption_wh": 134,
     "distribution": "api-only",
@@ -317,7 +318,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "Anthropic",
-    "params": 200,
+    "params": 440,
     "prefs": {
       "clear_formatting": 822,
       "complete": 774,
@@ -331,7 +332,7 @@
     },
     "reasoning": false,
     "release_date": "02/2025",
-    "required_ram": 200,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "Claude 3.7 Sonnet",
     "status": "disabled",
@@ -343,7 +344,8 @@
     "url": "https://www.anthropic.com/news/claude-3-7-sonnet"
   },
   "claude-4-5-sonnet": {
-    "arch": "maybe-dense",
+    "active_params": 137.5,
+    "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
     "endpoint": {
@@ -356,18 +358,19 @@
     "license": "proprietary",
     "new": true,
     "organisation": "Anthropic",
-    "params": 200,
+    "params": 440,
     "prefs": null,
     "reasoning": false,
     "release_date": "09/2025",
-    "required_ram": 200,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "Claude 4.5 Sonnet",
     "status": "enabled",
     "url": "https://www.anthropic.com/news/claude-sonnet-4-5"
   },
   "claude-4-sonnet": {
-    "arch": "maybe-dense",
+    "active_params": 137.5,
+    "arch": "maybe-moe",
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
@@ -382,7 +385,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "Anthropic",
-    "params": 200,
+    "params": 440,
     "prefs": {
       "clear_formatting": 117,
       "complete": 103,
@@ -396,7 +399,7 @@
     },
     "reasoning": false,
     "release_date": "05/2025",
-    "required_ram": 200,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "Claude 4 Sonnet",
     "status": "enabled",
@@ -692,7 +695,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "Google",
-    "params": 440,
+    "params": 600,
     "prefs": {
       "clear_formatting": 977,
       "complete": 767,
@@ -706,7 +709,7 @@
     },
     "reasoning": false,
     "release_date": "02/2024",
-    "required_ram": 440,
+    "required_ram": 600,
     "reuse": false,
     "simple_name": "Gemini 1.5 Pro",
     "status": "archived",
@@ -730,7 +733,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "Google",
-    "params": 440,
+    "params": 600,
     "prefs": {
       "clear_formatting": 984,
       "complete": 865,
@@ -744,7 +747,7 @@
     },
     "reasoning": false,
     "release_date": "09/2024",
-    "required_ram": 440,
+    "required_ram": 600,
     "reuse": false,
     "simple_name": "Gemini 1.5 Pro",
     "status": "archived",
@@ -756,18 +759,19 @@
     "url": "https://ai.google.dev/gemini-api"
   },
   "gemini-2.0-flash-001": {
+    "active_params": 137,
     "arch": "moe",
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
     "elo": 1091,
-    "friendly_size": "M",
+    "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-2.0-flash-001",
     "license": "proprietary",
     "new": false,
     "organisation": "Google",
-    "params": 40,
+    "params": 440,
     "prefs": {
       "clear_formatting": 1179,
       "complete": 1566,
@@ -781,7 +785,7 @@
     },
     "reasoning": false,
     "release_date": "12/2024",
-    "required_ram": 40,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "Gemini 2.0 Flash",
     "status": "archived",
@@ -793,18 +797,19 @@
     "url": "https://ai.google.dev/gemini-api"
   },
   "gemini-2.0-flash-exp": {
+    "active_params": 137,
     "arch": "moe",
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
     "elo": 1104,
-    "friendly_size": "M",
+    "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-2.0-flash-exp",
     "license": "proprietary",
     "new": false,
     "organisation": "Google",
-    "params": 40,
+    "params": 440,
     "prefs": {
       "clear_formatting": 734,
       "complete": 616,
@@ -818,7 +823,7 @@
     },
     "reasoning": false,
     "release_date": "12/2024",
-    "required_ram": 40,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "Gemini 2.0 Flash",
     "status": "archived",
@@ -830,6 +835,7 @@
     "url": "https://ai.google.dev/gemini-api"
   },
   "gemini-2.5-flash": {
+    "active_params": 137,
     "arch": "moe",
     "commercial_use": null,
     "consumption_wh": 12,
@@ -839,13 +845,13 @@
       "api_model_id": "gemini-2.5-flash",
       "api_type": "vertex_ai"
     },
-    "friendly_size": "L",
+    "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-2.5-flash",
     "license": "proprietary",
     "new": true,
     "organisation": "Google",
-    "params": 70,
+    "params": 440,
     "prefs": {
       "clear_formatting": 98,
       "complete": 140,
@@ -859,7 +865,7 @@
     },
     "reasoning": false,
     "release_date": "06/2025",
-    "required_ram": 70,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "Gemini 2.5 Flash",
     "status": "enabled",
@@ -1172,24 +1178,24 @@
     "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "openai.svg",
     "id": "gpt-3.5-turbo-0301",
     "license": "proprietary",
     "new": false,
     "organisation": "OpenAI",
-    "params": 70,
+    "params": 55,
     "prefs": null,
     "reasoning": false,
     "release_date": "03/2023",
-    "required_ram": 70,
+    "required_ram": 55,
     "reuse": false,
     "simple_name": "GPT-3.5",
     "status": "archived",
     "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo"
   },
   "gpt-4.1-mini": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "consumption_wh": 12,
     "distribution": "api-only",
@@ -1204,7 +1210,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "OpenAI",
-    "params": 70,
+    "params": 75,
     "prefs": {
       "clear_formatting": 936,
       "complete": 878,
@@ -1218,7 +1224,7 @@
     },
     "reasoning": false,
     "release_date": "04/2025",
-    "required_ram": 70,
+    "required_ram": 75,
     "reuse": false,
     "simple_name": "GPT-4.1 Mini",
     "status": "enabled",
@@ -1227,10 +1233,10 @@
       2,
       5
     ],
-    "url": "https://openai.com/index/gpt-4-1/"
+    "url": "https://platform.openai.com/docs/models/gpt-4.1-mini"
   },
   "gpt-4.1-nano": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
@@ -1245,7 +1251,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "OpenAI",
-    "params": 35,
+    "params": 23,
     "prefs": {
       "clear_formatting": 598,
       "complete": 471,
@@ -1259,7 +1265,7 @@
     },
     "reasoning": false,
     "release_date": "04/2025",
-    "required_ram": 35,
+    "required_ram": 23,
     "reuse": false,
     "simple_name": "GPT 4.1 Nano",
     "status": "enabled",
@@ -1271,6 +1277,7 @@
     "url": "https://openai.com/index/gpt-4-1/"
   },
   "gpt-4o-2024-08-06": {
+    "active_params": 137.5,
     "arch": "maybe-moe",
     "commercial_use": null,
     "consumption_wh": 61,
@@ -1282,7 +1289,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "OpenAI",
-    "params": 200,
+    "params": 440,
     "prefs": {
       "clear_formatting": 1002,
       "complete": 593,
@@ -1296,7 +1303,7 @@
     },
     "reasoning": false,
     "release_date": "08/2024",
-    "required_ram": 200,
+    "required_ram": 440,
     "reuse": false,
     "simple_name": "GPT-4o",
     "status": "archived",
@@ -1305,21 +1312,21 @@
       6,
       2
     ],
-    "url": "https://platform.openai.com/docs/models/gpt#gpt-4o"
+    "url": "https://platform.openai.com/docs/models/gpt-4o"
   },
   "gpt-4o-mini-2024-07-18": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
     "elo": 976,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "gpt-4o-mini-2024-07-18",
     "license": "proprietary",
     "new": false,
     "organisation": "OpenAI",
-    "params": 35,
+    "params": 18,
     "prefs": {
       "clear_formatting": 1283,
       "complete": 857,
@@ -1333,7 +1340,7 @@
     },
     "reasoning": false,
     "release_date": "07/2024",
-    "required_ram": 35,
+    "required_ram": 18,
     "reuse": false,
     "simple_name": "GPT-4o mini",
     "status": "archived",
@@ -1345,6 +1352,7 @@
     "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini"
   },
   "gpt-5": {
+    "active_params": 94,
     "arch": "maybe-moe",
     "commercial_use": null,
     "distribution": "api-only",
@@ -1358,60 +1366,62 @@
     "license": "proprietary",
     "new": true,
     "organisation": "OpenAI",
-    "params": 200,
+    "params": 300,
     "prefs": null,
     "reasoning": false,
     "release_date": "08/2025",
-    "required_ram": 200,
+    "required_ram": 300,
     "reuse": false,
     "simple_name": "GPT 5",
     "status": "enabled"
   },
   "gpt-5-mini": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
     "endpoint": {
       "api_model_id": "openai/gpt-5-mini",
       "api_type": "openrouter"
     },
-    "friendly_size": "XL",
+    "friendly_size": "M",
     "icon_path": "openai.svg",
     "id": "gpt-5-mini",
     "license": "proprietary",
     "new": true,
     "organisation": "OpenAI",
-    "params": 200,
+    "params": 47,
     "prefs": null,
     "reasoning": false,
     "release_date": "08/2025",
-    "required_ram": 200,
+    "required_ram": 47,
     "reuse": false,
     "simple_name": "GPT 5 Mini",
-    "status": "enabled"
+    "status": "enabled",
+    "url": "https://platform.openai.com/docs/models/gpt-5-mini"
   },
   "gpt-5-nano": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
     "endpoint": {
       "api_model_id": "openai/gpt-5-nano",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "gpt-5-nano",
     "license": "proprietary",
     "new": true,
     "organisation": "OpenAI",
-    "params": 70,
+    "params": 11,
     "prefs": null,
     "reasoning": false,
     "release_date": "04/2025",
-    "required_ram": 70,
+    "required_ram": 11,
     "reuse": false,
     "simple_name": "GPT 5 Nano",
-    "status": "enabled"
+    "status": "enabled",
+    "url": "https://platform.openai.com/docs/models/gpt-5-nano"
   },
   "gpt-oss-120b": {
     "active_params": 5.1,
@@ -1496,7 +1506,7 @@
     ]
   },
   "grok-3-mini-beta": {
-    "arch": "maybe-moe",
+    "arch": "dense",
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
@@ -1511,7 +1521,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "xAI",
-    "params": 200,
+    "params": 650,
     "prefs": {
       "clear_formatting": 323,
       "complete": 354,
@@ -1525,7 +1535,7 @@
     },
     "reasoning": true,
     "release_date": "04/2025",
-    "required_ram": 200,
+    "required_ram": 650,
     "reuse": false,
     "simple_name": "Grok 3 Mini",
     "status": "archived",
@@ -1537,7 +1547,7 @@
     "url": "https://x.ai/news/grok-3"
   },
   "grok-4-fast": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
     "endpoint": {
@@ -1550,11 +1560,11 @@
     "license": "proprietary",
     "new": true,
     "organisation": "xAI",
-    "params": 200,
+    "params": 1700,
     "prefs": null,
     "reasoning": false,
     "release_date": "09/2025",
-    "required_ram": 200,
+    "required_ram": 1700,
     "reuse": false,
     "simple_name": "Grok 4 Fast",
     "status": "enabled",
@@ -2012,17 +2022,17 @@
       "api_model_id": "mistralai/magistral-medium-2506",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "L",
     "icon_path": "mistral.png",
     "id": "magistral-medium",
     "license": "proprietary",
     "new": true,
     "organisation": "Mistral AI",
-    "params": 35,
+    "params": 95,
     "prefs": null,
     "reasoning": false,
     "release_date": "06/2025",
-    "required_ram": 35,
+    "required_ram": 95,
     "reuse": false,
     "simple_name": "Magistral Medium",
     "status": "enabled"
@@ -2179,6 +2189,30 @@
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411"
   },
+  "mistral-medium-2508": {
+    "arch": "maybe-dense",
+    "commercial_use": null,
+    "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "mistralai/mistral-medium-3",
+      "api_type": "openrouter"
+    },
+    "friendly_size": "L",
+    "icon_path": "mistral.png",
+    "id": "mistral-medium-2508",
+    "license": "proprietary",
+    "new": true,
+    "organisation": "Mistral AI",
+    "params": 95,
+    "prefs": null,
+    "reasoning": false,
+    "release_date": "08/2025",
+    "required_ram": 95,
+    "reuse": false,
+    "simple_name": "Mistral Medium 2508",
+    "status": "enabled",
+    "url": "https://mistral.ai/news/mistral-medium-3"
+  },
   "mistral-medium-3.1": {
     "arch": "maybe-dense",
     "commercial_use": null,
@@ -2187,17 +2221,17 @@
       "api_model_id": "mistralai/mistral-medium-3.1",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "L",
     "icon_path": "mistral.png",
     "id": "mistral-medium-3.1",
     "license": "proprietary",
     "new": true,
     "organisation": "Mistral AI",
-    "params": 35,
+    "params": 95,
     "prefs": null,
     "reasoning": false,
     "release_date": "08/2025",
-    "required_ram": 35,
+    "required_ram": 95,
     "reuse": false,
     "simple_name": "Mistral Medium 3.1",
     "status": "enabled"
@@ -2255,7 +2289,7 @@
     "license": "proprietary",
     "new": false,
     "organisation": "Mistral AI",
-    "params": 35,
+    "params": 24,
     "prefs": {
       "clear_formatting": 500,
       "complete": 500,
@@ -2269,7 +2303,7 @@
     },
     "reasoning": false,
     "release_date": "02/2025",
-    "required_ram": 35,
+    "required_ram": 24,
     "reuse": false,
     "simple_name": "Mistral Saba",
     "status": "enabled",
@@ -2474,18 +2508,18 @@
     "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1"
   },
   "o3-mini": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
     "elo": 978,
-    "friendly_size": "XL",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "o3-mini",
     "license": "proprietary",
     "new": false,
     "organisation": "OpenAI",
-    "params": 200,
+    "params": 18,
     "prefs": {
       "clear_formatting": 230,
       "complete": 254,
@@ -2499,7 +2533,7 @@
     },
     "reasoning": true,
     "release_date": "11/2024",
-    "required_ram": 200,
+    "required_ram": 18,
     "reuse": false,
     "simple_name": "o3-mini",
     "status": "archived",
@@ -2508,10 +2542,10 @@
       6,
       7
     ],
-    "url": "https://openai.com/index/openai-o3-mini/"
+    "url": "https://platform.openai.com/docs/models/o3-mini"
   },
   "o4-mini": {
-    "arch": "maybe-moe",
+    "arch": "maybe-dense",
     "commercial_use": null,
     "consumption_wh": 61,
     "distribution": "api-only",
@@ -2520,13 +2554,13 @@
       "api_model_id": "openai/o4-mini",
       "api_type": "openrouter"
     },
-    "friendly_size": "XL",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "o4-mini",
     "license": "proprietary",
     "new": false,
     "organisation": "OpenAI",
-    "params": 200,
+    "params": 18,
     "prefs": {
       "clear_formatting": 257,
       "complete": 339,
@@ -2538,9 +2572,9 @@
       "total_prefs": 1542,
       "useful": 489
     },
-    "reasoning": false,
+    "reasoning": true,
     "release_date": "04/2025",
-    "required_ram": 200,
+    "required_ram": 18,
     "reuse": false,
     "simple_name": "o4 mini",
     "status": "enabled",
@@ -2549,7 +2583,7 @@
       7,
       3
     ],
-    "url": "https://openai.com/index/introducing-o3-and-o4-mini/"
+    "url": "https://platform.openai.com/docs/models/o4-mini"
   },
   "olmo-2-0325-32b": {
     "arch": "dense",
@@ -2688,6 +2722,30 @@
       2
     ],
     "url": "https://huggingface.co/microsoft/Phi-4"
+  },
+  "qwen-3-8b": {
+    "arch": "dense",
+    "commercial_use": true,
+    "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "qwen/qwen3-8b",
+      "api_type": "openrouter"
+    },
+    "friendly_size": "S",
+    "icon_path": "qwen.png",
+    "id": "qwen-3-8b",
+    "license": "Apache 2.0",
+    "new": true,
+    "organisation": "Alibaba",
+    "params": 8,
+    "prefs": null,
+    "reasoning": false,
+    "release_date": "07/2025",
+    "required_ram": 8,
+    "reuse": true,
+    "simple_name": "Qwen 3 8B",
+    "status": "enabled",
+    "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ"
   },
   "Qwen1.5-32B-Chat": {
     "arch": "dense",
@@ -3002,6 +3060,31 @@
     "simple_name": "Qwen3 Coder 480B A35B",
     "status": "enabled",
     "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct"
+  },
+  "qwen3-max-2025-09-23": {
+    "active_params": 32,
+    "arch": "moe",
+    "commercial_use": null,
+    "distribution": "api-only",
+    "endpoint": {
+      "api_model_id": "qwen/qwen3-max",
+      "api_type": "openrouter"
+    },
+    "friendly_size": "XL",
+    "icon_path": "qwen.png",
+    "id": "qwen3-max-2025-09-23",
+    "license": "proprietary",
+    "new": true,
+    "organisation": "Alibaba",
+    "params": 1000,
+    "prefs": null,
+    "reasoning": false,
+    "release_date": "09/2025",
+    "required_ram": 1000,
+    "reuse": false,
+    "simple_name": "Qwen 3 Max",
+    "status": "enabled",
+    "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list"
   },
   "qwq-32b": {
     "arch": "dense",
