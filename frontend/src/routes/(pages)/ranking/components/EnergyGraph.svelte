@@ -140,7 +140,7 @@
           <g class="target-line" transform="translate(0, {yScale(hoveredModelData.y)})">
             <line x1={padding.left} x2={xScale(hoveredModelData.x)} />
             <rect y="-15" x={padding.left - 72} width="78" height="30" rx="4" ry="4" />
-            <text x={padding.left - 32} y="+4">{hoveredModelData.y} ELO</text>
+            <text x={padding.left - 32} y="+4">{hoveredModelData.y} BT</text>
           </g>
 
           <!-- x axis -->
