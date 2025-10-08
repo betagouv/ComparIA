@@ -46,55 +46,36 @@ CREATE TABLE IF NOT EXISTS conversations (
     conversation_b_pii_removed JSONB,
 );
 
-GRANT USAGE,
-SELECT
-    ON SEQUENCE conversations_id_seq TO "languia-dev";
+-- GRANT USAGE,
+-- SELECT
+--     ON SEQUENCE conversations_id_seq TO "languia";
 
-
-GRANT USAGE,
-SELECT
-    ON SEQUENCE conversations_id_seq TO "languia-stg";
-
-
-GRANT USAGE,
-SELECT
-    ON SEQUENCE conversations_id_seq TO "languia-ro-stg";
-
-GRANT SELECT ON TABLE conversations TO "languia-ro-stg";
-
-GRANT ALL PRIVILEGES ON TABLE conversations TO "languia-stg";
+-- GRANT ALL PRIVILEGES ON TABLE conversations TO "languia";
 
 
 -- 02/04/2025
 ALTER TABLE conversations ADD COLUMN total_conv_a_output_tokens INT;
 ALTER TABLE conversations ADD COLUMN total_conv_b_output_tokens INT;
-ALTER TABLE conversations ADD COLUMN model_a_params JSON;
-ALTER TABLE conversations ADD COLUMN model_b_params JSON;
 ALTER TABLE conversations ADD COLUMN total_conv_a_kwh FLOAT;
 ALTER TABLE conversations ADD COLUMN total_conv_b_kwh FLOAT;
 
 -- 14/04/2025
 ALTER TABLE conversations ADD COLUMN ip_map VARCHAR(255);
-ALTER TABLE conversations DROP COLUMN model_a_params;
-ALTER TABLE conversations DROP COLUMN model_b_params;
 ALTER TABLE conversations ADD COLUMN model_a_total_params FLOAT;
 ALTER TABLE conversations ADD COLUMN model_a_active_params FLOAT;
 ALTER TABLE conversations ADD COLUMN model_b_active_params FLOAT;
 ALTER TABLE conversations ADD COLUMN model_b_total_params FLOAT;
 ALTER TABLE conversations ADD COLUMN postprocess_failed BOOLEAN DEFAULT FALSE;
 
--- 09/10/2025
--- ALTER TABLE conversations DROP COLUMN model_a_total_params;
--- ALTER TABLE conversations DROP COLUMN model_b_total_params;
--- ALTER TABLE conversations DROP COLUMN model_a_active_params;
--- ALTER TABLE conversations DROP COLUMN model_b_active_params;
--- ALTER TABLE conversations DROP COLUMN total_conv_a_kwh;
--- ALTER TABLE conversations DROP COLUMN total_conv_b_kwh;
--- ALTER TABLE conversations DROP COLUMN total_conv_a_output_tokens;
--- ALTER TABLE conversations DROP COLUMN total_conv_b_output_tokens;
--- ALTER TABLE conversations DROP COLUMN country;
--- ALTER TABLE conversations DROP COLUMN city;
-
--- FIXME: fix or drop
-    -- selected_category VARCHAR(255),
-    -- is_unedited_prompt BOOLEAN,
+-- 14/10/2025
+ALTER TABLE conversations DROP COLUMN model_a_total_params;
+ALTER TABLE conversations DROP COLUMN model_b_total_params;
+ALTER TABLE conversations DROP COLUMN model_a_active_params;
+ALTER TABLE conversations DROP COLUMN model_b_active_params;
+ALTER TABLE conversations DROP COLUMN total_conv_a_kwh;
+ALTER TABLE conversations DROP COLUMN total_conv_b_kwh;
+ALTER TABLE conversations DROP COLUMN country;
+ALTER TABLE conversations DROP COLUMN city;
+-- comma separated
+ALTER TABLE conversations ADD COLUMN cohorts TEXT;
+ALTER TABLE conversations ADD COLUMN country_portal VARCHAR(255);

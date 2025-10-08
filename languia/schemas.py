@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, model_validator, ValidationError
+from pydantic import BaseModel, Field, model_validator, RootModel
 from typing import List, Optional, Dict, Any
 import datetime
 
@@ -17,14 +17,16 @@ class ConversationMessage(BaseModel):
         return self
 
 
+ConversationMessages = RootModel[List[ConversationMessage]]
+
 class Conversation(BaseModel):
     id: int
     # TODO: fuseau horaire
     timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
     model_a_name: str
     model_b_name: str
-    conversation_a: List[ConversationMessage]
-    conversation_b: List[ConversationMessage]
+    conversation_a: ConversationMessages
+    conversation_b: ConversationMessages
     conv_turns: int = 0
     system_prompt_a: Optional[str] = None
     system_prompt_b: Optional[str] = None
@@ -35,10 +37,8 @@ class Conversation(BaseModel):
     visitor_id: Optional[str] = None
     ip: Optional[str] = None
     model_pair_name: str
+    # TODO: computed / added at dataset
     opening_msg: str
-    selected_category: Optional[str] = None
-    # TODO: from database to dataset (computed)
-    is_unedited_prompt: Optional[bool] = None
     archived: bool = False
     mode: Optional[str] = None
     custom_models_selection: Optional[Dict[str, Any]] = None
@@ -48,9 +48,6 @@ class Conversation(BaseModel):
     languages: Optional[Dict[str, Any]] = None
     pii_analyzed: bool = False
     contains_pii: Optional[bool] = None
-    conversation_a_pii_removed: Optional[List[ConversationMessage]] = None
-    conversation_b_pii_removed: Optional[List[ConversationMessage]] = None
-    opening_msg_pii_removed: Optional[str] = None
     total_conv_a_output_tokens: Optional[int] = None
     total_conv_b_output_tokens: Optional[int] = None
     # TODO: from db to dataset only (computed)

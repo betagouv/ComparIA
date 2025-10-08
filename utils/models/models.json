@@ -593,6 +593,19 @@
       },
       {
         "status": "archived",
+        "id": "gemma-2-27b-it",
+        "simple_name": "Gemma 2 27B",
+        "license": "Gemma",
+        "release_date": "06/2024",
+        "params": 27,
+        "arch": "dense",
+        "url": "https://huggingface.co/google/gemma-2-27b-it",
+        "desc": "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.",
+        "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+        "fyi": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions. Le modèle sollicité ici est la version quantisée (q8)."
+      },
+      {
+        "status": "archived",
         "id": "gemma-2-9b-it",
         "simple_name": "Gemma 2 9B",
         "license": "Gemma",
