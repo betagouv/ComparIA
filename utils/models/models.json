@@ -344,8 +344,8 @@
         "status": "archived",
         "id": "grok-3-mini-beta",
         "release_date": "04/2025",
-        "params": "XL",
-        "arch": "maybe-moe",
+        "params": 650,
+        "arch": "dense",
         "url": "https://x.ai/news/grok-3",
         "desc": "Version plus légère du modèle Grok 3, permettant de réduire les coûts tout en conservant de bonnes performances pour de nombreuses tâches. Il peut simuler une phase de raisonnement avant de fournir une réponse finale.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Malgré son nom, Grok 3 Mini est sans doute un très grand modèle, nécessitant plusieurs cartes graphiques puissantes pour fonctionner. De plus, il contient une phase de raisonnement facultative qui implique une génération plus longue et donc une consommation énergétique plus élevée. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
@@ -361,12 +361,12 @@
         "license": "proprietary",
         "id": "grok-4-fast",
         "release_date": "09/2025",
-        "params": "XL",
-        "arch": "maybe-moe",
+        "params": 1700,
+        "arch": "maybe-dense",
         "url": "https://x.ai/news/grok-4-fast",
         "desc": "Grok 4 Fast est un modèle axé sur l'équilibre entre performance, vitesse et coût, notamment pour des tâches de recherche d'information et d'autres actions \"agentiques\".",
         "size_desc": "Doté d’une fenêtre de contexte de 2 millions de jetons, Grok 4 Fast combine un mode raisonnement et un mode réponse directe dans un même modèle. Il utilise environ 40 % de jetons de raisonnement en moins que Grok 4, permettant une réduction sensible du coût d’exécution et de latence.",
-        "fyi": "La taille exacte du modèle n’est pas connue. Malgré son nom, Grok 4 Fast est sans doute un très grand modèle, nécessitant plusieurs cartes graphiques puissantes pour fonctionner. De plus, il contient une phase de raisonnement facultative qui implique une génération plus longue et donc une consommation énergétique plus élevée. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nEntraîné par renforcement, Grok 4 Fast atteint des scores proches du très grand modèle - Grok 4 tout en restant plus économe. Il a été entraîné pour être performant sur la navigation web et spécifiquement de la plateforme X, ainsi que des capacités d’appel d’outils et de l’exécution de code.",
+        "fyi": "La taille exacte du modèle n’est pas connue. Malgré son nom, Grok 4 Fast est sans doute un très grand modèle, nécessitant plusieurs cartes graphiques puissantes pour fonctionner. De plus, il contient une phase de raisonnement facultative qui implique une génération plus longue et donc une consommation énergétique plus élevée. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nEntraîné par renforcement, Grok 4 Fast atteint des scores proches du très grand modèle - Grok 4 tout en restant plus économe. Il a été entraîné pour être performant sur la navigation web et spécifiquement de la plateforme X, ainsi que des capacités d’appel d’outils et de l’exécution de code.",
         "new": true,
         "endpoint": {
           "api_type": "openrouter",
@@ -442,20 +442,21 @@
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
       {
-        "new": true,
-        "id": "gemini-2.5-flash",
         "simple_name": "Gemini 2.5 Flash",
         "license": "proprietary",
+        "id": "gemini-2.5-flash",
         "release_date": "06/2025",
-        "params": "L",
+        "params": 440,
+        "active_params": 137,
         "arch": "moe",
+        "desc": "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.",
+        "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale.",
+        "new": true,
         "endpoint": {
           "api_type": "vertex_ai",
           "api_model_id": "gemini-2.5-flash"
-        },
-        "desc": "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.",
-        "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale."
+        }
       },
       {
         "new": true,
@@ -523,12 +524,13 @@
         "fyi": "Il peut traiter du texte et des images sur un serveur équipé d’une seule carte graphique puissante. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
       },
       {
+        "simple_name": "Gemini 2.0 Flash",
+        "license": "proprietary",
         "status": "archived",
         "id": "gemini-2.0-flash-001",
-        "simple_name": "Gemini 2.0 Flash",
-        "license": "proprietary",
         "release_date": "12/2024",
-        "params": 40,
+        "params": 440,
+        "active_params": 137,
         "arch": "moe",
         "url": "https://ai.google.dev/gemini-api",
         "desc": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés.",
@@ -536,12 +538,13 @@
         "fyi": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
       },
       {
+        "simple_name": "Gemini 2.0 Flash",
+        "license": "proprietary",
         "status": "archived",
         "id": "gemini-2.0-flash-exp",
-        "simple_name": "Gemini 2.0 Flash",
-        "license": "proprietary",
         "release_date": "12/2024",
-        "params": 40,
+        "params": 440,
+        "active_params": 137,
         "arch": "moe",
         "url": "https://ai.google.dev/gemini-api",
         "desc": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés.",
@@ -549,12 +552,12 @@
         "fyi": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
       },
       {
-        "status": "archived",
-        "id": "gemini-1.5-pro-002",
         "simple_name": "Gemini 1.5 Pro",
         "license": "proprietary",
+        "status": "archived",
+        "id": "gemini-1.5-pro-002",
         "release_date": "09/2024",
-        "params": 440,
+        "params": 600,
         "active_params": 220,
         "arch": "moe",
         "url": "https://ai.google.dev/gemini-api",
@@ -602,12 +605,12 @@
         "fyi": "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
       },
       {
-        "status": "archived",
-        "id": "gemini-1.5-pro-001",
         "simple_name": "Gemini 1.5 Pro",
         "license": "proprietary",
+        "status": "archived",
+        "id": "gemini-1.5-pro-001",
         "release_date": "02/2024",
-        "params": 440,
+        "params": 600,
         "active_params": 220,
         "arch": "moe",
         "url": "https://ai.google.dev/gemini-api",
@@ -709,10 +712,11 @@
       {
         "simple_name": "Qwen 2.5 max 0125",
         "license": "proprietary",
-        "id": "qwen-2.5-max-0125",
         "status": "missing_data",
-        "release_date": "04/2025",
-        "params": "XL",
+        "id": "qwen-2.5-max-0125",
+        "release_date": "01/2025",
+        "params": 325,
+        "active_params": 2.7,
         "arch": "moe",
         "desc": "Très grand modèle de raisonnement spécialisé et très performant en mathématiques, code et résolution de problèmes logiques.",
         "size_desc": "Ce modèle propriétaire basé sur une **architecture MoE à grande échelle a été**entraîné sur **plus de 20 billions de jetons**. Il est conçu pour des tâches nécessitant plusieurs étapes de réflexion. \n\nLa fenêtre de contexte va jusqu’à 32 000 jetons.",
@@ -797,23 +801,28 @@
       },
       {
         "simple_name": "Qwen 3 Max",
-        "status": "missing_data",
         "license": "proprietary",
         "id": "qwen3-max-2025-09-23",
         "release_date": "09/2025",
-        "params": "XL",
+        "params": 1000,
+        "active_params": 32,
         "arch": "moe",
+        "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
         "desc": "Parmi les rares modèles propriétaires de Qwen, celui-ci est le plus grand et le plus puissant de la troisième génération. Il a été entraîné avec une attention particulière à l’usage en entreprise et aux cas d’utilisation agentiques.",
         "size_desc": "La taille exacte n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Le modèle dispose d’une fenêtre de contexte allant jusqu’à 256 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
         "fyi": "Ce modèle a été entraîné sur 36 billions de jetons, soit presque le double de Qwen 2.5, et il est officiellement capable de répondre dans 100 langues.",
-        "new": true
+        "new": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "qwen/qwen3-max"
+        }
       },
       {
         "simple_name": "Qwen 3 8B",
-        "status": "missing_data",
         "license": "Apache 2.0",
-        "params": 8,
         "id": "qwen-3-8b",
+        "release_date": "07/2025",
+        "params": 8,
         "arch": "dense",
         "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
         "desc": "Petit modèle multilingue dense de la famille Qwen 3, offrant un mode “raisonnement” pour des tâches complexes (mathématiques, code) et un mode “réponse directe” pour des réponses plus rapides.",
@@ -822,7 +831,7 @@
         "new": true,
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "Qwen/Qwen3-8B"
+          "api_model_id": "qwen/qwen3-8b"
         }
       }
     ]
@@ -916,148 +925,153 @@
         "fyi": "Ce modèle peut être exécuté localement sur un ordinateur portable haut de gamme équipé de seulement 16 Go de VRAM (ou de RAM système). Cela en fait une option très accessible pour les développeurs. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (*low*, *medium*, et *high*) qui déterminent la verbosité du modèle."
       },
       {
-        "new": true,
-        "id": "gpt-5",
         "simple_name": "GPT 5",
         "license": "proprietary",
+        "id": "gpt-5",
         "release_date": "08/2025",
-        "params": "XL",
+        "params": 300,
+        "active_params": 94,
         "arch": "maybe-moe",
-        "endpoint": {
-          "api_model_id": "openai/gpt-5",
-          "api_type": "openrouter"
-        },
         "desc": "Le GPT-5 n'est pas un modèle unique, mais un système unifié composé de deux modèles distincts : un modèle rapide (`gpt-5-main`) pour les requêtes courantes et un modèle de raisonnement (`gpt-5-thinking`) pour les problèmes complexes. Comparé à ses prédécesseurs, OpenAI affirme qu'il est plus utile dans les requêtes du monde réel, avec des améliorations notables dans les domaines de l'écriture, du codage et de la santé. Il réduit également le phénomène des hallucinations. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
         "size_desc": "Le système GPT-5 est composé de modèles de différentes tailles, mais les tailles exactes ne sont pas connues. Son architecture est conçue pour inclure plusieurs modèles, orchestrés par un système de routage interne, qui sélectionne le plus petit modèle adapté à la tâche pour optimiser la vitesse et la profondeur du raisonnement. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.",
-        "fyi": "Les développeurs qui utilisent ce modèle peuvent configurer un paramètre de verbosité pour ajuster la longueur de la phase de raisonnement.\n\nEn matière de sécurité, le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête. Les créateurs du modèle ont aussi utilisé la phase d’entraînement au “raisonnement” pour le rendre plus “résistant” aux tentatives de contournement de leurs règles de sécurité (*jailbreaking*)."
-      },
-      {
+        "fyi": "Les développeurs qui utilisent ce modèle peuvent configurer un paramètre de verbosité pour ajuster la longueur de la phase de raisonnement.\n\nEn matière de sécurité, le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête. Les créateurs du modèle ont aussi utilisé la phase d’entraînement au “raisonnement” pour le rendre plus “résistant” aux tentatives de contournement de leurs règles de sécurité (*jailbreaking*).",
         "new": true,
-        "id": "gpt-5-mini",
-        "simple_name": "GPT 5 Mini",
-        "license": "proprietary",
-        "release_date": "08/2025",
-        "params": "XL",
-        "arch": "maybe-moe",
-        "endpoint": {
-          "api_model_id": "openai/gpt-5-mini",
-          "api_type": "openrouter"
-        },
-        "desc": "Le GPT-5 Mini est une version allégée du modèle GPT-5 principal. Il est conçu pour être utilisé dans des environnements où il est nécessaire de limiter les coûts, par exemple à grande échelle. Son modèle de raisonnement est presque aussi performant que celui du modèle principal (`gpt-5-thinking`) malgré sa taille plus petite. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
-        "size_desc": "Le modèle Mini est une déclinaison plus compacte (taille moyenne supposée) du système GPT-5. Il est conçu pour fonctionner de manière optimale pour un bon équilibre entre performance et coût, grâce à un système de routage qui le sélectionne pour des tâches spécifiques. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Néanmoins, les modèles sont probablement très grands, nécessitant plusieurs cartes graphiques puissantes pour l’inférence.",
-        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.\n\nBien qu'il soit une version plus petite, il se montre très compétitif face au modèle GPT-5 principal sur de nombreux benchmarks, en particulier dans le domaine médical."
-      },
-      {
-        "new": true,
-        "id": "gpt-5-nano",
-        "simple_name": "GPT 5 Nano",
-        "license": "proprietary",
-        "release_date": "04/2025",
-        "params": "L",
-        "arch": "maybe-moe",
-        "endpoint": {
-          "api_model_id": "openai/gpt-5-nano",
-          "api_type": "openrouter"
-        },
-        "desc": "Le GPT-5 Nano est la plus petite et la plus rapide version du modèle de raisonnement GPT-5. Il est conçu pour des contextes où une latence ou un coût ultra-faible est nécessaire. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
-        "size_desc": "Le modèle Nano est le plus compact de la famille GPT-5 (taille petite supposée). Il est sélectionné par le système de routage pour les requêtes nécessitant une latence ultra-faible et des réponses instantanées. Son architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui permet une meilleure efficacité énergétique et des performances élevées, même sur des requêtes nécessitant une réponse rapide.",
-        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête."
-      },
-      {
-        "id": "gpt-4.1-nano",
-        "simple_name": "GPT 4.1 Nano",
-        "license": "proprietary",
-        "release_date": "04/2025",
-        "params": "M",
-        "arch": "maybe-moe",
-        "url": "https://openai.com/index/gpt-4-1/",
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "openai/gpt-4.1-nano"
-        },
-        "desc": "Plus petite version allégée du modèle GPT 4.1 , conçue pour limiter les coûts tout en restant compétitive sur la plupart des tâches. Le modèle accepte de très longues requêtes, ce qui permet de l’utiliser par exemple pour l’analyse de corpus de documents.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de taille moyenne, nécessitant une carte graphique puissante pour l’exécution. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique.  Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
-        "fyi": "Il s'agit d'une version distillée d’un modèle de plus grande taille, avec un transfert partiel de ses connaissances. Il peut traiter du texte, des images et de l’audio. Sa fenêtre de contexte peut atteindre jusqu’à 1 million de jetons, ce qui le rend particulièrement adapté à l’analyse de corpus de textes ou de dépôts de code très longs."
-      },
-      {
-        "id": "gpt-4.1-mini",
-        "simple_name": "GPT-4.1 Mini",
-        "license": "proprietary",
-        "release_date": "04/2025",
-        "params": "L",
-        "arch": "maybe-moe",
-        "url": "https://openai.com/index/gpt-4-1/",
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "openai/gpt-4.1-mini"
-        },
-        "desc": "Version allégée de GPT 4.1 mais qui reste tout de même de grande taille, conçue pour limiter les coûts tout en restant compétitif sur la plupart des tâches. Le modèle accepte de très longues requêtes, ce qui permet de l’utiliser par exemple pour l’analyse de corpus de documents.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant une carte graphique puissante pour l’exécution. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
-        "fyi": "Il s'agit d'une version distillée d’un modèle plus grand, avec un transfert partiel de ses connaissances. Il peut traiter du texte, des images et de l’audio.  Sa fenêtre de contexte peut atteindre jusqu’à 1 million de jetons, ce qui le rend particulièrement adapté à l’analyse de corpus très longs ou de dépôts de code."
-      },
-      {
-        "id": "o4-mini",
-        "simple_name": "o4 mini",
-        "license": "proprietary",
-        "release_date": "04/2025",
-        "params": "XL",
-        "arch": "maybe-moe",
-        "url": "https://openai.com/index/introducing-o3-and-o4-mini/",
-        "desc": "Très grand modèle de raisonnement, adapté pour des tâches et questions scientifiques et technologiques complexes.",
-        "size_desc": "Malgré son nom et le fait que la taille exacte n’est pas connue, o4 mini est très probablement un grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Les modèles de raisonnement comme o4 mini nécessitent plus de temps pour répondre, car une phase de raisonnement précède la génération du résultat final, ce qui accroit leur consommation énergétique. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres pour générer chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
-        "fyi": "Ce modèle est très performant pour l’analyse d’images et de graphiques. Il a aussi été entraîné pour interagir avec d’autres systèmes via des appels de fonctions, ce qui rend possible son utilisation pour des cas d’usage agentiques. En tant que modèle très puissant de raisonnement, il peut notamment être utilisé pour répartir des tâches entre plusieurs modèles plus petits et/ou plus spécialisés.  Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, ce qui facilite l’analyse de longs documents.",
-        "endpoint": {
-          "api_model_id": "openai/o4-mini",
-          "api_type": "openrouter"
+          "api_model_id": "openai/gpt-5"
         }
       },
       {
-        "status": "archived",
-        "id": "o3-mini",
-        "simple_name": "o3-mini",
+        "simple_name": "GPT 5 Mini",
         "license": "proprietary",
-        "release_date": "11/2024",
-        "params": "XL",
-        "arch": "maybe-moe",
-        "reasoning": true,
-        "url": "https://openai.com/index/openai-o3-mini/",
-        "desc": "o3-mini est fait pour le raisonnement et le code. Il offre un bon équilibre entre performance, coût et latence, tout en étant plus petit que d'autres modèles de chez OpenAI.",
-        "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
-        "fyi": "Modèle optimisé pour les tâches de raisonnement STEM (science, technologie, ingénierie, mathématiques) et l'écriture de code. Il se démarque dans les domaines scientifiques, mathématiques et de la programmation."
+        "id": "gpt-5-mini",
+        "release_date": "08/2025",
+        "params": 47,
+        "arch": "maybe-dense",
+        "url": "https://platform.openai.com/docs/models/gpt-5-mini",
+        "desc": "Le GPT-5 Mini est une version allégée du modèle GPT-5 principal. Il est conçu pour être utilisé dans des environnements où il est nécessaire de limiter les coûts, par exemple à grande échelle. Son modèle de raisonnement est presque aussi performant que celui du modèle principal (`gpt-5-thinking`) malgré sa taille plus petite. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
+        "size_desc": "Le modèle Mini est une déclinaison plus compacte (taille moyenne supposée) du système GPT-5. Il est conçu pour fonctionner de manière optimale pour un bon équilibre entre performance et coût, grâce à un système de routage qui le sélectionne pour des tâches spécifiques. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Néanmoins, les modèles sont probablement très grands, nécessitant plusieurs cartes graphiques puissantes pour l’inférence.",
+        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.\n\nBien qu'il soit une version plus petite, il se montre très compétitif face au modèle GPT-5 principal sur de nombreux benchmarks, en particulier dans le domaine médical.",
+        "new": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5-mini"
+        }
       },
       {
+        "simple_name": "GPT 5 Nano",
+        "license": "proprietary",
+        "id": "gpt-5-nano",
+        "release_date": "04/2025",
+        "params": 11,
+        "arch": "maybe-dense",
+        "url": "https://platform.openai.com/docs/models/gpt-5-nano",
+        "desc": "Le GPT-5 Nano est la plus petite et la plus rapide version du modèle de raisonnement GPT-5. Il est conçu pour des contextes où une latence ou un coût ultra-faible est nécessaire. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
+        "size_desc": "Le modèle Nano est le plus compact de la famille GPT-5 (taille petite supposée). Il est sélectionné par le système de routage pour les requêtes nécessitant une latence ultra-faible et des réponses instantanées. Son architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui permet une meilleure efficacité énergétique et des performances élevées, même sur des requêtes nécessitant une réponse rapide.",
+        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.",
+        "new": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5-nano"
+        }
+      },
+      {
+        "simple_name": "GPT 4.1 Nano",
+        "license": "proprietary",
+        "id": "gpt-4.1-nano",
+        "release_date": "04/2025",
+        "params": 23,
+        "arch": "maybe-dense",
+        "url": "https://openai.com/index/gpt-4-1/",
+        "desc": "Plus petite version allégée du modèle GPT 4.1 , conçue pour limiter les coûts tout en restant compétitive sur la plupart des tâches. Le modèle accepte de très longues requêtes, ce qui permet de l’utiliser par exemple pour l’analyse de corpus de documents.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de taille moyenne, nécessitant une carte graphique puissante pour l’exécution. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique.  Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
+        "fyi": "Il s'agit d'une version distillée d’un modèle de plus grande taille, avec un transfert partiel de ses connaissances. Il peut traiter du texte, des images et de l’audio. Sa fenêtre de contexte peut atteindre jusqu’à 1 million de jetons, ce qui le rend particulièrement adapté à l’analyse de corpus de textes ou de dépôts de code très longs.",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-4.1-nano"
+        }
+      },
+      {
+        "simple_name": "GPT-4.1 Mini",
+        "license": "proprietary",
+        "id": "gpt-4.1-mini",
+        "release_date": "04/2025",
+        "params": 75,
+        "arch": "maybe-dense",
+        "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
+        "desc": "Version allégée de GPT 4.1 mais qui reste tout de même de grande taille, conçue pour limiter les coûts tout en restant compétitif sur la plupart des tâches. Le modèle accepte de très longues requêtes, ce qui permet de l’utiliser par exemple pour l’analyse de corpus de documents.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant une carte graphique puissante pour l’exécution. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
+        "fyi": "Il s'agit d'une version distillée d’un modèle plus grand, avec un transfert partiel de ses connaissances. Il peut traiter du texte, des images et de l’audio.  Sa fenêtre de contexte peut atteindre jusqu’à 1 million de jetons, ce qui le rend particulièrement adapté à l’analyse de corpus très longs ou de dépôts de code.",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-4.1-mini"
+        }
+      },
+      {
+        "simple_name": "o4 mini",
+        "license": "proprietary",
+        "id": "o4-mini",
+        "release_date": "04/2025",
+        "params": 18,
+        "arch": "maybe-dense",
+        "url": "https://platform.openai.com/docs/models/o4-mini",
+        "desc": "Très grand modèle de raisonnement, adapté pour des tâches et questions scientifiques et technologiques complexes.",
+        "size_desc": "Malgré son nom et le fait que la taille exacte n’est pas connue, o4 mini est très probablement un grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Les modèles de raisonnement comme o4 mini nécessitent plus de temps pour répondre, car une phase de raisonnement précède la génération du résultat final, ce qui accroit leur consommation énergétique. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres pour générer chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
+        "fyi": "Ce modèle est très performant pour l’analyse d’images et de graphiques. Il a aussi été entraîné pour interagir avec d’autres systèmes via des appels de fonctions, ce qui rend possible son utilisation pour des cas d’usage agentiques. En tant que modèle très puissant de raisonnement, il peut notamment être utilisé pour répartir des tâches entre plusieurs modèles plus petits et/ou plus spécialisés.  Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, ce qui facilite l’analyse de longs documents.",
+        "reasoning": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/o4-mini"
+        }
+      },
+      {
+        "simple_name": "o3-mini",
+        "license": "proprietary",
         "status": "archived",
-        "id": "gpt-4o-2024-08-06",
+        "id": "o3-mini",
+        "release_date": "11/2024",
+        "params": 18,
+        "arch": "maybe-dense",
+        "url": "https://platform.openai.com/docs/models/o3-mini",
+        "desc": "o3-mini est fait pour le raisonnement et le code. Il offre un bon équilibre entre performance, coût et latence, tout en étant plus petit que d'autres modèles de chez OpenAI.",
+        "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
+        "fyi": "Modèle optimisé pour les tâches de raisonnement STEM (science, technologie, ingénierie, mathématiques) et l'écriture de code. Il se démarque dans les domaines scientifiques, mathématiques et de la programmation.",
+        "reasoning": true
+      },
+      {
         "simple_name": "GPT-4o",
         "license": "proprietary",
+        "status": "archived",
+        "id": "gpt-4o-2024-08-06",
         "release_date": "08/2024",
-        "params": "XL",
+        "params": 440,
+        "active_params": 137.5,
         "arch": "maybe-moe",
-        "url": "https://platform.openai.com/docs/models/gpt#gpt-4o",
+        "url": "https://platform.openai.com/docs/models/gpt-4o",
         "desc": "Le plus grand des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en août 2024.",
         "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
         "fyi": "Modèle lancé en août 2024 et successeur de GPT-4, GPT-4o est une version améliorée de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA."
       },
       {
-        "status": "archived",
-        "id": "gpt-4o-mini-2024-07-18",
         "simple_name": "GPT-4o mini",
         "license": "proprietary",
+        "status": "archived",
+        "id": "gpt-4o-mini-2024-07-18",
         "release_date": "07/2024",
-        "params": "M",
-        "arch": "maybe-moe",
+        "params": 18,
+        "arch": "maybe-dense",
         "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
         "desc": "Le plus petit des deux modèles sur lesquels repose ChatGPT d'OpenAI, lancé en juillet 2024.",
         "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
         "fyi": "Modèle lancé en juillet 2024 et remplaçant GPT-3.5, GPT-4o mini est une version plus petite de GPT-4, conçue pour diverses tâches de traitement du langage naturel via, par exemple, l'application ChatGPT de l'entreprise américaine OpenIA."
       },
       {
-        "status": "archived",
-        "id": "gpt-3.5-turbo-0301",
         "simple_name": "GPT-3.5",
         "license": "proprietary",
+        "status": "archived",
+        "id": "gpt-3.5-turbo-0301",
         "release_date": "03/2023",
-        "params": "L",
+        "params": 55,
         "arch": "maybe-dense",
         "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo",
         "desc": "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel.",
@@ -1076,28 +1090,32 @@
         "license": "proprietary",
         "id": "mistral-medium-2508",
         "release_date": "08/2025",
-        "params": "M",
-        "status": "missing_data",
+        "params": 95,
         "arch": "maybe-dense",
+        "url": "https://mistral.ai/news/mistral-medium-3",
         "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est devenu particulièrement intéressant après une mise à jour en août 2025 avec des améliorations importantes de performance générale, un ton \"amélioré\" et une meilleure capacité de chercher des informations sur Internet.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
         "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.",
-        "new": true
+        "new": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "mistralai/mistral-medium-3"
+        }
       },
       {
-        "new": true,
-        "id": "mistral-medium-3.1",
         "simple_name": "Mistral Medium 3.1",
         "license": "proprietary",
+        "id": "mistral-medium-3.1",
         "release_date": "08/2025",
-        "params": "M",
+        "params": 95,
         "arch": "maybe-dense",
         "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est particulièrement intéressant pour des tâches de programmation ou des tâches de raisonnement, par exemple les mathématiques.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
         "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.",
+        "new": true,
         "endpoint": {
-          "api_model_id": "mistralai/mistral-medium-3.1",
-          "api_type": "openrouter"
+          "api_type": "openrouter",
+          "api_model_id": "mistralai/mistral-medium-3.1"
         }
       },
       {
@@ -1117,19 +1135,19 @@
         }
       },
       {
-        "new": true,
-        "id": "magistral-medium",
         "simple_name": "Magistral Medium",
         "license": "proprietary",
+        "id": "magistral-medium",
         "release_date": "06/2025",
-        "params": "M",
+        "params": 95,
         "arch": "maybe-dense",
         "desc": "Modèle de raisonnement de taille moyenne multimodal et multilingue. Adapté à des tâches de programmation ou autres tâches nécessitant analyse approfondie compréhension de systèmes logiques complexes ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les modèles de raisonnement requièrent plus de capacité de calcul pour produire une réponse, ce qui augmente leur consommation énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 40 000 jetons, utile pour l’analyse de documents courts mais insuffisant pour analyser des corpus de documents larges.",
         "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. Il a été entraîné avec de l’apprentissage par renforcement sur Mistral Medium 3 et n'a pas été distillé à partir de modèles de raisonnement existants. Ce modèle hérite des capacités multimodales de Mistral Medium 3 même si l'apprentissage par renforcement n'a été réalisé que sur du texte.",
+        "new": true,
         "endpoint": {
-          "api_model_id": "mistralai/magistral-medium-2506",
-          "api_type": "openrouter"
+          "api_type": "openrouter",
+          "api_model_id": "mistralai/magistral-medium-2506"
         }
       },
       {
@@ -1175,20 +1193,20 @@
         "fyi": "Mistral Small 3.2 24B Instruct est un modèle multimodal qui offre des performances de pointe dans les tâches de raisonnement basées sur le texte et la vision, y compris l'analyse d'images, la programmation, le raisonnement mathématique et le soutien multilingue pour des dizaines de langues."
       },
       {
-        "id": "mistral-saba",
         "simple_name": "Mistral Saba",
         "license": "proprietary",
+        "id": "mistral-saba",
         "release_date": "02/2025",
-        "params": "M",
+        "params": 24,
         "arch": "maybe-dense",
         "url": "https://mistral.ai/news/mistral-saba",
+        "desc": "Modèle de taille moyenne conçu pour une compréhension linguistique et culturelle fine des langues du Moyen-Orient et d’Asie du Sud, notamment l’arabe, le tamoul et le malayalam.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de taille moyenne, nécessitant au moins une carte graphique puissante pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. \n\nLe modèle propose une fenêtre de contexte allant jusqu’à 128 000 jetons, adaptée à l’analyse de longs documents.",
+        "fyi": "L’entraînement a porté principalement sur des textes en arabe, tamoul et malayalam. Les corpus régionaux ont été sélectionnés pour refléter les usages authentiques, y compris la syntaxe, les registres et les variantes dialectales. Pour la tokenisation (découpage du texte en unités de base que le modèle peut traiter), une stratégie spécialisée adaptée aux langues à morphologie complexe comme l'arabe a été employée. Des optimisations visent à éviter la fragmentation excessive des mots et à maximiser la couverture du vocabulaire.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "mistralai/mistral-saba"
-        },
-        "desc": "Modèle de taille moyenne conçu pour une compréhension linguistique et culturelle fine des langues du Moyen-Orient et d’Asie du Sud, notamment l’arabe, le tamoul et le malayalam.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de taille moyenne, nécessitant au moins une carte graphique puissante pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. \n\nLe modèle propose une fenêtre de contexte allant jusqu’à 128 000 jetons, adaptée à l’analyse de longs documents.",
-        "fyi": "L’entraînement a porté principalement sur des textes en arabe, tamoul et malayalam. Les corpus régionaux ont été sélectionnés pour refléter les usages authentiques, y compris la syntaxe, les registres et les variantes dialectales. Pour la tokenisation (découpage du texte en unités de base que le modèle peut traiter), une stratégie spécialisée adaptée aux langues à morphologie complexe comme l'arabe a été employée. Des optimisations visent à éviter la fragmentation excessive des mots et à maximiser la couverture du vocabulaire."
+        }
       },
       {
         "status": "archived",
@@ -1299,8 +1317,9 @@
         "license": "proprietary",
         "id": "claude-4-sonnet",
         "release_date": "05/2025",
-        "params": "XL",
-        "arch": "maybe-dense",
+        "params": 440,
+        "active_params": 137.5,
+        "arch": "maybe-moe",
         "desc": "Très grand modèle multimodal et multilingue très puissant en code. L'utilisateur ou le développeur qui utilise ce modèle peut choisir entre plusieurs niveaux de raisonnement.",
         "size_desc": "La taille exacte n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Le modèle dispose d’une fenêtre de contexte allant jusqu’à 1 000 000 jetons, adaptée à l’analyse de très longs documents ou de dépôts de code.",
         "fyi": "Claude 4 Sonnet est une version plus compacte de Claude 4 Opus optimisée pour la vitesse, l’efficacité et l’accessibilité. Il est un peu moins bon sur les tâches qui demandent un raisonnement complexe en plusieurs étapes. Néanmoins, il est nettement moins coûteux, plus rapide et consomme moins d’énergie que Opus 4.\n\nLe modèle offre la possibilité de choisir l'intensité de \"raisonnement\". À la différence d’autres modèles, le mode raisonnement n’a pas été surtout entraîné sur des données mathématiques, mais surtout sur des cas d’usage réels.",
@@ -1310,27 +1329,28 @@
         }
       },
       {
-        "status": "disabled",
-        "id": "claude-3-7-sonnet",
         "simple_name": "Claude 3.7 Sonnet",
         "license": "proprietary",
+        "status": "disabled",
+        "id": "claude-3-7-sonnet",
         "release_date": "02/2025",
-        "params": "XL",
-        "arch": "maybe-dense",
+        "params": 440,
+        "active_params": 137.5,
+        "arch": "maybe-moe",
         "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
         "desc": "Très grand modèle multimodal et multilingue, performant pour la génération de code, avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
         "fyi": "Claude 4 Opus est la version la plus avancée de la famille Claude 4. Il est optimisé pour la puissance brute et les tâches complexes nécessitant un raisonnement soutenu sur de longues périodes : il peut par exemple travailler sur des tâches à long terme (Anthropic déclarent qu'il peut travailler jusqu'à sept heures de manière indépendante). En contrepartie, Opus est plus coûteux à utiliser, plus lent à répondre et nécessite davantage de ressources pour fonctionner.\n\nLe modèle offre deux modes d’utilisation : un mode réflexion avec un raisonnement étape par étape pour les problèmes complexes, et un mode rapide pour les réponses directes. À la différence d’autres modèles, le mode raisonnement n’a pas été majoritairement entraîné sur des données mathématiques, mais adapté à des cas d’usage réels."
       },
       {
-        "status": "archived",
-        "id": "claude-3-5-sonnet-v2",
         "simple_name": "Claude 3.5 Sonnet v2",
         "license": "proprietary",
+        "status": "archived",
+        "id": "claude-3-5-sonnet-v2",
         "release_date": "10/2024",
-        "params": 300,
-        "active_params": 100,
-        "arch": "maybe-dense",
+        "params": 440,
+        "active_params": 137.5,
+        "arch": "maybe-moe",
         "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
         "desc": "Modele tres performant en code, fait apres une amelioration de post-training par rapport au claude 3",
         "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
@@ -1341,8 +1361,9 @@
         "license": "proprietary",
         "id": "claude-4-5-sonnet",
         "release_date": "09/2025",
-        "params": "XL",
-        "arch": "maybe-dense",
+        "params": 440,
+        "active_params": 137.5,
+        "arch": "maybe-moe",
         "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
         "desc": "Très grand modèle multimodal et multilingue, extrêmement performant en code, en raisonnement et en mathématiques. L'utilisateur ou le développeur qui utilise ce modèle peut choisir entre plusieurs niveaux de raisonnement.",
         "size_desc": "La taille exacte n’est pas connue. Tout indique qu’il s’agit d’un très grand modèle, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour le faire fonctionner. Les estimations de taille et de consommation énergétique reposent sur des indices indirects comme les coûts d’inférence et la latence observée. Claude Sonnet 4.5 dispose d’une fenêtre de contexte allant jusqu’à 1 000 000 jetons, adaptée à l’analyse de dépôts de code entiers ou de documents très volumineux.",
