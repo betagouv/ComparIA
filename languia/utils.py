@@ -282,7 +282,7 @@ def get_api_key(endpoint: Endpoint):
 
 def sum_tokens(messages) -> int:
     total_output_tokens = sum(
-        msg.metadata.output_tokens for msg in messages if msg.role == "assistant"
+        msg.metadata.get("output_tokens") for msg in messages if msg.role == "assistant"
     )
     return total_output_tokens
 
@@ -304,7 +304,7 @@ def to_threeway_chatbot(conversations):
             threeway_chatbot.append(msg_a)
         else:
             if msg_a:
-                msg_a.metadata["bot"] = "a"
+                msg_a.metadata.update({"bot": "a"})
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
@@ -316,7 +316,7 @@ def to_threeway_chatbot(conversations):
                 )
             if msg_b:
 
-                msg_b.metadata["bot"] = "b"
+                msg_b.metadata.update({"bot": "b"})
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
