@@ -44,7 +44,6 @@ CREATE TABLE IF NOT EXISTS conversations (
     contains_pii BOOLEAN,
     conversation_a_pii_removed JSONB,
     conversation_b_pii_removed JSONB,
-    opening_msg_pii_removed TEXT,
 );
 
 GRANT USAGE,
@@ -83,3 +82,19 @@ ALTER TABLE conversations ADD COLUMN model_a_active_params FLOAT;
 ALTER TABLE conversations ADD COLUMN model_b_active_params FLOAT;
 ALTER TABLE conversations ADD COLUMN model_b_total_params FLOAT;
 ALTER TABLE conversations ADD COLUMN postprocess_failed BOOLEAN DEFAULT FALSE;
+
+-- 09/10/2025
+-- ALTER TABLE conversations DROP COLUMN model_a_total_params;
+-- ALTER TABLE conversations DROP COLUMN model_b_total_params;
+-- ALTER TABLE conversations DROP COLUMN model_a_active_params;
+-- ALTER TABLE conversations DROP COLUMN model_b_active_params;
+-- ALTER TABLE conversations DROP COLUMN total_conv_a_kwh;
+-- ALTER TABLE conversations DROP COLUMN total_conv_b_kwh;
+-- ALTER TABLE conversations DROP COLUMN total_conv_a_output_tokens;
+-- ALTER TABLE conversations DROP COLUMN total_conv_b_output_tokens;
+-- ALTER TABLE conversations DROP COLUMN country;
+-- ALTER TABLE conversations DROP COLUMN city;
+
+-- FIXME: fix or drop
+    -- selected_category VARCHAR(255),
+    -- is_unedited_prompt BOOLEAN,
