@@ -1,7 +1,7 @@
 import gradio as gr
 
 from languia.litellm import litellm_stream_iter
-from litellm.litellm_core_utils import token_counter
+from litellm.litellm_core_utils.token_counter import token_counter
 
 import time
 from languia.custom_components.customchatbot import (
@@ -34,7 +34,7 @@ class Conversation:
             self.messages = messages
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = models.get(model_name, {}).get('endpoint', {})
+        self.endpoint = models.get(model_name, {}).get("endpoint", {})
 
 
 logger = logging.getLogger("languia")
@@ -110,7 +110,9 @@ def bot_response(
 
     messages_dict = messages_to_dict_list(state.messages)
     litellm_model_name = (
-        endpoint.get("api_type", "openai") + "/" + endpoint.get("api_model_id", state.model_name)
+        endpoint.get("api_type", "openai")
+        + "/"
+        + endpoint.get("api_model_id", state.model_name)
     )
 
     api_key = get_api_key(endpoint)
@@ -180,11 +182,7 @@ def bot_response(
             f"No answer from API {endpoint_name} for model {state.model_name}"
         )
     if not output_tokens:
-        output_tokens = token_counter(
-            messages=messages_to_dict_list(state.messages, strip_metadata=True, concat_reasoning_with_content=True
-            ),
-            model=state.model_name)
-
+        output_tokens = token_counter(text=[reasoning, output], model=state.model_name)
     state.messages = update_last_message(
         messages=state.messages,
         text=output,
