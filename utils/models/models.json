@@ -669,6 +669,7 @@
         "size_desc": "Avec 30 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. De plus l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique.",
         "fyi": "Ce modèle MoE (Mixture of Experts) se distingue par une configuration de 128 experts au total, avec seulement 8 experts activés par jeton, ce qui permet une inférence plus rapide et plus efficace. Il utilise un système appelé *global-batch* pour optimiser la répartition du travail entre les experts, afin qu'ils soient tous utilisés de manière équilibrée.\n\nContrairement à d'autres modèles comme Qwen 2.5-MoE qui recyclent les mêmes experts à travers plusieurs couches du réseau, Qwen 3 30B A2B attribue des experts uniques à chaque couche. Concrètement, cela signifie que les experts de la première couche ne sont jamais réutilisés dans les couches suivantes - chaque niveau du modèle dispose de son propre ensemble d'experts spécialisés. Cette architecture permet à chaque expert de se concentrer exclusivement sur les tâches spécifiques à sa position dans le réseau neuronal, résultant en une spécialisation plus fine et des performances optimisées pour chaque étape du traitement de l'information.",
         "new": true,
+        "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "qwen/qwen3-30b-a3b"
@@ -842,6 +843,7 @@
         "size_desc": "Avec 8 milliards de paramètres, il fait partie des modèles de petite taille. Il peut être utilisé localement sur un poste pour préserver la confidentialité des données, ou sur serveur peu coûteux pour limiter les coûts par rapport à un modèle plus grand. \n\nSa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter de longs documents.",
         "fyi": "Qwen 3 8B a été entraîné sur le même corpus que les modèles plus grands de la famille Qwen : 36 billions de jetons couvrant 119 langues. Son apprentissage suit trois étapes : pré-entraînement sur 30 billions de jetons avec une fenêtre de 4 000, enrichissement factuel avec 5 billions de jetons, puis une phase spécialisée pour les contextes longs.",
         "new": true,
+        "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "qwen/qwen3-8b"
