@@ -4,10 +4,9 @@ import sys
 import os
 import subprocess
 import os
-import shutil
 import hashlib
 from datetime import datetime
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
 
@@ -153,6 +152,28 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
         columns_to_drop = ["archived", "pii_analyzed", "ip", "chatbot_index", "conversation_a_pii_removed","conversation_b_pii_removed", "opening_msg_pii_removed", "ip_map"]
         
+        # FIXME:
+        # logger.info("Adding model infos...")
+        # df["model_a_total_params"] = df.apply(
+        #         lambda row: (
+        #             get_total_params(row['model_a_name'])
+        #         ),
+        #         axis=1,
+        #     )
+# ALTER TABLE conversations DROP COLUMN model_a_total_params;
+# ALTER TABLE conversations DROP COLUMN model_b_total_params;
+# ALTER TABLE conversations DROP COLUMN model_a_active_params;
+# ALTER TABLE conversations DROP COLUMN model_b_active_params;
+# ALTER TABLE conversations DROP COLUMN total_conv_a_kwh;
+# ALTER TABLE conversations DROP COLUMN total_conv_b_kwh;
+# ALTER TABLE conversations DROP COLUMN total_conv_a_output_tokens;
+# ALTER TABLE conversations DROP COLUMN total_conv_b_output_tokens;
+# ALTER TABLE conversations DROP COLUMN country;
+# ALTER TABLE conversations DROP COLUMN city;
+
+# -- FIXME: drop in dataset and keep in database with a note saying it's flaky
+#     -- selected_category VARCHAR(255),
+#     -- is_unedited_prompt BOOLEAN,
         df = df.drop(
             columns=[col for col in columns_to_drop if col in df.columns],
             errors="ignore",
@@ -237,30 +258,6 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
 
     repo_path = os.path.join(repo_prefix, repo_name)
 
-
-    # if not os.path.exists(repo_path):
-    #     # TODO: refacto
-    #     # TODO: use hf-cli upload/download?
-
-    #     logger.info("Cloning into "+ repo_prefix + " from " + repo_org + "/" + repo_name)
-    #     _clone_result = subprocess.run(cwd=repo_prefix,
-    #                                    args=
-    #         ["git", "-C", repo_prefix, "clone", repo_org + "/" + repo_name]
-    #     )
-
-    #     if _clone_result.returncode == 0:
-    #         logger.info("Cloned")
-    #         return True
-    #     else:
-    #         logger.error(f"Failed to clone for {repo_path}: {_clone_result.stderr}")
-    #         return False
-
-    # Pull latest changes for the repository
-    # if not update_repository(repo_path):
-    #     logger.error(
-    #         f"Failed to update repository for {dataset_name}. Skipping dataset."
-    #     )
-    #     return
 
     engine = None
     conn = None
