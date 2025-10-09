@@ -34,8 +34,6 @@ I18N_OS_LICENSE_KEYS = [
 I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
 I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
 
-PARAMS_SIZE_MAP = {"XS": 3, "S": 7, "M": 35, "L": 70, "XL": 200}
-
 Licenses = RootModel[list[License]]
 Orgas = RootModel[list[Organisation]]
 
@@ -107,7 +105,7 @@ def params_to_friendly_size(params):
     Returns:
         str: The friendly size description
     """
-    intervals = [(0, 7), (7, 20), (20, 70), (70, 150), (150, float("inf"))]
+    intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
     sizes = ["XS", "S", "M", "L", "XL"]
 
     for i, (lower, upper) in enumerate(intervals):
@@ -207,12 +205,7 @@ def validate() -> None:
             if model_data.get("fully_open_source"):
                 model_data["distribution"] = "fully_open_source"
 
-            if isinstance(model_data["params"], str):
-                model_data["friendly_size"] = model_data["params"]
-                # Guess params
-                model_data["params"] = PARAMS_SIZE_MAP[model_data["params"]]
-            else:
-                model_data["friendly_size"] = params_to_friendly_size(
+            model_data["friendly_size"] = params_to_friendly_size(
                     model_data["params"]
                 )
 

@@ -119,7 +119,7 @@ def save_vote_to_db(data):
 
     logger = logging.getLogger("languia")
     if not dsn:
-        logger.warn("Cannot log to db: no db configured")
+        logger.warning("Cannot log to db: no db configured")
         return
     conn = psycopg2.connect(dsn)
     cursor = conn.cursor()
@@ -661,7 +661,7 @@ def upsert_conv_to_db(data):
 
     logger = logging.getLogger("languia")
     if not dsn:
-        logger.warn("Cannot log to db: no db configured")
+        logger.warning("Cannot log to db: no db configured")
         return
 
     conn = None

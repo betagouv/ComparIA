@@ -40,6 +40,7 @@ import requests
 
 from languia.utils import (
     AppState,
+    get_chosen_model,
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
@@ -49,7 +50,6 @@ from languia.utils import (
 from languia.session import increment_input_chars, redis_host, is_ratelimited
 
 from languia.reveal import (
-    get_chosen_model,
     build_reveal_dict,
     determine_choice_badge,
 )
