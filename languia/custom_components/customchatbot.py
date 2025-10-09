@@ -38,6 +38,7 @@ class MetadataDict(TypedDict):
     duration: Union[float, None]
     generation_id: Union[str, None]
 
+
 class FileDataDict(TypedDict):
     path: str  # server filepath
     url: NotRequired[Optional[str]]  # normalised server url
@@ -53,7 +54,7 @@ class MessageDict(TypedDict):
     role: Literal["user", "assistant", "system"]
     metadata: NotRequired[MetadataDict]
     error: NotRequired[Optional[str]]
-    
+
     reasoning: NotRequired[str]
 
 
@@ -62,18 +63,18 @@ class FileMessage(GradioModel):
     alt_text: Optional[str] = None
 
 
-
-
 class Metadata(GradioModel):
-    bot: Optional[str] = None
+    bot: Optional[Literal["a", "b"]] = None
     duration: Optional[float] = None
     generation_id: Optional[str] = None
+    output_tokens: Optional[int] = None
 
 
 class Message(GradioModel):
     role: str
     error: Optional[str] = None
     metadata: Metadata = Field(default_factory=Metadata)
+    
     content: str
     reasoning: Optional[str] = None
 
@@ -102,6 +103,7 @@ class ChatMessage:
 
 class ChatbotDataMessages(GradioRootModel):
     root: list[Message]
+
 
 if TYPE_CHECKING:
     from gradio.components import Timer
@@ -279,7 +281,6 @@ class CustomChatbot(Component):
             return None
         return chat_message
 
-
     def preprocess(
         self,
         payload: ChatbotDataMessages | None,
@@ -326,7 +327,6 @@ class CustomChatbot(Component):
         if chat_message is None:
             return None
         return chat_message
-
 
     def _postprocess_message_messages(
         self, message: MessageDict | ChatMessage
@@ -385,5 +385,9 @@ class CustomChatbot(Component):
     def example_value(self) -> Any:
         return [
             Message(role="user", content="Hello!").model_dump(),
-            Message(role="assistant", content="How can I help you?", reasoning="This is a sample response").model_dump(),
+            Message(
+                role="assistant",
+                content="How can I help you?",
+                reasoning="This is a sample response",
+            ).model_dump(),
         ]
