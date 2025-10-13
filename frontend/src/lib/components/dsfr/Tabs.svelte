@@ -1,6 +1,6 @@
 <script
   lang="ts"
-  generics="T extends { id: string; label: string; href?: string; content?: string, icon?: string }"
+  generics="T extends { id: string; label: string; href?: string; content?: string, icon?: string, iconClass?: string }"
 >
   import type { Snippet } from 'svelte'
   import type { ClassValue, SvelteHTMLElements } from 'svelte/elements'
@@ -60,7 +60,11 @@
           </a>
         {:else}
           <button {...item.props} type="button">
-            {#if item.icon}<Icon icon={item.icon} size="xs" class="me-2" />{/if}{item.label}
+            {#if item.icon}<Icon
+                icon={item.icon}
+                size="xs"
+                class={['me-2', item.iconClass]}
+              />{/if}{item.label}
           </button>
         {/if}
       </li>
