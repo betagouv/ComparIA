@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, Search, Table } from '$components/dsfr'
+  import { Link, Search, Table, Toggle } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import {
     APINegativeReactions,
@@ -10,7 +10,13 @@
   import type { BotModel } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
-  type ColKind = 'name' | 'total_prefs' | 'positive_prefs_ratio' | APIReactionPref
+  type ColKind =
+    | 'name'
+    | 'positive_prefs_ratio'
+    | 'total_positive_prefs'
+    | 'total_negative_prefs'
+    | 'n_match'
+    | APIReactionPref
 
   let {
     id,
@@ -33,30 +39,35 @@
 
   const cols = (
     [
-      { id: 'name' },
-      { id: 'total_prefs' },
+      { id: 'name', orderable: true },
       {
         id: 'positive_prefs_ratio',
-        tooltip: m['ranking.preferences.table.tooltips.positive_prefs_ratio']()
+        tooltip: m['ranking.preferences.table.tooltips.positive_prefs_ratio'](),
+        orderable: true
       },
+      { id: 'total_positive_prefs' },
+      { id: 'total_negative_prefs' },
+      // { id: 'n_match' }, // FIXME uncomment when data available
       ...APIPositiveReactions.map((reaction, i) => ({
         id: reaction,
-        colHeaderClass: 'bg-(--green-emeraude-975-75)!'
+        colHeaderClass: 'bg-(--green-emeraude-975-75)!',
+        orderable: true
       })),
       ...APINegativeReactions.map((reaction, i) => ({
         id: reaction,
-        colHeaderClass: 'bg-(--warning-950-100)!'
+        colHeaderClass: 'bg-(--warning-950-100)!',
+        orderable: true
       }))
     ] as const
   ).map((col) => ({
     ...col,
-    label: m[`ranking.preferences.table.cols.${col.id}`](),
-    orderable: col.id !== 'total_prefs'
+    label: m[`ranking.preferences.table.cols.${col.id}`]()
   }))
 
   let orderingCol = $state(initialOrderCol)
   let orderingMethod = $state(initialOrderMethod)
   let search = $state('')
+  let asPercentage = $state(false)
 
   $effect(() => {
     if (orderingCol === undefined) {
@@ -75,11 +86,9 @@
         simple_name: model.simple_name,
         icon_path: model.icon_path,
         organisation: model.organisation,
-        total_prefs: model.prefs!.total_prefs,
-        positive_prefs_ratio: model.prefs!.positive_prefs_ratio,
-        ...(Object.fromEntries(
-          reactions.map((r) => [r, model.prefs![r] / model.prefs!.total_prefs])
-        ) as Record<APIReactionPref, number>),
+        ...model.prefs!,
+        total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs![v], 0),
+        total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs![v], 0),
         search: (['id', 'simple_name', 'organisation'] as const)
           .map((key) => model[key].toLowerCase())
           .join(' ')
@@ -129,7 +138,22 @@
       </div>
     </div>
 
-    <Search id="model-search" bind:value={search} label={m['ranking.table.search']()} />
+    <div class="flex flex-col gap-5 md:flex-row md:items-center">
+      <Toggle
+        id="data-as-percentage"
+        bind:value={asPercentage}
+        label={m['ranking.preferences.table.percentLabel']()}
+        hideCheckLabel
+        variant="primary"
+        class="me-14 text-[14px]!"
+      />
+      <Search
+        id="model-search"
+        bind:value={search}
+        label={m['ranking.table.search']()}
+        class="ms-auto w-full md:w-auto"
+      />
+    </div>
   {/snippet}
 
   {#snippet cell(model, col)}
@@ -147,8 +171,8 @@
         class="text-black!"
         onclick={() => (selectedModel = model.id)}>{model.id}</a
       >
-    {:else if col.id === 'total_prefs'}
-      <strong>{model.total_prefs}</strong>
+    {:else if col.id === 'total_positive_prefs' || col.id === 'total_negative_prefs'}
+      <strong>{model[col.id]}</strong>
     {:else if col.id === 'positive_prefs_ratio'}
       {@const size = Math.round(model[col.id] * 100)}
       <div class="flex h-[25px] w-full rounded-sm border border-[#cecece] text-[12px] font-bold">
@@ -162,8 +186,10 @@
           {Math.round((1 - model[col.id]) * 100)}%
         </div>
       </div>
+    {:else if asPercentage}
+      {Math.round((model[col.id] / model.total_prefs) * 100)}%
     {:else}
-      {Math.round(model[col.id] * 100)}%
+      {model[col.id]}
     {/if}
   {/snippet}
 </Table>
