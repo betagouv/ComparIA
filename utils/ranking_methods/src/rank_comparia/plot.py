@@ -12,17 +12,61 @@ import altair as alt
 import polars as pl
 
 
+def plot_score_mean_win_proba(scores: pl.DataFrame) -> alt.Chart:
+    """
+    Plot ELO-type scores against mean probability to win against
+    all other models.
+
+    Args:
+        scores (pl.DataFrame): Scores DataFrame with columns "model_name", "median".
+    Returns:
+        alt.Chart: Plot.
+    """
+    df = scores.select("model_name", "median")
+    df_pairs = (
+        df.join(df, how="cross", suffix="_opp")
+        .filter(pl.col("model_name") != pl.col("model_name_opp"))
+        .with_columns((1 / (1 + 10 ** ((pl.col("median_opp") - pl.col("median")) / 400))).alias("p_win"))
+    )
+
+    df_result = (
+        df_pairs.group_by("model_name", "median")
+        .agg(pl.mean("p_win").alias("mean_win_prob"))
+        .sort("median", descending=True)
+    )
+    df_results = df_result.to_pandas()
+    return (
+        alt.Chart(df_result)
+        .mark_circle(size=80)
+        .encode(
+            x=alt.X(
+                "median:Q",
+                title="Score",
+                scale=alt.Scale(domain=[df_results["median"].min(), df_results["median"].max()]),  # type: ignore
+            ),
+            y=alt.Y(
+                "mean_win_prob:Q",
+                title="Mean win probability",
+                scale=alt.Scale(
+                    domain=[df_results["mean_win_prob"].min(), df_results["mean_win_prob"].max()]  # type: ignore
+                ),
+            ),
+            tooltip=["model_name", "median", "mean_win_prob"],
+        )
+        .properties(width=500, height=400, title="Score vs. mean win probability")
+    )
+
+
 def plot_scores_with_confidence(scores: pl.DataFrame) -> alt.LayerChart:
     """
     Plot models scores.
 
     Args:
-        scores (pl.DataFrame): Scores DataFrame with columns "model", "median", "p2.5" and "p97.5".
+        scores (pl.DataFrame): Scores DataFrame with columns "model_name", "median", "p2.5" and "p97.5".
     Returns:
         alt.Chart: Plot.
     """
     scores = scores.sort("median", descending=True)
-
     model_order = scores["model_name"].to_list()
     df = scores.to_pandas()
 
@@ -152,83 +196,8 @@ def plot_winrate_heatmap(heatmap_data: pl.DataFrame) -> alt.LayerChart:
     # rotate x-axis labels 45 degrees
     return final_chart.configure_axisX(labelAngle=45)
 
-def plot_winrate_count(matches_data: pl.DataFrame) -> alt.LayerChart:
-    """
-    From aggregated data with columns "model_a", "model_b", "a_win_ratio", and "count",
-    plot a graph of weighted average winrate for each model.
 
-    Args:
-        matches_data (pl.DataFrame): Matches data with "model_a", "model_b", "a_win_ratio", and "count".
-    Returns:
-        alt.Chart: A bar chart of weighted average winrates per model.
-    """
-
-    weighted_a_wins = (
-        matches_data.group_by('model_a')
-        .agg([
-            (pl.col("a_win_ratio") * pl.col("count")).sum().alias("weighted_sum"),
-            pl.col("count").sum().alias("total_count")
-        ])
-        .rename({'model_a': 'model'})
-    )
-
-    weighted_b_wins = (
-        matches_data.group_by('model_b')
-        .agg([
-            ((1.0 - pl.col("a_win_ratio")) * pl.col("count")).sum().alias("weighted_sum"),
-            pl.col("count").sum().alias("total_count")
-        ])
-        .rename({'model_b': 'model'})
-    )
-    
-    combined_wins = pl.concat([weighted_a_wins, weighted_b_wins])
-    
-    final_data = (
-        combined_wins.group_by('model')
-        .agg([
-            pl.col("weighted_sum").sum().alias("final_weighted_sum"),
-            pl.col("total_count").sum().alias("final_total_count")
-        ])
-        .with_columns(
-            (pl.col("final_weighted_sum") / pl.col("final_total_count")).alias("win_rate")
-        )
-        .sort('win_rate', descending=True)
-    )
-
-    base = (
-        alt.Chart(final_data.to_pandas())
-        .encode(
-            x=alt.X("model:N", sort="-y", title="Modèle"),
-            y=alt.Y("win_rate:Q", title="Taux de victoire moyen (pondéré)"),
-            tooltip=["model", alt.Tooltip("win_rate", format=".2f")],
-            color=alt.Color(
-                "win_rate:Q",
-                scale=alt.Scale(scheme="redblue"),
-                legend=None
-            )
-        )
-    )
-
-    bars = base.mark_bar()
-    text = base.mark_text(
-        align="center",
-        baseline="bottom",
-        dy=-5,
-        fontSize=10,
-    ).encode(
-        text=alt.Text("win_rate:Q", format=".2f")
-    )
-    
-    return (bars + text)
-
-
-
-
-def plot_elo_against_frugal_elo(
-    frugal_log_score: pl.DataFrame,
-    bootstraped_scores: pl.DataFrame,
-    models_info: pl.DataFrame,
-) -> alt.Chart:
+def plot_elo_against_frugal_elo(frugal_log_score: pl.DataFrame, bootstraped_scores: pl.DataFrame) -> alt.Chart:
     """
     Draw chart displaying Elo scores against Elo score adjusted for frugality.
 
@@ -240,11 +209,11 @@ def plot_elo_against_frugal_elo(
         alt.Chart: chart displaying Elo scores against Elo score adjusted for frugality.
     """
     # Add infos about models (organization, license, etc)
-
+    model_infos = pl.read_json(source=Path(".").resolve().parent / "data" / "models_data.json")
     all_data = (
         bootstraped_scores.select(["model_name", "median"])
         .join(frugal_log_score, on="model_name")
-        .join(models_info, on="model_name")
+        .join(model_infos, on="model_name")
     )
 
     all_data_frugal = all_data.with_columns(frugal=(pl.col("median") - 366 * pl.col("cost")))
@@ -280,10 +249,8 @@ def plot_elo_against_frugal_elo(
 
 def draw_frugality_chart(
     frugality_infos: pl.DataFrame,
-    models_info: pl.DataFrame,
     scale: Literal["match", "token"] | None,
     log: bool = False,
-    # mean: bool = False,
     title: str = "",
 ) -> alt.Chart:
     """
@@ -294,14 +261,14 @@ def draw_frugality_chart(
         title (str): Chart title.
         scale (Literal) : Select to plot mean_per_token or mean_per_match if mean=True
         log (bool): Whether or not to use a log scale.
-        mean (bool): Whether or not to display total consumption or mean consumption.
 
     Returns:
         alt.Chart: Chart displaying Elo/BT scores against frugality scores.
     """
 
     # Add infos about models (organization, license, etc)
-    all_data = frugality_infos.join(models_info, on="model_name")
+    model_infos = pl.read_json(source=Path(".").resolve().parent / "data" / "models_data.json")
+    all_data = frugality_infos.join(model_infos, on="model_name")
 
     # Dropdown to select models by license (TODO: filter by proprietary/openweights/opensource)
     input_dropdown = alt.binding_select(
@@ -316,7 +283,6 @@ def draw_frugality_chart(
 
     x_column = "conso_all_conv"
 
-    # if mean:
     if scale == "match":
         x_column = "mean_conso_per_match"
     elif scale == "token":

@@ -38,6 +38,7 @@ export interface APIBotModel {
   trust_range?: [number, number]
   total_votes?: number
   consumption_wh?: number
+  n_match?: number
   prefs:
     | (Record<APIReactionPref, number> & {
         total_prefs: number

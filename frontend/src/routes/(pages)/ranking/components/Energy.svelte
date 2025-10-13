@@ -22,10 +22,10 @@
 </script>
 
 <div id="ranking-energy">
-  <h2 class="fr-h6 text-primary! mb-1!">{m['ranking.energy.title']()}</h2>
+  <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
   <p class="mb-8! text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
 
-  <div class="rounded bg-white p-8">
+  <div class="rounded bg-white p-4 md:p-8">
     <section>
       <div class="mb-10 text-center">
         <h3 class="text-lg! mt-3! mb-0!">{m['ranking.energy.views.graph.title']()}</h3>
@@ -60,6 +60,7 @@
         initialOrderMethod="ascending"
         includedCols={['name', 'elo', 'consumption_wh', 'size', 'arch', 'organisation', 'license']}
         hideTotal
+        raw
         {onDownloadData}
       />
     </section>

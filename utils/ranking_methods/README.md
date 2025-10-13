@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
 ## Description
 
 Ce projet consiste en un POC permettant de calculer d'une part un classement des modèles de langue utilisés dans le comparateur public d'IA conversationnelle [compar:IA](https://comparia.beta.gouv.fr/), et d'autre part d'estimer le coût écologique de ces modèles.
+Un travail sur la représentation de l'évolution des matchs au cours du temps a été effectué. Il permet de construire un graphe dynamique représentant l'évolution des matchs entre modèles dans le comparateur. Il est possible de naviguer dans une fenêtre de temps donnée pour observer quel modèle a été mis en compétition avec quel modèle, combien de fois et la proportion de matchs gagnés pour chaque modèle. Outre le traitement effectué sur les données pour construire le graphique, une interface graphique a été développée.
 
 Ce projet est en développement et sera mis régulièrement à jour.
 
@@ -44,13 +45,13 @@ Voir les notebooks dans le dossier `notebooks/` pour avoir des exemples d'utilis
 3. Le notebook `pipeline.ipynb` qui illustre l'utilisation de l'interface `RankingPipeline`. Il permet de paramétrer les classements qu'on veut établir, d'exporter des représentations graphiques, comparer les classements établis par les différentes méthodes. On peut également établir des classements selon les mots-clés de la colonne `Categories` du jeu de données. Les données calculées sont enregistrées dans un format `csv` dans le dossier spécifié avec le paramètre `export_path`
 4. Le notebook `graph.ipynb` permet de construire les dictionnaires nécessaires à la création du graphe dynamique.
 
-Les notebooks `frugal.ipynb` et `rankers.ipynb` sont davantage des notebooks pour illustrer les fonctions implémentées. Le notebook `pipeline.ipynb` est le notebook "principal" qui permet de paramétrer les calculs des scores et l'export des graphiques associés.
+Les notebooks `frugal.ipynb` et `rankers.ipynb` sont davantage pour illustrer les fonctions implémentées. Le notebook `pipeline.ipynb` est le notebook "principal" qui permet de paramétrer les calculs des scores et l'export des graphiques associés.
 
 Les fonctions utilisées dans les notebooks se trouvent dans `src/rank_comparia/` :
 - Les méthodes de calcul de classement se trouvent dans les fichiers `elo.py`, `maximum_likelihood.py` dont `ranker.py` est la classe générique.
 - Les méthodes de calcul de la consommation énergétique se trouvent dans `frugality.py`  
 - Les fonctions associées à la générétation des diffférents graphiques se trouvent dans `plot.py`
-- Une pipeline bout en bout est en construction dans `pipeline.py`. Elle inclut les méthodes de classement selon différents paramètres (méthode de classement, calcul par batch, quel jeu de données à utiliser, etc.).
+- Une pipeline bout en bout est en construction dans `pipeline.py`. Elle inclut les méthodes de classement selon différents paramètres (méthode de classement, quel jeu de données à utiliser, etc.).
 
 
 Les fonctions nécessaires à la construction du graphe dynamique représentant l'évolution des matchs se trouve dans le dossier `graph-frontend/`. Les fichiers de données nécessaires à la construction de ces graphes se trouvent dans `graph-fronted/files/` ; il est possible de mettre à jour ces données en générant de nouveaux fichiers avec le notebook `graph.ipynb`. Ces données seront sauvegardées dans `/data`. Les fonctions utilisées dans ce notebook se trouve dans `notebooks/utils_graph_d3.py`.

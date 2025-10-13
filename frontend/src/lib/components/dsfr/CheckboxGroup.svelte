@@ -7,6 +7,7 @@
     legend,
     options,
     value = $bindable([]),
+    row = false,
     legendClass = '',
     labelClass = '',
     labelSlot,
@@ -15,6 +16,7 @@
     legend: string
     options: Option[]
     value: string[]
+    row?: boolean
     legendClass?: ClassValue
     labelClass?: ClassValue
     labelSlot?: Snippet<[{ option: Option; index: number }]>
@@ -34,26 +36,33 @@
     {legend}
   </legend>
 
-  {#each options as option, i}
-    <div class="fr-fieldset__element not-last:mb-2! last:mb-0!">
-      <div class="fr-checkbox-group">
-        <input
-          name="checkbox1"
-          id={`${id}-${option.value}`}
-          type="checkbox"
-          value={option.value}
-          bind:group={value}
-        />
-        <label class={['fr-label ms-6!', labelClass]} for={`${id}-${option.value}`}>
-          {#if labelSlot}
-            {@render labelSlot({ option, index: i })}
-          {:else}
-            {option.label ?? option.value}
-          {/if}
-        </label>
+  <div class="flex flex-wrap">
+    {#each options as option, i}
+      <div
+        class={['fr-fieldset__element not-last:mb-2! last:mb-0!', { 'grow-0! basis-auto!': row }]}
+      >
+        <div class="fr-checkbox-group">
+          <input
+            name="checkbox1"
+            id={`${id}-${option.value}`}
+            type="checkbox"
+            value={option.value}
+            bind:group={value}
+          />
+          <label
+            class={['fr-label ms-6!', { 'inline-block!': row }, labelClass]}
+            for={`${id}-${option.value}`}
+          >
+            {#if labelSlot}
+              {@render labelSlot({ option, index: i })}
+            {:else}
+              {option.label ?? option.value}
+            {/if}
+          </label>
+        </div>
       </div>
-    </div>
-  {/each}
+    {/each}
+  </div>
 </fieldset>
 
 <style>

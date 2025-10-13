@@ -2,7 +2,7 @@ import os
 from getpass import getpass
 from pathlib import Path
 
-#cache_dir = input("Indicate path to all Hugging Face caches:")
+# cache_dir = input("Indicate path to all Hugging Face caches:")
 cache_dir = "cache"
 os.environ["HF_DATASETS_CACHE"] = cache_dir
 os.environ["HF_HUB_CACHE"] = cache_dir
@@ -18,12 +18,9 @@ pipeline = RankingPipeline(
     include_votes=True,
     include_reactions=True,
     bootstrap_samples=1000,
-    top_results=None,
     mean_how="token",
-    batch=False,
     export_path=Path("output"),
-    models_data=Path("./utils/models/generated-models.json")
 )
 
-#ranker = pipeline.ranker
+# ranker = pipeline.ranker
 scores = pipeline.run()

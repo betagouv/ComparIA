@@ -80,7 +80,6 @@ def calculate_frugality_score(conversations: pl.DataFrame, n_match: Optional[pl.
     Args:
         conversations (pl.DataFrame): Conversations data.
         n_match (pl.DataFrame): Data with the number of matches by model.
-        mean (bool): If True, compute mean energy consumption per conversation.
 
     Returns:
         pl.DataFrame: DataFrame with frugality scores.

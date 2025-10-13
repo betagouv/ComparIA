@@ -21,6 +21,11 @@ scikit-learn = "^1.6.1"
 altair = "^5.5.0"
 vl-convert-python = "^1.8.0"
 networkx = "^3.5"
+hdbscan = "^0.8.40"
+nltk = "^3.9.1"
+bertopic = "^0.17.3"
+matplotlib = "^3.10.5"
+umap-learn = "^0.5.9.post2"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1"
@@ -121,7 +126,3 @@ line_length = 120
 no_lines_before = ["LOCALFOLDER"]
 extend_skip = [".cache"]
 lines_after_imports = 2
-
-[project]
-name = "rank-comparia"
-version = "0.0.1"
