@@ -4,12 +4,26 @@ import json5
 import sys
 import datetime
 from pathlib import Path
+import logging
+from logging.handlers import WatchedFileHandler
+from languia.logs import JSONFormatter, PostgresHandler
+from httpx import Timeout
 
-from languia.models import Model, Endpoint
+GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
+
+OBJECTIVE = 200_000
+
+MAX_INPUT_CHARS_PER_HOUR = 200_000
+
+SMALL_MODELS_BUCKET_UPPER_LIMIT = 60
+BIG_MODELS_BUCKET_LOWER_LIMIT = 100
 
 env_debug = os.getenv("LANGUIA_DEBUG")
 
-MAX_INPUT_CHARS_PER_HOUR = 200_000
+BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+
+# unavailable models won't be sampled.
+unavailable_models = []
 
 if env_debug:
     if env_debug.lower() == "true":
@@ -22,17 +36,8 @@ else:
 t = datetime.datetime.now()
 hostname = os.uname().nodename
 log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
-import logging
 
 LOGDIR = os.getenv("LOGDIR", "./data")
-
-from logging.handlers import WatchedFileHandler
-
-from languia.logs import JSONFormatter, PostgresHandler
-
-from httpx import Timeout
-
-GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
 db = os.getenv("COMPARIA_DB_URI", None)
 enable_postgres_handler = True
@@ -75,11 +80,6 @@ def build_logger(logger_filename):
 
 
 logger = build_logger(log_filename)
-
-num_sides = 2
-enable_moderation = False
-
-objective = 150_000
 
 if os.getenv("GIT_COMMIT"):
     git_commit = os.getenv("GIT_COMMIT")
@@ -148,14 +148,14 @@ random_pool = [
 small_models = [
     id
     for id, model in models.items()
-    if model["params"] <= 60
+    if model["params"] <= SMALL_MODELS_BUCKET_UPPER_LIMIT
     and id not in reasoning_models
 ]
 
 big_models = [
         id
     for id, model in models.items()
-    if model["params"] >= 100
+    if model["params"] >= BIG_MODELS_BUCKET_LOWER_LIMIT
     and id not in reasoning_models
 ]
 
@@ -172,10 +172,3 @@ def get_model_system_prompt(model_name):
         return "Tu es un assistant IA serviable et bienveillant. Tu fais des réponses concises et précises."
     else:
         return None
-
-
-BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
-
-
-# unavailable models won't be sampled.
-unavailable_models = []

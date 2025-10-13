@@ -49,7 +49,7 @@ app = gr.mount_gradio_app(
 
 from languia.utils import get_gauge_count
 
-objective = config.objective
+objective = config.OBJECTIVE
 
 @app.exception_handler(500)
 async def http_exception_handler(request, exc):
@@ -73,7 +73,7 @@ async def available_models():
 
 @app.get("/counter", response_class=JSONResponse)
 async def counter():
-    return JSONResponse({"count": get_gauge_count(), "objective": config.objective})
+    return JSONResponse({"count": get_gauge_count(), "objective": config.OBJECTIVE})
 
 
 app = SentryAsgiMiddleware(app)
