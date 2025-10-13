@@ -455,7 +455,7 @@ def register_listeners():
                 f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures."
             )
 
-        for i in range(config.num_sides):
+        for i in range(2):
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
@@ -536,7 +536,7 @@ def register_listeners():
             )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
-        for i in range(config.num_sides):
+        for i in range(2):
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
