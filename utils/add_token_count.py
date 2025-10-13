@@ -137,17 +137,37 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                     conversation_id = conv["id"]
                     print(f"Processing conversation with ID: {conversation_id}")
                     try:
-                        conv_a_raw_data = json.loads(conv["conversation_a"]) if isinstance(conv["conversation_a"], str) else conv["conversation_a"]
-                        conv_b_raw_data = json.loads(conv["conversation_b"]) if isinstance(conv["conversation_b"], str) else conv["conversation_b"]
+                        conv_a_raw_data = (
+                            json.loads(conv["conversation_a"])
+                            if isinstance(conv["conversation_a"], str)
+                            else conv["conversation_a"]
+                        )
+                        conv_b_raw_data = (
+                            json.loads(conv["conversation_b"])
+                            if isinstance(conv["conversation_b"], str)
+                            else conv["conversation_b"]
+                        )
 
                         # Validate conversation messages using Pydantic schema
-                        print(f"  Validating conversation A messages (ID: {conversation_id})...")
-                        conv_a_validated_messages = ConversationMessages(conv_a_raw_data).root
-                        print(f"  Conversation A messages (ID: {conversation_id}) validated.")
+                        print(
+                            f"  Validating conversation A messages (ID: {conversation_id})..."
+                        )
+                        conv_a_validated_messages = ConversationMessages(
+                            conv_a_raw_data
+                        ).root
+                        print(
+                            f"  Conversation A messages (ID: {conversation_id}) validated."
+                        )
 
-                        print(f"  Validating conversation B messages (ID: {conversation_id})...")
-                        conv_b_validated_messages = ConversationMessages(conv_b_raw_data).root
-                        print(f"  Conversation B messages (ID: {conversation_id}) validated.")
+                        print(
+                            f"  Validating conversation B messages (ID: {conversation_id})..."
+                        )
+                        conv_b_validated_messages = ConversationMessages(
+                            conv_b_raw_data
+                        ).root
+                        print(
+                            f"  Conversation B messages (ID: {conversation_id}) validated."
+                        )
 
                         # Process conversations
                         print(f"  Processing conversation A (ID: {conversation_id})...")
@@ -195,7 +215,9 @@ def process_unprocessed_conversations(dsn, batch_size=10):
 
                         #                                 Json(enriched_conv_a),
                     except ValidationError as e:
-                        print(f"Pydantic validation error for conversation {conversation_id}: {e}")
+                        print(
+                            f"Pydantic validation error for conversation {conversation_id}: {e}"
+                        )
                         batch_error_count += 1
                         # Mark the conversation as failed due to validation error
                         # mark_failed_query = """
