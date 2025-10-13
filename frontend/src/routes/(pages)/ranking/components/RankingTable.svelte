@@ -58,7 +58,7 @@
       { id: 'total_votes', orderable: true },
       { id: 'consumption_wh', orderable: true, tooltip: m['reveal.impacts.energy.tooltip']() },
       { id: 'size', orderable: true, tooltip: m['ranking.table.data.tooltips.size']() },
-      { id: 'arch' },
+      { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
       { id: 'release', orderable: true },
       { id: 'organisation', orderable: true },
       { id: 'license' }
