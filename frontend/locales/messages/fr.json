@@ -1462,7 +1462,7 @@
                     "faq": {
                         "1": {
                             "desc": "Nous prenons le parti d’afficher en grisé (non analysés) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture.",
-                            "title": "Pourquoi certains modèles sont signalés comme non analysés ?"
+                            "title": "Pourquoi certains modèles sont-ils signalés comme non analysés ?"
                         }
                     },
                     "infos": {
@@ -1488,9 +1488,8 @@
                         "params": "Paramètres (mds)"
                     },
                     "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
-                    "yLabel": "Score BT"
+                    "yLabel": "Score Bradley-Terry"
                 },
-                "legend": "Sélectionnez un modèle pour connaitre son Score BT et sa consommation énergétique",
                 "table": {
                     "title": "Données du graphique en tableau"
                 }
@@ -1586,9 +1585,9 @@
                     "trust_range": "Confiance (±)"
                 },
                 "tooltips": {
-                    "elo": "Score estimé selon le modèle statistique Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre, calculé à partir de l'ensemble des votes et réactions des utilisateurs",
+                    "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
-                    "trust_range": "Intervalle indiquant la fiabilité du score: plus l'intervalle est étroit, plus l'estimation du score est fiable. Il y a 95% de chances que le vrai score du modèle soit dans cette plage."
+                    "trust_range": "Intervalle indiquant la fiabilité du rang de classement : plus l'intervalle est étroit, plus l'estimation du rang est fiable. Il y a 95% de chances que le vrai rang du modèle soit dans cette plage."
                 }
             },
             "lastUpdate": "Mise à jour le {date}",

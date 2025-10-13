@@ -1350,8 +1350,7 @@
                     },
                     "xLabel": "Average consumption per 1000 tokens",
                     "yLabel": "Preference score"
-                },
-                "legend": "Choose a viewing mode"
+                }
             }
         },
         "preferences": {
