@@ -206,17 +206,13 @@ def register_listeners():
             gen_a = bot_response(
                 "a",
                 conv_a_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                request
             )
             i = 1
             gen_b = bot_response(
                 "b",
                 conv_b_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                request
             )
             while True:
                 try:
@@ -563,16 +559,12 @@ def register_listeners():
             gen_a = bot_response(
                 "a",
                 conv_a_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                request
             )
             gen_b = bot_response(
                 "b",
                 conv_b_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
+                request
             )
             while True:
                 try:
@@ -642,7 +634,7 @@ def register_listeners():
                 app_state_scoped, [conv_a_scoped, conv_b_scoped], request
             )
 
-            if not conv_a_scoped.messages[-1].role == "user":
+            if conv_a_scoped.messages[-1].role != "user":
                 logger.info(
                     f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
                     extra={"request": request},
@@ -728,8 +720,7 @@ def register_listeners():
     ):
 
         for reaction in app_state_scoped.reactions:
-            if reaction:
-                if reaction["liked"] != None:
+            if reaction and reaction["liked"] != None:
                     logger.info("meaningful_reaction")
                     logger.debug(reaction)
                     break

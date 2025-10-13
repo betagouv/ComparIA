@@ -13,9 +13,6 @@ class ContextTooLongError(ValueError):
     def __str__(self):
         return "Context too long."
 
-    pass
-
-
 class EmptyResponseError(RuntimeError):
     def __init__(self, response=None, *args: object) -> None:
         super().__init__(*args)
@@ -279,13 +276,11 @@ def get_api_key(endpoint: Endpoint):
     return None
 
 
-
 def sum_tokens(messages) -> int:
     total_output_tokens = sum(
         msg.metadata.get("output_tokens") for msg in messages if msg.role == "assistant"
     )
     return total_output_tokens
-
 
 
 def to_threeway_chatbot(conversations):
@@ -355,6 +350,7 @@ AS total_approx;
         cursor.execute(select_statement)
         res = cursor.fetchone()
         result = res[0]
+        return result
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
     finally:
@@ -362,4 +358,3 @@ AS total_approx;
             cursor.close()
         if conn:
             conn.close()
-        return result

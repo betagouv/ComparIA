@@ -82,8 +82,6 @@ def bot_response(
     temperature=0.7,
     # top_p=1.0,
     max_new_tokens=4096,
-    apply_rate_limit=True,
-    use_recommended_config=True,
 ):
     # temperature = float(temperature)
     # top_p = float(top_p)
