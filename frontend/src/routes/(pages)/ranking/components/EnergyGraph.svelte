@@ -282,6 +282,10 @@
       height: 570px;
     }
 
+    text {
+      fill: var(--color-black);
+    }
+
     .axis {
       line {
         stroke: var(--grey-950-100);
