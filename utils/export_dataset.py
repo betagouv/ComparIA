@@ -9,9 +9,6 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
-# FIXME: fix or drop
-#     -- selected_category VARCHAR(255),
-#     -- is_unedited_prompt BOOLEAN,
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,14 +34,10 @@ DATASET_CONFIG = {
     conv_b_id,
     session_hash,
     visitor_id,
-    country,
-    city,
     model_pair_name,
     opening_msg,
     system_prompt_a,
     system_prompt_b,
-    selected_category,
-    is_unedited_prompt,
     mode,
     custom_models_selection,
     short_summary,
@@ -53,23 +46,16 @@ DATASET_CONFIG = {
     languages,
     total_conv_a_output_tokens,
     total_conv_b_output_tokens,
-    model_a_total_params,
-    model_a_active_params,
-    model_b_active_params,
-    model_b_total_params,
-    total_conv_a_kwh,
-    total_conv_b_kwh,
-    ip,
-    ip_map
+    ip
 FROM conversations
 WHERE archived = FALSE
 AND pii_analyzed = TRUE
-AND contains_pii = FALSE;""",
-        # AND postprocess_failed = FALSE
+AND contains_pii = FALSE
+AND postprocess_failed = FALSE
+;""",
         "repo": "comparia-conversations",
     },
     "votes": {
-        # id	timestamp	model_a_name	model_b_name	model_pair_name	chosen_model_name	opening_msg	both_equal	conversation_a	conversation_b	conv_turns	selected_category	is_unedited_prompt	conversation_pair_id	session_hash	visitor_id	conv_comments_a	conv_comments_b	conv_useful_a	conv_useful_b	conv_creative_a	conv_creative_b	conv_clear_formatting_a	conv_clear_formatting_b	conv_incorrect_a	conv_incorrect_b	conv_superficial_a	conv_superficial_b	conv_instructions_not_followed_a	conv_instructions_not_followed_b	system_prompt_b	system_prompt_a	conv_complete_a	conv_complete_b
         "query": """SELECT v.*
 FROM votes v
 WHERE v.archived = FALSE
@@ -77,8 +63,9 @@ AND EXISTS (
     SELECT 1
     FROM conversations c
     WHERE c.conversation_pair_id = v.conversation_pair_id
-    AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
+    AND c.contains_pii = FALSE
+    AND c.postprocess_failed = FALSE
 )
 ;""",
         "repo": "comparia-votes",
@@ -93,6 +80,7 @@ AND EXISTS (
     WHERE c.conversation_pair_id = r.conversation_pair_id
     AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
+    AND c.postprocess_failed = FALSE
 )
 ;""",
         "repo": "comparia-reactions",
@@ -173,16 +161,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
         #         ),
         #         axis=1,
         #     )
-        # ALTER TABLE conversations DROP COLUMN model_a_total_params;
-        # ALTER TABLE conversations DROP COLUMN model_b_total_params;
-        # ALTER TABLE conversations DROP COLUMN model_a_active_params;
-        # ALTER TABLE conversations DROP COLUMN model_b_active_params;
-        # ALTER TABLE conversations DROP COLUMN total_conv_a_kwh;
-        # ALTER TABLE conversations DROP COLUMN total_conv_b_kwh;
-        # ALTER TABLE conversations DROP COLUMN total_conv_a_output_tokens;
-        # ALTER TABLE conversations DROP COLUMN total_conv_b_output_tokens;
-        # ALTER TABLE conversations DROP COLUMN country;
-        # ALTER TABLE conversations DROP COLUMN city;
 
         # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
         #     -- selected_category VARCHAR(255),
@@ -294,7 +272,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
             export_data(data, dataset_name, repo_path)
 
             # Commit and push changes for the repository
-            commit_and_push(repo_org, repo_name, repo_path)
+            # commit_and_push(repo_org, repo_name, repo_path)
 
     except OperationalError as e:
         logger.error(f"Database connection error for dataset {dataset_name}: {e}")
