@@ -1414,7 +1414,6 @@
                     "name": "Model",
                     "positive_prefs_ratio": "Distribution of preferences",
                     "superficial": "Superficial",
-                    "total_prefs": "Total preferences",
                     "useful": "Useful"
                 },
                 "tooltips": {
