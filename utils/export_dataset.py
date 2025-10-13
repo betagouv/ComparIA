@@ -241,7 +241,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
     DATABASE_URI = os.getenv("DATABASE_URI")
     if not DATABASE_URI:
         logger.error(
-            f"Cannot process {dataset_name}: no database configuration provided"
+            f"Cannot process {dataset_name}: no $DATABASE_URI"
         )
         return
 
@@ -291,7 +291,7 @@ def main():
     # subprocess.run(args=
     #         ["git", "--global" "config","credential.helper", "store"]
     #     )
-    logger.info("huggingface-cli login --token $HF_TOKEN")
+    logger.info("huggingface-cli login --token $HF_PUSH_DATASET_KEY")
 
     _login_result = subprocess.run(
         args=[
