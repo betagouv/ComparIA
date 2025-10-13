@@ -1488,7 +1488,7 @@
                         "params": "Paramètres (mds)"
                     },
                     "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
-                    "yLabel": "Score Bradley-Terry"
+                    "yLabel": "Score Bradley-Terry (BT)"
                 },
                 "table": {
                     "title": "Données du graphique en tableau"
@@ -1545,6 +1545,10 @@
         },
         "preferences": {
             "desc": "Quand vous votez, vous pouvez qualifier votre préférence selon différentes catégories positives et négatives. Comparez leur répartition d’un modèle à l’autre.",
+            "modal": {
+                "cta": "Qu’est-ce qu’une préférence ?",
+                "title": "Préférences positives et négatives"
+            },
             "tabLabel": "Focus préférences",
             "table": {
                 "cols": {
@@ -1552,13 +1556,16 @@
                     "complete": "Complète",
                     "creative": "Créative",
                     "incorrect": "Incorrecte",
-                    "instructions_not_followed": "Instructions non suivies",
+                    "instructions_not_followed": "Instructions<br> non suivies",
+                    "n_match": "Matchs",
                     "name": "Modèle",
                     "positive_prefs_ratio": "Répartition des préférences",
                     "superficial": "Superficielle",
-                    "total_prefs": "Total préférences",
+                    "total_negative_prefs": "Total préférences<br> Négatives",
+                    "total_positive_prefs": "Total préférences<br> Positives",
                     "useful": "Utile"
                 },
+                "percentLabel": "Préférences en pourcentage",
                 "tooltips": {
                     "positive_prefs_ratio": "Lors du vote, des badges permettaient de préciser les raisons de votre préférence. Cette colonne présente la répartition en pourcentage de ces badges (positifs ou négatifs) pour l'ensemble des votes."
                 }
