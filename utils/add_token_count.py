@@ -50,7 +50,7 @@ def process_conversation(
     )
 
     if metadata_filled and metadata_not_filled:
-        input(
+        print(
             "WARNING: Some assistant messages have 'output_tokens' in metadata, while others don't."
         )
 
