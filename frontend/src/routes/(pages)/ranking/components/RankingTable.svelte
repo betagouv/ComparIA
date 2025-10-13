@@ -212,9 +212,9 @@
     {:else if col.id === 'size'}
       <strong>{model.friendly_size}</strong> -
       {#if model.distribution === 'api-only'}
-        <span class="text-xs">(est.)</span>
+        <span class="text-xs">{m['ranking.table.data.estimation']()}</span>
       {:else}
-        {model.params} Mds
+        {m['ranking.table.data.billions']({ count: model.params })}
       {/if}
     {:else if col.id === 'release'}
       {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}

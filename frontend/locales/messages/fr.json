@@ -1571,6 +1571,7 @@
         },
         "table": {
             "data": {
+                "billions": "{count} Mds",
                 "cols": {
                     "arch": "Architecture",
                     "consumption_wh": "Conso moyenne<br>(1000 tokens)",
@@ -1584,6 +1585,7 @@
                     "total_votes": "Total votes",
                     "trust_range": "Confiance (±)"
                 },
+                "estimation": "(estimation)",
                 "tooltips": {
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
