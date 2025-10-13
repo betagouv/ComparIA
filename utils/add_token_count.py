@@ -2,11 +2,8 @@ import litellm
 import psycopg2
 import json
 from psycopg2.extras import DictCursor
-from pydantic import ValidationError, RootModel
-from languia.schemas import ConversationMessage
-from typing import List
-
-ConversationMessages = RootModel[List[ConversationMessage]]
+from pydantic import ValidationError
+from languia.schemas import ConversationMessages
 
 
 def count_tokens(text, model):
@@ -18,8 +15,21 @@ def count_tokens(text, model):
         print("DEBUG: count_tokens returned 0 for empty text.")
     return num_tokens
 
+def sum_tokens(conv: ConversationMessages):
+    total_assistant_output_tokens = 0
+    for message in conv.root:
+        if message.role == "assistant":
+            total_assistant_output_tokens += message.content.metadata.output_tokens
+    if total_assistant_output_tokens == 0:
+        print("Sanity check convo is empty of assistant messages")
+        for message in conv.root:
+            if not (message.role == "user" or message.role == "system"):
+                raise f"No token found for convo {conv.model_dump_json()}"
+    return total_assistant_output_tokens
 
-def process_conversation(conversation, model, already_calculated_total_output_tokens=None):
+def process_conversation(
+    conversation, model, already_calculated_total_output_tokens=None
+):
     """Processes a conversation, counts tokens for assistant messages, and returns enriched conversation and total assistant tokens."""
     print("Processing conversation...")
     if not conversation:
@@ -55,11 +65,12 @@ def process_conversation(conversation, model, already_calculated_total_output_to
             if role == "assistant":
                 if not existing_output_tokens:
                     output_tokens = count_tokens(content, model)
+                    metadata = message.get("metadata", {})
+                    metadata["output_tokens"] = output_tokens
+                    message["metadata"] = metadata
 
                 total_assistant_output_tokens += output_tokens
 
-                metadata["output_tokens"] = output_tokens
-                message["metadata"] = metadata
             enriched_conversation.append(message)
 
     print(
@@ -69,10 +80,19 @@ def process_conversation(conversation, model, already_calculated_total_output_to
         print(
             "WARNING: process_conversation returned 0 total assistant tokens for an assistant-answered conversation."
         )
-    if already_calculated_total_output_tokens and total_assistant_output_tokens != already_calculated_total_output_tokens:
-        diff = (total_assistant_output_tokens-already_calculated_total_output_tokens)/already_calculated_total_output_tokens
-        print(f"WARNING: Already calc'ed {already_calculated_total_output_tokens} but now calc'ed {total_assistant_output_tokens}\nDiff %: {diff*100}")
-    return enriched_conversation, total_assistant_output_tokens
+    if (
+        already_calculated_total_output_tokens
+        and total_assistant_output_tokens != already_calculated_total_output_tokens
+    ):
+        diff = (
+            total_assistant_output_tokens - already_calculated_total_output_tokens
+        ) / already_calculated_total_output_tokens
+        if diff > 0.5:
+            print(
+                f"WARNING: Already calc'ed {already_calculated_total_output_tokens} but now calc'ed {total_assistant_output_tokens}\nDiff % superior to 50%: {diff*100}"
+            )
+
+    return (ConversationMessages(enriched_conversation).model_dump_json()), total_assistant_output_tokens
 
 
 def process_unprocessed_conversations(dsn, batch_size=10):
@@ -86,27 +106,23 @@ def process_unprocessed_conversations(dsn, batch_size=10):
         conn = psycopg2.connect(dsn)
         print("Successfully connected to the database.")
 
-        for i in range(10):
+        while True:
             print("Starting a new batch processing loop...")
             with conn.cursor(cursor_factory=DictCursor) as cursor:
                 # Start a transaction
                 conn.autocommit = False
                 print("Transaction started.")
 
-                # Get batch of unprocessed conversations with model_a_name
-                # Temporarily modify query to re-validate all conversations for Pydantic schema changes
-                # After running this once, consider reverting the WHERE clause to its original form
-                # or a more specific condition for ongoing processing.
                 query = """
                     SELECT id, conversation_a, conversation_b, model_a_name, model_b_name, total_conv_a_output_tokens, total_conv_b_output_tokens
                     FROM conversations
-                    WHERE postprocess_failed IS FALSE
+                    WHERE total_conv_a_output_tokens IS NULL OR total_conv_b_output_tokens IS NULL
                     ORDER BY id
                     LIMIT %s
                     FOR UPDATE SKIP LOCKED
                     """
                 print(
-                    f"Executing query to fetch {batch_size} unprocessed conversations: '{cursor.mogrify(query, (batch_size,)).decode()}'"
+                    f"Executing query to fetch {batch_size} unprocessed conversations"
                 )
                 cursor.execute(
                     query,
@@ -141,8 +157,12 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             if isinstance(conv["conversation_b"], str)
                             else conv["conversation_b"]
                         )
-                        already_calculated_total_output_tokens_a = conv["total_conv_a_output_tokens"]
-                        already_calculated_total_output_tokens_b = conv["total_conv_a_output_tokens"]
+                        already_calculated_total_output_tokens_a = conv[
+                            "total_conv_a_output_tokens"
+                        ]
+                        already_calculated_total_output_tokens_b = conv[
+                            "total_conv_a_output_tokens"
+                        ]
                         try:
                             # Validate conversation messages using Pydantic schema
                             print(
@@ -150,7 +170,7 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             )
                             conv_a_validated_messages = ConversationMessages(
                                 conv_a_raw_data
-                            ).root
+                            )
                             print(
                                 f"  Conversation A messages (ID: {conversation_id}) validated."
                             )
@@ -160,60 +180,87 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                             )
                             conv_b_validated_messages = ConversationMessages(
                                 conv_b_raw_data
-                            ).root
+                            )
                             print(
                                 f"  Conversation B messages (ID: {conversation_id}) validated."
                             )
+                            total_conv_a_tokens = sum_tokens(conv_a_validated_messages)
+                            total_conv_b_tokens = sum_tokens(conv_b_validated_messages)
+                            # Update conversation with token counts and model metadata
+                            update_query = """
+                                UPDATE conversations
+                                SET
+                                    total_conv_a_output_tokens = %s,
+                                    total_conv_b_output_tokens = %s
+                                WHERE id = %s
+                                """
+                            print(
+                                f"  Updating total tokens only for conversation ID {conversation_id} w/ {total_conv_a_tokens} and {total_conv_b_tokens}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, conversation_id)).decode()}'"
+                            )
+                            cursor.execute(
+                                update_query,
+                                (
+                                    total_conv_a_tokens,
+                                    total_conv_b_tokens,
+                                    conversation_id,
+                                ),
+                            )
+                            batch_processed_count += 1
                         except ValidationError as e:
                             print(
-                            f"Pydantic validation error for conversation {conversation_id}: {e}"
-                        )
+                                f"Pydantic validation error for conversation {conversation_id}: {e}"
+                            )
 
                             # Process conversations
-                            print(f"  Processing conversation A (ID: {conversation_id})...")
+                            print(
+                                f"  Processing conversation A (ID: {conversation_id})..."
+                            )
                             enriched_conv_a, total_conv_a_tokens = process_conversation(
-                                conv_a_raw_data, model_a, already_calculated_total_output_tokens_a
+                                conv_a_raw_data,
+                                model_a,
+                                already_calculated_total_output_tokens_a,
                             )
                             print(
                                 f"  Conversation A (ID: {conversation_id}) processed. Total output tokens: {total_conv_a_tokens}"
                             )
 
-                            print(f"  Processing conversation B (ID: {conversation_id})...")
+                            print(
+                                f"  Processing conversation B (ID: {conversation_id})..."
+                            )
                             enriched_conv_b, total_conv_b_tokens = process_conversation(
-                                conv_b_raw_data, model_b, already_calculated_total_output_tokens_b
+                                conv_b_raw_data,
+                                model_b,
+                                already_calculated_total_output_tokens_b,
                             )
                             print(
                                 f"  Conversation B (ID: {conversation_id}) processed. Total output tokens: {total_conv_b_tokens}"
                             )
 
                             # Update conversation with token counts and model metadata
-                            # update_query = """
-                            #     UPDATE conversations
-                            #     SET
-                            #         total_conv_a_output_tokens = %s,
-                            #         total_conv_b_output_tokens = %s,
-                            #         conv_a = %s,
-                            #         conv_b = %s
-                            #     WHERE id = %s
-                            #     """
-                            # print(
-                            #     f"  Executing update query for conversation ID {conversation_id}: '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, model_a_params, model_a_active_params, model_b_params, model_b_active_params, total_conv_a_kwh, total_conv_b_kwh, conversation_id)).decode()}'"
-                            # )
-                            # cursor.execute(
-                            #     update_query,
-                            #     (
-                            #         total_conv_a_tokens,
-                            #         total_conv_b_tokens,
-                            #         enriched_conv_a,
-                            #         enriched_conv_b,
-                            #         conversation_id,
-                            #     ),
-                            # )
+                            update_query = """
+                                UPDATE conversations
+                                SET
+                                    total_conv_a_output_tokens = %s,
+                                    total_conv_b_output_tokens = %s,
+                                    conversation_a = %s,
+                                    conversation_b = %s
+                                WHERE id = %s
+                                """
+                            print(
+                                f"  Executing update query for conversation ID {conversation_id}"
+                                # '{cursor.mogrify(update_query, (total_conv_a_tokens, total_conv_b_tokens, enriched_conv_a, enriched_conv_b, conversation_id)).decode()}'"
+                            )
+                            cursor.execute(
+                                update_query,
+                                (
+                                    total_conv_a_tokens,
+                                    total_conv_b_tokens,
+                                    enriched_conv_a,
+                                    enriched_conv_b,
+                                    conversation_id,
+                                ),
+                            )
                             batch_processed_count += 1
-                            #                                 conv_a = %s,
-                            #                                 conv_b = %s,
-
-                            #                                 Json(enriched_conv_a),
 
                     except Exception as e:
                         print(f"Error processing conversation {conversation_id}: {e}")
@@ -228,7 +275,9 @@ def process_unprocessed_conversations(dsn, batch_size=10):
                         #     f"  Marking conversation ID {conversation_id} as failed: '{cursor.mogrify(mark_failed_query, (conversation_id,)).decode()}'"
                         # )
                         # cursor.execute(mark_failed_query, (conversation_id,))
-                        continue
+                        raise
+                        # continue
+                        
 
                 print(
                     f"Committing transaction for the processed batch of {num_conversations_in_batch} conversations."
