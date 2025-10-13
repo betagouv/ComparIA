@@ -21,6 +21,10 @@ BIG_MODELS_BUCKET_LOWER_LIMIT = 100
 env_debug = os.getenv("LANGUIA_DEBUG")
 
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
+BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
+
+# unavailable models won't be sampled.
+unavailable_models = []
 
 if env_debug:
     if env_debug.lower() == "true":
@@ -138,15 +142,13 @@ random_pool = [id for id, _model in models.items() if id not in reasoning_models
 small_models = [
     id
     for id, model in models.items()
-    if model["params"] <= 60
-    and id not in reasoning_models
+    if model["params"] <= SMALL_MODELS_BUCKET_UPPER_LIMIT and id not in reasoning_models
 ]
 
 big_models = [
     id
     for id, model in models.items()
-    if model["params"] >= 100
-    and id not in reasoning_models
+    if model["params"] >= BIG_MODELS_BUCKET_LOWER_LIMIT and id not in reasoning_models
 ]
 
 pricey_models = [id for id, model in models.items() if model.get("pricey", False)]
