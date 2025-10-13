@@ -125,17 +125,15 @@
           {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
         </p>
 
-        <!-- FIXME 404 -->
-        <!-- <Link
-          native={false}
+        <Link
           href="#"
           download="true"
           text={m['actions.downloadData']()}
           icon="download-line"
           iconPos="right"
-          class="text-[14px]!"
+          class="text-[14px]! text-grey!"
           onclick={() => onDownloadData()}
-        /> -->
+        />
       </div>
     </div>
 
