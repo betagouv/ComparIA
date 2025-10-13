@@ -1,0 +1,3 @@
+[submodule "utils/ranking_methods"]
+	path = utils/ranking_methods
+	url = https://github.com/ketsapiwiq/ranking_methods/
