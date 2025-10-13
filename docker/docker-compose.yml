@@ -3,8 +3,8 @@ services:
     env_file: .env
     environment:
       LOGDIR: /data
-      LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
-      PUBLIC_API_URL: "http://languia:8001"
+      # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/languia"
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -15,17 +15,35 @@ services:
       - ../data:/data
       # Dev config
       - ../:/app
-    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+    command: ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+    depends_on:
+      - postgres
 
   frontend:
     build:
       context: ../frontend
       dockerfile: ../docker/Dockerfile-sveltekit
-      args:
-        PUBLIC_API_URL: "http://languia:8001"
-    ports:
-      - "3000:80" # Assuming SvelteKit serves on port 80 inside the container
+    # For runtime access in +page.server.ts via same hostname
+    network_mode: host
     depends_on:
       - languia
     environment:
-      PUBLIC_API_URL: "http://languia:8001" # For runtime access in +page.server.ts
+      PUBLIC_API_URL: "http://127.0.0.1:8001"
+    # Dev config
+    volumes:
+      - ../frontend:/app
+    command: ["npm", "run", "dev", "--", "--host", "--port", "3000"]
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: languia
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./data/file.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+volumes:
+  db-data:
