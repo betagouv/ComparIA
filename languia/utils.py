@@ -11,6 +11,7 @@ import logging
 
 logger = logging.getLogger("languia")
 
+
 def get_total_params(model_extra_info):
     """
     Get the total number of parameters for a model.
@@ -24,8 +25,11 @@ def get_total_params(model_extra_info):
         else:
             return int(model_extra_info["params"])
     else:
-        logger.error(f"Couldn't get total params for {model_extra_info.get('id')}, missing params")
+        logger.error(
+            f"Couldn't get total params for {model_extra_info.get('id')}, missing params"
+        )
         return None
+
 
 def get_active_params(model_extra_info):
     """
@@ -45,12 +49,9 @@ def get_active_params(model_extra_info):
         return get_total_params(model_extra_info)
 
 
-
 class ContextTooLongError(ValueError):
     def __str__(self):
         return "Context too long."
-
-    pass
 
 
 class EmptyResponseError(RuntimeError):
@@ -316,47 +317,11 @@ def get_api_key(endpoint: Endpoint):
     return None
 
 
-def get_conditions_from_license(license_name):
-    if "propriétaire" in license_name:
-        return "restricted"
-    elif license_name in ["Gemma", "CC-BY-NC-4.0"]:
-        return "copyleft"
-    else:
-        return "free"
-
-
-def get_distrib_clause_from_license(license_name):
-    if "propriétaire" in license_name:
-        return "api-only"
-    else:
-        return "open-weights"
-
-
 def sum_tokens(messages) -> int:
     total_output_tokens = sum(
         msg.metadata.get("output_tokens") for msg in messages if msg.role == "assistant"
     )
     return total_output_tokens
-
-
-def shuffle_prompt(guided_cards, request):
-    logger = logging.getLogger("languia")
-    prompt = gen_prompt(guided_cards)
-    logger.info(
-        f"shuffle: {prompt}",
-        extra={"request": request},
-    )
-    return prompt
-
-
-def gen_prompt(category):
-    from languia.config import prompts_table
-
-    prompts = prompts_table[category]
-    # [category]
-    # for category in get_categories(prompts_pool):
-    # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
-    return prompts[np.random.randint(len(prompts))]
 
 
 def to_threeway_chatbot(conversations):
@@ -426,6 +391,7 @@ AS total_approx;
         cursor.execute(select_statement)
         res = cursor.fetchone()
         result = res[0]
+        return result
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
     finally:
@@ -433,4 +399,3 @@ AS total_approx;
             cursor.close()
         if conn:
             conn.close()
-        return result
