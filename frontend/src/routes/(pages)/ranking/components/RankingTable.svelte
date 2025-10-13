@@ -27,7 +27,8 @@
     initialOrderMethod = 'descending',
     includedCols,
     onDownloadData,
-    hideTotal = false
+    hideTotal = false,
+    raw = false
   }: {
     id: string
     data: BotModel[]
@@ -36,6 +37,7 @@
     includedCols?: ColKind[]
     onDownloadData: () => void
     hideTotal?: boolean
+    raw?: boolean
   } = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
@@ -65,7 +67,8 @@
     .filter((col) => (includedCols ? includedCols.includes(col.id) : true))
     .map((col) => ({
       ...col,
-      label: m[`ranking.table.data.cols.${col.id}`]()
+      label: m[`ranking.table.data.cols.${col.id}`](),
+      colHeaderClass: raw ? 'bg-transparent! border-b-1 border-(--border-contrast-grey)' : ''
     }))
 
   let orderingCol = $state(initialOrderCol)
@@ -171,15 +174,14 @@
           {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
         </p>
 
-        <!-- FIXME 404 -->
         <Link
-          native={false}
+          native={raw}
           href="#"
           download="true"
           text={m['actions.downloadData']()}
           icon="download-line"
           iconPos="right"
-          class="text-[14px]!"
+          class={['text-[14px]!', { 'text-grey!': raw }]}
           onclick={() => onDownloadData()}
         />
       </div>
@@ -219,24 +221,34 @@
     {:else if col.id === 'release'}
       {`${model.release_date.getMonth() + 1}/${model.release_date.getFullYear().toString().slice(2)}`}
     {:else if col.id === 'license'}
-      <Badge {...model.badges.license} size="xs" noTooltip />
+      {#if raw}
+        {model.badges.license.text}
+      {:else}
+        <Badge {...model.badges.license} size="xs" noTooltip />
+      {/if}
     {:else if model[col.id] === undefined}
       <span class="text-xs">{m['words.NA']()}</span>
     {:else if col.id === 'elo'}
-      <div
-        class="cg-border text-info rounded-sm! relative max-w-[100px]"
-        style="--range-width: {model.eloRangeWidth}%"
-      >
-        <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
-        <span class="z-1 relative p-1 text-xs font-bold">{model.elo}</span>
-      </div>
+      {#if raw}
+        {model.elo}
+      {:else}
+        <div
+          class="cg-border text-info rounded-sm! relative max-w-[100px]"
+          style="--range-width: {model.eloRangeWidth}%"
+        >
+          <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
+          <span class="z-1 relative p-1 text-xs font-bold">{model.elo}</span>
+        </div>
+      {/if}
     {:else if col.id === 'trust_range'}
       +{model.trust_range![0]}/-{model.trust_range![1]}
     {:else if col.id === 'consumption_wh'}
       {model.consumption_wh} Wh
-      <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-        <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
-      </div>
+      {#if !raw}
+        <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
+          <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
+        </div>
+      {/if}
     {:else if col.id === 'arch'}
       {m[`models.arch.types.${model.arch}.name`]()}
     {:else}
