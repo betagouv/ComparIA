@@ -7,6 +7,7 @@
     value: boolean
     label: string
     help?: string
+    hideCheckLabel?: boolean
     checkedLabel?: string
     uncheckedLabel?: string
     variant?: 'primary' | 'secondary'
@@ -18,6 +19,7 @@
     value = $bindable(),
     label,
     help,
+    hideCheckLabel = false,
     checkedLabel = m['words.activated'](),
     uncheckedLabel = m['words.deactivated'](),
     variant = 'secondary',
@@ -43,9 +45,11 @@
   >
     <div class="block">{label}</div>
   </label>
-  <div aria-hidden="true" class="w-full text-end text-sm text-[#3A3A3A]">
-    {value ? checkedLabel : uncheckedLabel}
-  </div>
+  {#if !hideCheckLabel}
+    <div aria-hidden="true" class="w-full text-end text-sm text-[#3A3A3A]">
+      {value ? checkedLabel : uncheckedLabel}
+    </div>
+  {/if}
   {#if help}
     <p class="fr-hint-text mt-1!" id="toggle-hint-{id}">{help}</p>
   {/if}
