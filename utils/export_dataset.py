@@ -9,7 +9,9 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
-
+# FIXME: fix or drop
+#     -- selected_category VARCHAR(255),
+#     -- is_unedited_prompt BOOLEAN,
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -63,7 +65,7 @@ FROM conversations
 WHERE archived = FALSE
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE;""",
-# AND postprocess_failed = FALSE
+        # AND postprocess_failed = FALSE
         "repo": "comparia-conversations",
     },
     "votes": {
@@ -114,9 +116,10 @@ def load_session_hash_ip():
         return False
     engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
     with engine.connect() as conn:
-        session_hash_to_ip_map = pd.read_sql_query("SELECT ip_map, session_hash FROM conversations", conn)
+        session_hash_to_ip_map = pd.read_sql_query(
+            "SELECT ip_map, session_hash FROM conversations", conn
+        )
     return True
-
 
 
 def hash_md5(value):
@@ -144,14 +147,24 @@ def fetch_and_transform_data(conn, table_name, query=None):
             df["visitor_id"] = df.apply(
                 lambda row: (
                     hash_md5(f"ip-{session_hash_to_ip_map.get(row['session_hash'])}")
-                    if pd.isnull(row["visitor_id"]) and session_hash_to_ip_map.get(row['session_hash'])
+                    if pd.isnull(row["visitor_id"])
+                    and session_hash_to_ip_map.get(row["session_hash"])
                     else row["visitor_id"]
                 ),
                 axis=1,
             )
 
-        columns_to_drop = ["archived", "pii_analyzed", "ip", "chatbot_index", "conversation_a_pii_removed","conversation_b_pii_removed", "opening_msg_pii_removed", "ip_map"]
-        
+        columns_to_drop = [
+            "archived",
+            "pii_analyzed",
+            "ip",
+            "chatbot_index",
+            "conversation_a_pii_removed",
+            "conversation_b_pii_removed",
+            "opening_msg_pii_removed",
+            "ip_map",
+        ]
+
         # FIXME:
         # logger.info("Adding model infos...")
         # df["model_a_total_params"] = df.apply(
@@ -160,20 +173,20 @@ def fetch_and_transform_data(conn, table_name, query=None):
         #         ),
         #         axis=1,
         #     )
-# ALTER TABLE conversations DROP COLUMN model_a_total_params;
-# ALTER TABLE conversations DROP COLUMN model_b_total_params;
-# ALTER TABLE conversations DROP COLUMN model_a_active_params;
-# ALTER TABLE conversations DROP COLUMN model_b_active_params;
-# ALTER TABLE conversations DROP COLUMN total_conv_a_kwh;
-# ALTER TABLE conversations DROP COLUMN total_conv_b_kwh;
-# ALTER TABLE conversations DROP COLUMN total_conv_a_output_tokens;
-# ALTER TABLE conversations DROP COLUMN total_conv_b_output_tokens;
-# ALTER TABLE conversations DROP COLUMN country;
-# ALTER TABLE conversations DROP COLUMN city;
+        # ALTER TABLE conversations DROP COLUMN model_a_total_params;
+        # ALTER TABLE conversations DROP COLUMN model_b_total_params;
+        # ALTER TABLE conversations DROP COLUMN model_a_active_params;
+        # ALTER TABLE conversations DROP COLUMN model_b_active_params;
+        # ALTER TABLE conversations DROP COLUMN total_conv_a_kwh;
+        # ALTER TABLE conversations DROP COLUMN total_conv_b_kwh;
+        # ALTER TABLE conversations DROP COLUMN total_conv_a_output_tokens;
+        # ALTER TABLE conversations DROP COLUMN total_conv_b_output_tokens;
+        # ALTER TABLE conversations DROP COLUMN country;
+        # ALTER TABLE conversations DROP COLUMN city;
 
-# -- FIXME: drop in dataset and keep in database with a note saying it's flaky
-#     -- selected_category VARCHAR(255),
-#     -- is_unedited_prompt BOOLEAN,
+        # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
+        #     -- selected_category VARCHAR(255),
+        #     -- is_unedited_prompt BOOLEAN,
         df = df.drop(
             columns=[col for col in columns_to_drop if col in df.columns],
             errors="ignore",
@@ -189,8 +202,7 @@ def export_data(df, table_name, export_dir):
         logger.warning(f"No data to export for table: {table_name}")
         return
 
-    os.makedirs(export_dir,exist_ok=True)
-
+    os.makedirs(export_dir, exist_ok=True)
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
@@ -213,24 +225,35 @@ def export_data(df, table_name, export_dir):
 def commit_and_push(repo_org, repo_name, repo_path):
     """Commits and pushes changes for a given repository."""
     # Check for changes
-    
-        # Commit
-    commit_message = (
-        f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    )
-#  huggingface-cli upload ministere-culture/comparia-votes comparia-votes  --repo-type=dataset
-    logger.info(f"huggingface-cli upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'")
 
-    push_result = subprocess.run(["huggingface-cli", "upload",    (repo_org + "/" + repo_name), repo_path, "--token", os.getenv("HF_PUSH_DATASET_KEY", ""), "--repo-type","dataset", "--commit-message", commit_message])
+    # Commit
+    commit_message = f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    #  huggingface-cli upload ministere-culture/comparia-votes comparia-votes  --repo-type=dataset
+    logger.info(
+        f"huggingface-cli upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'"
+    )
+
+    push_result = subprocess.run(
+        [
+            "huggingface-cli",
+            "upload",
+            (repo_org + "/" + repo_name),
+            repo_path,
+            "--token",
+            os.getenv("HF_PUSH_DATASET_KEY", ""),
+            "--repo-type",
+            "dataset",
+            "--commit-message",
+            commit_message,
+        ]
+    )
 
     # push_result = subprocess.run(["git", "pull", "-C", repo_path, "push", "--dry-run"])
     if push_result.returncode == 0:
         logger.info(f"Successfully pushed changes for {repo_path}")
         return True
     else:
-        logger.error(
-            f"Failed to push changes for {repo_path}: {push_result.stderr}"
-        )
+        logger.error(f"Failed to push changes for {repo_path}: {push_result.stderr}")
         return False
 
 
@@ -251,13 +274,11 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
         logger.error(f"No repository defined for dataset: {dataset_name}")
         return
 
-
     repo_org = os.getenv("REPO_ORG", "ministere-culture")
 
     logger.info(f"Folder defined for dataset: {repo_prefix}")
 
     repo_path = os.path.join(repo_prefix, repo_name)
-
 
     engine = None
     conn = None
@@ -268,7 +289,6 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
 
             # Fetch and transform data
             data = fetch_and_transform_data(conn, dataset_name, query)
-
 
             # Export data
             export_data(data, dataset_name, repo_path)
@@ -295,16 +315,21 @@ def main():
     #     )
     logger.info("huggingface-cli login --token $HF_TOKEN")
 
-    _login_result = subprocess.run(args=
-        ["huggingface-cli","login", "--token", os.getenv("HF_PUSH_DATASET_KEY", "")]
+    _login_result = subprocess.run(
+        args=[
+            "huggingface-cli",
+            "login",
+            "--token",
+            os.getenv("HF_PUSH_DATASET_KEY", ""),
+        ]
     )
-    
+
     if _login_result.returncode == 0:
         logger.info("Logged in")
     else:
         logger.error(f"Failed to login: {_login_result.stderr}")
         return False
-    
+
     if len(sys.argv) > 1:
         repo_prefix = sys.argv[1] or "/app/datasets"
     else:
