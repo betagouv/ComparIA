@@ -6,6 +6,11 @@ import json
 import litellm
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
+from languia.reveal import get_llm_impact, convert_range_to_value
+
+# WARNING:__main__:- 'mistral-small-24B-Instruct-2501' not found in generated-models.json
+# WARNING:__main__:- 'gemma-2-27b-it' not found in generated-models.json
+# WARNING:__main__:- 'qwen3-235b-a22b-thinking-2507' not found in generated-models.json
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -61,7 +66,6 @@ def main():
         sys.exit(1)
 
     missing_models = []
-    model_encoder_data = {}
 
     # Pre-check for missing models in generated-models.json
     for model_id in model_ids_from_db:
@@ -73,23 +77,23 @@ def main():
         for model in missing_models:
             logger.warning(f"- {model}")
 
-    # Get encoder info for each model
+    results = []
     for model_id in model_ids_from_db:
         if model_id in models_data:
-            try:
-                # Get the tokenizer for the model
-                tokenizer = litellm.get_tokenizer(model_id)
-                if tokenizer:
-                    model_encoder_data[model_id] = tokenizer.name
-                else:
-                    model_encoder_data[model_id] = "Tokenizer not found"
-            except Exception as e:
-                model_encoder_data[model_id] = f"Could not get tokenizer: {e}"
+            model_info = models_data[model_id]
+            
+            # Calculate impact for 1 million tokens
+            impact = get_llm_impact(model_info, model_id, 1000000, None)
+            
+            if impact:
+                energy_kwh = convert_range_to_value(impact.energy.value)
+                energy_wh = energy_kwh * 1000
+                results.append({'model_id': model_id, 'wh_per_million_token': energy_wh})
 
-
-    logger.info("\nLiteLLM Encoder Information:")
-    for model_id, encoder_name in sorted(model_encoder_data.items()):
-        print(f"{model_id}: {encoder_name}")
+    if results:
+        results_df = pd.DataFrame(results)
+        print("Wh per million token for each model:")
+        print(results_df.to_string(index=False))
 
 if __name__ == "__main__":
     main()
