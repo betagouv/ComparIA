@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge, Button, Link } from '$components/dsfr'
+  import { Badge, Button, Link, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { RevealData } from '$lib/chatService.svelte'
   import { scrollTo } from '$lib/helpers/attachments'
@@ -54,21 +54,36 @@
         <h6 class="mt-auto! mb-5! text-base!">{m['reveal.impacts.title']()}</h6>
         <div class="flex">
           <div class="flex basis-1/2 flex-col md:basis-2/3 md:flex-row">
-            <MiniCard
-              id="params-{side}"
-              value={model.params}
-              desc={m['reveal.impacts.size.label']()}
-              tooltip={m['models.openWeight.tooltips.params']()}
-              class="md:w-full"
-            >
-              {m['reveal.impacts.size.count']()}
-              {#if model.distribution !== 'open-weights'}
-                {m['reveal.impacts.size.estimated']()}
-              {/if}
-              {#if model.quantization === 'q8'}
-                {m['reveal.impacts.size.quantized']()}
-              {/if}
-            </MiniCard>
+            <div class="relative md:w-full">
+              <MiniCard
+                id="params-{side}"
+                value={model.params}
+                desc={m['reveal.impacts.size.label']()}
+                tooltip={m['models.openWeight.tooltips.params']()}
+                class="z-10 -mb-2 h-full bg-white "
+              >
+                {m['reveal.impacts.size.count']()}
+                {#if model.distribution !== 'open-weights'}
+                  {m['reveal.impacts.size.estimated']()}
+                {/if}
+                {#if model.quantization === 'q8'}
+                  {m['reveal.impacts.size.quantized']()}
+                {/if}
+              </MiniCard>
+              <div
+                class="cg-border rounded-sm! bg-(--beige-gris-galet-950-100) absolute z-0 flex w-full p-1 ps-3 pt-2 text-[11px] leading-normal"
+              >
+                <span class="text-(--beige-gris-galet-sun-407-moon-821)">
+                  {model.badges.arch.text}
+                </span>
+                <Tooltip
+                  id="{model.id}-arch-tooltip"
+                  size="xs"
+                  text={model.badges.arch.tooltip}
+                  class="ms-auto"
+                />
+              </div>
+            </div>
 
             <strong class="m-auto mb-1 text-[20px] md:mx-1 md:my-auto">×</strong>
 
@@ -98,7 +113,7 @@
           </div>
         </div>
 
-        <h6 class="mt-9! mb-5! text-base!">{m['reveal.equivalent.title']()}</h6>
+        <h6 class="mt-9! md:mt-14! mb-5! text-base!">{m['reveal.equivalent.title']()}</h6>
         <div class="grid grid-cols-3 gap-2">
           <MiniCard
             id="co2-{side}"

@@ -29,12 +29,12 @@
     {@html sanitize(tooltip)}
   </Tooltip>
 
-  <div class={[icon ? 'flex flex-col items-center gap-2 md:gap-3 md:flex-row' : '']}>
+  <div class={[icon ? 'flex flex-col items-center gap-2 md:flex-row md:gap-3' : '']}>
     {#if icon}
       <Icon {icon} block class={iconClass} />
     {/if}
     <div class={[icon ? 'text-center md:text-start' : '']}>
-      <strong class="inline-flex items-baseline">
+      <strong class="inline-flex items-baseline leading-normal">
         <span class={[icon ? 'text-[24px]' : 'text-[18px]']}>{value}</span>
         <span class={[icon ? 'text-[14px]' : 'ms-1 text-[10px]']}>
           {#if units}
