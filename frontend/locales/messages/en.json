@@ -3,6 +3,7 @@
         "externalLink": "{text}"
     },
     "actions": {
+        "accessData": "Access data",
         "contact": "Contact us",
         "contactUs": "Contact us",
         "copyLink": {
@@ -13,6 +14,7 @@
             "do": "Copy the message",
             "done": "Message copied"
         },
+        "downloadData": "Download data",
         "home": "Homepage",
         "returnHome": "Return to homepage",
         "seeMore": "See more",
@@ -536,9 +538,14 @@
                 "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. It has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
             },
             "Claude 4 Sonnet": {
-                "desc": "<p> Very large multimodal and multilingual model, very powerful in code, with two response modes: the user can choose between a reasoning mode, for more in-depth answers, or a fast mode, to directly generate the final answer. </p>",
-                "fyi": "<p> Claude 4 Sonnet is a more compact version of Claude 4 Opus optimized for speed, efficiency, and accessibility. It is slightly less adept at tasks requiring complex, multi-step reasoning. On the other hand, it is significantly less expensive, faster, can generate longer texts, and consumes less power than Opus. </p>\n <p> The model offers two modes of use: a reasoning mode with step-by-step reasoning for complex problems, and a rapid mode for direct answers. Unlike other models, the reasoning mode was not primarily trained on mathematical data, but adapted to real-life use cases. </p>",
-                "size_desc": "<p> The exact size is unknown. Evidence suggests that this is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. The model has a context window of up to 200,000 tokens, suitable for analyzing long documents or code repositories. </p>"
+                "desc": "<p> Very large multimodal and multilingual model, very powerful in code. The user or developer using this model can choose between several levels of reasoning. </p>",
+                "fyi": "<p> Claude 4 Sonnet is a more compact version of Claude 4 Opus optimized for speed, efficiency, and accessibility. It is slightly less effective at tasks requiring complex, multi-step reasoning. However, it is significantly less expensive, faster, and more energy-efficient than Opus 4. </p>\n <p> The model offers the possibility to choose the intensity of \"reasoning\". Unlike other models, the reasoning mode was not primarily trained on mathematical data, but mainly on real-life use cases. </p>",
+                "size_desc": "<p> The exact size is unknown. Evidence suggests that this is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. The model has a context window of up to 1,000,000 tokens, suitable for analyzing very long documents or code repositories. </p>"
+            },
+            "Claude 4.5 Sonnet": {
+                "desc": "<p> Very large multimodal and multilingual model, extremely powerful in coding, reasoning, and mathematics. The user or developer using this model can choose between multiple levels of reasoning. </p>",
+                "fyi": "<p> Claude Sonnet 4.5 is a direct evolution of Sonnet 4. The \".5\" refers to the major changes introduced during post-training, which result in significant gains in reasoning, mathematics, and especially in the practical use of computers. At the time of its release, it was considered the best model in the world for coding and excelled at solving long and complex multi-step tasks. Its performance on benchmarks such as SWE-bench Verified and OSWorld marked a clear improvement over previous versions, with the ability to maintain \"focus\" for more than thirty hours on the same problem. </p>",
+                "size_desc": "<p> The exact size is unknown. All of the available information sources suggest that this is a very large model, requiring servers with multiple powerful graphics cards to run it. Size and power consumption estimates are based on indirect clues such as inference costs and observed latency. Claude Sonnet 4.5 has a context window of up to 1,000,000 tokens, suitable for analyzing entire code repositories or very large documents. </p>"
             },
             "Command A": {
                 "desc": "<p> Large model, efficient for programming, use of tools, and “retrieval augmented generation” (RAG). </p>",
@@ -558,7 +565,12 @@
             "DeepSeek R1": {
                 "desc": "<p> Very large model with high performance on mathematical, scientific and programming tasks, which simulates a reasoning step before generating its answer. </p>",
                 "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture with 61 layers. It has a total of 671 billion parameters, 37 billion of which are token-activated. Training used large-scale reinforcement learning, with multiple SFT (supervised fine-tuning) steps where the model learns from examples of correct answers. </p>",
-                "size_desc": "<p> With 671 billion parameters, DeepSeek R1 is a very large model that requires multiple powerful graphics cards to run. Reasoning models of this type take longer to produce an answer, which increases energy consumption. However, the Mixture of Experts (MoE) architecture activates only a portion of the parameters at each token, thus limiting its energy footprint. The context window reaches 128,000 tokens, which is suitable for analyzing long documents. </p>"
+                "size_desc": "<p> With 671 billion parameters, DeepSeek R1 is a very large model that requires multiple powerful graphics cards to run. Reasoning models of this type take longer to produce an answer, which increases energy consumption. However, the Mixture of Experts (MoE) architecture activates only a portion of the parameters at each token, thus limiting its energy footprint. The context window reaches 163,840 tokens, which is suitable for analyzing long documents. </p>"
+            },
+            "DeepSeek R1 0528": {
+                "desc": "<p> A very large model, specialized in mathematical, scientific, and programming tasks. It simulates a reasoning step before generating its answer and, with the May 2025 update, has gained in analysis depth and accuracy thanks to post-training optimization. </p>",
+                "fyi": "<p> This model is based on a Mixture of Experts (MoE) architecture with 61 layers. It has a total of 671 billion parameters, 37 billion of which are activated per token. Training used large-scale reinforcement learning, with multiple SFT ( <em> supervised fine-tuning </em> - where the model learns from examples of correct answers) adjustments. Its latest version (DeepSeek-R1-0528) significantly improves its reasoning capabilities, reducing the hallucination rate and increasing efficiency in programming, logic, and function calling. On the AIME 2025 test, its score increased from 70% to 87.5%, bringing it closer to models like o3 and Gemini 2.5 Pro. </p>",
+                "size_desc": "<p> With 671 billion parameters, DeepSeek R1 is a very large model that requires multiple powerful graphics cards to run. Reasoning models of this type take longer to produce an answer, which increases energy consumption. However, the Mixture of Experts (MoE) architecture activates only a portion of the parameters at each token, thus limiting its energy footprint. The context window reaches 163,840 tokens, which is suitable for analyzing long documents. </p>"
             },
             "DeepSeek R1 Llama 70B": {
                 "desc": "<p> Large model based on Meta Llama 3.3 70B, retrained with reasoning examples from the DeepSeek R1 model. It offers good math and coding capabilities. </p>",
@@ -689,6 +701,11 @@
                 "desc": "<p> A lighter version of the Grok 3 model, reducing costs while maintaining good performance for many tasks. It can go through a reasoning phase before providing a final answer. </p>",
                 "fyi": "<p> Grok 3 Mini is a distilled version of Grok 3: it is close to it in terms of capabilities, while being faster and less expensive.\n The model offers two modes: a thinking mode with step-by-step reasoning for complex problems, and a quick mode for immediate answers.\n Its context window reaches 131,000 tokens, making it suitable for analyzing long documents. </p>",
                 "size_desc": "<p> The exact size of the model is unknown. Despite its name, Grok 3 Mini is likely a very large model, requiring multiple powerful graphics cards to run. Additionally, it contains an optional reasoning phase that involves longer generation times and therefore higher power consumption. However, the supposed Mixture of Experts (MoE) architecture only activates a portion of the parameters at each token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. </p>"
+            },
+            "Grok 4 Fast": {
+                "desc": "<p> Grok 4 Fast is a model focused on balancing performance, speed, and cost, particularly for information retrieval tasks and other \"agentic\" actions. </p>",
+                "fyi": "<p> The exact size of the model is unknown. Despite its name, Grok 4 Fast is likely a very large model, requiring multiple powerful graphics cards to run. Additionally, it contains an optional reasoning phase that involves longer generation times and thus higher energy consumption. However, the supposed Mixture of Experts (MoE) architecture only activates a portion of the parameters at each token, thus limiting its energy footprint. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> Trained by reinforcement learning, Grok 4 Fast achieves scores close to the very large model - Grok 4 while remaining more efficient. It has been trained to perform well on web browsing and specifically on the X platform, as well as on tool calling capabilities and code execution. </p>",
+                "size_desc": "<p> Featuring a 2 million token context window, Grok 4 Fast combines reasoning and direct response modes in a single model. It uses approximately 40% fewer reasoning tokens than Grok 4, resulting in a significant reduction in execution cost and latency. </p>"
             },
             "Hermes 3 405B": {
                 "desc": "<p> Very large model retrained from the Llama 3.1 405B, adjusted to better meet user prompts and improve it's capacity to use tools. </p>",
@@ -1070,18 +1087,22 @@
             "types": {
                 "dense": {
                     "desc": "Dense architecture refers to a type of neural network in which each neuron in one layer is connected to all neurons in the next layer. This allows all parameters in the layer to contribute to the output calculation.",
+                    "name": "Dense",
                     "title": "Dense Architecture"
                 },
                 "matformer": {
                     "desc": "Imagine **Russian dolls** (matryoshkas → matryoshka transformer → Matformer): each block contains several **nested sub-models** of increasing size, sharing the same parameters. This allows, for each request, to select a model of adapted capacity, according to the available memory or latency, without needing to re-train different models.",
+                    "name": "Matformer",
                     "title": "Matformer Architecture"
                 },
                 "moe": {
                     "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
+                    "name": "MOE",
                     "title": "MoE Architecture"
                 },
                 "na": {
                     "desc": "The publisher has not made information about the model's architecture public.",
+                    "name": "Proprietary",
                     "title": "Architecture N/A"
                 }
             }
@@ -1178,6 +1199,13 @@
         "ram": "{min} to {max} GB",
         "release": "Released on {date}",
         "size": {
+            "count": {
+                "L": "70 to 150 billion",
+                "M": "20 to 70 billion",
+                "S": "7 to 20 billion",
+                "XL": ">150 billion",
+                "XS": "<7 billion"
+            },
             "estimated": "Estimated size ({size})",
             "title": "Size"
         }
@@ -1328,7 +1356,7 @@
             "title": "Are the most popular models energy efficient?",
             "views": {
                 "graph": {
-                    "desc": "Select a model to find out its satisfaction score and energy consumption",
+                    "desc": "Select a model to find out its BT Score and energy consumption",
                     "faq": {
                         "1": {
                             "desc": "We have decided to display proprietary models that do not communicate transparently on size and architecture in gray (not analyzed).",
@@ -1337,7 +1365,7 @@
                     },
                     "infos": {
                         "list": {
-                            "1": "The models that have the highest rates of satisfaction and optimize energy consumption are located at the top left",
+                            "1": "At the top left are the models that are the most popular and consume, on average, less energy.",
                             "2": "The models located at the bottom left are the least popular but consume the least energy.",
                             "3": "The further a model is located to the right of the graph, the more energy it consumes."
                         },
@@ -1354,8 +1382,47 @@
                 "legend": "Choose a viewing mode"
             }
         },
+        "methodo": {
+            "methods": {
+                "elo": {
+                    "title": "Bradley-Terry (BT) leaderboard"
+                },
+                "pros": "Benefits",
+                "title": "Two ways to classify models",
+                "winrate": {
+                    "def": "<strong> Definition </strong> An empirical ranking system for models based on the percentage of duels won by a model against all other models.",
+                    "list": {
+                        "1": "<strong> Game Count Bias </strong> A model that has won three out of three duels has a 100% win rate, but this score is not very meaningful because it is based on very little data.",
+                        "2": "<strong> No consideration of duel difficulty: </strong> beating a “beginner” or an “expert” model counts the same. Win rates are unfair since they do not take match difficulty into account.",
+                        "3": "<strong> Stagnation: </strong> In the long run, many good models end up around 50% win rate because they are facing models of their own skill level, which makes the rankings less discriminating."
+                    },
+                    "title": "Ranking by win rate"
+                }
+            },
+            "tabLabel": "Methodology",
+            "title": "How to choose the model classification method?"
+        },
         "preferences": {
-            "tabLabel": "Preference focused view"
+            "desc": "When you vote, you can classify your preference according to different positive and negative labels. Compare their distribution across models.",
+            "tabLabel": "Preference focused view",
+            "table": {
+                "cols": {
+                    "clear_formatting": "Clear formatting<br>",
+                    "complete": "Complete",
+                    "creative": "Creative",
+                    "incorrect": "Incorrect",
+                    "instructions_not_followed": "Instructions not followed",
+                    "name": "Model",
+                    "positive_prefs_ratio": "Distribution of preferences",
+                    "superficial": "Superficial",
+                    "total_prefs": "Total preferences",
+                    "useful": "Useful"
+                },
+                "tooltips": {
+                    "positive_prefs_ratio": "When voting, labels are used to indicate the reasons for your preference. This column shows the percentage distribution of these labels (positive or negative) for all votes."
+                }
+            },
+            "title": "How are user preferences distributed?"
         },
         "ranking": {
             "desc": "Thank you for your contributions! Your votes contribute to an Elo ranking that we make transparent in this leaderboard.<br>This Elo satisfaction score, built in partnership with PEReN, is based on your votes, your reactions of approval and disapproval.",
@@ -1364,8 +1431,9 @@
         "table": {
             "data": {
                 "cols": {
+                    "arch": "Architecture",
                     "consumption_wh": "Energy<br>(1000 tokens)",
-                    "elo": "Preference score",
+                    "elo": "BT score",
                     "license": "Licence",
                     "name": "Model",
                     "organisation": "Organization",
@@ -1374,6 +1442,11 @@
                     "size": "Size<br>(parameters)",
                     "total_votes": "Total votes",
                     "trust_range": "Confidence (±)"
+                },
+                "tooltips": {
+                    "elo": "Estimated score according to the Bradley-Terry statistical model reflecting the probability that one model is preferred to another, calculated from all user votes and reactions",
+                    "size": "Model size in billions of parameters, categorized into five classes. For proprietary models, this size is not reported.",
+                    "trust_range": "Interval indicating the reliability of the score: the narrower the interval, the more reliable the score estimate. There is a 95% chance that the model's true score is within this range."
                 }
             },
             "lastUpdate": "Updated on {date}",
