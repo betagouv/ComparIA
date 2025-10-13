@@ -97,14 +97,14 @@
 {#snippet legend()}
   <div
     id="graph-legend"
-    class="cg-border rounded-md! bg-very-light-grey h-full p-4 text-[12px] leading-normal"
+    class="cg-border rounded-md! bg-very-light-grey flex h-full flex-col p-4 text-[12px] leading-normal"
   >
-    <p class="mb-4! text-[13px]!">
+    <p class="mb-4! text-[13px]! leading-normal!">
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
-    <ul class="p-0! list-none! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
+    <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
       {#each archs as arch}
-        <li class="p-0! mb-2 flex items-center">
+        <li class="p-0! not-last:mb-2 flex items-center">
           <div class={['dot me-2 rounded-full', arch]}></div>
           {m[`models.arch.types.${arch}.name`]()}
           <Tooltip
@@ -122,7 +122,7 @@
       <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
     </p>
 
-    <CheckboxGroup {...sizeFilter} bind:value={sizes} legendClass="sr-only" row class="mb-0!">
+    <CheckboxGroup {...sizeFilter} bind:value={sizes} legendClass="sr-only" row class="mb-10!">
       {#snippet labelSlot({ option })}
         <div class="flex items-center">
           <div
@@ -133,19 +133,17 @@
         </div>
       {/snippet}
     </CheckboxGroup>
+
+    <Search
+      id="energy-graph-model-search"
+      bind:value={search}
+      label={m['words.search']()}
+      class="ms-auto mt-auto"
+    />
   </div>
 {/snippet}
 
 <div id="energy-graph">
-  <div class="mb-4 flex">
-    <Search
-      id="energy-graph-model-search"
-      bind:value={search}
-      label={m['ranking.table.search']()}
-      class="ms-auto"
-    />
-  </div>
-
   <div class="flex items-center gap-2">
     <div
       class="-me-8 h-6 w-6 translate-y-[35px] -rotate-90 overflow-visible whitespace-nowrap text-center"
@@ -260,7 +258,7 @@
           </div>
         {/if}
 
-        <div class="hidden h-[535px] w-[220px] md:block">
+        <div class="hidden h-[535px] w-[230px] md:block">
           {@render legend()}
         </div>
       </div>
