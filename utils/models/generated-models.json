@@ -11,6 +11,7 @@
     "organisation": "Cohere",
     "params": 8,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "05/2024",
     "required_ram": 8,
@@ -47,6 +48,7 @@
       "total_prefs": 2327,
       "useful": 643
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 32,
@@ -84,6 +86,7 @@
       "total_prefs": 938,
       "useful": 243
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 8,
@@ -108,6 +111,7 @@
     "organisation": "Cohere",
     "params": 35,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "05/2024",
     "required_ram": 35,
@@ -139,6 +143,7 @@
       "total_prefs": 4267,
       "useful": 1077
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 35,
@@ -163,6 +168,7 @@
     "organisation": "jpacifico",
     "params": 14,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 14,
@@ -195,6 +201,7 @@
       "total_prefs": 391,
       "useful": 83
     },
+    "pricey": false,
     "quantization": "q4",
     "reasoning": false,
     "release_date": "09/2024",
@@ -221,6 +228,7 @@
     "organisation": "jpacifico",
     "params": 14,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 14,
@@ -253,6 +261,7 @@
       "total_prefs": 1197,
       "useful": 280
     },
+    "pricey": false,
     "quantization": "q8",
     "reasoning": false,
     "release_date": "02/2025",
@@ -292,6 +301,7 @@
       "total_prefs": 4171,
       "useful": 1303
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 440,
@@ -330,6 +340,7 @@
       "total_prefs": 3333,
       "useful": 1003
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "02/2025",
     "required_ram": 440,
@@ -360,6 +371,7 @@
     "organisation": "Anthropic",
     "params": 440,
     "prefs": null,
+    "pricey": true,
     "reasoning": false,
     "release_date": "09/2025",
     "required_ram": 440,
@@ -397,6 +409,7 @@
       "total_prefs": 449,
       "useful": 119
     },
+    "pricey": true,
     "reasoning": false,
     "release_date": "05/2025",
     "required_ram": 440,
@@ -437,6 +450,7 @@
       "total_prefs": 3673,
       "useful": 994
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 111,
@@ -462,6 +476,7 @@
     "organisation": "Cohere",
     "params": 104,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2024",
     "required_ram": 104,
@@ -486,6 +501,7 @@
     "organisation": "DeepSeek",
     "params": 685,
     "prefs": null,
+    "pricey": false,
     "reasoning": true,
     "release_date": "08/2025",
     "required_ram": 685,
@@ -523,6 +539,7 @@
       "total_prefs": 3084,
       "useful": 846
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "01/2025",
     "required_ram": 671,
@@ -553,6 +570,7 @@
     "organisation": "DeepSeek",
     "params": 685,
     "prefs": null,
+    "pricey": false,
     "reasoning": true,
     "release_date": "05/2025",
     "required_ram": 685,
@@ -589,6 +607,7 @@
       "total_prefs": 1915,
       "useful": 476
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "01/2025",
     "required_ram": 70,
@@ -631,6 +650,7 @@
       "total_prefs": 4199,
       "useful": 1160
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 685,
@@ -669,6 +689,7 @@
       "total_prefs": 5055,
       "useful": 1331
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 671,
@@ -707,6 +728,7 @@
       "total_prefs": 3606,
       "useful": 971
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "02/2024",
     "required_ram": 600,
@@ -745,6 +767,7 @@
       "total_prefs": 4108,
       "useful": 1148
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 600,
@@ -783,6 +806,7 @@
       "total_prefs": 5134,
       "useful": 1350
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 440,
@@ -821,6 +845,7 @@
       "total_prefs": 2658,
       "useful": 782
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 440,
@@ -863,6 +888,7 @@
       "total_prefs": 433,
       "useful": 107
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "06/2025",
     "required_ram": 440,
@@ -899,6 +925,7 @@
       "total_prefs": 1081,
       "useful": 318
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "06/2024",
     "required_ram": 27,
@@ -924,6 +951,7 @@
     "organisation": "Google",
     "params": 2,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 2,
@@ -956,6 +984,7 @@
       "total_prefs": 4865,
       "useful": 1250
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "06/2024",
     "required_ram": 9,
@@ -997,6 +1026,7 @@
       "total_prefs": 3808,
       "useful": 949
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 12,
@@ -1038,6 +1068,7 @@
       "total_prefs": 4329,
       "useful": 1128
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 27,
@@ -1079,6 +1110,7 @@
       "total_prefs": 4204,
       "useful": 1014
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 4,
@@ -1121,6 +1153,7 @@
       "total_prefs": 350,
       "useful": 81
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "05/2025",
     "required_ram": 8,
@@ -1162,6 +1195,7 @@
       "total_prefs": 170,
       "useful": 60
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "07/2025",
     "required_ram": 355,
@@ -1186,6 +1220,7 @@
     "organisation": "OpenAI",
     "params": 55,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2023",
     "required_ram": 55,
@@ -1222,6 +1257,7 @@
       "total_prefs": 3961,
       "useful": 1153
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 75,
@@ -1263,6 +1299,7 @@
       "total_prefs": 2790,
       "useful": 838
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 23,
@@ -1301,6 +1338,7 @@
       "total_prefs": 4048,
       "useful": 1230
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 440,
@@ -1338,6 +1376,7 @@
       "total_prefs": 5029,
       "useful": 1492
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 18,
@@ -1368,6 +1407,7 @@
     "organisation": "OpenAI",
     "params": 300,
     "prefs": null,
+    "pricey": true,
     "reasoning": false,
     "release_date": "08/2025",
     "required_ram": 300,
@@ -1391,6 +1431,7 @@
     "organisation": "OpenAI",
     "params": 47,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2025",
     "required_ram": 47,
@@ -1415,6 +1456,7 @@
     "organisation": "OpenAI",
     "params": 11,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 11,
@@ -1452,6 +1494,7 @@
       "total_prefs": 478,
       "useful": 97
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "08/2025",
     "required_ram": 117,
@@ -1493,6 +1536,7 @@
       "total_prefs": 382,
       "useful": 77
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "08/2025",
     "required_ram": 21,
@@ -1533,6 +1577,7 @@
       "total_prefs": 1455,
       "useful": 421
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "04/2025",
     "required_ram": 650,
@@ -1562,6 +1607,7 @@
     "organisation": "xAI",
     "params": 1700,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2025",
     "required_ram": 1700,
@@ -1594,6 +1640,7 @@
       "total_prefs": 5046,
       "useful": 1451
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 405,
@@ -1623,6 +1670,7 @@
     "organisation": "Nous",
     "params": 70,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2025",
     "required_ram": 70,
@@ -1655,6 +1703,7 @@
       "total_prefs": 162,
       "useful": 44
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 400,
@@ -1697,6 +1746,7 @@
       "total_prefs": 168,
       "useful": 69
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "11/2025",
     "required_ram": 1000,
@@ -1733,6 +1783,7 @@
       "total_prefs": 3125,
       "useful": 841
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 40,
@@ -1774,6 +1825,7 @@
       "total_prefs": 8445,
       "useful": 2234
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 405,
@@ -1811,6 +1863,7 @@
       "total_prefs": 5510,
       "useful": 1532
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 70,
@@ -1853,6 +1906,7 @@
       "total_prefs": 6099,
       "useful": 1465
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 8,
@@ -1894,6 +1948,7 @@
       "total_prefs": 5840,
       "useful": 1541
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 70,
@@ -1935,6 +1990,7 @@
       "total_prefs": 4698,
       "useful": 1331
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 70,
@@ -1977,6 +2033,7 @@
       "total_prefs": 2322,
       "useful": 606
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 109,
@@ -2007,6 +2064,7 @@
     "organisation": "Meta",
     "params": 400,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 400,
@@ -2030,6 +2088,7 @@
     "organisation": "Mistral AI",
     "params": 95,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "06/2025",
     "required_ram": 95,
@@ -2065,6 +2124,7 @@
       "total_prefs": 407,
       "useful": 114
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "06/2025",
     "required_ram": 24,
@@ -2089,6 +2149,7 @@
     "organisation": "Meta",
     "params": 70,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2024",
     "required_ram": 70,
@@ -2108,6 +2169,7 @@
     "organisation": "Meta",
     "params": 8,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2024",
     "required_ram": 8,
@@ -2139,6 +2201,7 @@
       "total_prefs": 7332,
       "useful": 1800
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "10/2024",
     "required_ram": 8,
@@ -2176,6 +2239,7 @@
       "total_prefs": 6525,
       "useful": 1904
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "11/2024",
     "required_ram": 123,
@@ -2205,6 +2269,7 @@
     "organisation": "Mistral AI",
     "params": 95,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2025",
     "required_ram": 95,
@@ -2229,6 +2294,7 @@
     "organisation": "Mistral AI",
     "params": 95,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2025",
     "required_ram": 95,
@@ -2260,6 +2326,7 @@
       "total_prefs": 5218,
       "useful": 1414
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 12,
@@ -2301,6 +2368,7 @@
       "total_prefs": 2441,
       "useful": 653
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "02/2025",
     "required_ram": 24,
@@ -2338,6 +2406,7 @@
       "total_prefs": 2674,
       "useful": 745
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "01/2025",
     "required_ram": 24,
@@ -2367,6 +2436,7 @@
     "organisation": "Mistral AI",
     "params": 24,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "06/2025",
     "required_ram": 24,
@@ -2398,6 +2468,7 @@
       "total_prefs": 3897,
       "useful": 1110
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 24,
@@ -2423,6 +2494,7 @@
     "organisation": "Mistral AI",
     "params": 24,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 24,
@@ -2456,6 +2528,7 @@
       "total_prefs": 4284,
       "useful": 1117
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2024",
     "required_ram": 176,
@@ -2494,6 +2567,7 @@
       "total_prefs": 2573,
       "useful": 727
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "12/2023",
     "required_ram": 56,
@@ -2531,6 +2605,7 @@
       "total_prefs": 1129,
       "useful": 350
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "11/2024",
     "required_ram": 18,
@@ -2572,6 +2647,7 @@
       "total_prefs": 1542,
       "useful": 489
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "04/2025",
     "required_ram": 18,
@@ -2598,6 +2674,7 @@
     "organisation": "Ai2",
     "params": 32,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "03/2025",
     "required_ram": 32,
@@ -2618,6 +2695,7 @@
     "organisation": "Microsoft",
     "params": 3.8,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "05/2024",
     "required_ram": 3.8,
@@ -2638,6 +2716,7 @@
     "organisation": "Microsoft",
     "params": 7,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "05/2024",
     "required_ram": 7,
@@ -2669,6 +2748,7 @@
       "total_prefs": 3049,
       "useful": 636
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "08/2024",
     "required_ram": 3.8,
@@ -2710,6 +2790,7 @@
       "total_prefs": 5768,
       "useful": 1552
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "12/2024",
     "required_ram": 14,
@@ -2739,6 +2820,7 @@
     "organisation": "Alibaba",
     "params": 8,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2025",
     "required_ram": 8,
@@ -2759,6 +2841,7 @@
     "organisation": "Alibaba",
     "params": 32,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "02/2024",
     "required_ram": 32,
@@ -2779,6 +2862,7 @@
     "organisation": "Alibaba",
     "params": 57,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 57,
@@ -2798,6 +2882,7 @@
     "organisation": "Alibaba",
     "params": 72,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 72,
@@ -2830,6 +2915,7 @@
       "total_prefs": 89,
       "useful": 19
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "07/2024",
     "required_ram": 7,
@@ -2867,6 +2953,7 @@
       "total_prefs": 217,
       "useful": 52
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 32,
@@ -2904,6 +2991,7 @@
       "total_prefs": 1692,
       "useful": 402
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2024",
     "required_ram": 7,
@@ -2941,6 +3029,7 @@
       "total_prefs": 5506,
       "useful": 1380
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "04/2025",
     "required_ram": 32,
@@ -2983,6 +3072,7 @@
       "total_prefs": 110,
       "useful": 33
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "05/2025",
     "required_ram": 30,
@@ -3023,6 +3113,7 @@
       "total_prefs": 797,
       "useful": 228
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "04/2025",
     "required_ram": 32,
@@ -3053,6 +3144,7 @@
     "organisation": "Alibaba",
     "params": 480,
     "prefs": null,
+    "pricey": false,
     "reasoning": true,
     "release_date": "07/2025",
     "required_ram": 480,
@@ -3078,6 +3170,7 @@
     "organisation": "Alibaba",
     "params": 1000,
     "prefs": null,
+    "pricey": false,
     "reasoning": false,
     "release_date": "09/2025",
     "required_ram": 1000,
@@ -3114,6 +3207,7 @@
       "total_prefs": 1348,
       "useful": 295
     },
+    "pricey": false,
     "reasoning": true,
     "release_date": "04/2025",
     "required_ram": 32,
@@ -3151,6 +3245,7 @@
       "total_prefs": 97,
       "useful": 16
     },
+    "pricey": false,
     "reasoning": false,
     "release_date": "05/2024",
     "required_ram": 9,

@@ -58,6 +58,7 @@ from languia.logs import vote_last_response, sync_reactions, record_conversation
 
 from languia.config import (
     BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
+    pricey_models
 )
 
 from languia.conversation import bot_response, Conversation
@@ -162,11 +163,11 @@ def register_listeners():
 
         if redis_host and is_ratelimited(ip):
             logger.error(
-                f"Too much text submitted for ip {ip}",
+                f"Too much text submitted to pricey models for ip {ip}",
                 extra={"request": request},
             )
             raise gr.Error(
-                f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures."
+                f"Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits."
             )
 
         if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
@@ -274,8 +275,10 @@ def register_listeners():
                     gr.update(visible=True, interactive=False),
                     gr.update(visible=True),
                 ]
-            increment_input_chars(ip, len(text))
-
+            if first_model_name in pricey_models:
+                increment_input_chars(ip, len(text))
+            if second_model_name in pricey_models:
+                increment_input_chars(ip, len(text))
         except Exception as e:
 
             conv_a_scoped.messages[-1].error = str(e)
@@ -464,7 +467,10 @@ def register_listeners():
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
         ip = get_ip(request)
-        increment_input_chars(ip, len(text))
+        if conv_a_scoped.model_name in pricey_models:
+            increment_input_chars(ip, len(text))
+        if conv_b_scoped.model_name in pricey_models:
+            increment_input_chars(ip, len(text))
 
         # FIXME running bot_response_multi directly here to receive messages on front
         yield from bot_response_multi(

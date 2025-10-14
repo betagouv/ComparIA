@@ -936,6 +936,7 @@
         "size_desc": "Le système GPT-5 est composé de modèles de différentes tailles, mais les tailles exactes ne sont pas connues. Son architecture est conçue pour inclure plusieurs modèles, orchestrés par un système de routage interne, qui sélectionne le plus petit modèle adapté à la tâche pour optimiser la vitesse et la profondeur du raisonnement. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.",
         "fyi": "Les développeurs qui utilisent ce modèle peuvent configurer un paramètre de verbosité pour ajuster la longueur de la phase de raisonnement.\n\nEn matière de sécurité, le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête. Les créateurs du modèle ont aussi utilisé la phase d’entraînement au “raisonnement” pour le rendre plus “résistant” aux tentatives de contournement de leurs règles de sécurité (*jailbreaking*).",
         "new": true,
+        "pricey": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "openai/gpt-5"
@@ -1326,7 +1327,8 @@
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "anthropic/claude-sonnet-4"
-        }
+        },
+        "pricey": true
       },
       {
         "simple_name": "Claude 3.7 Sonnet",
@@ -1372,7 +1374,8 @@
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "anthropic/claude-sonnet-4.5"
-        }
+        },
+        "pricey": true
       }
     ]
   },

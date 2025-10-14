@@ -9,7 +9,7 @@ from languia.models import Model, Endpoint
 
 env_debug = os.getenv("LANGUIA_DEBUG")
 
-MAX_INPUT_CHARS_PER_HOUR = 200_000
+RATELIMIT_PRICEY_MODELS_INPUT = 50_000
 
 if env_debug:
     if env_debug.lower() == "true":
@@ -157,6 +157,12 @@ big_models = [
     for id, model in models.items()
     if model["friendly_size"] in ["L", "XL", "XXL"]
     and id not in reasoning_models
+]
+
+pricey_models= [
+        id
+    for id, model in models.items()
+    if model.get("pricey", False)
 ]
 
 headers = {"User-Agent": "FastChat Client"}

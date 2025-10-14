@@ -6,7 +6,7 @@ redis_host = os.getenv("COMPARIA_REDIS_HOST", False)
 
 r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 
-from languia.config import MAX_INPUT_CHARS_PER_HOUR
+from languia.config import RATELIMIT_PRICEY_MODELS_INPUT
 
 def increment_input_chars(ip: str, input_chars: int):
     if not redis_host:
@@ -17,7 +17,7 @@ def increment_input_chars(ip: str, input_chars: int):
 
 def is_ratelimited(ip: str):
     counter = r.get(f'ip:{ip}')
-    if counter and int(counter) > MAX_INPUT_CHARS_PER_HOUR * 2:
+    if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
         return True
     else:
         return False

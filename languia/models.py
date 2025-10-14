@@ -39,6 +39,7 @@ class Model(BaseModel):
     desc: str
     size_desc: str
     fyi: str
+    pricey: bool = False
 
     @model_validator(mode="after")
     def check_endpoint(self):
