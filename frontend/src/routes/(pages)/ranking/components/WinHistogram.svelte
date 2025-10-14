@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { extent, scaleLinear, ticks } from 'd3'
+  import { extent, range, scaleLinear, ticks } from 'd3'
   import { onMount } from 'svelte'
 
-  let { data }: { data: { x: string; y: number }[] } = $props()
+  let { data, minMaxY }: { data: { x: string; y: number }[]; minMaxY: [number, number] } = $props()
 
   let svg = $state<SVGSVGElement>()
   let width = $state(528)
@@ -10,8 +10,7 @@
 
   const padding = { top: 20, bottom: 130, left: 50, right: 20 }
 
-  let minMaxX = $derived(extent(data, (m, i) => i) as [number, number])
-  let minMaxY = $derived(extent(data, (m) => m.y) as [number, number])
+  let minMaxX = $derived(extent(range(11)) as [number, number])
   let xScale = $derived(scaleLinear(minMaxX, [padding.left, width - padding.right]))
   let yScale = $derived(scaleLinear(minMaxY, [height - padding.bottom, padding.top]))
   const xTicks = $derived(ticks(0, 9, 10))
