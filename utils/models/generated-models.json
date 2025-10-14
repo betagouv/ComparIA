@@ -1,4 +1,30 @@
 {
+  "Apertus-8B-Instruct-2509": {
+    "arch": "dense",
+    "commercial_use": true,
+    "distribution": "open-weights",
+    "endpoint": {
+      "api_base": "https://router.huggingface.co/v1",
+      "api_model_id": "swiss-ai/Apertus-8B-Instruct-2509:publicai",
+      "api_type": "huggingface"
+    },
+    "friendly_size": "S",
+    "icon_path": "swissai.webp",
+    "id": "Apertus-8B-Instruct-2509",
+    "license": "Apache 2.0",
+    "new": true,
+    "organisation": "Swiss AI",
+    "params": 8,
+    "prefs": null,
+    "pricey": false,
+    "reasoning": false,
+    "release_date": "09/2025",
+    "required_ram": 8,
+    "reuse": true,
+    "simple_name": "Apertus 8B Instruct",
+    "status": "enabled",
+    "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509"
+  },
   "aya-23-8b": {
     "arch": "dense",
     "commercial_use": false,
@@ -1181,7 +1207,7 @@
     "icon_path": "zhipu.svg",
     "id": "glm-4.5",
     "license": "MIT",
-    "new": true,
+    "new": false,
     "organisation": "Zhipu",
     "params": 355,
     "prefs": {
@@ -1196,7 +1222,7 @@
       "useful": 60
     },
     "pricey": false,
-    "reasoning": true,
+    "reasoning": false,
     "release_date": "07/2025",
     "required_ram": 355,
     "reuse": true,
@@ -1207,6 +1233,31 @@
       5,
       14
     ]
+  },
+  "glm-4.6": {
+    "active_params": 32,
+    "arch": "dense",
+    "commercial_use": true,
+    "distribution": "open-weights",
+    "endpoint": {
+      "api_model_id": "z-ai/glm-4.6",
+      "api_type": "openrouter"
+    },
+    "friendly_size": "XL",
+    "icon_path": "zhipu.svg",
+    "id": "glm-4.6",
+    "license": "MIT",
+    "new": true,
+    "organisation": "Zhipu",
+    "params": 357,
+    "prefs": null,
+    "pricey": false,
+    "reasoning": false,
+    "release_date": "09/2025",
+    "required_ram": 357,
+    "reuse": true,
+    "simple_name": "GLM 4.6",
+    "status": "enabled"
   },
   "gpt-3.5-turbo-0301": {
     "arch": "maybe-dense",
@@ -1725,7 +1776,7 @@
     "distribution": "open-weights",
     "elo": 1032,
     "endpoint": {
-      "api_model_id": "moonshotai/kimi-k2",
+      "api_model_id": "moonshotai/kimi-k2-0905",
       "api_type": "openrouter"
     },
     "friendly_size": "XL",
@@ -1748,7 +1799,7 @@
     },
     "pricey": false,
     "reasoning": true,
-    "release_date": "11/2025",
+    "release_date": "09/2025",
     "required_ram": 1000,
     "reuse": true,
     "simple_name": "Kimi K2",
@@ -1757,7 +1808,8 @@
     "trust_range": [
       13,
       17
-    ]
+    ],
+    "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct"
   },
   "lfm-40b": {
     "arch": "moe",
