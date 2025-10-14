@@ -94,7 +94,7 @@
 
 <svelte:window onresize={resize} />
 
-{#snippet legend()}
+{#snippet legend(kind: string)}
   <div
     id="graph-legend"
     class="cg-border rounded-md! bg-very-light-grey flex h-full flex-col p-4 text-[12px] leading-normal"
@@ -108,7 +108,7 @@
           <div class={['dot me-2 rounded-full', arch]}></div>
           {m[`models.arch.types.${arch}.name`]()}
           <Tooltip
-            id="arch-type-{arch}"
+            id="arch-type-{arch}-{kind}"
             text={m[`models.arch.types.${arch}.desc`]()}
             size="xs"
             class="ms-1"
@@ -259,7 +259,7 @@
         {/if}
 
         <div class="hidden h-[535px] w-[230px] md:block">
-          {@render legend()}
+          {@render legend('desktop')}
         </div>
       </div>
 
@@ -271,7 +271,7 @@
   </div>
 
   <div class="mt-6 md:hidden">
-    {@render legend()}
+    {@render legend('mobile')}
   </div>
 </div>
 
