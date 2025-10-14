@@ -1,9 +1,31 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import { WinHistogram } from '.'
 
-  function onDownloadData(kind: 'winrate' | 'elo') {}
+  let { data }: { data: BotModel[] } = $props()
+
+  type WinKey = 'mean_win_prob' | 'win_rate'
+
+  function formatModelData(data: BotModel[], key: WinKey) {
+    return data
+      .filter((m) => !!m[key])
+      .slice(0, 11)
+      .sort((a, b) => b[key]! - a[key]!)
+      .map((m, i) => ({
+        x: m.id,
+        y: m[key]!
+      }))
+  }
+
+  const modelsData = $derived({
+    win_rate: formatModelData(data, 'win_rate'),
+    mean_win_prob: formatModelData(data, 'mean_win_prob')
+  })
+
+  function onDownloadData(key: WinKey) {}
 </script>
 
 <div id="ranking-methodo">
@@ -65,7 +87,9 @@
         <h4 class="text-[14px]! mb-5!">{m['ranking.methodo.impacts.winrate.title']()}</h4>
 
         <div>
-          <div class="h-[200px] rounded-sm bg-white">FIXME GRAPH</div>
+          <div class="h-[400px] rounded-sm bg-white">
+            <WinHistogram data={modelsData['win_rate']} />
+          </div>
           <div class="mb-5 mt-2 flex gap-5">
             <Link
               href="FIXME"
@@ -80,7 +104,7 @@
               icon="download-line"
               iconPos="right"
               class="text-[14px]! text-dark-grey!"
-              onclick={() => onDownloadData('winrate')}
+              onclick={() => onDownloadData('win_rate')}
             />
           </div>
         </div>
@@ -95,7 +119,9 @@
         <h4 class="text-[14px]! mb-5!">{m['ranking.methodo.impacts.elo.title']()}</h4>
 
         <div>
-          <div class="h-[200px] rounded-sm bg-white">FIXME GRAPH</div>
+          <div class="h-[400px] rounded-sm bg-white">
+            <WinHistogram data={modelsData['mean_win_prob']} />
+          </div>
           <div class="mb-5 mt-2 flex gap-5">
             <Link
               href="FIXME"
@@ -110,7 +136,7 @@
               icon="download-line"
               iconPos="right"
               class="text-[14px]! text-dark-grey!"
-              onclick={() => onDownloadData('elo')}
+              onclick={() => onDownloadData('mean_win_prob')}
             />
           </div>
         </div>

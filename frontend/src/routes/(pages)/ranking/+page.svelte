@@ -119,7 +119,7 @@
         {:else if id === 'preferences'}
           <Preferences data={modelsData} onDownloadData={() => onDownloadPrefsData()} />
         {:else if id === 'methodo'}
-          <Methodology />
+          <Methodology data={modelsData} />
         {/if}
       {/snippet}
     </Tabs>
