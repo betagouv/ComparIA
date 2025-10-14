@@ -241,6 +241,8 @@ def validate() -> None:
                         model_extra_data["rank_p97.5"] - model_extra_data["rank"],
                     ],
                     "n_match": model_extra_data["n_match"],
+                    "mean_win_prob": model_extra_data["mean_win_prob"],
+                    "win_rate": model_extra_data["win_rate"],
                     "consumption_wh": round(
                         model_extra_data["mean_conso_per_token"] * 1000 * 1000
                     ),
