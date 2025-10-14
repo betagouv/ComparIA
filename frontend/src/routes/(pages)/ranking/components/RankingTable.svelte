@@ -12,7 +12,7 @@
     | 'name'
     | 'elo'
     | 'trust_range'
-    | 'total_votes'
+    | 'n_match'
     | 'consumption_wh'
     | 'size'
     | 'arch'
@@ -55,7 +55,7 @@
       { id: 'name', orderable: true },
       { id: 'elo', orderable: true, tooltip: m['ranking.table.data.tooltips.elo']() },
       { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
-      { id: 'total_votes', orderable: true },
+      { id: 'n_match', orderable: true },
       { id: 'consumption_wh', orderable: true, tooltip: m['reveal.impacts.energy.tooltip']() },
       { id: 'size', orderable: true, tooltip: m['ranking.table.data.tooltips.size']() },
       { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
@@ -127,7 +127,7 @@
           case 'name':
             return a.id.localeCompare(b.id)
           case 'elo':
-          case 'total_votes':
+          case 'n_match':
             return sortIfDefined(a, b, orderingCol)
           case 'consumption_wh':
             return sortIfDefined(a, b, orderingCol)

@@ -1599,12 +1599,12 @@
                     "consumption_wh": "Conso moyenne<br>(1000 tokens)",
                     "elo": "Score BT",
                     "license": "Licence",
+                    "n_match": "Total votes",
                     "name": "Modèle",
                     "organisation": "Organisation",
                     "rank": "Rang",
                     "release": "Date sortie",
                     "size": "Taille<br>(paramètres)",
-                    "total_votes": "Total votes",
                     "trust_range": "Confiance (±)"
                 },
                 "estimation": "(estimation)",
