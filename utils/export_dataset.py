@@ -9,6 +9,10 @@ import hashlib
 from datetime import datetime
 from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
+
+# Add the parent directory to the Python path to resolve the 'languia' module
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from languia.utils import get_total_params, get_active_params
 
 
