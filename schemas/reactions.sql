@@ -35,10 +35,6 @@ CREATE TABLE reactions (
     -- Visitor UUID (tracked user)
     ip VARCHAR(255),
     -- IP Address (user's IP)
-    country VARCHAR(500),
-    -- Country (optional, could be extracted from IP or provided)
-    city VARCHAR(500),
-    -- City (optional, could be extracted from IP or provided)
     response_content TEXT,
     -- Content of the model's response (optional)
     question_content TEXT,
