@@ -3,6 +3,7 @@
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import { extent } from 'd3'
   import { WinHistogram } from '.'
 
   let { data }: { data: BotModel[] } = $props()
@@ -12,7 +13,7 @@
   function formatModelData(data: BotModel[], key: WinKey) {
     return data
       .filter((m) => !!m[key])
-      .slice(0, 11)
+      .slice(0, 10)
       .sort((a, b) => b[key]! - a[key]!)
       .map((m, i) => ({
         x: m.id,
@@ -23,6 +24,12 @@
   const modelsData = $derived({
     win_rate: formatModelData(data, 'win_rate'),
     mean_win_prob: formatModelData(data, 'mean_win_prob')
+  })
+
+  const minMaxY = $derived.by(() => {
+    const minMax = extent(Object.values(modelsData).flatMap((l) => l.map((l) => l.y)))
+    // Reduce a bit the min so that the last bar have at least an height
+    return [minMax[0]! - 0.02, minMax[1]!] as [number, number]
   })
 
   function onDownloadData(key: WinKey) {}
@@ -84,11 +91,13 @@
 
     <div class="grid gap-6 lg:grid-cols-2">
       <div class="max-w-[528px]">
-        <h4 class="text-[14px]! mb-5!">{m['ranking.methodo.impacts.winrate.title']()}</h4>
+        <h4 class="text-[14px]! mb-5! lg:mb-10! leading-normal!">
+          {m['ranking.methodo.impacts.winrate.title']()}
+        </h4>
 
         <div>
           <div class="h-[400px] rounded-sm bg-white">
-            <WinHistogram data={modelsData['win_rate']} />
+            <WinHistogram data={modelsData['win_rate']} {minMaxY} />
           </div>
           <div class="mb-5 mt-2 flex gap-5">
             <Link
@@ -116,11 +125,13 @@
       </div>
 
       <div class="max-w-[528px]">
-        <h4 class="text-[14px]! mb-5!">{m['ranking.methodo.impacts.elo.title']()}</h4>
+        <h4 class="text-[14px]! mb-5! leading-normal!">
+          {m['ranking.methodo.impacts.elo.title']()}
+        </h4>
 
         <div>
           <div class="h-[400px] rounded-sm bg-white">
-            <WinHistogram data={modelsData['mean_win_prob']} />
+            <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
           </div>
           <div class="mb-5 mt-2 flex gap-5">
             <Link
