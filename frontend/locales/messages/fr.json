@@ -1520,7 +1520,7 @@
                     "desc": {
                         "1": "Le modèle <strong>Bradley-Terry</strong> transforme un ensemble de comparaisons locales et potentiellement incomplètes en un système de classement global cohérent et statistiquement robuste, là où le taux de victoire empirique reste limité aux observations directes."
                     },
-                    "title": "Classement selon le taux de victoire des modèles estimé selon le score BT"
+                    "title": "Classement des 10 premiers modèles selon le taux de victoire des modèles estimé selon le score BT"
                 },
                 "title": "Impact du choix de la méthode sur le classement des modèles",
                 "winrate": {
@@ -1528,7 +1528,7 @@
                         "1": "En se basant uniquement sur le <strong>taux de victoire moyen</strong>, on peut obtenir un classement global, mais ce calcul suppose que chaque modèle ait joué contre tous les autres.",
                         "2": "Cette méthode n'est pas idéale car elle nécessite les données de toutes les combinaisons de modèles et ès qu’on augmente le nombre de modèles, cela devient vite coûteux et lourd à maintenir."
                     },
-                    "title": "Classement selon le taux de victoire des modèles"
+                    "title": "Classement des 10 premiers modèles selon le taux de victoire des modèles"
                 }
             },
             "methods": {
