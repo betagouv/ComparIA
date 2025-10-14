@@ -830,7 +830,7 @@
                 },
                 "moe": {
                     "desc": "Arkitekturen Mixture of Experts (MoE) använder en routingmekanism för att, beroende på indata, endast aktivera vissa specialiserade delmängder (\"experter\") av det neurala nätverket. Detta möjliggör konstruktion av mycket stora modeller samtidigt som beräkningskostnaderna hålls nere, eftersom endast en del av nätverket används i varje steg.",
-                    "title": "MOE-arkitektur"
+                    "title": "MoE-arkitektur"
                 },
                 "na": {
                     "desc": "Utgivaren har inte offentliggjort information om modellens arkitektur.",
