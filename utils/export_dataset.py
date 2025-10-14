@@ -174,7 +174,9 @@ def fetch_and_transform_data(conn, table_name, query=None):
             "opening_msg_pii_removed",
             "ip_map",
             "country",
-            "city"
+            "city",
+            "cohorts",
+            "country_portal"
         ]
         if table_name == "conversations":
             logger.info("Adding model infos...")
