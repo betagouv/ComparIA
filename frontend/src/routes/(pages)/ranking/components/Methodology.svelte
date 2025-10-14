@@ -3,6 +3,7 @@
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { extent } from 'd3'
   import { WinHistogram } from '.'
 
@@ -32,7 +33,21 @@
     return [minMax[0]! - 0.02, minMax[1]!] as [number, number]
   })
 
-  function onDownloadData(key: WinKey) {}
+  function onDownloadData() {
+    const csvCols = [
+      { key: 'id' as const, label: 'id' },
+      { key: 'mean_win_prob' as const, label: 'mean win prob' },
+      { key: 'win_rate' as const, label: 'classic winrate' }
+    ]
+    const csvData = [
+      csvCols.map((col) => col.label).join(','),
+      ...data
+        .sort((a, b) => sortIfDefined(a, b, 'mean_win_prob'))
+        .map((m) => csvCols.map((col) => m[col.key]).join(','))
+    ].join('\n')
+
+    downloadTextFile(csvData, 'winrate')
+  }
 </script>
 
 <div id="ranking-methodo">
@@ -100,11 +115,11 @@
             <WinHistogram data={modelsData['win_rate']} {minMaxY} />
           </div>
           <div class="mb-5 mt-2 flex gap-5">
-            <Link
+            <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
               class="text-[14px]! text-dark-grey!"
-            />
+            /> -->
 
             <Link
               href="#"
@@ -113,7 +128,7 @@
               icon="download-line"
               iconPos="right"
               class="text-[14px]! text-dark-grey!"
-              onclick={() => onDownloadData('win_rate')}
+              onclick={() => onDownloadData()}
             />
           </div>
         </div>
@@ -134,11 +149,11 @@
             <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
           </div>
           <div class="mb-5 mt-2 flex gap-5">
-            <Link
+            <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
               class="text-[14px]! text-dark-grey!"
-            />
+            /> -->
 
             <Link
               href="#"
@@ -147,7 +162,7 @@
               icon="download-line"
               iconPos="right"
               class="text-[14px]! text-dark-grey!"
-              onclick={() => onDownloadData('mean_win_prob')}
+              onclick={() => onDownloadData()}
             />
           </div>
         </div>
