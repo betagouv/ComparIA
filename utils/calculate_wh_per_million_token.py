@@ -8,8 +8,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 from languia.reveal import get_llm_impact, convert_range_to_value
 
-# WARNING:__main__:- 'mistral-small-24B-Instruct-2501' not found in generated-models.json
-# WARNING:__main__:- 'gemma-2-27b-it' not found in generated-models.json
 # WARNING:__main__:- 'qwen3-235b-a22b-thinking-2507' not found in generated-models.json
 
 # Configure logging
@@ -26,7 +24,8 @@ def get_distinct_model_ids(engine):
         with engine.connect() as conn:
             df = pd.read_sql_query(query, conn)
             # Filter out None values if any
-            return df['model_id'].dropna().unique().tolist()
+            model_ids = df['model_id'].dropna().unique().tolist()
+            return [model_id.lower() for model_id in model_ids]
     except Exception as e:
         logger.error(f"Failed to fetch distinct model IDs: {e}")
         return []
@@ -35,7 +34,8 @@ def load_models_data():
     """Load the generated models JSON data."""
     try:
         with open(MODELS_JSON_PATH, 'r') as f:
-            return json.load(f)
+            models_data = json.load(f)
+            return {k.lower(): v for k, v in models_data.items()}
     except FileNotFoundError:
         logger.error(f"Models JSON file not found at: {MODELS_JSON_PATH}")
         return None
@@ -83,9 +83,10 @@ def main():
             model_info = models_data[model_id]
             
             # Calculate impact for 1 million tokens
-            impact = get_llm_impact(model_info, model_id, 1000000, None)
-            
-            if impact:
+            # Calculate impact for 1 million tokens
+            impact = get_llm_impact(model_info, model_id, 1_000_000, None)
+
+            if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
                 energy_kwh = convert_range_to_value(impact.energy.value)
                 energy_wh = energy_kwh * 1000
                 results.append({'model_id': model_id, 'wh_per_million_token': energy_wh})
@@ -94,6 +95,7 @@ def main():
         results_df = pd.DataFrame(results)
         print("Wh per million token for each model:")
         print(results_df.to_string(index=False))
+        return results_df
 
 if __name__ == "__main__":
     main()

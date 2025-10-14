@@ -1,5 +1,5 @@
 import logging
-from languia.utils import sum_tokens
+from languia.utils import get_active_params, get_total_params, sum_tokens
 
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
@@ -189,41 +189,17 @@ def get_llm_impact(
 ) -> dict:
     """Compute or fallback to estimated impact for an LLM."""
     logger = logging.getLogger("languia")
-    # TODO: add request latency
-    # TODO: add range
-    # model_active_parameter_count: ValueOrRange,
-    # model_total_parameter_count: ValueOrRange,
-
     # most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
     # TODO: contribute back to that list
     # impact = llm_impacts("huggingface_hub", model_name, token_count, request_latency)
-    if "active_params" in model_extra_info and "params" in model_extra_info:
-        # TODO: add request latency
-        model_active_parameter_count = int(model_extra_info["active_params"])
-        model_total_parameter_count = int(model_extra_info["params"])
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
-            model_active_parameter_count = int(model_extra_info["active_params"]) // 2
-            model_total_parameter_count = int(model_extra_info["params"]) // 2
-    else:
-        if "params" in model_extra_info:
-            if (
-                "quantization" in model_extra_info
-                and model_extra_info.get("quantization", None) == "q8"
-            ):
-                model_active_parameter_count = int(model_extra_info["params"]) // 2
-                model_total_parameter_count = int(model_extra_info["params"]) // 2
-            else:
-                # TODO: add request latency
-                model_active_parameter_count = int(model_extra_info["params"])
-                model_total_parameter_count = int(model_extra_info["params"])
-        else:
-            logger.error(
-                "Couldn' calculate impact for" + model_name + ", missing params"
-            )
-            return None
+    model_active_parameter_count = get_active_params(model_extra_info)
+    model_total_parameter_count = get_total_params(model_extra_info)
+
+    if not model_active_parameter_count or not model_total_parameter_count:
+        logger.error(
+            "Couldn't calculate impact for" + model_name + ", missing params"
+        )
+        return None
 
     # TODO: move to config.py
     electricity_mix_zone = "WOR"

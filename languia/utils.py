@@ -7,6 +7,43 @@ import gradio as gr
 import logging
 
 from languia.models import Model, Endpoint
+import logging
+
+logger = logging.getLogger("languia")
+
+def get_total_params(model_extra_info):
+    """
+    Get the total number of parameters for a model.
+    """
+    if "params" in model_extra_info:
+        if (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q8"
+        ):
+            return int(model_extra_info["params"]) // 2
+        else:
+            return int(model_extra_info["params"])
+    else:
+        logger.error(f"Couldn't get total params for {model_extra_info.get('id')}, missing params")
+        return None
+
+def get_active_params(model_extra_info):
+    """
+    Get the number of active parameters for a model.
+    For MoE models, this will be different from the total number of parameters.
+    """
+    if "active_params" in model_extra_info:
+        if (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q8"
+        ):
+            return int(model_extra_info["active_params"]) // 2
+        else:
+            return int(model_extra_info["active_params"])
+    else:
+        # Fallback to total params if active_params is not available
+        return get_total_params(model_extra_info)
+
 
 
 class ContextTooLongError(ValueError):
