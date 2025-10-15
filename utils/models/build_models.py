@@ -281,7 +281,7 @@ def validate() -> None:
             model_data = filter_dict(model, I18N_MODEL_KEYS)
 
             if model_data.get("fully_open_source"):
-                model_data["distribution"] = "fully_open_source"
+                model_data["distribution"] = "fully-open-source"
 
             model_data["friendly_size"] = params_to_friendly_size(model_data["params"])
 

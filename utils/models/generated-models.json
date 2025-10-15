@@ -2,7 +2,7 @@
   "Apertus-70B-Instruct-2509": {
     "arch": "dense",
     "commercial_use": true,
-    "distribution": "fully_open_source",
+    "distribution": "fully-open-source",
     "endpoint": {
       "api_base": "https://router.huggingface.co/v1",
       "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
@@ -25,12 +25,12 @@
     "simple_name": "Apertus 70B Instruct",
     "status": "enabled",
     "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
-    "wh_per_million_token": 0
+    "wh_per_million_token": 12468.733333333334
   },
   "Apertus-8B-Instruct-2509": {
     "arch": "dense",
     "commercial_use": true,
-    "distribution": "fully_open_source",
+    "distribution": "fully-open-source",
     "friendly_size": "XS",
     "fully_open_source": true,
     "icon_path": "swissai.webp",
@@ -1034,7 +1034,7 @@
     "simple_name": "Gemma 2 27B",
     "status": "archived",
     "url": "https://huggingface.co/google/gemma-2-27b-it",
-    "wh_per_million_token": 0
+    "wh_per_million_token": 6434.256666666666
   },
   "gemma-2-27b-it-q8": {
     "arch": "dense",
@@ -2946,7 +2946,7 @@
   "olmo-2-0325-32b": {
     "arch": "dense",
     "commercial_use": true,
-    "distribution": "fully_open_source",
+    "distribution": "fully-open-source",
     "friendly_size": "S",
     "fully_open_source": true,
     "icon_path": "ai2.svg",
