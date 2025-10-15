@@ -75,9 +75,6 @@ def update_last_message(
     return messages
 
 
-# import sys
-
-
 def bot_response(
     position,
     state,
@@ -85,8 +82,6 @@ def bot_response(
     temperature=0.7,
     # top_p=1.0,
     max_new_tokens=4096,
-    apply_rate_limit=True,
-    use_recommended_config=True,
 ):
     # temperature = float(temperature)
     # top_p = float(top_p)
@@ -113,7 +108,9 @@ def bot_response(
 
     messages_dict = messages_to_dict_list(state.messages)
     litellm_model_name = (
-        endpoint.get("api_type", "openai") + "/" + endpoint.get("api_model_id", state.model_name)
+        endpoint.get("api_type", "openai")
+        + "/"
+        + endpoint.get("api_model_id", state.model_name)
     )
 
     api_key = get_api_key(endpoint)

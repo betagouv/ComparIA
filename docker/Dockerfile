@@ -20,7 +20,7 @@ CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
 ARG GIT_COMMIT
 ENV GIT_COMMIT=$GIT_COMMIT
 
-COPY controller.py main.py demo.py models-extra-info.toml /app/
+COPY controller.py main.py demo.py /app/
 # Useful for export scripts
 COPY utils /app/utils
 COPY templates /app/templates

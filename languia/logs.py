@@ -119,7 +119,7 @@ def save_vote_to_db(data):
 
     logger = logging.getLogger("languia")
     if not dsn:
-        logger.warn("Cannot log to db: no db configured")
+        logger.warning("Cannot log to db: no db configured")
         return
     conn = psycopg2.connect(dsn)
     cursor = conn.cursor()
@@ -340,8 +340,6 @@ def upsert_reaction_to_db(data, request):
             session_hash, 
             visitor_id, 
             ip, 
-            country, 
-            city, 
             response_content, 
             question_content, 
             liked, 
@@ -377,8 +375,6 @@ def upsert_reaction_to_db(data, request):
             %(session_hash)s, 
             %(visitor_id)s, 
             %(ip)s, 
-            %(country)s, 
-            %(city)s, 
             %(response_content)s, 
             %(question_content)s, 
             %(liked)s, 
@@ -413,8 +409,6 @@ def upsert_reaction_to_db(data, request):
             session_hash = EXCLUDED.session_hash,
             visitor_id = EXCLUDED.visitor_id,
             ip = EXCLUDED.ip,
-            country = EXCLUDED.country,
-            city = EXCLUDED.city,
             response_content = EXCLUDED.response_content,
             question_content = EXCLUDED.question_content,
             liked = EXCLUDED.liked,
@@ -623,8 +617,6 @@ def record_reaction(
         "refers_to_conv_id": current_conversation.conv_id,
         # Warning: IP is a PII
         "ip": str(get_ip(request)),
-        "country": "",
-        "city": "",
         "comment": comment,
         "response_content": response_content,
         "question_content": question_content,
@@ -661,7 +653,7 @@ def upsert_conv_to_db(data):
 
     logger = logging.getLogger("languia")
     if not dsn:
-        logger.warn("Cannot log to db: no db configured")
+        logger.warning("Cannot log to db: no db configured")
         return
 
     conn = None
@@ -687,8 +679,6 @@ def upsert_conv_to_db(data):
                 session_hash,
                 visitor_id,
                 ip,
-                country,
-                city,
                 model_pair_name,
                 opening_msg,
                 selected_category,
@@ -710,8 +700,6 @@ def upsert_conv_to_db(data):
                 %(session_hash)s,
                 %(visitor_id)s,
                 %(ip)s,
-                %(country)s,
-                %(city)s,
                 %(model_pair_name)s,
                 %(opening_msg)s,
                 %(selected_category)s,
@@ -805,8 +793,6 @@ def record_conversations(
         "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
         # Warning: IP is a PII
         "ip": str(get_ip(request)),
-        "country": "",
-        "city": "",
         "model_pair_name": model_pair_name,
         "mode": str(mode),
         "custom_models_selection": json.dumps(custom_models_selection)
