@@ -74,7 +74,7 @@ class Message(GradioModel):
     role: str
     error: Optional[str] = None
     metadata: Metadata = Field(default_factory=Metadata)
-    
+
     content: str
     reasoning: Optional[str] = None
 

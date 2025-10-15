@@ -8,15 +8,17 @@ r = redis.Redis(host=redis_host, port=6379, decode_responses=True)
 
 from languia.config import RATELIMIT_PRICEY_MODELS_INPUT
 
+
 def increment_input_chars(ip: str, input_chars: int):
     if not redis_host:
         return False
-    r.incrby(f'ip:{ip}', input_chars)
-    r.expire(f'ip:{ip}', 3600 * 2)
+    r.incrby(f"ip:{ip}", input_chars)
+    r.expire(f"ip:{ip}", 3600 * 2)
     return True
 
+
 def is_ratelimited(ip: str):
-    counter = r.get(f'ip:{ip}')
+    counter = r.get(f"ip:{ip}")
     if counter and int(counter) > RATELIMIT_PRICEY_MODELS_INPUT * 2:
         return True
     else:
@@ -33,12 +35,14 @@ class Session:
 
 
 def save_session(session: Session):
-    r.hset(f'session:{session.session_hash}', mapping={
-        "conversations": session.conversations,
-        "ip": session.ip,
-
-    })
-    r.hgetall(f'session:{session.session_hash}')
+    r.hset(
+        f"session:{session.session_hash}",
+        mapping={
+            "conversations": session.conversations,
+            "ip": session.ip,
+        },
+    )
+    r.hgetall(f"session:{session.session_hash}")
 
 
 #     r.hset(f'session:{session.session_hash}', mapping={

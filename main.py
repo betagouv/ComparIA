@@ -16,7 +16,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://localhost:8000"
+    "http://localhost:8000",
 ]
 
 app.add_middleware(
@@ -51,6 +51,7 @@ from languia.utils import get_gauge_count
 
 objective = config.OBJECTIVE
 
+
 @app.exception_handler(500)
 async def http_exception_handler(request, exc):
     return FileResponse("templates/50x.html", status_code=500)
@@ -70,6 +71,7 @@ async def available_models():
 # @app.get("/enabled_models", response_class=JSONResponse)
 # async def enabled_models():
 #     return JSONResponse(dict(config.models))
+
 
 @app.get("/counter", response_class=JSONResponse)
 async def counter():

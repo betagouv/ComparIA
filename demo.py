@@ -10,6 +10,6 @@ if __name__ == "__main__":
     demo.launch(
         root_path="/arene",
         server_name="0.0.0.0",
-        server_port=7860,       # Default Gradio port
-        share=False,            # Set to True if you want to create a shareable link
+        server_port=7860,  # Default Gradio port
+        share=False,  # Set to True if you want to create a shareable link
     )

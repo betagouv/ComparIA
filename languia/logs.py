@@ -39,12 +39,12 @@ class JSONFormatter(logging.Formatter):
                 # TODO: remove IP?
                 log_data["ip"] = get_ip(record.request)
                 log_data["session_hash"] = record.request.session_hash
-            
+
             except:
                 pass
         if hasattr(record, "extra"):
             log_data["extra"] = record.extra
-            
+
         return json.dumps(log_data)
 
 
@@ -229,13 +229,15 @@ def vote_last_response(
 
     t = datetime.datetime.now()
 
-    model_pair_name = sorted(filter(None, [conversations[0].model_name, conversations[1].model_name]))
+    model_pair_name = sorted(
+        filter(None, [conversations[0].model_name, conversations[1].model_name])
+    )
 
     if conversations[0].messages[0].role == "system":
         opening_msg = conversations[0].messages[1].content
     else:
         opening_msg = conversations[0].messages[0].content
-    
+
     data = {
         "timestamp": str(t),
         "model_a_name": conversations[0].model_name,
@@ -251,7 +253,8 @@ def vote_last_response(
         "selected_category": category,
         "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
         "system_prompt_a": get_model_system_prompt(conversations[0].model_name),
-        "system_prompt_b": get_model_system_prompt(conversations[1].model_name),        "conversation_pair_id": conversations[0].conv_id
+        "system_prompt_b": get_model_system_prompt(conversations[1].model_name),
+        "conversation_pair_id": conversations[0].conv_id
         + "-"
         + conversations[1].conv_id,
         # Warning: IP is a PII
@@ -524,16 +527,16 @@ def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
         msg_index = bot_msg_rank * 2 + 1 + system_prompt_offset
         # FIXME: make msg_index be sent correctly from view... needs refacto to pass both convs to view instead of a merged one
         if role == "a":
-            question_content = chatbot[chatbot_index-1]['content']
+            question_content = chatbot[chatbot_index - 1]["content"]
         elif role == "b":
-            question_content = chatbot[chatbot_index-2]['content']
+            question_content = chatbot[chatbot_index - 2]["content"]
         else:
             # if no role available: alternatively, if message before is a bot's, then it's the message even before
-            if chatbot[chatbot_index-1]['role'] == "bot":
-                question_content = chatbot[chatbot_index-2]['content']
+            if chatbot[chatbot_index - 1]["role"] == "bot":
+                question_content = chatbot[chatbot_index - 2]["content"]
             else:
-                question_content = chatbot[chatbot_index-1]['content']
-        
+                question_content = chatbot[chatbot_index - 1]["content"]
+
         record_reaction(
             conversations=[conv_a, conv_b],
             model_pos=role,
@@ -562,6 +565,7 @@ def record_reaction(
     request: gr.Request,
 ):
     from languia.config import get_model_system_prompt
+
     logger = logging.getLogger("languia")
     if model_pos not in ["a", "b"]:
         raise gr.Error(f"Weird model_pos: {model_pos}")
@@ -640,7 +644,7 @@ def record_reaction(
     reaction_log_path = os.path.join(LOGDIR, reaction_log_filename)
     with open(reaction_log_path, "a") as fout:
         fout.write(json.dumps(data) + "\n")
-    logger.info(f"saved_reaction: {json.dumps(data)}",  extra={"request": request})
+    logger.info(f"saved_reaction: {json.dumps(data)}", extra={"request": request})
 
     upsert_reaction_to_db(data=data, request=request)
 
@@ -740,6 +744,7 @@ def record_conversations(
     request: gr.Request,
 ):
     from languia.config import get_model_system_prompt
+
     # logger = logging.getLogger("languia")
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
@@ -747,12 +752,11 @@ def record_conversations(
 
     model_pair_name = sorted([conversations[0].model_name, conversations[1].model_name])
 
-
     if conversations[0].messages[0].role == "system":
         opening_msg = conversations[0].messages[1].content
     else:
         opening_msg = conversations[0].messages[0].content
-    
+
     conv_turns = count_turns((conversations[0].messages))
     t = datetime.datetime.now()
 
@@ -762,19 +766,17 @@ def record_conversations(
         category = app_state_scoped.category
     else:
         category = None
-    
 
     if hasattr(app_state_scoped, "mode"):
         mode = app_state_scoped.mode
     else:
         mode = None
-    
 
     if hasattr(app_state_scoped, "custom_models_selection"):
         custom_models_selection = app_state_scoped.custom_models_selection
     else:
         custom_models_selection = []
-    
+
     data = {
         "selected_category": category,
         "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
@@ -795,7 +797,7 @@ def record_conversations(
         "ip": str(get_ip(request)),
         "model_pair_name": model_pair_name,
         "mode": str(mode),
-        "custom_models_selection": json.dumps(custom_models_selection)
+        "custom_models_selection": json.dumps(custom_models_selection),
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"

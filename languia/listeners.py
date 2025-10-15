@@ -56,10 +56,7 @@ from languia.reveal import (
 
 from languia.logs import vote_last_response, sync_reactions, record_conversations
 
-from languia.config import (
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
-    pricey_models
-)
+from languia.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, pricey_models
 
 from languia.conversation import bot_response, Conversation
 
@@ -204,17 +201,9 @@ def register_listeners():
 
         try:
             i = 0
-            gen_a = bot_response(
-                "a",
-                conv_a_scoped,
-                request
-            )
+            gen_a = bot_response("a", conv_a_scoped, request)
             i = 1
-            gen_b = bot_response(
-                "b",
-                conv_b_scoped,
-                request
-            )
+            gen_b = bot_response("b", conv_b_scoped, request)
             while True:
                 try:
                     i = 0
@@ -562,16 +551,8 @@ def register_listeners():
         request: gr.Request,
     ):
         try:
-            gen_a = bot_response(
-                "a",
-                conv_a_scoped,
-                request
-            )
-            gen_b = bot_response(
-                "b",
-                conv_b_scoped,
-                request
-            )
+            gen_a = bot_response("a", conv_a_scoped, request)
+            gen_b = bot_response("b", conv_b_scoped, request)
             while True:
                 try:
                     i = 0
@@ -727,9 +708,9 @@ def register_listeners():
 
         for reaction in app_state_scoped.reactions:
             if reaction and reaction["liked"] != None:
-                    logger.info("meaningful_reaction")
-                    logger.debug(reaction)
-                    break
+                logger.info("meaningful_reaction")
+                logger.debug(reaction)
+                break
         # If no break found
         else:
             logger.debug("no meaningful reaction found, inflicting vote screen")
