@@ -7,6 +7,9 @@ from pydantic import BaseModel, Field, RootModel, ValidationError
 from rich import print
 from rich.logging import RichHandler
 from slugify import slugify
+import sys
+import os
+from languia.reveal import get_llm_impact, convert_range_to_value
 from typing import Any, Literal, Tuple, get_args, Annotated
 from .utils import Obj, read_json, write_json, filter_dict, sort_dict
 from languia.models import License, Organisation, Endpoint, Model
@@ -95,6 +98,72 @@ def validate_orgas_and_models(
         return None
 
 
+def connect_to_db(DATABASE_URI):
+
+    from sqlalchemy import create_engine
+    from sqlalchemy.exc import OperationalError
+
+    if not DATABASE_URI:
+        log.error(
+            "Cannot connect to the database: no $DATABASE_URI configuration provided."
+        )
+
+    try:
+        engine = create_engine(DATABASE_URI)
+    except Exception as e:
+        log.error(f"Failed to create database engine: {e}")
+        return {}
+
+
+def fetch_distinct_model_ids(engine, models_data):
+    """Get distinct model IDs from the conversations table."""
+
+    import pandas as pd
+
+    query = "SELECT DISTINCT model_a_name as model_id FROM conversations UNION SELECT DISTINCT model_b_name as model_id FROM conversations"
+    try:
+        with engine.connect() as conn:
+            df = pd.read_sql_query(query, conn)
+            # Filter out None values if any
+            model_ids = df["model_id"].dropna().unique().tolist()
+
+            if not model_ids:
+                log.warning("No model IDs found in the database.")
+                return {}
+
+            missing_models = []
+            for model_id in model_ids:
+                if model_id not in models_data:
+                    missing_models.append(
+                        f"'{model_id}' not found in generated-models.json"
+                    )
+
+            if missing_models:
+                log.warning("Pre-check found missing models in generated-models.json:")
+                for model in missing_models:
+                    log.warning(f"- {model}")
+            return [model_id.lower() for model_id in model_ids]
+    except Exception as e:
+        log.error(f"Failed to fetch distinct model IDs: {e}")
+        return []
+
+
+def get_ecologits_rate(models_data: dict) -> dict:
+    """Calculates wh_per_million_token for each model."""
+
+    wh_per_million_token_map = {}
+    for model_id in models_data:
+        model_info = models_data[model_id]
+
+        impact = get_llm_impact(model_info, model_id, 1_000_000, None)
+
+        if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
+            energy_kwh = convert_range_to_value(impact.energy.value)
+            energy_wh = energy_kwh * 1000
+            wh_per_million_token_map[model_id] = energy_wh
+    return wh_per_million_token_map
+
+
 def params_to_friendly_size(params):
     """
     Converts a parameter value to a friendly size description.
@@ -172,6 +241,15 @@ def validate() -> None:
     }
     generated_models = {}
 
+    # Load existing generated models to pass to get_ecologits_rate
+    existing_generated_models = read_json(GENERATED_MODELS_PATH)
+
+    if os.getenv("DATABASE_URI"):
+        engine = utils.connect_to_db(os.getenv("DATABASE_URI"))
+        fetch_distinct_model_ids(engine, existing_generated_models)
+
+    wh_per_million_token_map = get_ecologits_rate(existing_generated_models)
+
     for orga in dumped_orgas:
         i18n["licenses"]["proprio"][orga["name"]] = {
             k.replace("proprietary_", ""): orga[k] if k in orga else ""
@@ -205,9 +283,7 @@ def validate() -> None:
             if model_data.get("fully_open_source"):
                 model_data["distribution"] = "fully_open_source"
 
-            model_data["friendly_size"] = params_to_friendly_size(
-                    model_data["params"]
-                )
+            model_data["friendly_size"] = params_to_friendly_size(model_data["params"])
 
             if model.get("quantization", None) == "q8":
                 model_data["required_ram"] = model_data["params"] * 2
@@ -260,6 +336,9 @@ def validate() -> None:
                     **model_data,
                     **(model_extra_data or {}),
                     "prefs": model_preferences_data,
+                    "wh_per_million_token": wh_per_million_token_map.get(
+                        model["id"], 0
+                    ),
                 }
             )
 

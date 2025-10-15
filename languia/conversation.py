@@ -1,6 +1,7 @@
 import gradio as gr
 
 from languia.litellm import litellm_stream_iter
+from litellm.litellm_core_utils.token_counter import token_counter
 
 import time
 from languia.custom_components.customchatbot import (
@@ -31,10 +32,9 @@ class Conversation:
             ] + messages
         else:
             self.messages = messages
-        self.output_tokens = None
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = models.get(model_name, {}).get('endpoint', {})
+        self.endpoint = models.get(model_name, {}).get("endpoint", {})
 
 
 logger = logging.getLogger("languia")
@@ -179,10 +179,8 @@ def bot_response(
         raise EmptyResponseError(
             f"No answer from API {endpoint_name} for model {state.model_name}"
         )
-    if output_tokens:
-        if state.output_tokens is None:
-            state.output_tokens = output_tokens
-
+    if not output_tokens:
+        output_tokens = token_counter(text=[reasoning, output], model=state.model_name)
     state.messages = update_last_message(
         messages=state.messages,
         text=output,
