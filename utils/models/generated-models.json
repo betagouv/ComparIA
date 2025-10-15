@@ -1,18 +1,42 @@
 {
+  "Apertus-70B-Instruct-2509": {
+    "arch": "dense",
+    "commercial_use": true,
+    "distribution": "fully_open_source",
+    "endpoint": {
+      "api_base": "https://router.huggingface.co/v1",
+      "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
+      "api_type": "huggingface"
+    },
+    "friendly_size": "M",
+    "fully_open_source": true,
+    "icon_path": "swissai.webp",
+    "id": "Apertus-70B-Instruct-2509",
+    "license": "Apache 2.0",
+    "new": true,
+    "organisation": "Swiss AI",
+    "params": 70,
+    "prefs": null,
+    "pricey": false,
+    "reasoning": false,
+    "release_date": "09/2025",
+    "required_ram": 70,
+    "reuse": true,
+    "simple_name": "Apertus 70B Instruct",
+    "status": "enabled",
+    "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
+    "wh_per_million_token": 0
+  },
   "Apertus-8B-Instruct-2509": {
     "arch": "dense",
     "commercial_use": true,
-    "distribution": "open-weights",
-    "endpoint": {
-      "api_base": "https://router.huggingface.co/v1",
-      "api_model_id": "swiss-ai/Apertus-8B-Instruct-2509:publicai",
-      "api_type": "huggingface"
-    },
-    "friendly_size": "S",
+    "distribution": "fully_open_source",
+    "friendly_size": "XS",
+    "fully_open_source": true,
     "icon_path": "swissai.webp",
     "id": "Apertus-8B-Instruct-2509",
     "license": "Apache 2.0",
-    "new": true,
+    "new": false,
     "organisation": "Swiss AI",
     "params": 8,
     "prefs": null,
@@ -22,14 +46,15 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Apertus 8B Instruct",
-    "status": "enabled",
-    "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509"
+    "status": "archived",
+    "url": "https://huggingface.co/swiss-ai/Apertus-8B-Instruct-2509",
+    "wh_per_million_token": 3767.8599999999997
   },
   "aya-23-8b": {
     "arch": "dense",
     "commercial_use": false,
     "distribution": "open-weights",
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "cohere.png",
     "id": "aya-23-8b",
     "license": "CC-BY-NC-4.0",
@@ -43,7 +68,8 @@
     "required_ram": 8,
     "reuse": true,
     "simple_name": "Aya 23 8B",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 3767.8599999999997
   },
   "aya-expanse-32b": {
     "arch": "dense",
@@ -56,7 +82,7 @@
       "api_model_id": "c4ai-aya-expanse-32b",
       "api_type": "openai"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "cohere.png",
     "id": "aya-expanse-32b",
     "license": "CC-BY-NC-4.0",
@@ -88,6 +114,7 @@
       5
     ],
     "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
+    "wh_per_million_token": 7135.939999999998,
     "win_rate": 0.47371903153153155
   },
   "aya-expanse-8b": {
@@ -96,7 +123,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 967,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "cohere.png",
     "id": "aya-expanse-8b",
     "license": "CC-BY-NC-4.0",
@@ -127,13 +154,14 @@
       8,
       6
     ],
+    "wh_per_million_token": 3767.8599999999997,
     "win_rate": 0.5014285714285713
   },
   "Aya23-35B": {
     "arch": "dense",
     "commercial_use": false,
     "distribution": "open-weights",
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "cohere.png",
     "id": "Aya23-35B",
     "license": "CC-BY-NC-4.0",
@@ -147,7 +175,8 @@
     "required_ram": 35,
     "reuse": true,
     "simple_name": "Aya23-35B",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 7556.949999999999
   },
   "c4ai-command-r-08-2024": {
     "arch": "dense",
@@ -155,7 +184,7 @@
     "consumption_wh": 8,
     "distribution": "open-weights",
     "elo": 923,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "cohere.png",
     "id": "c4ai-command-r-08-2024",
     "license": "CC-BY-NC-4.0",
@@ -186,13 +215,14 @@
       2,
       3
     ],
+    "wh_per_million_token": 7556.949999999999,
     "win_rate": null
   },
   "chocolatine-14b-instruct-dpo-v1.2": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-14b-instruct-dpo-v1.2",
     "license": "MIT",
@@ -207,7 +237,8 @@
     "reuse": true,
     "simple_name": "Chocolatine 14B",
     "status": "archived",
-    "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2"
+    "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2",
+    "wh_per_million_token": 4609.88
   },
   "chocolatine-14b-instruct-dpo-v1.2-q4": {
     "arch": "dense",
@@ -215,7 +246,7 @@
     "consumption_wh": 5,
     "distribution": "open-weights",
     "elo": 747,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-14b-instruct-dpo-v1.2-q4",
     "license": "MIT",
@@ -248,13 +279,14 @@
       1
     ],
     "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF",
+    "wh_per_million_token": 4609.88,
     "win_rate": 0.2402265372168285
   },
   "chocolatine-2-14b-instruct-v2.0.3": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-2-14b-instruct-v2.0.3",
     "license": "MIT",
@@ -269,7 +301,8 @@
     "reuse": true,
     "simple_name": "Chocolatine 2 14B",
     "status": "archived",
-    "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3"
+    "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
+    "wh_per_million_token": 4609.88
   },
   "chocolatine-2-14b-instruct-v2.0.3-q8": {
     "arch": "dense",
@@ -277,7 +310,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 812,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-2-14b-instruct-v2.0.3-q8",
     "license": "MIT",
@@ -310,6 +343,7 @@
       1
     ],
     "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
+    "wh_per_million_token": 3627.5233333333335,
     "win_rate": 0.33153674832962143
   },
   "claude-3-5-sonnet-v2": {
@@ -351,6 +385,7 @@
       2
     ],
     "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": 0.49167810026385234
   },
   "claude-3-7-sonnet": {
@@ -392,6 +427,7 @@
       6
     ],
     "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": 0.5242363775901765
   },
   "claude-4-5-sonnet": {
@@ -418,7 +454,8 @@
     "reuse": false,
     "simple_name": "Claude 4.5 Sonnet",
     "status": "enabled",
-    "url": "https://www.anthropic.com/news/claude-sonnet-4-5"
+    "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
+    "wh_per_million_token": 87485.15999999997
   },
   "claude-4-sonnet": {
     "active_params": 137.5,
@@ -462,6 +499,7 @@
       6,
       7
     ],
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": null
   },
   "command-a": {
@@ -506,6 +544,7 @@
       4
     ],
     "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
+    "wh_per_million_token": 18222.536666666667,
     "win_rate": null
   },
   "command-r-plus": {
@@ -526,7 +565,8 @@
     "required_ram": 104,
     "reuse": true,
     "simple_name": "Command R+",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 17240.18
   },
   "deepseek-chat-v3.1": {
     "active_params": 37,
@@ -552,7 +592,8 @@
     "reuse": true,
     "simple_name": "DeepSeek v3.1",
     "status": "enabled",
-    "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1"
+    "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
+    "wh_per_million_token": 47025.74
   },
   "deepseek-r1": {
     "active_params": 37,
@@ -597,6 +638,7 @@
       6
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
+    "wh_per_million_token": 47025.74,
     "win_rate": null
   },
   "deepseek-r1-0528": {
@@ -623,7 +665,8 @@
     "reuse": true,
     "simple_name": "DeepSeek R1 0528",
     "status": "enabled",
-    "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528"
+    "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1-0528",
+    "wh_per_million_token": 47025.74
   },
   "deepseek-r1-distill-llama-70b": {
     "arch": "dense",
@@ -635,7 +678,7 @@
       "api_model_id": "deepseek/deepseek-r1-distill-llama-70b",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "deepseek.png",
     "id": "deepseek-r1-distill-llama-70b",
     "license": "Llama 3.3",
@@ -667,6 +710,7 @@
       2
     ],
     "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b",
+    "wh_per_million_token": 12468.733333333334,
     "win_rate": null
   },
   "deepseek-v3-0324": {
@@ -712,6 +756,7 @@
       3
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
+    "wh_per_million_token": 47025.74,
     "win_rate": null
   },
   "deepseek-v3-chat": {
@@ -753,6 +798,7 @@
       4
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
+    "wh_per_million_token": 47025.74,
     "win_rate": 0.6146811271783463
   },
   "gemini-1.5-pro-001": {
@@ -794,6 +840,7 @@
       7
     ],
     "url": "https://ai.google.dev/gemini-api",
+    "wh_per_million_token": 167596.16666666666,
     "win_rate": 0.6779703389830509
   },
   "gemini-1.5-pro-002": {
@@ -835,6 +882,7 @@
       4
     ],
     "url": "https://ai.google.dev/gemini-api",
+    "wh_per_million_token": 167596.16666666666,
     "win_rate": 0.5422303872889772
   },
   "gemini-2.0-flash-001": {
@@ -876,6 +924,7 @@
       4
     ],
     "url": "https://ai.google.dev/gemini-api",
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": null
   },
   "gemini-2.0-flash-exp": {
@@ -917,6 +966,7 @@
       2
     ],
     "url": "https://ai.google.dev/gemini-api",
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": 0.653934659090909
   },
   "gemini-2.5-flash": {
@@ -961,7 +1011,30 @@
       1,
       2
     ],
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": 0.6178694581280788
+  },
+  "gemma-2-27b-it": {
+    "arch": "dense",
+    "commercial_use": true,
+    "distribution": "open-weights",
+    "friendly_size": "S",
+    "icon_path": "google.png",
+    "id": "gemma-2-27b-it",
+    "license": "Gemma",
+    "new": false,
+    "organisation": "Google",
+    "params": 27,
+    "prefs": null,
+    "pricey": false,
+    "reasoning": false,
+    "release_date": "06/2024",
+    "required_ram": 27,
+    "reuse": true,
+    "simple_name": "Gemma 2 27B",
+    "status": "archived",
+    "url": "https://huggingface.co/google/gemma-2-27b-it",
+    "wh_per_million_token": 0
   },
   "gemma-2-27b-it-q8": {
     "arch": "dense",
@@ -969,7 +1042,7 @@
     "consumption_wh": 6,
     "distribution": "open-weights",
     "elo": 997,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "google.png",
     "id": "gemma-2-27b-it-q8",
     "license": "Gemma",
@@ -1001,6 +1074,7 @@
       7
     ],
     "url": "https://huggingface.co/google/gemma-2-27b-it",
+    "wh_per_million_token": 6434.256666666666,
     "win_rate": 0.5821391076115486
   },
   "gemma-2-2b-it": {
@@ -1022,7 +1096,8 @@
     "reuse": true,
     "simple_name": "Gemma 2 2B",
     "status": "archived",
-    "url": "https://huggingface.co/google/gemma-2-2b-it"
+    "url": "https://huggingface.co/google/gemma-2-2b-it",
+    "wh_per_million_token": 2925.84
   },
   "gemma-2-9b-it": {
     "arch": "dense",
@@ -1030,7 +1105,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 947,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "google.png",
     "id": "gemma-2-9b-it",
     "license": "Gemma",
@@ -1062,6 +1137,7 @@
       2
     ],
     "url": "https://huggingface.co/google/gemma-2-9b-it",
+    "wh_per_million_token": 3908.1966666666667,
     "win_rate": 0.5066673182173574
   },
   "gemma-3-12b": {
@@ -1074,7 +1150,7 @@
       "api_model_id": "google/gemma-3-12b-it",
       "api_type": "openrouter"
     },
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "google.png",
     "id": "gemma-3-12b",
     "license": "Gemma",
@@ -1106,6 +1182,7 @@
       4
     ],
     "url": "https://huggingface.co/google/gemma-3-12b-it",
+    "wh_per_million_token": 4329.206666666666,
     "win_rate": 0.5777532065457762
   },
   "gemma-3-27b": {
@@ -1118,7 +1195,7 @@
       "api_model_id": "google/gemma-3-27b-it",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "google.png",
     "id": "gemma-3-27b",
     "license": "Gemma",
@@ -1150,6 +1227,7 @@
       3
     ],
     "url": "https://huggingface.co/google/gemma-3-27b-it",
+    "wh_per_million_token": 6434.256666666666,
     "win_rate": null
   },
   "gemma-3-4b": {
@@ -1194,6 +1272,7 @@
       5
     ],
     "url": "https://huggingface.co/google/gemma-3-4b-it",
+    "wh_per_million_token": 3206.5133333333333,
     "win_rate": 0.5376570048309179
   },
   "gemma-3n-e4b-it": {
@@ -1207,7 +1286,7 @@
       "api_model_id": "google/gemma-3n-e4b-it",
       "api_type": "openrouter"
     },
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "google.png",
     "id": "gemma-3n-e4b-it",
     "license": "Gemma",
@@ -1238,6 +1317,7 @@
       8,
       5
     ],
+    "wh_per_million_token": 3206.5133333333333,
     "win_rate": null
   },
   "glm-4.5": {
@@ -1251,7 +1331,7 @@
       "api_model_id": "z-ai/glm-4.5",
       "api_type": "openrouter"
     },
-    "friendly_size": "XL",
+    "friendly_size": "L",
     "icon_path": "zhipu.svg",
     "id": "glm-4.5",
     "license": "MIT",
@@ -1282,6 +1362,7 @@
       5,
       15
     ],
+    "wh_per_million_token": 21407.82,
     "win_rate": null
   },
   "glm-4.6": {
@@ -1293,7 +1374,7 @@
       "api_model_id": "z-ai/glm-4.6",
       "api_type": "openrouter"
     },
-    "friendly_size": "XL",
+    "friendly_size": "L",
     "icon_path": "zhipu.svg",
     "id": "glm-4.6",
     "license": "MIT",
@@ -1307,13 +1388,14 @@
     "required_ram": 357,
     "reuse": true,
     "simple_name": "GLM 4.6",
-    "status": "enabled"
+    "status": "enabled",
+    "wh_per_million_token": 21407.82
   },
   "gpt-3.5-turbo-0301": {
     "arch": "maybe-dense",
     "commercial_use": null,
     "distribution": "api-only",
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "gpt-3.5-turbo-0301",
     "license": "proprietary",
@@ -1328,7 +1410,8 @@
     "reuse": false,
     "simple_name": "GPT-3.5",
     "status": "archived",
-    "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo"
+    "url": "https://platform.openai.com/docs/models/gp#gpt-3-5-turbo",
+    "wh_per_million_token": 10363.683333333332
   },
   "gpt-4.1-mini": {
     "arch": "maybe-dense",
@@ -1340,7 +1423,7 @@
       "api_model_id": "openai/gpt-4.1-mini",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "openai.svg",
     "id": "gpt-4.1-mini",
     "license": "proprietary",
@@ -1372,6 +1455,7 @@
       4
     ],
     "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
+    "wh_per_million_token": 13170.416666666666,
     "win_rate": 0.5160280948200175
   },
   "gpt-4.1-nano": {
@@ -1384,7 +1468,7 @@
       "api_model_id": "openai/gpt-4.1-nano",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "gpt-4.1-nano",
     "license": "proprietary",
@@ -1416,6 +1500,7 @@
       5
     ],
     "url": "https://openai.com/index/gpt-4-1/",
+    "wh_per_million_token": 5872.909999999999,
     "win_rate": 0.46347906976744185
   },
   "gpt-4o-2024-08-06": {
@@ -1457,6 +1542,7 @@
       2
     ],
     "url": "https://platform.openai.com/docs/models/gpt-4o",
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": 0.48838983050847457
   },
   "gpt-4o-mini-2024-07-18": {
@@ -1497,6 +1583,7 @@
       3
     ],
     "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
+    "wh_per_million_token": 5171.2266666666665,
     "win_rate": 0.49948956248212756
   },
   "gpt-5": {
@@ -1508,7 +1595,7 @@
       "api_model_id": "openai/gpt-5",
       "api_type": "openrouter"
     },
-    "friendly_size": "XL",
+    "friendly_size": "L",
     "icon_path": "openai.svg",
     "id": "gpt-5",
     "license": "proprietary",
@@ -1522,7 +1609,8 @@
     "required_ram": 300,
     "reuse": false,
     "simple_name": "GPT 5",
-    "status": "enabled"
+    "status": "enabled",
+    "wh_per_million_token": 47510.43999999999
   },
   "gpt-5-mini": {
     "arch": "maybe-dense",
@@ -1532,7 +1620,7 @@
       "api_model_id": "openai/gpt-5-mini",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "gpt-5-mini",
     "license": "proprietary",
@@ -1547,7 +1635,8 @@
     "reuse": false,
     "simple_name": "GPT 5 Mini",
     "status": "enabled",
-    "url": "https://platform.openai.com/docs/models/gpt-5-mini"
+    "url": "https://platform.openai.com/docs/models/gpt-5-mini",
+    "wh_per_million_token": 9240.99
   },
   "gpt-5-nano": {
     "arch": "maybe-dense",
@@ -1557,7 +1646,7 @@
       "api_model_id": "openai/gpt-5-nano",
       "api_type": "openrouter"
     },
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "openai.svg",
     "id": "gpt-5-nano",
     "license": "proprietary",
@@ -1572,7 +1661,8 @@
     "reuse": false,
     "simple_name": "GPT 5 Nano",
     "status": "enabled",
-    "url": "https://platform.openai.com/docs/models/gpt-5-nano"
+    "url": "https://platform.openai.com/docs/models/gpt-5-nano",
+    "wh_per_million_token": 4188.87
   },
   "gpt-oss-120b": {
     "active_params": 5.1,
@@ -1616,6 +1706,7 @@
       4,
       5
     ],
+    "wh_per_million_token": 3346.8500000000004,
     "win_rate": null
   },
   "gpt-oss-20b": {
@@ -1629,7 +1720,7 @@
       "api_model_id": "openai/gpt-oss-20b",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "gpt-oss-20b",
     "license": "Apache 2.0",
@@ -1660,6 +1751,7 @@
       6,
       6
     ],
+    "wh_per_million_token": 3066.1766666666667,
     "win_rate": null
   },
   "grok-3-mini-beta": {
@@ -1704,6 +1796,7 @@
       5
     ],
     "url": "https://x.ai/news/grok-3",
+    "wh_per_million_token": 469320.0,
     "win_rate": null
   },
   "grok-4-fast": {
@@ -1729,7 +1822,8 @@
     "reuse": false,
     "simple_name": "Grok 4 Fast",
     "status": "enabled",
-    "url": "https://x.ai/news/grok-4-fast"
+    "url": "https://x.ai/news/grok-4-fast",
+    "wh_per_million_token": 3135827.4999999995
   },
   "hermes-3-llama-3.1-405b": {
     "arch": "dense",
@@ -1769,6 +1863,7 @@
       1
     ],
     "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
+    "wh_per_million_token": 237926.06666666665,
     "win_rate": 0.46617755493290075
   },
   "hermes-4-70b": {
@@ -1779,7 +1874,7 @@
       "api_model_id": "nousresearch/hermes-4-70b",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "nous.webp",
     "id": "hermes-4-70b",
     "license": "Llama 3.1",
@@ -1793,7 +1888,8 @@
     "required_ram": 70,
     "reuse": true,
     "simple_name": "Hermes 4 70B",
-    "status": "enabled"
+    "status": "enabled",
+    "wh_per_million_token": 12468.733333333334
   },
   "jamba-1.5-large": {
     "active_params": 94,
@@ -1834,6 +1930,7 @@
       12
     ],
     "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large",
+    "wh_per_million_token": 47510.43999999999,
     "win_rate": 0.5449418604651162
   },
   "kimi-k2": {
@@ -1879,6 +1976,7 @@
       15
     ],
     "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
+    "wh_per_million_token": 57087.51999999998,
     "win_rate": null
   },
   "lfm-40b": {
@@ -1887,7 +1985,7 @@
     "consumption_wh": 8,
     "distribution": "api-only",
     "elo": 876,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "liquid.svg",
     "id": "lfm-40b",
     "license": "proprietary",
@@ -1919,6 +2017,7 @@
       1
     ],
     "url": "https://www.liquid.ai/liquid-foundation-models",
+    "wh_per_million_token": 8258.633333333331,
     "win_rate": 0.4159418669647848
   },
   "llama-3.1-405b": {
@@ -1963,6 +2062,7 @@
       2
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct",
+    "wh_per_million_token": 237926.06666666665,
     "win_rate": null
   },
   "llama-3.1-70b": {
@@ -1971,7 +2071,7 @@
     "consumption_wh": 12,
     "distribution": "open-weights",
     "elo": 967,
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "meta.svg",
     "id": "llama-3.1-70b",
     "license": "Llama 3.1",
@@ -2003,6 +2103,7 @@
       4
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct",
+    "wh_per_million_token": 12468.733333333334,
     "win_rate": 0.53059276504298
   },
   "llama-3.1-8b": {
@@ -2016,7 +2117,7 @@
       "api_model_id": "meta-llama/Llama-3.1-8B-Instruct",
       "api_type": "openai"
     },
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "meta.svg",
     "id": "llama-3.1-8b",
     "license": "Llama 3.1",
@@ -2048,6 +2149,7 @@
       1
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
+    "wh_per_million_token": 3767.8599999999997,
     "win_rate": null
   },
   "llama-3.1-nemotron-70b-instruct": {
@@ -2060,7 +2162,7 @@
       "api_model_id": "nvidia/llama-3.1-nemotron-70b-instruct",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "nvidia.svg",
     "id": "llama-3.1-nemotron-70b-instruct",
     "license": "Llama 3.1",
@@ -2092,6 +2194,7 @@
       4
     ],
     "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct",
+    "wh_per_million_token": 12468.733333333334,
     "win_rate": null
   },
   "llama-3.3-70b": {
@@ -2104,7 +2207,7 @@
       "api_model_id": "meta-llama/llama-3.3-70b-instruct",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "meta.svg",
     "id": "llama-3.3-70b",
     "license": "Llama 3.3",
@@ -2136,6 +2239,7 @@
       4
     ],
     "url": "https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct",
+    "wh_per_million_token": 12468.733333333334,
     "win_rate": null
   },
   "llama-4-scout": {
@@ -2181,6 +2285,7 @@
       3
     ],
     "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+    "wh_per_million_token": 5030.889999999999,
     "win_rate": null
   },
   "llama-maverick": {
@@ -2206,7 +2311,8 @@
     "required_ram": 400,
     "reuse": true,
     "simple_name": "Llama 4 Maverick",
-    "status": "enabled"
+    "status": "enabled",
+    "wh_per_million_token": 15092.669999999998
   },
   "magistral-medium": {
     "arch": "maybe-dense",
@@ -2216,7 +2322,7 @@
       "api_model_id": "mistralai/magistral-medium-2506",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "magistral-medium",
     "license": "proprietary",
@@ -2230,7 +2336,8 @@
     "required_ram": 95,
     "reuse": false,
     "simple_name": "Magistral Medium",
-    "status": "enabled"
+    "status": "enabled",
+    "wh_per_million_token": 15977.149999999998
   },
   "magistral-small-2506": {
     "arch": "dense",
@@ -2242,7 +2349,7 @@
       "api_model_id": "mistralai/magistral-small-2506",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "magistral-small-2506",
     "license": "Apache 2.0",
@@ -2273,13 +2380,14 @@
       4,
       8
     ],
+    "wh_per_million_token": 6013.246666666666,
     "win_rate": null
   },
   "Meta-Llama-3-70B-Instruct": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "meta.svg",
     "id": "Meta-Llama-3-70B-Instruct",
     "license": "Llama 3 Community",
@@ -2293,13 +2401,14 @@
     "required_ram": 70,
     "reuse": false,
     "simple_name": "Llama 3 70B",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 12468.733333333334
   },
   "Meta-Llama-3-8B-Instruct": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "meta.svg",
     "id": "Meta-Llama-3-8B-Instruct",
     "license": "Llama 3 Community",
@@ -2313,7 +2422,8 @@
     "required_ram": 8,
     "reuse": false,
     "simple_name": "Llama 3 8B",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 3767.8599999999997
   },
   "ministral-8b-instruct-2410": {
     "arch": "dense",
@@ -2321,7 +2431,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 958,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "mistral.png",
     "id": "ministral-8b-instruct-2410",
     "license": "Mistral AI Research License",
@@ -2353,6 +2463,7 @@
       1
     ],
     "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
+    "wh_per_million_token": 3767.8599999999997,
     "win_rate": null
   },
   "mistral-large-2411": {
@@ -2393,6 +2504,7 @@
       3
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
+    "wh_per_million_token": 19906.576666666668,
     "win_rate": 0.5269031531531531
   },
   "mistral-medium-2508": {
@@ -2403,7 +2515,7 @@
       "api_model_id": "mistralai/mistral-medium-3",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mistral-medium-2508",
     "license": "proprietary",
@@ -2418,7 +2530,8 @@
     "reuse": false,
     "simple_name": "Mistral Medium 2508",
     "status": "enabled",
-    "url": "https://mistral.ai/news/mistral-medium-3"
+    "url": "https://mistral.ai/news/mistral-medium-3",
+    "wh_per_million_token": 15977.149999999998
   },
   "mistral-medium-3.1": {
     "arch": "maybe-dense",
@@ -2428,7 +2541,7 @@
       "api_model_id": "mistralai/mistral-medium-3.1",
       "api_type": "openrouter"
     },
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "mistral.png",
     "id": "mistral-medium-3.1",
     "license": "proprietary",
@@ -2442,7 +2555,8 @@
     "required_ram": 95,
     "reuse": false,
     "simple_name": "Mistral Medium 3.1",
-    "status": "enabled"
+    "status": "enabled",
+    "wh_per_million_token": 15977.149999999998
   },
   "mistral-nemo-2407": {
     "arch": "dense",
@@ -2450,7 +2564,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 846,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "mistral.png",
     "id": "mistral-nemo-2407",
     "license": "Apache 2.0",
@@ -2482,6 +2596,7 @@
       1
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407",
+    "wh_per_million_token": 4329.206666666666,
     "win_rate": 0.3746761554453863
   },
   "mistral-saba": {
@@ -2494,7 +2609,7 @@
       "api_model_id": "mistralai/mistral-saba",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-saba",
     "license": "proprietary",
@@ -2526,6 +2641,7 @@
       4
     ],
     "url": "https://mistral.ai/news/mistral-saba",
+    "wh_per_million_token": 6013.246666666666,
     "win_rate": null
   },
   "mistral-small-24b-instruct-2501": {
@@ -2534,7 +2650,7 @@
     "consumption_wh": 6,
     "distribution": "open-weights",
     "elo": 979,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-small-24b-instruct-2501",
     "license": "Apache 2.0",
@@ -2566,6 +2682,7 @@
       6
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501",
+    "wh_per_million_token": 6013.246666666666,
     "win_rate": 0.49546851461283525
   },
   "mistral-small-2506": {
@@ -2576,7 +2693,7 @@
       "api_model_id": "mistralai/mistral-small-3.2-24b-instruct",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-small-2506",
     "license": "Apache 2.0",
@@ -2590,7 +2707,8 @@
     "required_ram": 24,
     "reuse": true,
     "simple_name": "Mistral Small 3.2",
-    "status": "enabled"
+    "status": "enabled",
+    "wh_per_million_token": 6013.246666666666
   },
   "mistral-small-3.1-24b": {
     "arch": "dense",
@@ -2598,7 +2716,7 @@
     "consumption_wh": 6,
     "distribution": "open-weights",
     "elo": 1000,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-small-3.1-24b",
     "license": "Apache 2.0",
@@ -2630,13 +2748,14 @@
       3
     ],
     "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503",
+    "wh_per_million_token": 6013.246666666666,
     "win_rate": 0.49401449843260187
   },
   "mistral-small-3.2-24b": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-small-3.2-24b",
     "license": "Apache 2.0",
@@ -2651,7 +2770,8 @@
     "reuse": true,
     "simple_name": "Mistral Small 3.2 24B",
     "status": "archived",
-    "url": "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506"
+    "url": "https://huggingface.co/mistralai/mistral-small-3.2-24b-instruct-2506",
+    "wh_per_million_token": 6013.246666666666
   },
   "mixtral-8x22b-instruct-v0.1": {
     "active_params": 44,
@@ -2660,7 +2780,7 @@
     "consumption_wh": 18,
     "distribution": "open-weights",
     "elo": 836,
-    "friendly_size": "XL",
+    "friendly_size": "L",
     "icon_path": "mistral.png",
     "id": "mixtral-8x22b-instruct-v0.1",
     "license": "Apache 2.0",
@@ -2692,6 +2812,7 @@
       1
     ],
     "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
+    "wh_per_million_token": 17639.96,
     "win_rate": 0.366685599120557
   },
   "mixtral-8x7b-instruct-v0.1": {
@@ -2701,7 +2822,7 @@
     "consumption_wh": 5,
     "distribution": "open-weights",
     "elo": 881,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mixtral-8x7b-instruct-v0.1",
     "license": "Apache 2.0",
@@ -2733,6 +2854,7 @@
       2
     ],
     "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
+    "wh_per_million_token": 4609.88,
     "win_rate": 0.43490624999999994
   },
   "o3-mini": {
@@ -2773,6 +2895,7 @@
       7
     ],
     "url": "https://platform.openai.com/docs/models/o3-mini",
+    "wh_per_million_token": 5171.2266666666665,
     "win_rate": 0.5113641975308642
   },
   "o4-mini": {
@@ -2817,13 +2940,14 @@
       3
     ],
     "url": "https://platform.openai.com/docs/models/o4-mini",
+    "wh_per_million_token": 5171.2266666666665,
     "win_rate": null
   },
   "olmo-2-0325-32b": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "fully_open_source",
-    "friendly_size": "M",
+    "friendly_size": "S",
     "fully_open_source": true,
     "icon_path": "ai2.svg",
     "id": "olmo-2-0325-32b",
@@ -2839,7 +2963,8 @@
     "reuse": true,
     "simple_name": "OLMo-2 32B",
     "status": "archived",
-    "url": "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct"
+    "url": "https://huggingface.co/allenai/OLMo-2-0325-32B-Instruct",
+    "wh_per_million_token": 7135.939999999998
   },
   "phi-3-mini-4k": {
     "arch": "dense",
@@ -2860,13 +2985,14 @@
     "reuse": true,
     "simple_name": "Phi-3-Mini",
     "status": "archived",
-    "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct"
+    "url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
+    "wh_per_million_token": 3066.1766666666667
   },
   "Phi-3-small-8k-Instruct": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "microsoft.png",
     "id": "Phi-3-small-8k-Instruct",
     "license": "MIT",
@@ -2880,7 +3006,8 @@
     "required_ram": 7,
     "reuse": true,
     "simple_name": "Phi-3-small-8k-Instruct",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 3627.5233333333335
   },
   "phi-3.5-mini-instruct": {
     "arch": "dense",
@@ -2920,6 +3047,7 @@
       1
     ],
     "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
+    "wh_per_million_token": 3066.1766666666667,
     "win_rate": 0.40230769230769226
   },
   "phi-4": {
@@ -2932,7 +3060,7 @@
       "api_model_id": "microsoft/phi-4",
       "api_type": "openrouter"
     },
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "microsoft.png",
     "id": "phi-4",
     "license": "MIT",
@@ -2964,6 +3092,7 @@
       2
     ],
     "url": "https://huggingface.co/microsoft/Phi-4",
+    "wh_per_million_token": 4609.88,
     "win_rate": null
   },
   "qwen-3-8b": {
@@ -2974,7 +3103,7 @@
       "api_model_id": "qwen/qwen3-8b",
       "api_type": "openrouter"
     },
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "qwen.png",
     "id": "qwen-3-8b",
     "license": "Apache 2.0",
@@ -2989,13 +3118,14 @@
     "reuse": true,
     "simple_name": "Qwen 3 8B",
     "status": "enabled",
-    "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ"
+    "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
+    "wh_per_million_token": 3767.8599999999997
   },
   "Qwen1.5-32B-Chat": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "Qwen1.5-32B-Chat",
     "license": "Apache 2.0",
@@ -3009,14 +3139,15 @@
     "required_ram": 32,
     "reuse": true,
     "simple_name": "Qwen1.5-32B",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 7135.939999999998
   },
   "Qwen2-57B-A14B-Instruct": {
     "active_params": 14,
     "arch": "moe",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "Qwen2-57B-A14B-Instruct",
     "license": "Apache 2.0",
@@ -3030,13 +3161,14 @@
     "required_ram": 57,
     "reuse": true,
     "simple_name": "Qwen2-57B-A14B-Instruct",
-    "status": "archived"
+    "status": "archived",
+    "wh_per_million_token": 4609.88
   },
   "Qwen2-72b-instruct": {
     "arch": "dense",
     "commercial_use": true,
     "distribution": "open-weights",
-    "friendly_size": "L",
+    "friendly_size": "M",
     "icon_path": "qwen.png",
     "id": "Qwen2-72b-instruct",
     "license": "Apache 2.0",
@@ -3051,7 +3183,8 @@
     "reuse": true,
     "simple_name": "Qwen2-72b-instruct",
     "status": "archived",
-    "url": "https://huggingface.co/Qwen/Qwen2-72B-Instruct"
+    "url": "https://huggingface.co/Qwen/Qwen2-72B-Instruct",
+    "wh_per_million_token": 12749.406666666668
   },
   "qwen2-7b-instruct": {
     "arch": "dense",
@@ -3059,7 +3192,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 726,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "qwen.png",
     "id": "qwen2-7b-instruct",
     "license": "Apache 2.0",
@@ -3091,6 +3224,7 @@
       0
     ],
     "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
+    "wh_per_million_token": 3627.5233333333335,
     "win_rate": 0.2525
   },
   "qwen2.5-32b-instruct": {
@@ -3099,7 +3233,7 @@
     "consumption_wh": 7,
     "distribution": "open-weights",
     "elo": 960,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen2.5-32b-instruct",
     "license": "Apache 2.0",
@@ -3131,6 +3265,7 @@
       11
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
+    "wh_per_million_token": 7135.939999999998,
     "win_rate": 0.5557042253521126
   },
   "qwen2.5-7b-instruct": {
@@ -3139,7 +3274,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 921,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "qwen.png",
     "id": "qwen2.5-7b-instruct",
     "license": "Apache 2.0",
@@ -3171,6 +3306,7 @@
       3
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
+    "wh_per_million_token": 3627.5233333333335,
     "win_rate": 0.49303521126760563
   },
   "qwen2.5-coder-32b-instruct": {
@@ -3179,7 +3315,7 @@
     "consumption_wh": 7,
     "distribution": "open-weights",
     "elo": 919,
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen2.5-coder-32b-instruct",
     "license": "Apache 2.0",
@@ -3211,6 +3347,7 @@
       2
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
+    "wh_per_million_token": 7135.939999999998,
     "win_rate": 0.4368676671214188
   },
   "qwen3-30b-a3b": {
@@ -3224,7 +3361,7 @@
       "api_model_id": "qwen/qwen3-30b-a3b",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen3-30b-a3b",
     "license": "Apache 2.0",
@@ -3255,6 +3392,7 @@
       9,
       14
     ],
+    "wh_per_million_token": 3066.1766666666667,
     "win_rate": null
   },
   "qwen3-32b": {
@@ -3267,7 +3405,7 @@
       "api_model_id": "qwen/qwen3-32b",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen3-32b",
     "license": "Apache 2.0",
@@ -3299,6 +3437,7 @@
       7
     ],
     "url": "https://huggingface.co/Qwen/Qwen3-32B",
+    "wh_per_million_token": 7135.939999999998,
     "win_rate": null
   },
   "Qwen3-Coder-480B-A35B-Instruct": {
@@ -3325,7 +3464,8 @@
     "reuse": true,
     "simple_name": "Qwen3 Coder 480B A35B",
     "status": "enabled",
-    "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct"
+    "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    "wh_per_million_token": 30227.799999999996
   },
   "qwen3-max-2025-09-23": {
     "active_params": 32,
@@ -3351,7 +3491,8 @@
     "reuse": false,
     "simple_name": "Qwen 3 Max",
     "status": "enabled",
-    "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list"
+    "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
+    "wh_per_million_token": 57087.51999999998
   },
   "qwq-32b": {
     "arch": "dense",
@@ -3363,7 +3504,7 @@
       "api_model_id": "qwen/qwq-32b",
       "api_type": "openrouter"
     },
-    "friendly_size": "M",
+    "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwq-32b",
     "license": "Apache 2.0",
@@ -3395,6 +3536,7 @@
       1
     ],
     "url": "https://huggingface.co/Qwen/QwQ-32B",
+    "wh_per_million_token": 7135.939999999998,
     "win_rate": null
   },
   "Yi-1.5-9B-Chat": {
@@ -3403,7 +3545,7 @@
     "consumption_wh": 4,
     "distribution": "open-weights",
     "elo": 760,
-    "friendly_size": "S",
+    "friendly_size": "XS",
     "icon_path": "yi.svg",
     "id": "Yi-1.5-9B-Chat",
     "license": "Apache 2.0",
@@ -3435,6 +3577,7 @@
       2
     ],
     "url": "https://huggingface.co/01-ai/Yi-1.5-9B-Chat",
+    "wh_per_million_token": 3908.1966666666667,
     "win_rate": 0.32599999999999996
   }
 }
