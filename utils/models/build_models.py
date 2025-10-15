@@ -378,18 +378,22 @@ def main():
         help="Fetch distinct model IDs from the database.",
     )
     parser.add_argument("--ranking", action="store_true", help="Generate ranking data.")
+    parser.add_argument("--no-push", action="store_true", help="Don't push to hub.")
     args = parser.parse_args()
 
     if args.fetch_models_id:
-        if os.getenv("DATABASE_URI"):
-            engine = connect_to_db(os.getenv("DATABASE_URI"))
-            existing_generated_models = read_json(GENERATED_MODELS_PATH)
-            fetch_distinct_model_ids(engine, existing_generated_models)
+        engine = connect_to_db(os.getenv("DATABASE_URI"))
+        existing_generated_models = read_json(GENERATED_MODELS_PATH)
+        fetch_distinct_model_ids(engine, existing_generated_models)
 
     if args.ranking:
         import rank_comparia
+        
+        # Default to current path if null
+        input_file = str(GENERATED_MODELS_PATH) if GENERATED_MODELS_PATH else "."
+        output_file = str(MODELS_EXTRA_DATA_PATH) if MODELS_EXTRA_DATA_PATH else "."
 
-        rank_comparia.export(str(GENERATED_MODELS_PATH), str(MODELS_EXTRA_DATA_PATH))
+        rank_comparia.export(input_file, output_file)
 
     validate()
 
