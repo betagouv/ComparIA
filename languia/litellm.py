@@ -76,12 +76,11 @@ def litellm_stream_iter(
     #     session_id=session_id,
     # )
 
-    # TODO: do it in all cases?
-    if "mistralai" in model_name:
-        messages = strip_metadata(messages)
-        print("stripping metadata")
+    messages = strip_metadata(messages)
+    logging.debug("stripping metadata")
 
     kwargs = {
+        # "mock_response": "Here's the answer: print('Hello')",
         "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
         "stream_timeout": 30,
@@ -107,7 +106,6 @@ def litellm_stream_iter(
         # "parent_observation_id": span.id,
         # "generation_id": span.id
         # },
-        # "mock_response": "Here's the answer: print('Hello')"
     }
 
     if "c4ai-aya-expanse-32b" not in model_name:
