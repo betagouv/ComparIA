@@ -11,14 +11,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
 
 # Add the parent directory to the Python path to resolve the 'languia' module
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from languia.utils import get_total_params, get_active_params
 
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
 
-MODELS_JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'models', 'generated-models.json')
+MODELS_JSON_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "models", "generated-models.json"
+)
 MODELS_DATA = {}
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -130,13 +132,14 @@ def load_models_data():
     """Load the generated models JSON data."""
     global MODELS_DATA
     try:
-        with open(MODELS_JSON_PATH, 'r') as f:
+        with open(MODELS_JSON_PATH, "r") as f:
             models_data = json.load(f)
             MODELS_DATA = {k.lower(): v for k, v in models_data.items()}
     except FileNotFoundError:
         logger.error(f"Models JSON file not found at: {MODELS_JSON_PATH}")
     except json.JSONDecodeError:
         logger.error(f"Error decoding JSON from: {MODELS_JSON_PATH}")
+
 
 def fetch_and_transform_data(conn, table_name, query=None):
     """
@@ -176,7 +179,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
             "country",
             "city",
             "cohorts",
-            "country_portal"
+            "country_portal",
         ]
         if table_name == "conversations":
             logger.info("Adding model infos...")
@@ -192,23 +195,39 @@ def fetch_and_transform_data(conn, table_name, query=None):
             df["model_b_active_params"] = df["model_b_name"].apply(
                 lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
             )
-            from utils.calculate_wh_per_million_token import main as calculate_wh_per_million_token
-            wh_per_million_token_df = calculate_wh_per_million_token()
-            wh_per_million_token_map = wh_per_million_token_df.set_index('model_id')['wh_per_million_token'].to_dict()
 
             df["total_conv_a_kwh"] = df.apply(
                 lambda row: (
-                    (wh_per_million_token_map.get(row['model_a_name'].lower(), 0) * row["total_conv_a_output_tokens"]) / 1_000_000
-                ) if row["total_conv_a_output_tokens"] is not None else None,
+                    (
+                        (
+                            MODELS_DATA.get(row["model_a_name"].lower(), {}).get(
+                                "wh_per_million_token", 0
+                            )
+                            * row["total_conv_a_output_tokens"]
+                        )
+                        / 1_000_000
+                    )
+                    if row["total_conv_a_output_tokens"] is not None
+                    else None
+                ),
                 axis=1,
             )
             df["total_conv_b_kwh"] = df.apply(
                 lambda row: (
-                    (wh_per_million_token_map.get(row['model_b_name'].lower(), 0) * row["total_conv_b_output_tokens"]) / 1_000_000
-                ) if row["total_conv_b_output_tokens"] is not None else None,
+                    (
+                        (
+                            MODELS_DATA.get(row["model_b_name"].lower(), {}).get(
+                                "wh_per_million_token", 0
+                            )
+                            * row["total_conv_b_output_tokens"]
+                        )
+                        / 1_000_000
+                    )
+                    if row["total_conv_b_output_tokens"] is not None
+                    else None
+                ),
                 axis=1,
             )
-
 
         # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
         #     -- selected_category VARCHAR(255),
@@ -288,9 +307,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
     logger.info(f"Starting processing for dataset: {dataset_name}")
     DATABASE_URI = os.getenv("DATABASE_URI")
     if not DATABASE_URI:
-        logger.error(
-            f"Cannot process {dataset_name}: no $DATABASE_URI"
-        )
+        logger.error(f"Cannot process {dataset_name}: no $DATABASE_URI")
         return
 
     repo_name = dataset_config.get("repo")
