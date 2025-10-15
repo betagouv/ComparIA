@@ -1,5 +1,5 @@
 import logging
-from languia.utils import sum_tokens
+from languia.utils import sum_tokens, get_active_params, get_total_params
 
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
 
