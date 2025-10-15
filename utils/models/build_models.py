@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 import rich
 import logging
 import markdown
@@ -9,6 +10,11 @@ from rich.logging import RichHandler
 from slugify import slugify
 import sys
 import os
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from languia.reveal import get_llm_impact, convert_range_to_value
 from typing import Any, Literal, Tuple, get_args, Annotated
 from .utils import Obj, read_json, write_json, filter_dict, sort_dict
@@ -244,9 +250,10 @@ def validate() -> None:
     # Load existing generated models to pass to get_ecologits_rate
     existing_generated_models = read_json(GENERATED_MODELS_PATH)
 
-    if os.getenv("DATABASE_URI"):
-        engine = utils.connect_to_db(os.getenv("DATABASE_URI"))
-        fetch_distinct_model_ids(engine, existing_generated_models)
+    # This logic is now handled by the --fetch-models-id flag
+    # if os.getenv("DATABASE_URI"):
+    #     engine = utils.connect_to_db(os.getenv("DATABASE_URI"))
+    #     fetch_distinct_model_ids(engine, existing_generated_models)
 
     wh_per_million_token_map = get_ecologits_rate(existing_generated_models)
 
@@ -361,5 +368,31 @@ export const MODELS = {[model["simple_name"] for model in generated_models.value
     write_json(GENERATED_MODELS_PATH, sort_dict(generated_models))
 
 
-if __name__ == "__main__":
+def main():
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Build models data.")
+    parser.add_argument(
+        "--fetch-models-id",
+        action="store_true",
+        help="Fetch distinct model IDs from the database.",
+    )
+    parser.add_argument("--ranking", action="store_true", help="Generate ranking data.")
+    args = parser.parse_args()
+
+    if args.fetch_models_id:
+        if os.getenv("DATABASE_URI"):
+            engine = connect_to_db(os.getenv("DATABASE_URI"))
+            existing_generated_models = read_json(GENERATED_MODELS_PATH)
+            fetch_distinct_model_ids(engine, existing_generated_models)
+
+    if args.ranking:
+        import rank_comparia
+
+        rank_comparia.export(str(GENERATED_MODELS_PATH), str(MODELS_EXTRA_DATA_PATH))
+
     validate()
+
+
+if __name__ == "__main__":
+    main()
