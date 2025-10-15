@@ -29,7 +29,7 @@ class Model(BaseModel):
     license: str
     fully_open_source: bool | None = None
     release_date: str = Field(pattern=r"^[0-9]{2}/[0-9]{4}$")
-    params: int | float | Literal["XS", "S", "M", "L", "XL"]
+    params: int | float
     active_params: int | float | None = None
     arch: str
     reasoning: bool | Literal["hybrid"] = False
