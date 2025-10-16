@@ -335,7 +335,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
             export_data(data, dataset_name, repo_path)
 
             # Commit and push changes for the repository
-            # commit_and_push(repo_org, repo_name, repo_path)
+            commit_and_push(repo_org, repo_name, repo_path)
 
     except OperationalError as e:
         logger.error(f"Database connection error for dataset {dataset_name}: {e}")
