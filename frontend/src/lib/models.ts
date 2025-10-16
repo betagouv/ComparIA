@@ -105,7 +105,7 @@ export function parseModel(model: APIBotModel) {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
         text:
-          model.distribution === 'open-weights'
+          (model.distribution === 'open-weights' || model.distribution === 'fully-open-source')
             ? m['models.parameters']({ number: model.params })
             : m['models.size.estimated']({ size: model.friendly_size }),
         tooltip:
