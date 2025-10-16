@@ -1157,11 +1157,11 @@
                 "reset": "Clear all filters",
                 "size": {
                     "labels": {
-                        "L": "70 to 150 billion",
-                        "M": "20 to 70 billion",
-                        "S": "7 to 20 billion",
-                        "XL": "> 150 billion",
-                        "XS": "< 7 billion"
+                        "L": "100 to 400 billion",
+                        "M": "60 to 100 billion",
+                        "S": "15 to 60 billion",
+                        "XL": "> 400 billion",
+                        "XS": "< 15 billion"
                     },
                     "legend": "Size (parameters)"
                 }
