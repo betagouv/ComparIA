@@ -117,7 +117,9 @@ def load_session_hash_ip():
     engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
     with engine.connect() as conn:
         session_hash_to_ip_map = pl.read_database(
-            query="SELECT ip_map, session_hash FROM conversations", connection=conn
+            query="SELECT ip_map, session_hash FROM conversations",
+            connection=conn,
+            infer_schema_length=None
         )
     return True
 
@@ -149,7 +151,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
     try:
         logger.info(f"Fetching data for table: {table_name}")
-        df = pl.read_database(query=query, connection=conn)
+        df = pl.read_database(query=query, connection=conn, infer_schema_length=None)
         # if table_name == "conversations":
         #     df.write_parquet("conv.parquet")
 
