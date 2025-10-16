@@ -373,9 +373,9 @@ def main():
         return False
 
     if len(sys.argv) > 1:
-        repo_prefix = sys.argv[1] or "/app/datasets"
+        repo_prefix = sys.argv[1]
     else:
-        repo_prefix = "/app/datasets"
+        repo_prefix = "."
 
     if len(sys.argv) > 2:
         only_dataset = sys.argv[2] or None
