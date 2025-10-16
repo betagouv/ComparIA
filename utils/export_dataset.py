@@ -4,14 +4,24 @@ import sys
 import os
 import subprocess
 import os
-import shutil
+import json
 import hashlib
 from datetime import datetime
-from sqlalchemy import create_engine, text
+from sqlalchemy import create_engine
 from sqlalchemy.exc import OperationalError
+
+# Add the parent directory to the Python path to resolve the 'languia' module
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from languia.utils import get_total_params, get_active_params
 
 
 # TODO: apply add token ecologits + topics pii + ip_map just before export
+
+MODELS_JSON_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "models", "generated-models.json"
+)
+MODELS_DATA = {}
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
@@ -36,14 +46,10 @@ DATASET_CONFIG = {
     conv_b_id,
     session_hash,
     visitor_id,
-    country,
-    city,
     model_pair_name,
     opening_msg,
     system_prompt_a,
     system_prompt_b,
-    selected_category,
-    is_unedited_prompt,
     mode,
     custom_models_selection,
     short_summary,
@@ -52,23 +58,16 @@ DATASET_CONFIG = {
     languages,
     total_conv_a_output_tokens,
     total_conv_b_output_tokens,
-    model_a_total_params,
-    model_a_active_params,
-    model_b_active_params,
-    model_b_total_params,
-    total_conv_a_kwh,
-    total_conv_b_kwh,
-    ip,
-    ip_map
+    ip
 FROM conversations
 WHERE archived = FALSE
 AND pii_analyzed = TRUE
-AND contains_pii = FALSE;""",
-# AND postprocess_failed = FALSE
+AND contains_pii = FALSE
+AND postprocess_failed = FALSE
+;""",
         "repo": "comparia-conversations",
     },
     "votes": {
-        # id	timestamp	model_a_name	model_b_name	model_pair_name	chosen_model_name	opening_msg	both_equal	conversation_a	conversation_b	conv_turns	selected_category	is_unedited_prompt	conversation_pair_id	session_hash	visitor_id	conv_comments_a	conv_comments_b	conv_useful_a	conv_useful_b	conv_creative_a	conv_creative_b	conv_clear_formatting_a	conv_clear_formatting_b	conv_incorrect_a	conv_incorrect_b	conv_superficial_a	conv_superficial_b	conv_instructions_not_followed_a	conv_instructions_not_followed_b	system_prompt_b	system_prompt_a	conv_complete_a	conv_complete_b
         "query": """SELECT v.*
 FROM votes v
 WHERE v.archived = FALSE
@@ -76,14 +75,15 @@ AND EXISTS (
     SELECT 1
     FROM conversations c
     WHERE c.conversation_pair_id = v.conversation_pair_id
-    AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
+    AND c.contains_pii = FALSE
+    AND c.postprocess_failed = FALSE
 )
 ;""",
         "repo": "comparia-votes",
     },
     "reactions": {
-        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, country, city, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
+        "query": """SELECT id, timestamp, model_a_name, model_b_name, refers_to_model, msg_index, opening_msg, conversation_a, conversation_b, model_pos, conv_turns, conversation_pair_id, conv_a_id, conv_b_id, refers_to_conv_id, session_hash, visitor_id, response_content, question_content, liked, disliked, comment, useful, creative, complete, clear_formatting, incorrect, superficial, instructions_not_followed, model_pair_name, msg_rank, question_id, system_prompt
 FROM reactions r
 WHERE r.archived = FALSE
 AND EXISTS (
@@ -92,6 +92,7 @@ AND EXISTS (
     WHERE c.conversation_pair_id = r.conversation_pair_id
     AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
+    AND c.postprocess_failed = FALSE
 )
 ;""",
         "repo": "comparia-reactions",
@@ -115,15 +116,29 @@ def load_session_hash_ip():
         return False
     engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
     with engine.connect() as conn:
-        session_hash_to_ip_map = pd.read_sql_query("SELECT ip_map, session_hash FROM conversations", conn)
+        session_hash_to_ip_map = pd.read_sql_query(
+            "SELECT ip_map, session_hash FROM conversations", conn
+        )
     return True
-
 
 
 def hash_md5(value):
     if not value:
         return None
     return hashlib.md5(value.encode("utf-8")).hexdigest()
+
+
+def load_models_data():
+    """Load the generated models JSON data."""
+    global MODELS_DATA
+    try:
+        with open(MODELS_JSON_PATH, "r") as f:
+            models_data = json.load(f)
+            MODELS_DATA = {k.lower(): v for k, v in models_data.items()}
+    except FileNotFoundError:
+        logger.error(f"Models JSON file not found at: {MODELS_JSON_PATH}")
+    except json.JSONDecodeError:
+        logger.error(f"Error decoding JSON from: {MODELS_JSON_PATH}")
 
 
 def fetch_and_transform_data(conn, table_name, query=None):
@@ -145,14 +160,76 @@ def fetch_and_transform_data(conn, table_name, query=None):
             df["visitor_id"] = df.apply(
                 lambda row: (
                     hash_md5(f"ip-{session_hash_to_ip_map.get(row['session_hash'])}")
-                    if pd.isnull(row["visitor_id"]) and session_hash_to_ip_map.get(row['session_hash'])
+                    if pd.isnull(row["visitor_id"])
+                    and session_hash_to_ip_map.get(row["session_hash"])
                     else row["visitor_id"]
                 ),
                 axis=1,
             )
 
-        columns_to_drop = ["archived", "pii_analyzed", "ip", "chatbot_index", "conversation_a_pii_removed","conversation_b_pii_removed", "opening_msg_pii_removed", "ip_map"]
-        
+        columns_to_drop = [
+            "archived",
+            "pii_analyzed",
+            "ip",
+            "chatbot_index",
+            "conversation_a_pii_removed",
+            "conversation_b_pii_removed",
+            "opening_msg_pii_removed",
+            "ip_map",
+            "cohorts",
+            "country_portal",
+        ]
+        if table_name == "conversations":
+            logger.info("Adding model infos...")
+            df["model_a_total_params"] = df["model_a_name"].apply(
+                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {}))
+            )
+            df["model_b_total_params"] = df["model_b_name"].apply(
+                lambda x: get_total_params(MODELS_DATA.get(x.lower(), {}))
+            )
+            df["model_a_active_params"] = df["model_a_name"].apply(
+                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
+            )
+            df["model_b_active_params"] = df["model_b_name"].apply(
+                lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
+            )
+
+            df["total_conv_a_kwh"] = df.apply(
+                lambda row: (
+                    (
+                        (
+                            MODELS_DATA.get(row["model_a_name"].lower(), {}).get(
+                                "wh_per_million_token", 0
+                            )
+                            * row["total_conv_a_output_tokens"]
+                        )
+                        / 1_000_000
+                    )
+                    if row["total_conv_a_output_tokens"] is not None
+                    else None
+                ),
+                axis=1,
+            )
+            df["total_conv_b_kwh"] = df.apply(
+                lambda row: (
+                    (
+                        (
+                            MODELS_DATA.get(row["model_b_name"].lower(), {}).get(
+                                "wh_per_million_token", 0
+                            )
+                            * row["total_conv_b_output_tokens"]
+                        )
+                        / 1_000_000
+                    )
+                    if row["total_conv_b_output_tokens"] is not None
+                    else None
+                ),
+                axis=1,
+            )
+
+        # -- FIXME: drop in dataset and keep in database with a note saying it's flaky
+        #     -- selected_category VARCHAR(255),
+        #     -- is_unedited_prompt BOOLEAN,
         df = df.drop(
             columns=[col for col in columns_to_drop if col in df.columns],
             errors="ignore",
@@ -168,8 +245,7 @@ def export_data(df, table_name, export_dir):
         logger.warning(f"No data to export for table: {table_name}")
         return
 
-    os.makedirs(export_dir,exist_ok=True)
-
+    os.makedirs(export_dir, exist_ok=True)
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
@@ -192,24 +268,35 @@ def export_data(df, table_name, export_dir):
 def commit_and_push(repo_org, repo_name, repo_path):
     """Commits and pushes changes for a given repository."""
     # Check for changes
-    
-        # Commit
-    commit_message = (
-        f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    )
-#  huggingface-cli upload ministere-culture/comparia-votes comparia-votes  --repo-type=dataset
-    logger.info(f"huggingface-cli upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'")
 
-    push_result = subprocess.run(["huggingface-cli", "upload",    (repo_org + "/" + repo_name), repo_path, "--token", os.getenv("HF_PUSH_DATASET_KEY", ""), "--repo-type","dataset", "--commit-message", commit_message])
+    # Commit
+    commit_message = f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+    #  huggingface-cli upload ministere-culture/comparia-votes comparia-votes  --repo-type=dataset
+    logger.info(
+        f"huggingface-cli upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'"
+    )
+
+    push_result = subprocess.run(
+        [
+            "huggingface-cli",
+            "upload",
+            (repo_org + "/" + repo_name),
+            repo_path,
+            "--token",
+            os.getenv("HF_PUSH_DATASET_KEY", ""),
+            "--repo-type",
+            "dataset",
+            "--commit-message",
+            commit_message,
+        ]
+    )
 
     # push_result = subprocess.run(["git", "pull", "-C", repo_path, "push", "--dry-run"])
     if push_result.returncode == 0:
         logger.info(f"Successfully pushed changes for {repo_path}")
         return True
     else:
-        logger.error(
-            f"Failed to push changes for {repo_path}: {push_result.stderr}"
-        )
+        logger.error(f"Failed to push changes for {repo_path}: {push_result.stderr}")
         return False
 
 
@@ -218,9 +305,7 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
     logger.info(f"Starting processing for dataset: {dataset_name}")
     DATABASE_URI = os.getenv("DATABASE_URI")
     if not DATABASE_URI:
-        logger.error(
-            f"Cannot process {dataset_name}: no database configuration provided"
-        )
+        logger.error(f"Cannot process {dataset_name}: no $DATABASE_URI")
         return
 
     repo_name = dataset_config.get("repo")
@@ -230,37 +315,11 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
         logger.error(f"No repository defined for dataset: {dataset_name}")
         return
 
-
     repo_org = os.getenv("REPO_ORG", "ministere-culture")
 
     logger.info(f"Folder defined for dataset: {repo_prefix}")
 
     repo_path = os.path.join(repo_prefix, repo_name)
-
-
-    # if not os.path.exists(repo_path):
-    #     # TODO: refacto
-    #     # TODO: use hf-cli upload/download?
-
-    #     logger.info("Cloning into "+ repo_prefix + " from " + repo_org + "/" + repo_name)
-    #     _clone_result = subprocess.run(cwd=repo_prefix,
-    #                                    args=
-    #         ["git", "-C", repo_prefix, "clone", repo_org + "/" + repo_name]
-    #     )
-
-    #     if _clone_result.returncode == 0:
-    #         logger.info("Cloned")
-    #         return True
-    #     else:
-    #         logger.error(f"Failed to clone for {repo_path}: {_clone_result.stderr}")
-    #         return False
-
-    # Pull latest changes for the repository
-    # if not update_repository(repo_path):
-    #     logger.error(
-    #         f"Failed to update repository for {dataset_name}. Skipping dataset."
-    #     )
-    #     return
 
     engine = None
     conn = None
@@ -272,12 +331,11 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
             # Fetch and transform data
             data = fetch_and_transform_data(conn, dataset_name, query)
 
-
             # Export data
             export_data(data, dataset_name, repo_path)
 
             # Commit and push changes for the repository
-            commit_and_push(repo_org, repo_name, repo_path)
+            # commit_and_push(repo_org, repo_name, repo_path)
 
     except OperationalError as e:
         logger.error(f"Database connection error for dataset {dataset_name}: {e}")
@@ -292,22 +350,28 @@ def process_dataset(dataset_name, dataset_config, repo_prefix):
 def main():
 
     load_session_hash_ip()
+    load_models_data()
     # logger.info("")
     # subprocess.run(args=
     #         ["git", "--global" "config","credential.helper", "store"]
     #     )
-    logger.info("huggingface-cli login --token $HF_TOKEN")
+    logger.info("huggingface-cli login --token $HF_PUSH_DATASET_KEY")
 
-    _login_result = subprocess.run(args=
-        ["huggingface-cli","login", "--token", os.getenv("HF_PUSH_DATASET_KEY", "")]
+    _login_result = subprocess.run(
+        args=[
+            "huggingface-cli",
+            "login",
+            "--token",
+            os.getenv("HF_PUSH_DATASET_KEY", ""),
+        ]
     )
-    
+
     if _login_result.returncode == 0:
         logger.info("Logged in")
     else:
         logger.error(f"Failed to login: {_login_result.stderr}")
         return False
-    
+
     if len(sys.argv) > 1:
         repo_prefix = sys.argv[1] or "/app/datasets"
     else:

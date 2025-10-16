@@ -571,6 +571,11 @@
                     "license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
                     "reuse_specificities": ""
                 },
+                "Swiss AI": {
+                    "commercial_use_specificities": "",
+                    "license_desc": "",
+                    "reuse_specificities": ""
+                },
                 "xAI": {
                     "commercial_use_specificities": "",
                     "license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
@@ -584,6 +589,16 @@
             }
         },
         "models": {
+            "Apertus 70B Instruct": {
+                "desc": "<p>Moyen modèle entièrement open source, incluant ses données, ses poids et son code d’entraînement, développé par un consortium d’institutions suisses. Il a été entraîné sur plus de 1 800 langues à partir de 15 000 milliards de tokens issus exclusivement de sources publiques et à licences ouvertes, garantissant une transparence totale. Entraîné sur le supercalculateur Alps du CSCS à Lugano, alimenté par une énergie hydroélectrique neutre en carbone, il incarne une approche plus durable et éthique du développement de l’IA. Il a été conçu dès le départ pour être conforme à l’AI Act.</p>",
+                "fyi": "<p>Le modèle a été entraîné sur le supercalculateur Alps à Lugano, utilisant plus de 10 millions d’heures GPU alimentées par une énergie hydroélectrique neutre en carbone. Le modèle a été préentraîné sur 15 000 milliards de tokens issus exclusivement de sources publiques et permissives, couvrant plus de 1 800 langues, dont une part importante de langues peu représentées.</p>\n<p>Apertus s’appuie sur un tokenizer byte-level BPE de 131 000 entrées, dérivé du tokenizer « tekken » de Mistral AI, optimisé pour le multilinguisme, le code et les expressions mathématiques. L’architecture combine plusieurs innovations : Rotary Positional Embeddings (RoPE) avec base étendue et ajustement NTK-aware pour les longs contextes, Grouped Query Attention (GQA) pour une meilleure efficacité mémoire, normalisation QK-Norm pour stabiliser l’entraînement, et une fonction d’activation xIELU (extended Integrated ELU) améliorant la performance des MLP.</p>\n<p>L’affinage final du modèle repose sur un algorithme d’alignement appelé QRPO (Quantile Reward-Preferring Optimization), une alternative au RLHF classique, qui utilise des signaux de récompense absolus pour un apprentissage plus stable et mieux aligné sur les préférences humaines. Bien qu’il ne rivalise pas directement avec les modèles propriétaires les plus avancés, Apertus se distingue par son ouverture totale, sa rigueur scientifique et son approche exemplaire en matière de transparence et de conformité réglementaire.</p>",
+                "size_desc": "<p>Avec 70 milliards de paramètres, ce modèle fait partie des petits modèles. Il peut être utilisé localement sur un ordinateur puissant, garantissant la confidentialité des données, ou hébergé sur un serveur équipé d’une seule carte graphique, ce qui limite les coûts d’infrastructure. Sa fenêtre de contexte de 65 536 jetons ce qui permet de traiter d'assez longs documents.</p>"
+            },
+            "Apertus 8B Instruct": {
+                "desc": "<p>Petit modèle entièrement open source, incluant ses données, ses poids et son code d’entraînement, développé par un consortium d’institutions suisses. Il a été entraîné sur plus de 1 800 langues à partir de 15 000 milliards de tokens issus exclusivement de sources publiques et à licences ouvertes, garantissant une transparence totale. Entraîné sur le supercalculateur Alps du CSCS à Lugano, alimenté par une énergie hydroélectrique neutre en carbone, il incarne une approche plus durable et éthique du développement de l’IA. Il a été conçu dès le départ pour être conforme à l’AI Act.</p>",
+                "fyi": "<p>Le modèle a été entraîné sur le supercalculateur Alps à Lugano, utilisant plus de 10 millions d’heures GPU alimentées par une énergie hydroélectrique neutre en carbone. Le modèle a été préentraîné sur 15 000 milliards de tokens issus exclusivement de sources publiques et permissives, couvrant plus de 1 800 langues, dont une part importante de langues peu représentées.</p>\n<p>Apertus s’appuie sur un tokenizer byte-level BPE de 131 000 entrées, dérivé du tokenizer « tekken » de Mistral AI, optimisé pour le multilinguisme, le code et les expressions mathématiques. L’architecture combine plusieurs innovations : Rotary Positional Embeddings (RoPE) avec base étendue et ajustement NTK-aware pour les longs contextes, Grouped Query Attention (GQA) pour une meilleure efficacité mémoire, normalisation QK-Norm pour stabiliser l’entraînement, et une fonction d’activation xIELU (extended Integrated ELU) améliorant la performance des MLP.</p>\n<p>L’affinage final du modèle repose sur un algorithme d’alignement appelé QRPO (Quantile Reward-Preferring Optimization), une alternative au RLHF classique, qui utilise des signaux de récompense absolus pour un apprentissage plus stable et mieux aligné sur les préférences humaines. Bien qu’il ne rivalise pas directement avec les modèles propriétaires les plus avancés, Apertus se distingue par son ouverture totale, sa rigueur scientifique et son approche exemplaire en matière de transparence et de conformité réglementaire.</p>",
+                "size_desc": "<p>Avec 8 milliards de paramètres, ce modèle fait partie des petits modèles. Il peut être utilisé localement sur un ordinateur puissant, garantissant la confidentialité des données, ou hébergé sur un serveur équipé d’une seule carte graphique, ce qui limite les coûts d’infrastructure. Sa fenêtre de contexte de 65 536 jetons ce qui permet de traiter d'assez longs documents.</p>"
+            },
             "Aya 23 8B": {
                 "desc": "<p>Petit modèle multilingue, entraîné spécifiquement en grande proportion sur des langues généralement sous-représentées.</p>",
                 "fyi": "<p>Aya 23 8B de Cohere est un petit modèle de la famille Command R qui a spécialement été entraîné sur un corpus multilingue.</p>",
@@ -733,6 +748,11 @@
                 "desc": "<p>Très grand modèle créé par Zhipu AI, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent.  Le modèle a deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement la réponse finale.</p>",
                 "fyi": "<p>Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin.</p>",
                 "size_desc": "<p>Avec 355 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.</p>"
+            },
+            "GLM 4.6": {
+                "desc": "<p>Mise à jour du grand modèle créé par Zhipu AI - GLM 4.6, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour augmente la taille de la fenêtre de contexte, améliore sa performance en code, s'aligne plus avec les préférences humaines et est plus capable en cas d'usages agentiques/utilisation d'outils.</p>",
+                "fyi": "<p>Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin.</p>",
+                "size_desc": "<p>Avec 357 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 200 000 jetons, ce qui permet de traiter de très longs documents.</p>"
             },
             "GPT 4.1 Nano": {
                 "desc": "<p>Plus petite version allégée du modèle GPT 4.1 , conçue pour limiter les coûts tout en restant compétitive sur la plupart des tâches. Le modèle accepte de très longues requêtes, ce qui permet de l’utiliser par exemple pour l’analyse de corpus de documents.</p>",
@@ -1199,8 +1219,8 @@
                 },
                 "moe": {
                     "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
-                    "name": "MOE",
-                    "title": "Architecture MOE"
+                    "name": "MoE",
+                    "title": "Architecture MoE"
                 },
                 "na": {
                     "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
@@ -1505,7 +1525,7 @@
                     "desc": {
                         "1": "Le modèle <strong>Bradley-Terry</strong> transforme un ensemble de comparaisons locales et potentiellement incomplètes en un système de classement global cohérent et statistiquement robuste, là où le taux de victoire empirique reste limité aux observations directes."
                     },
-                    "title": "Classement selon le taux de victoire des modèles estimé selon le score BT"
+                    "title": "Classement des 10 premiers modèles selon le taux de victoire des modèles estimé selon le score BT"
                 },
                 "title": "Impact du choix de la méthode sur le classement des modèles",
                 "winrate": {
@@ -1513,7 +1533,7 @@
                         "1": "En se basant uniquement sur le <strong>taux de victoire moyen</strong>, on peut obtenir un classement global, mais ce calcul suppose que chaque modèle ait joué contre tous les autres.",
                         "2": "Cette méthode n'est pas idéale car elle nécessite les données de toutes les combinaisons de modèles et ès qu’on augmente le nombre de modèles, cela devient vite coûteux et lourd à maintenir."
                     },
-                    "title": "Classement selon le taux de victoire des modèles"
+                    "title": "Classement des 10 premiers modèles selon le taux de victoire des modèles"
                 }
             },
             "methods": {
@@ -1557,7 +1577,7 @@
                     "creative": "Créative",
                     "incorrect": "Incorrecte",
                     "instructions_not_followed": "Instructions<br> non suivies",
-                    "n_match": "Matchs",
+                    "n_match": "Total matchs",
                     "name": "Modèle",
                     "positive_prefs_ratio": "Répartition des préférences",
                     "superficial": "Superficielle",
@@ -1584,12 +1604,12 @@
                     "consumption_wh": "Conso moyenne<br>(1000 tokens)",
                     "elo": "Score BT",
                     "license": "Licence",
+                    "n_match": "Total votes",
                     "name": "Modèle",
                     "organisation": "Organisation",
                     "rank": "Rang",
                     "release": "Date sortie",
                     "size": "Taille<br>(paramètres)",
-                    "total_votes": "Total votes",
                     "trust_range": "Confiance (±)"
                 },
                 "estimation": "(estimation)",

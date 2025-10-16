@@ -232,7 +232,6 @@ with gr.Blocks(
 
         footer_area = gr.HTML()
 
-
     available_models = gr.JSON(visible=False)
     reveal_data = gr.JSON(visible=False)
 

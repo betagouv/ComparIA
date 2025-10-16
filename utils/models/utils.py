@@ -1,4 +1,4 @@
-import json
+import json5, json
 from pathlib import Path
 from typing import Any
 
@@ -7,7 +7,7 @@ Obj = dict[str, Any]
 
 
 def read_json(path: Path) -> Any:
-    return json.loads(path.read_text())
+    return json5.loads(path.read_text())
 
 
 def write_json(path: Path, data, indent: int = 2) -> None:

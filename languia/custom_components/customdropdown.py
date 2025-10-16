@@ -45,8 +45,9 @@ class CustomDropdown(FormComponent):
 
     def __init__(
         self,
-        choices: Sequence[str | int | float | tuple[str, str | int | float]]
-        | None = None,
+        choices: (
+            Sequence[str | int | float | tuple[str, str | int | float]] | None
+        ) = None,
         *,
         value: dict | Callable | DefaultValue | None = DEFAULT_VALUE,
         type: Literal["value", "index"] = "value",
@@ -111,7 +112,7 @@ class CustomDropdown(FormComponent):
             value = {
                 "prompt_value": "random",
                 "mode": "random",
-                "custom_models_selection": []
+                "custom_models_selection": [],
             }
         self.models = models
         self.max_choices = max_choices
@@ -142,46 +143,46 @@ class CustomDropdown(FormComponent):
                 "mode": {"type": "string"},
                 "custom_models_selection": {
                     "type": "array",
-                    "items": {"type": "string"}
-                }
-            }
+                    "items": {"type": "string"},
+                },
+            },
         }
 
     def example_payload(self) -> Any:
         return {
             "prompt_value": "example prompt",
             "mode": "random",
-            "custom_models_selection": []
+            "custom_models_selection": [],
         }
 
     def example_value(self) -> Any:
         return {
             "prompt_value": "example value",
             "mode": "random",
-            "custom_models_selection": []
+            "custom_models_selection": [],
         }
 
-    def preprocess(
-        self, payload: dict | None
-    ) -> dict | None:
+    def preprocess(self, payload: dict | None) -> dict | None:
         if payload is None:
             return None
 
         if not isinstance(payload, dict):
-            raise Error(f"CustomDropdown expects a dictionary payload, got {type(payload)}")
+            raise Error(
+                f"CustomDropdown expects a dictionary payload, got {type(payload)}"
+            )
 
         try:
             return {
                 "prompt_value": str(payload.get("prompt_value", "")),
                 "mode": str(payload.get("mode", "random")),
-                "custom_models_selection": list(payload.get("custom_models_selection", []))
+                "custom_models_selection": list(
+                    payload.get("custom_models_selection", [])
+                ),
             }
         except Exception as e:
             raise Error(f"Error processing dropdown payload: {str(e)}")
 
-    def postprocess(
-        self, value: dict | None
-    ) -> dict | None:
+    def postprocess(self, value: dict | None) -> dict | None:
         if value is None:
             return None
 
@@ -191,5 +192,5 @@ class CustomDropdown(FormComponent):
         return {
             "prompt_value": str(value.get("prompt_value", "")),
             "mode": str(value.get("mode", "random")),
-            "custom_models_selection": list(value.get("custom_models_selection", []))
+            "custom_models_selection": list(value.get("custom_models_selection", [])),
         }

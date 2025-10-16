@@ -1,55 +1,7 @@
 import logging
-from languia.utils import get_chosen_model, messages_to_dict_list
-
-from litellm import token_counter
-
-from jinja2 import Environment, FileSystemLoader
+from languia.utils import sum_tokens, get_active_params, get_total_params
 
 from ecologits.tracers.utils import compute_llm_impacts, electricity_mixes
-
-size_desc = {
-    "XS": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
-    "S": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
-    "M": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-    "L": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
-    "XL": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
-}
-
-license_desc = {
-    "MIT": "La licence MIT est une licence de logiciel libre permissive : elle permet à quiconque de réutiliser, modifier et distribuer le modèle, même à des fins commerciales, sous réserve d'inclure la licence d'origine et les mentions de droits d'auteur.",
-    "Apache 2.0": "Cette licence permet d'utiliser, modifier et distribuer librement, même à des fins commerciales. Outre la liberté d’utilisation, elle garantit la protection juridique en incluant une clause de non-atteinte aux brevets et la transparence : toutes les modifications doivent être documentées et sont donc traçables.",
-    "Gemma": "Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagée avec la communauté sous la même licence, favorisant ainsi la collaboration et la transparence dans le développement logiciel.",
-    "Llama 3 Community": "Cette licence permet d'utiliser, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels et interdit la réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles concurrents, protégeant ainsi les investissements technologiques et la marque de Meta.",
-    "Llama 3.1": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
-    "Llama 3.3": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
-    "Llama 4": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les opérations dépassant 700 millions d'utilisateurs mensuels. La réutilisation du code ou des contenus générés pour l’entraînement ou l'amélioration de modèles dérivés est autorisée à condition d’afficher “built with llama” et d’inclure “Llama” dans leur nom pour toute distribution.",
-    "Jamba Open Model": "Cette licence permet d'utiliser, reproduire, modifier et distribuer librement le code avec attribution, mais impose des restrictions pour les organismes dépassant 50 millions de dollars de revenus annuels.",
-    "CC-BY-NC-4.0": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
-    "propriétaire Gemini": "Le modèle est disponible sous licence payante et accessible via l'API Gemini disponible sur les plateformes Google AI Studio et Vertex AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-    "propriétaire Mistral": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
-    "propriétaire xAI": "Le modèle est accessible via API xAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-    "propriétaire Liquid": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Liquid AI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités.",
-    "propriétaire OpenAI": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-    "propriétaire Anthropic": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic, nécessitant un paiement à l'utilisation basé sur le nombre de tokens traités ou selon les termes de l'entreprise.",
-    "Mistral AI Non-Production": "Cette licence permet de partager et adapter le contenu à condition de créditer l'auteur, mais interdit toute utilisation commerciale. Elle offre une flexibilité pour les usages non commerciaux tout en protégeant les droits de l'auteur.",
-}
-
-# TODO: move tu utils
-license_attrs = {
-    # Utilisation commerciale
-    # Modification autorisée
-    # Attribution requise
-    # "MIT": {"commercial": True, "can_modify": True, "attribution": True},
-    # "Apache 2.0": {"commercial": True, "can_modify": True, "attribution": True},
-    # "Gemma": {"copyleft": True},
-    "Llama 3 Community": {"warning_commercial": True},
-    "Llama 3.1": {"warning_commercial": True},
-    "Llama 3.3": {"warning_commercial": True},
-    "Jamba Open Model": {"warning_commercial": True},
-    "CC-BY-NC-4.0": {"prohibit_commercial": True},
-    "Mistral AI Non-Production": {"prohibit_commercial": True},
-    "Mistral AI Research": {"prohibit_commercial": True},
-}
 
 
 def convert_range_to_value(value_or_range):
@@ -122,6 +74,7 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
     else:
         return int(streaming_hours * 60 * 60), "s"
 
+
 def build_reveal_dict(conv_a, conv_b, chosen_model):
     from languia.config import all_models
 
@@ -130,27 +83,11 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
     model_a = all_models.get(conv_a.model_name)
     model_b = all_models.get(conv_b.model_name)
 
-    if conv_a.output_tokens and conv_a.output_tokens != 0:
-        model_a_tokens = conv_a.output_tokens
-        logger.debug("output_tokens (model a): " + str(model_a_tokens))
-    else:
-        model_a_tokens = token_counter(
-            messages=messages_to_dict_list(conv_a.messages, strip_metadata=True, concat_reasoning_with_content=True), model=conv_a.model_name
-        )
-        logger.debug(
-            "output_tokens (model a) (litellm tokenizer): " + str(model_a_tokens)
-        )
+    model_a_tokens = sum_tokens(conv_a.messages)
+    logger.debug("output_tokens (model a): " + str(model_a_tokens))
 
-    if conv_b.output_tokens and conv_b.output_tokens != 0:
-        model_b_tokens = conv_b.output_tokens
-        logger.debug("output_tokens (model b): " + str(model_b_tokens))
-    else:
-        model_b_tokens = token_counter(
-            messages=messages_to_dict_list(conv_b.messages, strip_metadata=True, concat_reasoning_with_content=True), model=conv_b.model_name
-        )
-        logger.debug(
-            "output_tokens (model b) (litellm tokenizer): " + str(model_b_tokens)
-        )
+    model_b_tokens = sum_tokens(conv_b.messages)
+    logger.debug("output_tokens (model b): " + str(model_b_tokens))
 
     # TODO:
     # request_latency_a = conv_a.conv.finish_tstamp - conv_a.conv.start_tstamp
@@ -158,18 +95,12 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
     model_a_impact = get_llm_impact(model_a, conv_a.model_name, model_a_tokens, None)
     model_b_impact = get_llm_impact(model_b, conv_b.model_name, model_b_tokens, None)
 
-
-
     model_a_kwh = convert_range_to_value(model_a_impact.energy.value)
     model_b_kwh = convert_range_to_value(model_b_impact.energy.value)
     model_a_co2 = convert_range_to_value(model_a_impact.gwp.value)
     model_b_co2 = convert_range_to_value(model_b_impact.gwp.value)
-    lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(
-        model_a_kwh
-    )
-    lightbulb_b, lightbulb_b_unit = calculate_lightbulb_consumption(
-        model_b_kwh
-    )
+    lightbulb_a, lightbulb_a_unit = calculate_lightbulb_consumption(model_a_kwh)
+    lightbulb_b, lightbulb_b_unit = calculate_lightbulb_consumption(model_b_kwh)
 
     streaming_a, streaming_a_unit = calculate_streaming_hours(model_a_co2)
     streaming_b, streaming_b_unit = calculate_streaming_hours(model_b_co2)
@@ -199,9 +130,6 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         model_b_kwh=model_b_kwh,
         model_a_co2=model_a_co2,
         model_b_co2=model_b_co2,
-        size_desc=size_desc,
-        license_desc=license_desc,
-        license_attrs=license_attrs,
         model_a_tokens=model_a_tokens,
         model_b_tokens=model_b_tokens,
         streaming_a=streaming_a,
@@ -211,7 +139,8 @@ def build_reveal_dict(conv_a, conv_b, chosen_model):
         lightbulb_a=lightbulb_a,
         lightbulb_a_unit=lightbulb_a_unit,
         lightbulb_b=lightbulb_b,
-        lightbulb_b_unit=lightbulb_b_unit)
+        lightbulb_b_unit=lightbulb_b_unit,
+    )
 
 
 def determine_choice_badge(reactions):
@@ -256,41 +185,15 @@ def get_llm_impact(
 ) -> dict:
     """Compute or fallback to estimated impact for an LLM."""
     logger = logging.getLogger("languia")
-    # TODO: add request latency
-    # TODO: add range
-    # model_active_parameter_count: ValueOrRange,
-    # model_total_parameter_count: ValueOrRange,
-
     # most of the time, won't appear in venv/lib64/python3.11/site-packages/ecologits/data/models.csv, should use compute_llm_impacts instead
     # TODO: contribute back to that list
     # impact = llm_impacts("huggingface_hub", model_name, token_count, request_latency)
-    if "active_params" in model_extra_info and "params" in model_extra_info:
-        # TODO: add request latency
-        model_active_parameter_count = int(model_extra_info["active_params"])
-        model_total_parameter_count = int(model_extra_info["params"])
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
-            model_active_parameter_count = int(model_extra_info["active_params"]) // 2
-            model_total_parameter_count = int(model_extra_info["params"]) // 2
-    else:
-        if "params" in model_extra_info:
-            if (
-                "quantization" in model_extra_info
-                and model_extra_info.get("quantization", None) == "q8"
-            ):
-                model_active_parameter_count = int(model_extra_info["params"]) // 2
-                model_total_parameter_count = int(model_extra_info["params"]) // 2
-            else:
-                # TODO: add request latency
-                model_active_parameter_count = int(model_extra_info["params"])
-                model_total_parameter_count = int(model_extra_info["params"])
-        else:
-            logger.error(
-                "Couldn' calculate impact for" + model_name + ", missing params"
-            )
-            return None
+    model_active_parameter_count = get_active_params(model_extra_info)
+    model_total_parameter_count = get_total_params(model_extra_info)
+
+    if not model_active_parameter_count or not model_total_parameter_count:
+        logger.error("Couldn't calculate impact for" + model_name + ", missing params")
+        return None
 
     # TODO: move to config.py
     electricity_mix_zone = "WOR"

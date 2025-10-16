@@ -36,9 +36,10 @@ export interface APIBotModel {
   // extra data
   elo?: number
   trust_range?: [number, number]
-  total_votes?: number
-  consumption_wh?: number
   n_match?: number
+  mean_win_prob?: number
+  win_rate?: number
+  consumption_wh?: number
   prefs:
     | (Record<APIReactionPref, number> & {
         total_prefs: number

@@ -7,13 +7,51 @@ import gradio as gr
 import logging
 
 from languia.models import Model, Endpoint
+import logging
+
+logger = logging.getLogger("languia")
+
+
+def get_total_params(model_extra_info):
+    """
+    Get the total number of parameters for a model.
+    """
+    if "params" in model_extra_info:
+        if (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q8"
+        ):
+            return int(model_extra_info["params"]) // 2
+        else:
+            return int(model_extra_info["params"])
+    else:
+        logger.error(
+            f"Couldn't get total params for {model_extra_info.get('id')}, missing params"
+        )
+        return None
+
+
+def get_active_params(model_extra_info):
+    """
+    Get the number of active parameters for a model.
+    For MoE models, this will be different from the total number of parameters.
+    """
+    if "active_params" in model_extra_info:
+        if (
+            "quantization" in model_extra_info
+            and model_extra_info.get("quantization", None) == "q8"
+        ):
+            return int(model_extra_info["active_params"]) // 2
+        else:
+            return int(model_extra_info["active_params"])
+    else:
+        # Fallback to total params if active_params is not available
+        return get_total_params(model_extra_info)
 
 
 class ContextTooLongError(ValueError):
     def __str__(self):
         return "Context too long."
-
-    pass
 
 
 class EmptyResponseError(RuntimeError):
@@ -36,6 +74,7 @@ def filter_enabled_models(models: dict[str, Model]):
             except:
                 continue
     return enabled_models
+
 
 def get_ip(request: Request):
     # 'x-real-ip': '178.33.22.30', 'x-forwarded-for': '178.33.22.30', 'x-forwarded-host': 'languia.stg.cloud.culture.fr' 'x-original-forwarded-for': '88.185.32.248','cloud-protector-client-ip': '88.185.32.248', )
@@ -155,7 +194,6 @@ def get_user_info(request):
     return user_id, session_id
 
 
-
 class AppState:
     def __init__(
         self,
@@ -261,13 +299,16 @@ def pick_models(mode, custom_models_selection, unavailable_models):
 
     return [model_left_name, model_right_name]
 
+
 def get_api_key(endpoint: Endpoint):
 
     # // "api_type": "huggingface/cohere",
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
 
     # "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
-    if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get("api_base"):
+    if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get(
+        "api_base"
+    ):
         return os.getenv("ALBERT_KEY")
     if endpoint.get("api_base") and "huggingface.co" in endpoint.get("api_base"):
         return os.getenv("HF_INFERENCE_KEY")
@@ -276,69 +317,12 @@ def get_api_key(endpoint: Endpoint):
     return None
 
 
-def params_to_friendly_size(params):
-    """
-    Converts a parameter value to a friendly size description.
-
-    Args:
-        param (int): The parameter value
-
-    Returns:
-        str: The friendly size description
-    """
-    intervals = [(0, 7), (7, 20), (20, 70), (70, 150), (150, float("inf"))]
-    sizes = ["XS", "S", "M", "L", "XL"]
-
-    for i, (lower, upper) in enumerate(intervals):
-        if lower <= params < upper:
-            return sizes[i]
-
-    return "M"
-
-
-def get_conditions_from_license(license_name):
-    if "propriétaire" in license_name:
-        return "restricted"
-    elif license_name in ["Gemma", "CC-BY-NC-4.0"]:
-        return "copyleft"
-    else:
-        return "free"
-
-
-def get_distrib_clause_from_license(license_name):
-    if "propriétaire" in license_name:
-        return "api-only"
-    else:
-        return "open-weights"
-
-
-def count_output_tokens(messages) -> int:
-    """Count output tokens (assuming 4 letters per token)."""
-
-    total_messages = sum(
-        len(msg.content) for msg in messages if msg.role == "assistant"
+def sum_tokens(messages) -> int:
+    total_output_tokens = sum(
+        msg.metadata.get("output_tokens") for msg in messages if msg.role == "assistant"
     )
-    return int(total_messages / 4)
+    return total_output_tokens
 
-
-def shuffle_prompt(guided_cards, request):
-    logger = logging.getLogger("languia")
-    prompt = gen_prompt(guided_cards)
-    logger.info(
-        f"shuffle: {prompt}",
-        extra={"request": request},
-    )
-    return prompt
-
-
-def gen_prompt(category):
-    from languia.config import prompts_table
-
-    prompts = prompts_table[category]
-    # [category]
-    # for category in get_categories(prompts_pool):
-    # prompts.extend([(prompt, category) for prompt in prompts_table[category]])
-    return prompts[np.random.randint(len(prompts))]
 
 def to_threeway_chatbot(conversations):
     threeway_chatbot = []
@@ -356,7 +340,7 @@ def to_threeway_chatbot(conversations):
             threeway_chatbot.append(msg_a)
         else:
             if msg_a:
-                msg_a.metadata["bot"] = "a"
+                msg_a.metadata.update({"bot": "a"})
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
@@ -368,7 +352,7 @@ def to_threeway_chatbot(conversations):
                 )
             if msg_b:
 
-                msg_b.metadata["bot"] = "b"
+                msg_b.metadata.update({"bot": "b"})
                 threeway_chatbot.append(
                     {
                         "role": "assistant",
@@ -385,6 +369,7 @@ def get_gauge_count():
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as dsn
+
     cursor = None
     conn = None
     result = 55000
@@ -406,6 +391,7 @@ AS total_approx;
         cursor.execute(select_statement)
         res = cursor.fetchone()
         result = res[0]
+        return result
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
     finally:
@@ -413,5 +399,3 @@ AS total_approx;
             cursor.close()
         if conn:
             conn.close()
-        return result
-

@@ -16,7 +16,7 @@ origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://localhost:8000"
+    "http://localhost:8000",
 ]
 
 app.add_middleware(
@@ -49,13 +49,10 @@ app = gr.mount_gradio_app(
 
 from languia.utils import get_gauge_count
 
-objective = config.objective
-
-@app.exception_handler(500)
-async def http_exception_handler(request, exc):
-    return FileResponse("templates/50x.html", status_code=500)
+objective = config.OBJECTIVE
 
 
+@app.get("/", response_class=JSONResponse)
 @app.get("/available_models", response_class=JSONResponse)
 async def available_models():
     return JSONResponse(
@@ -71,9 +68,10 @@ async def available_models():
 # async def enabled_models():
 #     return JSONResponse(dict(config.models))
 
+
 @app.get("/counter", response_class=JSONResponse)
 async def counter():
-    return JSONResponse({"count": get_gauge_count(), "objective": config.objective})
+    return JSONResponse({"count": get_gauge_count(), "objective": config.OBJECTIVE})
 
 
 app = SentryAsgiMiddleware(app)

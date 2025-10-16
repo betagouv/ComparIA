@@ -131,13 +131,13 @@ class Config:
 
 def process_conversation(conversation, analyzer, db_params):
     conn = None
-    conversation_pair_id = conversation[0] # Extract ID early
+    conversation_pair_id = conversation[0]  # Extract ID early
     try:
         conn = psycopg2.connect(db_params)
         cursor = conn.cursor()
 
         (
-            _, # conversation_pair_id already extracted
+            _,  # conversation_pair_id already extracted
             conversation_a,
             conversation_b,
             existing_summary,
@@ -145,19 +145,17 @@ def process_conversation(conversation, analyzer, db_params):
             existing_languages,
             existing_contains_pii,
             existing_pii_analyzed,
-            postprocess_failed # Retrieve the new field
+            postprocess_failed,  # Retrieve the new field
         ) = conversation
 
         print(f"Processing conversation pair ID: {conversation_pair_id}")
         if postprocess_failed:
-            print(f"Conversation {conversation_pair_id} marked as postprocess failed, skipping.")
+            print(
+                f"Conversation {conversation_pair_id} marked as postprocess failed, skipping."
+            )
             return None
 
-        if (
-            existing_summary
-            or existing_keywords
-            or existing_languages
-        ):
+        if existing_summary or existing_keywords or existing_languages:
             print(f"Conversation {conversation_pair_id} already has data:")
             print(f"  Short Summary: {existing_summary}")
             print(f"  Keywords: {existing_keywords}")
@@ -167,7 +165,9 @@ def process_conversation(conversation, analyzer, db_params):
             return None  # Indicate no analysis was performed
 
         for attempt in range(Config.MAX_RETRIES):
-            print(f"Attempt {attempt + 1}/{Config.MAX_RETRIES} for conversation pair ID: {conversation_pair_id}")
+            print(
+                f"Attempt {attempt + 1}/{Config.MAX_RETRIES} for conversation pair ID: {conversation_pair_id}"
+            )
             contains_pii, categories, keywords, short_summary, languages = (
                 analyzer.analyze_conversations(
                     conversation_a, conversation_b, conversation_pair_id
@@ -215,14 +215,17 @@ def process_conversation(conversation, analyzer, db_params):
             (conversation_pair_id,),
         )
         conn.commit()
-        return conversation_pair_id # return the id of the failed conversation
+        return conversation_pair_id  # return the id of the failed conversation
     except psycopg2.Error as e:
-        print(f"Database Error in process_conversation for ID {conversation_pair_id}: {e}")
+        print(
+            f"Database Error in process_conversation for ID {conversation_pair_id}: {e}"
+        )
         return conversation_pair_id
     finally:
         if conn:
             cursor.close()
             conn.close()
+
 
 def process_conversations(db_params, analyzer: Config):
     conn = None
@@ -235,41 +238,71 @@ def process_conversations(db_params, analyzer: Config):
             "SELECT count(*) FROM conversations WHERE short_summary IS NULL AND postprocess_failed = FALSE;"
         )
         no_summary_count = cursor.fetchone()[0]
-        print(f"{no_summary_count} conversations with no short summary and not marked as failed.")
+        print(
+            f"{no_summary_count} conversations with no short summary and not marked as failed."
+        )
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE keywords IS NULL AND postprocess_failed = FALSE;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE keywords IS NULL AND postprocess_failed = FALSE;"
+        )
         no_keywords_count = cursor.fetchone()[0]
-        print(f"{no_keywords_count} conversations with no keywords and not marked as failed.")
+        print(
+            f"{no_keywords_count} conversations with no keywords and not marked as failed."
+        )
 
         cursor.execute(
             "SELECT count(*) FROM conversations WHERE short_summary IS NOT NULL AND postprocess_failed = FALSE;"
         )
         summary_count = cursor.fetchone()[0]
-        print(f"{summary_count} conversations with a short summary and not marked as failed.")
+        print(
+            f"{summary_count} conversations with a short summary and not marked as failed."
+        )
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE keywords IS NOT NULL AND postprocess_failed = FALSE;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE keywords IS NOT NULL AND postprocess_failed = FALSE;"
+        )
         keywords_count = cursor.fetchone()[0]
         print(f"{keywords_count} conversations with keywords and not marked as failed.")
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii = FALSE AND postprocess_failed = FALSE;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE contains_pii = FALSE AND postprocess_failed = FALSE;"
+        )
         contains_pii_false_count = cursor.fetchone()[0]
-        print(f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed.")
+        print(
+            f"{contains_pii_false_count} conversations with contains_pii = FALSE and not marked as failed."
+        )
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii = TRUE AND postprocess_failed = FALSE;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE contains_pii = TRUE AND postprocess_failed = FALSE;"
+        )
         contains_pii_true_count = cursor.fetchone()[0]
-        print(f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed.")
+        print(
+            f"{contains_pii_true_count} conversations with contains_pii = TRUE and not marked as failed."
+        )
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE contains_pii IS NULL AND postprocess_failed = FALSE;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE contains_pii IS NULL AND postprocess_failed = FALSE;"
+        )
         contains_pii_null_count = cursor.fetchone()[0]
-        print(f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed.")
+        print(
+            f"{contains_pii_null_count} conversations with contains_pii = NULL and not marked as failed."
+        )
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE pii_analyzed = FALSE AND postprocess_failed = FALSE;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE pii_analyzed = FALSE AND postprocess_failed = FALSE;"
+        )
         pii_analyzed_false_count = cursor.fetchone()[0]
-        print(f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed.")
+        print(
+            f"{pii_analyzed_false_count} conversations with pii_analyzed = FALSE and not marked as failed."
+        )
 
-        cursor.execute("SELECT count(*) FROM conversations WHERE pii_analyzed = TRUE AND postprocess_failed = FALSE;")
+        cursor.execute(
+            "SELECT count(*) FROM conversations WHERE pii_analyzed = TRUE AND postprocess_failed = FALSE;"
+        )
         pii_analyzed_true_count = cursor.fetchone()[0]
-        print(f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed.")
+        print(
+            f"{pii_analyzed_true_count} conversations with pii_analyzed = TRUE and not marked as failed."
+        )
 
         # Include the postprocess_failed field in the select statement and filter
         cursor.execute(

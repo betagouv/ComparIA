@@ -28,7 +28,7 @@
       { key: 'id' as const, label: 'id', energy: true },
       { key: 'elo' as const, label: 'elo', energy: true },
       { key: 'trust_range' as const, label: 'confidence interval' },
-      { key: 'total_votes' as const, label: 'total votes' },
+      { key: 'n_match' as const, label: 'total votes' },
       { key: 'consumption_wh' as const, label: 'consumption (wh)', energy: true },
       { key: 'friendly_size' as const, label: 'size', energy: true },
       { key: 'params' as const, label: 'parameters', energy: true },
@@ -60,7 +60,7 @@
     const csvCols = [
       { key: 'id' as const, label: 'id' },
       { key: 'positive_prefs_ratio' as const, label: 'positive ratio' },
-      { key: 'total_votes' as const, label: 'total votes' },
+      { key: 'total_prefs' as const, label: 'total prefs' },
       { key: 'total_positive_prefs' as const, label: 'total positive' },
       { key: 'total_negative_prefs' as const, label: 'total negative' },
       { key: 'n_match' as const, label: 'total matches' },
@@ -78,7 +78,7 @@
         .map((m) => {
           return csvCols
             .map((col) => {
-              if (col.key === 'id' || col.key === 'total_votes' || col.key === 'n_match') {
+              if (col.key === 'id' || col.key === 'n_match') {
                 return m[col.key]
               } else if (col.key === 'total_positive_prefs') {
                 return APIPositiveReactions.reduce((acc, v) => acc + m.prefs![v], 0)
@@ -119,7 +119,7 @@
         {:else if id === 'preferences'}
           <Preferences data={modelsData} onDownloadData={() => onDownloadPrefsData()} />
         {:else if id === 'methodo'}
-          <Methodology />
+          <Methodology data={modelsData} />
         {/if}
       {/snippet}
     </Tabs>

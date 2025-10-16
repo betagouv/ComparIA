@@ -1,9 +1,53 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import type { BotModel } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+  import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
+  import { extent } from 'd3'
+  import { WinHistogram } from '.'
 
-  function onDownloadData(kind: 'winrate' | 'elo') {}
+  let { data }: { data: BotModel[] } = $props()
+
+  type WinKey = 'mean_win_prob' | 'win_rate'
+
+  function formatModelData(data: BotModel[], key: WinKey) {
+    return data
+      .filter((m) => !!m[key])
+      .slice(0, 10)
+      .sort((a, b) => b[key]! - a[key]!)
+      .map((m, i) => ({
+        x: m.id,
+        y: m[key]!
+      }))
+  }
+
+  const modelsData = $derived({
+    win_rate: formatModelData(data, 'win_rate'),
+    mean_win_prob: formatModelData(data, 'mean_win_prob')
+  })
+
+  const minMaxY = $derived.by(() => {
+    const minMax = extent(Object.values(modelsData).flatMap((l) => l.map((l) => l.y)))
+    // Reduce a bit the min so that the last bar have at least an height
+    return [minMax[0]! - 0.02, minMax[1]!] as [number, number]
+  })
+
+  function onDownloadData() {
+    const csvCols = [
+      { key: 'id' as const, label: 'id' },
+      { key: 'mean_win_prob' as const, label: 'mean win prob' },
+      { key: 'win_rate' as const, label: 'classic winrate' }
+    ]
+    const csvData = [
+      csvCols.map((col) => col.label).join(','),
+      ...data
+        .sort((a, b) => sortIfDefined(a, b, 'mean_win_prob'))
+        .map((m) => csvCols.map((col) => m[col.key]).join(','))
+    ].join('\n')
+
+    downloadTextFile(csvData, 'winrate')
+  }
 </script>
 
 <div id="ranking-methodo">
@@ -62,16 +106,20 @@
 
     <div class="grid gap-6 lg:grid-cols-2">
       <div class="max-w-[528px]">
-        <h4 class="text-[14px]! mb-5!">{m['ranking.methodo.impacts.winrate.title']()}</h4>
+        <h4 class="text-[14px]! mb-5! lg:mb-10! leading-normal!">
+          {m['ranking.methodo.impacts.winrate.title']()}
+        </h4>
 
         <div>
-          <div class="h-[200px] rounded-sm bg-white">FIXME GRAPH</div>
+          <div class="h-[400px] rounded-sm bg-white">
+            <WinHistogram data={modelsData['win_rate']} {minMaxY} />
+          </div>
           <div class="mb-5 mt-2 flex gap-5">
-            <Link
+            <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
               class="text-[14px]! text-dark-grey!"
-            />
+            /> -->
 
             <Link
               href="#"
@@ -80,7 +128,7 @@
               icon="download-line"
               iconPos="right"
               class="text-[14px]! text-dark-grey!"
-              onclick={() => onDownloadData('winrate')}
+              onclick={() => onDownloadData()}
             />
           </div>
         </div>
@@ -92,16 +140,20 @@
       </div>
 
       <div class="max-w-[528px]">
-        <h4 class="text-[14px]! mb-5!">{m['ranking.methodo.impacts.elo.title']()}</h4>
+        <h4 class="text-[14px]! mb-5! leading-normal!">
+          {m['ranking.methodo.impacts.elo.title']()}
+        </h4>
 
         <div>
-          <div class="h-[200px] rounded-sm bg-white">FIXME GRAPH</div>
+          <div class="h-[400px] rounded-sm bg-white">
+            <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
+          </div>
           <div class="mb-5 mt-2 flex gap-5">
-            <Link
+            <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
               class="text-[14px]! text-dark-grey!"
-            />
+            /> -->
 
             <Link
               href="#"
@@ -110,7 +162,7 @@
               icon="download-line"
               iconPos="right"
               class="text-[14px]! text-dark-grey!"
-              onclick={() => onDownloadData('elo')}
+              onclick={() => onDownloadData()}
             />
           </div>
         </div>

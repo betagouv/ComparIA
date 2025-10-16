@@ -1097,7 +1097,7 @@
                 },
                 "moe": {
                     "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
-                    "name": "MOE",
+                    "name": "MoE",
                     "title": "MoE Architecture"
                 },
                 "na": {
@@ -1433,12 +1433,12 @@
                     "consumption_wh": "Energy<br>(1000 tokens)",
                     "elo": "BT score",
                     "license": "Licence",
+                    "n_match": "Total votes",
                     "name": "Model",
                     "organisation": "Organization",
                     "rank": "Rank",
                     "release": "Release date",
                     "size": "Size<br>(parameters)",
-                    "total_votes": "Total votes",
                     "trust_range": "Confidence (±)"
                 },
                 "tooltips": {

@@ -1,6 +1,7 @@
 import gradio as gr
 
 from languia.litellm import litellm_stream_iter
+from litellm.litellm_core_utils.token_counter import token_counter
 
 import time
 from languia.custom_components.customchatbot import (
@@ -31,10 +32,9 @@ class Conversation:
             ] + messages
         else:
             self.messages = messages
-        self.output_tokens = None
         self.conv_id = str(uuid4()).replace("-", "")
         self.model_name = model_name
-        self.endpoint = models.get(model_name, {}).get('endpoint', {})
+        self.endpoint = models.get(model_name, {}).get("endpoint", {})
 
 
 logger = logging.getLogger("languia")
@@ -75,9 +75,6 @@ def update_last_message(
     return messages
 
 
-# import sys
-
-
 def bot_response(
     position,
     state,
@@ -85,8 +82,6 @@ def bot_response(
     temperature=0.7,
     # top_p=1.0,
     max_new_tokens=4096,
-    apply_rate_limit=True,
-    use_recommended_config=True,
 ):
     # temperature = float(temperature)
     # top_p = float(top_p)
@@ -113,7 +108,9 @@ def bot_response(
 
     messages_dict = messages_to_dict_list(state.messages)
     litellm_model_name = (
-        endpoint.get("api_type", "openai") + "/" + endpoint.get("api_model_id", state.model_name)
+        endpoint.get("api_type", "openai")
+        + "/"
+        + endpoint.get("api_model_id", state.model_name)
     )
 
     api_key = get_api_key(endpoint)
@@ -182,10 +179,8 @@ def bot_response(
         raise EmptyResponseError(
             f"No answer from API {endpoint_name} for model {state.model_name}"
         )
-    if output_tokens:
-        if state.output_tokens is None:
-            state.output_tokens = output_tokens
-
+    if not output_tokens:
+        output_tokens = token_counter(text=[reasoning, output], model=state.model_name)
     state.messages = update_last_message(
         messages=state.messages,
         text=output,

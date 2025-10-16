@@ -40,6 +40,7 @@ import requests
 
 from languia.utils import (
     AppState,
+    get_chosen_model,
     get_ip,
     get_matomo_tracker_from_cookies,
     pick_models,
@@ -49,16 +50,13 @@ from languia.utils import (
 from languia.session import increment_input_chars, redis_host, is_ratelimited
 
 from languia.reveal import (
-    get_chosen_model,
     build_reveal_dict,
     determine_choice_badge,
 )
 
 from languia.logs import vote_last_response, sync_reactions, record_conversations
 
-from languia.config import (
-    BLIND_MODE_INPUT_CHAR_LEN_LIMIT,
-)
+from languia.config import BLIND_MODE_INPUT_CHAR_LEN_LIMIT, pricey_models
 
 from languia.conversation import bot_response, Conversation
 
@@ -162,11 +160,11 @@ def register_listeners():
 
         if redis_host and is_ratelimited(ip):
             logger.error(
-                f"Too much text submitted for ip {ip}",
+                f"Too much text submitted to pricey models for ip {ip}",
                 extra={"request": request},
             )
             raise gr.Error(
-                f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures."
+                f"Vous avez trop sollicité les modèles parmi les plus onéreux, veuillez réessayer dans quelques heures. Vous pouvez toujours solliciter des modèles plus petits."
             )
 
         if len(text) > BLIND_MODE_INPUT_CHAR_LEN_LIMIT:
@@ -203,21 +201,9 @@ def register_listeners():
 
         try:
             i = 0
-            gen_a = bot_response(
-                "a",
-                conv_a_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
-            )
+            gen_a = bot_response("a", conv_a_scoped, request)
             i = 1
-            gen_b = bot_response(
-                "b",
-                conv_b_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
-            )
+            gen_b = bot_response("b", conv_b_scoped, request)
             while True:
                 try:
                     i = 0
@@ -274,8 +260,10 @@ def register_listeners():
                     gr.update(visible=True, interactive=False),
                     gr.update(visible=True),
                 ]
-            increment_input_chars(ip, len(text))
-
+            if first_model_name in pricey_models:
+                increment_input_chars(ip, len(text))
+            if second_model_name in pricey_models:
+                increment_input_chars(ip, len(text))
         except Exception as e:
 
             conv_a_scoped.messages[-1].error = str(e)
@@ -452,7 +440,7 @@ def register_listeners():
                 f"Trop de texte a été envoyé, veuillez réessayer dans quelques heures."
             )
 
-        for i in range(config.num_sides):
+        for i in range(2):
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
@@ -464,7 +452,10 @@ def register_listeners():
         chatbot = to_threeway_chatbot(conversations)
         text = gr.update(visible=True, value="")
         ip = get_ip(request)
-        increment_input_chars(ip, len(text))
+        if conv_a_scoped.model_name in pricey_models:
+            increment_input_chars(ip, len(text))
+        if conv_b_scoped.model_name in pricey_models:
+            increment_input_chars(ip, len(text))
 
         # FIXME running bot_response_multi directly here to receive messages on front
         yield from bot_response_multi(
@@ -530,7 +521,7 @@ def register_listeners():
             )
 
         text = text[:BLIND_MODE_INPUT_CHAR_LEN_LIMIT]
-        for i in range(config.num_sides):
+        for i in range(2):
             conversations[i].messages.append(ChatMessage(role="user", content=text))
         conv_a_scoped = conversations[0]
         conv_b_scoped = conversations[1]
@@ -560,20 +551,8 @@ def register_listeners():
         request: gr.Request,
     ):
         try:
-            gen_a = bot_response(
-                "a",
-                conv_a_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
-            )
-            gen_b = bot_response(
-                "b",
-                conv_b_scoped,
-                request,
-                apply_rate_limit=True,
-                use_recommended_config=True,
-            )
+            gen_a = bot_response("a", conv_a_scoped, request)
+            gen_b = bot_response("b", conv_b_scoped, request)
             while True:
                 try:
                     i = 0
@@ -642,7 +621,7 @@ def register_listeners():
                 app_state_scoped, [conv_a_scoped, conv_b_scoped], request
             )
 
-            if not conv_a_scoped.messages[-1].role == "user":
+            if conv_a_scoped.messages[-1].role != "user":
                 logger.info(
                     f"response_modele_a ({conv_a_scoped.model_name}): {str(conv_a_scoped.messages[-1].content)}",
                     extra={"request": request},
@@ -728,11 +707,10 @@ def register_listeners():
     ):
 
         for reaction in app_state_scoped.reactions:
-            if reaction:
-                if reaction["liked"] != None:
-                    logger.info("meaningful_reaction")
-                    logger.debug(reaction)
-                    break
+            if reaction and reaction["liked"] != None:
+                logger.info("meaningful_reaction")
+                logger.debug(reaction)
+                break
         # If no break found
         else:
             logger.debug("no meaningful reaction found, inflicting vote screen")
