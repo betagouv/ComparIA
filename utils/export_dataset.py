@@ -1,4 +1,4 @@
-import pandas as pd
+import polars as pl
 import logging
 import sys
 import os
@@ -116,8 +116,10 @@ def load_session_hash_ip():
         return False
     engine = create_engine(DATABASE_URI, execution_options={"stream_results": True})
     with engine.connect() as conn:
-        session_hash_to_ip_map = pd.read_sql_query(
-            "SELECT ip_map, session_hash FROM conversations", conn
+        session_hash_to_ip_map = pl.read_database(
+            query="SELECT ip_map, session_hash FROM conversations",
+            connection=conn,
+            infer_schema_length=None
         )
     return True
 
@@ -149,22 +151,29 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
     try:
         logger.info(f"Fetching data for table: {table_name}")
-        df = pd.read_sql_query(query, conn)
+        df = pl.read_database(query=query, connection=conn, infer_schema_length=None)
+        # if table_name == "conversations":
+        #     df.write_parquet("conv.parquet")
 
         if "visitor_id" in df.columns:
             logger.info("Hashing visitor_id with MD5...")
-            df["visitor_id"] = df["visitor_id"].apply(
-                lambda x: hash_md5(x) if pd.notnull(x) else None
+            df = df.with_columns(
+                pl.col("visitor_id").map_elements(
+                    lambda x: hash_md5(x) if x is not None else None,
+                    return_dtype=pl.Utf8
+                )
             )
             logger.info("Replacing missing visitor_id with hashed IP map ID...")
-            df["visitor_id"] = df.apply(
-                lambda row: (
-                    hash_md5(f"ip-{session_hash_to_ip_map.get(row['session_hash'])}")
-                    if pd.isnull(row["visitor_id"])
-                    and session_hash_to_ip_map.get(row["session_hash"])
-                    else row["visitor_id"]
-                ),
-                axis=1,
+            df = df.with_columns(
+                pl.when(pl.col("visitor_id").is_null() & pl.col("session_hash").is_in(list(session_hash_to_ip_map.keys())))
+                .then(
+                    pl.col("session_hash").map_elements(
+                        lambda x: hash_md5(f"ip-{session_hash_to_ip_map.get(x)}") if session_hash_to_ip_map.get(x) else None,
+                        return_dtype=pl.Utf8
+                    )
+                )
+                .otherwise(pl.col("visitor_id"))
+                .alias("visitor_id")
             )
 
         columns_to_drop = [
@@ -243,7 +252,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
         return df
     except Exception as e:
         logger.error(f"Failed to fetch data from {table_name}: {e}")
-        return pd.DataFrame()
+        return pl.DataFrame()
 
 
 def export_data(df, table_name, export_dir):
@@ -255,15 +264,15 @@ def export_data(df, table_name, export_dir):
 
     logger.info(f"Exporting data for table: {table_name}")
     try:
-        df.to_parquet(f"{export_dir}/{table_name}.parquet")
-        df.to_json(f"{export_dir}/{table_name}.jsonl", orient="records", lines=True)
+        df.write_parquet(f"{export_dir}/{table_name}.parquet")
+        df.write_ndjson(f"{export_dir}/{table_name}.jsonl")
 
-        sample_df = df.sample(n=min(len(df), 1000), random_state=42)
-        sample_df.to_csv(
-            f"{export_dir}/{table_name}_samples.tsv", sep="\t", index=False
+        sample_df = df.sample(n=min(len(df), 1000), seed=42)
+        sample_df.write_csv(
+            f"{export_dir}/{table_name}_samples.tsv", separator="\t"
         )
-        sample_df.to_json(
-            f"{export_dir}/{table_name}_samples.jsonl", orient="records", lines=True
+        sample_df.write_ndjson(
+            f"{export_dir}/{table_name}_samples.jsonl"
         )
 
         logger.info(f"Export completed for table: {table_name}")
