@@ -63,11 +63,27 @@
   }))
 
   let containerElem = $state<HTMLDivElement>()
-  let hideGradient = $state(true)
+  let scrollable = $state({ left: false, right: false })
 
   function updateGradientDisplay() {
-    hideGradient =
-      containerElem!.offsetWidth + containerElem!.scrollLeft >= containerElem!.scrollWidth
+    scrollable.left = containerElem!.scrollLeft !== 0
+    scrollable.right =
+      containerElem!.offsetWidth + containerElem!.scrollLeft < containerElem!.scrollWidth
+  }
+
+  function scrollTable(direction: -1 | 1) {
+    const { offsetWidth, scrollLeft } = containerElem!
+    const cols = Array.from(containerElem!.querySelectorAll<HTMLHtmlElement>('thead th')).reverse()
+    const col = cols.find((col) => {
+      const offsetLeft = col.offsetLeft - direction
+      return direction === 1 ? offsetLeft <= offsetWidth + scrollLeft : offsetLeft <= scrollLeft
+    })
+
+    if (!col) return
+
+    containerElem!.scrollTo({
+      left: direction === 1 ? col.offsetLeft + col.offsetWidth - offsetWidth : col.offsetLeft
+    })
   }
 
   onMount(() => {
@@ -79,13 +95,35 @@
   {#if header}
     <div class="fr-table__header mb-4 flex flex-col gap-5 md:flex-row">
       {@render header()}
+
+      {#if scrollable.left || scrollable.right}
+        <div class="flex w-full justify-between gap-2 md:w-auto">
+          <Button
+            text={m['actions.scrollLeft']()}
+            icon="arrow-left-line"
+            iconOnly
+            variant="tertiary"
+            disabled={!scrollable.left}
+            onclick={() => scrollTable(-1)}
+          />
+          <Button
+            text={m['actions.scrollRight']()}
+            icon="arrow-right-line"
+            iconOnly
+            variant="tertiary"
+            disabled={!scrollable.right}
+            class="ms-auto md:ms-0"
+            onclick={() => scrollTable(1)}
+          />
+        </div>
+      {/if}
     </div>
   {/if}
 
   <div class="fr-table__wrapper relative">
     <div
       id="table-gradient"
-      class={['z-1 absolute inset-0 start-[95%]', { hidden: hideGradient }]}
+      class={['z-1 absolute inset-0 start-[80%] md:start-[95%]', { hidden: !scrollable.right }]}
     ></div>
 
     <div

@@ -17,6 +17,8 @@
         "downloadData": "Télécharger les données",
         "home": "Page d'accueil",
         "returnHome": "Revenir à l'accueil",
+        "scrollLeft": "Defiler vers la gauche",
+        "scrollRight": "Défiler vers la droite",
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue",
         "vote": "Donner mon avis"
@@ -1328,7 +1330,7 @@
                 "XL": ">400 mds",
                 "XS": "<15 mds"
             },
-           "estimated": "Taille estimée ({size})",
+            "estimated": "Taille estimée ({size})",
             "title": "Taille"
         }
     },
