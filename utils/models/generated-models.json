@@ -76,7 +76,7 @@
     "commercial_use": false,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 985,
+    "elo": 994,
     "endpoint": {
       "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
       "api_model_id": "c4ai-aya-expanse-32b",
@@ -86,8 +86,8 @@
     "icon_path": "cohere.png",
     "id": "aya-expanse-32b",
     "license": "CC-BY-NC-4.0",
-    "mean_win_prob": 0.5080581239614764,
-    "n_match": 3552,
+    "mean_win_prob": 0.5051322245143051,
+    "n_match": 4032,
     "new": false,
     "organisation": "Cohere",
     "params": 32,
@@ -110,24 +110,24 @@
     "simple_name": "Aya Expanse 32B",
     "status": "enabled",
     "trust_range": [
-      4,
-      5
+      3,
+      4
     ],
     "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
     "wh_per_million_token": 7135.939999999998,
-    "win_rate": 0.47371903153153155
+    "win_rate": 0.4703000992063492
   },
   "aya-expanse-8b": {
     "arch": "dense",
     "commercial_use": false,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 967,
+    "elo": 976,
     "friendly_size": "XS",
     "icon_path": "cohere.png",
     "id": "aya-expanse-8b",
     "license": "CC-BY-NC-4.0",
-    "mean_win_prob": 0.4826450444566156,
+    "mean_win_prob": 0.48005364097104664,
     "n_match": 1302,
     "new": false,
     "organisation": "Cohere",
@@ -151,8 +151,8 @@
     "simple_name": "Aya Expanse 8B",
     "status": "archived",
     "trust_range": [
-      8,
-      6
+      7,
+      8
     ],
     "wh_per_million_token": 3767.8599999999997,
     "win_rate": 0.5014285714285713
@@ -183,13 +183,13 @@
     "commercial_use": false,
     "consumption_wh": 8,
     "distribution": "open-weights",
-    "elo": 923,
+    "elo": 932,
     "friendly_size": "S",
     "icon_path": "cohere.png",
     "id": "c4ai-command-r-08-2024",
     "license": "CC-BY-NC-4.0",
-    "mean_win_prob": 0.42224375810166187,
-    "n_match": 5999,
+    "mean_win_prob": 0.4207291062904581,
+    "n_match": 5959,
     "new": false,
     "organisation": "Cohere",
     "params": 35,
@@ -212,11 +212,11 @@
     "simple_name": "Command R",
     "status": "disabled",
     "trust_range": [
-      2,
+      3,
       3
     ],
     "wh_per_million_token": 7556.949999999999,
-    "win_rate": null
+    "win_rate": 0.42916932371203226
   },
   "chocolatine-14b-instruct-dpo-v1.2": {
     "arch": "dense",
@@ -245,12 +245,12 @@
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 747,
+    "elo": 753,
     "friendly_size": "XS",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-14b-instruct-dpo-v1.2-q4",
     "license": "MIT",
-    "mean_win_prob": 0.2146890665795374,
+    "mean_win_prob": 0.2110520294849003,
     "n_match": 309,
     "new": false,
     "organisation": "jpacifico",
@@ -280,7 +280,7 @@
     ],
     "url": "https://huggingface.co/jpacifico/Chocolatine-14B-Instruct-DPO-v1.2-Q4_K_M-GGUF",
     "wh_per_million_token": 4609.88,
-    "win_rate": 0.2402265372168285
+    "win_rate": 0.24022653721682843
   },
   "chocolatine-2-14b-instruct-v2.0.3": {
     "arch": "dense",
@@ -309,12 +309,12 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 812,
+    "elo": 821,
     "friendly_size": "XS",
     "icon_path": "huggingface.svg",
     "id": "chocolatine-2-14b-instruct-v2.0.3-q8",
     "license": "MIT",
-    "mean_win_prob": 0.2830008059006913,
+    "mean_win_prob": 0.28203887869331534,
     "n_match": 1796,
     "new": false,
     "organisation": "jpacifico",
@@ -339,26 +339,26 @@
     "simple_name": "Chocolatine 2 14B",
     "status": "archived",
     "trust_range": [
-      1,
+      0,
       1
     ],
     "url": "https://huggingface.co/jpacifico/jpacifico/Chocolatine-2-14B-Instruct-v2.0.3",
     "wh_per_million_token": 3627.5233333333335,
-    "win_rate": 0.33153674832962143
+    "win_rate": 0.3315367483296213
   },
   "claude-3-5-sonnet-v2": {
     "active_params": 137.5,
     "arch": "maybe-moe",
     "commercial_use": null,
-    "consumption_wh": 134,
+    "consumption_wh": 87,
     "distribution": "api-only",
-    "elo": 965,
+    "elo": 974,
     "friendly_size": "XL",
     "icon_path": "anthropic.png",
     "id": "claude-3-5-sonnet-v2",
     "license": "proprietary",
-    "mean_win_prob": 0.4801382342322256,
-    "n_match": 5685,
+    "mean_win_prob": 0.4771442226646627,
+    "n_match": 5683,
     "new": false,
     "organisation": "Anthropic",
     "params": 440,
@@ -381,26 +381,26 @@
     "simple_name": "Claude 3.5 Sonnet v2",
     "status": "archived",
     "trust_range": [
-      6,
-      2
+      4,
+      4
     ],
     "url": "https://www.anthropic.com/news/3-5-models-and-computer-use",
     "wh_per_million_token": 87485.15999999997,
-    "win_rate": 0.49167810026385234
+    "win_rate": 0.49210804152736226
   },
   "claude-3-7-sonnet": {
     "active_params": 137.5,
     "arch": "maybe-moe",
     "commercial_use": null,
-    "consumption_wh": 134,
+    "consumption_wh": 87,
     "distribution": "api-only",
-    "elo": 1044,
+    "elo": 1053,
     "friendly_size": "XL",
     "icon_path": "anthropic.png",
     "id": "claude-3-7-sonnet",
     "license": "proprietary",
-    "mean_win_prob": 0.5884593817107391,
-    "n_match": 3909,
+    "mean_win_prob": 0.5869075063863287,
+    "n_match": 3907,
     "new": false,
     "organisation": "Anthropic",
     "params": 440,
@@ -423,12 +423,12 @@
     "simple_name": "Claude 3.7 Sonnet",
     "status": "disabled",
     "trust_range": [
-      3,
-      6
+      5,
+      4
     ],
     "url": "https://www.anthropic.com/news/claude-3-7-sonnet",
     "wh_per_million_token": 87485.15999999997,
-    "win_rate": 0.5242363775901765
+    "win_rate": 0.5242257486562582
   },
   "claude-4-5-sonnet": {
     "active_params": 137.5,
@@ -461,9 +461,9 @@
     "active_params": 137.5,
     "arch": "maybe-moe",
     "commercial_use": null,
-    "consumption_wh": 61,
+    "consumption_wh": 87,
     "distribution": "api-only",
-    "elo": 1043,
+    "elo": 1063,
     "endpoint": {
       "api_model_id": "anthropic/claude-sonnet-4",
       "api_type": "openrouter"
@@ -472,8 +472,8 @@
     "icon_path": "anthropic.png",
     "id": "claude-4-sonnet",
     "license": "proprietary",
-    "mean_win_prob": 0.5878335397532999,
-    "n_match": 1092,
+    "mean_win_prob": 0.5992278571832657,
+    "n_match": 1098,
     "new": false,
     "organisation": "Anthropic",
     "params": 440,
@@ -496,8 +496,8 @@
     "simple_name": "Claude 4 Sonnet",
     "status": "enabled",
     "trust_range": [
-      6,
-      7
+      8,
+      6
     ],
     "wh_per_million_token": 87485.15999999997,
     "win_rate": null
@@ -507,7 +507,7 @@
     "commercial_use": false,
     "consumption_wh": 18,
     "distribution": "open-weights",
-    "elo": 1057,
+    "elo": 1064,
     "endpoint": {
       "api_model_id": "cohere/command-a",
       "api_type": "openrouter"
@@ -516,8 +516,8 @@
     "icon_path": "cohere.png",
     "id": "command-a",
     "license": "CC-BY-NC-4.0",
-    "mean_win_prob": 0.6058786916891241,
-    "n_match": 4415,
+    "mean_win_prob": 0.6008961844170537,
+    "n_match": 4807,
     "new": false,
     "organisation": "Cohere",
     "params": 111,
@@ -540,8 +540,8 @@
     "simple_name": "Command A",
     "status": "enabled",
     "trust_range": [
-      3,
-      4
+      4,
+      5
     ],
     "url": "https://huggingface.co/CohereForAI/c4ai-command-a-03-2025",
     "wh_per_million_token": 18222.536666666667,
@@ -601,7 +601,7 @@
     "commercial_use": true,
     "consumption_wh": 47,
     "distribution": "open-weights",
-    "elo": 1023,
+    "elo": 1031,
     "endpoint": {
       "api_model_id": "deepseek/deepseek-r1",
       "api_type": "openrouter"
@@ -610,8 +610,8 @@
     "icon_path": "deepseek.png",
     "id": "deepseek-r1",
     "license": "MIT",
-    "mean_win_prob": 0.5603654621033086,
-    "n_match": 3799,
+    "mean_win_prob": 0.5564808214129897,
+    "n_match": 3510,
     "new": false,
     "organisation": "DeepSeek",
     "params": 671,
@@ -634,12 +634,12 @@
     "simple_name": "DeepSeek R1",
     "status": "archived",
     "trust_range": [
-      2,
-      6
+      4,
+      3
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-R1",
     "wh_per_million_token": 47025.74,
-    "win_rate": null
+    "win_rate": 0.5313019943019943
   },
   "deepseek-r1-0528": {
     "active_params": 37,
@@ -673,7 +673,7 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 947,
+    "elo": 956,
     "endpoint": {
       "api_model_id": "deepseek/deepseek-r1-distill-llama-70b",
       "api_type": "openrouter"
@@ -682,8 +682,8 @@
     "icon_path": "deepseek.png",
     "id": "deepseek-r1-distill-llama-70b",
     "license": "Llama 3.3",
-    "mean_win_prob": 0.4544952513196748,
-    "n_match": 2559,
+    "mean_win_prob": 0.4529969359259259,
+    "n_match": 2718,
     "new": false,
     "organisation": "DeepSeek",
     "params": 70,
@@ -706,7 +706,7 @@
     "simple_name": "DeepSeek R1 Llama 70B",
     "status": "enabled",
     "trust_range": [
-      6,
+      7,
       2
     ],
     "url": "https://huggingface.co/deepseek-ai/deepseek-r1-distill-llama-70b",
@@ -719,7 +719,7 @@
     "commercial_use": true,
     "consumption_wh": 47,
     "distribution": "open-weights",
-    "elo": 1085,
+    "elo": 1097,
     "endpoint": {
       "api_model_id": "deepseek/deepseek-chat-v3-0324",
       "api_type": "openrouter"
@@ -728,8 +728,8 @@
     "icon_path": "deepseek.png",
     "id": "deepseek-v3-0324",
     "license": "MIT",
-    "mean_win_prob": 0.643524558131932,
-    "n_match": 4832,
+    "mean_win_prob": 0.6439809132899961,
+    "n_match": 4385,
     "new": false,
     "organisation": "DeepSeek",
     "params": 685,
@@ -753,11 +753,11 @@
     "status": "archived",
     "trust_range": [
       2,
-      3
+      5
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3-0324",
     "wh_per_million_token": 47025.74,
-    "win_rate": null
+    "win_rate": 0.5851128848346637
   },
   "deepseek-v3-chat": {
     "active_params": 37,
@@ -765,13 +765,13 @@
     "commercial_use": true,
     "consumption_wh": 47,
     "distribution": "open-weights",
-    "elo": 1074,
+    "elo": 1082,
     "friendly_size": "XL",
     "icon_path": "deepseek.png",
     "id": "deepseek-v3-chat",
     "license": "MIT",
-    "mean_win_prob": 0.6285489460249408,
-    "n_match": 5394,
+    "mean_win_prob": 0.6253520264839973,
+    "n_match": 5388,
     "new": false,
     "organisation": "DeepSeek",
     "params": 671,
@@ -794,25 +794,25 @@
     "simple_name": "DeepSeek v3",
     "status": "archived",
     "trust_range": [
-      1,
-      4
+      3,
+      5
     ],
     "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
     "wh_per_million_token": 47025.74,
-    "win_rate": 0.6146811271783463
+    "win_rate": 0.6141481069042317
   },
   "gemini-1.5-pro-001": {
     "active_params": 220,
     "arch": "moe",
     "commercial_use": null,
-    "consumption_wh": 133,
+    "consumption_wh": 168,
     "distribution": "api-only",
-    "elo": 1050,
+    "elo": 1059,
     "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-1.5-pro-001",
     "license": "proprietary",
-    "mean_win_prob": 0.5974543230288275,
+    "mean_win_prob": 0.5947279722627247,
     "n_match": 2360,
     "new": false,
     "organisation": "Google",
@@ -836,26 +836,26 @@
     "simple_name": "Gemini 1.5 Pro",
     "status": "archived",
     "trust_range": [
-      4,
-      7
+      8,
+      6
     ],
     "url": "https://ai.google.dev/gemini-api",
     "wh_per_million_token": 167596.16666666666,
-    "win_rate": 0.6779703389830509
+    "win_rate": 0.6779703389830508
   },
   "gemini-1.5-pro-002": {
     "active_params": 220,
     "arch": "moe",
     "commercial_use": null,
-    "consumption_wh": 134,
+    "consumption_wh": 168,
     "distribution": "api-only",
-    "elo": 1015,
+    "elo": 1024,
     "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-1.5-pro-002",
     "license": "proprietary",
-    "mean_win_prob": 0.5490949912321552,
-    "n_match": 5035,
+    "mean_win_prob": 0.5467735750628704,
+    "n_match": 5027,
     "new": false,
     "organisation": "Google",
     "params": 600,
@@ -878,26 +878,26 @@
     "simple_name": "Gemini 1.5 Pro",
     "status": "archived",
     "trust_range": [
-      5,
-      4
+      3,
+      5
     ],
     "url": "https://ai.google.dev/gemini-api",
     "wh_per_million_token": 167596.16666666666,
-    "win_rate": 0.5422303872889772
+    "win_rate": 0.5421981300974736
   },
   "gemini-2.0-flash-001": {
     "active_params": 137,
     "arch": "moe",
     "commercial_use": null,
-    "consumption_wh": 8,
+    "consumption_wh": 0,
     "distribution": "api-only",
-    "elo": 1090,
+    "elo": 1100,
     "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-2.0-flash-001",
     "license": "proprietary",
-    "mean_win_prob": 0.6500337997913367,
-    "n_match": 5903,
+    "mean_win_prob": 0.6481125752719294,
+    "n_match": 5879,
     "new": false,
     "organisation": "Google",
     "params": 440,
@@ -920,26 +920,26 @@
     "simple_name": "Gemini 2.0 Flash",
     "status": "archived",
     "trust_range": [
-      1,
-      4
+      2,
+      6
     ],
     "url": "https://ai.google.dev/gemini-api",
     "wh_per_million_token": 87485.15999999997,
-    "win_rate": null
+    "win_rate": 0.6200952542949482
   },
   "gemini-2.0-flash-exp": {
     "active_params": 137,
     "arch": "moe",
     "commercial_use": null,
-    "consumption_wh": 8,
+    "consumption_wh": 0,
     "distribution": "api-only",
-    "elo": 1104,
+    "elo": 1113,
     "friendly_size": "XL",
     "icon_path": "google.png",
     "id": "gemini-2.0-flash-exp",
     "license": "proprietary",
-    "mean_win_prob": 0.6669971896177344,
-    "n_match": 2816,
+    "mean_win_prob": 0.664805993063853,
+    "n_match": 2805,
     "new": false,
     "organisation": "Google",
     "params": 440,
@@ -963,19 +963,19 @@
     "status": "archived",
     "trust_range": [
       1,
-      2
+      4
     ],
     "url": "https://ai.google.dev/gemini-api",
     "wh_per_million_token": 87485.15999999997,
-    "win_rate": 0.653934659090909
+    "win_rate": 0.6550089126559714
   },
   "gemini-2.5-flash": {
     "active_params": 137,
     "arch": "moe",
     "commercial_use": null,
-    "consumption_wh": 12,
+    "consumption_wh": 87,
     "distribution": "api-only",
-    "elo": 1117,
+    "elo": 1129,
     "endpoint": {
       "api_model_id": "gemini-2.5-flash",
       "api_type": "vertex_ai"
@@ -984,8 +984,8 @@
     "icon_path": "google.png",
     "id": "gemini-2.5-flash",
     "license": "proprietary",
-    "mean_win_prob": 0.6830116182798468,
-    "n_match": 812,
+    "mean_win_prob": 0.6851331471655292,
+    "n_match": 1016,
     "new": true,
     "organisation": "Google",
     "params": 440,
@@ -1009,10 +1009,10 @@
     "status": "enabled",
     "trust_range": [
       1,
-      2
+      3
     ],
     "wh_per_million_token": 87485.15999999997,
-    "win_rate": 0.6178694581280788
+    "win_rate": 0.6023326771653543
   },
   "gemma-2-27b-it": {
     "arch": "dense",
@@ -1041,12 +1041,12 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 997,
+    "elo": 1006,
     "friendly_size": "S",
     "icon_path": "google.png",
     "id": "gemma-2-27b-it-q8",
     "license": "Gemma",
-    "mean_win_prob": 0.5246929799063921,
+    "mean_win_prob": 0.5213687195595966,
     "n_match": 762,
     "new": false,
     "organisation": "Google",
@@ -1070,7 +1070,7 @@
     "simple_name": "Gemma 2 27B",
     "status": "archived",
     "trust_range": [
-      11,
+      12,
       7
     ],
     "url": "https://huggingface.co/google/gemma-2-27b-it",
@@ -1104,13 +1104,13 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 947,
+    "elo": 956,
     "friendly_size": "XS",
     "icon_path": "google.png",
     "id": "gemma-2-9b-it",
     "license": "Gemma",
-    "mean_win_prob": 0.45565609247621636,
-    "n_match": 5116,
+    "mean_win_prob": 0.45311592635234516,
+    "n_match": 5115,
     "new": false,
     "organisation": "Google",
     "params": 9,
@@ -1133,19 +1133,19 @@
     "simple_name": "Gemma 2 9B",
     "status": "archived",
     "trust_range": [
-      4,
+      5,
       2
     ],
     "url": "https://huggingface.co/google/gemma-2-9b-it",
     "wh_per_million_token": 3908.1966666666667,
-    "win_rate": 0.5066673182173574
+    "win_rate": 0.5069931573802542
   },
   "gemma-3-12b": {
     "arch": "dense",
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 1066,
+    "elo": 1075,
     "endpoint": {
       "api_model_id": "google/gemma-3-12b-it",
       "api_type": "openrouter"
@@ -1154,8 +1154,8 @@
     "icon_path": "google.png",
     "id": "gemma-3-12b",
     "license": "Gemma",
-    "mean_win_prob": 0.6179889464814592,
-    "n_match": 4522,
+    "mean_win_prob": 0.6154864196101204,
+    "n_match": 4840,
     "new": false,
     "organisation": "Google",
     "params": 12,
@@ -1178,19 +1178,19 @@
     "simple_name": "Gemma 3 12B",
     "status": "enabled",
     "trust_range": [
-      2,
-      4
+      3,
+      6
     ],
     "url": "https://huggingface.co/google/gemma-3-12b-it",
     "wh_per_million_token": 4329.206666666666,
-    "win_rate": 0.5777532065457762
+    "win_rate": null
   },
   "gemma-3-27b": {
     "arch": "dense",
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1089,
+    "elo": 1096,
     "endpoint": {
       "api_model_id": "google/gemma-3-27b-it",
       "api_type": "openrouter"
@@ -1199,8 +1199,8 @@
     "icon_path": "google.png",
     "id": "gemma-3-27b",
     "license": "Gemma",
-    "mean_win_prob": 0.6484312190011655,
-    "n_match": 4859,
+    "mean_win_prob": 0.6432694652711533,
+    "n_match": 5202,
     "new": false,
     "organisation": "Google",
     "params": 27,
@@ -1223,19 +1223,19 @@
     "simple_name": "Gemma 3 27B",
     "status": "enabled",
     "trust_range": [
-      2,
-      3
+      3,
+      5
     ],
     "url": "https://huggingface.co/google/gemma-3-27b-it",
     "wh_per_million_token": 6434.256666666666,
-    "win_rate": null
+    "win_rate": 0.5977777777777779
   },
   "gemma-3-4b": {
     "arch": "dense",
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1039,
+    "elo": 1046,
     "endpoint": {
       "api_model_id": "google/gemma-3-4b-it",
       "api_type": "openrouter"
@@ -1244,8 +1244,8 @@
     "icon_path": "google.png",
     "id": "gemma-3-4b",
     "license": "Gemma",
-    "mean_win_prob": 0.5821312724078959,
-    "n_match": 5382,
+    "mean_win_prob": 0.5772112981393527,
+    "n_match": 5773,
     "new": false,
     "organisation": "Google",
     "params": 4,
@@ -1268,12 +1268,12 @@
     "simple_name": "Gemma 3 4B",
     "status": "enabled",
     "trust_range": [
-      3,
-      5
+      6,
+      2
     ],
     "url": "https://huggingface.co/google/gemma-3-4b-it",
     "wh_per_million_token": 3206.5133333333333,
-    "win_rate": 0.5376570048309179
+    "win_rate": 0.5317373982331542
   },
   "gemma-3n-e4b-it": {
     "active_params": 4,
@@ -1281,7 +1281,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1003,
+    "elo": 1041,
     "endpoint": {
       "api_model_id": "google/gemma-3n-e4b-it",
       "api_type": "openrouter"
@@ -1290,8 +1290,8 @@
     "icon_path": "google.png",
     "id": "gemma-3n-e4b-it",
     "license": "Gemma",
-    "mean_win_prob": 0.5332035358714943,
-    "n_match": 1087,
+    "mean_win_prob": 0.5701912371067508,
+    "n_match": 902,
     "new": true,
     "organisation": "Google",
     "params": 8,
@@ -1314,8 +1314,8 @@
     "simple_name": "Gemma 3n 4B",
     "status": "enabled",
     "trust_range": [
-      8,
-      5
+      9,
+      6
     ],
     "wh_per_million_token": 3206.5133333333333,
     "win_rate": null
@@ -1324,9 +1324,9 @@
     "active_params": 32,
     "arch": "moe",
     "commercial_use": true,
-    "consumption_wh": 157,
+    "consumption_wh": 21,
     "distribution": "open-weights",
-    "elo": 1080,
+    "elo": 1103,
     "endpoint": {
       "api_model_id": "z-ai/glm-4.5",
       "api_type": "openrouter"
@@ -1335,8 +1335,8 @@
     "icon_path": "zhipu.svg",
     "id": "glm-4.5",
     "license": "MIT",
-    "mean_win_prob": 0.636467488642974,
-    "n_match": 127,
+    "mean_win_prob": 0.6518162247535938,
+    "n_match": 252,
     "new": false,
     "organisation": "Zhipu",
     "params": 355,
@@ -1359,7 +1359,7 @@
     "simple_name": "GLM 4.5",
     "status": "enabled",
     "trust_range": [
-      5,
+      3,
       15
     ],
     "wh_per_million_token": 21407.82,
@@ -1416,9 +1416,9 @@
   "gpt-4.1-mini": {
     "arch": "maybe-dense",
     "commercial_use": null,
-    "consumption_wh": 12,
+    "consumption_wh": 13,
     "distribution": "api-only",
-    "elo": 1029,
+    "elo": 1037,
     "endpoint": {
       "api_model_id": "openai/gpt-4.1-mini",
       "api_type": "openrouter"
@@ -1427,8 +1427,8 @@
     "icon_path": "openai.svg",
     "id": "gpt-4.1-mini",
     "license": "proprietary",
-    "mean_win_prob": 0.5677809215177921,
-    "n_match": 5695,
+    "mean_win_prob": 0.5641452850306717,
+    "n_match": 6059,
     "new": false,
     "organisation": "OpenAI",
     "params": 75,
@@ -1451,19 +1451,19 @@
     "simple_name": "GPT-4.1 Mini",
     "status": "enabled",
     "trust_range": [
-      3,
-      4
+      4,
+      3
     ],
     "url": "https://platform.openai.com/docs/models/gpt-4.1-mini",
     "wh_per_million_token": 13170.416666666666,
-    "win_rate": 0.5160280948200175
+    "win_rate": null
   },
   "gpt-4.1-nano": {
     "arch": "maybe-dense",
     "commercial_use": null,
-    "consumption_wh": 8,
+    "consumption_wh": 6,
     "distribution": "api-only",
-    "elo": 969,
+    "elo": 982,
     "endpoint": {
       "api_model_id": "openai/gpt-4.1-nano",
       "api_type": "openrouter"
@@ -1472,8 +1472,8 @@
     "icon_path": "openai.svg",
     "id": "gpt-4.1-nano",
     "license": "proprietary",
-    "mean_win_prob": 0.4857818120675204,
-    "n_match": 4300,
+    "mean_win_prob": 0.48865811439617396,
+    "n_match": 4620,
     "new": false,
     "organisation": "OpenAI",
     "params": 23,
@@ -1496,26 +1496,26 @@
     "simple_name": "GPT 4.1 Nano",
     "status": "enabled",
     "trust_range": [
-      3,
-      5
+      4,
+      4
     ],
     "url": "https://openai.com/index/gpt-4-1/",
     "wh_per_million_token": 5872.909999999999,
-    "win_rate": 0.46347906976744185
+    "win_rate": null
   },
   "gpt-4o-2024-08-06": {
     "active_params": 137.5,
     "arch": "maybe-moe",
     "commercial_use": null,
-    "consumption_wh": 61,
+    "consumption_wh": 87,
     "distribution": "api-only",
-    "elo": 956,
+    "elo": 964,
     "friendly_size": "XL",
     "icon_path": "openai.svg",
     "id": "gpt-4o-2024-08-06",
     "license": "proprietary",
-    "mean_win_prob": 0.4671491104668001,
-    "n_match": 5900,
+    "mean_win_prob": 0.4640395635551428,
+    "n_match": 5896,
     "new": false,
     "organisation": "OpenAI",
     "params": 440,
@@ -1538,25 +1538,25 @@
     "simple_name": "GPT-4o",
     "status": "archived",
     "trust_range": [
-      6,
-      2
+      4,
+      4
     ],
     "url": "https://platform.openai.com/docs/models/gpt-4o",
     "wh_per_million_token": 87485.15999999997,
-    "win_rate": 0.48838983050847457
+    "win_rate": 0.4884362279511534
   },
   "gpt-4o-mini-2024-07-18": {
     "arch": "maybe-dense",
     "commercial_use": null,
-    "consumption_wh": 8,
+    "consumption_wh": 5,
     "distribution": "api-only",
-    "elo": 976,
+    "elo": 984,
     "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "gpt-4o-mini-2024-07-18",
     "license": "proprietary",
-    "mean_win_prob": 0.4951469566441382,
-    "n_match": 6994,
+    "mean_win_prob": 0.49202136302582894,
+    "n_match": 6990,
     "new": false,
     "organisation": "OpenAI",
     "params": 18,
@@ -1579,12 +1579,12 @@
     "simple_name": "GPT-4o mini",
     "status": "archived",
     "trust_range": [
-      5,
-      3
+      3,
+      5
     ],
     "url": "https://platform.openai.com/docs/models/gp#gpt-4o-mini",
     "wh_per_million_token": 5171.2266666666665,
-    "win_rate": 0.49948956248212756
+    "win_rate": 0.4991287553648069
   },
   "gpt-5": {
     "active_params": 94,
@@ -1670,7 +1670,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1073,
+    "elo": 1092,
     "endpoint": {
       "api_model_id": "openai/gpt-oss-120b",
       "api_type": "openrouter"
@@ -1679,8 +1679,8 @@
     "icon_path": "openai.svg",
     "id": "gpt-oss-120b",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.6270900989429337,
-    "n_match": 842,
+    "mean_win_prob": 0.63826267833625,
+    "n_match": 680,
     "new": true,
     "organisation": "OpenAI",
     "params": 117,
@@ -1703,8 +1703,8 @@
     "simple_name": "GPT OSS-120B",
     "status": "enabled",
     "trust_range": [
-      4,
-      5
+      7,
+      7
     ],
     "wh_per_million_token": 3346.8500000000004,
     "win_rate": null
@@ -1715,7 +1715,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 1019,
+    "elo": 1036,
     "endpoint": {
       "api_model_id": "openai/gpt-oss-20b",
       "api_type": "openrouter"
@@ -1724,8 +1724,8 @@
     "icon_path": "openai.svg",
     "id": "gpt-oss-20b",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.5550349535997852,
-    "n_match": 1085,
+    "mean_win_prob": 0.5633951587343187,
+    "n_match": 751,
     "new": true,
     "organisation": "OpenAI",
     "params": 21,
@@ -1748,8 +1748,8 @@
     "simple_name": "GPT OSS-20B",
     "status": "enabled",
     "trust_range": [
-      6,
-      6
+      9,
+      7
     ],
     "wh_per_million_token": 3066.1766666666667,
     "win_rate": null
@@ -1757,9 +1757,9 @@
   "grok-3-mini-beta": {
     "arch": "dense",
     "commercial_use": null,
-    "consumption_wh": 61,
+    "consumption_wh": 469,
     "distribution": "api-only",
-    "elo": 1059,
+    "elo": 1070,
     "endpoint": {
       "api_model_id": "x-ai/grok-3-mini-beta",
       "api_type": "openrouter"
@@ -1768,8 +1768,8 @@
     "icon_path": "xai.svg",
     "id": "grok-3-mini-beta",
     "license": "proprietary",
-    "mean_win_prob": 0.6091152813526198,
-    "n_match": 1572,
+    "mean_win_prob": 0.6097941430139903,
+    "n_match": 1537,
     "new": false,
     "organisation": "xAI",
     "params": 650,
@@ -1792,8 +1792,8 @@
     "simple_name": "Grok 3 Mini",
     "status": "archived",
     "trust_range": [
-      3,
-      5
+      5,
+      7
     ],
     "url": "https://x.ai/news/grok-3",
     "wh_per_million_token": 469320.0,
@@ -1830,13 +1830,13 @@
     "commercial_use": true,
     "consumption_wh": 238,
     "distribution": "open-weights",
-    "elo": 936,
+    "elo": 944,
     "friendly_size": "XL",
     "icon_path": "nous.webp",
     "id": "hermes-3-llama-3.1-405b",
     "license": "Llama 3.1",
-    "mean_win_prob": 0.4399369063847157,
-    "n_match": 6781,
+    "mean_win_prob": 0.43674503509129964,
+    "n_match": 6735,
     "new": false,
     "organisation": "Nous",
     "params": 405,
@@ -1864,7 +1864,7 @@
     ],
     "url": "https://huggingface.co/NousResearch/Hermes-3-Llama-3.1-405B",
     "wh_per_million_token": 237926.06666666665,
-    "win_rate": 0.46617755493290075
+    "win_rate": 0.4664038604305864
   },
   "hermes-4-70b": {
     "arch": "dense",
@@ -1897,12 +1897,12 @@
     "commercial_use": true,
     "consumption_wh": 48,
     "distribution": "open-weights",
-    "elo": 966,
+    "elo": 974,
     "friendly_size": "XL",
     "icon_path": "ai21.webp",
     "id": "jamba-1.5-large",
     "license": "Jamba Open Model",
-    "mean_win_prob": 0.4814607726416122,
+    "mean_win_prob": 0.4773192563169142,
     "n_match": 172,
     "new": false,
     "organisation": "AI21",
@@ -1926,8 +1926,8 @@
     "simple_name": "Jamba 1.5 Large",
     "status": "archived",
     "trust_range": [
-      19,
-      12
+      17,
+      15
     ],
     "url": "https://huggingface.co/ai21labs/AI21-Jamba-1.5-Large",
     "wh_per_million_token": 47510.43999999999,
@@ -1939,7 +1939,7 @@
     "commercial_use": true,
     "consumption_wh": 57,
     "distribution": "open-weights",
-    "elo": 1032,
+    "elo": 1061,
     "endpoint": {
       "api_model_id": "moonshotai/kimi-k2-0905",
       "api_type": "openrouter"
@@ -1948,8 +1948,8 @@
     "icon_path": "moonshot-ai.webp",
     "id": "kimi-k2",
     "license": "MIT",
-    "mean_win_prob": 0.572969143470125,
-    "n_match": 154,
+    "mean_win_prob": 0.5974200665691032,
+    "n_match": 206,
     "new": true,
     "organisation": "Moonshot AI",
     "params": 1000,
@@ -1972,8 +1972,8 @@
     "simple_name": "Kimi K2",
     "status": "enabled",
     "trust_range": [
-      13,
-      15
+      15,
+      13
     ],
     "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
     "wh_per_million_token": 57087.51999999998,
@@ -1984,12 +1984,12 @@
     "commercial_use": null,
     "consumption_wh": 8,
     "distribution": "api-only",
-    "elo": 876,
+    "elo": 885,
     "friendly_size": "S",
     "icon_path": "liquid.svg",
     "id": "lfm-40b",
     "license": "proprietary",
-    "mean_win_prob": 0.3608768701970416,
+    "mean_win_prob": 0.35849947709891117,
     "n_match": 3578,
     "new": false,
     "organisation": "Liquid",
@@ -2013,19 +2013,19 @@
     "simple_name": "LFM 40B",
     "status": "archived",
     "trust_range": [
-      1,
-      1
+      2,
+      0
     ],
     "url": "https://www.liquid.ai/liquid-foundation-models",
     "wh_per_million_token": 8258.633333333331,
-    "win_rate": 0.4159418669647848
+    "win_rate": 0.41594186696478486
   },
   "llama-3.1-405b": {
     "arch": "dense",
     "commercial_use": true,
     "consumption_wh": 238,
     "distribution": "open-weights",
-    "elo": 952,
+    "elo": 960,
     "endpoint": {
       "api_model_id": "meta/llama3-405b-instruct-maas",
       "api_type": "vertex_ai"
@@ -2034,8 +2034,8 @@
     "icon_path": "meta.svg",
     "id": "llama-3.1-405b",
     "license": "Llama 3.1",
-    "mean_win_prob": 0.46178569435639044,
-    "n_match": 10102,
+    "mean_win_prob": 0.45893395471614107,
+    "n_match": 9973,
     "new": false,
     "organisation": "Meta",
     "params": 405,
@@ -2059,7 +2059,7 @@
     "status": "archived",
     "trust_range": [
       4,
-      2
+      3
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-405B-Instruct",
     "wh_per_million_token": 237926.06666666665,
@@ -2070,13 +2070,13 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 967,
+    "elo": 976,
     "friendly_size": "M",
     "icon_path": "meta.svg",
     "id": "llama-3.1-70b",
     "license": "Llama 3.1",
-    "mean_win_prob": 0.4828319688246592,
-    "n_match": 5584,
+    "mean_win_prob": 0.48025710870263016,
+    "n_match": 5583,
     "new": false,
     "organisation": "Meta",
     "params": 70,
@@ -2099,19 +2099,19 @@
     "simple_name": "Llama 3.1 70B",
     "status": "archived",
     "trust_range": [
-      4,
-      4
+      2,
+      6
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-70B-Instruct",
     "wh_per_million_token": 12468.733333333334,
-    "win_rate": 0.53059276504298
+    "win_rate": 0.5307182518359305
   },
   "llama-3.1-8b": {
     "arch": "dense",
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 918,
+    "elo": 926,
     "endpoint": {
       "api_base": "https://albert.api.etalab.gouv.fr/v1/",
       "api_model_id": "meta-llama/Llama-3.1-8B-Instruct",
@@ -2121,8 +2121,8 @@
     "icon_path": "meta.svg",
     "id": "llama-3.1-8b",
     "license": "Llama 3.1",
-    "mean_win_prob": 0.4156866376439725,
-    "n_match": 8256,
+    "mean_win_prob": 0.4124211591742532,
+    "n_match": 8380,
     "new": false,
     "organisation": "Meta",
     "params": 8,
@@ -2146,7 +2146,7 @@
     "status": "enabled",
     "trust_range": [
       4,
-      1
+      0
     ],
     "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
     "wh_per_million_token": 3767.8599999999997,
@@ -2157,7 +2157,7 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 1038,
+    "elo": 1048,
     "endpoint": {
       "api_model_id": "nvidia/llama-3.1-nemotron-70b-instruct",
       "api_type": "openrouter"
@@ -2166,8 +2166,8 @@
     "icon_path": "nvidia.svg",
     "id": "llama-3.1-nemotron-70b-instruct",
     "license": "Llama 3.1",
-    "mean_win_prob": 0.5812994304469272,
-    "n_match": 6838,
+    "mean_win_prob": 0.5794711154830546,
+    "n_match": 6709,
     "new": false,
     "organisation": "Nvidia",
     "params": 70,
@@ -2190,8 +2190,8 @@
     "simple_name": "Nemotron Llama 3.1 70B",
     "status": "archived",
     "trust_range": [
-      3,
-      4
+      5,
+      3
     ],
     "url": "https://huggingface.co/nvidia/Llama-3.1-Nemotron-70B-Instruct",
     "wh_per_million_token": 12468.733333333334,
@@ -2202,7 +2202,7 @@
     "commercial_use": true,
     "consumption_wh": 12,
     "distribution": "open-weights",
-    "elo": 977,
+    "elo": 984,
     "endpoint": {
       "api_model_id": "meta-llama/llama-3.3-70b-instruct",
       "api_type": "openrouter"
@@ -2211,8 +2211,8 @@
     "icon_path": "meta.svg",
     "id": "llama-3.3-70b",
     "license": "Llama 3.3",
-    "mean_win_prob": 0.4960397410653855,
-    "n_match": 6738,
+    "mean_win_prob": 0.4919012811066372,
+    "n_match": 7095,
     "new": false,
     "organisation": "Meta",
     "params": 70,
@@ -2248,7 +2248,7 @@
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 1006,
+    "elo": 1016,
     "endpoint": {
       "api_model_id": "meta-llama/llama-4-scout",
       "api_type": "openrouter"
@@ -2257,8 +2257,8 @@
     "icon_path": "meta.svg",
     "id": "llama-4-scout",
     "license": "Llama 4",
-    "mean_win_prob": 0.5371314467656412,
-    "n_match": 3273,
+    "mean_win_prob": 0.5360502867688955,
+    "n_match": 3385,
     "new": false,
     "organisation": "Meta",
     "params": 109,
@@ -2281,8 +2281,8 @@
     "simple_name": "Llama 4 Scout",
     "status": "enabled",
     "trust_range": [
-      6,
-      3
+      3,
+      5
     ],
     "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
     "wh_per_million_token": 5030.889999999999,
@@ -2344,7 +2344,7 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1049,
+    "elo": 1067,
     "endpoint": {
       "api_model_id": "mistralai/magistral-small-2506",
       "api_type": "openrouter"
@@ -2353,8 +2353,8 @@
     "icon_path": "mistral.png",
     "id": "magistral-small-2506",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.5955223936353997,
-    "n_match": 1037,
+    "mean_win_prob": 0.6050253433991335,
+    "n_match": 1026,
     "new": true,
     "organisation": "Mistral AI",
     "params": 24,
@@ -2377,8 +2377,8 @@
     "simple_name": "Magistral Small",
     "status": "enabled",
     "trust_range": [
-      4,
-      8
+      5,
+      9
     ],
     "wh_per_million_token": 6013.246666666666,
     "win_rate": null
@@ -2430,13 +2430,13 @@
     "commercial_use": false,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 958,
+    "elo": 966,
     "friendly_size": "XS",
     "icon_path": "mistral.png",
     "id": "ministral-8b-instruct-2410",
     "license": "Mistral AI Research License",
-    "mean_win_prob": 0.47004521826789003,
-    "n_match": 9388,
+    "mean_win_prob": 0.4673283941666362,
+    "n_match": 9278,
     "new": false,
     "organisation": "Mistral AI",
     "params": 8,
@@ -2459,8 +2459,8 @@
     "simple_name": "Ministral",
     "status": "disabled",
     "trust_range": [
-      5,
-      1
+      3,
+      4
     ],
     "url": "https://huggingface.co/mistralai/Ministral-8B-Instruct-2410",
     "wh_per_million_token": 3767.8599999999997,
@@ -2471,13 +2471,13 @@
     "commercial_use": false,
     "consumption_wh": 20,
     "distribution": "open-weights",
-    "elo": 1014,
+    "elo": 1022,
     "friendly_size": "L",
     "icon_path": "mistral.png",
     "id": "mistral-large-2411",
     "license": "Mistral AI Research License",
-    "mean_win_prob": 0.5471362439553301,
-    "n_match": 8880,
+    "mean_win_prob": 0.5444308506507108,
+    "n_match": 8829,
     "new": false,
     "organisation": "Mistral AI",
     "params": 123,
@@ -2500,12 +2500,12 @@
     "simple_name": "Mistral Large 2",
     "status": "disabled",
     "trust_range": [
-      5,
+      4,
       3
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Large-Instruct-2411",
     "wh_per_million_token": 19906.576666666668,
-    "win_rate": 0.5269031531531531
+    "win_rate": 0.5272930116661004
   },
   "mistral-medium-2508": {
     "arch": "maybe-dense",
@@ -2563,13 +2563,13 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 846,
+    "elo": 855,
     "friendly_size": "XS",
     "icon_path": "mistral.png",
     "id": "mistral-nemo-2407",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.32299186950482534,
-    "n_match": 6253,
+    "mean_win_prob": 0.32120940361913114,
+    "n_match": 6251,
     "new": false,
     "organisation": "Mistral AI",
     "params": 12,
@@ -2592,19 +2592,19 @@
     "simple_name": "Mistral Nemo",
     "status": "archived",
     "trust_range": [
-      2,
+      1,
       1
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Nemo-Instruct-2407",
     "wh_per_million_token": 4329.206666666666,
-    "win_rate": 0.3746761554453863
+    "win_rate": 0.37472564389697643
   },
   "mistral-saba": {
     "arch": "maybe-dense",
     "commercial_use": null,
     "consumption_wh": 6,
     "distribution": "api-only",
-    "elo": 989,
+    "elo": 1006,
     "endpoint": {
       "api_model_id": "mistralai/mistral-saba",
       "api_type": "openrouter"
@@ -2613,8 +2613,8 @@
     "icon_path": "mistral.png",
     "id": "mistral-saba",
     "license": "proprietary",
-    "mean_win_prob": 0.5131617978345631,
-    "n_match": 3572,
+    "mean_win_prob": 0.5223334728854877,
+    "n_match": 3923,
     "new": false,
     "organisation": "Mistral AI",
     "params": 24,
@@ -2637,8 +2637,8 @@
     "simple_name": "Mistral Saba",
     "status": "enabled",
     "trust_range": [
-      4,
-      4
+      6,
+      2
     ],
     "url": "https://mistral.ai/news/mistral-saba",
     "wh_per_million_token": 6013.246666666666,
@@ -2649,13 +2649,13 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 979,
+    "elo": 988,
     "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-small-24b-instruct-2501",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.499640083674661,
-    "n_match": 3319,
+    "mean_win_prob": 0.4978048540495314,
+    "n_match": 3318,
     "new": false,
     "organisation": "Mistral AI",
     "params": 24,
@@ -2678,12 +2678,12 @@
     "simple_name": "Mistral Small 3",
     "status": "archived",
     "trust_range": [
-      4,
+      3,
       6
     ],
     "url": "https://huggingface.co/mistralai/Mistral-Small-24B-Instruct-2501",
     "wh_per_million_token": 6013.246666666666,
-    "win_rate": 0.49546851461283525
+    "win_rate": 0.49492766726943943
   },
   "mistral-small-2506": {
     "arch": "dense",
@@ -2715,13 +2715,13 @@
     "commercial_use": true,
     "consumption_wh": 6,
     "distribution": "open-weights",
-    "elo": 1000,
+    "elo": 1010,
     "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mistral-small-3.1-24b",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.5285923975459302,
-    "n_match": 5104,
+    "mean_win_prob": 0.5269068285537745,
+    "n_match": 5079,
     "new": false,
     "organisation": "Mistral AI",
     "params": 24,
@@ -2744,12 +2744,12 @@
     "simple_name": "Mistral Small 3.1 24B",
     "status": "archived",
     "trust_range": [
-      5,
-      3
+      3,
+      5
     ],
     "url": "https://huggingface.co/mistralai/mistral-small-3.1-24b-instruct-2503",
     "wh_per_million_token": 6013.246666666666,
-    "win_rate": 0.49401449843260187
+    "win_rate": 0.4945107304587517
   },
   "mistral-small-3.2-24b": {
     "arch": "dense",
@@ -2779,13 +2779,13 @@
     "commercial_use": true,
     "consumption_wh": 18,
     "distribution": "open-weights",
-    "elo": 836,
+    "elo": 844,
     "friendly_size": "L",
     "icon_path": "mistral.png",
     "id": "mixtral-8x22b-instruct-v0.1",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.31057171781481846,
-    "n_match": 5458,
+    "mean_win_prob": 0.3080596993344551,
+    "n_match": 5455,
     "new": false,
     "organisation": "Mistral AI",
     "params": 176,
@@ -2813,7 +2813,7 @@
     ],
     "url": "https://huggingface.co/mistralai/Mixtral-8x22B-Instruct-v0.1",
     "wh_per_million_token": 17639.96,
-    "win_rate": 0.366685599120557
+    "win_rate": 0.36684692942254804
   },
   "mixtral-8x7b-instruct-v0.1": {
     "active_params": 14,
@@ -2821,12 +2821,12 @@
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 881,
+    "elo": 888,
     "friendly_size": "S",
     "icon_path": "mistral.png",
     "id": "mixtral-8x7b-instruct-v0.1",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.3663595023724305,
+    "mean_win_prob": 0.3630446403135373,
     "n_match": 2560,
     "new": false,
     "organisation": "Mistral AI",
@@ -2851,7 +2851,7 @@
     "status": "archived",
     "trust_range": [
       1,
-      2
+      1
     ],
     "url": "https://huggingface.co/mistralai/Mixtral-8x7B-Instruct-v0.1",
     "wh_per_million_token": 4609.88,
@@ -2860,15 +2860,15 @@
   "o3-mini": {
     "arch": "maybe-dense",
     "commercial_use": null,
-    "consumption_wh": 61,
+    "consumption_wh": 5,
     "distribution": "api-only",
-    "elo": 978,
+    "elo": 986,
     "friendly_size": "S",
     "icon_path": "openai.svg",
     "id": "o3-mini",
     "license": "proprietary",
-    "mean_win_prob": 0.4983617917351386,
-    "n_match": 1620,
+    "mean_win_prob": 0.4943884728435017,
+    "n_match": 1619,
     "new": false,
     "organisation": "OpenAI",
     "params": 18,
@@ -2891,19 +2891,19 @@
     "simple_name": "o3-mini",
     "status": "archived",
     "trust_range": [
-      6,
-      7
+      4,
+      8
     ],
     "url": "https://platform.openai.com/docs/models/o3-mini",
     "wh_per_million_token": 5171.2266666666665,
-    "win_rate": 0.5113641975308642
+    "win_rate": 0.5114206300185298
   },
   "o4-mini": {
     "arch": "maybe-dense",
     "commercial_use": null,
-    "consumption_wh": 61,
+    "consumption_wh": 5,
     "distribution": "api-only",
-    "elo": 999,
+    "elo": 1009,
     "endpoint": {
       "api_model_id": "openai/o4-mini",
       "api_type": "openrouter"
@@ -2912,8 +2912,8 @@
     "icon_path": "openai.svg",
     "id": "o4-mini",
     "license": "proprietary",
-    "mean_win_prob": 0.5267430130095039,
-    "n_match": 2088,
+    "mean_win_prob": 0.5260032088298672,
+    "n_match": 2513,
     "new": false,
     "organisation": "OpenAI",
     "params": 18,
@@ -2941,7 +2941,7 @@
     ],
     "url": "https://platform.openai.com/docs/models/o4-mini",
     "wh_per_million_token": 5171.2266666666665,
-    "win_rate": null
+    "win_rate": 0.4672264226024672
   },
   "olmo-2-0325-32b": {
     "arch": "dense",
@@ -3014,12 +3014,12 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 857,
+    "elo": 865,
     "friendly_size": "XS",
     "icon_path": "microsoft.png",
     "id": "phi-3.5-mini-instruct",
     "license": "MIT",
-    "mean_win_prob": 0.33638983054386684,
+    "mean_win_prob": 0.33393558341712287,
     "n_match": 2535,
     "new": false,
     "organisation": "Microsoft",
@@ -3048,14 +3048,14 @@
     ],
     "url": "https://huggingface.co/microsoft/Phi-3.5-mini-instruct",
     "wh_per_million_token": 3066.1766666666667,
-    "win_rate": 0.40230769230769226
+    "win_rate": 0.4023076923076923
   },
   "phi-4": {
     "arch": "dense",
     "commercial_use": true,
     "consumption_wh": 5,
     "distribution": "open-weights",
-    "elo": 961,
+    "elo": 970,
     "endpoint": {
       "api_model_id": "microsoft/phi-4",
       "api_type": "openrouter"
@@ -3064,8 +3064,8 @@
     "icon_path": "microsoft.png",
     "id": "phi-4",
     "license": "MIT",
-    "mean_win_prob": 0.47489548227779943,
-    "n_match": 8003,
+    "mean_win_prob": 0.4725292769933478,
+    "n_match": 8346,
     "new": false,
     "organisation": "Microsoft",
     "params": 14,
@@ -3088,8 +3088,8 @@
     "simple_name": "Phi-4",
     "status": "enabled",
     "trust_range": [
-      5,
-      2
+      3,
+      4
     ],
     "url": "https://huggingface.co/microsoft/Phi-4",
     "wh_per_million_token": 4609.88,
@@ -3191,12 +3191,12 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 726,
+    "elo": 732,
     "friendly_size": "XS",
     "icon_path": "qwen.png",
     "id": "qwen2-7b-instruct",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.19574469713763326,
+    "mean_win_prob": 0.1921743139087896,
     "n_match": 80,
     "new": false,
     "organisation": "Alibaba",
@@ -3220,7 +3220,7 @@
     "simple_name": "Qwen2-7B",
     "status": "archived",
     "trust_range": [
-      3,
+      2,
       0
     ],
     "url": "https://huggingface.co/Qwen/Qwen2-7B-Instruct",
@@ -3232,12 +3232,12 @@
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 960,
+    "elo": 964,
     "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen2.5-32b-instruct",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.4731162843336879,
+    "mean_win_prob": 0.4644020193117969,
     "n_match": 142,
     "new": false,
     "organisation": "Alibaba",
@@ -3262,7 +3262,7 @@
     "status": "archived",
     "trust_range": [
       23,
-      11
+      13
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-32B-Instruct",
     "wh_per_million_token": 7135.939999999998,
@@ -3273,13 +3273,13 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 921,
+    "elo": 930,
     "friendly_size": "XS",
     "icon_path": "qwen.png",
     "id": "qwen2.5-7b-instruct",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.4202266728588782,
-    "n_match": 1420,
+    "mean_win_prob": 0.41832525576357,
+    "n_match": 1417,
     "new": false,
     "organisation": "Alibaba",
     "params": 7,
@@ -3302,25 +3302,25 @@
     "simple_name": "Qwen2.5-7B",
     "status": "archived",
     "trust_range": [
-      3,
-      3
+      5,
+      2
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-7B-Instruct",
     "wh_per_million_token": 3627.5233333333335,
-    "win_rate": 0.49303521126760563
+    "win_rate": 0.49383909668313336
   },
   "qwen2.5-coder-32b-instruct": {
     "arch": "dense",
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 919,
+    "elo": 929,
     "friendly_size": "S",
     "icon_path": "qwen.png",
     "id": "qwen2.5-coder-32b-instruct",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.41704931104873566,
-    "n_match": 7330,
+    "mean_win_prob": 0.41610380579084216,
+    "n_match": 7299,
     "new": false,
     "organisation": "Alibaba",
     "params": 32,
@@ -3344,11 +3344,11 @@
     "status": "disabled",
     "trust_range": [
       3,
-      2
+      1
     ],
     "url": "https://huggingface.co/Qwen/Qwen2.5-Coder-32B-Instruct",
     "wh_per_million_token": 7135.939999999998,
-    "win_rate": 0.4368676671214188
+    "win_rate": 0.4375763803260721
   },
   "qwen3-30b-a3b": {
     "active_params": 3.3,
@@ -3356,7 +3356,7 @@
     "commercial_use": true,
     "consumption_wh": 3,
     "distribution": "open-weights",
-    "elo": 982,
+    "elo": 995,
     "endpoint": {
       "api_model_id": "qwen/qwen3-30b-a3b",
       "api_type": "openrouter"
@@ -3365,8 +3365,8 @@
     "icon_path": "qwen.png",
     "id": "qwen3-30b-a3b",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.5038414484176588,
-    "n_match": 416,
+    "mean_win_prob": 0.5074199924596862,
+    "n_match": 543,
     "new": true,
     "organisation": "Alibaba",
     "params": 30,
@@ -3389,8 +3389,8 @@
     "simple_name": "Qwen 3 30B A3B",
     "status": "enabled",
     "trust_range": [
-      9,
-      14
+      8,
+      11
     ],
     "wh_per_million_token": 3066.1766666666667,
     "win_rate": null
@@ -3400,7 +3400,7 @@
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 1035,
+    "elo": 1047,
     "endpoint": {
       "api_model_id": "qwen/qwen3-32b",
       "api_type": "openrouter"
@@ -3409,8 +3409,8 @@
     "icon_path": "qwen.png",
     "id": "qwen3-32b",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.5769032139178458,
-    "n_match": 748,
+    "mean_win_prob": 0.5778121985542688,
+    "n_match": 826,
     "new": false,
     "organisation": "Alibaba",
     "params": 32,
@@ -3433,8 +3433,8 @@
     "simple_name": "Qwen 3 32B",
     "status": "enabled",
     "trust_range": [
-      6,
-      7
+      9,
+      5
     ],
     "url": "https://huggingface.co/Qwen/Qwen3-32B",
     "wh_per_million_token": 7135.939999999998,
@@ -3499,7 +3499,7 @@
     "commercial_use": true,
     "consumption_wh": 7,
     "distribution": "open-weights",
-    "elo": 945,
+    "elo": 954,
     "endpoint": {
       "api_model_id": "qwen/qwq-32b",
       "api_type": "openrouter"
@@ -3508,8 +3508,8 @@
     "icon_path": "qwen.png",
     "id": "qwq-32b",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.45288642682099567,
-    "n_match": 1596,
+    "mean_win_prob": 0.4506762157960025,
+    "n_match": 1566,
     "new": false,
     "organisation": "Alibaba",
     "params": 32,
@@ -3532,8 +3532,8 @@
     "simple_name": "qwq 32B",
     "status": "archived",
     "trust_range": [
-      7,
-      1
+      9,
+      2
     ],
     "url": "https://huggingface.co/Qwen/QwQ-32B",
     "wh_per_million_token": 7135.939999999998,
@@ -3544,12 +3544,12 @@
     "commercial_use": true,
     "consumption_wh": 4,
     "distribution": "open-weights",
-    "elo": 760,
+    "elo": 769,
     "friendly_size": "XS",
     "icon_path": "yi.svg",
     "id": "Yi-1.5-9B-Chat",
     "license": "Apache 2.0",
-    "mean_win_prob": 0.22765853620162194,
+    "mean_win_prob": 0.22674622090052607,
     "n_match": 65,
     "new": false,
     "organisation": "01-ai",
