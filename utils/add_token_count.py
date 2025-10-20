@@ -20,7 +20,7 @@ def sum_tokens(conv: ConversationMessages):
     total_assistant_output_tokens = 0
     for message in conv.root:
         if message.role == "assistant":
-            total_assistant_output_tokens += message.content.metadata.output_tokens
+            total_assistant_output_tokens += message.metadata.output_tokens
     if total_assistant_output_tokens == 0:
         print("Sanity check convo is empty of assistant messages")
         for message in conv.root:
