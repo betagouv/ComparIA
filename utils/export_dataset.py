@@ -203,7 +203,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
                             )
                             * row["total_conv_a_output_tokens"]
                         )
-                        / 1_000_000
+                        / 1_000  # and not a million bc convert wh to kwh
                     )
                     if row["total_conv_a_output_tokens"] is not None
                     else None
@@ -219,7 +219,7 @@ def fetch_and_transform_data(conn, table_name, query=None):
                             )
                             * row["total_conv_b_output_tokens"]
                         )
-                        / 1_000_000
+                        / 1_000  # and not a million bc convert wh to kwh
                     )
                     if row["total_conv_b_output_tokens"] is not None
                     else None
