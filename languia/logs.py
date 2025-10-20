@@ -16,7 +16,7 @@ from languia.utils import (
     count_turns,
     get_ip,
     get_matomo_tracker_from_cookies,
-    sum_tokens
+    sum_tokens,
 )
 
 LOGDIR = os.getenv("LOGDIR", "./data")
@@ -804,7 +804,7 @@ def record_conversations(
         "mode": str(mode),
         "custom_models_selection": json.dumps(custom_models_selection),
         "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
-        "total_conv_b_output_tokens": sum_tokens(conversations[1].messages)
+        "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
