@@ -16,6 +16,7 @@ from languia.utils import (
     count_turns,
     get_ip,
     get_matomo_tracker_from_cookies,
+    sum_tokens
 )
 
 LOGDIR = os.getenv("LOGDIR", "./data")
@@ -688,7 +689,9 @@ def upsert_conv_to_db(data):
                 selected_category,
                 is_unedited_prompt,
                 mode,
-                custom_models_selection 
+                custom_models_selection,
+                total_conv_a_output_tokens,
+                total_conv_b_output_tokens
                                         )
             VALUES (
                 %(model_a_name)s,
@@ -710,6 +713,8 @@ def upsert_conv_to_db(data):
                 %(is_unedited_prompt)s,
                 %(mode)s,
                 %(custom_models_selection)s
+                %(total_conv_a_output_tokens)s,
+                %(total_conv_b_output_tokens)s
             )
             ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
@@ -798,6 +803,8 @@ def record_conversations(
         "model_pair_name": model_pair_name,
         "mode": str(mode),
         "custom_models_selection": json.dumps(custom_models_selection),
+        "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
+        "total_conv_b_output_tokens": sum_tokens(conversations[1].messages)
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
