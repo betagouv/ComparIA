@@ -4,7 +4,7 @@
   import { APINegativeReactions, APIPositiveReactions } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
-  import { sanitize } from '$lib/utils/commons'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, Preferences, RankingTable } from './components'
 
@@ -106,7 +106,11 @@
       {#snippet tab({ id })}
         {#if id === 'ranking'}
           <p class="text-[14px]! text-dark-grey mb-12!">
-            {@html sanitize(m['ranking.ranking.desc']())}
+            {@html sanitize(
+              m['ranking.ranking.desc']({
+                linkProps: externalLinkProps('https://www.peren.gouv.fr/')
+              })
+            )}
           </p>
 
           <RankingTable
