@@ -1478,7 +1478,7 @@
             "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
             "views": {
                 "graph": {
-                    "desc": "Sélectionnez un modèle pour connaitre son Score BT et sa consommation énergétique",
+                    "desc": "Sélectionnez un modèle pour connaitre son score Bradley-Terry (BT) et sa consommation énergétique",
                     "faq": {
                         "1": {
                             "desc": "Nous prenons le parti d’afficher en grisé (non analysés) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture.",
@@ -1499,7 +1499,7 @@
                         "sizeSub": "(milliards de paramètres)"
                     },
                     "tabLabel": "Vue graphique",
-                    "title": "Score BT VS Consommation moyenne pour 1000 tokens",
+                    "title": "Score de satisfaction BT VS Consommation moyenne pour 1000 tokens",
                     "tooltip": {
                         "active_params": "Paramètres actifs (mds)",
                         "arch": "Architecture",
