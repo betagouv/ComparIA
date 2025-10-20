@@ -1602,7 +1602,7 @@
                 "cols": {
                     "arch": "Architecture",
                     "consumption_wh": "Conso moyenne<br>(1000 tokens)",
-                    "elo": "Score BT",
+                    "elo": "Score de<br> satisfaction BT",
                     "license": "Licence",
                     "n_match": "Total votes",
                     "name": "Modèle",
