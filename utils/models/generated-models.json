@@ -2,14 +2,14 @@
   "Apertus-70B-Instruct-2509": {
     "arch": "dense",
     "commercial_use": true,
-    "distribution": "fully-open-source",
+    "distribution": "open-weights",
     "endpoint": {
       "api_base": "https://router.huggingface.co/v1",
       "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
       "api_type": "huggingface"
     },
     "friendly_size": "M",
-    "fully_open_source": true,
+    "fully_open_source": false,
     "icon_path": "swissai.webp",
     "id": "Apertus-70B-Instruct-2509",
     "license": "Apache 2.0",
@@ -30,9 +30,9 @@
   "Apertus-8B-Instruct-2509": {
     "arch": "dense",
     "commercial_use": true,
-    "distribution": "fully-open-source",
+    "distribution": "open-weights",
     "friendly_size": "XS",
-    "fully_open_source": true,
+    "fully_open_source": false,
     "icon_path": "swissai.webp",
     "id": "Apertus-8B-Instruct-2509",
     "license": "Apache 2.0",
