@@ -25,16 +25,18 @@
   <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
   <p class="mb-8! text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
 
-  <div class="rounded bg-white p-4 md:p-8">
-    <section>
+  <div class="gap-15 flex flex-col">
+    <section class="rounded bg-white p-4 md:p-8">
       <div class="mb-10 text-center">
         <h3 class="text-lg! mt-3! mb-0!">{m['ranking.energy.views.graph.title']()}</h3>
         <p class="text-grey! text-sm!">{m['ranking.energy.views.graph.desc']()}</p>
       </div>
 
       <EnergyGraph {data} />
+    </section>
 
-      <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10 mt-12">
+    <section class="rounded bg-white p-4 md:p-8">
+      <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10">
         <ul>
           {#each ['1', '2', '3'] as const as n}
             <li>{m[`ranking.energy.views.graph.infos.list.${n}`]()}</li>
@@ -51,8 +53,8 @@
       </AccordionGroup>
     </section>
 
-    <section class="mt-25">
-      <h3 class="text-lg! mb-0!">{m['ranking.energy.views.table.title']()}</h3>
+    <section class="rounded bg-white p-4 md:p-8">
+      <h3 class="mt-6! text-lg! mb-0!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
         {data}
