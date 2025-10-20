@@ -194,32 +194,36 @@ def fetch_and_transform_data(conn, table_name, query=None):
                 lambda x: get_active_params(MODELS_DATA.get(x.lower(), {}))
             )
 
+            wh_per_token = MODELS_DATA.get(row["model_a_name"].lower(), {}).get(
+                                "wh_per_million_token", 0
+                            )
+                            / 1_000_000
             df["total_conv_a_kwh"] = df.apply(
                 lambda row: (
                     (
                         (
-                            MODELS_DATA.get(row["model_a_name"].lower(), {}).get(
-                                "wh_per_million_token", 0
-                            )
+                            wh_per_token
                             * row["total_conv_a_output_tokens"]
                         )
-                        / 1_000  # and not a million bc convert wh to kwh
+                        / 1_000  # convert wh to kwh
                     )
                     if row["total_conv_a_output_tokens"] is not None
                     else None
                 ),
                 axis=1,
             )
+            wh_per_token = MODELS_DATA.get(row["model_b_name"].lower(), {}).get(
+                                "wh_per_million_token", 0
+                            )
+                            / 1_000_000
             df["total_conv_b_kwh"] = df.apply(
                 lambda row: (
                     (
                         (
-                            MODELS_DATA.get(row["model_b_name"].lower(), {}).get(
-                                "wh_per_million_token", 0
-                            )
+                            wh_per_token
                             * row["total_conv_b_output_tokens"]
                         )
-                        / 1_000  # and not a million bc convert wh to kwh
+                        / 1_000  # convert wh to kwh
                     )
                     if row["total_conv_b_output_tokens"] is not None
                     else None
