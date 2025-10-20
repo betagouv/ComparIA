@@ -4,15 +4,15 @@
   import { APINegativeReactions, APIPositiveReactions } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
-  import { sanitize } from '$lib/utils/commons'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, Preferences, RankingTable } from './components'
 
   const tabs = (
     [
       { id: 'ranking', icon: 'trophy-line' },
-      { id: 'energy', icon: 'flashlight-line', iconClass: 'text-primary' },
-      { id: 'preferences', icon: 'thumb-up-line', iconClass: 'text-primary' },
+      { id: 'energy', icon: 'flashlight-line' },
+      { id: 'preferences', icon: 'thumb-up-line' },
       { id: 'methodo' }
     ] as const
   ).map((tab) => ({
@@ -63,7 +63,6 @@
       { key: 'total_prefs' as const, label: 'total prefs' },
       { key: 'total_positive_prefs' as const, label: 'total positive' },
       { key: 'total_negative_prefs' as const, label: 'total negative' },
-      { key: 'n_match' as const, label: 'total matches' },
       ...[...APIPositiveReactions, ...APINegativeReactions].map((reaction) => ({
         key: reaction,
         label: reaction.replaceAll('_', ' ')
@@ -74,11 +73,11 @@
       csvCols.map((col) => col.label).join(','),
       ...modelsData
         .filter((m) => !!m.prefs)
-        .sort((a, b) => sortIfDefined(a, b, 'positive_prefs_ratio'))
+        .sort((a, b) => sortIfDefined(a.prefs!, b.prefs!, 'positive_prefs_ratio'))
         .map((m) => {
           return csvCols
             .map((col) => {
-              if (col.key === 'id' || col.key === 'n_match') {
+              if (col.key === 'id') {
                 return m[col.key]
               } else if (col.key === 'total_positive_prefs') {
                 return APIPositiveReactions.reduce((acc, v) => acc + m.prefs![v], 0)
@@ -106,7 +105,11 @@
       {#snippet tab({ id })}
         {#if id === 'ranking'}
           <p class="text-[14px]! text-dark-grey mb-12!">
-            {@html sanitize(m['ranking.ranking.desc']())}
+            {@html sanitize(
+              m['ranking.ranking.desc']({
+                linkProps: externalLinkProps('https://www.peren.gouv.fr/')
+              })
+            )}
           </p>
 
           <RankingTable

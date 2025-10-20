@@ -15,7 +15,6 @@
     | 'positive_prefs_ratio'
     | 'total_positive_prefs'
     | 'total_negative_prefs'
-    | 'n_match'
     | APIReactionPref
 
   let {
@@ -47,7 +46,6 @@
       },
       { id: 'total_positive_prefs' },
       { id: 'total_negative_prefs' },
-      { id: 'n_match' },
       ...APIPositiveReactions.map((reaction, i) => ({
         id: reaction,
         colHeaderClass: 'bg-(--green-emeraude-975-75)!',
@@ -77,24 +75,22 @@
   })
 
   const rows = $derived.by(() => {
-    const models = data.filter((m) => !!m.prefs)
-    const reactions = [...APINegativeReactions, ...APIPositiveReactions]
-
-    return models.map((model) => {
-      return {
-        id: model.id,
-        simple_name: model.simple_name,
-        icon_path: model.icon_path,
-        organisation: model.organisation,
-        ...model.prefs!,
-        total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs![v], 0),
-        total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs![v], 0),
-        n_match: model.n_match,
-        search: (['id', 'simple_name', 'organisation'] as const)
-          .map((key) => model[key].toLowerCase())
-          .join(' ')
-      }
-    })
+    return data
+      .filter((m) => !!m.prefs)
+      .map((model) => {
+        return {
+          id: model.id,
+          simple_name: model.simple_name,
+          icon_path: model.icon_path,
+          organisation: model.organisation,
+          ...model.prefs!,
+          total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs![v], 0),
+          total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs![v], 0),
+          search: (['id', 'simple_name', 'organisation'] as const)
+            .map((key) => model[key].toLowerCase())
+            .join(' ')
+        }
+      })
   })
 
   const sortedRows = $derived.by(() => {

@@ -220,14 +220,14 @@
                 alt={hoveredModelData.organisation}
                 class="me-1 w-[14px] object-contain"
               />
-              <strong class="text-[12px] leading-normal">{hoveredModelData.id}</strong>
+              <strong class="text-[14px] leading-normal">{hoveredModelData.id}</strong>
             </div>
 
-            <div class="mt-1 text-[10px]">
+            <div class="mt-1 text-[12px]">
               {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item}
                 <div class="flex gap-1 leading-relaxed">
                   <Icon icon={item.icon} size="xxs" class="text-primary" />
-                  <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                  <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
                     {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
                   </p>
                   <strong class="ms-auto">{hoveredModelData[item.key]}</strong>
@@ -238,7 +238,7 @@
                 {#each tooltipExtraData as key}
                   {#if hoveredModelData[key]}
                     <div class="flex gap-1 leading-relaxed">
-                      <p class="mb-0! text-[10px]! text-grey leading-relaxed!">
+                      <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
                         {m[`ranking.energy.views.graph.tooltip.${key}`]()}
                       </p>
                       <strong class="ms-auto">
@@ -309,6 +309,10 @@
         stroke: var(--color-grey);
         stroke-dasharray: 5;
         stroke-width: 2px;
+      }
+
+      rect {
+        fill: var(--color-black);
       }
 
       text {
