@@ -5,7 +5,7 @@
     Row extends { id: string }
   "
 >
-  import { Button, Pagination, Select, Tooltip } from '$components/dsfr'
+  import { Button, Pagination, Search, Select, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
   import { onMount, type Snippet } from 'svelte'
@@ -18,9 +18,12 @@
     pagination?: boolean
     orderingCol?: Col['id']
     orderingMethod?: 'ascending' | 'descending'
+    search?: string
+    searchLabel?: string
     hideCaption?: boolean
     cell: Snippet<[Row, Col]>
-    header?: Snippet
+    headerLeft?: Snippet
+    headerRight?: Snippet
   } & HTMLTableAttributes
 
   let {
@@ -31,9 +34,12 @@
     pagination = false,
     orderingCol = $bindable(),
     orderingMethod = $bindable(),
+    search = $bindable(),
+    searchLabel = m['words.search'](),
     hideCaption = false,
     cell,
-    header,
+    headerLeft,
+    headerRight,
     class: classes,
     ...props
   }: TableProps = $props()
@@ -91,10 +97,25 @@
   })
 </script>
 
+<svelte:window onresize={() => updateGradientDisplay()} />
+
 <div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
-  {#if header}
-    <div class="fr-table__header mb-4 flex flex-col gap-5 md:flex-row">
-      {@render header()}
+  <div class="fr-table__header mb-4 flex flex-col gap-5 md:flex-row md:flex-wrap">
+    <div class="flex flex-wrap items-center gap-5">
+      {@render headerLeft?.()}
+    </div>
+
+    <div class="flex flex-col gap-5 md:flex-row md:items-center">
+      {@render headerRight?.()}
+
+      {#if search !== undefined}
+        <Search
+          id="table-search"
+          bind:value={search}
+          label={searchLabel}
+          class="ms-auto w-full md:w-auto"
+        />
+      {/if}
 
       {#if scrollable.left || scrollable.right}
         <div class="flex w-full justify-between gap-2 md:w-auto">
@@ -118,7 +139,7 @@
         </div>
       {/if}
     </div>
-  {/if}
+  </div>
 
   <div class="fr-table__wrapper relative">
     <div

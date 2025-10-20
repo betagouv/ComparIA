@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link, Search, Table, Toggle } from '$components/dsfr'
+  import { Link, Table, Toggle } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import {
     APINegativeReactions,
@@ -111,44 +111,38 @@
   rows={sortedRows}
   bind:orderingCol
   bind:orderingMethod
+  bind:search
+  searchLabel={m['ranking.table.search']()}
   caption={m['ranking.title']()}
   hideCaption
 >
-  {#snippet header()}
-    <div class="flex flex-wrap items-center gap-5">
-      <div class="fr-table__detail mb-0! flex gap-5">
-        <p class="mb-0! text-[14px]!">
-          {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
-        </p>
+  {#snippet headerLeft()}
+    <div class="fr-table__detail mb-0! flex gap-5">
+      <p class="mb-0! text-[14px]!">
+        {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
+      </p>
 
-        <Link
-          href="#"
-          download="true"
-          text={m['actions.downloadData']()}
-          icon="download-line"
-          iconPos="right"
-          class="text-[14px]! text-grey!"
-          onclick={() => onDownloadData()}
-        />
-      </div>
-    </div>
-
-    <div class="flex flex-col gap-5 md:flex-row md:items-center">
-      <Toggle
-        id="data-as-percentage"
-        bind:value={asPercentage}
-        label={m['ranking.preferences.table.percentLabel']()}
-        hideCheckLabel
-        variant="primary"
-        class="text-[14px]! me-14"
-      />
-      <Search
-        id="model-search"
-        bind:value={search}
-        label={m['ranking.table.search']()}
-        class="ms-auto w-full md:w-auto"
+      <Link
+        href="#"
+        download="true"
+        text={m['actions.downloadData']()}
+        icon="download-line"
+        iconPos="right"
+        class="text-[14px]! text-grey!"
+        onclick={() => onDownloadData()}
       />
     </div>
+  {/snippet}
+
+  {#snippet headerRight()}
+    <Toggle
+      id="data-as-percentage"
+      bind:value={asPercentage}
+      label={m['ranking.preferences.table.percentLabel']()}
+      hideCheckLabel
+      variant="primary"
+      class="text-[14px]! me-14"
+    />
   {/snippet}
 
   {#snippet cell(model, col)}

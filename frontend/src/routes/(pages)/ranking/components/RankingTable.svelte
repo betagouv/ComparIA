@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Badge, Link, Search, Table } from '$components/dsfr'
+  import { Badge, Link, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
@@ -150,44 +150,42 @@
   rows={sortedRows}
   bind:orderingCol
   bind:orderingMethod
+  bind:search
+  searchLabel={m['ranking.table.search']()}
   caption={m['ranking.title']()}
   hideCaption
 >
-  {#snippet header()}
-    <div class="flex flex-wrap items-center gap-5">
-      {#if !hideTotal}
-        <div class="flex gap-5">
-          <div class="cg-border rounded-sm! bg-white px-4 py-2">
-            <strong>{m['ranking.table.totalModels']()}</strong>
-            <span class="text-grey">{rows.length}</span>
-          </div>
-
-          <div class="cg-border rounded-sm! bg-white px-4 py-2">
-            <strong>{m['ranking.table.totalVotes']()}</strong>
-            <span class="text-grey">{totalVotes}</span>
-          </div>
+  {#snippet headerLeft()}
+    {#if !hideTotal}
+      <div class="flex gap-5">
+        <div class="cg-border rounded-sm! bg-white px-4 py-2">
+          <strong>{m['ranking.table.totalModels']()}</strong>
+          <span class="text-grey">{rows.length}</span>
         </div>
-      {/if}
 
-      <div class="fr-table__detail mb-0! flex flex-col gap-3 md:flex-row md:gap-5">
-        <p class="mb-0! text-[14px]!">
-          {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
-        </p>
-
-        <Link
-          native={raw}
-          href="#"
-          download="true"
-          text={m['actions.downloadData']()}
-          icon="download-line"
-          iconPos="right"
-          class={['text-[14px]!', { 'text-grey!': raw }]}
-          onclick={() => onDownloadData()}
-        />
+        <div class="cg-border rounded-sm! bg-white px-4 py-2">
+          <strong>{m['ranking.table.totalVotes']()}</strong>
+          <span class="text-grey">{totalVotes}</span>
+        </div>
       </div>
-    </div>
+    {/if}
 
-    <Search id="model-search" bind:value={search} label={m['ranking.table.search']()} />
+    <div class="fr-table__detail mb-0! flex flex-col gap-3 md:flex-row md:gap-5">
+      <p class="mb-0! text-[14px]!">
+        {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
+      </p>
+
+      <Link
+        native={raw}
+        href="#"
+        download="true"
+        text={m['actions.downloadData']()}
+        icon="download-line"
+        iconPos="right"
+        class={['text-[14px]!', { 'text-grey!': raw }]}
+        onclick={() => onDownloadData()}
+      />
+    </div>
   {/snippet}
 
   {#snippet cell(model, col)}
@@ -201,7 +199,7 @@
           src="/orgs/ai/{model.icon_path}"
           alt={model.organisation}
           width="20"
-          class="me-1 inline-block"
+          class=" inline-block"
         />
         <a
           href="#{model.id}"
