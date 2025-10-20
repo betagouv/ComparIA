@@ -63,7 +63,6 @@
       { key: 'total_prefs' as const, label: 'total prefs' },
       { key: 'total_positive_prefs' as const, label: 'total positive' },
       { key: 'total_negative_prefs' as const, label: 'total negative' },
-      { key: 'n_match' as const, label: 'total matches' },
       ...[...APIPositiveReactions, ...APINegativeReactions].map((reaction) => ({
         key: reaction,
         label: reaction.replaceAll('_', ' ')
@@ -78,7 +77,7 @@
         .map((m) => {
           return csvCols
             .map((col) => {
-              if (col.key === 'id' || col.key === 'n_match') {
+              if (col.key === 'id') {
                 return m[col.key]
               } else if (col.key === 'total_positive_prefs') {
                 return APIPositiveReactions.reduce((acc, v) => acc + m.prefs![v], 0)
