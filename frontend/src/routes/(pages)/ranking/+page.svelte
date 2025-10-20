@@ -73,7 +73,7 @@
       csvCols.map((col) => col.label).join(','),
       ...modelsData
         .filter((m) => !!m.prefs)
-        .sort((a, b) => sortIfDefined(a, b, 'positive_prefs_ratio'))
+        .sort((a, b) => sortIfDefined(a.prefs!, b.prefs!, 'positive_prefs_ratio'))
         .map((m) => {
           return csvCols
             .map((col) => {
