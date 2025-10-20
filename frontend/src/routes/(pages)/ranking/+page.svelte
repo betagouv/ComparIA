@@ -11,8 +11,8 @@
   const tabs = (
     [
       { id: 'ranking', icon: 'trophy-line' },
-      { id: 'energy', icon: 'flashlight-line', iconClass: 'text-primary' },
-      { id: 'preferences', icon: 'thumb-up-line', iconClass: 'text-primary' },
+      { id: 'energy', icon: 'flashlight-line' },
+      { id: 'preferences', icon: 'thumb-up-line' },
       { id: 'methodo' }
     ] as const
   ).map((tab) => ({
