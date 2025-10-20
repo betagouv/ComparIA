@@ -51,7 +51,7 @@
 
   const cols = (
     [
-      { id: 'rank', orderable: true },
+      { id: 'rank', orderable: true, tooltip: m['ranking.table.data.tooltips.rank']() },
       { id: 'name', orderable: true },
       { id: 'elo', orderable: true, tooltip: m['ranking.table.data.tooltips.elo']() },
       { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },

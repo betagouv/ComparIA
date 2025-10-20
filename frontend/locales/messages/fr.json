@@ -1618,6 +1618,7 @@
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
+                    "rank": "Rang de classement attribué selon le score de satisfaction Bradley-Terry",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
                     "trust_range": "Intervalle indiquant la fiabilité du rang de classement : plus l'intervalle est étroit, plus l'estimation du rang est fiable. Il y a 95% de chances que le vrai rang du modèle soit dans cette plage."
                 }
