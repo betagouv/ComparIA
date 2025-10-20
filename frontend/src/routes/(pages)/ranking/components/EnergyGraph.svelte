@@ -311,6 +311,10 @@
         stroke-width: 2px;
       }
 
+      rect {
+        fill: var(--color-black);
+      }
+
       text {
         text-anchor: middle;
         font-size: 14px;
