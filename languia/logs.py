@@ -712,7 +712,7 @@ def upsert_conv_to_db(data):
                 %(selected_category)s,
                 %(is_unedited_prompt)s,
                 %(mode)s,
-                %(custom_models_selection)s
+                %(custom_models_selection)s,
                 %(total_conv_a_output_tokens)s,
                 %(total_conv_b_output_tokens)s
             )
