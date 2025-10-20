@@ -63,7 +63,7 @@
                 class="z-10 -mb-2 h-full bg-white "
               >
                 {m['reveal.impacts.size.count']()}
-                {#if model.distribution !== 'open-weights'}
+                {#if model.distribution === 'api-only'}
                   {m['reveal.impacts.size.estimated']()}
                 {/if}
                 {#if model.quantization === 'q8'}

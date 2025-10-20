@@ -1322,13 +1322,13 @@
         "release": "Sortie {date}",
         "size": {
             "count": {
-                "L": "70 à 150 mds",
-                "M": "20 à 70 mds",
-                "S": "7 à 20 mds",
-                "XL": ">150 mds",
-                "XS": "<7 mds"
+                "L": "100 à 400 mds",
+                "M": "60 à 100 mds",
+                "S": "15 à 60 mds",
+                "XL": ">400 mds",
+                "XS": "<15 mds"
             },
-            "estimated": "Taille estimée ({size})",
+           "estimated": "Taille estimée ({size})",
             "title": "Taille"
         }
     },
