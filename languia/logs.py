@@ -720,7 +720,9 @@ def upsert_conv_to_db(data):
             DO UPDATE SET
                 conversation_a = EXCLUDED.conversation_a,
                 conversation_b = EXCLUDED.conversation_b,
-                conv_turns = EXCLUDED.conv_turns
+                conv_turns = EXCLUDED.conv_turns,
+                total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
+                total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens
                 """
         )
 
