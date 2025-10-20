@@ -8,7 +8,7 @@
   import { Button, Pagination, Select, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import { sanitize } from '$lib/utils/commons'
-  import type { Snippet } from 'svelte'
+  import { onMount, type Snippet } from 'svelte'
   import type { ClassValue, HTMLTableAttributes } from 'svelte/elements'
 
   type TableProps = {
@@ -61,6 +61,18 @@
     value,
     label: m['components.table.pageCount']({ count: value })
   }))
+
+  let containerElem = $state<HTMLDivElement>()
+  let hideGradient = $state(true)
+
+  function updateGradientDisplay() {
+    hideGradient =
+      containerElem!.offsetWidth + containerElem!.scrollLeft >= containerElem!.scrollWidth
+  }
+
+  onMount(() => {
+    updateGradientDisplay()
+  })
 </script>
 
 <div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
@@ -70,8 +82,17 @@
     </div>
   {/if}
 
-  <div class="fr-table__wrapper">
-    <div class="fr-table__container">
+  <div class="fr-table__wrapper relative">
+    <div
+      id="table-gradient"
+      class={['z-1 absolute inset-0 start-[95%]', { hidden: hideGradient }]}
+    ></div>
+
+    <div
+      bind:this={containerElem}
+      class="fr-table__container"
+      onscroll={() => updateGradientDisplay()}
+    >
       <div class="fr-table__content">
         <table {id} {...props}>
           <caption>{caption}</caption>
@@ -157,5 +178,14 @@
 
   thead tr {
     --border-plain-grey: none;
+  }
+
+  #table-gradient {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(135, 135, 135, 0.15) 50%,
+      rgba(135, 135, 135, 0.2) 100%
+    );
   }
 </style>
