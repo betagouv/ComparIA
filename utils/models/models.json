@@ -527,21 +527,7 @@
         "simple_name": "Gemini 2.0 Flash",
         "license": "proprietary",
         "status": "archived",
-        "id": "gemini-2.0-flash-001",
-        "release_date": "12/2024",
-        "params": 440,
-        "active_params": 137,
-        "arch": "moe",
-        "url": "https://ai.google.dev/gemini-api",
-        "desc": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés.",
-        "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-        "fyi": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
-      },
-      {
-        "simple_name": "Gemini 2.0 Flash",
-        "license": "proprietary",
-        "status": "archived",
-        "id": "gemini-2.0-flash-exp",
+        "id": "gemini-2.0-flash",
         "release_date": "12/2024",
         "params": 440,
         "active_params": 137,
@@ -555,7 +541,7 @@
         "simple_name": "Gemini 1.5 Pro",
         "license": "proprietary",
         "status": "archived",
-        "id": "gemini-1.5-pro-002",
+        "id": "gemini-1.5-pro",
         "release_date": "09/2024",
         "params": 600,
         "active_params": 220,
@@ -616,20 +602,6 @@
         "desc": "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives.",
         "size_desc": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
         "fyi": "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
-      },
-      {
-        "simple_name": "Gemini 1.5 Pro",
-        "license": "proprietary",
-        "status": "archived",
-        "id": "gemini-1.5-pro-001",
-        "release_date": "02/2024",
-        "params": 600,
-        "active_params": 220,
-        "arch": "moe",
-        "url": "https://ai.google.dev/gemini-api",
-        "desc": "Sorti en février 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio.",
-        "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
-        "fyi": "Sorti en février 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
       }
     ]
   },
