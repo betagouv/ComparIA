@@ -200,10 +200,8 @@ def validate() -> None:
         "models": {},
     }
 
-    # Load existing generated models to pass to get_ecologits_rate
-    existing_generated_models = read_json(GENERATED_MODELS_PATH)
-
     if os.getenv("DATABASE_URI"):
+        existing_generated_models = read_json(GENERATED_MODELS_PATH)
         engine = connect_to_db(os.getenv("DATABASE_URI"))
         fetch_distinct_model_ids(engine, existing_generated_models)
 
