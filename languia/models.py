@@ -11,12 +11,14 @@ from pydantic import (
     field_validator,
 )
 from pydantic_core import PydanticCustomError
-from typing import Any, Literal
+from typing import Any, Literal, get_args
 
 ROOT_PATH = Path(__file__).parent.parent
 FRONTEND_PATH = ROOT_PATH / "frontend"
 
+FriendlySize = Literal["XS", "S", "M", "L", "XL"]
 Distribution = Literal["api-only", "open-weights", "fully-open-source"]
+FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
 class License(BaseModel):
@@ -89,6 +91,16 @@ class Model(RawModel):
 
         return value
 
+    @computed_field
+    @property
+    def friendly_size(self) -> FriendlySize:
+        intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
+
+        for i, (lower, upper) in enumerate(intervals):
+            if lower <= self.params < upper:
+                return FRIENDLY_SIZE[i]
+
+        raise Exception("Error: Could not guess friendly_size")
 
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):

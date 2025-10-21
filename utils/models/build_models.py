@@ -156,26 +156,6 @@ def get_ecologits_rate(models_data: dict) -> dict:
     return wh_per_million_token_map
 
 
-def params_to_friendly_size(params):
-    """
-    Converts a parameter value to a friendly size description.
-
-    Args:
-        param (int): The parameter value
-
-    Returns:
-        str: The friendly size description
-    """
-    intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
-    sizes = ["XS", "S", "M", "L", "XL"]
-
-    for i, (lower, upper) in enumerate(intervals):
-        if lower <= params < upper:
-            return sizes[i]
-
-    raise Exception("Error: Could not guess friendly_size")
-
-
 def validate() -> None:
     raw_licenses = read_json(LICENSES_PATH)
     raw_orgas = read_json(MODELS_PATH)
@@ -272,8 +252,6 @@ def validate() -> None:
         for model in orga["models"]:
             # Enhance model data
             model_data = filter_dict(model, I18N_MODEL_KEYS)
-
-            model_data["friendly_size"] = params_to_friendly_size(model_data["params"])
 
             if model.get("quantization", None) == "q8":
                 model_data["required_ram"] = model_data["params"] * 2
