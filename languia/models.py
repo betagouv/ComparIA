@@ -1,12 +1,15 @@
+import datetime
 from pydantic import BaseModel, Field, RootModel, ValidationError, model_validator
 from pydantic_core import PydanticCustomError
-from typing import Any, Literal, Tuple, get_args, Annotated
+from typing import Any, Literal
+
+Distribution = Literal["api-only", "open-weights", "fully-open-source"]
 
 
 class License(BaseModel):
     license: str
     license_desc: str
-    distribution: Literal["api-only", "open-weights", "fully-open-source"]
+    distribution: Distribution
     reuse: bool
     commercial_use: bool | None = None
     reuse_specificities: str | None = None
@@ -78,15 +81,10 @@ def filter_enabled_models(models: dict[str, Model]):
     return enabled_models
 
 
-from pydantic import BaseModel, Field, model_validator, RootModel
-from typing import List, Optional, Dict, Any
-import datetime
-
-
 class ConversationMessage(BaseModel):
     role: str
     content: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
     # Custom validation to ensure 'output_tokens' is present for 'assistant' roles
     @model_validator(mode="after")
@@ -99,7 +97,7 @@ class ConversationMessage(BaseModel):
         return self
 
 
-ConversationMessages = RootModel[List[ConversationMessage]]
+ConversationMessages = RootModel[list[ConversationMessage]]
 
 
 class Conversation(BaseModel):
@@ -111,27 +109,27 @@ class Conversation(BaseModel):
     conversation_a: ConversationMessages
     conversation_b: ConversationMessages
     conv_turns: int = 0
-    system_prompt_a: Optional[str] = None
-    system_prompt_b: Optional[str] = None
+    system_prompt_a: str | None = None
+    system_prompt_b: str | None = None
     conversation_pair_id: str
     conv_a_id: str
     conv_b_id: str
     session_hash: str
-    visitor_id: Optional[str] = None
-    ip: Optional[str] = None
+    visitor_id: str | None = None
+    ip: str | None = None
     model_pair_name: str
     # TODO: computed / added at dataset
     opening_msg: str
     archived: bool = False
-    mode: Optional[str] = None
-    custom_models_selection: Optional[Dict[str, Any]] = None
-    short_summary: Optional[str] = None
-    keywords: Optional[Dict[str, Any]] = None
-    categories: Optional[Dict[str, Any]] = None
-    languages: Optional[Dict[str, Any]] = None
+    mode: str | None = None
+    custom_models_selection: dict[str, Any] | None = None
+    short_summary: str | None = None
+    keywords: dict[str, Any] | None = None
+    categories: dict[str, Any] | None = None
+    languages: dict[str, Any] | None = None
     pii_analyzed: bool = False
-    contains_pii: Optional[bool] = None
-    total_conv_a_output_tokens: Optional[int] = None
-    total_conv_b_output_tokens: Optional[int] = None
-    ip_map: Optional[str] = None
+    contains_pii: bool | None = None
+    total_conv_a_output_tokens: int | None = None
+    total_conv_b_output_tokens: int | None = None
+    ip_map: str | None = None
     postprocess_failed: bool = False
