@@ -1,7 +1,20 @@
 import datetime
-from pydantic import BaseModel, Field, RootModel, ValidationError, model_validator
+from pathlib import Path
+from pydantic import (
+    BaseModel,
+    Field,
+    RootModel,
+    ValidationError,
+    model_validator,
+    ValidationInfo,
+    computed_field,
+    field_validator,
+)
 from pydantic_core import PydanticCustomError
 from typing import Any, Literal
+
+ROOT_PATH = Path(__file__).parent.parent
+FRONTEND_PATH = ROOT_PATH / "frontend"
 
 Distribution = Literal["api-only", "open-weights", "fully-open-source"]
 
@@ -70,6 +83,18 @@ class RawOrganisation(BaseModel):
     proprietary_reuse_specificities: str | None = None
     proprietary_commercial_use_specificities: str | None = None
     models: list[RawModel]
+
+    @field_validator("icon_path", mode="after")
+    @classmethod
+    def check_icon_exists(cls, value: str) -> str:
+        file_path = FRONTEND_PATH / "static" / "orgs" / "ai" / value
+        if not file_path.exists():
+            raise PydanticCustomError(
+                "file_missing",
+                f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_PATH)}' doesn't exists.",
+            )
+
+        return value
 
 
 # Model used to generated 'utils/models/generated-models.json'
