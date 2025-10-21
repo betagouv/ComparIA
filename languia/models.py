@@ -102,6 +102,15 @@ class Model(RawModel):
 
         raise Exception("Error: Could not guess friendly_size")
 
+    @computed_field
+    @property
+    def required_ram(self) -> int | float:
+        if self.quantization == "q8":
+            return self.params * 2
+
+        # We suppose from q4 to fp16
+        return self.params
+
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
     name: str
