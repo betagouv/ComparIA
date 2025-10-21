@@ -8,7 +8,6 @@ from rich.logging import RichHandler
 from slugify import slugify
 from typing import Any
 
-from languia.reveal import get_llm_impact, convert_range_to_value
 from languia.models import Licenses, Orgas, RawOrgas
 from utils.models.utils import Obj, read_json, write_json, filter_dict, sort_dict
 
@@ -140,22 +139,6 @@ def fetch_distinct_model_ids(engine, models_data):
         return []
 
 
-def get_ecologits_rate(models_data: dict) -> dict:
-    """Calculates wh_per_million_token for each model."""
-
-    wh_per_million_token_map = {}
-    for model_id in models_data:
-        model_info = models_data[model_id]
-
-        impact = get_llm_impact(model_info, model_id, 1_000_000, None)
-
-        if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
-            energy_kwh = convert_range_to_value(impact.energy.value)
-            energy_wh = energy_kwh * 1000
-            wh_per_million_token_map[model_id] = energy_wh
-    return wh_per_million_token_map
-
-
 def validate() -> None:
     raw_licenses = read_json(LICENSES_PATH)
     raw_orgas = read_json(MODELS_PATH)
@@ -246,8 +229,6 @@ def validate() -> None:
     # FIXME temp
     return
 
-    wh_per_million_token_map = get_ecologits_rate(existing_generated_models)
-
     for orga in dumped_orgas:
         for model in orga["models"]:
             model_extra_data = next(
@@ -291,9 +272,6 @@ def validate() -> None:
                 {
                     **(model_extra_data or {}),
                     "prefs": model_preferences_data,
-                    "wh_per_million_token": wh_per_million_token_map.get(
-                        model["id"], 0
-                    ),
                 }
             )
 
