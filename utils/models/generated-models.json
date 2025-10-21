@@ -875,7 +875,7 @@
       5
     ],
     "url": "https://ai.google.dev/gemini-api",
-    "wh_per_million_token": 0,
+    "wh_per_million_token": 167596.16666666666,
     "win_rate": 0.5477713987473902
   },
   "gemini-2.0-flash": {
@@ -907,7 +907,7 @@
       3
     ],
     "url": "https://ai.google.dev/gemini-api",
-    "wh_per_million_token": 0,
+    "wh_per_million_token": 87485.15999999997,
     "win_rate": null
   },
   "gemini-2.5-flash": {
@@ -1732,7 +1732,8 @@
     "win_rate": null
   },
   "grok-3-mini-beta": {
-    "arch": "dense",
+    "active_params": 22,
+    "arch": "maybe-moe",
     "commercial_use": null,
     "consumption_wh": 469,
     "distribution": "api-only",
@@ -1741,7 +1742,7 @@
       "api_model_id": "x-ai/grok-3-mini-beta",
       "api_type": "openrouter"
     },
-    "friendly_size": "XL",
+    "friendly_size": "L",
     "icon_path": "xai.svg",
     "id": "grok-3-mini-beta",
     "license": "proprietary",
@@ -1749,7 +1750,7 @@
     "n_match": 1537,
     "new": false,
     "organisation": "xAI",
-    "params": 650,
+    "params": 180,
     "prefs": {
       "clear_formatting": 323,
       "complete": 354,
@@ -1764,7 +1765,7 @@
     "pricey": false,
     "reasoning": true,
     "release_date": "04/2025",
-    "required_ram": 650,
+    "required_ram": 180,
     "reuse": false,
     "simple_name": "Grok 3 Mini",
     "status": "archived",
@@ -1777,7 +1778,8 @@
     "win_rate": null
   },
   "grok-4-fast": {
-    "arch": "maybe-dense",
+    "active_params": 121,
+    "arch": "maybe-moe",
     "commercial_use": null,
     "consumption_wh": 3136,
     "distribution": "api-only",
