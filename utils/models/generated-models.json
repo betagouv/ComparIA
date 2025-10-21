@@ -1774,7 +1774,7 @@
       7
     ],
     "url": "https://x.ai/news/grok-3",
-    "wh_per_million_token": 469320.0,
+    "wh_per_million_token": 11465.146666666666,
     "win_rate": null
   },
   "grok-4-fast": {
@@ -1810,7 +1810,7 @@
       10
     ],
     "url": "https://x.ai/news/grok-4-fast",
-    "wh_per_million_token": 3135827.4999999995,
+    "wh_per_million_token": 255136.7433333333,
     "win_rate": null
   },
   "hermes-3-llama-3.1-405b": {
