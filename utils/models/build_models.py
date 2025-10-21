@@ -9,7 +9,7 @@ from slugify import slugify
 from typing import Any
 
 from languia.reveal import get_llm_impact, convert_range_to_value
-from languia.models import Licenses, RawOrgas
+from languia.models import Licenses, Orgas, RawOrgas
 from utils.models.utils import Obj, read_json, write_json, filter_dict, sort_dict
 
 logging.basicConfig(
@@ -62,16 +62,13 @@ def validate_licenses(raw_licenses: Any) -> list[Any] | None:
             errors[name].append({"key": err["loc"][1], **err})
 
         log_errors(errors)
+
         return None
 
 
-def validate_orgas_and_models(
-    raw_orgas: Any, exclude_defaults=False
-) -> list[Any] | None:
+def validate_orgas_and_models(raw_orgas: Any) -> RawOrgas | None:
     try:
-        return RawOrgas(raw_orgas).model_dump(
-            exclude_none=True, exclude_defaults=exclude_defaults
-        )
+        return RawOrgas(raw_orgas).model_dump()
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
@@ -81,7 +78,7 @@ def validate_orgas_and_models(
                 name = f"organisation '{orga.get("name", err["loc"][0])}'"
                 key = err["loc"][1]
             elif "models" in err["loc"]:
-                name = f"model '{orga["models"][err["loc"][2]]["simple_name"]}'"
+                name = f"model '{orga["models"][err["loc"][2]]["id"]}'"
                 key = err["type"] if err["type"] == "endpoint" else err["loc"][3]
 
             if name not in errors:
@@ -182,8 +179,16 @@ def params_to_friendly_size(params):
 def validate() -> None:
     raw_licenses = read_json(LICENSES_PATH)
     raw_orgas = read_json(MODELS_PATH)
-    raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
+    raw_extra_data = {m["model_name"]: m for m in read_json(MODELS_EXTRA_DATA_PATH)}
     raw_preferences_data = read_json(MODELS_PREFERENCES_PATH)
+
+    dumped_licenses = validate_licenses(raw_licenses)
+
+    if dumped_licenses is None:
+        log.error("Errors in 'licenses.json', exiting...")
+        return
+    else:
+        log.info("No errors in 'licenses.json'!")
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
@@ -197,42 +202,54 @@ def validate() -> None:
                 filtered_models.append(model)
         orga["models"] = filtered_models
 
-    dumped_licenses = validate_licenses(raw_licenses)
+    # First validate with RawOrgas
     dumped_orgas = validate_orgas_and_models(raw_orgas)
 
-    if not dumped_licenses or not dumped_orgas:
+    if dumped_orgas is None:
+        log.error("Errors in 'models.json', exiting...")
         return
+    else:
+        log.info("No errors in 'models.json'!")
 
-    dict_licenses = {license["license"]: license for license in dumped_licenses}
-    base_proprietary_license = dict_licenses.pop("proprietary")
+    context = {
+        "licenses": {l["license"]: l for l in dumped_licenses},
+        "data": raw_extra_data,
+    }
+
+    # Then use the full Orgas builder
+    # Any errors comming from here are code generation errors, not errors in 'models.json'
+    orgas = Orgas.model_validate(raw_orgas, context=context)
+
+    generated_models = {}
 
     i18n = {
         "licenses": {
-            "os": sort_dict(
-                {
-                    license["license"]: {
-                        k: (
-                            (license[k] if k in license else "")
-                            if k != "license_desc"
-                            else markdown.markdown(license[k])
-                        )
-                        for k in I18N_OS_LICENSE_KEYS
-                    }
-                    for license in dict_licenses.values()
+            "os": {
+                l["license"]: {
+                    k: (
+                        (l[k] if k in l else "")
+                        if k != "license_desc"
+                        else markdown.markdown(l[k])
+                    )
+                    for k in I18N_OS_LICENSE_KEYS
                 }
-            ),
+                for l in context["licenses"].values()
+                if l["license"] != "proprietary"
+            },
             "proprio": {},
         },
         "models": {},
     }
-    generated_models = {}
 
     # Load existing generated models to pass to get_ecologits_rate
     existing_generated_models = read_json(GENERATED_MODELS_PATH)
 
     if os.getenv("DATABASE_URI"):
-        engine = utils.connect_to_db(os.getenv("DATABASE_URI"))
+        engine = connect_to_db(os.getenv("DATABASE_URI"))
         fetch_distinct_model_ids(engine, existing_generated_models)
+
+    # FIXME temp
+    return
 
     wh_per_million_token_map = get_ecologits_rate(existing_generated_models)
 
