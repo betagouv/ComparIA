@@ -22,7 +22,8 @@ class Endpoint(BaseModel):
     api_model_id: str
 
 
-class Model(BaseModel):
+# RawModels are manually defined models in 'utils/models/models.json'
+class RawModel(BaseModel):
     new: bool = False
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
         "enabled"
@@ -53,7 +54,8 @@ class Model(BaseModel):
         return self
 
 
-class Organisation(BaseModel):
+# Model to validate organisations data from 'utils/models/models.json'
+class RawOrganisation(BaseModel):
     name: str
     icon_path: str | None = None  # FIXME required?
     proprietary_license_desc: str | None = None
@@ -61,7 +63,7 @@ class Organisation(BaseModel):
     proprietary_commercial_use: bool | None = None
     proprietary_reuse_specificities: str | None = None
     proprietary_commercial_use_specificities: str | None = None
-    models: list[Model]
+    models: list[RawModel]
 
 
 Licenses = RootModel[list[License]]
