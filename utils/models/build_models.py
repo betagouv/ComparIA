@@ -1,15 +1,13 @@
 import logging
 import markdown
 import os
-import sys
 from pathlib import Path
-from pydantic import BaseModel, Field, RootModel, ValidationError
+from pydantic import ValidationError
 from rich.logging import RichHandler
-from slugify import slugify
 from typing import Any
 
 from languia.models import ROOT_PATH, Licenses, Orgas, RawOrgas
-from utils.models.utils import Obj, read_json, write_json, filter_dict, sort_dict
+from utils.models.utils import Obj, read_json, write_json, sort_dict
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
@@ -143,7 +141,6 @@ def validate() -> None:
     raw_licenses = read_json(LICENSES_PATH)
     raw_orgas = read_json(MODELS_PATH)
     raw_extra_data = {m["model_name"]: m for m in read_json(MODELS_EXTRA_DATA_PATH)}
-    raw_preferences_data = read_json(MODELS_PREFERENCES_PATH)
 
     dumped_licenses = validate_licenses(raw_licenses)
 
