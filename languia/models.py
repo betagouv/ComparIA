@@ -80,7 +80,7 @@ class RawModel(BaseModel):
     id: str
     simple_name: str
     license: str
-    fully_open_source: bool | None = None
+    fully_open_source: bool = False
     release_date: str = Field(pattern=r"^[0-9]{2}/[0-9]{4}$")
     params: int | float
     active_params: int | float | None = None
@@ -92,7 +92,7 @@ class RawModel(BaseModel):
     desc: str
     size_desc: str
     fyi: str
-    pricey: bool = False
+    pricey: bool = False  # FIXME move to endpoint?
 
     @model_validator(mode="after")
     def check_endpoint(self):
