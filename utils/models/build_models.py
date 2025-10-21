@@ -224,38 +224,12 @@ def validate() -> None:
                 for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
             }
 
-            if model.data is None:
+            if model.data is None or model.prefs is None:
                 log.warning(
                     f"Missing data for model '{model.id}' (status: {model.status})"
                 )
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
-
-    # FIXME temp
-    return
-
-    for orga in dumped_orgas:
-        for model in orga["models"]:
-
-            model_preferences_data = next(
-                (m for m in raw_preferences_data if m["model_name"] == model["id"]),
-                None,
-            )
-            # FIXME check whos missing
-            if model_preferences_data is not None:
-                model_preferences_data = {
-                    k: v for k, v in model_preferences_data.items() if k != "model_name"
-                }
-
-            # Build complete model data (license + model) without translatable keys
-            generated_models[model["id"]] = sort_dict(
-                {
-                    "prefs": model_preferences_data,
-                }
-            )
-
-    i18n["licenses"]["proprio"] = sort_dict(i18n["licenses"]["proprio"])
-    i18n["models"] = sort_dict(i18n["models"])
 
     # Integrate translatable content to frontend locales
     frontend_i18n = read_json(I18N_PATH)
