@@ -54,6 +54,12 @@ class RawModel(BaseModel):
         return self
 
 
+# Models are models definition generated with 'utils/models/build_models.py'
+# as 'utils/models/generated-models.json'
+class Model(RawModel):
+    status: Literal["archived", "enabled", "disabled"] = "enabled"
+
+
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
     name: str
@@ -65,6 +71,10 @@ class RawOrganisation(BaseModel):
     proprietary_commercial_use_specificities: str | None = None
     models: list[RawModel]
 
+
+# Model used to generated 'utils/models/generated-models.json'
+class Organisation(RawOrganisation):
+    models: list[Model]
 
 Licenses = RootModel[list[License]]
 RawOrgas = RootModel[list[RawOrganisation]]
