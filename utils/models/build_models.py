@@ -316,8 +316,6 @@ def validate() -> None:
             # Build complete model data (license + model) without translatable keys
             generated_models[model["id"]] = sort_dict(
                 {
-                    "organisation": orga["name"],
-                    "icon_path": orga["icon_path"],
                     **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
                     **(model_extra_data or {}),

@@ -71,6 +71,9 @@ class RawModel(BaseModel):
 # as 'utils/models/generated-models.json'
 class Model(RawModel):
     status: Literal["archived", "enabled", "disabled"] = "enabled"
+    # Merged from Organisation
+    organisation: str
+    icon_path: str | None = None  # FIXME required?
 
 
 # Model to validate organisations data from 'utils/models/models.json'
@@ -100,6 +103,17 @@ class RawOrganisation(BaseModel):
 # Model used to generated 'utils/models/generated-models.json'
 class Organisation(RawOrganisation):
     models: list[Model]
+
+    @field_validator("models", mode="before")
+    @classmethod
+    def enhance_models(cls, value: Any, info: ValidationInfo) -> list[RawModel]:
+        for model in value:
+            # forward organisation data
+            model["organisation"] = info.data.get("name")
+            model["icon_path"] = info.data.get("icon_path")
+
+        return value
+
 
 Licenses = RootModel[list[License]]
 RawOrgas = RootModel[list[RawOrganisation]]
