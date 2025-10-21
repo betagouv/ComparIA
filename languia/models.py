@@ -38,6 +38,25 @@ class Endpoint(BaseModel):
     api_model_id: str
 
 
+class DatasetData(BaseModel):
+    elo: float = Field(validation_alias="median")
+    n_match: int
+    mean_win_prob: float
+    win_rate: float | None
+
+    rank_p2_5: int = Field(validation_alias="rank_p2.5", exclude=True)
+    rank_p97_5: int = Field(validation_alias="rank_p97.5", exclude=True)
+    rank: int
+
+    @computed_field
+    @property
+    def trust_range(self) -> list[int, int]:
+        return [
+            self.rank - self.rank_p2_5,
+            self.rank_p97_5 - self.rank,
+        ]
+
+
 # RawModels are manually defined models in 'utils/models/models.json'
 class RawModel(BaseModel):
     new: bool = False
@@ -81,6 +100,8 @@ class Model(RawModel):
     # Merged from Organisation
     organisation: str
     icon_path: str | None = None  # FIXME required?
+    # Merged from extra-data
+    data: DatasetData | None = None
 
     @field_validator("distribution", mode="before")
     @classmethod
@@ -184,6 +205,12 @@ class Organisation(RawOrganisation):
             if model["license"] == "proprietary":
                 model["reuse"] = info.data["proprietary_reuse"]
                 model["commercial_use"] = info.data["proprietary_commercial_use"]
+
+            # inject ranking/prefs data
+            data = info.context["data"].get(model["id"])
+
+            if data:
+                model["data"] = data
 
         return value
 
