@@ -8,7 +8,7 @@ from rich.logging import RichHandler
 from slugify import slugify
 from typing import Any
 
-from languia.models import Licenses, Orgas, RawOrgas
+from languia.models import ROOT_PATH, Licenses, Orgas, RawOrgas
 from utils.models.utils import Obj, read_json, write_json, filter_dict, sort_dict
 
 logging.basicConfig(
@@ -232,8 +232,14 @@ def validate() -> None:
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
     # Integrate translatable content to frontend locales
+    log.info(f"Saving '{I18N_PATH.relative_to(ROOT_PATH)}'...")
     frontend_i18n = read_json(I18N_PATH)
     frontend_i18n["generated"] = sort_dict(i18n)
+    write_json(I18N_PATH, frontend_i18n, indent=4)
+
+    # Save generated models
+    log.info(f"Saving '{GENERATED_MODELS_PATH.relative_to(ROOT_PATH)}'...")
+    write_json(GENERATED_MODELS_PATH, sort_dict(generated_models))
 
     # FIXME add ARCHS
     TS_DATA_PATH.write_text(
@@ -243,8 +249,7 @@ export const MODELS = {[model["simple_name"] for model in generated_models.value
 """
     )
 
-    write_json(I18N_PATH, frontend_i18n, indent=4)
-    write_json(GENERATED_MODELS_PATH, sort_dict(generated_models))
+    log.info("Generation is successfull!")
 
 
 if __name__ == "__main__":
