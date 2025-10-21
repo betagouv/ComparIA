@@ -12,6 +12,7 @@ from pydantic import (
 )
 from pydantic_core import PydanticCustomError
 from typing import Any, Literal, get_args
+from languia.reveal import get_llm_impact, convert_range_to_value
 
 ROOT_PATH = Path(__file__).parent.parent
 FRONTEND_PATH = ROOT_PATH / "frontend"
@@ -110,6 +111,29 @@ class Model(RawModel):
 
         # We suppose from q4 to fp16
         return self.params
+
+    @computed_field
+    @property
+    def wh_per_million_token(self) -> int | float:
+        model_info = {
+            "params": self.params,
+            "active_params": self.active_params,
+            "quantization": self.quantization,
+        }
+        impact = get_llm_impact(
+            model_info,
+            self.id,
+            1_000_000,
+            None,
+        )
+
+        if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
+            energy_kwh = convert_range_to_value(impact.energy.value)
+            return energy_kwh * 1000
+
+        # FIXME return None?
+        return 0
+
 
 # Model to validate organisations data from 'utils/models/models.json'
 class RawOrganisation(BaseModel):
