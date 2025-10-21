@@ -57,6 +57,20 @@ class DatasetData(BaseModel):
         ]
 
 
+class PreferencesData(BaseModel):
+    positive_prefs_ratio: float
+    total_prefs: int
+    # Positive count
+    useful: int
+    clear_formatting: int
+    complete: int
+    creative: int
+    # Negative count
+    incorrect: int
+    instructions_not_followed: int
+    superficial: int
+
+
 # RawModels are manually defined models in 'utils/models/models.json'
 class RawModel(BaseModel):
     new: bool = False
@@ -102,6 +116,7 @@ class Model(RawModel):
     icon_path: str | None = None  # FIXME required?
     # Merged from extra-data
     data: DatasetData | None = None
+    prefs: PreferencesData | None = None
 
     @field_validator("distribution", mode="before")
     @classmethod
@@ -211,6 +226,11 @@ class Organisation(RawOrganisation):
 
             if data:
                 model["data"] = data
+
+                PREFS_KEYS = list(PreferencesData.model_fields.keys())
+                prefs = {key: data.pop(key) for key in PREFS_KEYS}
+                if prefs:
+                    model["prefs"] = prefs
 
         return value
 
