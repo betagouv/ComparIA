@@ -239,7 +239,7 @@
         </div>
       {/if}
     {:else if col.id === 'trust_range'}
-      +{model.trust_range![0]}/-{model.trust_range![1]}
+      -{model.trust_range![1]}/+{model.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
       {model.consumption_wh} Wh
       {#if !raw}
