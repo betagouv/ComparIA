@@ -118,12 +118,12 @@ def connect_to_db(DATABASE_URI):
 def fetch_distinct_model_ids(engine, models_data):
     """Get distinct model IDs from the conversations table."""
 
-    import pandas as pd
+    import polars as pl
 
     query = "SELECT DISTINCT model_a_name as model_id FROM conversations UNION SELECT DISTINCT model_b_name as model_id FROM conversations"
     try:
         with engine.connect() as conn:
-            df = pd.read_sql_query(query, conn)
+            df = pl.read_database(query=query, connection=conn)
             # Filter out None values if any
             model_ids = df["model_id"].dropna().unique().tolist()
 
