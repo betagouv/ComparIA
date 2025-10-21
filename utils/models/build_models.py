@@ -250,15 +250,6 @@ def validate() -> None:
 
     for orga in dumped_orgas:
         for model in orga["models"]:
-            # Enhance model data
-            model_data = filter_dict(model, I18N_MODEL_KEYS)
-
-            if model.get("quantization", None) == "q8":
-                model_data["required_ram"] = model_data["params"] * 2
-            else:
-                # We suppose from q4 to fp16
-                model_data["required_ram"] = model_data["params"]
-
             model_extra_data = next(
                 (
                     m
@@ -298,7 +289,6 @@ def validate() -> None:
             # Build complete model data (license + model) without translatable keys
             generated_models[model["id"]] = sort_dict(
                 {
-                    **model_data,
                     **(model_extra_data or {}),
                     "prefs": model_preferences_data,
                     "wh_per_million_token": wh_per_million_token_map.get(
