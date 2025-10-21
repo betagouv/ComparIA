@@ -224,6 +224,11 @@ def validate() -> None:
                 for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
             }
 
+            if model.data is None:
+                log.warning(
+                    f"Missing data for model '{model.id}' (status: {model.status})"
+                )
+
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
     # FIXME temp
@@ -231,31 +236,6 @@ def validate() -> None:
 
     for orga in dumped_orgas:
         for model in orga["models"]:
-            model_extra_data = next(
-                (
-                    m
-                    for m in raw_extra_data
-                    if m["model_name"] == model["id"]
-                    # or m["name"] == model["simple_name"]
-                ),
-                None,
-            )
-            # FIXME check whos missing
-            if model_extra_data is not None:
-                model_extra_data = {
-                    "elo": round(model_extra_data["median"]),
-                    # trust range based on computed median rank and interval
-                    "trust_range": [
-                        model_extra_data["rank"] - model_extra_data["rank_p2.5"],
-                        model_extra_data["rank_p97.5"] - model_extra_data["rank"],
-                    ],
-                    "n_match": model_extra_data["n_match"],
-                    "mean_win_prob": model_extra_data["mean_win_prob"],
-                    "win_rate": model_extra_data["win_rate"],
-                    "consumption_wh": round(
-                        model_extra_data["mean_conso_per_token"] * 1000 * 1000
-                    ),
-                }
 
             model_preferences_data = next(
                 (m for m in raw_preferences_data if m["model_name"] == model["id"]),
@@ -270,7 +250,6 @@ def validate() -> None:
             # Build complete model data (license + model) without translatable keys
             generated_models[model["id"]] = sort_dict(
                 {
-                    **(model_extra_data or {}),
                     "prefs": model_preferences_data,
                 }
             )
