@@ -64,6 +64,20 @@ class Organisation(BaseModel):
 Licenses = RootModel[list[License]]
 Orgas = RootModel[list[Organisation]]
 
+
+def filter_enabled_models(models: dict[str, Model]):
+    enabled_models = {}
+    for model_id, model_dict in models.items():
+        if model_dict.get("status") == "enabled":
+            try:
+                if Endpoint.model_validate(model_dict.get("endpoint")):
+                    enabled_models[model_id] = model_dict
+            except:
+                continue
+
+    return enabled_models
+
+
 from pydantic import BaseModel, Field, model_validator, RootModel
 from typing import List, Optional, Dict, Any
 import datetime

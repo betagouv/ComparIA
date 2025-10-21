@@ -2,12 +2,12 @@ import numpy as np
 import os
 
 from gradio import Request
+from typing import TYPE_CHECKING
 import gradio as gr
-
 import logging
 
-from languia.models import Model, Endpoint
-import logging
+if TYPE_CHECKING:
+    from languia.models import Endpoint
 
 logger = logging.getLogger("languia")
 
@@ -62,18 +62,6 @@ class EmptyResponseError(RuntimeError):
     def __str__(self):
         msg = "Empty response"
         return msg
-
-
-def filter_enabled_models(models: dict[str, Model]):
-    enabled_models = {}
-    for model_id, model_dict in models.items():
-        if model_dict.get("status") == "enabled":
-            try:
-                if Endpoint.model_validate(model_dict.get("endpoint")):
-                    enabled_models[model_id] = model_dict
-            except:
-                continue
-    return enabled_models
 
 
 def get_ip(request: Request):
@@ -300,7 +288,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     return [model_left_name, model_right_name]
 
 
-def get_api_key(endpoint: Endpoint):
+def get_api_key(endpoint: "Endpoint"):
 
     # // "api_type": "huggingface/cohere",
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
