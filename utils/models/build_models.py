@@ -1,18 +1,16 @@
-import json
-import rich
 import logging
 import markdown
+import os
+import sys
 from pathlib import Path
 from pydantic import BaseModel, Field, RootModel, ValidationError
-from rich import print
 from rich.logging import RichHandler
 from slugify import slugify
-import sys
-import os
+from typing import Any
+
 from languia.reveal import get_llm_impact, convert_range_to_value
-from typing import Any, Literal, Tuple, get_args, Annotated
-from .utils import Obj, read_json, write_json, filter_dict, sort_dict
-from languia.models import License, Organisation, Endpoint, Model
+from languia.models import Licenses, RawOrgas
+from utils.models.utils import Obj, read_json, write_json, filter_dict, sort_dict
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
@@ -36,9 +34,6 @@ I18N_OS_LICENSE_KEYS = [
 ]
 I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
 I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
-
-Licenses = RootModel[list[License]]
-Orgas = RootModel[list[Organisation]]
 
 
 def log_errors(errors: dict[str, list[Obj]]) -> None:
@@ -74,7 +69,7 @@ def validate_orgas_and_models(
     raw_orgas: Any, exclude_defaults=False
 ) -> list[Any] | None:
     try:
-        return Orgas(raw_orgas).model_dump(
+        return RawOrgas(raw_orgas).model_dump(
             exclude_none=True, exclude_defaults=exclude_defaults
         )
     except ValidationError as exc:

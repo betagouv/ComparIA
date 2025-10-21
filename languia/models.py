@@ -67,6 +67,7 @@ class RawOrganisation(BaseModel):
 
 
 Licenses = RootModel[list[License]]
+RawOrgas = RootModel[list[RawOrganisation]]
 Orgas = RootModel[list[Organisation]]
 
 
