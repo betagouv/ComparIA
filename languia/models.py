@@ -71,9 +71,23 @@ class RawModel(BaseModel):
 # as 'utils/models/generated-models.json'
 class Model(RawModel):
     status: Literal["archived", "enabled", "disabled"] = "enabled"
+    # Merged from License
+    distribution: Distribution
+    reuse: bool
+    commercial_use: bool | None = None
     # Merged from Organisation
     organisation: str
     icon_path: str | None = None  # FIXME required?
+
+    @field_validator("distribution", mode="before")
+    @classmethod
+    def check_distribution(
+        cls, value: Distribution, info: ValidationInfo
+    ) -> Distribution:
+        if info.data["fully_open_source"]:
+            value = "fully-open-source"
+
+        return value
 
 
 # Model to validate organisations data from 'utils/models/models.json'
@@ -111,6 +125,20 @@ class Organisation(RawOrganisation):
             # forward organisation data
             model["organisation"] = info.data.get("name")
             model["icon_path"] = info.data.get("icon_path")
+
+            # forward/inject license data
+            if model["license"] not in info.context["licenses"]:
+                raise PydanticCustomError(
+                    "license_missing",
+                    f"license is defined but license data is missing in 'licenses.json' for license '{model["license"]}'",
+                )
+
+            for k, v in info.context["licenses"][model["license"]].items():
+                model[k] = v
+
+            if model["license"] == "proprietary":
+                model["reuse"] = info.data["proprietary_reuse"]
+                model["commercial_use"] = info.data["proprietary_commercial_use"]
 
         return value
 

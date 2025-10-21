@@ -219,7 +219,6 @@ def validate() -> None:
     # Then use the full Orgas builder
     # Any errors comming from here are code generation errors, not errors in 'models.json'
     orgas = Orgas.model_validate(raw_orgas, context=context)
-
     generated_models = {}
 
     i18n = {
@@ -248,43 +247,31 @@ def validate() -> None:
         engine = connect_to_db(os.getenv("DATABASE_URI"))
         fetch_distinct_model_ids(engine, existing_generated_models)
 
+    for orga in orgas.root:
+        # Retrieving i18n licenses descriptions
+        i18n["licenses"]["proprio"][orga.name] = {
+            k.replace("proprietary_", ""): v if v else ""
+            for k, v in orga.model_dump(include=I18N_PROPRIO_LICENSE_KEYS).items()
+        }
+
+        for model in orga.models:
+            # Retrieving i18n models descriptions
+            i18n["models"][model.simple_name] = {
+                k: markdown.markdown(v)
+                for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
+            }
+
+            generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
+
     # FIXME temp
     return
 
     wh_per_million_token_map = get_ecologits_rate(existing_generated_models)
 
     for orga in dumped_orgas:
-        i18n["licenses"]["proprio"][orga["name"]] = {
-            k.replace("proprietary_", ""): orga[k] if k in orga else ""
-            for k in I18N_PROPRIO_LICENSE_KEYS
-        }
-        proprio_license_data = {**base_proprietary_license}
-        proprio_license_data["reuse"] = orga["proprietary_reuse"]
-        proprio_license_data["commercial_use"] = orga.get(
-            "proprietary_commercial_use", None
-        )
-
         for model in orga["models"]:
-            i18n["models"][model["simple_name"]] = {
-                k: markdown.markdown(model[k]) for k in I18N_MODEL_KEYS
-            }
-            try:
-                license_data = (
-                    dict_licenses[model["license"]]
-                    if model["license"] != "proprietary"
-                    else proprio_license_data
-                )
-            except KeyError as e:
-                log.error(
-                    f"Incorrect or missing license data in 'licenses.json' for license '{model["license"]}'"
-                )
-                return
-
             # Enhance model data
             model_data = filter_dict(model, I18N_MODEL_KEYS)
-
-            if model_data.get("fully_open_source"):
-                model_data["distribution"] = "fully-open-source"
 
             model_data["friendly_size"] = params_to_friendly_size(model_data["params"])
 
@@ -333,7 +320,6 @@ def validate() -> None:
             # Build complete model data (license + model) without translatable keys
             generated_models[model["id"]] = sort_dict(
                 {
-                    **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
                     **model_data,
                     **(model_extra_data or {}),
                     "prefs": model_preferences_data,
