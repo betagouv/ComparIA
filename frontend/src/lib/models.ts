@@ -12,6 +12,29 @@ export type License = (typeof LICENSES)[number]
 export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
 
+interface DatasetData {
+  elo: number
+  n_match: number
+  mean_win_prob: number
+  rank: number
+  win_rate?: number
+  trust_range: [number, number]
+}
+
+interface PreferencesData {
+  positive_prefs_ratio: number
+  total_prefs: number
+  // Positive count
+  useful: number
+  clear_formatting: number
+  complete: number
+  creative: number
+  // Negative count
+  incorrect: number
+  instructions_not_followed: number
+  superficial: number
+}
+
 export interface APIBotModel {
   new: boolean
   status: 'archived' | 'enabled'
@@ -25,33 +48,24 @@ export interface APIBotModel {
   commercial_use: boolean | null
   release_date: string
   params: number
-  active_params?: number
+  active_params: number | null
   friendly_size: Sizes
   arch: Archs
   reasoning: boolean | 'hybrid'
-  quantization?: 'q4' | 'q8'
+  quantization: 'q4' | 'q8' | null
   required_ram: number
-  url?: string // FIXME required?
+  url: string | null // FIXME required?
   // conditions: 'free' | 'copyleft' | 'restricted'
-  // extra data
-  elo?: number
-  trust_range?: [number, number]
-  n_match?: number
-  mean_win_prob?: number
-  win_rate?: number
-  consumption_wh?: number
-  prefs:
-    | (Record<APIReactionPref, number> & {
-        total_prefs: number
-        positive_prefs_ratio: number
-      })
-    | null
+  wh_per_million_token: number
+  data: DatasetData | null
+  prefs: PreferencesData | null
 }
 export type BotModel = ReturnType<typeof parseModel>
 
 export function parseModel(model: APIBotModel) {
   return {
     ...model,
+    consumption_wh: Math.round(model.wh_per_million_token / 1000),
     desc: m[`generated.models.${model.simple_name}.desc`](),
     sizeDesc: m[`generated.models.${model.simple_name}.size_desc`](),
     fyi: m[`generated.models.${model.simple_name}.fyi`](),
@@ -105,7 +119,7 @@ export function parseModel(model: APIBotModel) {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
         text:
-          (model.distribution === 'open-weights' || model.distribution === 'fully-open-source')
+          model.distribution === 'open-weights' || model.distribution === 'fully-open-source'
             ? m['models.parameters']({ number: model.params })
             : m['models.size.estimated']({ size: model.friendly_size }),
         tooltip:
