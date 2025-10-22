@@ -1,7 +1,7 @@
 <script lang="ts">
   import { CheckboxGroup, Icon, Search, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel, Sizes } from '$lib/models'
+  import type { BotModelWithData, Sizes } from '$lib/models'
   import { SIZES } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
@@ -10,7 +10,7 @@
 
   type ModelGraphData = (typeof models)[number]
 
-  let { data }: { data: BotModel[] } = $props()
+  let { data }: { data: BotModelWithData[] } = $props()
 
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
   const archs = ['moe', 'dense', 'matformer', 'na'] as const
@@ -22,7 +22,7 @@
         return {
           ...m,
           x: m.consumption_wh!,
-          y: m.elo!,
+          y: m.data.elo!,
           radius: dotSizes[m.friendly_size],
           class: m.license === 'proprietary' ? 'na' : m.arch,
           search: (['id', 'simple_name', 'organisation'] as const)
@@ -231,7 +231,11 @@
                   <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
                     {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
                   </p>
-                  <strong class="ms-auto">{hoveredModelData[item.key]}</strong>
+                  <strong class="ms-auto"
+                    >{item.key === 'elo'
+                      ? hoveredModelData.data[item.key]
+                      : hoveredModelData[item.key]}</strong
+                  >
                 </div>
               {/each}
 

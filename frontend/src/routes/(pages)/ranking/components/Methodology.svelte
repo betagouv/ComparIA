@@ -1,24 +1,24 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel } from '$lib/models'
+  import type { BotModelWithData } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { extent } from 'd3'
   import { WinHistogram } from '.'
 
-  let { data }: { data: BotModel[] } = $props()
+  let { data }: { data: BotModelWithData[] } = $props()
 
   type WinKey = 'mean_win_prob' | 'win_rate'
 
-  function formatModelData(data: BotModel[], key: WinKey) {
+  function formatModelData(data: BotModelWithData[], key: WinKey) {
     return data
-      .filter((m) => !!m[key])
+      .filter((m) => !!m.data[key])
       .slice(0, 10)
-      .sort((a, b) => b[key]! - a[key]!)
+      .sort((a, b) => b.data[key]! - a.data[key]!)
       .map((m, i) => ({
         x: m.id,
-        y: m[key]!
+        y: m.data[key]!
       }))
   }
 
@@ -43,7 +43,9 @@
       csvCols.map((col) => col.label).join(','),
       ...data
         .sort((a, b) => sortIfDefined(a, b, 'mean_win_prob'))
-        .map((m) => csvCols.map((col) => m[col.key]).join(','))
+        .map((m) =>
+          csvCols.map((col) => (col.key == 'id' ? m[col.key] : m.data[col.key])).join(',')
+        )
     ].join('\n')
 
     downloadTextFile(csvData, 'winrate')

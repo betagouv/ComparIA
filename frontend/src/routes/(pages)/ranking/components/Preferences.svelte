@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Link, Modal } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel } from '$lib/models'
+  import type { BotModelWithData } from '$lib/models'
   import { PreferencesTable } from '.'
 
-  let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
+  let { data, onDownloadData }: { data: BotModelWithData[]; onDownloadData: () => void } = $props()
 </script>
 
 <div id="ranking-preferences">
