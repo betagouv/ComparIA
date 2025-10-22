@@ -63,7 +63,7 @@ def validate_licenses(raw_licenses: Any) -> list[Any] | None:
         return None
 
 
-def validate_orgas_and_models(raw_orgas: Any) -> RawOrgas | None:
+def validate_orgas_and_models(raw_orgas: Any) -> list[Any] | None:
     try:
         return RawOrgas(raw_orgas).model_dump()
     except ValidationError as exc:
@@ -140,7 +140,8 @@ def fetch_distinct_model_ids(engine, models_data):
 def validate() -> None:
     raw_licenses = read_json(LICENSES_PATH)
     raw_orgas = read_json(MODELS_PATH)
-    raw_extra_data = {m["model_name"]: m for m in read_json(MODELS_EXTRA_DATA_PATH)}
+    raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
+    raw_models_data = {m["model_name"]: m for m in raw_extra_data["data"]}
 
     dumped_licenses = validate_licenses(raw_licenses)
 
@@ -173,7 +174,7 @@ def validate() -> None:
 
     context = {
         "licenses": {l["license"]: l for l in dumped_licenses},
-        "data": raw_extra_data,
+        "data": raw_models_data,
     }
 
     # Then use the full Orgas builder
@@ -234,7 +235,13 @@ def validate() -> None:
 
     # Save generated models
     log.info(f"Saving '{GENERATED_MODELS_PATH.relative_to(ROOT_PATH)}'...")
-    write_json(GENERATED_MODELS_PATH, sort_dict(generated_models))
+    write_json(
+        GENERATED_MODELS_PATH,
+        {
+            "timestamp": raw_extra_data["timestamp"],
+            "models": sort_dict(generated_models),
+        },
+    )
 
     # FIXME add ARCHS
     TS_DATA_PATH.write_text(
