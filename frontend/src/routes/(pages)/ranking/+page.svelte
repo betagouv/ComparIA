@@ -24,17 +24,18 @@
 
   function onDownloadData(kind: 'ranking' | 'energy') {
     const csvCols = [
-      { key: 'rank' as const, label: 'rank' },
+      { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
-      { key: 'elo' as const, label: 'elo', energy: true },
-      { key: 'trust_range' as const, label: 'confidence interval' },
-      { key: 'n_match' as const, label: 'total votes' },
-      { key: 'consumption_wh' as const, label: 'wh per thousand tokens', energy: true },
-      { key: 'friendly_size' as const, label: 'size', energy: true },
-      { key: 'params' as const, label: 'parameters', energy: true },
-      { key: 'release_date' as const, label: 'release' },
-      { key: 'organisation' as const, label: 'organisation', energy: true },
-      { key: 'distribution' as const, label: 'distribution', energy: true }
+      { key: 'elo' as const, label: 'Bradley-Terry Score', energy: true },
+      { key: 'trust_range' as const, label: 'Confidence interval' },
+      { key: 'n_match' as const, label: 'Total votes' },
+      { key: 'consumption_wh' as const, label: 'Consumption Wh (1000 tokens)', energy: true },
+      { key: 'friendly_size' as const, label: 'Size', energy: true },
+      { key: 'params' as const, label: 'Parameters (B)', energy: true },
+      { key: 'arch' as const, label: 'Architecture', energy: true },
+      { key: 'release_date' as const, label: 'Release' },
+      { key: 'organisation' as const, label: 'Organisation', energy: true },
+      { key: 'distribution' as const, label: 'Distribution', energy: true }
     ]
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
@@ -44,16 +45,19 @@
         .map((m, i) => {
           return cols
             .map((col) => {
-              if (col.key === 'elo' || col.key === 'rank' || col.key === 'n_match') return m.data[col.key]
+              if (col.key === 'elo' || col.key === 'rank' || col.key === 'n_match')
+                return m.data[col.key]
               if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
-              if (col.key === 'trust_range') return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
+              if (col.key === 'trust_range')
+                return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
               return m[col.key]
             })
             .join(',')
         })
     ].join('\n')
 
-    downloadTextFile(data, kind)
+    // FIXME add date
+    downloadTextFile(data, `comparia_model-${kind}`)
   }
 
   function onDownloadPrefsData() {
@@ -90,7 +94,8 @@
         })
     ].join('\n')
 
-    downloadTextFile(data, 'preferences')
+    // FIXME add date
+    downloadTextFile(data, `comparia_model-preferences`)
   }
 </script>
 
