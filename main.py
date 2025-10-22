@@ -56,11 +56,14 @@ objective = config.OBJECTIVE
 @app.get("/available_models", response_class=JSONResponse)
 async def available_models():
     return JSONResponse(
-        [
-            model
-            for model in config.all_models.values()
-            if model["status"] in ("enabled", "archived")
-        ]
+        {
+            "models": [
+                model
+                for model in config.all_models_data["models"].values()
+                if model["status"] in ("enabled", "archived")
+            ],
+            "data_timestamp": config.all_models_data["timestamp"],
+        }
     )
 
 

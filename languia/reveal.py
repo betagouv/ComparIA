@@ -76,12 +76,12 @@ def calculate_streaming_hours(impact_gwp_value_or_range):
 
 
 def build_reveal_dict(conv_a, conv_b, chosen_model):
-    from languia.config import all_models
+    from languia.config import all_models_data
 
     logger = logging.getLogger("languia")
 
-    model_a = all_models.get(conv_a.model_name)
-    model_b = all_models.get(conv_b.model_name)
+    model_a = all_models_data["models"].get(conv_a.model_name)
+    model_b = all_models_data["models"].get(conv_b.model_name)
 
     model_a_tokens = sum_tokens(conv_a.messages)
     logger.debug("output_tokens (model a): " + str(model_a_tokens))
