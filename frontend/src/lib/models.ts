@@ -1,4 +1,3 @@
-import type { APIReactionPref } from '$lib/chatService.svelte'
 import { getContext, setContext } from 'svelte'
 import { LICENSES, MODELS, ORGANISATIONS } from './generated'
 import { m } from './i18n/messages'
@@ -61,6 +60,7 @@ export interface APIBotModel {
   prefs: PreferencesData | null
 }
 export type BotModel = ReturnType<typeof parseModel>
+export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
 
 export function parseModel(model: APIBotModel) {
   return {
@@ -151,4 +151,10 @@ export function setModelsContext(models: APIBotModel[]) {
 
 export function getModelsContext() {
   return getContext<BotModel[]>('models')
+}
+
+export function getModelsWithDataContext() {
+  return getContext<BotModel[]>('models').filter(
+    (m) => m.data !== null && m.prefs !== null
+  ) as BotModelWithData[]
 }
