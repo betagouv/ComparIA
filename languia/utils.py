@@ -16,11 +16,8 @@ def get_total_params(model_extra_info):
     """
     Get the total number of parameters for a model.
     """
-    if "params" in model_extra_info:
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
+    if model_extra_info.get("params"):
+        if model_extra_info.get("quantization", None) == "q8":
             return int(model_extra_info["params"]) // 2
         else:
             return int(model_extra_info["params"])
@@ -36,11 +33,8 @@ def get_active_params(model_extra_info):
     Get the number of active parameters for a model.
     For MoE models, this will be different from the total number of parameters.
     """
-    if "active_params" in model_extra_info:
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
+    if model_extra_info.get("active_params"):
+        if model_extra_info.get("quantization", None) == "q8":
             return int(model_extra_info["active_params"]) // 2
         else:
             return int(model_extra_info["active_params"])
