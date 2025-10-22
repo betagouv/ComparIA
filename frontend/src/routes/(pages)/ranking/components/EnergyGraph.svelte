@@ -48,7 +48,8 @@
     return models.filter((m) => {
       const sizeMatch = sizes.length === 0 || sizes.includes(m.friendly_size)
       const searchMatch = !_search || m.search.includes(_search)
-      return sizeMatch && searchMatch
+      // FIXME remove grok models filtering?
+      return sizeMatch && searchMatch && m.id !== 'grok-4-fast' && m.id !== 'grok-3-mini-beta'
     })
   })
 
