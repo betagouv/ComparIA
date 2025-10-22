@@ -1,17 +1,18 @@
 import datetime
 from pathlib import Path
 from pydantic import (
+    AfterValidator,
     BaseModel,
     Field,
     RootModel,
     ValidationError,
-    model_validator,
     ValidationInfo,
+    model_validator,
     computed_field,
     field_validator,
 )
 from pydantic_core import PydanticCustomError
-from typing import Any, Literal, get_args
+from typing import Annotated, Any, Literal, get_args
 from languia.reveal import get_llm_impact, convert_range_to_value
 
 ROOT_PATH = Path(__file__).parent.parent
@@ -39,7 +40,9 @@ class Endpoint(BaseModel):
 
 
 class DatasetData(BaseModel):
-    elo: float = Field(validation_alias="median")
+    elo: Annotated[int | float, AfterValidator(lambda elo: round(elo))] = Field(
+        validation_alias="median"
+    )
     n_match: int
     mean_win_prob: float
     win_rate: float | None
