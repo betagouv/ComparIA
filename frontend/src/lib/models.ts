@@ -59,6 +59,8 @@ export interface APIBotModel {
   data: DatasetData | null
   prefs: PreferencesData | null
 }
+export type APIData = { data_timestamp: number; models: APIBotModel[] }
+export type Data = { lastUpdateDate: Date; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
 
@@ -142,19 +144,21 @@ export function parseModel(model: APIBotModel) {
   }
 }
 
-export function setModelsContext(models: APIBotModel[]) {
-  setContext(
-    'models',
-    models.map((model) => parseModel(model))
-  )
+export function setModelsContext(data: APIData) {
+  setContext('data', {
+    lastUpdateDate: new Date(data.data_timestamp * 1000).toLocaleDateString(),
+    models: data.models.map((model) => parseModel(model))
+  })
 }
 
 export function getModelsContext() {
-  return getContext<BotModel[]>('models')
+  return getContext<Data>('data')
 }
 
 export function getModelsWithDataContext() {
-  return getContext<BotModel[]>('models').filter(
-    (m) => m.data !== null && m.prefs !== null
-  ) as BotModelWithData[]
+  const { models, ...data } = getContext<Data>('data')
+  return {
+    ...data,
+    models: models.filter((m) => m.data !== null && m.prefs !== null) as BotModelWithData[]
+  }
 }
