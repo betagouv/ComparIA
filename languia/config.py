@@ -129,10 +129,9 @@ if os.getenv("SENTRY_DSN"):
         + str(git_commit)
     )
 
+all_models_data = json5.loads(Path("./utils/models/generated-models.json").read_text())
 
-all_models = json5.loads(Path("./utils/models/generated-models.json").read_text())
-
-models = filter_enabled_models(all_models)
+models = filter_enabled_models(all_models_data["models"])
 
 reasoning_models = [id for id, model in models.items() if model.get("reasoning", False)]
 
