@@ -1735,7 +1735,7 @@
     "active_params": 22,
     "arch": "maybe-moe",
     "commercial_use": null,
-    "consumption_wh": 469,
+    "consumption_wh": 11.5,
     "distribution": "api-only",
     "elo": 1073,
     "endpoint": {
@@ -1781,7 +1781,7 @@
     "active_params": 121,
     "arch": "maybe-moe",
     "commercial_use": null,
-    "consumption_wh": 3136,
+    "consumption_wh": 256,
     "distribution": "api-only",
     "elo": 1072,
     "endpoint": {
