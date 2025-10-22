@@ -20,7 +20,7 @@
     label: m[`ranking.${tab.id}.tabLabel`]()
   }))
 
-  const modelsData = getModelsWithDataContext()
+  const { lastUpdateDate, models: modelsData } = getModelsWithDataContext()
 
   function onDownloadData(kind: 'ranking' | 'energy') {
     const csvCols = [
@@ -56,8 +56,7 @@
         })
     ].join('\n')
 
-    // FIXME add date
-    downloadTextFile(data, `comparia_model-${kind}`)
+    downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}`)
   }
 
   function onDownloadPrefsData() {
@@ -94,8 +93,7 @@
         })
     ].join('\n')
 
-    // FIXME add date
-    downloadTextFile(data, `comparia_model-preferences`)
+    downloadTextFile(data, `comparia_model-preferences-${lastUpdateDate}`)
   }
 </script>
 
@@ -116,17 +114,13 @@
             )}
           </p>
 
-          <RankingTable
-            id="ranking-table"
-            data={modelsData}
-            onDownloadData={() => onDownloadData('ranking')}
-          />
+          <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
         {:else if id === 'energy'}
-          <Energy data={modelsData} onDownloadData={() => onDownloadData('energy')} />
+          <Energy onDownloadData={() => onDownloadData('energy')} />
         {:else if id === 'preferences'}
-          <Preferences data={modelsData} onDownloadData={() => onDownloadPrefsData()} />
+          <Preferences onDownloadData={() => onDownloadPrefsData()} />
         {:else if id === 'methodo'}
-          <Methodology data={modelsData} />
+          <Methodology />
         {/if}
       {/snippet}
     </Tabs>

@@ -4,7 +4,7 @@
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import type { BotModelWithData } from '$lib/models'
+  import { getModelsWithDataContext } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -22,7 +22,6 @@
 
   let {
     id,
-    data,
     initialOrderCol = 'elo',
     initialOrderMethod = 'descending',
     includedCols,
@@ -31,7 +30,6 @@
     raw = false
   }: {
     id: string
-    data: BotModelWithData[]
     initialOrderCol?: ColKind
     initialOrderMethod?: 'ascending' | 'descending'
     includedCols?: ColKind[]
@@ -44,8 +42,7 @@
 
   const votesData = getVotesContext()
   const totalVotes = $derived(NumberFormater.format(votesData.count))
-  // FIXME retrieve info from backend
-  let lastUpdateDate = new Date()
+  const { lastUpdateDate, models: data } = getModelsWithDataContext()
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
 

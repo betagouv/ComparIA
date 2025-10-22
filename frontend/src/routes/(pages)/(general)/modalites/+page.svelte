@@ -4,7 +4,7 @@
   import { getModelsContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
-  const models = getModelsContext().filter((model) => model.status === 'enabled')
+  const models = getModelsContext().models.filter((model) => model.status === 'enabled')
 </script>
 
 <SeoHead title={m['seo.titles.modalites']()} />
