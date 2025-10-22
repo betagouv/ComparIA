@@ -1,11 +1,11 @@
 <script lang="ts">
   import { Accordion, AccordionGroup, Alert } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel } from '$lib/models'
+  import type { BotModelWithData } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
 
-  let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
+  let { data, onDownloadData }: { data: BotModelWithData[]; onDownloadData: () => void } = $props()
 
   const faq = [
     {

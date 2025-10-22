@@ -3,7 +3,7 @@
   import SeoHead from '$components/SEOHead.svelte'
   import { APINegativeReactions, APIPositiveReactions } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsContext } from '$lib/models'
+  import { getModelsWithDataContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, Preferences, RankingTable } from './components'
@@ -20,7 +20,7 @@
     label: m[`ranking.${tab.id}.tabLabel`]()
   }))
 
-  const modelsData = getModelsContext().filter((m) => !!m.elo)
+  const modelsData = getModelsWithDataContext()
 
   function onDownloadData(kind: 'ranking' | 'energy') {
     const csvCols = [
@@ -29,7 +29,7 @@
       { key: 'elo' as const, label: 'elo', energy: true },
       { key: 'trust_range' as const, label: 'confidence interval' },
       { key: 'n_match' as const, label: 'total votes' },
-      { key: 'consumption_wh' as const, label: 'consumption (wh)', energy: true },
+      { key: 'consumption_wh' as const, label: 'wh per thousand tokens', energy: true },
       { key: 'friendly_size' as const, label: 'size', energy: true },
       { key: 'params' as const, label: 'parameters', energy: true },
       { key: 'release_date' as const, label: 'release' },
@@ -40,13 +40,13 @@
     const data = [
       cols.map((col) => col.label).join(','),
       ...modelsData
-        .sort((a, b) => sortIfDefined(a, b, 'elo'))
+        .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
         .map((m, i) => {
           return cols
             .map((col) => {
-              if (col.key === 'rank') return i.toString()
+              if (col.key === 'elo' || col.key === 'rank' || col.key === 'n_match') return m.data[col.key]
               if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
-              if (col.key === 'trust_range') return `+${m.trust_range![0]}/-${m.trust_range![1]}`
+              if (col.key === 'trust_range') return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
               return m[col.key]
             })
             .join(',')
@@ -72,19 +72,18 @@
     const data = [
       csvCols.map((col) => col.label).join(','),
       ...modelsData
-        .filter((m) => !!m.prefs)
-        .sort((a, b) => sortIfDefined(a.prefs!, b.prefs!, 'positive_prefs_ratio'))
+        .sort((a, b) => sortIfDefined(a.prefs, b.prefs, 'positive_prefs_ratio'))
         .map((m) => {
           return csvCols
             .map((col) => {
               if (col.key === 'id') {
                 return m[col.key]
               } else if (col.key === 'total_positive_prefs') {
-                return APIPositiveReactions.reduce((acc, v) => acc + m.prefs![v], 0)
+                return APIPositiveReactions.reduce((acc, v) => acc + m.prefs[v], 0)
               } else if (col.key === 'total_negative_prefs') {
-                return APINegativeReactions.reduce((acc, v) => acc + m.prefs![v], 0)
+                return APINegativeReactions.reduce((acc, v) => acc + m.prefs[v], 0)
               } else {
-                return m.prefs![col.key]
+                return m.prefs[col.key]
               }
             })
             .join(',')
