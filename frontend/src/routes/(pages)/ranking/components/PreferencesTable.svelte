@@ -7,7 +7,7 @@
     type APIReactionPref
   } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import type { BotModelWithData } from '$lib/models'
+  import { getModelsWithDataContext } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -19,20 +19,17 @@
 
   let {
     id,
-    data,
     initialOrderCol = 'positive_prefs_ratio',
     initialOrderMethod = 'descending',
     onDownloadData
   }: {
     id: string
-    data: BotModelWithData[]
     initialOrderCol?: ColKind
     initialOrderMethod?: 'ascending' | 'descending'
     onDownloadData: () => void
   } = $props()
 
-  // FIXME retrieve info from backend
-  let lastUpdateDate = new Date()
+  const { lastUpdateDate, models: data } = getModelsWithDataContext()
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
 
@@ -75,21 +72,18 @@
   })
 
   const rows = $derived.by(() => {
-    return data
-      .map((model) => {
-        return {
-          id: model.id,
-          simple_name: model.simple_name,
-          icon_path: model.icon_path,
-          organisation: model.organisation,
-          ...model.prefs,
-          total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs[v], 0),
-          total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs[v], 0),
-          search: (['id', 'simple_name', 'organisation'] as const)
-            .map((key) => model[key].toLowerCase())
-            .join(' ')
-        }
-      })
+    return data.map((model) => ({
+      id: model.id,
+      simple_name: model.simple_name,
+      icon_path: model.icon_path,
+      organisation: model.organisation,
+      ...model.prefs,
+      total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs[v], 0),
+      total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs[v], 0),
+      search: (['id', 'simple_name', 'organisation'] as const)
+        .map((key) => model[key].toLowerCase())
+        .join(' ')
+    }))
   })
 
   const sortedRows = $derived.by(() => {
@@ -118,7 +112,7 @@
   {#snippet headerLeft()}
     <div class="fr-table__detail mb-0! flex gap-5">
       <p class="mb-0! text-[14px]!">
-        {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
+        {m['ranking.table.lastUpdate']({ date: lastUpdateDate })}
       </p>
 
       <Link

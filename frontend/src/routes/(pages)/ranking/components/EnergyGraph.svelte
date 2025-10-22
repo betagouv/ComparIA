@@ -1,8 +1,8 @@
 <script lang="ts">
   import { CheckboxGroup, Icon, Search, Tooltip } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModelWithData, Sizes } from '$lib/models'
-  import { SIZES } from '$lib/models'
+  import type { Sizes } from '$lib/models'
+  import { getModelsWithDataContext, SIZES } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
@@ -10,7 +10,7 @@
 
   type ModelGraphData = (typeof models)[number]
 
-  let { data }: { data: BotModelWithData[] } = $props()
+  const { models: data } = getModelsWithDataContext()
 
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
   const archs = ['moe', 'dense', 'matformer', 'na'] as const

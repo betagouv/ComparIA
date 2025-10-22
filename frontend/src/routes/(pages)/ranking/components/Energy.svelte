@@ -1,11 +1,10 @@
 <script lang="ts">
   import { Accordion, AccordionGroup, Alert } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModelWithData } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
 
-  let { data, onDownloadData }: { data: BotModelWithData[]; onDownloadData: () => void } = $props()
+  let { onDownloadData }: { onDownloadData: () => void } = $props()
 
   const faq = [
     {
@@ -32,7 +31,7 @@
         <p class="text-grey! text-sm!">{m['ranking.energy.views.graph.desc']()}</p>
       </div>
 
-      <EnergyGraph {data} />
+      <EnergyGraph />
     </section>
 
     <section class="rounded bg-white p-4 md:p-8">
@@ -57,7 +56,6 @@
       <h3 class="mt-6! text-lg! mb-0!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
-        {data}
         initialOrderCol="consumption_wh"
         initialOrderMethod="ascending"
         includedCols={['name', 'elo', 'consumption_wh', 'size', 'arch', 'organisation', 'license']}

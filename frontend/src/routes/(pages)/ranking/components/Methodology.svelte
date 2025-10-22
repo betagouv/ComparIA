@@ -1,13 +1,13 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModelWithData } from '$lib/models'
+  import { getModelsWithDataContext, type BotModelWithData } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { extent } from 'd3'
   import { WinHistogram } from '.'
 
-  let { data }: { data: BotModelWithData[] } = $props()
+  const { lastUpdateDate, models: data } = getModelsWithDataContext()
 
   type WinKey = 'mean_win_prob' | 'win_rate'
 
@@ -48,7 +48,7 @@
         )
     ].join('\n')
 
-    downloadTextFile(csvData, 'winrate')
+    downloadTextFile(csvData, `comparia_model-winrate-${lastUpdateDate}`)
   }
 </script>
 
