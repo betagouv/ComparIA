@@ -427,6 +427,16 @@
         }
     },
     "generated": {
+        "archs": {
+            "dense": {
+                "desc": "Den dense arkitektur betegner en type neuralt netværk, hvor hver neuron i et lag er forbundet til alle neuroner i det næste lag. Dette gør det muligt for alle parametrene i laget at bidrage til beregningen af outputtet.",
+                "name": "Dense"
+            },
+            "na": {
+                "name": "Proprietær",
+                "title": "Arkitektur N/A"
+            }
+        },
         "licenses": {
             "os": {
                 "Apache 2.0": {
@@ -1054,17 +1064,7 @@
     },
     "models": {
         "arch": {
-            "title": "Vidste du?",
-            "types": {
-                "dense": {
-                    "desc": "Den dense arkitektur betegner en type neuralt netværk, hvor hver neuron i et lag er forbundet til alle neuroner i det næste lag. Dette gør det muligt for alle parametrene i laget at bidrage til beregningen af outputtet.",
-                    "name": "Dense"
-                },
-                "na": {
-                    "name": "Proprietær",
-                    "title": "Arkitektur N/A"
-                }
-            }
+            "title": "Vidste du?"
         },
         "conditions": {
             "commercialUse": {
