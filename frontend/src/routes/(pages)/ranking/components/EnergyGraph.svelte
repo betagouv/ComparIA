@@ -1,7 +1,8 @@
 <script lang="ts">
   import { CheckboxGroup, Icon, Search, Tooltip } from '$components/dsfr'
+  import { ARCHS } from '$lib/generated'
   import { m } from '$lib/i18n/messages'
-  import type { Sizes } from '$lib/models'
+  import type { Archs, Sizes } from '$lib/models'
   import { getModelsWithDataContext, SIZES } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
@@ -13,7 +14,6 @@
   const { models: data } = getModelsWithDataContext()
 
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
-  const archs = ['moe', 'dense', 'matformer', 'na'] as const
 
   const models = $derived(
     data
@@ -104,13 +104,13 @@
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
     <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
-      {#each archs as arch}
+      {#each ARCHS as arch}
         <li class="p-0! not-last:mb-2 flex items-center">
           <div class={['dot me-2 rounded-full', arch]}></div>
-          {m[`models.arch.types.${arch}.name`]()}
+          {m[`generated.archs.${arch}.name`]()}
           <Tooltip
             id="arch-type-{arch}-{kind}"
-            text={m[`models.arch.types.${arch}.desc`]()}
+            text={m[`generated.archs.${arch}.desc`]()}
             size="xs"
             class="ms-1"
           />
@@ -249,7 +249,7 @@
                       <strong class="ms-auto">
                         {#if key === 'arch'}
                           {m[
-                            `models.arch.types.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as (typeof archs)[number])}.name`
+                            `generated.archs.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as Archs)}.name`
                           ]()}
                         {:else}
                           {hoveredModelData[key]}

@@ -1,12 +1,13 @@
 import { getContext, setContext } from 'svelte'
-import { LICENSES, MODELS, ORGANISATIONS } from './generated'
+import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from './generated'
 import { m } from './i18n/messages'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
-export const ARCHS = ['moe', 'dense', 'matformer', 'maybe-moe', 'maybe-dense'] as const
 
 export type Sizes = (typeof SIZES)[number]
 export type Archs = (typeof ARCHS)[number]
+export type MaybeArchs = (typeof MAYBE_ARCHS)[number]
+export type AllArchs = Archs | MaybeArchs
 export type License = (typeof LICENSES)[number]
 export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
@@ -49,7 +50,7 @@ export interface APIBotModel {
   params: number
   active_params: number | null
   friendly_size: Sizes
-  arch: Archs
+  arch: AllArchs
   reasoning: boolean | 'hybrid'
   quantization: 'q4' | 'q8' | null
   required_ram: number
@@ -63,6 +64,10 @@ export type APIData = { data_timestamp: number; models: APIBotModel[] }
 export type Data = { lastUpdateDate: Date; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
+
+function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
+  return MAYBE_ARCHS.includes(arch as MaybeArchs)
+}
 
 export function parseModel(model: APIBotModel) {
   return {
@@ -128,16 +133,10 @@ export function parseModel(model: APIBotModel) {
           model.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
       },
       arch: {
-        // FIXME need description and label for 'maybe-*'
         id: `model-arch-${model.id}`,
         variant: 'yellow' as const,
-        text: m[
-          `models.arch.types.${model.arch === 'maybe-moe' || model.arch === 'maybe-dense' ? 'na' : model.arch}.title`
-        ](),
-        tooltip:
-          m[
-            `models.arch.types.${model.arch === 'maybe-moe' || model.arch === 'maybe-dense' ? 'na' : model.arch}.desc`
-          ]()
+        text: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.title`](),
+        tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       },
       reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
     }

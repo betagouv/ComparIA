@@ -4,7 +4,7 @@
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import { getModelsWithDataContext } from '$lib/models'
+  import { getModelsWithDataContext, type Archs } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -90,10 +90,7 @@
 
       return {
         ...model,
-        arch:
-          model.license === 'proprietary'
-            ? ('na' as const)
-            : (model.arch as 'moe' | 'dense' | 'matformer'),
+        arch: (model.license === 'proprietary' ? 'na' : model.arch) as Archs,
         release_date: new Date([month, '01', year].join('/')),
         eloRangeWidth: Math.ceil(((model.data.elo - lowestElo) / (highestElo - lowestElo)) * 100),
         consoRangeWidth: Math.ceil((model.consumption_wh / highestConso) * 100),
@@ -235,7 +232,7 @@
         </div>
       {/if}
     {:else if col.id === 'arch'}
-      {m[`models.arch.types.${model.arch}.name`]()}
+      {m[`generated.archs.${model.arch}.name`]()}
     {:else if col.id === 'n_match'}
       {model.data.n_match}
     {:else if col.id === 'organisation'}
