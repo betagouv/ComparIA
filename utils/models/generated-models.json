@@ -11,7 +11,7 @@
         "n_match": 89,
         "rank": 42,
         "trust_range": [24, 23],
-        "win_rate": null
+        "win_rate": 0.4638372093023255
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -59,7 +59,7 @@
         "n_match": 86,
         "rank": 59,
         "trust_range": [22, 11],
-        "win_rate": null
+        "win_rate": 0.46869047619047627
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -178,7 +178,7 @@
         "n_match": 1302,
         "rank": 51,
         "trust_range": [5, 9],
-        "win_rate": 0.5014285714285716
+        "win_rate": 0.5014285714285713
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -249,7 +249,7 @@
         "n_match": 5959,
         "rank": 67,
         "trust_range": [2, 2],
-        "win_rate": 0.4296878670917938
+        "win_rate": 0.42968786709179396
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -391,7 +391,7 @@
         "n_match": 1796,
         "rank": 77,
         "trust_range": [0, 1],
-        "win_rate": 0.33173162583518934
+        "win_rate": 0.3317316258351893
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -435,7 +435,7 @@
         "n_match": 5683,
         "rank": 54,
         "trust_range": [4, 4],
-        "win_rate": 0.4921080415273623
+        "win_rate": 0.4921080415273624
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -571,7 +571,7 @@
         "n_match": 1127,
         "rank": 20,
         "trust_range": [7, 6],
-        "win_rate": null
+        "win_rate": 0.5376198934280639
       },
       "distribution": "api-only",
       "endpoint": {
@@ -619,7 +619,7 @@
         "n_match": 4831,
         "rank": 19,
         "trust_range": [4, 4],
-        "win_rate": null
+        "win_rate": 0.5679958592132506
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -694,7 +694,7 @@
         "n_match": 314,
         "rank": 5,
         "trust_range": [3, 13],
-        "win_rate": null
+        "win_rate": 0.5103225806451612
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -742,7 +742,7 @@
         "n_match": 3510,
         "rank": 33,
         "trust_range": [5, 3],
-        "win_rate": 0.5313019943019942
+        "win_rate": 0.5313019943019943
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -790,7 +790,7 @@
         "n_match": 103,
         "rank": 13,
         "trust_range": [11, 21],
-        "win_rate": null
+        "win_rate": 0.5056862745098039
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -838,7 +838,7 @@
         "n_match": 2721,
         "rank": 62,
         "trust_range": [5, 3],
-        "win_rate": null
+        "win_rate": 0.44303420375137914
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -934,7 +934,7 @@
         "n_match": 5388,
         "rank": 11,
         "trust_range": [3, 6],
-        "win_rate": 0.6141481069042316
+        "win_rate": 0.6141481069042317
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -1022,7 +1022,7 @@
         "n_match": 8684,
         "rank": 4,
         "trust_range": [1, 4],
-        "win_rate": 0.6317699216950715
+        "win_rate": 0.6317699216950713
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -1066,7 +1066,7 @@
         "n_match": 1042,
         "rank": 2,
         "trust_range": [1, 2],
-        "win_rate": 0.5973416506717851
+        "win_rate": 0.597341650671785
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1141,7 +1141,7 @@
         "n_match": 762,
         "rank": 43,
         "trust_range": [9, 9],
-        "win_rate": 0.5826115485564305
+        "win_rate": 0.5826115485564304
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -1212,7 +1212,7 @@
         "n_match": 5115,
         "rank": 63,
         "trust_range": [5, 2],
-        "win_rate": 0.5068660801564029
+        "win_rate": 0.5068660801564027
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -1256,7 +1256,7 @@
         "n_match": 4863,
         "rank": 14,
         "trust_range": [3, 5],
-        "win_rate": null
+        "win_rate": 0.5748498560263267
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1352,7 +1352,7 @@
         "n_match": 5794,
         "rank": 28,
         "trust_range": [6, 2],
-        "win_rate": 0.5317897825336555
+        "win_rate": 0.5317897825336554
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1400,7 +1400,7 @@
         "n_match": 933,
         "rank": 29,
         "trust_range": [8, 6],
-        "win_rate": null
+        "win_rate": 0.505021505376344
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1448,7 +1448,7 @@
         "n_match": 274,
         "rank": 10,
         "trust_range": [8, 11],
-        "win_rate": null
+        "win_rate": 0.602
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1496,7 +1496,7 @@
         "n_match": 121,
         "rank": 23,
         "trust_range": [19, 18],
-        "win_rate": null
+        "win_rate": 0.525798319327731
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1571,7 +1571,7 @@
         "n_match": 6078,
         "rank": 30,
         "trust_range": [4, 3],
-        "win_rate": null
+        "win_rate": 0.5149917709019092
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1667,7 +1667,7 @@
         "n_match": 5896,
         "rank": 58,
         "trust_range": [4, 4],
-        "win_rate": 0.48863297150610585
+        "win_rate": 0.4886329715061059
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -1755,7 +1755,7 @@
         "n_match": 1092,
         "rank": 37,
         "trust_range": [4, 8],
-        "win_rate": null
+        "win_rate": 0.46124656278643444
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1803,7 +1803,7 @@
         "n_match": 539,
         "rank": 34,
         "trust_range": [9, 8],
-        "win_rate": null
+        "win_rate": 0.4939219330855019
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1851,7 +1851,7 @@
         "n_match": 524,
         "rank": 65,
         "trust_range": [11, 5],
-        "win_rate": 0.3965648854961832
+        "win_rate": 0.39656488549618324
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1899,7 +1899,7 @@
         "n_match": 684,
         "rank": 9,
         "trust_range": [6, 8],
-        "win_rate": null
+        "win_rate": 0.5710834553440703
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1947,7 +1947,7 @@
         "n_match": 758,
         "rank": 32,
         "trust_range": [10, 7],
-        "win_rate": null
+        "win_rate": 0.5144782034346104
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1995,7 +1995,7 @@
         "n_match": 1537,
         "rank": 15,
         "trust_range": [4, 7],
-        "win_rate": null
+        "win_rate": 0.5305338541666667
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2043,7 +2043,7 @@
         "n_match": 637,
         "rank": 16,
         "trust_range": [7, 9],
-        "win_rate": null
+        "win_rate": 0.5672955974842766
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2091,7 +2091,7 @@
         "n_match": 6735,
         "rank": 66,
         "trust_range": [4, 0],
-        "win_rate": 0.46634743875278395
+        "win_rate": 0.466347438752784
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2135,7 +2135,7 @@
         "n_match": 478,
         "rank": 71,
         "trust_range": [1, 2],
-        "win_rate": null
+        "win_rate": 0.35016806722689076
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2227,7 +2227,7 @@
         "n_match": 207,
         "rank": 22,
         "trust_range": [14, 13],
-        "win_rate": null
+        "win_rate": 0.5792610837438423
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2275,7 +2275,7 @@
         "n_match": 3578,
         "rank": 73,
         "trust_range": [2, 0],
-        "win_rate": 0.416296813862493
+        "win_rate": 0.41629681386249306
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -2319,7 +2319,7 @@
         "n_match": 9973,
         "rank": 61,
         "trust_range": [4, 2],
-        "win_rate": null
+        "win_rate": 0.4950747166783672
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2367,7 +2367,7 @@
         "n_match": 5583,
         "rank": 53,
         "trust_range": [4, 5],
-        "win_rate": 0.530445996775927
+        "win_rate": 0.5304459967759269
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2411,7 +2411,7 @@
         "n_match": 8402,
         "rank": 70,
         "trust_range": [4, 0],
-        "win_rate": null
+        "win_rate": 0.4417390786811094
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2459,7 +2459,7 @@
         "n_match": 6709,
         "rank": 26,
         "trust_range": [5, 3],
-        "win_rate": null
+        "win_rate": 0.5452863107664778
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2507,7 +2507,7 @@
         "n_match": 7120,
         "rank": 48,
         "trust_range": [3, 5],
-        "win_rate": null
+        "win_rate": 0.4730341340075854
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2555,7 +2555,7 @@
         "n_match": 3406,
         "rank": 36,
         "trust_range": [3, 5],
-        "win_rate": null
+        "win_rate": 0.49648529411764714
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2603,7 +2603,7 @@
         "n_match": 559,
         "rank": 38,
         "trust_range": [7, 9],
-        "win_rate": null
+        "win_rate": 0.48642728904847404
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2699,7 +2699,7 @@
         "n_match": 1053,
         "rank": 18,
         "trust_range": [7, 8],
-        "win_rate": null
+        "win_rate": 0.555361216730038
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2801,7 +2801,7 @@
         "n_match": 9278,
         "rank": 56,
         "trust_range": [3, 4],
-        "win_rate": null
+        "win_rate": 0.47576819407008086
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2889,7 +2889,7 @@
         "n_match": 154,
         "rank": 21,
         "trust_range": [17, 15],
-        "win_rate": 0.5632467532467531
+        "win_rate": 0.5632467532467532
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2937,7 +2937,7 @@
         "n_match": 675,
         "rank": 1,
         "trust_range": [0, 2],
-        "win_rate": null
+        "win_rate": 0.6027151335311572
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3029,7 +3029,7 @@
         "n_match": 3944,
         "rank": 41,
         "trust_range": [4, 3],
-        "win_rate": null
+        "win_rate": 0.4697767630644342
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3121,7 +3121,7 @@
         "n_match": 742,
         "rank": 17,
         "trust_range": [7, 9],
-        "win_rate": null
+        "win_rate": 0.561417004048583
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3169,7 +3169,7 @@
         "n_match": 5079,
         "rank": 39,
         "trust_range": [3, 4],
-        "win_rate": 0.4945107304587519
+        "win_rate": 0.4945107304587517
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -3240,7 +3240,7 @@
         "n_match": 5455,
         "rank": 76,
         "trust_range": [1, 1],
-        "win_rate": 0.3671035747021082
+        "win_rate": 0.36710357470210814
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -3501,7 +3501,7 @@
         "n_match": 2535,
         "rank": 74,
         "trust_range": [0, 1],
-        "win_rate": 0.40211045364891523
+        "win_rate": 0.4021104536489152
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -3545,7 +3545,7 @@
         "n_match": 8355,
         "rank": 55,
         "trust_range": [4, 4],
-        "win_rate": null
+        "win_rate": 0.47906870960019143
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3593,7 +3593,7 @@
         "n_match": 142,
         "rank": 57,
         "trust_range": [19, 13],
-        "win_rate": null
+        "win_rate": 0.45935714285714285
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3722,7 +3722,7 @@
         "n_match": 80,
         "rank": 80,
         "trust_range": [2, 0],
-        "win_rate": 0.2525
+        "win_rate": 0.25249999999999995
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -3898,7 +3898,7 @@
         "n_match": 570,
         "rank": 44,
         "trust_range": [8, 10],
-        "win_rate": null
+        "win_rate": 0.4550966608084359
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3946,7 +3946,7 @@
         "n_match": 829,
         "rank": 27,
         "trust_range": [8, 6],
-        "win_rate": null
+        "win_rate": 0.5591151515151515
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3994,7 +3994,7 @@
         "n_match": 98,
         "rank": 25,
         "trust_range": [19, 20],
-        "win_rate": null
+        "win_rate": 0.4976595744680851
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4042,7 +4042,7 @@
         "n_match": 199,
         "rank": 3,
         "trust_range": [2, 14],
-        "win_rate": null
+        "win_rate": 0.5498484848484849
       },
       "distribution": "api-only",
       "endpoint": {
@@ -4090,7 +4090,7 @@
         "n_match": 1566,
         "rank": 64,
         "trust_range": [8, 2],
-        "win_rate": null
+        "win_rate": 0.4485997442455243
       },
       "distribution": "open-weights",
       "endpoint": {
