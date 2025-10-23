@@ -14,7 +14,7 @@
   let { children, data } = $props()
 
   setVotesContext(data.votes)
-  setModelsContext(data.models)
+  setModelsContext(data.data)
 </script>
 
 <Toaster />
