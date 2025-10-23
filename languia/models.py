@@ -23,6 +23,7 @@ Distribution = Literal["api-only", "open-weights", "fully-open-source"]
 FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
+# Used to validate 'utils/models/licenses.json'
 class License(BaseModel):
     license: str
     license_desc: str
@@ -31,6 +32,14 @@ class License(BaseModel):
     commercial_use: bool | None = None
     reuse_specificities: str | None = None
     commercial_use_specificities: str | None = None
+
+
+# Used to validate 'utils/models/archs.json'
+class Arch(BaseModel):
+    id: str
+    name: str
+    title: str
+    desc: str
 
 
 class Endpoint(BaseModel):
@@ -96,6 +105,16 @@ class RawModel(BaseModel):
     size_desc: str
     fyi: str
     pricey: bool = False  # FIXME move to endpoint?
+
+    @field_validator("arch", mode="after")
+    @classmethod
+    def check_arch_exists(cls, value: str, info: ValidationInfo) -> str:
+        if value.replace("maybe-", "") not in info.context["archs"]:
+            raise PydanticCustomError(
+                "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
+            )
+
+        return value
 
     @model_validator(mode="after")
     def check_endpoint(self):
@@ -239,6 +258,7 @@ class Organisation(RawOrganisation):
 
 
 Licenses = RootModel[list[License]]
+Archs = RootModel[list[Arch]]
 RawOrgas = RootModel[list[RawOrganisation]]
 Orgas = RootModel[list[Organisation]]
 

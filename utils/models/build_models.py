@@ -6,7 +6,7 @@ from pydantic import ValidationError
 from rich.logging import RichHandler
 from typing import Any
 
-from languia.models import ROOT_PATH, Licenses, Orgas, RawOrgas
+from languia.models import ROOT_PATH, Archs, Licenses, Orgas, RawOrgas
 from utils.models.utils import Obj, read_json, write_json, sort_dict
 
 logging.basicConfig(
@@ -17,6 +17,7 @@ log = logging.getLogger("models")
 CURRENT_FOLDER = Path(__file__).parent
 FRONTEND_FOLDER = CURRENT_FOLDER.parent.parent / "frontend"
 LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
+ARCHS_PATH = CURRENT_FOLDER / "archs.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
 MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
 MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
@@ -46,9 +47,11 @@ def log_errors(errors: dict[str, list[Obj]]) -> None:
         )
 
 
-def validate_licenses(raw_licenses: Any) -> list[Any] | None:
+def validate_licenses(raw_licenses: Any) -> list[Any]:
     try:
-        return Licenses(raw_licenses).model_dump(exclude_none=True)
+        licenses = Licenses(raw_licenses).model_dump(exclude_none=True)
+        log.info("No errors in 'licenses.json'!")
+        return licenses
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
@@ -60,12 +63,33 @@ def validate_licenses(raw_licenses: Any) -> list[Any] | None:
 
         log_errors(errors)
 
-        return None
+        raise Exception("Errors in 'licenses.json', exiting...")
 
 
-def validate_orgas_and_models(raw_orgas: Any) -> list[Any] | None:
+def validate_archs(raw_archs: Any) -> list[Any]:
     try:
-        return RawOrgas(raw_orgas).model_dump()
+        archs = Archs(raw_archs).model_dump()
+        log.info("No errors in 'archs.json'!")
+        return archs
+    except ValidationError as exc:
+        errors: dict[str, list[Obj]] = {}
+
+        for err in exc.errors():
+            name = f"arch '{raw_archs[err["loc"][0]]["id"]}'"
+            if name not in errors:
+                errors[name] = []
+            errors[name].append({"key": err["loc"][1], **err})
+
+        log_errors(errors)
+
+        raise Exception("Errors in 'archs.json', exiting...")
+
+
+def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[Any]:
+    try:
+        orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump()
+        log.info("No errors in 'models.json'!")
+        return orgas
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
@@ -84,7 +108,7 @@ def validate_orgas_and_models(raw_orgas: Any) -> list[Any] | None:
 
         log_errors(errors)
 
-        return None
+        raise Exception("Errors in 'models.json', exiting...")
 
 
 def connect_to_db(DATABASE_URI):
@@ -137,19 +161,19 @@ def fetch_distinct_model_ids(engine, models_data):
         return []
 
 
-def validate() -> None:
+def main() -> None:
     raw_licenses = read_json(LICENSES_PATH)
+    raw_archs = read_json(ARCHS_PATH)
     raw_orgas = read_json(MODELS_PATH)
     raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
     raw_models_data = {m["model_name"]: m for m in raw_extra_data["data"]}
 
-    dumped_licenses = validate_licenses(raw_licenses)
-
-    if dumped_licenses is None:
-        log.error("Errors in 'licenses.json', exiting...")
+    try:
+        dumped_licenses = validate_licenses(raw_licenses)
+        dumped_archs = validate_archs(raw_archs)
+    except Exception as err:
+        log.error(str(err))
         return
-    else:
-        log.info("No errors in 'licenses.json'!")
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
@@ -163,19 +187,18 @@ def validate() -> None:
                 filtered_models.append(model)
         orga["models"] = filtered_models
 
-    # First validate with RawOrgas
-    dumped_orgas = validate_orgas_and_models(raw_orgas)
-
-    if dumped_orgas is None:
-        log.error("Errors in 'models.json', exiting...")
-        return
-    else:
-        log.info("No errors in 'models.json'!")
-
     context = {
         "licenses": {l["license"]: l for l in dumped_licenses},
+        "archs": {a.pop("id"): a for a in dumped_archs},
         "data": raw_models_data,
     }
+
+    # First validate with RawOrgas
+    try:
+        dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
+    except Exception as err:
+        log.error(str(err))
+        return
 
     # Then use the full Orgas builder
     # Any errors comming from here are code generation errors, not errors in 'models.json'
@@ -183,6 +206,7 @@ def validate() -> None:
     generated_models = {}
 
     i18n = {
+        "archs": context["archs"],
         "licenses": {
             "os": {
                 l["license"]: {
@@ -245,7 +269,9 @@ def validate() -> None:
 
     # FIXME add ARCHS
     TS_DATA_PATH.write_text(
-        f"""export const LICENSES = {[license["license"] for license in dumped_licenses]} as const
+        f"""export const LICENSES = {[l for l in context["licenses"].keys()]} as const
+export const ARCHS = {[a for a in context["archs"]]} as const
+export const MAYBE_ARCHS = {[f"maybe-{a}" for a in context["archs"] if a != 'na']} as const
 export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
 export const MODELS = {[model["simple_name"] for model in generated_models.values()]} as const
 """
@@ -255,4 +281,4 @@ export const MODELS = {[model["simple_name"] for model in generated_models.value
 
 
 if __name__ == "__main__":
-    validate()
+    main()
