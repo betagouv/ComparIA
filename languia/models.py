@@ -114,6 +114,12 @@ class RawModel(BaseModel):
                 "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
             )
 
+        if info.data["license"] != "proprietary" and "maybe" in value:
+            raise PydanticCustomError(
+                "wrong_arch",
+                f"Arch should not be 'maybe' since license is not 'proprietary'.",
+            )
+
         return value
 
     @field_validator("active_params", mode="before")
@@ -121,7 +127,7 @@ class RawModel(BaseModel):
     def check_active_params_is_defined_if_moe(
         cls, value: str, info: ValidationInfo
     ) -> int | float | None:
-        if "moe" in info.data["arch"] and value is None:
+        if "arch" in info.data and "moe" in info.data["arch"] and value is None:
             raise PydanticCustomError(
                 "missing_active_params",
                 f"Model's arch is '{info.data["arch"]}' and requires 'active_params' to be defined.",
