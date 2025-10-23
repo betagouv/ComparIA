@@ -54,7 +54,7 @@ class DatasetData(BaseModel):
     )
     n_match: int
     mean_win_prob: float
-    win_rate: float | None
+    win_rate: float
 
     rank_p2_5: int = Field(validation_alias="rank_p2.5", exclude=True)
     rank_p97_5: int = Field(validation_alias="rank_p97.5", exclude=True)

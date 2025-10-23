@@ -17,7 +17,7 @@ interface DatasetData {
   n_match: number
   mean_win_prob: number
   rank: number
-  win_rate?: number
+  win_rate: number
   trust_range: [number, number]
 }
 
