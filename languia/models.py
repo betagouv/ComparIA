@@ -94,9 +94,9 @@ class RawModel(BaseModel):
     license: str
     fully_open_source: bool = False
     release_date: str = Field(pattern=r"^[0-9]{2}/[0-9]{4}$")
-    params: int | float
-    active_params: int | float | None = None
     arch: str
+    params: int | float
+    active_params: int | float | None = Field(default=None, validate_default=True)
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
     url: str | None = None  # FIXME required?
@@ -112,6 +112,19 @@ class RawModel(BaseModel):
         if value.replace("maybe-", "") not in info.context["archs"]:
             raise PydanticCustomError(
                 "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
+            )
+
+        return value
+
+    @field_validator("active_params", mode="before")
+    @classmethod
+    def check_active_params_is_defined_if_moe(
+        cls, value: str, info: ValidationInfo
+    ) -> int | float | None:
+        if "moe" in info.data["arch"] and value is None:
+            raise PydanticCustomError(
+                "missing_active_params",
+                f"Model's arch is '{info.data["arch"]}' and requires 'active_params' to be defined.",
             )
 
         return value
