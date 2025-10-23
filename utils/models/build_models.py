@@ -166,7 +166,7 @@ def main() -> None:
     raw_archs = read_json(ARCHS_PATH)
     raw_orgas = read_json(MODELS_PATH)
     raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
-    raw_models_data = {m["model_name"]: m for m in raw_extra_data["data"]}
+    raw_models_data = {m["model_name"]: m for m in raw_extra_data["models"]}
 
     try:
         dumped_licenses = validate_licenses(raw_licenses)
