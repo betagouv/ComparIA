@@ -51,16 +51,16 @@
 
   const cols = (
     [
-      { id: 'rank', orderable: true, tooltip: m['ranking.table.data.tooltips.rank']() },
-      { id: 'name', orderable: true },
-      { id: 'elo', orderable: true, tooltip: m['ranking.table.data.tooltips.elo']() },
+      { id: 'rank', tooltip: m['ranking.table.data.tooltips.rank']() },
+      { id: 'name' },
+      { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
       { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
-      { id: 'n_match', orderable: true },
-      { id: 'consumption_wh', orderable: true, tooltip: m['reveal.impacts.energy.tooltip']() },
-      { id: 'size', orderable: true, tooltip: m['ranking.table.data.tooltips.size']() },
+      { id: 'n_match' },
+      { id: 'consumption_wh', tooltip: m['reveal.impacts.energy.tooltip']() },
+      { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
       { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
-      { id: 'release', orderable: true },
-      { id: 'organisation', orderable: true },
+      { id: 'release' },
+      { id: 'organisation' },
       { id: 'license' }
     ] as const
   )
@@ -68,7 +68,8 @@
     .map((col) => ({
       ...col,
       label: m[`ranking.table.data.cols.${col.id}`](),
-      colHeaderClass: raw ? 'bg-transparent! border-b-1 border-(--border-contrast-grey)' : ''
+      orderable: col.id !== 'trust_range',
+      colHeaderClass: raw ? 'bg-white! border-b-1 border-(--border-contrast-grey)' : ''
     }))
 
   let orderingCol = $state(initialOrderCol)
@@ -135,8 +136,10 @@
             return b.params - a.params
           case 'release':
             return Number(b.release_date) - Number(a.release_date)
+          case 'arch':
           case 'organisation':
-            return a.organisation.localeCompare(b.organisation)
+          case 'license':
+            return a[orderingCol].localeCompare(b[orderingCol])
           default:
             return a.rank - b.rank
         }
