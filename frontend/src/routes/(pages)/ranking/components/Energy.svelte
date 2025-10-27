@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Accordion, AccordionGroup, Alert } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import { sanitize } from '$lib/utils/commons'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
 
   let { onDownloadData }: { onDownloadData: () => void } = $props()
@@ -22,7 +22,12 @@
 
 <div id="ranking-energy">
   <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
-  <p class="mb-8! text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
+  <p class="text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
+  <p class="mb-8! text-[14px]! text-dark-grey">
+    {@html sanitize(m['ranking.energy.desc2']({
+      linkProps: externalLinkProps('https://ecologits.ai/latest/')
+    }))}
+  </p>
 
   <div class="gap-15 flex flex-col">
     <section class="rounded bg-white p-4 md:p-8">
@@ -37,7 +42,7 @@
     <section class="rounded bg-white p-4 md:p-8">
       <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10">
         <ul>
-          {#each ['1', '2', '3'] as const as n}
+          {#each ['1', '2', '3', '4'] as const as n}
             <li>{m[`ranking.energy.views.graph.infos.list.${n}`]()}</li>
           {/each}
         </ul>

@@ -1484,6 +1484,7 @@
     "ranking": {
         "energy": {
             "desc": "Explorez le graphique qui met en perspective le score de satisfaction d’un modèle (axe des ordonnées) avec sa consommation énergétique (axe des abscisses).",
+            "desc2": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
             "tabLabel": "Focus énergie",
             "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
             "views": {
@@ -1497,9 +1498,10 @@
                     },
                     "infos": {
                         "list": {
-                            "1": "En haut à gauche se trouvent les modèles qui plaisent et qui consomment peu d’énergie.",
-                            "2": "En bas à gauche figurent les modèles les moins appréciés, mais qui consomment également peu d’énergie.",
-                            "3": "Plus un modèle est situé sur la droite du graphique, plus il consomme d’énergie."
+                            "1": "En haut à gauche se trouvent les modèles qui plaisent et qui consomment peu d’énergie par rapport aux autres modèles.",
+                            "2": "Plus un modèle est situé en haut du graphique, plus son score de satisfaction Bradley-Terry est élevé.",
+                            "3": "Plus un modèle est situé sur la gauche du graphique, moins il consomme d’énergie par rapport aux autres modèles.",
+                            "4": "Au-delà de la taille, l’architecture a un impact sur la consommation énergétique moyenne des modèles: par exemple, à gabarit similaire, le modèle Llama 3 405B (architecture dense, 405 milliards de paramètres) consomme 10 fois plus d’énergie en moyenne que le modèle GLM 4.5 (architecture MOE, 355 milliards de paramètres et 32 milliards de paramètres actifs)."
                         },
                         "title": "Exemples de lecture :"
                     },
