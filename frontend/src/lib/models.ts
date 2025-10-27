@@ -3,8 +3,10 @@ import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from './generated
 import { m } from './i18n/messages'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
+export const CONSO_SIZES = ['S', 'M', 'L'] as const
 
 export type Sizes = (typeof SIZES)[number]
+export type ConsoSizes = (typeof CONSO_SIZES)[number]
 export type Archs = (typeof ARCHS)[number]
 export type MaybeArchs = (typeof MAYBE_ARCHS)[number]
 export type AllArchs = Archs | MaybeArchs

@@ -1248,6 +1248,14 @@
                 "forbidden": "Interdit"
             }
         },
+        "conso": {
+            "count": {
+                "L": "> 100 Wh",
+                "M": "de 10 à 100 Wh",
+                "S": "< 10 Wh"
+            },
+            "filterLegend": "Filtre par consommation énergétique moyenne pour 1000 tokens"
+        },
         "extra": {
             "experts": {
                 "api-only": "Pour les expert·es, consultez la <a {linkProps}>site officiel du modèle</a>",
