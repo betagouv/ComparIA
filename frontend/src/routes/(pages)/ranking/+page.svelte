@@ -27,7 +27,11 @@
       { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
       { key: 'elo' as const, label: 'Bradley-Terry Score', energy: true },
+      { key: 'score_p2_5' as const, label: 'BT p2.5' },
+      { key: 'score_p97_5' as const, label: 'BT p97.5' },
       { key: 'trust_range' as const, label: 'Confidence interval' },
+      { key: 'rank_p2_5' as const, label: 'Rank p2.5' },
+      { key: 'rank_p97_5' as const, label: 'Rank p97.5' },
       { key: 'n_match' as const, label: 'Total votes' },
       { key: 'consumption_wh' as const, label: 'Consumption Wh (1000 tokens)', energy: true },
       { key: 'friendly_size' as const, label: 'Size', energy: true },
@@ -35,7 +39,7 @@
       { key: 'arch' as const, label: 'Architecture', energy: true },
       { key: 'release_date' as const, label: 'Release' },
       { key: 'organisation' as const, label: 'Organisation', energy: true },
-      { key: 'distribution' as const, label: 'Distribution', energy: true }
+      { key: 'distribution' as const, label: 'License', energy: true }
     ]
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
@@ -45,18 +49,29 @@
         .map((m, i) => {
           return cols
             .map((col) => {
-              if (col.key === 'elo' || col.key === 'rank' || col.key === 'n_match')
+              if (
+                col.key === 'elo' ||
+                col.key === 'rank' ||
+                col.key === 'n_match' ||
+                col.key === 'rank_p2_5' ||
+                col.key === 'rank_p97_5' ||
+                col.key === 'score_p2_5' ||
+                col.key === 'score_p97_5'
+              )
                 return m.data[col.key]
               if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
               if (col.key === 'trust_range')
                 return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
+              if (col.key === 'consumption_wh') {
+                return m.license === 'proprietary' ? 'N/A' : m.consumption_wh
+              }
               return m[col.key]
             })
             .join(',')
         })
     ].join('\n')
 
-    downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}`)
+    downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}-license_Etalab_2_0`)
   }
 
   function onDownloadPrefsData() {
@@ -93,7 +108,7 @@
         })
     ].join('\n')
 
-    downloadTextFile(data, `comparia_model-preferences-${lastUpdateDate}`)
+    downloadTextFile(data, `comparia_model-preferences-${lastUpdateDate}-license_Etalab_2_0`)
   }
 </script>
 
@@ -117,7 +132,7 @@
           <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
         {:else if id === 'energy'}
           <Energy onDownloadData={() => onDownloadData('energy')} />
-        <!-- {:else if id === 'preferences'}
+          <!-- {:else if id === 'preferences'}
           <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
         {:else if id === 'methodo'}
           <Methodology />
