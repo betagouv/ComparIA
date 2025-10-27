@@ -67,7 +67,7 @@ export interface APIBotModel {
   prefs: PreferencesData | null
 }
 export type APIData = { data_timestamp: number; models: APIBotModel[] }
-export type Data = { lastUpdateDate: Date; models: BotModel[] }
+export type Data = { lastUpdateDate: string; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
 export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
 
