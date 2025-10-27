@@ -12,7 +12,7 @@
     [
       { id: 'ranking', icon: 'trophy-line' },
       { id: 'energy', icon: 'flashlight-line' },
-      { id: 'preferences', icon: 'thumb-up-line' },
+      // { id: 'preferences', icon: 'thumb-up-line' },
       { id: 'methodo' }
     ] as const
   ).map((tab) => ({
@@ -117,8 +117,8 @@
           <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
         {:else if id === 'energy'}
           <Energy onDownloadData={() => onDownloadData('energy')} />
-        {:else if id === 'preferences'}
-          <Preferences onDownloadData={() => onDownloadPrefsData()} />
+        <!-- {:else if id === 'preferences'}
+          <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
         {:else if id === 'methodo'}
           <Methodology />
         {/if}
