@@ -240,11 +240,15 @@
     {:else if col.id === 'trust_range'}
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
-      {model.consumption_wh} Wh
-      {#if !raw}
-        <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-          <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
-        </div>
+      {#if model.license === 'proprietary'}
+        <span class="text-xs">{m['words.NA']()}</span>
+      {:else}
+        {model.consumption_wh} Wh
+        {#if !raw}
+          <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
+            <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
+          </div>
+        {/if}
       {/if}
     {:else if col.id === 'arch'}
       {m[`generated.archs.${model.arch}.name`]()}
