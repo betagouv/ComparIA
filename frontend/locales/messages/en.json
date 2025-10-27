@@ -17,6 +17,8 @@
         "downloadData": "Download data",
         "home": "Homepage",
         "returnHome": "Return to homepage",
+        "scrollLeft": "Scroll left",
+        "scrollRight": "Scroll right",
         "seeMore": "See more",
         "selectLanguage": "Select a language",
         "vote": "Give feedback"
@@ -497,6 +499,16 @@
             }
         },
         "models": {
+            "Apertus 70B Instruct": {
+                "desc": "<p> Semi-open and reproducible medium-sized model developed by a consortium of Swiss institutions. Its weights and training code are published under a permissive license. It was trained on over 1,800 languages on over 15 trillion tokens. Training took place on the CSCS Alps supercomputer in Lugano, powered by carbon-neutral hydroelectric power. </p>",
+                "fyi": "<p> The model was trained on the Alps supercomputer in Lugano, using over 10 million GPU hours powered by carbon-neutral hydroelectric power. The model was pre-trained on 15 trillion tokens covering over 1,800 languages, including a significant proportion of underrepresented languages. </p>\n <p> Apertus is based on a 131,000-entry byte-level BPE tokenizer, derived from Mistral AI's \"tekken\" tokenizer, optimized for multilingualism, code, and mathematical expressions. The architecture combines several innovations: Rotary Positional Embeddings (RoPE) with an extended base and NTK-aware tuning for long contexts, Grouped Query Attention (GQA) for better memory efficiency, QK-Norm normalization to stabilize training, and an xIELU (extended Integrated ELU) activation function improving MLP performance. </p>\n <p> The final refinement of the model relies on an alignment algorithm called QRPO (Quantile Reward-Preferring Optimization), an alternative to classic RLHF, which uses absolute reward signals for more stable learning that is better aligned with human preferences. While it doesn't directly compete with the most advanced proprietary models, Apertus stands out for its level of transparency. </p>",
+                "size_desc": "<p> With 70 billion parameters, this model is in the large model category. It requires at least two powerful GPUs for hosting, which leads to significant operating costs. Its 65,536-token context window allows it to process fairly long documents.</p>"
+            },
+            "Apertus 8B Instruct": {
+                "desc": "<p> Small, semi-open, and reproducible model developed by a consortium of Swiss institutions. Its weights and training code are published under a permissive license. It was trained on over 1,800 languages on over 15 trillion tokens. Training took place on the CSCS Alps supercomputer in Lugano, powered by carbon-neutral hydroelectric power. </p>",
+                "fyi": "<p> The model was trained on the Alps supercomputer in Lugano, using over 10 million GPU hours powered by carbon-neutral hydroelectric power. The model was pre-trained on 15 trillion tokens covering over 1,800 languages, including a significant proportion of underrepresented languages. </p>\n <p> Apertus is based on a 131,000-entry byte-level BPE tokenizer, derived from Mistral AI's \"tekken\" tokenizer, optimized for multilingualism, code, and mathematical expressions. The architecture combines several innovations: Rotary Positional Embeddings (RoPE) with an extended base and NTK-aware tuning for long contexts, Grouped Query Attention (GQA) for better memory efficiency, QK-Norm normalization to stabilize training, and an xIELU (extended Integrated ELU) activation function improving MLP performance. </p>\n <p> The final refinement of the model relies on an alignment algorithm called QRPO (Quantile Reward-Preferring Optimization), an alternative to classic RLHF, which uses absolute reward signals for more stable learning that is better aligned with human preferences. While it doesn't directly compete with the most advanced proprietary models, Apertus stands out for its level of transparency. </p>",
+                "size_desc": "<p> With 8 billion parameters, this model is one of the smallest models. It can be used locally on a powerful computer, ensuring data confidentiality, or hosted on a server equipped with a single graphics card, which limits infrastructure costs. Its context window of 65,536 tokens allows it to process fairly long documents. </p>"
+            },
             "Aya 23 8B": {
                 "desc": "<p>Small multilingual language model trained on a large portion of generally under-represented languages.</p>",
                 "fyi": "<p>Aya 23 8B by Cohere is a small language model from the Command R family, specifically trained on a multilingual corpus.</p>",
@@ -597,6 +609,11 @@
                 "fyi": "<p> This model has good agentic capabilities, allowing it to make function calls with reliably. It offers solid coding performance, thus allowing the model to create complete web applications and generate artefacts, which are single-file programs that can be used within the interfaces of conversational agents. For training, a specific reinforcement learning infrastructure, named Slime, was designed to optimize performance on complex and agentic tasks by efficiently managing long workflows - thus the model is able to long-running tasks - making the best use of its tools and remaining consistent from start to finish. </p>",
                 "size_desc": "<p> With 355 billion parameters, this model is considered very large. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than dense models of similar size, but it still requires a server with several very powerful graphics cards to host. Its context window goes up to 128,000 tokens, which allows it to process fairly long documents. </p>"
             },
+            "GLM 4.6": {
+                "desc": "<p> An updated version of the GLM 4.5 model created by Zhipu AI, GLM 4.6 increases the size of the context window, improves its performance in code, aligns more with human preferences, and is more capable in agentic/tool use cases. </p>",
+                "fyi": "<p> This model has good agentic capabilities, allowing it to make function calls with high reliability. Its coding performance is high, and the model has a good ability to create complete web applications and generate artifacts, which are single-file programs that can be used within the interfaces of conversational agents. For training, a specific reinforcement learning framework, called slime, was designed to optimize performance on complex and agentic tasks by efficiently handling long workflows - the model is able to handle complex and long-running tasks, such as creating an application from scratch, making the best use of its tools and remaining consistent from start to finish. </p>",
+                "size_desc": "<p> With 357 billion parameters, this model falls into the very large model category. Thanks to a Mixture of Experts (MoE) architecture, it is more efficient than some other models of similar size, but it still requires a server with several very powerful graphics cards to host it. Its context window goes up to 200,000 tokens, which allows it to process very long documents. </p>"
+            },
             "GPT 4.1 Nano": {
                 "desc": "<p> Smaller, lightweight version of the GPT 4.1 model, designed to keep costs down while remaining competitive on most tasks. The model supports very long queries, making it suitable for use in long document corpus analysis. </p>",
                 "fyi": "<p> This is a distilled version of a larger model, with partial knowledge transfer. It can process text, images, and audio. Its context window can reach up to 1 million tokens, making it particularly suitable for analyzing text corpora or very long code repositories. </p>",
@@ -648,8 +665,8 @@
                 "size_desc": "<p>Medium-sized models offer a good balance between complexity, cost, and performance: they are much less resource-intensive than large models while still being able to handle complex tasks such as sentiment analysis or reasoning.</p>"
             },
             "Gemini 1.5 Pro": {
-                "desc": "<p> Released in February 2024, this multimodal model can be used for text generation but also interpret images, videos, and audio. </p>",
-                "fyi": "<p> Released in February 2024, this multilingual and multimodal model is capable of processing a very large volume of input data, whether text, image, sound (up to 11 hours of audio) or video (up to one hour). It is the LLM model that powers Google's Gemini chatbot. </p>",
+                "desc": "<p> Released in September 2024 (version 002), this multimodal model can be used for text generation but also interpret images, videos, and audio. </p>",
+                "fyi": "<p> Announced in February  2024 and released in May of the year, this multilingual and multimodal model is capable of processing a very large volume of input data, whether text, image, sound (up to 11 hours of audio) or video (up to one hour). It was the LLM model that powered Google's Gemini chatbot. </p>",
                 "size_desc": "<p>These models, with hundreds of billions of parameters, are the most complex and advanced in terms of performance and accuracy. The computing and memory resources required to deploy these models are such that they are intended for the most advanced applications and highly specialized environments.</p>"
             },
             "Gemini 2.0 Flash": {
@@ -792,6 +809,11 @@
                 "fyi": "<p> This model was trained with a high proportion of code data (over 80 programming languages) and mathematics, which improves its ability to solve complex problems and use tools. </p>",
                 "size_desc": "<p> With 123 billion parameters, this model is considered large. It requires a server equipped with at least one powerful graphics card, which implies a significant operating cost. It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
             },
+            "Mistral Medium 2508": {
+                "desc": "<p> A mid-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It became particularly attractive after an update in August 2025 with significant improvements in overall performance, an \"improved\" tone, and better ability to search for information on the Internet. </p>",
+                "fyi": "<p> This model was designed to deliver solid performance at a lower cost than proprietary or semi-open models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
+                "size_desc": "<p> The exact size of the model is unknown. Evidence suggests that it is a large model, requiring at least several powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. </p>\n <p> It has a context window of up to 128,000 tokens, useful for analyzing long documents. </p>"
+            },
             "Mistral Medium 3.1": {
                 "desc": "<p> A medium-sized, multilingual, multimodal model that is inexpensive compared to other models that offer similar performance. It is particularly useful for programming or reasoning tasks, such as mathematics. </p>",
                 "fyi": "<p> This model was designed to deliver solid performance at a lower cost than other similar models. Special attention was paid to professional usage data during its training. It performs particularly well compared to other models of similar size at generating code and performing mathematical tasks. </p>\n <p> This model was used as the basis for training Magistral Medium - a reasoning model. </p>",
@@ -881,6 +903,16 @@
                 "desc": "<p> Medium-sized multilingual model with two response methods: the user can choose between a reasoning mode, for more in-depth answers, or a quick mode, to directly generate the final answer. </p>",
                 "fyi": "<p> This model was trained on a very large data set: 36 billion tokens in 119 languages. Training was done in three stages. The model first learned from 30 billion tokens with a context of 4,000 tokens. Then, 5 billion tokens were added to strengthen its factual knowledge. Finally, it was exposed to a specific corpus to help it better handle very long texts. As a result, it has a context window of 128,000 tokens at the end of training, which is useful for reading and analyzing long documents. </p>",
                 "size_desc": "<p> With 32 billion parameters, this model is considered mid-sized. It can run on a server equipped with a single powerful graphics card, which limits infrastructure costs. </p>\n <p> Its 128,000-token context window allows it to process long documents. </p>"
+            },
+            "Qwen 3 8B": {
+                "desc": "<p> Small, dense multilingual model of the Qwen 3 family, offering a “reasoning” mode for complex tasks (mathematics, code) and a “direct response” mode for faster responses. </p>",
+                "fyi": "<p> Qwen 3 8B was trained on the same corpus as the larger models in the Qwen family: 36 billion tokens covering 119 languages. Its training follows three stages: pre-training on 30 billion tokens with a window of 4,000, factual enrichment with 5 billion tokens, and then a specialized phase for long contexts. </p>",
+                "size_desc": "<p> With 8 billion parameters, it is one of the smallest models. It can be used locally on a workstation to preserve data confidentiality, or on an inexpensive server to limit costs compared to a larger model. </p>\n <p> Its context window can hold up to 128,000 tokens, making it useful to process long documents. </p>"
+            },
+            "Qwen 3 Max": {
+                "desc": "<p> Among Qwen's few proprietary models, this is the largest and most powerful of the third generation. It has been trained with particular attention to enterprise usage and agentic use cases. </p>",
+                "fyi": "<p> This model was trained on 36 trillion tokens, almost double that of Qwen 2.5, and is officially capable of responding in 100 languages. </p>",
+                "size_desc": "<p> The exact size is unknown. Evidence suggests that this is a very large model, requiring servers with multiple powerful graphics cards to run. Available estimates rely on indirect indices such as inference costs and response latency. The model has a context window of up to 256,000 tokens, suitable for analyzing long documents or code repositories. </p>"
             },
             "Qwen1.5-32B": {
                 "desc": "<p> Medium-sized model with a training process highly focused on aligning with user preferences. </p>",
@@ -1200,11 +1232,11 @@
         "release": "Released on {date}",
         "size": {
             "count": {
-                "L": "70 to 150 billion",
-                "M": "20 to 70 billion",
-                "S": "7 to 20 billion",
-                "XL": ">150 billion",
-                "XS": "<7 billion"
+                "L": "100 to 400 billion",
+                "M": "60 to 100 billion",
+                "S": "15 to 60 billion",
+                "XL": ">400 billion",
+                "XS": "<15 billion"
             },
             "estimated": "Estimated size ({size})",
             "title": "Size"
@@ -1356,7 +1388,7 @@
             "title": "Are the most popular models energy efficient?",
             "views": {
                 "graph": {
-                    "desc": "Select a model to find out its BT Score and energy consumption",
+                    "desc": "Select a model to find out its Bradley-Terry (BT) score and estimated energy consumption",
                     "faq": {
                         "1": {
                             "desc": "We have decided to display proprietary models that do not communicate transparently on size and architecture in gray (not analyzed).",
@@ -1366,24 +1398,63 @@
                     "infos": {
                         "list": {
                             "1": "At the top left are the models that are the most popular and consume, on average, less energy.",
-                            "2": "The models located at the bottom left are the least popular but consume the least energy.",
+                            "2": "At the bottom left are the least popular models, which also consume little energy.",
                             "3": "The further a model is located to the right of the graph, the more energy it consumes."
                         },
                         "title": "Graph reading examples:"
                     },
-                    "tabLabel": "Graph view",
-                    "tooltip": {
-                        "consumption_wh": "Average consumption (Wh)",
-                        "elo": "Preference score"
+                    "legends": {
+                        "arch": "Model architecture",
+                        "size": "Filter by size",
+                        "sizeSub": "(billions of parameters)"
                     },
-                    "xLabel": "Average consumption per 1000 tokens",
-                    "yLabel": "Preference score"
+                    "tabLabel": "Graph view",
+                    "title": "Bradley-Terry (BT) Satisfaction Score VS Average Consumption per 1000 Tokens",
+                    "tooltip": {
+                        "active_params": "Active parameters (billions)",
+                        "arch": "Architecture",
+                        "consumption_wh": "Average consumption (Wh)",
+                        "elo": "BT score",
+                        "params": "Parameters (billions)"
+                    },
+                    "xLabel": "Average consumption per 1000 tokens (Wh)",
+                    "yLabel": "Bradley-Terry Score (BT)"
+                },
+                "table": {
+                    "title": "Chart data in table form"
                 }
             }
         },
         "methodo": {
-            "methods": {
+            "desc": {
+                "1": "Since 2024, thousands of users have used the arena to compare the responses of different models, generating hundreds of thousands of votes. Simply counting the number of wins is not enough to establish a ranking. A fair system must be statistically robust, adjust after each matchup, and truly reflect the value of the performances achieved.",
+                "2": "It is with this in mind that a <strong>ranking based on the Bradley-Terry model</strong> was established, developed in collaboration with the <strong>French Center of expertise for digital platform regulation (PEReN) teams</strong>, based on all the votes and reactions collected on the platform. To learn more, see our <a {linkProps}>methodological notebook</a>."
+            },
+            "impacts": {
                 "elo": {
+                    "desc": {
+                        "1": "The <strong> Bradley-Terry </strong> model transforms a set of local and potentially incomplete comparisons into a consistent and statistically robust global ranking system, where the empirical win rate remains limited to direct observations."
+                    },
+                    "title": "Ranking of the top 10 models by estimated win rate from Bradley Terry (BT) scores"
+                },
+                "title": "Impact of methodological choice on model ranking",
+                "winrate": {
+                    "desc": {
+                        "1": "Based solely on the <strong> average win rate </strong> , an overall ranking can be obtained, but this calculation assumes that each model has played against all others.",
+                        "2": "This method is not ideal because it requires data from all combinations of models and as soon as the number of models increases, it quickly becomes expensive and cumbersome to maintain."
+                    },
+                    "title": "Top 10 Models Ranking by Model Win Rate"
+                }
+            },
+            "methods": {
+                "cons": "Main problems",
+                "elo": {
+                    "def": "<strong> Definition </strong>: Ranking system where the gain or loss of points depends on the result (victory/defeat/draw <strong> and </strong> the estimated level of the opponent: if a weaker model beats a stronger model, its progression in the ranking is greater.",
+                    "list": {
+                        "1": "<strong> Probabilistic model </strong>: we can estimate the probable outcome of any matchup, even between models that have never been directly competed.",
+                        "2": "<strong> Taking match difficulty into account </strong> :The scores estimated from the Bradley Terry model take into account the level of the opponents encountered, allowing for a fair comparison between models.",
+                        "3": "<strong> Better Uncertainty Management </strong>:The confidence interval integrates the entire network of comparisons. This allows for a more accurate estimation of uncertainty, especially for models with few direct confrontations but many common opponents."
+                    },
                     "title": "Bradley-Terry (BT) leaderboard"
                 },
                 "pros": "Benefits",
@@ -1403,6 +1474,10 @@
         },
         "preferences": {
             "desc": "When you vote, you can classify your preference according to different positive and negative labels. Compare their distribution across models.",
+            "modal": {
+                "cta": "What is a preference?",
+                "title": "Positive and negative preferences"
+            },
             "tabLabel": "Preference focused view",
             "table": {
                 "cols": {
@@ -1410,12 +1485,16 @@
                     "complete": "Complete",
                     "creative": "Creative",
                     "incorrect": "Incorrect",
-                    "instructions_not_followed": "Instructions not followed",
+                    "instructions_not_followed": "Instructions<br> not followed",
+                    "n_match": "Total matches",
                     "name": "Model",
                     "positive_prefs_ratio": "Distribution of preferences",
                     "superficial": "Superficial",
+                    "total_negative_prefs": "Total preferences<br> Negative",
+                    "total_positive_prefs": "Total preferences<br> Positive",
                     "useful": "Useful"
                 },
+                "percentLabel": "Preferences in percentage",
                 "tooltips": {
                     "positive_prefs_ratio": "When voting, labels are used to indicate the reasons for your preference. This column shows the percentage distribution of these labels (positive or negative) for all votes."
                 }
@@ -1423,15 +1502,16 @@
             "title": "How are user preferences distributed?"
         },
         "ranking": {
-            "desc": "Thank you for your contributions! Your votes contribute to an Elo ranking that we make transparent in this leaderboard.<br>This Elo satisfaction score, built in partnership with PEReN, is based on your votes, your reactions of approval and disapproval.",
+            "desc": "Thank you for your contributions! Your votes contribute to a Bradley-Terry (BT) ranking, which we make transparent to you.<br>This Bradley-Terry (BT) satisfaction score is built in partnership with the <a {linkProps}>French Center of expertise for digital platform regulation (PEReN)</a> and is based on your votes and your reactions of approval and disapproval.",
             "tabLabel": "Leaderboard"
         },
         "table": {
             "data": {
+                "billions": "{count} billion",
                 "cols": {
                     "arch": "Architecture",
                     "consumption_wh": "Energy<br>(1000 tokens)",
-                    "elo": "BT score",
+                    "elo": "BT score <br> of satisfaction",
                     "license": "Licence",
                     "n_match": "Total votes",
                     "name": "Model",
@@ -1441,10 +1521,13 @@
                     "size": "Size<br>(parameters)",
                     "trust_range": "Confidence (±)"
                 },
+                "estimation": "(estimate)",
                 "tooltips": {
-                    "elo": "Estimated score according to the Bradley-Terry statistical model reflecting the probability that one model is preferred to another, calculated from all user votes and reactions",
+                    "arch": "The architecture of an LLM model refers to the design principles that define how the components of a neural network are arranged and interact to transform input data into predictive outputs, including the activation mode of parameters (dense vs. sparse), the specialization of components, and the information processing mechanisms (transformers, convolutional networks, hybrid architectures).",
+                    "elo": "Estimated statistical score based on the Bradley-Terry model, reflecting the probability that one model is preferred over another. This score is calculated from all user votes and reactions. For more information, visit the methodology tab.",
+                    "rank": "Rank assigned based on Bradley-Terry satisfaction score",
                     "size": "Model size in billions of parameters, categorized into five classes. For proprietary models, this size is not reported.",
-                    "trust_range": "Interval indicating the reliability of the score: the narrower the interval, the more reliable the score estimate. There is a 95% chance that the model's true score is within this range."
+                    "trust_range": "Interval indicating the reliability of the rank: the narrower the interval, the more reliable the rank estimate. There is a 95% chance that the model's true rank is within this range."
                 }
             },
             "lastUpdate": "Updated on {date}",
