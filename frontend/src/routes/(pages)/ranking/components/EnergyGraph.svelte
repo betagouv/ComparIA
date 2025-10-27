@@ -17,6 +17,7 @@
 
   const models = $derived(
     data
+      .filter((m) => m.license !== 'proprietary')
       .sort((a, b) => sortIfDefined(a, b, 'params'))
       .map((m) => {
         return {
@@ -157,7 +158,7 @@
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
     <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
-      {#each ARCHS as arch}
+      {#each ARCHS.filter((arch) => arch !== 'na') as arch}
         <li class="p-0! not-last:mb-2 flex items-center">
           <div class={['dot me-2 rounded-full', arch]}></div>
           {m[`generated.archs.${arch}.name`]()}
