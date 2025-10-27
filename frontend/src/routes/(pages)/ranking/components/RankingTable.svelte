@@ -124,7 +124,12 @@
           case 'n_match':
             return sortIfDefined(a.data, b.data, orderingCol)
           case 'consumption_wh':
-            return sortIfDefined(a, b, orderingCol)
+            const aProprietary = a.license === 'proprietary'
+            const bProprietary = b.license === 'proprietary'
+            if (aProprietary && bProprietary) return a.id.localeCompare(b.id)
+            if (aProprietary) return orderingMethod === 'ascending' ? -1 : 1
+            if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
+            return b.consumption_wh - a.consumption_wh
           case 'trust_range':
             const aCount = a.data.trust_range[0] + a.data.trust_range[1]
             const bCount = b.data.trust_range[0] + b.data.trust_range[1]
