@@ -67,7 +67,7 @@
     .map((col) => ({
       ...col,
       label: m[`ranking.table.data.cols.${col.id}`](),
-      orderable: col.id !== 'trust_range',
+      orderable: true,
       colHeaderClass: raw ? 'bg-white! border-b-1 border-(--border-contrast-grey)' : ''
     }))
 
@@ -125,6 +125,11 @@
             return sortIfDefined(a.data, b.data, orderingCol)
           case 'consumption_wh':
             return sortIfDefined(a, b, orderingCol)
+          case 'trust_range':
+            const aCount = a.data.trust_range[0] + a.data.trust_range[1]
+            const bCount = b.data.trust_range[0] + b.data.trust_range[1]
+            if (aCount === bCount) return a.data.rank - b.data.rank
+            return aCount - bCount
           case 'size':
             return b.params - a.params
           case 'release':
