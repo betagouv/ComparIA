@@ -18,6 +18,8 @@ interface DatasetData {
   elo: number
   n_match: number
   mean_win_prob: number
+  rank_p2_5: number
+  rank_p97_5: number
   rank: number
   win_rate: number
   trust_range: [number, number]
