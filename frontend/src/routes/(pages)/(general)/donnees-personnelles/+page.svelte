@@ -16,9 +16,6 @@
     <p>{m['general.privacy.cookiesDescMore']()}</p>
 
     <div id="matomo-opt-out"></div>
-    <script
-      src="https://stats.beta.gouv.fr/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=auto&showIntro=1"
-    ></script>
 
     <h2 id="cookie-banner">{m['general.privacy.cookiesBannerTitle']()}</h2>
     <p>{m['general.privacy.cookiesBannerDesc']()}</p>
@@ -89,4 +86,8 @@
       </li>
     </ul>
   </div>
+
+  <script
+    src="https://stats.beta.gouv.fr/index.php?module=CoreAdminHome&action=optOutJS&divId=matomo-opt-out&language=auto&showIntro=1"
+  ></script>
 </main>
