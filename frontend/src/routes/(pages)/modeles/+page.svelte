@@ -7,7 +7,7 @@
   import type { License, Organisation, Sizes } from '$lib/models'
   import { getModelsContext, SIZES } from '$lib/models'
 
-  const models = getModelsContext()
+  const models = getModelsContext().models
 
   const editorFilter = {
     id: 'editor',

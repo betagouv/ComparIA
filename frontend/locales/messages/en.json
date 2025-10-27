@@ -427,6 +427,28 @@
         }
     },
     "generated": {
+        "archs": {
+            "dense": {
+                "desc": "Dense architecture refers to a type of neural network in which each neuron in one layer is connected to all neurons in the next layer. This allows all parameters in the layer to contribute to the output calculation.",
+                "name": "Dense",
+                "title": "Dense Architecture"
+            },
+            "matformer": {
+                "desc": "Imagine **Russian dolls** (matryoshkas → matryoshka transformer → Matformer): each block contains several **nested sub-models** of increasing size, sharing the same parameters. This allows, for each request, to select a model of adapted capacity, according to the available memory or latency, without needing to re-train different models.",
+                "name": "Matformer",
+                "title": "Matformer Architecture"
+            },
+            "moe": {
+                "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
+                "name": "MoE",
+                "title": "MoE Architecture"
+            },
+            "na": {
+                "desc": "The publisher has not made information about the model's architecture public.",
+                "name": "Proprietary",
+                "title": "Architecture N/A"
+            }
+        },
         "licenses": {
             "os": {
                 "Apache 2.0": {
@@ -1083,29 +1105,7 @@
     },
     "models": {
         "arch": {
-            "title": "Did you know?",
-            "types": {
-                "dense": {
-                    "desc": "Dense architecture refers to a type of neural network in which each neuron in one layer is connected to all neurons in the next layer. This allows all parameters in the layer to contribute to the output calculation.",
-                    "name": "Dense",
-                    "title": "Dense Architecture"
-                },
-                "matformer": {
-                    "desc": "Imagine **Russian dolls** (matryoshkas → matryoshka transformer → Matformer): each block contains several **nested sub-models** of increasing size, sharing the same parameters. This allows, for each request, to select a model of adapted capacity, according to the available memory or latency, without needing to re-train different models.",
-                    "name": "Matformer",
-                    "title": "Matformer Architecture"
-                },
-                "moe": {
-                    "desc": "The Mixture of Experts (MoE) architecture uses a routing mechanism to activate, depending on the input, only certain specialized subsets (“experts”) of the neural network. This allows for the construction of very large models while keeping computational costs low, because only a part of the network is used at each step.",
-                    "name": "MoE",
-                    "title": "MoE Architecture"
-                },
-                "na": {
-                    "desc": "The publisher has not made information about the model's architecture public.",
-                    "name": "Proprietary",
-                    "title": "Architecture N/A"
-                }
-            }
+            "title": "Did you know?"
         },
         "conditions": {
             "commercialUse": {

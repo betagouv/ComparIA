@@ -410,6 +410,24 @@
         }
     },
     "generated": {
+        "archs": {
+            "dense": {
+                "desc": "Tät arkitektur hänvisar till en typ av neuralt nätverk där varje neuron i ett lager är kopplad till alla neuroner i nästa lager. Detta gör att alla parametrar i lagret kan bidra till beräkningen av utdata.",
+                "title": "Tät arkitektur"
+            },
+            "matformer": {
+                "desc": "Föreställ dig ryska dockor (matrjosjkor → matrjosjkatransformator → Matformer): Varje block innehåller flera inkapslade delmodeller av ökande storlek, som delar samma parametrar. Detta gör det möjligt att för varje begäran välja en modell med anpassad kapacitet, beroende på tillgängligt minne eller latens, utan att behöva omträna olika modeller.",
+                "title": "Matformer-arkitektur"
+            },
+            "moe": {
+                "desc": "Arkitekturen Mixture of Experts (MoE) använder en routingmekanism för att, beroende på indata, endast aktivera vissa specialiserade delmängder (\"experter\") av det neurala nätverket. Detta möjliggör konstruktion av mycket stora modeller samtidigt som beräkningskostnaderna hålls nere, eftersom endast en del av nätverket används i varje steg.",
+                "title": "MoE-arkitektur"
+            },
+            "na": {
+                "desc": "Utgivaren har inte offentliggjort information om modellens arkitektur.",
+                "title": "Okänd arkitektur"
+            }
+        },
         "licenses": {
             "os": {
                 "Apache 2.0": {
@@ -818,25 +836,7 @@
     },
     "models": {
         "arch": {
-            "title": "Visste du?",
-            "types": {
-                "dense": {
-                    "desc": "Tät arkitektur hänvisar till en typ av neuralt nätverk där varje neuron i ett lager är kopplad till alla neuroner i nästa lager. Detta gör att alla parametrar i lagret kan bidra till beräkningen av utdata.",
-                    "title": "Tät arkitektur"
-                },
-                "matformer": {
-                    "desc": "Föreställ dig ryska dockor (matrjosjkor → matrjosjkatransformator → Matformer): Varje block innehåller flera inkapslade delmodeller av ökande storlek, som delar samma parametrar. Detta gör det möjligt att för varje begäran välja en modell med anpassad kapacitet, beroende på tillgängligt minne eller latens, utan att behöva omträna olika modeller.",
-                    "title": "Matformer-arkitektur"
-                },
-                "moe": {
-                    "desc": "Arkitekturen Mixture of Experts (MoE) använder en routingmekanism för att, beroende på indata, endast aktivera vissa specialiserade delmängder (\"experter\") av det neurala nätverket. Detta möjliggör konstruktion av mycket stora modeller samtidigt som beräkningskostnaderna hålls nere, eftersom endast en del av nätverket används i varje steg.",
-                    "title": "MoE-arkitektur"
-                },
-                "na": {
-                    "desc": "Utgivaren har inte offentliggjort information om modellens arkitektur.",
-                    "title": "Okänd arkitektur"
-                }
-            }
+            "title": "Visste du?"
         },
         "conditions": {
             "commercialUse": {

@@ -326,7 +326,7 @@
         "license": "CC-BY-NC-4.0",
         "release_date": "04/2024",
         "params": 104,
-        "arch": "maybe-dense",
+        "arch": "dense",
         "desc": "Modèle multilingue spécialisé sur 10 langues, spécialisé pour des cas d'usage business.",
         "size_desc": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
         "fyi": "Grand frère de la famille Command R de Cohere, ce modèle de langage est orienté pour l'usage professionnel et conçu spécifiquement pour les tâches de recherche et d'extraction d'informations."
@@ -1553,6 +1553,7 @@
         "license": "proprietary",
         "release_date": "09/2024",
         "params": 40,
+        "active_params": 12,
         "arch": "moe",
         "url": "https://www.liquid.ai/liquid-foundation-models",
         "desc": "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.",
