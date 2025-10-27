@@ -162,6 +162,21 @@ export function getModelsWithDataContext() {
   const { models, ...data } = getContext<Data>('data')
   return {
     ...data,
-    models: models.filter((m) => m.data !== null && m.prefs !== null) as BotModelWithData[]
+    models: (
+      models.filter((m) => {
+        if (m.data == null) return false
+        if (m.prefs == null) return false
+        if (m.data.trust_range[0] > 10 || m.data.trust_range[1] > 10) return false
+        return true
+      }) as BotModelWithData[]
+    )
+      .sort((a, b) => a.data.rank - b.data.rank)
+      .map((m, i) => ({
+        ...m,
+        data: {
+          ...m.data,
+          rank: i + 1
+        }
+      }))
   }
 }
