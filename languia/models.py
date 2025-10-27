@@ -48,17 +48,19 @@ class Endpoint(BaseModel):
     api_model_id: str
 
 
-class DatasetData(BaseModel):
-    elo: Annotated[int | float, AfterValidator(lambda elo: round(elo))] = Field(
-        validation_alias="median"
-    )
-    n_match: int
-    mean_win_prob: float
-    win_rate: float
+RoundInt = Annotated[int | float, AfterValidator(lambda n: round(n))]
 
+
+class DatasetData(BaseModel):
+    elo: RoundInt = Field(validation_alias="median")
+    score_p2_5: RoundInt = Field(validation_alias="p2.5")
+    score_p97_5: RoundInt = Field(validation_alias="p97.5")
     rank_p2_5: int = Field(validation_alias="rank_p2.5")
     rank_p97_5: int = Field(validation_alias="rank_p97.5")
     rank: int
+    n_match: int
+    mean_win_prob: float
+    win_rate: float
 
     @computed_field
     @property

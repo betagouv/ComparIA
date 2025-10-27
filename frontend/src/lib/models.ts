@@ -16,11 +16,13 @@ export type Model = (typeof MODELS)[number]
 
 interface DatasetData {
   elo: number
-  n_match: number
-  mean_win_prob: number
+  score_p2_5: number
+  score_p97_5: number
+  rank: number
   rank_p2_5: number
   rank_p97_5: number
-  rank: number
+  n_match: number
+  mean_win_prob: number
   win_rate: number
   trust_range: [number, number]
 }
