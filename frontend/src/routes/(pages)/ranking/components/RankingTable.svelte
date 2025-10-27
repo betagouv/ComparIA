@@ -27,7 +27,8 @@
     includedCols,
     onDownloadData,
     hideTotal = false,
-    raw = false
+    raw = false,
+    filterProprietary = false
   }: {
     id: string
     initialOrderCol?: ColKind
@@ -36,6 +37,7 @@
     onDownloadData: () => void
     hideTotal?: boolean
     raw?: boolean
+    filterProprietary?: boolean
   } = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
@@ -81,7 +83,12 @@
   })
 
   const rows = $derived.by(() => {
-    const models = data.sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
+    const models = data
+      .filter((m) => {
+        if (filterProprietary) return m.license !== 'proprietary'
+        return true
+      })
+      .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
     const highestElo = models[0].data.elo!
     const lowestElo = models.reduce((a, m) => (m.data.elo < a ? m.data.elo : a), highestElo)
     const highestConso = models.reduce((a, m) => (m.consumption_wh > a ? m.consumption_wh : a), 0)

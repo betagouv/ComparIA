@@ -66,6 +66,7 @@
         includedCols={['name', 'elo', 'consumption_wh', 'size', 'arch', 'organisation', 'license']}
         hideTotal
         raw
+        filterProprietary
         {onDownloadData}
       />
     </section>
