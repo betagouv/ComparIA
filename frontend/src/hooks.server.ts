@@ -1,6 +1,10 @@
-import { MATOMO_ID, MATOMO_URL } from '$env/static/private'
 import { paraglideMiddleware } from '$lib/i18n/server'
 import type { Handle } from '@sveltejs/kit'
+import { env } from '$env/dynamic/private'
+
+const MATOMO_ID = env.MATOMO_ID || ''
+const MATOMO_URL = env.MATOMO_URL || ''
+
 
 // creating a handle to use the paraglide middleware
 const paraglideHandle: Handle = ({ event, resolve }) =>
