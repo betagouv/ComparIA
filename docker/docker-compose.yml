@@ -1,5 +1,5 @@
 services:
-  languia:
+  backend:
     env_file: .env
     environment:
       LOGDIR: /data
@@ -17,8 +17,8 @@ services:
       # Dev config
       - ../:/app
     command: ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
-    depends_on:
-      - postgres
+    # depends_on:
+    #   - postgres
 
   frontend:
     build:
@@ -27,7 +27,7 @@ services:
     # For runtime access in +page.server.ts via same hostname
     network_mode: host
     depends_on:
-      - languia
+      - backend
     environment:
       PUBLIC_API_URL: "http://127.0.0.1:8001"
     # Dev config
