@@ -30,6 +30,10 @@
 
 ## Run the arena
 
+### API configuration
+
+We rely heavily on OpenRouter, so if you want to test with real providers, in your environment variables, you need to have `OPENROUTER_API_KEY` set according to the configured models located in `utils/models/generated_models.json`. 
+
 ### With Docker Compose
 
 `docker compose -f docker/docker-compose.yml up backend frontend`
@@ -44,11 +48,25 @@
 2. `cd frontend/; npx vite dev`
 
 ## Project architecture and rationale
+### Architecture
 
-### Backend
+- `frontend/`: main code for frontend.
+Frontend is Sveltekit. It lives in `frontend/` and runs on port 5173 in dev env, which is Vite's default.
 
-In backend, it's a mounted `gradio.Blocks` within a FastAPI app. This lives in `main.py` while most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py`.
+- `main.py`: the Python file for the main FastAPI app
+- `languia`: backend code.
+Most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py`. It runs on port 8000 by default. Backend is a mounted `gradio.Blocks` within a FastAPI app.
+- `demo.py`: the Python file for Gradio's `gr.Blocks` configuration
 
-### Frontend 
+- `docker/`: Docker config
+- `utils/`: utilities for dataset handling and database manipulation
 
-Frontend is Sveltekit. It lives in `frontend/`.
+- `controller.py`: a simplistic dashboard
+You can run it with FastAPI: `uv run uvicorn controller:app --reload --port 21001`
+- `templates`: Jinja2 template for the dashboard
+
+- `pyproject.toml`: Python requirements
+- `sonar-project.properties` SonarQube configuration
+
+### Evolution
+We want to get rid of that Gradio code by transforming it into async FastAPI code and Redis session handling.
