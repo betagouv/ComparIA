@@ -7,10 +7,14 @@
   import { getLocale, type Locale } from '$lib/i18n/runtime'
   import { externalLinkProps, propsToAttrs, sanitize } from '$lib/utils/commons'
   import type { HTMLImgAttributes } from 'svelte/elements'
-
   const locale = getLocale()
   const acceptTos = useLocalStorage('comparia:tos', false)
   let tosError = $state<string>()
+  import * as env from '$env/static/public'
+
+  let PUBLIC_GIT_COMMIT = $state<string | null>((env as any).PUBLIC_GIT_COMMIT ?? null)
+
+  if (PUBLIC_GIT_COMMIT) console.log(`Git commit: ${PUBLIC_GIT_COMMIT}`)
 
   $effect(() => {
     if (acceptTos.value) tosError = undefined
