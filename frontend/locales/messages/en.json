@@ -986,10 +986,7 @@
         "menu": "Menu",
         "startDiscussion": "Start the discussion",
         "subtitle": "The chatbot arena",
-        "title": {
-            "compar": "compar",
-            "ia": "AI"
-        },
+        "title": "compar:AI",
         "votes": {
             "count": "{count} votes",
             "legend": "Legend",

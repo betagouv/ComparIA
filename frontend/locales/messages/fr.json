@@ -1110,10 +1110,9 @@
         "menu": "Menu",
         "startDiscussion": "Commencer à discuter",
         "subtitle": "Le comparateur d’IA conversationnelles",
-        "title": {
-            "compar": "compar",
-            "ia": "IA"
-        },
+        "title": 
+            "compar:IA"
+        ,
         "votes": {
             "count": "{count} votes",
             "legend": "Légende",

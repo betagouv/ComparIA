@@ -948,11 +948,8 @@
         "logoAlt": "Den Franske Republik",
         "menu": "Menu",
         "startDiscussion": "Start samtalen",
-        "subtitle": "Chatbot-arenaen",
-        "title": {
-            "compar": "compar",
-            "ia": "AI"
-        },
+        "subtitle": "Sammenlign svar fra chatbots",
+        "title": "AI-Arenaen",
         "votes": {
             "count": "{count} stemmer",
             "legend": "Legend",
