@@ -30,19 +30,25 @@
 
 ## Run the arena
 
-### Back-end
+### With Docker Compose
 
-`uvicorn main:app --reload --timeout-graceful-shutdown 1` or simply `uvicorn main:app`
-For arena only, you can also launch: `gradio demo.py`
+`docker compose -f docker/docker-compose.yml up backend frontend`
+
+### Back-end
+1. Install `uv`
+2. `uv sync`
+3. `uv run uvicorn main:app --reload --timeout-graceful-shutdown 1` or simply `uvicorn main:app`
 
 ### Front-end
-
-`cd frontend/; npx vite dev`
+1. Install `npx`
+2. `cd frontend/; npx vite dev`
 
 ## Project architecture and rationale
 
+### Backend
+
 In backend, it's a mounted `gradio.Blocks` within a FastAPI app. This lives in `main.py` while most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py`.
 
-### SvelteKit 
+### Frontend 
 
 Frontend is Sveltekit. It lives in `frontend/`.
