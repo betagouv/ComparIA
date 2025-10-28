@@ -429,6 +429,28 @@
         }
     },
     "generated": {
+        "archs": {
+            "dense": {
+                "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie.",
+                "name": "Dense",
+                "title": "Architecture Dense"
+            },
+            "matformer": {
+                "desc": "Imaginez des poupées russes (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs sous-modèles imbriqués de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles.",
+                "name": "Matformer",
+                "title": "Architecture Matformer"
+            },
+            "moe": {
+                "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
+                "name": "MoE",
+                "title": "Architecture MoE"
+            },
+            "na": {
+                "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
+                "name": "Propriétaire",
+                "title": "Architecture N/A"
+            }
+        },
         "licenses": {
             "os": {
                 "Apache 2.0": {
@@ -1207,29 +1229,7 @@
     },
     "models": {
         "arch": {
-            "title": "Le saviez-vous ?",
-            "types": {
-                "dense": {
-                    "desc": "L’architecture dense désigne un type de réseau de neurones dans lequel chaque neurone d’une couche est connecté à tous les neurones de la couche suivante. Cela permet à tous les paramètres de la couche de contribuer au calcul de la sortie.",
-                    "name": "Dense",
-                    "title": "Architecture Dense"
-                },
-                "matformer": {
-                    "desc": "Imaginez des **poupées russes** (matryoshkas → matryoshka transformer → Matformer) : chaque bloc contient plusieurs **sous-modèles imbriqués** de tailles croissantes, partageant les mêmes paramètres. Cela permet, à chaque requête, de sélectionner un modèle de capacité adaptée, selon la mémoire ou la latence disponibles, sans avoir besoin de ré-entraîner différents modèles.",
-                    "name": "Matformer",
-                    "title": "Architecture Matformer"
-                },
-                "moe": {
-                    "desc": "L’architecture Mixture of Experts (MoE) utilise un mécanisme de routage pour n’activer, en fonction de l’entrée, que certains sous-ensembles spécialisés (“experts”) du réseau de neurones. Cela permet de construire des modèles très grands tout en gardant un coût de calcul réduit, car seule une partie du réseau est utilisée à chaque étape.",
-                    "name": "MoE",
-                    "title": "Architecture MoE"
-                },
-                "na": {
-                    "desc": "L’éditeur n’a pas rendu les informations sur l’architecture du modèle publiques.",
-                    "name": "Propriétaire",
-                    "title": "Architecture N/A"
-                }
-            }
+            "title": "Le saviez-vous ?"
         },
         "conditions": {
             "commercialUse": {
@@ -1247,6 +1247,14 @@
                 "conditions": "Sous conditions",
                 "forbidden": "Interdit"
             }
+        },
+        "conso": {
+            "count": {
+                "L": "> 100 Wh",
+                "M": "de 10 à 100 Wh",
+                "S": "< 10 Wh"
+            },
+            "filterLegend": "Filtre par consommation énergétique moyenne pour 1000 tokens"
         },
         "extra": {
             "experts": {
@@ -1476,6 +1484,7 @@
     "ranking": {
         "energy": {
             "desc": "Explorez le graphique qui met en perspective le score de satisfaction d’un modèle (axe des ordonnées) avec sa consommation énergétique (axe des abscisses).",
+            "desc2": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
             "tabLabel": "Focus énergie",
             "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
             "views": {
@@ -1489,9 +1498,10 @@
                     },
                     "infos": {
                         "list": {
-                            "1": "En haut à gauche se trouvent les modèles qui plaisent et qui consomment peu d’énergie.",
-                            "2": "En bas à gauche figurent les modèles les moins appréciés, mais qui consomment également peu d’énergie.",
-                            "3": "Plus un modèle est situé sur la droite du graphique, plus il consomme d’énergie."
+                            "1": "En haut à gauche se trouvent les modèles qui plaisent et qui consomment peu d’énergie par rapport aux autres modèles.",
+                            "2": "Plus un modèle est situé en haut du graphique, plus son score de satisfaction Bradley-Terry est élevé.",
+                            "3": "Plus un modèle est situé sur la gauche du graphique, moins il consomme d’énergie par rapport aux autres modèles.",
+                            "4": "Au-delà de la taille, l’architecture a un impact sur la consommation énergétique moyenne des modèles: par exemple, à gabarit similaire, le modèle Llama 3 405B (architecture dense, 405 milliards de paramètres) consomme 10 fois plus d’énergie en moyenne que le modèle GLM 4.5 (architecture MOE, 355 milliards de paramètres et 32 milliards de paramètres actifs)."
                         },
                         "title": "Exemples de lecture :"
                     },
@@ -1527,7 +1537,7 @@
                     "desc": {
                         "1": "Le modèle <strong>Bradley-Terry</strong> transforme un ensemble de comparaisons locales et potentiellement incomplètes en un système de classement global cohérent et statistiquement robuste, là où le taux de victoire empirique reste limité aux observations directes."
                     },
-                    "title": "Classement des 10 premiers modèles selon le taux de victoire estimé à partir des scores Bradley Terry (BT)"
+                    "title": "10 premiers modèles du classement selon de taux de victoire estimé avec le modèle Bradley-Terry"
                 },
                 "title": "Impact du choix de la méthode sur le classement des modèles",
                 "winrate": {
@@ -1535,7 +1545,7 @@
                         "1": "En se basant uniquement sur le <strong>taux de victoire moyen</strong>, on peut obtenir un classement global, mais ce calcul suppose que chaque modèle ait joué contre tous les autres.",
                         "2": "Cette méthode n'est pas idéale car elle nécessite les données de toutes les combinaisons de modèles et ès qu’on augmente le nombre de modèles, cela devient vite coûteux et lourd à maintenir."
                     },
-                    "title": "Classement des 10 premiers modèles selon le taux de victoire des modèles"
+                    "title": "10 premiers modèles du classement selon de taux de victoire « empirique »"
                 }
             },
             "methods": {

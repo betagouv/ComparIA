@@ -1,16 +1,45 @@
-import type { APIReactionPref } from '$lib/chatService.svelte'
 import { getContext, setContext } from 'svelte'
-import { LICENSES, MODELS, ORGANISATIONS } from './generated'
+import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from './generated'
 import { m } from './i18n/messages'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const
-export const ARCHS = ['moe', 'dense', 'matformer', 'maybe-moe', 'maybe-dense'] as const
+export const CONSO_SIZES = ['S', 'M', 'L'] as const
 
 export type Sizes = (typeof SIZES)[number]
+export type ConsoSizes = (typeof CONSO_SIZES)[number]
 export type Archs = (typeof ARCHS)[number]
+export type MaybeArchs = (typeof MAYBE_ARCHS)[number]
+export type AllArchs = Archs | MaybeArchs
 export type License = (typeof LICENSES)[number]
 export type Organisation = (typeof ORGANISATIONS)[number]
 export type Model = (typeof MODELS)[number]
+
+interface DatasetData {
+  elo: number
+  score_p2_5: number
+  score_p97_5: number
+  rank: number
+  rank_p2_5: number
+  rank_p97_5: number
+  n_match: number
+  mean_win_prob: number
+  win_rate: number
+  trust_range: [number, number]
+}
+
+interface PreferencesData {
+  positive_prefs_ratio: number
+  total_prefs: number
+  // Positive count
+  useful: number
+  clear_formatting: number
+  complete: number
+  creative: number
+  // Negative count
+  incorrect: number
+  instructions_not_followed: number
+  superficial: number
+}
 
 export interface APIBotModel {
   new: boolean
@@ -25,33 +54,31 @@ export interface APIBotModel {
   commercial_use: boolean | null
   release_date: string
   params: number
-  active_params?: number
+  active_params: number | null
   friendly_size: Sizes
-  arch: Archs
+  arch: AllArchs
   reasoning: boolean | 'hybrid'
-  quantization?: 'q4' | 'q8'
+  quantization: 'q4' | 'q8' | null
   required_ram: number
-  url?: string // FIXME required?
+  url: string | null // FIXME required?
   // conditions: 'free' | 'copyleft' | 'restricted'
-  // extra data
-  elo?: number
-  trust_range?: [number, number]
-  n_match?: number
-  mean_win_prob?: number
-  win_rate?: number
-  consumption_wh?: number
-  prefs:
-    | (Record<APIReactionPref, number> & {
-        total_prefs: number
-        positive_prefs_ratio: number
-      })
-    | null
+  wh_per_million_token: number
+  data: DatasetData | null
+  prefs: PreferencesData | null
 }
+export type APIData = { data_timestamp: number; models: APIBotModel[] }
+export type Data = { lastUpdateDate: string; models: BotModel[] }
 export type BotModel = ReturnType<typeof parseModel>
+export type BotModelWithData = BotModel & { data: DatasetData; prefs: PreferencesData }
+
+function isMaybeArch(arch: AllArchs): arch is MaybeArchs {
+  return MAYBE_ARCHS.includes(arch as MaybeArchs)
+}
 
 export function parseModel(model: APIBotModel) {
   return {
     ...model,
+    consumption_wh: Math.round(model.wh_per_million_token / 1000),
     desc: m[`generated.models.${model.simple_name}.desc`](),
     sizeDesc: m[`generated.models.${model.simple_name}.size_desc`](),
     fyi: m[`generated.models.${model.simple_name}.fyi`](),
@@ -105,36 +132,53 @@ export function parseModel(model: APIBotModel) {
         id: `model-parameters-${model.id}`,
         variant: 'info' as const,
         text:
-          (model.distribution === 'open-weights' || model.distribution === 'fully-open-source')
+          model.distribution === 'open-weights' || model.distribution === 'fully-open-source'
             ? m['models.parameters']({ number: model.params })
             : m['models.size.estimated']({ size: model.friendly_size }),
         tooltip:
           model.distribution === 'api-only' ? m['models.openWeight.tooltips.params']() : undefined
       },
       arch: {
-        // FIXME need description and label for 'maybe-*'
         id: `model-arch-${model.id}`,
         variant: 'yellow' as const,
-        text: m[
-          `models.arch.types.${model.arch === 'maybe-moe' || model.arch === 'maybe-dense' ? 'na' : model.arch}.title`
-        ](),
-        tooltip:
-          m[
-            `models.arch.types.${model.arch === 'maybe-moe' || model.arch === 'maybe-dense' ? 'na' : model.arch}.desc`
-          ]()
+        text: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.title`](),
+        tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       },
       reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
     }
   }
 }
 
-export function setModelsContext(models: APIBotModel[]) {
-  setContext(
-    'models',
-    models.map((model) => parseModel(model))
-  )
+export function setModelsContext(data: APIData) {
+  setContext('data', {
+    lastUpdateDate: new Date(data.data_timestamp * 1000).toLocaleDateString(),
+    models: data.models.map((model) => parseModel(model))
+  })
 }
 
 export function getModelsContext() {
-  return getContext<BotModel[]>('models')
+  return getContext<Data>('data')
+}
+
+export function getModelsWithDataContext() {
+  const { models, ...data } = getContext<Data>('data')
+  return {
+    ...data,
+    models: (
+      models.filter((m) => {
+        if (m.data == null) return false
+        if (m.prefs == null) return false
+        if (m.data.trust_range[0] > 10 || m.data.trust_range[1] > 10) return false
+        return true
+      }) as BotModelWithData[]
+    )
+      .sort((a, b) => a.data.rank - b.data.rank)
+      .map((m, i) => ({
+        ...m,
+        data: {
+          ...m.data,
+          rank: i + 1
+        }
+      }))
+  }
 }

@@ -4,7 +4,7 @@
   import { getVotesContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
-  import type { BotModel } from '$lib/models'
+  import { getModelsWithDataContext, type Archs } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
 
   type ColKind =
@@ -22,45 +22,44 @@
 
   let {
     id,
-    data,
     initialOrderCol = 'elo',
     initialOrderMethod = 'descending',
     includedCols,
     onDownloadData,
     hideTotal = false,
-    raw = false
+    raw = false,
+    filterProprietary = false
   }: {
     id: string
-    data: BotModel[]
     initialOrderCol?: ColKind
     initialOrderMethod?: 'ascending' | 'descending'
     includedCols?: ColKind[]
     onDownloadData: () => void
     hideTotal?: boolean
     raw?: boolean
+    filterProprietary?: boolean
   } = $props()
 
   const NumberFormater = new Intl.NumberFormat(getLocale(), { maximumSignificantDigits: 3 })
 
   const votesData = getVotesContext()
   const totalVotes = $derived(NumberFormater.format(votesData.count))
-  // FIXME retrieve info from backend
-  let lastUpdateDate = new Date()
+  const { lastUpdateDate, models: data } = getModelsWithDataContext()
   let selectedModel = $state<string>()
   const selectedModelData = $derived(data.find((m) => m.id === selectedModel))
 
   const cols = (
     [
-      { id: 'rank', orderable: true, tooltip: m['ranking.table.data.tooltips.rank']() },
-      { id: 'name', orderable: true },
-      { id: 'elo', orderable: true, tooltip: m['ranking.table.data.tooltips.elo']() },
+      { id: 'rank', tooltip: m['ranking.table.data.tooltips.rank']() },
+      { id: 'name' },
+      { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
       { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
-      { id: 'n_match', orderable: true },
-      { id: 'consumption_wh', orderable: true, tooltip: m['reveal.impacts.energy.tooltip']() },
-      { id: 'size', orderable: true, tooltip: m['ranking.table.data.tooltips.size']() },
+      { id: 'n_match' },
+      { id: 'consumption_wh', tooltip: m['reveal.impacts.energy.tooltip']() },
+      { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
       { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
-      { id: 'release', orderable: true },
-      { id: 'organisation', orderable: true },
+      { id: 'release' },
+      { id: 'organisation' },
       { id: 'license' }
     ] as const
   )
@@ -68,7 +67,8 @@
     .map((col) => ({
       ...col,
       label: m[`ranking.table.data.cols.${col.id}`](),
-      colHeaderClass: raw ? 'bg-transparent! border-b-1 border-(--border-contrast-grey)' : ''
+      orderable: true,
+      colHeaderClass: raw ? 'bg-white! border-b-1 border-(--border-contrast-grey)' : ''
     }))
 
   let orderingCol = $state(initialOrderCol)
@@ -83,31 +83,25 @@
   })
 
   const rows = $derived.by(() => {
-    const models = data.sort((a, b) => sortIfDefined(a, b, 'elo'))
-    const highestElo = models[0].elo!
-    const lowestElo = models.reduce((a, m) => (m?.elo && m.elo < a ? m.elo : a), highestElo)
-    const highestConso = models.reduce(
-      (a, m) => (m?.consumption_wh && m.consumption_wh > a ? m.consumption_wh : a),
-      0
-    )
+    const models = data
+      .filter((m) => {
+        if (filterProprietary) return m.license !== 'proprietary'
+        return true
+      })
+      .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
+    const highestElo = models[0].data.elo!
+    const lowestElo = models.reduce((a, m) => (m.data.elo < a ? m.data.elo : a), highestElo)
+    const highestConso = models.reduce((a, m) => (m.consumption_wh > a ? m.consumption_wh : a), 0)
 
     return models.map((model, i) => {
       const [month, year] = model.release_date.split('/')
 
       return {
         ...model,
-        rank: i + 1,
-        arch:
-          model.license === 'proprietary'
-            ? ('na' as const)
-            : (model.arch as 'moe' | 'dense' | 'matformer'),
+        arch: (model.license === 'proprietary' ? 'na' : model.arch) as Archs,
         release_date: new Date([month, '01', year].join('/')),
-        eloRangeWidth: model.elo
-          ? Math.ceil(((model.elo - lowestElo) / (highestElo - lowestElo)) * 100)
-          : null,
-        consoRangeWidth: model.consumption_wh
-          ? Math.ceil((model.consumption_wh / highestConso) * 100)
-          : null,
+        eloRangeWidth: Math.ceil(((model.data.elo - lowestElo) / (highestElo - lowestElo)) * 100),
+        consoRangeWidth: Math.ceil((model.consumption_wh / highestConso) * 100),
         search: (['id', 'simple_name', 'organisation'] as const)
           .map((key) => model[key].toLowerCase())
           .join(' ')
@@ -128,17 +122,29 @@
             return a.id.localeCompare(b.id)
           case 'elo':
           case 'n_match':
-            return sortIfDefined(a, b, orderingCol)
+            return sortIfDefined(a.data, b.data, orderingCol)
           case 'consumption_wh':
-            return sortIfDefined(a, b, orderingCol)
+            const aProprietary = a.license === 'proprietary'
+            const bProprietary = b.license === 'proprietary'
+            if (aProprietary && bProprietary) return a.id.localeCompare(b.id)
+            if (aProprietary) return orderingMethod === 'ascending' ? -1 : 1
+            if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
+            return b.consumption_wh - a.consumption_wh
+          case 'trust_range':
+            const aCount = a.data.trust_range[0] + a.data.trust_range[1]
+            const bCount = b.data.trust_range[0] + b.data.trust_range[1]
+            if (aCount === bCount) return a.data.rank - b.data.rank
+            return aCount - bCount
           case 'size':
             return b.params - a.params
           case 'release':
             return Number(b.release_date) - Number(a.release_date)
+          case 'arch':
           case 'organisation':
-            return a.organisation.localeCompare(b.organisation)
+          case 'license':
+            return a[orderingCol].localeCompare(b[orderingCol])
           default:
-            return a.rank - b.rank
+            return a.data.rank - b.data.rank
         }
       })
   })
@@ -172,7 +178,7 @@
 
     <div class="fr-table__detail mb-0! flex flex-col gap-3 md:flex-row md:gap-5">
       <p class="mb-0! text-[14px]!">
-        {m['ranking.table.lastUpdate']({ date: lastUpdateDate.toLocaleDateString() })}
+        {m['ranking.table.lastUpdate']({ date: lastUpdateDate })}
       </p>
 
       <Link
@@ -190,7 +196,7 @@
 
   {#snippet cell(model, col)}
     {#if col.id === 'rank'}
-      <span class="font-medium">{model.rank}</span>
+      <span class="font-medium">{model.data.rank}</span>
     {:else if col.id === 'name'}
       <div
         class="max-w-[205px] overflow-hidden overflow-ellipsis sm:max-w-none sm:overflow-visible"
@@ -224,33 +230,37 @@
       {:else}
         <Badge {...model.badges.license} size="xs" noTooltip />
       {/if}
-    {:else if model[col.id] === undefined}
-      <span class="text-xs">{m['words.NA']()}</span>
     {:else if col.id === 'elo'}
       {#if raw}
-        {model.elo}
+        {model.data.elo}
       {:else}
         <div
           class="cg-border text-info rounded-sm! relative max-w-[100px]"
           style="--range-width: {model.eloRangeWidth}%"
         >
           <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
-          <span class="z-1 relative p-1 text-xs font-bold">{model.elo}</span>
+          <span class="z-1 relative p-1 text-xs font-bold">{model.data.elo}</span>
         </div>
       {/if}
     {:else if col.id === 'trust_range'}
-      -{model.trust_range![1]}/+{model.trust_range![0]}
+      -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
-      {model.consumption_wh} Wh
-      {#if !raw}
-        <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-          <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
-        </div>
+      {#if model.license === 'proprietary'}
+        <span class="text-xs">{m['words.NA']()}</span>
+      {:else}
+        {model.consumption_wh} Wh
+        {#if !raw}
+          <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
+            <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
+          </div>
+        {/if}
       {/if}
     {:else if col.id === 'arch'}
-      {m[`models.arch.types.${model.arch}.name`]()}
-    {:else}
-      {model[col.id]}
+      {m[`generated.archs.${model.arch}.name`]()}
+    {:else if col.id === 'n_match'}
+      {model.data.n_match}
+    {:else if col.id === 'organisation'}
+      {model.organisation}
     {/if}
   {/snippet}
 </Table>

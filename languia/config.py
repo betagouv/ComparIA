@@ -8,6 +8,7 @@ import logging
 from logging.handlers import WatchedFileHandler
 from languia.logs import JSONFormatter, PostgresHandler
 from httpx import Timeout
+from languia.models import filter_enabled_models
 
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
@@ -128,12 +129,9 @@ if os.getenv("SENTRY_DSN"):
         + str(git_commit)
     )
 
+all_models_data = json5.loads(Path("./utils/models/generated-models.json").read_text())
 
-all_models = json5.loads(Path("./utils/models/generated-models.json").read_text())
-
-from languia.utils import filter_enabled_models
-
-models = filter_enabled_models(all_models)
+models = filter_enabled_models(all_models_data["models"])
 
 reasoning_models = [id for id, model in models.items() if model.get("reasoning", False)]
 

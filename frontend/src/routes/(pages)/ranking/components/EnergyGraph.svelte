@@ -1,8 +1,9 @@
 <script lang="ts">
   import { CheckboxGroup, Icon, Search, Tooltip } from '$components/dsfr'
+  import { ARCHS } from '$lib/generated'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel, Sizes } from '$lib/models'
-  import { SIZES } from '$lib/models'
+  import type { Archs, ConsoSizes, Sizes } from '$lib/models'
+  import { CONSO_SIZES, getModelsWithDataContext, SIZES } from '$lib/models'
   import { sortIfDefined } from '$lib/utils/data'
   import { extent, ticks } from 'd3-array'
   import { scaleLinear } from 'd3-scale'
@@ -10,21 +11,22 @@
 
   type ModelGraphData = (typeof models)[number]
 
-  let { data }: { data: BotModel[] } = $props()
+  const { models: data } = getModelsWithDataContext()
 
   const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
-  const archs = ['moe', 'dense', 'matformer', 'na'] as const
 
   const models = $derived(
     data
+      .filter((m) => m.license !== 'proprietary')
       .sort((a, b) => sortIfDefined(a, b, 'params'))
       .map((m) => {
         return {
           ...m,
-          x: m.consumption_wh!,
-          y: m.elo!,
+          x: m.consumption_wh,
+          y: m.data.elo,
           radius: dotSizes[m.friendly_size],
           class: m.license === 'proprietary' ? 'na' : m.arch,
+          consoSize: m.consumption_wh < 10 ? 'S' : m.consumption_wh < 100 ? 'M' : 'L',
           search: (['id', 'simple_name', 'organisation'] as const)
             .map((key) => m[key].toLowerCase())
             .join(' ')
@@ -34,6 +36,7 @@
 
   let search = $state('')
   let sizes = $state<Sizes[]>([])
+  let consos = $state<ConsoSizes[]>([])
   const sizeFilter = {
     id: 'size',
     legend: m['models.list.filters.size.legend'](),
@@ -42,14 +45,29 @@
       label: m[`models.size.count.${value}`]()
     }))
   }
+  const consoFilter = {
+    id: 'conso',
+    legend: m['models.conso.filterLegend'](),
+    options: CONSO_SIZES.map((value) => ({
+      value,
+      label: m[`models.conso.count.${value}`]()
+    }))
+  }
 
   const filteredModels = $derived.by(() => {
     const _search = search.toLowerCase()
     return models.filter((m) => {
       const sizeMatch = sizes.length === 0 || sizes.includes(m.friendly_size)
+      const consoMatch = consos.length === 0 || consos.includes(m.consoSize)
       const searchMatch = !_search || m.search.includes(_search)
       // FIXME remove grok models filtering?
-      return sizeMatch && searchMatch && m.id !== 'grok-4-fast' && m.id !== 'grok-3-mini-beta'
+      return (
+        sizeMatch &&
+        consoMatch &&
+        searchMatch &&
+        m.id !== 'grok-4-fast' &&
+        m.id !== 'grok-3-mini-beta'
+      )
     })
   })
 
@@ -64,7 +82,7 @@
 
   let svg = $state<SVGSVGElement>()
   let width = $state(1100)
-  let height = $state(570)
+  let height = $state(660)
 
   const padding = { top: 5, right: 10, bottom: 35, left: 72 }
 
@@ -100,30 +118,31 @@
     id="graph-legend"
     class="cg-border rounded-md! bg-very-light-grey flex h-full flex-col p-4 text-[12px] leading-normal"
   >
-    <p class="mb-4! text-[13px]! leading-normal!">
-      <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
-    </p>
-    <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
-      {#each archs as arch}
-        <li class="p-0! not-last:mb-2 flex items-center">
-          <div class={['dot me-2 rounded-full', arch]}></div>
-          {m[`models.arch.types.${arch}.name`]()}
-          <Tooltip
-            id="arch-type-{arch}-{kind}"
-            text={m[`models.arch.types.${arch}.desc`]()}
-            size="xs"
-            class="ms-1"
-          />
-        </li>
-      {/each}
-    </ul>
+    <Search
+      id="energy-graph-model-search"
+      bind:value={search}
+      label={m['words.search']()}
+      class="mb-5"
+    />
 
-    <p class="mb-4! text-[13px]! leading-tight!">
+    <p class="mb-3! text-[13px]! leading-normal!" aria-hidden="true">
+      <strong>{consoFilter.legend}</strong>
+    </p>
+    <CheckboxGroup
+      {...consoFilter}
+      bind:value={consos}
+      legendClass="sr-only"
+      labelClass="text-dark-grey! text-[12px]! font-medium!"
+      row
+      class="mb-5!"
+    ></CheckboxGroup>
+
+    <p class="mb-3! text-[13px]! leading-tight!" aria-hidden="true">
       <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
       <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
     </p>
 
-    <CheckboxGroup {...sizeFilter} bind:value={sizes} legendClass="sr-only" row class="mb-10!">
+    <CheckboxGroup {...sizeFilter} bind:value={sizes} legendClass="sr-only" row class="mb-5!">
       {#snippet labelSlot({ option })}
         <div class="flex items-center">
           <div
@@ -135,12 +154,23 @@
       {/snippet}
     </CheckboxGroup>
 
-    <Search
-      id="energy-graph-model-search"
-      bind:value={search}
-      label={m['words.search']()}
-      class="ms-auto mt-auto"
-    />
+    <p class="mb-3! text-[13px]! leading-normal!">
+      <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
+    </p>
+    <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
+      {#each ARCHS.filter((arch) => arch !== 'na') as arch}
+        <li class="p-0! not-last:mb-2 flex items-center">
+          <div class={['dot me-2 rounded-full', arch]}></div>
+          {m[`generated.archs.${arch}.name`]()}
+          <Tooltip
+            id="arch-type-{arch}-{kind}"
+            text={m[`generated.archs.${arch}.desc`]()}
+            size="xs"
+            class="ms-1"
+          />
+        </li>
+      {/each}
+    </ul>
   </div>
 {/snippet}
 
@@ -231,7 +261,11 @@
                   <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
                     {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
                   </p>
-                  <strong class="ms-auto">{hoveredModelData[item.key]}</strong>
+                  <strong class="ms-auto"
+                    >{item.key === 'elo'
+                      ? hoveredModelData.data[item.key]
+                      : hoveredModelData[item.key]}</strong
+                  >
                 </div>
               {/each}
 
@@ -245,7 +279,7 @@
                       <strong class="ms-auto">
                         {#if key === 'arch'}
                           {m[
-                            `models.arch.types.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as (typeof archs)[number])}.name`
+                            `generated.archs.${hoveredModelData.license === 'proprietary' ? 'na' : (hoveredModelData.arch as Archs)}.name`
                           ]()}
                         {:else}
                           {hoveredModelData[key]}
@@ -259,7 +293,7 @@
           </div>
         {/if}
 
-        <div class="hidden h-[535px] w-[230px] md:block">
+        <div class="hidden h-[625px] w-[230px] md:block">
           {@render legend('desktop')}
         </div>
       </div>
@@ -280,7 +314,7 @@
   #energy-graph {
     svg {
       width: 100%;
-      height: 570px;
+      height: 660px;
     }
 
     text {
@@ -343,16 +377,16 @@
       background-color: #cecece;
     }
     .moe {
-      fill: var(--blue-france-main-525);
-      background-color: var(--blue-france-main-525);
+      fill: var(--green-menthe-850-200);
+      background-color: var(--green-menthe-850-200);
     }
     .dense {
       fill: var(--cg-orange);
       background-color: var(--cg-orange);
     }
     .matformer {
-      fill: var(--green-menthe-850-200);
-      background-color: var(--green-menthe-850-200);
+      fill: var(--blue-france-main-525);
+      background-color: var(--blue-france-main-525);
     }
   }
 

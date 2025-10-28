@@ -61,17 +61,15 @@
             </div>
           </div>
           <div
-            class="fr-header__service before:content-none! md:px-3! mx-1! sm:mx-3! flex w-1/2 grow sm:w-auto"
+            class="fr-header__service before:content-none! md:px-3! mx-1! sm:mx-3! flex w-1/2 grow items-center sm:w-auto"
           >
-            <!-- TODO readd -->
-            <!-- <img
-              src="/orgs/comparia.svg"
+            <img
+              src="/orgs/comparia.png"
               aria-hidden="true"
               alt=""
-              width="66"
-              height="47"
-              class="me-3 hidden sm:block"
-            /> -->
+              width="46"
+              class="me-4 hidden h-max sm:block"
+            />
             <div>
               <p class="fr-header__service-title mb-0! leading-normal!">
                 <a

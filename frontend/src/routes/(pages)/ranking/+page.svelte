@@ -3,7 +3,7 @@
   import SeoHead from '$components/SEOHead.svelte'
   import { APINegativeReactions, APIPositiveReactions } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
-  import { getModelsContext } from '$lib/models'
+  import { getModelsWithDataContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { downloadTextFile, sortIfDefined } from '$lib/utils/data'
   import { Energy, Methodology, Preferences, RankingTable } from './components'
@@ -12,7 +12,7 @@
     [
       { id: 'ranking', icon: 'trophy-line' },
       { id: 'energy', icon: 'flashlight-line' },
-      { id: 'preferences', icon: 'thumb-up-line' },
+      // { id: 'preferences', icon: 'thumb-up-line' },
       { id: 'methodo' }
     ] as const
   ).map((tab) => ({
@@ -20,40 +20,58 @@
     label: m[`ranking.${tab.id}.tabLabel`]()
   }))
 
-  const modelsData = getModelsContext().filter((m) => !!m.elo)
+  const { lastUpdateDate, models: modelsData } = getModelsWithDataContext()
 
   function onDownloadData(kind: 'ranking' | 'energy') {
     const csvCols = [
-      { key: 'rank' as const, label: 'rank' },
+      { key: 'rank' as const, label: 'Rank' },
       { key: 'id' as const, label: 'id', energy: true },
-      { key: 'elo' as const, label: 'elo', energy: true },
-      { key: 'trust_range' as const, label: 'confidence interval' },
-      { key: 'n_match' as const, label: 'total votes' },
-      { key: 'consumption_wh' as const, label: 'consumption (wh)', energy: true },
-      { key: 'friendly_size' as const, label: 'size', energy: true },
-      { key: 'params' as const, label: 'parameters', energy: true },
-      { key: 'release_date' as const, label: 'release' },
-      { key: 'organisation' as const, label: 'organisation', energy: true },
-      { key: 'distribution' as const, label: 'distribution', energy: true }
+      { key: 'elo' as const, label: 'Bradley-Terry Score', energy: true },
+      { key: 'score_p2_5' as const, label: 'BT p2.5' },
+      { key: 'score_p97_5' as const, label: 'BT p97.5' },
+      { key: 'trust_range' as const, label: 'Confidence interval' },
+      { key: 'rank_p2_5' as const, label: 'Rank p2.5' },
+      { key: 'rank_p97_5' as const, label: 'Rank p97.5' },
+      { key: 'n_match' as const, label: 'Total votes' },
+      { key: 'consumption_wh' as const, label: 'Consumption Wh (1000 tokens)', energy: true },
+      { key: 'friendly_size' as const, label: 'Size', energy: true },
+      { key: 'params' as const, label: 'Parameters (B)', energy: true },
+      { key: 'arch' as const, label: 'Architecture', energy: true },
+      { key: 'release_date' as const, label: 'Release' },
+      { key: 'organisation' as const, label: 'Organisation', energy: true },
+      { key: 'distribution' as const, label: 'License', energy: true }
     ]
     const cols = kind === 'ranking' ? csvCols : csvCols.filter((col) => col.energy)
     const data = [
       cols.map((col) => col.label).join(','),
       ...modelsData
-        .sort((a, b) => sortIfDefined(a, b, 'elo'))
+        .sort((a, b) => sortIfDefined(a.data, b.data, 'elo'))
         .map((m, i) => {
           return cols
             .map((col) => {
-              if (col.key === 'rank') return i.toString()
+              if (
+                col.key === 'elo' ||
+                col.key === 'rank' ||
+                col.key === 'n_match' ||
+                col.key === 'rank_p2_5' ||
+                col.key === 'rank_p97_5' ||
+                col.key === 'score_p2_5' ||
+                col.key === 'score_p97_5'
+              )
+                return m.data[col.key]
               if (col.key === 'params') return m.license === 'proprietary' ? 'N/A' : m.params
-              if (col.key === 'trust_range') return `+${m.trust_range![0]}/-${m.trust_range![1]}`
+              if (col.key === 'trust_range')
+                return `+${m.data.trust_range![0]}/-${m.data.trust_range![1]}`
+              if (col.key === 'consumption_wh') {
+                return m.license === 'proprietary' ? 'N/A' : m.consumption_wh
+              }
               return m[col.key]
             })
             .join(',')
         })
     ].join('\n')
 
-    downloadTextFile(data, kind)
+    downloadTextFile(data, `comparia_model-${kind}-${lastUpdateDate}-license_Etalab_2_0`)
   }
 
   function onDownloadPrefsData() {
@@ -72,26 +90,25 @@
     const data = [
       csvCols.map((col) => col.label).join(','),
       ...modelsData
-        .filter((m) => !!m.prefs)
-        .sort((a, b) => sortIfDefined(a.prefs!, b.prefs!, 'positive_prefs_ratio'))
+        .sort((a, b) => sortIfDefined(a.prefs, b.prefs, 'positive_prefs_ratio'))
         .map((m) => {
           return csvCols
             .map((col) => {
               if (col.key === 'id') {
                 return m[col.key]
               } else if (col.key === 'total_positive_prefs') {
-                return APIPositiveReactions.reduce((acc, v) => acc + m.prefs![v], 0)
+                return APIPositiveReactions.reduce((acc, v) => acc + m.prefs[v], 0)
               } else if (col.key === 'total_negative_prefs') {
-                return APINegativeReactions.reduce((acc, v) => acc + m.prefs![v], 0)
+                return APINegativeReactions.reduce((acc, v) => acc + m.prefs[v], 0)
               } else {
-                return m.prefs![col.key]
+                return m.prefs[col.key]
               }
             })
             .join(',')
         })
     ].join('\n')
 
-    downloadTextFile(data, 'preferences')
+    downloadTextFile(data, `comparia_model-preferences-${lastUpdateDate}-license_Etalab_2_0`)
   }
 </script>
 
@@ -112,17 +129,13 @@
             )}
           </p>
 
-          <RankingTable
-            id="ranking-table"
-            data={modelsData}
-            onDownloadData={() => onDownloadData('ranking')}
-          />
+          <RankingTable id="ranking-table" onDownloadData={() => onDownloadData('ranking')} />
         {:else if id === 'energy'}
-          <Energy data={modelsData} onDownloadData={() => onDownloadData('energy')} />
-        {:else if id === 'preferences'}
-          <Preferences data={modelsData} onDownloadData={() => onDownloadPrefsData()} />
+          <Energy onDownloadData={() => onDownloadData('energy')} />
+          <!-- {:else if id === 'preferences'}
+          <Preferences onDownloadData={() => onDownloadPrefsData()} /> -->
         {:else if id === 'methodo'}
-          <Methodology data={modelsData} />
+          <Methodology />
         {/if}
       {/snippet}
     </Tabs>

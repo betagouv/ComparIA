@@ -2,12 +2,12 @@ import numpy as np
 import os
 
 from gradio import Request
+from typing import TYPE_CHECKING
 import gradio as gr
-
 import logging
 
-from languia.models import Model, Endpoint
-import logging
+if TYPE_CHECKING:
+    from languia.models import Endpoint
 
 logger = logging.getLogger("languia")
 
@@ -16,11 +16,8 @@ def get_total_params(model_extra_info):
     """
     Get the total number of parameters for a model.
     """
-    if "params" in model_extra_info:
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
+    if model_extra_info.get("params"):
+        if model_extra_info.get("quantization", None) == "q8":
             return int(model_extra_info["params"]) // 2
         else:
             return int(model_extra_info["params"])
@@ -36,11 +33,8 @@ def get_active_params(model_extra_info):
     Get the number of active parameters for a model.
     For MoE models, this will be different from the total number of parameters.
     """
-    if "active_params" in model_extra_info:
-        if (
-            "quantization" in model_extra_info
-            and model_extra_info.get("quantization", None) == "q8"
-        ):
+    if model_extra_info.get("active_params"):
+        if model_extra_info.get("quantization", None) == "q8":
             return int(model_extra_info["active_params"]) // 2
         else:
             return int(model_extra_info["active_params"])
@@ -62,18 +56,6 @@ class EmptyResponseError(RuntimeError):
     def __str__(self):
         msg = "Empty response"
         return msg
-
-
-def filter_enabled_models(models: dict[str, Model]):
-    enabled_models = {}
-    for model_id, model_dict in models.items():
-        if model_dict.get("status") == "enabled":
-            try:
-                if Endpoint.model_validate(model_dict.get("endpoint")):
-                    enabled_models[model_id] = model_dict
-            except:
-                continue
-    return enabled_models
 
 
 def get_ip(request: Request):
@@ -300,7 +282,7 @@ def pick_models(mode, custom_models_selection, unavailable_models):
     return [model_left_name, model_right_name]
 
 
-def get_api_key(endpoint: Endpoint):
+def get_api_key(endpoint: "Endpoint"):
 
     # // "api_type": "huggingface/cohere",
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",

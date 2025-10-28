@@ -70,6 +70,7 @@
 
   let containerElem = $state<HTMLDivElement>()
   let scrollable = $state({ left: false, right: false })
+  let stickyElem = $state<HTMLDivElement>()
 
   function updateGradientDisplay() {
     scrollable.left = containerElem!.scrollLeft !== 0
@@ -92,12 +93,21 @@
     })
   }
 
+  function onscroll() {
+    // Can't use 'sticky' here, multiple parents have 'overflow', so use js
+    const parent = stickyElem!.parentElement!
+    const { top } = parent.getBoundingClientRect()
+    const pos = top >= 0 ? 0 : Math.abs(top)
+    stickyElem!.style = `top: ${pos}px;`
+  }
+
   onMount(() => {
     updateGradientDisplay()
+    onscroll()
   })
 </script>
 
-<svelte:window onresize={() => updateGradientDisplay()} />
+<svelte:window onresize={() => updateGradientDisplay()} {onscroll} />
 
 <div class={['fr-table', { 'fr-table--no-caption': hideCaption }, classes]}>
   <div class="fr-table__header mb-4 flex flex-col gap-5 md:flex-row md:flex-wrap">
@@ -144,19 +154,19 @@
   <div class="fr-table__wrapper relative">
     <div
       id="table-gradient"
-      class={['z-1 absolute inset-0 start-[80%] md:start-[95%]', { hidden: !scrollable.right }]}
+      class={['z-3 absolute inset-0 start-[80%] md:start-[95%]', { hidden: !scrollable.right }]}
     ></div>
 
     <div
       bind:this={containerElem}
-      class="fr-table__container"
+      class="fr-table__container overflow-y-hidden!"
       onscroll={() => updateGradientDisplay()}
     >
       <div class="fr-table__content">
         <table {id} {...props}>
           <caption>{caption}</caption>
 
-          <thead>
+          <thead bind:this={stickyElem} class="z-2 relative">
             <tr>
               {#each cols as col (col.id)}
                 <th class={col.colHeaderClass}>

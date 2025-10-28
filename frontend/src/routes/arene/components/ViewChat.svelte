@@ -54,6 +54,7 @@
   async function onPromptSubmit() {
     window.scrollTo(0, document.body.scrollHeight)
     await askChatBots(prompt)
+    prompt = ''
   }
 
   async function onRevealModels() {

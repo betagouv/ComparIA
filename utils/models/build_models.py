@@ -1,18 +1,13 @@
-import json
-import rich
 import logging
 import markdown
-from pathlib import Path
-from pydantic import BaseModel, Field, RootModel, ValidationError
-from rich import print
-from rich.logging import RichHandler
-from slugify import slugify
-import sys
 import os
-from languia.reveal import get_llm_impact, convert_range_to_value
-from typing import Any, Literal, Tuple, get_args, Annotated
-from .utils import Obj, read_json, write_json, filter_dict, sort_dict
-from languia.models import License, Organisation, Endpoint, Model
+from pathlib import Path
+from pydantic import ValidationError
+from rich.logging import RichHandler
+from typing import Any
+
+from languia.models import ROOT_PATH, Archs, Licenses, Orgas, RawOrgas
+from utils.models.utils import Obj, read_json, write_json, sort_dict
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
@@ -22,6 +17,7 @@ log = logging.getLogger("models")
 CURRENT_FOLDER = Path(__file__).parent
 FRONTEND_FOLDER = CURRENT_FOLDER.parent.parent / "frontend"
 LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
+ARCHS_PATH = CURRENT_FOLDER / "archs.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
 MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
 MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
@@ -37,9 +33,6 @@ I18N_OS_LICENSE_KEYS = [
 I18N_PROPRIO_LICENSE_KEYS = ["proprietary_" + k for k in I18N_OS_LICENSE_KEYS]
 I18N_MODEL_KEYS = ["desc", "size_desc", "fyi"]
 
-Licenses = RootModel[list[License]]
-Orgas = RootModel[list[Organisation]]
-
 
 def log_errors(errors: dict[str, list[Obj]]) -> None:
     for name, errs in errors.items():
@@ -54,9 +47,11 @@ def log_errors(errors: dict[str, list[Obj]]) -> None:
         )
 
 
-def validate_licenses(raw_licenses: Any) -> list[Any] | None:
+def validate_licenses(raw_licenses: Any) -> list[Any]:
     try:
-        return Licenses(raw_licenses).model_dump(exclude_none=True)
+        licenses = Licenses(raw_licenses).model_dump(exclude_none=True)
+        log.info("No errors in 'licenses.json'!")
+        return licenses
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
@@ -67,16 +62,34 @@ def validate_licenses(raw_licenses: Any) -> list[Any] | None:
             errors[name].append({"key": err["loc"][1], **err})
 
         log_errors(errors)
-        return None
+
+        raise Exception("Errors in 'licenses.json', exiting...")
 
 
-def validate_orgas_and_models(
-    raw_orgas: Any, exclude_defaults=False
-) -> list[Any] | None:
+def validate_archs(raw_archs: Any) -> list[Any]:
     try:
-        return Orgas(raw_orgas).model_dump(
-            exclude_none=True, exclude_defaults=exclude_defaults
-        )
+        archs = Archs(raw_archs).model_dump()
+        log.info("No errors in 'archs.json'!")
+        return archs
+    except ValidationError as exc:
+        errors: dict[str, list[Obj]] = {}
+
+        for err in exc.errors():
+            name = f"arch '{raw_archs[err["loc"][0]]["id"]}'"
+            if name not in errors:
+                errors[name] = []
+            errors[name].append({"key": err["loc"][1], **err})
+
+        log_errors(errors)
+
+        raise Exception("Errors in 'archs.json', exiting...")
+
+
+def validate_orgas_and_models(raw_orgas: Any, context: dict[str, Any]) -> list[Any]:
+    try:
+        orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump()
+        log.info("No errors in 'models.json'!")
+        return orgas
     except ValidationError as exc:
         errors: dict[str, list[Obj]] = {}
 
@@ -86,7 +99,7 @@ def validate_orgas_and_models(
                 name = f"organisation '{orga.get("name", err["loc"][0])}'"
                 key = err["loc"][1]
             elif "models" in err["loc"]:
-                name = f"model '{orga["models"][err["loc"][2]]["simple_name"]}'"
+                name = f"model '{orga["models"][err["loc"][2]]["id"]}'"
                 key = err["type"] if err["type"] == "endpoint" else err["loc"][3]
 
             if name not in errors:
@@ -95,7 +108,7 @@ def validate_orgas_and_models(
 
         log_errors(errors)
 
-        return None
+        raise Exception("Errors in 'models.json', exiting...")
 
 
 def connect_to_db(DATABASE_URI):
@@ -148,47 +161,19 @@ def fetch_distinct_model_ids(engine, models_data):
         return []
 
 
-def get_ecologits_rate(models_data: dict) -> dict:
-    """Calculates wh_per_million_token for each model."""
-
-    wh_per_million_token_map = {}
-    for model_id in models_data:
-        model_info = models_data[model_id]
-
-        impact = get_llm_impact(model_info, model_id, 1_000_000, None)
-
-        if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
-            energy_kwh = convert_range_to_value(impact.energy.value)
-            energy_wh = energy_kwh * 1000
-            wh_per_million_token_map[model_id] = energy_wh
-    return wh_per_million_token_map
-
-
-def params_to_friendly_size(params):
-    """
-    Converts a parameter value to a friendly size description.
-
-    Args:
-        param (int): The parameter value
-
-    Returns:
-        str: The friendly size description
-    """
-    intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
-    sizes = ["XS", "S", "M", "L", "XL"]
-
-    for i, (lower, upper) in enumerate(intervals):
-        if lower <= params < upper:
-            return sizes[i]
-
-    raise Exception("Error: Could not guess friendly_size")
-
-
-def validate() -> None:
+def main() -> None:
     raw_licenses = read_json(LICENSES_PATH)
+    raw_archs = read_json(ARCHS_PATH)
     raw_orgas = read_json(MODELS_PATH)
     raw_extra_data = read_json(MODELS_EXTRA_DATA_PATH)
-    raw_preferences_data = read_json(MODELS_PREFERENCES_PATH)
+    raw_models_data = {m["model_name"]: m for m in raw_extra_data["models"]}
+
+    try:
+        dumped_licenses = validate_licenses(raw_licenses)
+        dumped_archs = validate_archs(raw_archs)
+    except Exception as err:
+        log.error(str(err))
+        return
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
@@ -202,164 +187,98 @@ def validate() -> None:
                 filtered_models.append(model)
         orga["models"] = filtered_models
 
-        # Check if icon is available
-        if (
-            orga.get("icon_path")
-            and not Path(
-                FRONTEND_FOLDER / "static" / "orgs" / "ai" / orga["icon_path"]
-            ).exists()
-        ):
-            log.warning(f"Missing icon '{orga["icon_path"]}'")
+    context = {
+        "licenses": {l["license"]: l for l in dumped_licenses},
+        "archs": {a.pop("id"): a for a in dumped_archs},
+        "data": raw_models_data,
+    }
 
-    dumped_licenses = validate_licenses(raw_licenses)
-    dumped_orgas = validate_orgas_and_models(raw_orgas)
-
-    if not dumped_licenses or not dumped_orgas:
+    # First validate with RawOrgas
+    try:
+        dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
+    except Exception as err:
+        log.error(str(err))
         return
 
-    dict_licenses = {license["license"]: license for license in dumped_licenses}
-    base_proprietary_license = dict_licenses.pop("proprietary")
+    # Then use the full Orgas builder
+    # Any errors comming from here are code generation errors, not errors in 'models.json'
+    orgas = Orgas.model_validate(raw_orgas, context=context)
+    generated_models = {}
 
     i18n = {
+        "archs": context["archs"],
         "licenses": {
-            "os": sort_dict(
-                {
-                    license["license"]: {
-                        k: (
-                            (license[k] if k in license else "")
-                            if k != "license_desc"
-                            else markdown.markdown(license[k])
-                        )
-                        for k in I18N_OS_LICENSE_KEYS
-                    }
-                    for license in dict_licenses.values()
+            "os": {
+                l["license"]: {
+                    k: (
+                        (l[k] if k in l else "")
+                        if k != "license_desc"
+                        else markdown.markdown(l[k])
+                    )
+                    for k in I18N_OS_LICENSE_KEYS
                 }
-            ),
+                for l in context["licenses"].values()
+                if l["license"] != "proprietary"
+            },
             "proprio": {},
         },
         "models": {},
     }
-    generated_models = {}
-
-    # Load existing generated models to pass to get_ecologits_rate
-    existing_generated_models = read_json(GENERATED_MODELS_PATH)
 
     if os.getenv("DATABASE_URI"):
-        engine = utils.connect_to_db(os.getenv("DATABASE_URI"))
+        existing_generated_models = read_json(GENERATED_MODELS_PATH)
+        engine = connect_to_db(os.getenv("DATABASE_URI"))
         fetch_distinct_model_ids(engine, existing_generated_models)
 
-    wh_per_million_token_map = get_ecologits_rate(existing_generated_models)
-
-    for orga in dumped_orgas:
-        i18n["licenses"]["proprio"][orga["name"]] = {
-            k.replace("proprietary_", ""): orga[k] if k in orga else ""
-            for k in I18N_PROPRIO_LICENSE_KEYS
+    for orga in orgas.root:
+        # Retrieving i18n licenses descriptions
+        i18n["licenses"]["proprio"][orga.name] = {
+            k.replace("proprietary_", ""): v if v else ""
+            for k, v in orga.model_dump(include=I18N_PROPRIO_LICENSE_KEYS).items()
         }
-        proprio_license_data = {**base_proprietary_license}
-        proprio_license_data["reuse"] = orga["proprietary_reuse"]
-        proprio_license_data["commercial_use"] = orga.get(
-            "proprietary_commercial_use", None
-        )
 
-        for model in orga["models"]:
-            i18n["models"][model["simple_name"]] = {
-                k: markdown.markdown(model[k]) for k in I18N_MODEL_KEYS
+        for model in orga.models:
+            # Retrieving i18n models descriptions
+            i18n["models"][model.simple_name] = {
+                k: markdown.markdown(v)
+                for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
             }
-            try:
-                license_data = (
-                    dict_licenses[model["license"]]
-                    if model["license"] != "proprietary"
-                    else proprio_license_data
+
+            if model.data is None or model.prefs is None:
+                log.warning(
+                    f"Missing data for model '{model.id}' (status: {model.status})"
                 )
-            except KeyError as e:
-                log.error(
-                    f"Incorrect or missing license data in 'licenses.json' for license '{model["license"]}'"
-                )
-                return
 
-            # Enhance model data
-            model_data = filter_dict(model, I18N_MODEL_KEYS)
-
-            if model_data.get("fully_open_source"):
-                model_data["distribution"] = "fully-open-source"
-
-            model_data["friendly_size"] = params_to_friendly_size(model_data["params"])
-
-            if model.get("quantization", None) == "q8":
-                model_data["required_ram"] = model_data["params"] * 2
-            else:
-                # We suppose from q4 to fp16
-                model_data["required_ram"] = model_data["params"]
-
-            model_extra_data = next(
-                (
-                    m
-                    for m in raw_extra_data
-                    if m["model_name"] == model["id"]
-                    # or m["name"] == model["simple_name"]
-                ),
-                None,
-            )
-            # FIXME check whos missing
-            if model_extra_data is not None:
-                model_extra_data = {
-                    "elo": round(model_extra_data["median"]),
-                    # trust range based on computed median rank and interval
-                    "trust_range": [
-                        model_extra_data["rank"] - model_extra_data["rank_p2.5"],
-                        model_extra_data["rank_p97.5"] - model_extra_data["rank"],
-                    ],
-                    "n_match": model_extra_data["n_match"],
-                    "mean_win_prob": model_extra_data["mean_win_prob"],
-                    "win_rate": model_extra_data["win_rate"],
-                    "consumption_wh": round(
-                        model_extra_data["mean_conso_per_token"] * 1000 * 1000
-                    ),
-                }
-
-            model_preferences_data = next(
-                (m for m in raw_preferences_data if m["model_name"] == model["id"]),
-                None,
-            )
-            # FIXME check whos missing
-            if model_preferences_data is not None:
-                model_preferences_data = {
-                    k: v for k, v in model_preferences_data.items() if k != "model_name"
-                }
-
-            # Build complete model data (license + model) without translatable keys
-            generated_models[model["id"]] = sort_dict(
-                {
-                    "organisation": orga["name"],
-                    "icon_path": orga["icon_path"],
-                    **filter_dict(license_data, I18N_OS_LICENSE_KEYS),
-                    **model_data,
-                    **(model_extra_data or {}),
-                    "prefs": model_preferences_data,
-                    "wh_per_million_token": wh_per_million_token_map.get(
-                        model["id"], 0
-                    ),
-                }
-            )
-
-    i18n["licenses"]["proprio"] = sort_dict(i18n["licenses"]["proprio"])
-    i18n["models"] = sort_dict(i18n["models"])
+            generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
     # Integrate translatable content to frontend locales
+    log.info(f"Saving '{I18N_PATH.relative_to(ROOT_PATH)}'...")
     frontend_i18n = read_json(I18N_PATH)
     frontend_i18n["generated"] = sort_dict(i18n)
+    write_json(I18N_PATH, frontend_i18n, indent=4)
+
+    # Save generated models
+    log.info(f"Saving '{GENERATED_MODELS_PATH.relative_to(ROOT_PATH)}'...")
+    write_json(
+        GENERATED_MODELS_PATH,
+        {
+            "timestamp": raw_extra_data["timestamp"],
+            "models": sort_dict(generated_models),
+        },
+    )
 
     # FIXME add ARCHS
     TS_DATA_PATH.write_text(
-        f"""export const LICENSES = {[license["license"] for license in dumped_licenses]} as const
+        f"""export const LICENSES = {[l for l in context["licenses"].keys()]} as const
+export const ARCHS = {[a for a in context["archs"]]} as const
+export const MAYBE_ARCHS = {[f"maybe-{a}" for a in context["archs"] if a != 'na']} as const
 export const ORGANISATIONS = {[orga["name"] for orga in dumped_orgas]} as const
 export const MODELS = {[model["simple_name"] for model in generated_models.values()]} as const
 """
     )
 
-    write_json(I18N_PATH, frontend_i18n, indent=4)
-    write_json(GENERATED_MODELS_PATH, sort_dict(generated_models))
+    log.info("Generation is successfull!")
 
 
 if __name__ == "__main__":
-    validate()
+    main()

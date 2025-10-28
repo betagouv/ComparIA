@@ -1,11 +1,10 @@
 <script lang="ts">
   import { Accordion, AccordionGroup, Alert } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
-  import type { BotModel } from '$lib/models'
-  import { sanitize } from '$lib/utils/commons'
+  import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { EnergyGraph, RankingTable } from '.'
 
-  let { data, onDownloadData }: { data: BotModel[]; onDownloadData: () => void } = $props()
+  let { onDownloadData }: { onDownloadData: () => void } = $props()
 
   const faq = [
     {
@@ -23,7 +22,12 @@
 
 <div id="ranking-energy">
   <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
-  <p class="mb-8! text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
+  <p class="text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
+  <p class="mb-8! text-[14px]! text-dark-grey">
+    {@html sanitize(m['ranking.energy.desc2']({
+      linkProps: externalLinkProps('https://ecologits.ai/latest/')
+    }))}
+  </p>
 
   <div class="gap-15 flex flex-col">
     <section class="rounded bg-white p-4 md:p-8">
@@ -32,13 +36,13 @@
         <p class="text-grey! text-sm!">{m['ranking.energy.views.graph.desc']()}</p>
       </div>
 
-      <EnergyGraph {data} />
+      <EnergyGraph />
     </section>
 
     <section class="rounded bg-white p-4 md:p-8">
       <Alert title={m['ranking.energy.views.graph.infos.title']()} class="mb-10">
         <ul>
-          {#each ['1', '2', '3'] as const as n}
+          {#each ['1', '2', '3', '4'] as const as n}
             <li>{m[`ranking.energy.views.graph.infos.list.${n}`]()}</li>
           {/each}
         </ul>
@@ -57,12 +61,12 @@
       <h3 class="mt-6! text-lg! mb-0!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
-        {data}
         initialOrderCol="consumption_wh"
         initialOrderMethod="ascending"
         includedCols={['name', 'elo', 'consumption_wh', 'size', 'arch', 'organisation', 'license']}
         hideTotal
         raw
+        filterProprietary
         {onDownloadData}
       />
     </section>

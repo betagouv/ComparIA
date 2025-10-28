@@ -1,16 +1,45 @@
-from pydantic import BaseModel, Field, RootModel, ValidationError, model_validator
+import datetime
+from pathlib import Path
+from pydantic import (
+    AfterValidator,
+    BaseModel,
+    Field,
+    RootModel,
+    ValidationError,
+    ValidationInfo,
+    model_validator,
+    computed_field,
+    field_validator,
+)
 from pydantic_core import PydanticCustomError
-from typing import Any, Literal, Tuple, get_args, Annotated
+from typing import Annotated, Any, Literal, get_args
+from languia.reveal import get_llm_impact, convert_range_to_value
+
+ROOT_PATH = Path(__file__).parent.parent
+FRONTEND_PATH = ROOT_PATH / "frontend"
+
+FriendlySize = Literal["XS", "S", "M", "L", "XL"]
+Distribution = Literal["api-only", "open-weights", "fully-open-source"]
+FRIENDLY_SIZE: tuple[FriendlySize, ...] = get_args(FriendlySize)
 
 
+# Used to validate 'utils/models/licenses.json'
 class License(BaseModel):
     license: str
     license_desc: str
-    distribution: Literal["api-only", "open-weights", "fully-open-source"]
+    distribution: Distribution
     reuse: bool
     commercial_use: bool | None = None
     reuse_specificities: str | None = None
     commercial_use_specificities: str | None = None
+
+
+# Used to validate 'utils/models/archs.json'
+class Arch(BaseModel):
+    id: str
+    name: str
+    title: str
+    desc: str
 
 
 class Endpoint(BaseModel):
@@ -19,7 +48,45 @@ class Endpoint(BaseModel):
     api_model_id: str
 
 
-class Model(BaseModel):
+RoundInt = Annotated[int | float, AfterValidator(lambda n: round(n))]
+
+
+class DatasetData(BaseModel):
+    elo: RoundInt = Field(validation_alias="median")
+    score_p2_5: RoundInt = Field(validation_alias="p2.5")
+    score_p97_5: RoundInt = Field(validation_alias="p97.5")
+    rank_p2_5: int = Field(validation_alias="rank_p2.5")
+    rank_p97_5: int = Field(validation_alias="rank_p97.5")
+    rank: int
+    n_match: int
+    mean_win_prob: float
+    win_rate: float
+
+    @computed_field
+    @property
+    def trust_range(self) -> list[int, int]:
+        return [
+            self.rank - self.rank_p2_5,
+            self.rank_p97_5 - self.rank,
+        ]
+
+
+class PreferencesData(BaseModel):
+    positive_prefs_ratio: float
+    total_prefs: int
+    # Positive count
+    useful: int
+    clear_formatting: int
+    complete: int
+    creative: int
+    # Negative count
+    incorrect: int
+    instructions_not_followed: int
+    superficial: int
+
+
+# RawModels are manually defined models in 'utils/models/models.json'
+class RawModel(BaseModel):
     new: bool = False
     status: Literal["archived", "missing_data", "disabled", "enabled"] | None = (
         "enabled"
@@ -27,11 +94,11 @@ class Model(BaseModel):
     id: str
     simple_name: str
     license: str
-    fully_open_source: bool | None = None
+    fully_open_source: bool = False
     release_date: str = Field(pattern=r"^[0-9]{2}/[0-9]{4}$")
-    params: int | float
-    active_params: int | float | None = None
     arch: str
+    params: int | float
+    active_params: int | float | None = Field(default=None, validate_default=True)
     reasoning: bool | Literal["hybrid"] = False
     quantization: Literal["q4", "q8"] | None = None
     url: str | None = None  # FIXME required?
@@ -39,7 +106,36 @@ class Model(BaseModel):
     desc: str
     size_desc: str
     fyi: str
-    pricey: bool = False
+    pricey: bool = False  # FIXME move to endpoint?
+
+    @field_validator("arch", mode="after")
+    @classmethod
+    def check_arch_exists(cls, value: str, info: ValidationInfo) -> str:
+        if value.replace("maybe-", "") not in info.context["archs"]:
+            raise PydanticCustomError(
+                "missing_arch", f"Missing arch '{value}' infos in 'archs.json'."
+            )
+
+        if info.data["license"] != "proprietary" and "maybe" in value:
+            raise PydanticCustomError(
+                "wrong_arch",
+                f"Arch should not be 'maybe' since license is not 'proprietary'.",
+            )
+
+        return value
+
+    @field_validator("active_params", mode="before")
+    @classmethod
+    def check_active_params_is_defined_if_moe(
+        cls, value: str, info: ValidationInfo
+    ) -> int | float | None:
+        if "arch" in info.data and "moe" in info.data["arch"] and value is None:
+            raise PydanticCustomError(
+                "missing_active_params",
+                f"Model's arch is '{info.data["arch"]}' and requires 'active_params' to be defined.",
+            )
+
+        return value
 
     @model_validator(mode="after")
     def check_endpoint(self):
@@ -50,7 +146,76 @@ class Model(BaseModel):
         return self
 
 
-class Organisation(BaseModel):
+# Models are models definition generated with 'utils/models/build_models.py'
+# as 'utils/models/generated-models.json'
+class Model(RawModel):
+    status: Literal["archived", "enabled", "disabled"] = "enabled"
+    # Merged from License
+    distribution: Distribution
+    reuse: bool
+    commercial_use: bool | None = None
+    # Merged from Organisation
+    organisation: str
+    icon_path: str | None = None  # FIXME required?
+    # Merged from extra-data
+    data: DatasetData | None = None
+    prefs: PreferencesData | None = None
+
+    @field_validator("distribution", mode="before")
+    @classmethod
+    def check_distribution(
+        cls, value: Distribution, info: ValidationInfo
+    ) -> Distribution:
+        if info.data["fully_open_source"]:
+            value = "fully-open-source"
+
+        return value
+
+    @computed_field
+    @property
+    def friendly_size(self) -> FriendlySize:
+        intervals = [(0, 15), (15, 60), (60, 100), (100, 400), (400, float("inf"))]
+
+        for i, (lower, upper) in enumerate(intervals):
+            if lower <= self.params < upper:
+                return FRIENDLY_SIZE[i]
+
+        raise Exception("Error: Could not guess friendly_size")
+
+    @computed_field
+    @property
+    def required_ram(self) -> int | float:
+        if self.quantization == "q8":
+            return self.params * 2
+
+        # We suppose from q4 to fp16
+        return self.params
+
+    @computed_field
+    @property
+    def wh_per_million_token(self) -> int | float:
+        model_info = {
+            "params": self.params,
+            "active_params": self.active_params,
+            "quantization": self.quantization,
+        }
+        impact = get_llm_impact(
+            model_info,
+            self.id,
+            1_000_000,
+            None,
+        )
+
+        if impact and hasattr(impact, "energy") and hasattr(impact.energy, "value"):
+            energy_kwh = convert_range_to_value(impact.energy.value)
+            return energy_kwh * 1000
+
+        # FIXME return None?
+        return 0
+
+
+# Model to validate organisations data from 'utils/models/models.json'
+class RawOrganisation(BaseModel):
     name: str
     icon_path: str | None = None  # FIXME required?
     proprietary_license_desc: str | None = None
@@ -58,21 +223,84 @@ class Organisation(BaseModel):
     proprietary_commercial_use: bool | None = None
     proprietary_reuse_specificities: str | None = None
     proprietary_commercial_use_specificities: str | None = None
+    models: list[RawModel]
+
+    @field_validator("icon_path", mode="after")
+    @classmethod
+    def check_icon_exists(cls, value: str) -> str:
+        file_path = FRONTEND_PATH / "static" / "orgs" / "ai" / value
+        if not file_path.exists():
+            raise PydanticCustomError(
+                "file_missing",
+                f"'icon_path' is defined but the file '{file_path.relative_to(ROOT_PATH)}' doesn't exists.",
+            )
+
+        return value
+
+
+# Model used to generated 'utils/models/generated-models.json'
+class Organisation(RawOrganisation):
     models: list[Model]
+
+    @field_validator("models", mode="before")
+    @classmethod
+    def enhance_models(cls, value: Any, info: ValidationInfo) -> list[RawModel]:
+        for model in value:
+            # forward organisation data
+            model["organisation"] = info.data.get("name")
+            model["icon_path"] = info.data.get("icon_path")
+
+            # forward/inject license data
+            if model["license"] not in info.context["licenses"]:
+                raise PydanticCustomError(
+                    "license_missing",
+                    f"license is defined but license data is missing in 'licenses.json' for license '{model["license"]}'",
+                )
+
+            for k, v in info.context["licenses"][model["license"]].items():
+                model[k] = v
+
+            if model["license"] == "proprietary":
+                model["reuse"] = info.data["proprietary_reuse"]
+                model["commercial_use"] = info.data["proprietary_commercial_use"]
+
+            # inject ranking/prefs data
+            data = info.context["data"].get(model["id"])
+
+            if data:
+                model["data"] = data
+
+                PREFS_KEYS = list(PreferencesData.model_fields.keys())
+                prefs = {key: data.pop(key) for key in PREFS_KEYS}
+                if prefs:
+                    model["prefs"] = prefs
+
+        return value
 
 
 Licenses = RootModel[list[License]]
+Archs = RootModel[list[Arch]]
+RawOrgas = RootModel[list[RawOrganisation]]
 Orgas = RootModel[list[Organisation]]
 
-from pydantic import BaseModel, Field, model_validator, RootModel
-from typing import List, Optional, Dict, Any
-import datetime
+
+def filter_enabled_models(models: dict[str, Model]):
+    enabled_models = {}
+    for model_id, model_dict in models.items():
+        if model_dict.get("status") == "enabled":
+            try:
+                if Endpoint.model_validate(model_dict.get("endpoint")):
+                    enabled_models[model_id] = model_dict
+            except:
+                continue
+
+    return enabled_models
 
 
 class ConversationMessage(BaseModel):
     role: str
     content: str
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
     # Custom validation to ensure 'output_tokens' is present for 'assistant' roles
     @model_validator(mode="after")
@@ -85,7 +313,7 @@ class ConversationMessage(BaseModel):
         return self
 
 
-ConversationMessages = RootModel[List[ConversationMessage]]
+ConversationMessages = RootModel[list[ConversationMessage]]
 
 
 class Conversation(BaseModel):
@@ -97,27 +325,27 @@ class Conversation(BaseModel):
     conversation_a: ConversationMessages
     conversation_b: ConversationMessages
     conv_turns: int = 0
-    system_prompt_a: Optional[str] = None
-    system_prompt_b: Optional[str] = None
+    system_prompt_a: str | None = None
+    system_prompt_b: str | None = None
     conversation_pair_id: str
     conv_a_id: str
     conv_b_id: str
     session_hash: str
-    visitor_id: Optional[str] = None
-    ip: Optional[str] = None
+    visitor_id: str | None = None
+    ip: str | None = None
     model_pair_name: str
     # TODO: computed / added at dataset
     opening_msg: str
     archived: bool = False
-    mode: Optional[str] = None
-    custom_models_selection: Optional[Dict[str, Any]] = None
-    short_summary: Optional[str] = None
-    keywords: Optional[Dict[str, Any]] = None
-    categories: Optional[Dict[str, Any]] = None
-    languages: Optional[Dict[str, Any]] = None
+    mode: str | None = None
+    custom_models_selection: dict[str, Any] | None = None
+    short_summary: str | None = None
+    keywords: dict[str, Any] | None = None
+    categories: dict[str, Any] | None = None
+    languages: dict[str, Any] | None = None
     pii_analyzed: bool = False
-    contains_pii: Optional[bool] = None
-    total_conv_a_output_tokens: Optional[int] = None
-    total_conv_b_output_tokens: Optional[int] = None
-    ip_map: Optional[str] = None
+    contains_pii: bool | None = None
+    total_conv_a_output_tokens: int | None = None
+    total_conv_b_output_tokens: int | None = None
+    ip_map: str | None = None
     postprocess_failed: bool = False
