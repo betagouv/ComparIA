@@ -9,7 +9,11 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
     image: languia:latest
+    user: "app"
     ports:
       - "8001:80"
     volumes:
@@ -25,6 +29,10 @@ services:
     build:
       context: ../frontend
       dockerfile: ../docker/Dockerfile-sveltekit
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    user: "app"
     # For runtime access in +page.server.ts via same hostname
     network_mode: host
     depends_on:
