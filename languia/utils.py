@@ -141,21 +141,15 @@ def messages_to_dict_list(
 ):
     output = []
     for message in messages:
-        # Build base message
         msg_dict = {"role": message.role}
 
-        # Handle content and reasoning
         if message.reasoning and not concat_reasoning_with_content:
-            # Structured content for models supporting it
             msg_dict["reasoning_content"] = message.reasoning
         elif message.reasoning and concat_reasoning_with_content:
-            # Concatenate for other cases
             msg_dict["content"] ="<|think|>" + message.reasoning + "<|think|>" + message.content
         else:
-            # Standard content
             msg_dict["content"] = message.content
 
-        # Add metadata if not stripped
         if not strip_metadata and metadata_to_dict(message.metadata):
             msg_dict["metadata"] = metadata_to_dict(message.metadata)
 
