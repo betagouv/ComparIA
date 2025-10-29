@@ -1,13 +1,20 @@
 FROM public.ecr.aws/docker/library/python:3.13-slim AS base
 
 # Debug tools
-RUN apt-get update -y && apt-get install -y curl postgresql-client git
+RUN apt-get update -y && apt-get install -y curl postgresql-client git \
+    && curl -LsSf https://astral.sh/uv/install.sh | sh -s -- --prefix /usr/local
 
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-ENV PATH="/app/.venv/bin:/root/.local/bin/:$PATH"
+# Create a non-root user with the same UID/GID as the host user (1000 is common)
+ARG USER_ID=1000
+ARG GROUP_ID=1000
+RUN groupadd -g ${GROUP_ID} app && \
+    useradd -m -u ${USER_ID} -g app app
 
-COPY ./pyproject.toml /app/pyproject.toml
+USER app
+
+ENV PATH="/app/.venv/bin:$PATH"
+
+COPY --chown=app:app ./pyproject.toml /app/pyproject.toml
 WORKDIR /app
 RUN uv sync
 

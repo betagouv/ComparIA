@@ -1,4 +1,5 @@
 FROM public.ecr.aws/docker/library/node:24.4
+
 ARG GIT_COMMIT
 ENV PUBLIC_GIT_COMMIT=$GIT_COMMIT
 
@@ -11,10 +12,16 @@ ARG MATOMO_URL
 ENV MATOMO_URL=$MATOMO_URL
 
 WORKDIR /app
+
+# Install vite globally as root
 RUN npm install -g vite
-COPY ./package.json ./yarn.lock /app
+
+# Switch to app user for the rest
+USER node
+
+COPY --chown=node:node ./package.json ./yarn.lock /app
 RUN yarn install
-COPY ./ /app
+COPY --chown=node:node ./ /app
 
 RUN vite build
 
