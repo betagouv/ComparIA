@@ -14,8 +14,9 @@ services:
       - "8001:80"
     volumes:
       - ../data:/data
-      # Dev config
+      # Dev config - mount everything except .venv
       - ../:/app
+      - /app/.venv  # Exclude .venv from host mount (use container's .venv)
     command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
     # depends_on:
     #   - postgres
@@ -35,6 +36,7 @@ services:
     # Dev config
     volumes:
       - ../frontend:/app
+      - /app/node_modules  # Exclude node_modules from host mount
     command: ["npx", "vite", "dev", "--host", "--port", "3000"]
   postgres:
     image: postgres:16
