@@ -30,10 +30,12 @@ services:
       - backend
     environment:
       PUBLIC_API_URL: "http://127.0.0.1:8001"
+    # ports:
+    # - 3000:3000
     # Dev config
     volumes:
       - ../frontend:/app
-    command: ["npm", "run", "dev", "--", "--host", "--port", "3000"]
+    command: ["npx", "vite", "dev", "--host", "--port", "3000"]
   postgres:
     image: postgres:16
     environment:
