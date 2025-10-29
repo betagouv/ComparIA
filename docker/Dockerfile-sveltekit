@@ -1,11 +1,5 @@
 FROM public.ecr.aws/docker/library/node:24.4
 
-# Create a non-root user with the same UID/GID as the host user
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-RUN groupadd -g ${GROUP_ID} app && \
-    useradd -m -u ${USER_ID} -g app app
-
 ARG GIT_COMMIT
 ENV PUBLIC_GIT_COMMIT=$GIT_COMMIT
 
@@ -23,11 +17,11 @@ WORKDIR /app
 RUN npm install -g vite
 
 # Switch to app user for the rest
-USER app
+USER node
 
-COPY --chown=app:app ./package.json ./yarn.lock /app
+COPY --chown=node:node ./package.json ./yarn.lock /app
 RUN yarn install
-COPY --chown=app:app ./ /app
+COPY --chown=node:node ./ /app
 
 RUN vite build
 
