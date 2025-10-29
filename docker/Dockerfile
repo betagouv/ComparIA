@@ -13,6 +13,7 @@ ADD https://astral.sh/uv/install.sh /uv-installer.sh
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/app/.venv/bin:/root/.local/bin/:$PATH"
 
+USER app
 COPY --chown=app:app ./pyproject.toml /app/pyproject.toml
 WORKDIR /app
 USER app
