@@ -3,7 +3,7 @@
 # Variables
 PYTHON := python3
 UV := uv
-NPM := npm
+NPM := yarn
 BACKEND_PORT := 8000
 FRONTEND_PORT := 5173
 CONTROLLER_PORT := 21001
