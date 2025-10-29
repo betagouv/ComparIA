@@ -56,24 +56,7 @@ This will start:
 - Backend (FastAPI + Gradio) on http://localhost:8000
 - Frontend (SvelteKit) on http://localhost:5173
 
-#### Available Makefile Commands
-
-```bash
-make help                # Display all available commands
-make install             # Install all dependencies
-make install-backend     # Install backend dependencies only
-make install-frontend    # Install frontend dependencies only
-make dev                 # Run backend + frontend (parallel)
-make dev-backend         # Run backend only
-make dev-frontend        # Run frontend only
-make dev-controller      # Run the dashboard controller
-make build-frontend      # Build frontend for production
-make test-backend        # Run backend tests
-make test-frontend       # Run frontend tests
-make clean               # Clean generated files
-```
-
-#### Manual Setup
+### Manual Setup
 
 **Backend:**
 1. Install `uv`: `curl -LsSf https://astral.sh/uv/install.sh | sh`
@@ -91,43 +74,84 @@ make clean               # Clean generated files
 uv run uvicorn controller:app --reload --port 21001
 ```
 
-## Utilities
+## Other operations
 
-### Database
+### Available Makefile Commands
 
 ```bash
-make db-schema-init   # Initialise le schéma de la base de données
+make help                # Display all available commands
+make install             # Install all dependencies
+make install-backend     # Install backend dependencies only
+make install-frontend    # Install frontend dependencies only
+make dev                 # Run backend + frontend (parallel)
+make dev-backend         # Run backend only
+make dev-frontend        # Run frontend only
+make dev-controller      # Run the dashboard controller
+make build-frontend      # Build frontend for production
+make test-backend        # Run backend tests
+make test-frontend       # Run frontend tests
+make clean               # Clean generated files
+
+make db-schema-init   # Initializes the database schema
 make db-migrate       # Applies migrations
-```
 
-**Prerequisites:** `DATABASE_URI` environment variable configured
-
-### Models
-
-```bash
 make models-build       # Generates model files from JSON sources
 make models-maintenance # Launches the model maintenance script
-```
 
-These commands generate [`utils/models/generated-models.json`](utils/models/generated-models.json) and update translations in [`frontend/locales/messages/fr.json`](frontend/locales/messages/fr.json).
-
-### Datasets
-
-```bash
 make dataset-export   # Exports datasets to HuggingFace
-```
 
-**Prerequisites:** `DATABASE_URI` and `HF_PUSH_DATASET_KEY` environment variables configured
-
-### Ranking Methods
-
-```bash
 make ranking-install   # Installs dependencies (Poetry)
 make ranking-test      # Runs tests
 make ranking-pipeline  # Displays pipeline instructions
 ```
 
-Pour plus de détails, consultez [`utils/ranking_methods/README.md`](utils/ranking_methods/README.md) et les notebooks dans [`utils/ranking_methods/notebooks/`](utils/ranking_methods/notebooks/).
+### Database
+
+**Prerequisites:** `DATABASE_URI` environment variable configured
+```bash
+# Initialize database schema
+psql $DATABASE_URI -f utils/schemas/conversations.sql
+psql $DATABASE_URI -f utils/schemas/votes.sql
+psql $DATABASE_URI -f utils/schemas/reactions.sql
+psql $DATABASE_URI -f utils/schemas/logs.sql
+
+# Apply database migrations
+psql $DATABASE_URI -f utils/schemas/migrations/conversations_13102025.sql
+psql $DATABASE_URI -f utils/schemas/migrations/reactions_13102025.sql
+```
+
+### Models
+
+
+These commands generate [`utils/models/generated-models.json`](utils/models/generated-models.json) and update translations in [`frontend/locales/messages/fr.json`](frontend/locales/messages/fr.json).
+
+```bash
+# Generate model files from JSON sources
+uv run python utils/models/build_models.py
+
+# Run the models maintenance script
+uv run python utils/models/maintenance.py
+```
+
+### Datasets
+
+**Prerequisites:** `DATABASE_URI` and `HF_PUSH_DATASET_KEY` environment variables configured
+```bash
+# Export datasets to HuggingFace
+uv run python utils/export_dataset.py
+```
+
+### Ranking Methods
+
+```bash
+# Install ranking_methods project dependencies (via Poetry)
+cd utils/ranking_methods && poetry install
+
+# Run ranking_methods project tests
+cd utils/ranking_methods && poetry run pytest tests/
+```
+
+For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_methods/README.md) and the notebooks in [`utils/ranking_methods/notebooks/`](utils/ranking_methods/notebooks/).
 
 ## Project architecture and rationale
 ### Architecture
