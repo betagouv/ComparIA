@@ -119,13 +119,15 @@ def is_unedited_prompt(opening_msg, category):
 
 
 def metadata_to_dict(metadata):
+    if not metadata:
+        return None
     metadata_dict = dict(metadata)
     metadata_dict.pop("bot", None)
     if not metadata_dict.get("duration") or metadata_dict.get("duration") == 0:
         metadata_dict.pop("duration", None)
     if not metadata_dict.get("generation_id"):
         metadata_dict.pop("generation_id", None)
-    return metadata_dict
+    return metadata_dict if metadata_dict else None
 
 
 def strip_metadata(messages):
@@ -137,27 +139,22 @@ def strip_metadata(messages):
 def messages_to_dict_list(
     messages, strip_metadata=False, concat_reasoning_with_content=False
 ):
-    return [
-        {
-            "role": message.role,
-            "content": (
-                (message.reasoning + " ")
-                if message.reasoning and concat_reasoning_with_content
-                else "" + message.content
-            ),
-            **(
-                {"reasoning": message.reasoning}
-                if message.reasoning and not concat_reasoning_with_content
-                else {}
-            ),
-            **(
-                {"metadata": metadata_to_dict(message.metadata)}
-                if metadata_to_dict(message.metadata) and not strip_metadata
-                else {}
-            ),
-        }
-        for message in messages
-    ]
+    output = []
+    for message in messages:
+        msg_dict = {"role": message.role}
+
+        if message.reasoning and not concat_reasoning_with_content:
+            msg_dict["reasoning_content"] = message.reasoning
+        elif message.reasoning and concat_reasoning_with_content:
+            msg_dict["content"] ="<|think|>" + message.reasoning + "<|think|>" + message.content
+        else:
+            msg_dict["content"] = message.content
+
+        if not strip_metadata and metadata_to_dict(message.metadata):
+            msg_dict["metadata"] = metadata_to_dict(message.metadata)
+
+        output.append(msg_dict)
+    return output
 
 
 def get_user_info(request):

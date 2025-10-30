@@ -101,7 +101,7 @@ def bot_response(
         f"using endpoint {endpoint_name} for {state.model_name}",
         extra={"request": request},
     )
-    include_reasoning = False
+    include_reasoning = endpoint.get("include_reasoning", True)
 
     start_tstamp = time.time()
     # print("start: " + str(start_tstamp))

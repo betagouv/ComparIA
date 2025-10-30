@@ -145,14 +145,13 @@ def litellm_stream_iter(
             )
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
             if hasattr(chunk.choices[0], "delta"):
+                reasoning_delta = ""
                 if hasattr(chunk.choices[0].delta, "content"):
                     content = chunk.choices[0].delta.content or ""
                 else:
                     content = ""
                 if hasattr(chunk.choices[0].delta, "reasoning"):
                     reasoning_delta = chunk.choices[0].delta.reasoning or ""
-                else:
-                    reasoning_delta = ""
             else:
                 content = ""
 

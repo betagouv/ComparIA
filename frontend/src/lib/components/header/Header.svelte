@@ -77,7 +77,7 @@
                   target={page.url.pathname.includes('arene') ? '_blank' : undefined}
                   title={m['header.homeTitle']()}
                 >
-                  {m['header.title.compar']()}:{m['header.title.ia']()}
+                  {m['header.title']()}
                 </a>
               </p>
 

@@ -1,5 +1,5 @@
 services:
-  languia:
+  backend:
     env_file: .env
     environment:
       LOGDIR: /data
@@ -14,11 +14,12 @@ services:
       - "8001:80"
     volumes:
       - ../data:/data
-      # Dev config
+      # Dev config - mount everything except .venv
       - ../:/app
-    command: ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
-    depends_on:
-      - postgres
+      - /app/.venv  # Exclude .venv from host mount (use container's .venv)
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80", "--reload"]
+    # depends_on:
+    #   - postgres
 
   frontend:
     build:
@@ -27,13 +28,16 @@ services:
     # For runtime access in +page.server.ts via same hostname
     network_mode: host
     depends_on:
-      - languia
+      - backend
     environment:
       PUBLIC_API_URL: "http://127.0.0.1:8001"
+    # ports:
+    # - 3000:3000
     # Dev config
     volumes:
       - ../frontend:/app
-    command: ["npm", "run", "dev", "--", "--host", "--port", "3000"]
+      - /app/node_modules  # Exclude node_modules from host mount
+    command: ["npx", "vite", "dev", "--host", "--port", "3000"]
   postgres:
     image: postgres:16
     environment:
