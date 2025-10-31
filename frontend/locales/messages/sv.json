@@ -3,6 +3,7 @@
         "externalLink": "{text}"
     },
     "actions": {
+        "accessData": "Få åtkomst till data",
         "contact": "Kontakta oss",
         "contactUs": "Kontakta oss",
         "copyLink": {
@@ -13,8 +14,11 @@
             "do": "Kopiera meddelande",
             "done": "Meddelandet har kopierats"
         },
+        "downloadData": "Ladda ner data",
         "home": "Startsida",
         "returnHome": "Tillbaka till startsida",
+        "scrollLeft": "Scrolla till vänster",
+        "scrollRight": "Scrolla till höger",
         "seeMore": "Visa mer",
         "selectLanguage": "Välj språk",
         "vote": "Skicka åsikt"
@@ -153,6 +157,7 @@
         "reuse": {
             "bunka": {
                 "analyze": {
+                    "desc": "Analys av användarkonversationer med identifiering av uppgifter (skapande, informationssökning etc.), ämnen (konst och kultur, utbildning etc.), komplexa känslor (nyfikenhet, entusiasm etc.), språktyper (formell, professionell etc.)",
                     "title": "Visa analys för indikator"
                 },
                 "conversations": {
@@ -162,6 +167,7 @@
                 "desc": "Bunka.ai-teamet genomförde en djupgående studie av interaktioner mellan användare av Compar:AI-plattformen och AI-modeller, där de undersökte vilka ämnen man föredrog, vilka frågor som ställdes, och ifall modellerna främst användes som automatiseringsverktyg eller för att assistera användaren. Denna analys baseras på ett stort urval av 25 000 konversationer.",
                 "method": "Läs mer om metoderna"
             },
+            "desc": "Exempel på användning av datamängder från compar:IA",
             "title": "Hur används dessa uppgifter?"
         }
     },
@@ -183,10 +189,16 @@
     "faq": {
         "datasets": {
             "questions": {
+                "1": {
+                    "desc": "<p>Preferensdata används för att förbättra modeller under framtida träning.</p><p>Genom att blint jämföra svaren från två modeller uttrycker compar:IA-användare sina preferenser och anger vilka svar som är mest relevanta. Dessa preferensdata kan användas för att finjustera modellen – det vill säga att träna dem att generera svar som är mer i linje med användarnas förväntningar och preferenser.</p><p>Detta är en iterativ process där modellen gradvis lär sig att generera bättre svar baserat på feedback från människor om svarens kvalitet. Genom att ges tillgång till preferensdata lär sig modellerna att ta med den i sin svarsgenereringsprocess.</p>",
+                    "title": "Har preferensdata en omedelbar effekt på modellernas prestanda?"
+                },
                 "2": {
-                    "desc": "<p>Det unika med data som samlas in på compar:IA-plattformen är att de använder språk med mindre resurser, och motsvarar verkliga användaruppgifter. Denna data återspeglar mänskliga preferenser i ett specifikt språkligt och kulturellt sammanhang. Den gör det möjligt att justera modellerna för att göra dem mer relevanta, korrekta och anpassade till användarnas behov, samtidigt som vi åtgärdar eventuell bias eller luckor i nuvarande modeller.</p>"
+                    "desc": "<p>Det unika med data som samlas in på compar:IA-plattformen är att de använder språk med mindre resurser, och motsvarar verkliga användaruppgifter. Denna data återspeglar mänskliga preferenser i ett specifikt språkligt och kulturellt sammanhang. Den gör det möjligt att justera modellerna för att göra dem mer relevanta, korrekta och anpassade till användarnas behov, samtidigt som vi åtgärdar eventuell bias eller luckor i nuvarande modeller.</p>",
+                    "title": "Varför är preferensdata som samlas in på compar:IA värdefull?"
                 },
                 "3": {
+                    "desc": "<p>compar:IA positionerar sig som ett bedömnings- och anpassningsverktyg för språk med mindre resurser, fokuserat på svarskvalitet och insamling av preferensdata, och skiljer sig därmed från den globala rankningsmetoden från <a href='https://lmarena.ai/' target='_blank'>chatbot arena</a> utvecklad av <a href='http://lmsys.org' target='_blank'>lmsys.org</a> och den etiska anpassningen av AI-modeller från <a href='https://hannahkirk.github.io/prism-alignment/' target='_blank'>Prism Alignment Project</a>.</p>",
                     "title": "Vad skiljer compar:IA från andra liknande initiativ?"
                 }
             },
@@ -195,12 +207,15 @@
         "ecology": {
             "questions": {
                 "1": {
+                    "desc": "<p> compar:AI använder den metod som utvecklats av <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> för att ge en uppskattning av energiförbrukning så att användare kan jämföra miljöpåverkan av olika AI-modeller för samma fråga. Denna transparens är avgörande för att uppmuntra utveckling och införande av mer miljövänliga AI-modeller.</p><p>Ecologits tillämpar principerna för livscykelanalys (LCA) i enlighet med ISO 14044, med fokus för tillfället på effekten av <strong>inferens</strong> (dvs. användningen av modeller för att besvara frågor) och <strong>tillverkningen av grafikkort</strong> (resursutvinning, tillverkning och transport).</p><p>Modellens strömförbrukning uppskattas genom olika parametrar, som storleken på den AI-modell som används, platsen för servrarna där modellerna körs, och antalet utdatatokens. Beräkningen av indikatorn för global uppvärmningspotential uttryckt i CO2-ekvivalenter härleds från modellens strömförbrukningsmätning.</p><p>Det är viktigt att notera att metoder för att bedöma miljöpåverkan av AI fortfarande är under utveckling.</p>",
                     "title": "Hur beräknas miljömässiga indikatorer?"
                 },
                 "2": {
+                    "desc": "<p>Den geografiska platsen för en server spelar roll för modellens koldioxidavtryck. Om en modell tränas eller används i ett land som är starkt beroende av fossila bränslen, kommer dess miljöpåverkan att vara större än om den körs i ett land som mestadels använder förnybar energi.</p><p>Metoden för miljökonsekvensanalys av AI, utvecklad av <a target='_blank' href='https://ecologits.ai/latest/'>Ecologits (från GenAI Impact)</a> innehåller data om energimixen i de olika länder där servrarna är belägna. Detta möjliggör en mer exakt och nyanserad uppskattning av det faktiska koldioxidavtrycket från inferens på olika generativa AI-modeller.</p>",
                     "title": "Tar miljöindikatorer hänsyn till olika typer av energikällor i olika länder?"
                 },
                 "3": {
+                    "desc": "<p>Nuvarande mått på ekologisk påverkan fokuserar främst på effekten av <strong>inferens</strong> , det vill säga användningen av AI-modeller för att besvara frågor. Dessa metoder kan ge illusionen att inferens är mindre energikrävande än modellträning. <strong>Verkligheten är dock mer komplex.</strong> Vi kan jämföra med en bil:</p><ul><li>Att bygga en bil (träning) är en resurskrävande process, som bara behöver göras en gång.</li><li>Varje bilresa (inferens) förbrukar mindre energi, men dessa resor upprepas dagligen, och deras antal är potentiellt enormt.</li></ul><p>På liknande sätt kan den kumulativa effekten av inferens, över miljontals användare som frågar dagligen, vara <strong>större än effekten av den initiala träningen</strong>. Det är därför avgörande att verktyg för bedömning av AI-koldioxidavtryck beaktar <strong>hela livscykeln</strong>, från träning till användning.</p>",
                     "title": "Tar indikatorer för miljöpåverkan hänsyn till de resurser som används för att träna modellerna?"
                 }
             },
@@ -211,6 +226,10 @@
                 "1": {
                     "desc": "<p> Ja, internationaliseringen av compar:AI är igång. Vi börjar med en expansion till tre pilotländer: Litauen, Sverige och Danmark. Denna första fas kommer att göra det möjligt för oss att testa tillvägagångssättet och anpassa gränssnittet till olika europeiska språkliga och kulturella sammanhang. Så småningom kan vi expandera till fler europeiska språk baserat på feedback från dessa pilotländer. Målet är att gradvis bygga en gemensam europeisk digital plattform för mänsklig utvärdering av konversationsbaserad AI, med samarbetsinriktad styrning som återstår att definiera mellan de olika deltagande länderna. </p>",
                     "title": "compar:IA fokuserade från början på franska – finns det planer för andra europeiska språk?"
+                },
+                "2": {
+                    "desc": "<p>Utvecklingen av en europeisk plattform för att jämföra konversationsbaserade AI-modeller erbjuder flera konkreta fördelar. Den möjliggör insamling av preferensdata som återspeglar de europeiska användarnas verkliga behov, vilket förbättrar modellernas relevans för denna publik. Den garanterar därmed bättre representation av europeiska språk och kulturer, som ofta är underrepresenterade i globala utvärderingar som domineras av engelska. Den säkerställer också efterlevnad av europeiska bestämmelser (GDPR, AI-lagen) och integrerar utvärderingskriterier som är i linje med europeiska prioriteringar som miljömässig hållbarhet och algoritmisk transparens. Slutligen främjar den framväxten av ett konkurrenskraftigt och autonomt europeiskt AI-ekosystem.</p>",
+                    "title": "Vilka är fördelarna med en specifikt europeisk plattform för preferensinsamling?"
                 }
             },
             "title": "Internationalisering"
@@ -413,18 +432,22 @@
         "archs": {
             "dense": {
                 "desc": "Tät arkitektur hänvisar till en typ av neuralt nätverk där varje neuron i ett lager är kopplad till alla neuroner i nästa lager. Detta gör att alla parametrar i lagret kan bidra till beräkningen av utdata.",
+                "name": "Tät",
                 "title": "Tät arkitektur"
             },
             "matformer": {
                 "desc": "Föreställ dig ryska dockor (matrjosjkor → matrjosjkatransformator → Matformer): Varje block innehåller flera inkapslade delmodeller av ökande storlek, som delar samma parametrar. Detta gör det möjligt att för varje begäran välja en modell med anpassad kapacitet, beroende på tillgängligt minne eller latens, utan att behöva omträna olika modeller.",
+                "name": "Matformer",
                 "title": "Matformer-arkitektur"
             },
             "moe": {
                 "desc": "Arkitekturen Mixture of Experts (MoE) använder en routingmekanism för att, beroende på indata, endast aktivera vissa specialiserade delmängder (\"experter\") av det neurala nätverket. Detta möjliggör konstruktion av mycket stora modeller samtidigt som beräkningskostnaderna hålls nere, eftersom endast en del av nätverket används i varje steg.",
+                "name": "MoE",
                 "title": "MoE-arkitektur"
             },
             "na": {
                 "desc": "Utgivaren har inte offentliggjort information om modellens arkitektur.",
+                "name": "Proprietär",
                 "title": "Okänd arkitektur"
             }
         },
@@ -439,6 +462,14 @@
                 },
                 "Gemma": {
                     "license_desc": "<p>Denna licens är skapad för att uppmuntra att mjukvaran används, ändras och sprids, men innehåller en klausul som säger att alla ändrade versioner måste delas under samma licens, för att främja samarbete och transparens inom mjukvaruutveckling.</p>"
+                },
+                "Jamba Open Model": {
+                    "commercial_use_specificities": "under 50 miljoner USD i årliga intäkter",
+                    "license_desc": "<p>Denna licens tillåter att koden fritt används, reproduceras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för organisationer vars omsättning överskrider 50 miljoner USD.</p>"
+                },
+                "Llama 3 Community": {
+                    "commercial_use_specificities": "under 700 miljoner användare",
+                    "license_desc": "<p>Denna licens tillåter att koden fritt används, ändras och sprids, så länge upphovsmannen nämns, men sätter begränsningar för processer med över 700 miljoner användare per månad, och förbjuder att kod eller genererat material återanvänds för att träna eller utveckla konkurrerande modeller, för att därigenom skydda Metas investeringar och varumärke.</p>"
                 },
                 "Llama 3.1": {
                     "commercial_use_specificities": "under 700 miljoner användare",
@@ -475,6 +506,9 @@
                     "license_desc": "Modellen är tillgänglig under betald licens och åtkomlig via API på Googles företagsplattformar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller reserverad infrastruktur.",
                     "reuse_specificities": "förutom för att träna andra modeller på Vertex AI"
                 },
+                "Liquid": {
+                    "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via API på Liquid AIs plattformar. Den kräver en avgift per användning baserad på antalet bearbetade tokens."
+                },
                 "Mistral AI": {
                     "license_desc": "Modellen är tillgänglig under en betald licens och åtkomlig via Mistral API, Amazon Sagemaker, och flera andra värdar, vilket kräver betalning per användning baserat på antalet bearbetade tokens eller den reserverade infrastrukturen."
                 },
@@ -487,10 +521,50 @@
             }
         },
         "models": {
+            "Apertus 70B Instruct": {
+                "desc": "<p>En medelstor, halvöppen och reproducerbar modell utvecklad av ett konsortium av schweiziska institutioner. Dess vikter och träningskod publiceras under en tillåtande licens. Den har tränats på över 1 800 språk och över 15 biljoner tokens. Träningen ägde rum på superdatorn Alps vid CSCS i Lugano, driven av koldioxidneutral vattenkraft.</p>",
+                "fyi": "<p>Modellen tränades på superdatorn Alps i Lugano, med över 10 miljoner GPU-timmar drivna av koldioxidneutral vattenkraft. Modellen förtränades på 15 biljoner tokens som täckte över 1 800 språk, inklusive en betydande andel underrepresenterade språk. </p>\n<p>Apertus är baserad på en BPE-tokenizer med 131 000 ord, härledd från Mistral AI:s \"tekken\"-tokenizer, optimerad för flerspråkighet, kod och matematiska uttryck. Arkitekturen kombinerar flera innovationer: Rotary Positional Embeddings (RoPE) med en utökad bas och NTK-medveten justering för långa kontexter, Grouped Query Attention för förbättrad minneseffektivitet, QK-Norm-normalisering för att stabilisera träning och en xIELU-aktiveringsfunktion (utökad integrerad ELU) som förbättrar MLP-prestanda.</p>\n<p>Den slutliga förfiningen av modellen bygger på en anpassningsalgoritm som kallas QRPO (Quantile Reward-Preferring Optimization), ett alternativ till klassisk RLHF, som använder absoluta belöningssignaler för mer stabil inlärning och bättre anpassning till mänskliga preferenser. Även om den inte direkt konkurrerar med de mest avancerade proprietära modellerna, utmärker sig Apertus för hög transparens.</p>",
+                "size_desc": "<p>Med 70 miljarder parametrar är denna modell bland de mindre. Den kan användas lokalt på en kraftfull dator, vilket säkerställer datakonfidentialitet, eller lagras på en server utrustad med ett enda grafikkort, vilket begränsar infrastrukturkostnaderna. Dess kontextfönster på 65 536 tokens gör att den kan bearbeta ganska långa dokument.</p>"
+            },
+            "Apertus 8B Instruct": {
+                "desc": "<p>En liten halvöppen och reproducerbar modell utvecklad av ett konsortium av schweiziska institutioner. Dess vikter och träningskod publiceras under en tillåtande licens. Den har tränats på över 1 800 språk och över 15 biljoner tokens. Träningen ägde rum på superdatorn Alps vid CSCS i Lugano, driven av koldioxidneutral vattenkraft.</p>",
+                "fyi": "<p>Modellen tränades på superdatorn Alps i Lugano, med över 10 miljoner GPU-timmar drivna av koldioxidneutral vattenkraft. Modellen förtränades på 15 biljoner tokens som täckte över 1 800 språk, inklusive en betydande andel underrepresenterade språk. </p>\n<p>Apertus är baserad på en BPE-tokenizer med 131 000 ord, härledd från Mistral AI:s \"tekken\"-tokenizer, optimerad för flerspråkighet, kod och matematiska uttryck. Arkitekturen kombinerar flera innovationer: Rotary Positional Embeddings (RoPE) med en utökad bas och NTK-medveten justering för långa kontexter, Grouped Query Attention för förbättrad minneseffektivitet, QK-Norm-normalisering för att stabilisera träning och en xIELU-aktiveringsfunktion (utökad integrerad ELU) som förbättrar MLP-prestanda.</p>\n<p>Den slutliga förfiningen av modellen bygger på en anpassningsalgoritm som kallas QRPO (Quantile Reward-Preferring Optimization), ett alternativ till klassisk RLHF, som använder absoluta belöningssignaler för mer stabil inlärning och bättre anpassning till mänskliga preferenser. Även om den inte direkt konkurrerar med de mest avancerade proprietära modellerna, utmärker sig Apertus för hög transparens.</p>",
+                "size_desc": "<p>Med 8 miljarder parametrar är denna modell bland de mindre. Den kan användas lokalt på en kraftfull dator, vilket säkerställer datakonfidentialitet, eller lagras på en server utrustad med ett enda grafikkort, vilket begränsar infrastrukturkostnaderna. Dess kontextfönster på 65 536 tokens gör att den kan bearbeta ganska långa dokument.</p>"
+            },
+            "Aya 23 8B": {
+                "desc": "<p>Liten flerspråkig modell, tränad till stor del på underrepresenterade språk.</p>",
+                "fyi": "<p>Aya 23 8B från Cohere är en liten modell i Command R-familjen som har tränats på en flerspråkig korpus.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
+            },
             "Aya Expanse 32B": {
                 "desc": "<p>Mellanstor flerspråkig modell, som klarar 23 språk.</p>",
                 "fyi": "<p>Cohere, det kanadensiska företaget bakom denna modell, grundades av tidigare Google Brain-forskare, inklusive Aidan Gomez, medförfattare till den berömda artikeln \"Attention Is All You Need\" som revolutionerade AI. Dess främsta särprägel ligger i dess exklusiva fokus på generativ AI för företag, särskilt reglerade sektorer som finans, sjukvård, tillverkning och energi, samt den offentliga sektorn. Företaget är också en pionjär inom flerspråkiga metoder och har ett ideellt forskningslabb för att stödja öppen innovation.\n</p><p>Denna modell utformades för att ge goda funktioner i vart och ett av de 23 språken i dess utbildningskorpus.</p>",
                 "size_desc": "<p>Med 32 miljarder parametrar faller den här modellen i medelstor kategori. Den kan hanteras på en server med ett enda kraftfullt grafikkort, vilket hjälper till att hålla nere infrastrukturkostnaderna.</p>\n<p>Den har ett kontextfönster på upp till 130 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+            },
+            "Aya Expanse 8B": {
+                "desc": "<p>Liten flerspråkig modell, den andra i Aya-serien, tränad till stor del på underrepresenterade språk.</p>",
+                "fyi": "<p>Aya Expanse 8B från Cohere, ett kanadensiskt företag , är en liten modell ur Command R-familjen som har specialtränats på en flerspråkig korpus.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
+            },
+            "Aya23-35B": {
+                "desc": "<p>En medelstor flerspråkig modell, tränad till stor del på underrepresenterade språk.</p>",
+                "fyi": "<p>Aya 23 35B från Cohere är en medelstor modell ur Command R-familjen som har tränats specifikt på en flerspråkig korpus.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Chocolatine 14B": {
+                "desc": "<p>Denna modell är baserad på Microsofts Phi-3 Medium-modell, och är specialanpassad för det franska språket.</p>",
+                "fyi": "<p>Denna modell är baserad på Microsofts Phi-3 Medium-modell, och specialanpassad för franska språket. Modellens namn, 'Chocolatine', är en anspelning på CroissantLLM-projektet, som var ett av de första initiativen för att skapa en liten modell med öppen källkod optimerad för franska.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
+            },
+            "Chocolatine 2 14B": {
+                "desc": "<p>Denna modell är baserad på Alibabas Qwen2.5-modell, och har specialanpassats för franska språket.</p>",
+                "fyi": "<p>Denna modell är baserad på Alibabas Qwen 2.5-mall och specialanpassad för franska språket. Namnet \"Chocolatine\" är en anspelning på CroissantLLM-projektet, som var ett av de första initiativen för att skapa en liten modell med öppen källkod optimerad för franska.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
+            },
+            "Claude 3.5 Sonnet v2": {
+                "desc": "<p>Mycket effektiv kodmodell, skapad efter förbättringar efter träning jämfört med Claude 3</p>",
+                "fyi": "<p>Den bästa modellen i Claude 3.5-familjen, specialiserad på att generera litterära texter och en mer naturlig ton. Version v2 släpptes i oktober 2024.</p>",
+                "size_desc": "<p>Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer.</p>"
             },
             "Claude 3.7 Sonnet": {
                 "desc": "<p>Mycket stor, multimodal och flerspråkig modell, effektiv för kodgenerering, med två svarslägen: Användaren kan välja mellan ett resonemangsläge, för mer djupgående svar, eller ett snabbläge, för att direkt generera det slutliga svaret.</p>",
@@ -498,9 +572,14 @@
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en mycket stor modell som kräver servrar med flera kraftfulla grafikkort för att köras. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. Den har ett kontextfönster på upp till 200 000 tokens, vilket är lämpligt för att analysera långa dokument eller koddatabaser.</p>"
             },
             "Claude 4 Sonnet": {
-                "desc": "<p>Mycket stor multimodal och flerspråkig modell, med två svarsmetoder: användaren kan välja mellan ett resonemangsläge, för mer djupgående svar, eller ett snabbt läge, för att direkt generera det slutliga svaret.</p>",
-                "fyi": "<p>Claude 4 Sonnet är en mer kompakt version av Claude 4 Opus, optimerad för hastighet, effektivitet och tillgänglighet. Den är något mindre effektiv för uppgifter som kräver komplext resonemang i flera steg. Å andra sidan är den betydligt billigare, snabbare, kan generera längre texter och förbrukar mindre ström än Opus.</p>\n<p>Modellen erbjuder två användningslägen: ett reflektionsläge med stegvis resonemang för komplexa problem, och ett snabbläge för direkta svar. Till skillnad från andra modeller tränades inte resonemanget primärt på matematiska data, utan anpassades till verkliga användningsfall.</p>",
-                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en mycket stor modell som kräver servrar med flera kraftfulla grafikkort för att köras. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. Den har ett kontextfönster på upp till 200 000 tokens, vilket är lämpligt för att analysera långa dokument eller koddatabaser.</p>"
+                "desc": "<p>En mycket stor multimodal och flerspråkig modell, mycket kraftfull för kod. Användaren kan välja mellan flera nivåer av resonemang.</p>",
+                "fyi": "<p>Claude 4 Sonnet är en mer kompakt version av Claude 4 Opus, optimerad för hastighet, effektivitet och tillgänglighet. Den är något mindre effektiv vid uppgifter som kräver komplext resonemang i flera steg. Den är dock betydligt billigare, snabbare och förbrukar mindre energi än Opus 4.</p>\n<p>Modellen erbjuder möjligheten att välja nivån av \"resonemang\". Till skillnad från andra modeller tränades inte resonemanget primärt på matematiska data, utan huvudsakligen på verkliga användningsfall.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en mycket stor modell som kräver servrar med flera kraftfulla grafikkort för att köras. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. Den har ett kontextfönster på upp till en miljon tokens, vilket är lämpligt för att analysera långa dokument eller koddatabaser.</p>"
+            },
+            "Claude 4.5 Sonnet": {
+                "desc": "<p>En mycket stor, multimodal och flerspråkig modell, extremt kraftfull för kod, resonemang och matematik. Användaren kan välja mellan flera nivåer av resonemang.</p>",
+                "fyi": "<p>Claude Sonnet 4.5 är en direkt utveckling av Sonnet 4. \".5\" syftar på förändringar som introducerades i efterträningen, och som resulterar i betydande vinster inom resonemang, matematik och särskilt i den praktiska användningen av datorer. Vid tidpunkten för lanseringen ansågs den vara den bästa modellen i världen för kodning och utmärker sig på att lösa långa och komplexa flerstegsuppgifter. Dess prestanda på benchmarktester som SWE-bench Verified och OSWorld visar en markant förbättring jämfört med tidigare versioner, med förmågan att bibehålla \"fokus\" i mer än trettio timmar på ett enda problem.</p>",
+                "size_desc": "<p>Den exakta storleken är okänd. Allt tyder på att det är en mycket stor modell, som kräver servrar utrustade med flera kraftfulla grafikkort för att köras. Uppskattningar av storlek och strömförbrukning baseras på indirekta indikatorer som inferenskostnader och observerad latens. Claude Sonnet 4.5 har ett kontextfönster på upp till 1 000 000 tokens, lämpligt för att analysera hela koddatabaser eller mycket stora dokument.</p>"
             },
             "Command A": {
                 "desc": "<p>Stor modell, effektiv för programmering, användning av externa verktyg, och \"retrieval augmented generation\" (RAG).</p>",
@@ -512,10 +591,20 @@
                 "fyi": "<p>Cohere, det kanadensiska företaget bakom denna modell, grundades 2019 av tidigare Google Brain-forskare, inklusive Aidan Gomez, medförfattare till den berömda artikeln \"Attention Is All You Need\" som revolutionerade AI. Det som gör det unikt är dess exklusiva fokus på generativ AI för företag, särskilt reglerade sektorer som finans, sjukvård, tillverkningsindustri och energi, samt den offentliga sektorn. Företaget är också en pionjär inom flerspråkiga metoder och har ett ideellt forskningslabb för att stödja öppen innovation.</p>\n<p>Denna modell har utvärderats på över 10 språk. Dess kontextfönster når 128 000 tokens, vilket underlättar analysen av långa dokument. Detta fönster fördubblades i nästa version av modellen (Command A).</p>",
                 "size_desc": "<p>Med 35 miljarder parametrar faller den här modellen i kategorin medelstora modeller. Den kan hanteras på en server med ett enda kraftfullt grafikkort, vilket hjälper till att hålla nere infrastrukturkostnaderna.</p>"
             },
+            "Command R+": {
+                "desc": "<p>Specialiserad flerspråkig modell för 10 språk, utformad för affärsanvändning.</p>",
+                "fyi": "<p>Denna modell, den största i Coheres Command R-familj, är inriktad på professionell användning och utformad specifikt för inhämtning och utvinning av information.</p>",
+                "size_desc": "<p>Stora modeller kräver betydande resurser, men erbjuder bäst prestanda för avancerade uppgifter som kreativt skrivande, dialogmodellering och tillämpningar som kräver en noggrann förståelse av kontext.</p>"
+            },
             "DeepSeek R1": {
                 "desc": "<p>Mycket stor modell med hög prestanda för matematiska, vetenskapliga och programmeringsrelaterade uppgifter, som simulerar ett resonemangssteg innan svaret genereras.</p>",
                 "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur med 61 lager. Den har totalt 671 miljarder parametrar, varav 37 miljarder är token-aktiverade. Träningen använde storskalig förstärkningsinlärning, med flera SFT-steg (<em>supervised fine-tuning</em>, där modellen lär sig av exempel på korrekta svar) och bootstrap-data.</p>",
-                "size_desc": "<p>Med 671 miljarder parametrar är DeepSeek R1 en mycket stor modell som kräver flera kraftfulla grafikkort för att köras. Resonemangsmodeller av den här typen tar längre tid att producera ett svar, vilket ökar energiförbrukningen. Arkitekturen Mixture of Experts aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiförbrukning. Kontextfönstret når 128 000 tokens, vilket är lämpligt för att analysera långa dokument.</p>"
+                "size_desc": "<p>Med 671 miljarder parametrar är DeepSeek R1 en mycket stor modell som kräver flera kraftfulla grafikkort för att köras. Resonemangsmodeller av den här typen tar längre tid att producera ett svar, vilket ökar energiförbrukningen. Arkitekturen Mixture of Experts aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiförbrukning. Kontextfönstret når 163 848 tokens, vilket är lämpligt för att analysera långa dokument.</p>"
+            },
+            "DeepSeek R1 0528": {
+                "desc": "<p>En mycket stor modell, specialiserad på matematiska, vetenskapliga och programmeringsbaserade uppgifter. Den simulerar ett resonemangssteg innan den genererar sitt svar och har, med uppdateringen i maj 2025, ökat i analysdjup och noggrannhet tack vare optimering efter träning.</p>",
+                "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur med 61 lager. Den har totalt 671 miljarder parametrar, varav 37 miljarder aktiveras per token. Träningen använde storskalig förstärkningsinlärning, med flera steg av SFT (<em> supervised fine-tuning</em>, en process där modellen lär sig från exempel på korrekta svar). Dess senaste version (DeepSeek-R1-0528) förbättrar avsevärt dess resonemangsförmåga, minskar hallucinering, och ökar effektiviteten i programmering, logik och funktionsanrop. På AIME 2025-testet ökade dess poäng från 70 % till 87.5 %, vilket för den närmare modeller som o3 och Gemini 2.5 Pro.</p>",
+                "size_desc": "<p>Med 671 miljarder parametrar är DeepSeek R1 en mycket stor modell som kräver flera kraftfulla grafikkort för att köras. Resonemangsmodeller av den här typen tar längre tid att producera ett svar, vilket ökar energiförbrukningen. Arkitekturen Mixture of Experts aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiförbrukning. Kontextfönstret når 163 840 tokens, vilket är lämpligt för att analysera långa dokument.</p>"
             },
             "DeepSeek R1 Llama 70B": {
                 "desc": "<p>Stor modell baserad på Meta Llama 3.3 70B, omtränad med resonemangsexempel från DeepSeek R1-modellen. Den erbjuder bra matematik- och kodningsfunktioner.</p>",
@@ -525,7 +614,17 @@
             "DeepSeek V3": {
                 "desc": "<p>Mycket stor modell utformad för komplexa uppgifter: kodgenerering, verktygsanvändning, och analys av långa dokument. Den kan hantera många språk, men är särskilt väl lämpad för engelska och kinesiska.</p>",
                 "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur med 671 miljarder parametrar, men aktiverar endast 37 miljarder per genererad token. Den är effektiv för verktygsanrop, generering av strukturerad utdata (JSON) och kodgenerering.</p>",
-                "size_desc": "<p>DeepSeek V3 är en mycket stor modell som kräver flera grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) tillåter dock bara att en del av parametrarna aktiveras, vilket minskar minneskraven jämfört med en tät modell av samma storlek.</p>\n<p> Kontextfönstret når 163 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+                "size_desc": "<p>DeepSeek V3 är en mycket stor modell som kräver flera grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) tillåter dock bara att en del av parametrarna aktiveras, vilket minskar minneskraven jämfört med en tät modell av samma storlek.</p>\n<p> Kontextfönstret når 128 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+            },
+            "DeepSeek v3": {
+                "desc": "<p>DeepSeek V3-modellen, som släpptes i december 2024, har en Mixture-of-Experts-arkitektur, vilket gör att den kan vara mycket stor samtidigt som inferenskostnaderna minskas.</p>",
+                "fyi": "<p>Denna flaggskeppsmodell från det kinesiska företaget DeepSeek släpptes i december 2024 och har en Mixture-of-Experts-arkitektur, vilket gör att den kan vara mycket stor samtidigt som inferenskostnaderna minskas.</p>",
+                "size_desc": "<p>Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer.</p>"
+            },
+            "DeepSeek v3.1": {
+                "desc": "<p>En mycket stor modell utformad för komplexa uppgifter, som kodgenerering och analys av långa dokument. Denna version är särskilt bra för verktygsanvändning, och kan simulera en resonemangsfas innan det slutgiltiga svaret ges.</p>",
+                "fyi": "<p>Denna modell är baserad på en Mixture of Experts (MoE)-arkitektur, med 671 miljarder parametrar men där bara 37 miljarder aktiveras per genererad token. Den är effektiv för verktygsanrop, generering av strukturerad utdata (JSON) och generering av kod. Träningen använder FP8-mikroskalning, vilket minskar beräknings- och minneskostnader samtidigt som noggrannheten bibehålls. Modellen tränades i två faser: först på sekvenser om 32 000 tokens, och sedan skalad till 163 000 tokens, vilket möjliggör större stabilitet och förbättrad prestanda i mycket långa kontexter.</p>",
+                "size_desc": "<p>DeepSeek V3.1 är en mycket stor modell som kräver flera grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) tillåter dock endast att vissa parametrar aktiveras, vilket minskar belastningen jämfört med en kompakt modell av samma storlek.</p>\n<p>Kontextfönstret rymmer nu 163 000 tokens, jämfört med 128 000 i den tidigare versionen, vilket förbättrar analysen av mycket långa dokument.</p>"
             },
             "GLM 4.5": {
                 "desc": "<p>En mycket stor modell skapad av Zhipu AI, en kinesisk AI-modelltillverkare som grundades 2019 av professorer vid universitetet i Tsinghua och stöds av stora aktörer som Alibaba och Tencent. Modellen har två svarslägen: Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att direkt generera det slutliga svaret.</p>",
@@ -566,6 +665,9 @@
                 "desc": "<p>En lättviktsversion av GPT 4.1, men fortfarande i kategorin stora modeller, utformad för att hålla nere kostnaderna samtidigt som den förblir konkurrenskraftig på de flesta uppgifter. Modellen stöder mycket långa frågor, vilket gör den lämplig för användning vid dokumentkorpusanalys.</p>",
                 "fyi": "<p>Detta är en destillerad version av en större modell, med partiell kunskapsöverföring. Den kan bearbeta text, bilder och ljud. Dess kontextfönster kan nå upp till 1 miljon tokens, vilket gör den särskilt lämplig för att analysera mycket långa korpusar eller koddatabaser.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en medelstor modell som kräver ett kraftfullt grafikkort för att fungera. Den förmodade arkitekturen Mixture of Experts (MoE) aktiverar dock endast en delmängd av parametrar vid varje token, vilket begränsar dess energiavtryck. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens.</p>"
+            },
+            "Gemini 1.5 Pro": {
+                "desc": "<p>Denna multimodala modell, som släpptes i september 2024, är lämplig för text- och bildgenerering, videoanalys och ljudtranskription.</p>"
             },
             "Gemini 2.5 Flash": {
                 "desc": "<p>Stor multimodal och flerspråkig modell med två svarsmetoder: Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att generera det slutliga svaret direkt.</p>",
@@ -672,6 +774,26 @@
                 "fyi": "<p>Denna modell är baserad på omträning av Llama 3.1 70B, därav dess källmodell i namnet. Den introducerar förbättringar tack vare förstärkningsinlärning med mänsklig feedback (RLHF) och REINFORCE-algoritmen: Modellen utforskar olika svar, får feedback, och justerar sedan gradvis sina val för att bättre möta användarnas förväntningar. Denna anpassningsprocess används ofta när modellen är avsedd att anpassa sig till mänskliga preferenser eller för att optimera sina svar enligt specifika kriterier.</p>",
                 "size_desc": "<p>Med 70 miljarder parametrar tillhör den här modellen kategorin stora modeller. Den kräver flera kraftfulla grafikkort för att fungera, vilket resulterar i betydande driftskostnader.</p>"
             },
+            "OLMo-2 32B": {
+                "desc": "<p>OLMo 2 32B är en helt öppen källkodsmodell (inklusive korpus och träningskod) skapad av Allen AI Institute (Ai2), släppt i mars 2025.</p>",
+                "fyi": "<p>OLMo 2 32B är en helt öppen källkodsmodell – både korpusen och träningskoden är helt tillgängliga. Denna OLMo-modellfamilj designades av Allen Institute for AI (Ai2).</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Phi-3-Mini": {
+                "desc": "<p>Denna kompakta modell fungerar bra för kodgenerering och sammanfattningsuppgifter och stöder en begränsad kontext på 4000 tokens.</p>",
+                "fyi": "<p>Den här modellen, lillebror i Phi3-familjen, stöder en kontext med 4000 tokens och har tränats på syntetiska och filtrerade webbdatamängder.</p>",
+                "size_desc": "<p>Mycket små modeller, med färre än 7 miljarder parametrar, är de minst komplexa och mest resurseffektiva och ger tillräcklig prestanda för enkla uppgifter som textklassificering.</p>"
+            },
+            "Phi-3-small-8k-Instruct": {
+                "desc": "<p>Denna lilla modell är optimerad för logiskt resonemang och stöder ett kontextfönster på 8000 tokens. Den är lämplig för kodgenerering och komplexa uppgifter.</p>",
+                "fyi": "<p>Den här modellen, den större i Phi3-familjen, stöder en kontext på 8000 tokens och har tränats på syntetiska och filtrerade webbdataset.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
+            },
+            "Phi-3.5-mini": {
+                "desc": "<p>Denna modell fungerar bra för kodgenerering och sammanfattningsuppgifter och hanterar en stor kontext på 128k tokens.</p>",
+                "fyi": "<p>En liten modell i Phi-familjen som ersätter Phi-3-mini. Denna modell stöder en stor kontext med 128 000 tokens och har tränats på syntetiska och filtrerade webbdataset.</p>",
+                "size_desc": "<p>Mycket små modeller, med färre än 7 miljarder parametrar, är de minst komplexa och mest resurseffektiva och ger tillräcklig prestanda för enkla uppgifter som textklassificering.</p>"
+            },
             "Phi-4": {
                 "desc": "<p>Liten, flerspråkig modell som kan använda verktyg och presterar bra på komplexa uppgifter som logik, matematik och kod, samtidigt som den förblir kompakt.</p>",
                 "fyi": "<p>Denna modell använder TikTok för tokenisering, vilket förbättrar dess kapacitet i ett flerspråkigt sammanhang. Den tränades på totalt 9,8 <strong>biljoner</strong> tokens, varav 400 miljarder specifikt hämtades från högkvalitativ syntetisk data och resten från filtrerad organisk data. Träningen ägde rum på 1 920 H100-grafikkort i 21 dagar. Innovativa tekniker som självbedömning – under vilken modellen kritiserar och skriver om sina svar – och instruktionsomvändning användes för att stärka dess förståelse av instruktioner och resonemangsförmåga.</p>",
@@ -691,6 +813,29 @@
                 "desc": "<p>Medelstor flerspråkig modell med två svarsmetoder. Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att direkt generera det slutliga svaret.</p>",
                 "fyi": "<p>Denna modell tränades på en mycket stor datamängd: 36 biljoner tokens på 119 språk. Träningen genomfördes i tre steg. Modellen lärde sig först från 30 miljarder tokens med en kontext på 4 000 tokens. Sedan lades 5 miljarder tokens till för att stärka dess faktakunskaper. Slutligen exponerades den för en specifik korpus för att bättre hantera mycket långa texter. Som ett resultat har den ett kontextfönster på 128 000 tokens i slutet av träningen, vilket är användbart för att läsa och analysera långa dokument.</p>",
                 "size_desc": "<p>Med 32 miljarder parametrar tillhör den här modellen kategorin medelstora modeller. Den kan köras på en server utrustad med ett enda kraftfullt grafikkort, vilket begränsar infrastrukturkostnaderna.</p>\n<p>Dess kontextfönster med 128 000 tokens gör att den kan bearbeta långa dokument.</p>"
+            },
+            "Qwen 3 8B": {
+                "desc": "<p>En liten, kompakt, flerspråkig modell från Qwen 3-familjen, som erbjuder ett \"resonemangsläge\" för komplexa uppgifter (matematik, kodning) och ett \"direktsvarsläge\" för snabbare svar.</p>",
+                "fyi": "<p>Qwen 3 8B tränades på samma korpus som de större modellerna i Qwen-familjen: 36 biljoner tokens som täcker 119 språk. Dess inlärningsprocess följer tre steg: förträning på 30 biljoner tokens med ett fönster på 4 000, faktaberikning med 5 biljoner tokens, och sedan en specialiserad fas för långa kontexter.</p>",
+                "size_desc": "<p>Med 8 miljarder parametrar är det en av de minsta modellerna. Den kan användas lokalt på en arbetsstation för att bevara datasekretessen, eller på en billig server för att begränsa kostnaderna jämfört med en större modell.</p>\n<p>Dess kontextfönster kan innehålla upp till 128 000 tokens, vilket gör det enkelt att bearbeta långa dokument.</p>"
+            },
+            "Qwen 3 Max": {
+                "desc": "<p>Bland Qwens få proprietära modeller är detta den största och mest kraftfulla av tredje generationen. Den har tränats med särskild hänsyn till företags- och agentbaserade användningsfall.</p>",
+                "fyi": "<p>Denna modell har tränats på 36 biljoner tokens, nästan dubbelt så många som Qwen 2.5, och klarar officiellt 100 språk.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en mycket stor modell som kräver servrar med flera kraftfulla grafikkort för att köras. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens. Den har ett kontextfönster på upp till 256 000 tokens, vilket är lämpligt för att analysera långa dokument eller koddatabaser.</p>"
+            },
+            "Qwen1.5-32B": {
+                "desc": "<p>Medelstor modell med en träningsprocess som är starkt fokuserad på att anpassa sig till användarnas preferenser.</p>",
+                "fyi": "<p>Modellen genomgick en fas av anpassning till användarnas preferenser genom tekniker som DPO (Direct Preference Optimization) och PPO (Proximal Policy Optimization). Utöver dessa tekniker, som var mycket innovativa när modellen utformades, optimerade Alibabas team även träningsdata för att göra den mycket flerspråkig, inklusive europeiska, östasiatiska och sydostasiatiska språk.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Qwen2-57B-A14B-Instruct": {
+                "desc": "<p>Medelstor modell med en expertmixarkitektur, som presterar bra inom kod, matematik och flerspråkiga uppgifter.</p>",
+                "fyi": "<p>Denna version av Qwen-modellerna har längre kontextfönster.</p>"
+            },
+            "o3-mini": {
+                "fyi": "<p>Modell som är optimerad för och utmärker sig inom kodning och resonemangsuppgifter inom naturvetenskap och teknik.</p>",
+                "size_desc": "<p>Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer.</p>"
             },
             "o4 mini": {
                 "desc": "<p>Mycket stor resonemangsmodell, lämplig för komplexa vetenskapliga och tekniska uppgifter och frågor.</p>",
