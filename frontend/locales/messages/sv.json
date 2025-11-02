@@ -631,6 +631,11 @@
                 "fyi": "<p>Denna modell har goda agentfunktioner, vilket gör att den kan göra funktionsanrop med hög tillförlitlighet. Dess kodningsprestanda är hög, och modellen har en god förmåga att skapa kompletta webbapplikationer och generera artefakter, vilket är program med en enda fil som kan användas i gränssnitten för konversationsagenter. För träning utformades en specifik infrastruktur för förstärkningsinlärning, kallad slime, för att optimera prestandan för komplexa uppgifter och agentuppgifter genom att effektivt hantera långa arbetsflöden – modellen kan hantera komplexa och långvariga uppgifter, som att skapa en applikation från grunden, utnyttja sina verktyg på bästa sätt och förbli konsekvent från början till slut.</p>",
                 "size_desc": "<p>Med 355 miljarder parametrar faller den här modellen inom kategorin mycket stora modeller. Tack vare en Mixture of Experts (MoE)-arkitektur är den effektivare än vissa andra modeller av liknande storlek, men den kräver fortfarande en server med flera mycket kraftfulla grafikkort. Dess kontextfönster går upp till 128 000 tokens, vilket gör att den kan bearbeta ganska långa dokument.</p>"
             },
+            "GLM 4.6": {
+                "desc": "<p>Uppdatering av den stora modellen skapad av Zhipu AI - GLM 4.6, en kinesisk AI-modellredigerare som skapades 2019 av professorer från Tsinghua University och stöds av stora aktörer som Alibaba och Tencent. Denna uppdatering ökar storleken på kontextfönstret, förbättrar dess kodprestanda, anpassar sig närmare mänskliga preferenser och är mer kapabel i agent-/verktygsanvändningsscenarier.</p>",
+                "fyi": "<p>Denna modell har goda agentfunktioner, vilket gör att den kan göra funktionsanrop med hög tillförlitlighet. Dess kodningsprestanda är hög, och modellen har en god förmåga att skapa kompletta webbapplikationer och generera artefakter, vilket är program med en enda fil som kan användas i gränssnitten för konversationsagenter. För träning utformades en specifik infrastruktur för förstärkningsinlärning, kallad slime, för att optimera prestandan för komplexa uppgifter och agentuppgifter genom att effektivt hantera långa arbetsflöden – modellen kan hantera komplexa och långvariga uppgifter, som att skapa en applikation från grunden, utnyttja sina verktyg på bästa sätt och förbli konsekvent från början till slut.</p>",
+                "size_desc": "<p>Med 357 miljarder parametrar faller den här modellen inom kategorin mycket stora modeller. Tack vare en Mixture of Experts (MoE)-arkitektur är den effektivare än vissa andra modeller av liknande storlek, men den kräver fortfarande en server med flera mycket kraftfulla grafikkort. Dess kontextfönster kan innehålla upp till 200 000 tokens, vilket gör att den kan bearbeta mycket långa dokument.</p>"
+            },
             "GPT 4.1 Nano": {
                 "desc": "<p>Mindre, lättare version av GPT 4.1-modellen, utformad för att hålla nere kostnaderna samtidigt som den förblir konkurrenskraftig på de flesta uppgifter. Modellen stöder mycket långa frågor, vilket gör den lämplig för användning vid exempelvis korpusanalys med långa dokument.</p>",
                 "fyi": "<p>Detta är en destillerad version av en större modell, med viss kunskapsöverföring. Den kan bearbeta text, bilder och ljud. Dess kontextfönster kan nå upp till 1 miljon tokens, vilket gör den särskilt lämplig för att analysera textkorpusar eller mycket långa koddatabaser.</p>",
@@ -661,18 +666,55 @@
                 "fyi": "<p>Den här modellen kan köras lokalt på en avancerad bärbar dator med endast 16 GB VRAM (eller system-RAM). Detta gör den till ett mycket tillgängligt alternativ för utvecklare.</p>\n<p> I modellkonfigurationen är det möjligt att välja mellan tre resonemangsnivåer (<em>låg</em>, <em>medel</em> och <em>hög</em>) vilket avgör modellens utförlighet.</p>",
                 "size_desc": "<p>Med 20 miljarder parametrar tillhör denna modell kategorin medelstora modeller. Arkitekturen är baserad på \"mixture of experts\" (MoE), vilket möjliggör större energieffektivitet genom att endast aktivera en del av parametrarna (3,6 miljarder per token) för varje fråga. Det är en resonemangsmodell, vilket resulterar i högre energiförbrukning eftersom den genererar en intern tankekedja innan den ger det slutgiltiga svaret. Den har ett kontextfönster på 131 000 tokens, vilket gör den lämplig för att analysera stora dokument.</p>"
             },
+            "GPT-3.5": {
+                "desc": "<p>GPT-3.5 lanserades i mars 2023, och är en mindre OpenAI-modell som är tillräcklig för olika uppgifter inom språkbehandling.</p>",
+                "fyi": "<p>GPT-3.5 lanserades i mars 2023, och är en mindre OpenAI-modell som är tillräcklig för olika uppgifter inom språkbehandling.</p>",
+                "size_desc": "<p>Stora modeller kräver betydande resurser, men erbjuder bäst prestanda för avancerade uppgifter som kreativt skrivande, dialogmodellering och tillämpningar som kräver en noggrann förståelse av kontext.</p>"
+            },
             "GPT-4.1 Mini": {
                 "desc": "<p>En lättviktsversion av GPT 4.1, men fortfarande i kategorin stora modeller, utformad för att hålla nere kostnaderna samtidigt som den förblir konkurrenskraftig på de flesta uppgifter. Modellen stöder mycket långa frågor, vilket gör den lämplig för användning vid dokumentkorpusanalys.</p>",
                 "fyi": "<p>Detta är en destillerad version av en större modell, med partiell kunskapsöverföring. Den kan bearbeta text, bilder och ljud. Dess kontextfönster kan nå upp till 1 miljon tokens, vilket gör den särskilt lämplig för att analysera mycket långa korpusar eller koddatabaser.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en medelstor modell som kräver ett kraftfullt grafikkort för att fungera. Den förmodade arkitekturen Mixture of Experts (MoE) aktiverar dock endast en delmängd av parametrar vid varje token, vilket begränsar dess energiavtryck. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens.</p>"
             },
+            "GPT-4o": {
+                "desc": "<p>Den större av de två modellerna som OpenAI:s ChatGPT bygger på, lanserad i augusti 2024.</p>",
+                "fyi": "<p>GPT-4o lanserades i augusti 2024 och är efterträdaren till GPT-4. Det är en förbättrad version av GPT-4, designad för olika språkbehandlingsuppgifter via till exempel ChatGPT-applikationen från det amerikanska företaget OpenAI.</p>",
+                "size_desc": "<p>Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer.</p>"
+            },
+            "GPT-4o mini": {
+                "desc": "<p>Den mindre av de två modellerna som OpenAI:s ChatGPT bygger på, lanserad i juli 2024.</p>",
+                "fyi": "<p>GPT-4o mini lanserades i juli 2024 och ersatte GPT-3.5. Det är en mindre version av GPT-4, designad för olika språkbehandlingsuppgifter via till exempel ChatGPT-applikationen från det amerikanska företaget OpenAI.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
             "Gemini 1.5 Pro": {
-                "desc": "<p>Denna multimodala modell, som släpptes i september 2024, är lämplig för text- och bildgenerering, videoanalys och ljudtranskription.</p>"
+                "desc": "<p>Denna multimodala modell, som släpptes i september 2024, är lämplig för text- och bildgenerering, videoanalys och ljudtranskription.</p>",
+                "fyi": "<p>Denna flerspråkiga och multimodala modell, som annonserades i februari 2024 och släpptes i september 2024, kan bearbeta en mycket stor mängd indata, oavsett om det är text, bilder, ljud (upp till 11 timmar ljud) eller video (upp till en timme). Samma modell driver även Googles Gemini-chatbot.</p>",
+                "size_desc": "<p>Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer.</p>"
+            },
+            "Gemini 2.0 Flash": {
+                "desc": "<p>Denna mindre flerspråkiga och multimodala modell, som släpptes i december 2024, tillhör Gemini Flash-familjen och möjliggör mycket snabba svar för mindre avancerat resonemang.</p>",
+                "fyi": "<p>Denna mindre flerspråkiga och multimodala modell, som släpptes i december 2024, tillhör Gemini Flash-familjen och möjliggör mycket snabba svar för mindre avancerat resonemang än Gemini Pro-modellerna.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
             },
             "Gemini 2.5 Flash": {
                 "desc": "<p>Stor multimodal och flerspråkig modell med två svarsmetoder: Användaren kan välja mellan ett resonemangsläge för mer djupgående svar, eller ett snabbläge för att generera det slutliga svaret direkt.</p>",
                 "fyi": "<p>Denna modell är baserad på en \"Mixture of Experts\"-arkitektur (MoE) och har destillerats genom att endast behålla en approximation av förutsägelserna från lärarmodellen – Gemini 2.5 Pro. Den har tränats på en TPUv5p-arkitektur som innehåller möjligheten att fortsätta träningen automatiskt även vid träningsfel, datakorruption eller minnesproblem.</p>\n<p>Gemini 2.5 Flash stöder kontexter med upp till 1 miljon tokens och tre timmar videoinnehåll. Optimerad bildbehandling möjliggör bearbetning av ungefär tre gånger längre video i samma kontextfönster; endast 66 visuella tokens behövs för att generera en bildruta, jämfört med 258 tidigare. Denna modell har också inbyggt stöd för att generera ljud för dialog och talsyntes.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns bevis som tyder på att det är en stor modell som kräver flera kraftfulla grafikkort för att köras. Arkitekturen Mixture of Experts (MoE) aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiförbrukning. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens. Dess kontextfönster sträcker sig upp till 1 miljon tokens, vilket gör att den kan bearbeta mycket stora dokumentkorpusar.</p>"
+            },
+            "Gemma 2 27B": {
+                "desc": "<p>En högpresterande modell med rimlig storlek. Dess relativt höga kostnad gör den lämplig för specifika användningsområden som kräver hög precision.</p>",
+                "fyi": "<p>Med tre gånger fler parametrar än sin lillebror i Gemma 2-familjen är den här modellen mer exakt i sin respons på instruktioner. Modellen som används här är den kvantiserade versionen (q8).</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Gemma 2 2B": {
+                "desc": "<p>En mycket liten modell som erbjöd mycket konkurrenskraftig prestanda för sin storlek och för de flesta uppgifter.</p>",
+                "fyi": "<p>Denna lilla modell ur Gemma 2-familjen släpptes i juli 2024, och kan konkurrera med mycket större modeller.</p>",
+                "size_desc": "<p>Mycket små modeller, med färre än 7 miljarder parametrar, är de minst komplexa och mest resurseffektiva och ger tillräcklig prestanda för enkla uppgifter som textklassificering.</p>"
+            },
+            "Gemma 2 9B": {
+                "desc": "<p>Den mindre modellen i Gemma 2-familjen, släppt i juni 2024, är tränad att svara på specifika instruktioner, bearbeta komplexa förfrågningar och erbjuda kreativa lösningar.</p>",
+                "fyi": "<p>Den mindre modellen i Gemma 2-familjen, släppt i juni 2024, är tränad att svara på specifika instruktioner, bearbeta komplexa förfrågningar och erbjuda kreativa lösningar.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
             },
             "Gemma 3 12B": {
                 "desc": "<p>Liten multimodal modell lämplig för vanliga uppgifter som frågor och svar, sammanfattningar och bildtolkning.</p>",
@@ -699,20 +741,55 @@
                 "fyi": "<p>Grok 3 Mini är en destillerad version av Grok 3. Den är närliggande vad gäller funktioner, samtidigt som den är snabbare och billigare.\nModellen erbjuder två lägen: ett tankeläge med stegvis resonemang för komplexa problem, och ett snabbläge för omedelbara svar.\nDess kontextfönster når 131 000 tokens, vilket gör den lämplig för att analysera långa dokument.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Trots namnet är Grok 3 Mini sannolikt en mycket stor modell som kräver flera kraftfulla grafikkort för att köras. Dessutom innehåller den en valfri resonemangsfas som involverar längre genereringstider och därmed högre strömförbrukning. Den förmodade Mixture of Experts (MoE)-arkitekturen aktiverar dock bara en del av parametrarna vid varje token, vilket begränsar dess energiavtryck. Tillgängliga uppskattningar förlitar sig på indirekta index som inferenskostnader och svarslatens.</p>"
             },
+            "Grok 4 Fast": {
+                "desc": "<p>Grok 4 Fast är en modell som fokuserar på att balansera prestanda, hastighet och kostnad, särskilt för informationshämtningsuppgifter och andra \"agentiska\" åtgärder.</p>",
+                "fyi": "<p>Modellens exakta storlek är okänd. Trots namnet är Grok 4 Fast utan tvekan en mycket stor modell som kräver flera kraftfulla grafikkort för att fungera. Dessutom innehåller den en valbar resonemangsfas, vilket innebär en längre genereringstid och därmed högre strömförbrukning. Tillgängliga uppskattningar bygger på indirekta indikatorer som inferenskostnader och svarslatens.</p>\n<p>Tränad med hjälp av förstärkningsinlärning uppnår Grok 4 Fast poäng nära den ännu större modellen – Grok 4 – samtidigt som den är mer energieffektiv. Den har tränats för att prestera bra vid webbsurfning, särskilt på X-plattformen, såväl som i verktygsanrop som kodkörningsfunktioner.</p>",
+                "size_desc": "<p>Med ett kontextfönster på 2 miljoner tokens kombinerar Grok 4 Fast ett resonemangsläge och ett direktresponsläge i en enda modell. Den använder cirka 40 % färre resonemangstokens än Grok 4, vilket resulterar i en betydande minskning av exekveringskostnader och latens.</p>"
+            },
             "Hermes 3 405B": {
                 "desc": "<p>Mycket stor modell omtränad från Llama 3.1 405B, justerad för att bättre möta användarnas krav och underlätta användningen av externa verktyg.</p>",
                 "fyi": "<p> Denna modell är resultatet av omträning av parameteruppsättningen för Llama 3.1 405B för att göra dess beteende mindre begränsat och bättre ta hänsyn till nyanserna i användar- och systemprompter, vilket ger användaren större kontroll över modellens \"personlighet\" och beteende. Specifika resonemangsfunktioner som <strong><code>&lt;SCRATCHPAD&gt;</code></strong>, <strong><code>&lt;REASONING&gt;</code></strong> och <strong><code>&lt;THINKING&gt;</code></strong> har lagts till för att simulera resonemang kring komplexa uppgifter. Träningen använde verktyget AdamW (inlärningshastighet på 3.5×10⁻⁶), vilket hjälper modellen att lära sig effektivt genom att gradvis justera dess parametrar. Sedan finjusterades den med en metod som kallas DPO (direkt preferensoptimering), vilket förbättrar dess svar baserat på specifika preferenser. För att göra denna träning enklare och snabbare användes LoRA-adaptrar; dessa är mindre moduler som bara modifierar en del av modellen, vilket undviker behovet av att omarbeta alla parametrar samtidigt.</p>",
                 "size_desc": "<p>Med 405 miljarder parametrar hamnar den här modellen i kategorin mycket stora modeller. Den kräver en server utrustad med flera kraftfulla grafikkort, vilket resulterar i betydande driftskostnader.</p>"
+            },
+            "Hermes 4 70B": {
+                "desc": "<p>Stor omtränad modell baserad på Llama 3.1 70B, justerad för att bättre möta användarnas krav och stilistiska instruktioner.</p>",
+                "fyi": "<p>Hermes 4-70B tränades på 56 miljarder tokens genom att man kombinerade Fully Sharded Data Parallel (FSDP) och Tensor Parallelism för att hantera storleken. Modellen är baserad på Llama 3.1 70B, anpassad med TorchTitan och berikad med cirka 19 miljarder syntetiska tokens fokuserade på resonemang. Dess träning följer en flerfasmetod, med övervakad finjustering av resonemangskedjor som kan överstiga 30 000 tokens. Den utnyttjar också Atropos-miljön, som används för att generera och verifiera komplexa processer (kod, JSON, agentuppgifter), genom massiv \"rejection sampling\" som säkerställer datakvalitet.</p>",
+                "size_desc": "<p>Hermes 4-70B är en mycket stor modell som kräver åtminstone ett kraftfullt grafikkort.</p>\n<p>Kontextfönstret når 40 960 tokens i resonemang och 32 768 tokens för andra uppgifter, med finjusteringsmekanismer som används för att lära modellen att \"stänga\" tankesekvensen runt 30 000 tokens.</p>"
+            },
+            "Jamba 1.5 Large": {
+                "desc": "<p>Denna modell från företaget AI21, som släpptes i augusti 2024, är en speciell typ av hybridmodell som kallas \"SSM\" och Mixture of Experts, vars arkitektur syftar till att utnyttja antalet parametrar maximalt.</p>",
+                "fyi": "<p>Denna modell från företaget AI21, som släpptes i augusti 2024, är en speciell typ av hybridmodell som kallas \"SSM\" (State Space Models) och Mixture of Experts. Dess arkitektur syftar till att utnyttja antalet parametrar på bästa sätt.</p>",
+                "size_desc": "<p>Dessa modeller, med hundratals miljarder parametrar, är de mest komplexa och avancerade vad gäller prestanda och noggrannhet. De kräver stora beräknings- och minnesresurser och är avsedda för mycket avancerade applikationer och högt specialiserade miljöer.</p>"
             },
             "Kimi K2": {
                 "desc": "<p>Kimi K2, som utvecklades av Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), ett Pekingbaserat företag, är en mycket stor kodorienterad och agentbaserad modell. Den är känd för utvecklingsuppgifter i agentiska sammanhang (t.ex. i Cursor eller Windsurf). Den har inte ett explicit \"resonemangsläge\", men för stora uppgifter delar den upp sitt svar i steg och växlar mellan åtgärder (verktygsanrop) och textskrivning.</p>",
                 "fyi": "<p>För att stabilisera träning i mycket stor skala introducerade Moonshot AI MuonClip, en \"hastighetsbegränsare\" för träningsfasen som möjliggör träning av en modell av denna storlek och på en samling av 15,5 biljoner tokens utan att träningen spårar ur.</p>\n<p>På datasidan har K2 ofta arbetat med en \"simulator\" med riktiga verktyg (webbläsare, terminal, kodexekverare, API:er etc.). På samma sätt som en pilot i en simulator lär sig modellen genom att planera, försöka, misslyckas, och försöka igen, och att kedja ihop flera åtgärder för att uppnå ett mål. Som ett resultat är den särskilt bra på att kombinera verktyg och utföra uppgifter i flera steg.</p>",
                 "size_desc": "<p>Med 1 biljon parametrar är den här modellen en av de största. Tack vare en Mixture of Experts-arkitektur (MoE) är den effektivare än vissa andra modeller av liknande storlek, men den kräver fortfarande en server med flera mycket kraftfulla grafikkort. Dess kontextfönster går upp till 128 000 tokens, vilket gör att den kan bearbeta ganska långa dokument.</p>"
             },
+            "LFM 40B": {
+                "desc": "<p>Denna modell från det amerikanska företaget Liquid, som släpptes i september 2024, är en Mixture of Experts-modell, vars arkitektur syftar till att utnyttja antalet parametrar maximalt.</p>",
+                "fyi": "<p>Denna modell från det amerikanska företaget Liquid, som släpptes i september 2024, är en Mixture of Experts-modell, vars arkitektur syftar till att utnyttja antalet parametrar maximalt.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Llama 3 70B": {
+                "desc": "<p>Denna modell, som lanserades i april 2024, har tränats på över 15 biljoner tokens, men stöder en relativt begränsad kontext på 8 000 tokens.</p>",
+                "fyi": "<p>Denna modell, som lanserades i april 2024, tränades på över 15 biljoner tokens, och specialiserades sedan för dialog baserat på instruktionsdata och annoteringar gjorda av människor. Den stöder en kontext på 8 000 tokens.</p>",
+                "size_desc": "<p>Stora modeller kräver betydande resurser, men erbjuder bäst prestanda för avancerade uppgifter som kreativt skrivande, dialogmodellering och tillämpningar som kräver en noggrann förståelse av kontext.</p>"
+            },
+            "Llama 3 8B": {
+                "desc": "<p>Den mindre modellen i Llama 3-familjen är optimerad för dialog, med särskilt fokus på effektivitet och säkerhet.</p>",
+                "fyi": "<p>Den mindre modellen i Llama 3-familjen är optimerad för dialog, med särskilt fokus på effektivitet och säkerhet.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
+            },
             "Llama 3.1 405B": {
                 "desc": "<p>Mycket stor modell utformad för komplexa eller specialiserade uppgifter. Används ofta som en \"lärarmodell\" för att träna mer specialiserade modeller.</p>",
                 "fyi": "<p>Modellen tränades på en samling av 15 biljoner tokens med 16 000 H100-grafikkort (ett av de kraftfullaste grafikkorten på marknaden år 2025). Träningen kombinerade generering av syntetisk data och direkt preferensoptimering (DPO). Denna modell används ofta för att generera syntetisk data för att träna mindre modeller. Modellen använder 8-bitarskomprimering som standard för att minska minneskraven och möjliggöra exekvering på en enda kraftfull server.</p>",
                 "size_desc": "<p>Med 405 miljarder parametrar hamnar den här modellen i kategorin mycket stora modeller. Den kräver en server utrustad med flera kraftfulla grafikkort, vilket resulterar i betydande driftskostnader. Modellen har ett kontextfönster på upp till 128 000 tokens, vilket gör den lämplig för analys av långa dokument.</p>"
+            },
+            "Llama 3.1 70B": {
+                "desc": "<p>En modell med 70 miljarder parametrar, lanserad i april 2024, som utmärker sig på att generera och förstå komplexa texter på olika språk.</p>",
+                "fyi": "<p>Liksom andra modeller i Llama 3.1-familjen tränades denna modell, som släpptes i april 2024, på data som sträcker sig till december 2023. Det är ingen idé att fråga den om höjdpunkterna från de olympiska spelen i Paris 2024! Med 70 miljarder parametrar utmärker sig denna modell på att generera och förstå komplexa texter på olika språk.</p>",
+                "size_desc": "<p>Stora modeller kräver betydande resurser, men erbjuder bäst prestanda för avancerade uppgifter som kreativt skrivande, dialogmodellering och tillämpningar som kräver en noggrann förståelse av kontext.</p>"
             },
             "Llama 3.1 8B": {
                 "desc": "<p>Liten modell designad för lokal användning på en bärbar dator, som erbjuder bra funktioner för textsyntes och enkla svar.</p>",
@@ -754,20 +831,48 @@
                 "fyi": "<p>Denna modell tränades med en hög andel koddata (över 80 programmeringsspråk) och matematik, vilket förbättrar dess förmåga att lösa komplexa problem och använda externa verktyg.</p>",
                 "size_desc": "<p>Med 123 miljarder parametrar tillhör den här modellen kategorin stora modeller. Den kräver en server utrustad med minst ett kraftfullt grafikkort, vilket innebär en betydande driftskostnad. Den har ett kontextfönster på upp till 128 000 tokens, användbart för att analysera långa dokument.</p>"
             },
+            "Mistral Medium 2508": {
+                "desc": "<p>En medelstor, flerspråkig, multimodal och billig modell jämfört med andra modeller, som erbjuder liknande prestanda. Den blev särskilt attraktiv efter en uppdatering i augusti 2025 med betydande förbättringar av den totala prestandan, en \"förbättrad ton\" och bättre sökfunktioner på internet.</p>",
+                "fyi": "<p>Denna modell utformades för att leverera stabil prestanda till en lägre kostnad än proprietära eller halvöppna modeller. Särskild uppmärksamhet ägnades åt professionell användningsdata under träningen. Den presterar särskilt bra jämfört med andra modeller av liknande storlek för kodgenerering och matematiska uppgifter.</p>\n<p> Denna modell användes som grund för träning av Magistral Medium, en resonemangsmodell.</p>",
+                "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en stor modell som kräver flera kraftfulla grafikkort för att fungera. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens.</p>\n<p>Den har ett kontextfönster på upp till 128 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+            },
             "Mistral Medium 3.1": {
                 "desc": "<p>En medelstor, flerspråkig, multimodal modell som är billig jämfört med andra modeller som erbjuder liknande prestanda. Den är särskilt intressant för programmeringsuppgifter eller resonemangsuppgifter, såsom matematik.</p>",
                 "fyi": "<p>Denna modell utformades för att leverera stabil prestanda till en lägre kostnad än proprietära eller halvöppna modeller. Särskild uppmärksamhet ägnades åt professionell användningsdata under träningen. Den presterar särskilt bra jämfört med andra modeller av liknande storlek för kodgenerering och matematiska uppgifter.</p>\n<p>Denna modell användes som grund för träning av Magistral Medium, en resonemangsmodell.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en stor modell som kräver flera kraftfulla grafikkort för att fungera. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens.</p>\n<p>Den har ett kontextfönster på upp till 128 000 tokens, vilket är användbart för att analysera långa dokument.</p>"
+            },
+            "Mistral Nemo": {
+                "desc": "<p>Denna modell är optimerad för snabba svarstider och är idealisk för applikationer som kräver omedelbara svar. Den kan stödja en kontext på 128 000 tokens på över 100 språk. Släpptes i juli 2024.</p>",
+                "fyi": "<p>Denna modell, som släpptes i juli 2024, är tränad för resonemang, allmänkunskap och programmeringsuppgifter. Den använder Tekken-tokenizern, som är effektiv på att komprimera texter på upp till 128 000 tokens på över 100 språk.</p>",
+                "size_desc": "<p>En liten modell är mindre komplex och resurskrävande jämfört med större modeller, och ger fortfarande tillräcklig prestanda för många uppgifter (sammanfattning, översättning, textklassificering etc.)</p>"
             },
             "Mistral Saba": {
                 "desc": "<p>Medelstor modell utformad för en detaljerad språklig och kulturell förståelse av språk i Mellanöstern och Sydasien, inklusive arabiska, tamil och malayalam.</p>",
                 "fyi": "<p>Träningen fokuserade främst på texter på arabiska, tamil och malayalam. Regionala korpusar valdes ut för att återspegla autentisk användning, inklusive syntax, register och dialektala varianter. För tokenisering (uppdelning av texten i grundläggande enheter som modellen kan bearbeta) användes en specialiserad strategi anpassad för språk med komplex morfologi som arabiska. Optimeringar syftar till att undvika överdriven ordfragmentering och maximera ordförrådstäckningen.</p>",
                 "size_desc": "<p>Modellens exakta storlek är okänd. Det finns tecken på att det är en medelstor modell som kräver åtminstone ett kraftfullt grafikkort. Tillgängliga uppskattningar bygger på indirekta index som inferenskostnader och svarslatens.</p>\n<p>Modellen har ett kontextfönster på upp till 128 000 tokens, lämpligt för att analysera långa dokument.</p>"
             },
+            "Mistral Small 3": {
+                "desc": "<p>Denna modell, som släpptes i januari 2025, är specialiserad på flerspråkighet och har avancerade resonemangsförmågor.</p>",
+                "fyi": "<p>Denna modell, som släpptes i januari 2025, specialiserar sig på flerspråkighet, har ett funktionsanropsläge, och stöder en kontext på 32 000 tokens.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Mistral Small 3.1 24B": {
+                "desc": "<p>Mistral Small 3.1 24B Instruct är en förbättrad version av Mistral Small 3 (januari 2025), med 24 miljarder parametrar och avancerade multimodala funktioner.</p>",
+                "fyi": "<p>Mistral Small 3.1 24B Instruct är en multimodal modell som levererar modern prestanda för text- och bildbaserade resonemangsuppgifter, med bland annat bildanalys, programmering, matematik, och flerspråkigt stöd för dussintals språk.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
             "Mistral Small 3.2": {
                 "desc": "<p>Trots namnet är detta en medelstor modell. Den är multimodal (kan bearbeta text och bilder) och utmärker sig genom sin noggranna frågebehandling och sin förmåga att använda avancerade verktyg.</p>",
                 "fyi": "<p>Version 3.2 av denna modell är optimerad för att generera strukturerad utdata, särskilt i JSON, samtidigt som den begränsar upprepning och oönskat beteende under långa genereringstider. Den bearbetar både text- och bilddata, vilket gör det möjligt att analysera dem tillsammans.</p>",
                 "size_desc": "<p>Med 32 miljarder parametrar anses denna modell medelstor. Den kan köras på en server med ett enda kraftfullt grafikkort, vilket begränsar infrastrukturkostnaderna. Den har ett kontextfönster på upp till 128 000 tokens, användbart för att analysera långa dokument.</p>"
+            },
+            "Mistral Small 3.2 24B": {
+                "desc": "<p>Mistral Small 3.2 24B Instruct är en förbättrad version av Mistral Small 3.1 (mars 2025), med 24 miljarder parametrar och avancerade multimodala funktioner.</p>",
+                "fyi": "<p>Mistral Small 3.2 24B Instruct är en multimodal modell som levererar modern prestanda för text- och bildbaserade resonemangsuppgifter, med bland annat bildanalys, programmering, matematik, och flerspråkigt stöd för dussintals språk.</p>",
+                "size_desc": "<p>Medelstora modeller erbjuder en bra balans mellan enkelhet och prestanda. De är mycket mindre resurskrävande än stora modeller, men kan fortfarande hantera komplexa uppgifter som sentimentanalys och resonemang.</p>"
+            },
+            "Mixtral 8x22B": {
+                "desc": "<p>Denna flerspråkiga modell, som släpptes i april 2024, har specifikt tränats i engelska, franska, tyska, italienska och spanska, samt i uppgifter som involverar matematik, programmering och resonemang.</p>"
             },
             "Nemotron Llama 3.1 70B": {
                 "desc": "<p>Stor modell baserad på Llama 3.1 70B. Denna omtränade (fine-tune) version är ofta mer detaljerad och ger mer strukturerade svar.</p>",
@@ -1210,19 +1315,125 @@
         "title": "Allt du behöver veta om jämföraren"
     },
     "ranking": {
+        "energy": {
+            "views": {
+                "graph": {
+                    "tooltip": {
+                        "consumption_wh": "Genomsnittlig förbrukning (Wh)",
+                        "elo": "BT-poäng",
+                        "params": "Parametrar (i miljarder)"
+                    },
+                    "xLabel": "Genomsnittlig förbrukning per 1000 tokens (Wh)",
+                    "yLabel": "Bradley-Terry-poäng"
+                },
+                "table": {
+                    "title": "Data från grafen i tabellformat"
+                }
+            }
+        },
+        "methodo": {
+            "desc": {
+                "1": "Sedan 2024 har tusentals användare använt compar:IA för att jämföra svaren från olika modeller, vilket genererat hundratusentals röster. Att bara räkna antalet vinster räcker inte för att fastställa en ranking. Ett rättvist system måste vara statistiskt robust, justera efter varje jämförelse och verkligen återspegla värdet av de prestationer som uppnåtts.",
+                "2": "Det är med detta i åtanke som en <strong>rankning baserad på Bradley-Terry-modellen</strong> upprättades, utvecklad i samarbete med <strong>teamen vid Digital Regulation Expertise Center (PEReN)</strong>, med hjälp av alla röster och reaktioner som samlats in på plattformen. För att lära dig mer, se vår <a {linkProps}>metodguide</a>."
+            },
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": "<strong>Bradley-Terry</strong>-modellen omvandlar en uppsättning lokala och potentiellt ofullständiga jämförelser till ett konsekvent och statistiskt robust globalt rankingsystem, där den empiriska vinstfrekvensen förblir begränsad till direkta observationer."
+                    },
+                    "title": "Topp 10 modeller i rankningen baserat på uppskattad vinstfrekvens med Bradley-Terry-modellen"
+                },
+                "title": "Metodvalets påverkan på modellrankning",
+                "winrate": {
+                    "desc": {
+                        "1": "Baserat enbart på den <strong>genomsnittliga vinstprocenten</strong> kan vi få en övergripande ranking, men denna beräkning förutsätter att varje modell har jämförts med alla de andra.",
+                        "2": "Denna metod är inte idealisk eftersom den kräver data från alla modellkombinationer, och så fort antalet modeller ökar blir den snabbt dyr och besvärlig att underhålla."
+                    },
+                    "title": "Topp 10 modeller i rankningen baserat på \"empiriska\" vinstfrekvenser"
+                }
+            },
+            "methods": {
+                "cons": "Huvudproblem",
+                "elo": {
+                    "def": "<strong>Definition</strong>: Rankningssystem där poängvinsten eller -förlusten beror på resultatet (vinst/förlust/oavgjort) <strong>och</strong> motståndarens uppskattade nivå – om en svagare modell slår en starkare modell, gör den större framsteg i rankingen.",
+                    "list": {
+                        "1": "<strong>Probabilistisk modell</strong>: vi kan uppskatta det sannolika resultatet av vilken jämförelse som helst, även mellan modeller som aldrig har jämförts direkt.",
+                        "2": "<strong>Nivåjustering</strong>: Poäng enligt Bradley Terry-modellen tar hänsyn till nivån på de motståndare som möts, vilket möjliggör en rättvis jämförelse mellan modellerna.",
+                        "3": "<strong>Förbättrad osäkerhetshantering</strong>: Konfidensintervallet omfattar hela jämförelsenätverket. Detta möjliggör en mer exakt uppskattning av osäkerhet, särskilt för modeller med få direkta konfrontationer men många gemensamma motståndare."
+                    },
+                    "title": "Topplista enligt Bradley-Terry (BT)"
+                },
+                "pros": "Fördelar",
+                "title": "Två sätt att klassificera modeller",
+                "winrate": {
+                    "def": "<strong>Definition</strong>: Ett empiriskt rankingsystem för modeller baserat på andelen matcher som vunnits av en modell jämfört med alla andra modeller.",
+                    "list": {
+                        "1": "<strong>Osäkerhet med få mätpunkter</strong>: En modell som har vunnit tre av tre \"matcher\" visar en vinstprocent på 100 %, men denna poäng är inte särskilt signifikant eftersom den baseras på väldigt lite data.",
+                        "2": "<strong>Ingen hänsyn till motståndare</strong>: Att vinna mot en starkare eller svagare modell räknas lika. Vinstprocenten är orättvis eftersom den inte tar hänsyn till matchens svårighetsgrad.",
+                        "3": "<strong>Stagnering</strong>: På lång sikt får många bra modeller en vinstprocent på runt 50 % eftersom de möter modeller på liknande nivå, vilket gör att rankningen blir mindre meningsfull."
+                    },
+                    "title": "Rankning efter vinstfrekvens"
+                }
+            },
+            "tabLabel": "Metodik",
+            "title": "Hur väljer man metod för att klassificera modeller?"
+        },
+        "preferences": {
+            "desc": "När du röstar kan du kategorisera dina preferenser med hjälp av olika positiva och negativa kategorier. Jämför deras fördelning mellan olika modeller.",
+            "modal": {
+                "cta": "Vad är en preferens?",
+                "title": "Positiva och negativa preferenser"
+            },
+            "tabLabel": "Preferensvy",
+            "table": {
+                "cols": {
+                    "clear_formatting": "Rensa formatering",
+                    "complete": "Komplett",
+                    "creative": "Kreativt",
+                    "incorrect": "Fel",
+                    "instructions_not_followed": "Instruktioner följdes inte",
+                    "n_match": "Totalt antal matchningar",
+                    "name": "Modell",
+                    "positive_prefs_ratio": "Fördelning av preferenser",
+                    "superficial": "Ytligt",
+                    "total_negative_prefs": "Totalt antal preferenser <br>Negativa",
+                    "total_positive_prefs": "Totalt antal preferenser <br>Positiva",
+                    "useful": "Användbart"
+                },
+                "percentLabel": "Preferenser i procent",
+                "tooltips": {
+                    "positive_prefs_ratio": "Under omröstningen kan användaren med hjälp av etiketter ange skälen till sin preferens. Denna kolumn visar den procentuella fördelningen av dessa etiketter (positiva eller negativa) för alla röster."
+                }
+            },
+            "title": "Hur är preferenserna fördelade?"
+        },
+        "ranking": {
+            "desc": "Tack för dina bidrag! Dina röster matas in i en Bradley-Terry-ranking. Denna nöjdhetspoäng är skapad i samarbete med <a {linkProps}>Pôle d'Expertise de la Régulation Numérique (PEReN)</a> och baseras på dina röster och reaktioner.",
+            "tabLabel": "Rankning"
+        },
         "table": {
             "data": {
+                "billions": "{count} miljarder",
                 "cols": {
-                    "consumption_wh": "Energi<br>(1000 tokens)",
-                    "elo": "Nöjdhetspoäng",
+                    "arch": "Arkitektur",
+                    "consumption_wh": "Genomsnittlig förbrukning<br>(1000 tokens)",
+                    "elo": "Nöjdhetspoäng (BT)",
                     "license": "Licens",
                     "n_match": "Totalt antal röster",
                     "name": "Modell",
                     "organisation": "Organisation",
                     "rank": "Rang",
                     "release": "Utgivningsdatum",
-                    "size": "Storlek<br>(aktiva parametrar)",
+                    "size": "Storlek<br>(parametrar)",
                     "trust_range": "Konfidens (±)"
+                },
+                "estimation": "(uppskattning)",
+                "tooltips": {
+                    "arch": "Arkitekturen för en LLM-modell syftar på de designprinciper som definierar hur komponenterna i ett neuralt nätverk är arrangerade och interagerar för att omvandla indata till prediktiva resultat, inklusive läget för parameteraktivering (tät vs. gles), komponentspecialisering och informationsbehandlingsmekanismer (transformatorer, konvolutionella nätverk, hybridarkitekturer).",
+                    "elo": "Den statistiska poängen, uppskattad enligt Bradley-Terry-modellen, återspeglar sannolikheten att en modell föredras framför en annan. Denna poäng beräknas utifrån alla användarröster och reaktioner. För mer information, gå in på fliken \"metod\".",
+                    "rank": "Rankning enligt Bradley-Terry-nöjdhetspoängen",
+                    "size": "Modellstorleken i miljarder parametrar, kategoriserad i fem klasser. För proprietära modeller anges inte denna storlek.",
+                    "trust_range": "Intervall som anger tillförlitligheten hos rankningsuppskattningen – ju smalare intervallet är, desto mer tillförlitlig är rankningsuppskattningen. Sannolikheten är 95% att modellens verkliga ranking ligger inom detta intervall."
                 }
             },
             "lastUpdate": "Uppdaterat {date}",
@@ -1230,7 +1441,7 @@
             "totalModels": "Totalt antal modeller:",
             "totalVotes": "Totalt antal röster:"
         },
-        "title": "Modellrankning"
+        "title": "Från röster till rankning"
     },
     "reveal": {
         "equivalent": {
@@ -1350,9 +1561,13 @@
     },
     "words": {
         "NA": "--",
+        "activated": "Aktiverad",
+        "archived": "Arkiverad",
         "back": "Tillbaka",
         "close": "Stäng",
+        "deactivated": "Inaktiv",
         "loading": "Laddar",
+        "new": "Ny",
         "random": "Slump",
         "regenerate": "Regenerera",
         "reset": "Återställ",
