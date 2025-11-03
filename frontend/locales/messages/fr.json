@@ -1510,7 +1510,8 @@
                             "2": "<strong>En haut à gauche</strong> se trouvent les modèles qui plaisent et qui consomment peu d’énergie par rapport aux autres modèles.",
                             "3": "Au-delà de la taille, <strong>l’architecture</strong> a un impact sur la consommation énergétique moyenne des modèles: par exemple, à gabarit similaire, le modèle Llama 3 405B (architecture dense, 405 milliards de paramètres) consomme 10 fois plus d’énergie en moyenne que le modèle GLM 4.5 (architecture MOE, 355 milliards de paramètres et 32 milliards de paramètres actifs)."
                         },
-                        "title": "Comment trouver le bon équilibre entre performance perçue et sobriété énergétique ?Exemples de lecture du graphique"
+                        "subTitle": "Exemples de lecture du graphique",
+                        "title": "Comment trouver le bon équilibre entre performance perçue et sobriété énergétique ?"
                     },
                     "2": {
                         "descs": {
@@ -1537,7 +1538,7 @@
         "methodo": {
             "desc": {
                 "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
-                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (PEReN)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {linkProps}>carnet méthodologique</a>."
+                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {notebookLinkProps}>carnet méthodologique</a>."
             },
             "impacts": {
                 "elo": {

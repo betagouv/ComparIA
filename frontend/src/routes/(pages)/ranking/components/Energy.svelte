@@ -31,7 +31,10 @@
       <section class="basis-1/2 rounded-xl bg-white p-4 md:p-10">
         <h3 class="text-lg! flex items-center gap-3">
           <Icon icon="search-eye" size="lg" block class="text-yellow" />
-          {m['ranking.energy.views.methodo.1.title']()}
+          <span>
+            {m['ranking.energy.views.methodo.1.title']()}
+            <span class="font-normal!">{m['ranking.energy.views.methodo.1.subTitle']()}</span>
+          </span>
         </h3>
 
         <ul class="text-grey text-[14px]">

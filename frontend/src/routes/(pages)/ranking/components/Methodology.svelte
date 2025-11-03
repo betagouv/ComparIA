@@ -58,10 +58,11 @@
   <p class="text-[14px]! text-dark-grey">
     {@html sanitize(
       m['ranking.methodo.desc.2']({
-        linkProps: externalLinkProps({
+        notebookLinkProps: externalLinkProps({
           href: 'https://colab.research.google.com/drive/1j5AfStT3h-IK8V6FSJY9CLAYr_1SvYw7#scrollTo=LgXO1k5Tp0pq',
           class: 'text-primary!'
-        })
+        }),
+        perenLinkProps: externalLinkProps('https://www.peren.gouv.fr/')
       })
     )}
   </p>
