@@ -1601,7 +1601,7 @@
             "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
         "ranking": {
-            "desc": "Merci pour vos contributions ! Vos votes alimentent un classement Bradley-Terry (BT) et que nous vous rendons transparent.<br>Ce score de satisfaction Bradley-Terry (BT) est construit en partenariat avec le <a {linkProps}>Pôle d'Expertise de la Régulation Numérique (PEReN)</a> et repose sur vos votes et vos réactions d’approbation et désapprobation.",
+            "desc": "Merci pour vos contributions !<br> Le classement <strong>compar:IA</strong> repose sur l’ensemble des votes et réactions collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement compar:IA n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
             "tabLabel": "Classement"
         },
         "table": {
@@ -1623,7 +1623,7 @@
                 "estimation": "(estimation)",
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
-                    "consumption_wh": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. Plus un modèle est grand (en milliards de paramètres), plus il faut d'énergie pour produire un token. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture",
+                    "consumption_wh": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "rank": "Rang de classement attribué selon le score de satisfaction Bradley-Terry",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
