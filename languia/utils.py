@@ -146,7 +146,9 @@ def messages_to_dict_list(
         if message.reasoning and not concat_reasoning_with_content:
             msg_dict["reasoning_content"] = message.reasoning
         elif message.reasoning and concat_reasoning_with_content:
-            msg_dict["content"] ="<|think|>" + message.reasoning + "<|think|>" + message.content
+            msg_dict["content"] = (
+                "<|think|>" + message.reasoning + "<|think|>" + message.content
+            )
         else:
             msg_dict["content"] = message.content
 
