@@ -154,7 +154,7 @@
         data-fr-opened="false"
         aria-controls={modalId}
       >
-        Autre…
+        {m['vote.choices.other']()}
       </button>
     {/if}
   </div>

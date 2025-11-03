@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CheckboxGroup, Icon, Search, Tooltip } from '$components/dsfr'
+  import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
   import { ARCHS } from '$lib/generated'
   import { m } from '$lib/i18n/messages'
   import type { Archs, ConsoSizes, Sizes } from '$lib/models'
@@ -13,7 +13,7 @@
 
   const { models: data } = getModelsWithDataContext()
 
-  const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
+  const dotSizes = { XS: 5, S: 7, M: 9, L: 11, XL: 13 } as const
 
   const models = $derived(
     data
@@ -26,7 +26,12 @@
           y: m.data.elo,
           radius: dotSizes[m.friendly_size],
           class: m.license === 'proprietary' ? 'na' : m.arch,
-          consoSize: m.consumption_wh < 10 ? 'S' : m.consumption_wh < 100 ? 'M' : 'L',
+          consoSize:
+            m.consumption_wh < 10
+              ? ('S' as const)
+              : m.consumption_wh < 100
+                ? ('M' as const)
+                : ('L' as const),
           search: (['id', 'simple_name', 'organisation'] as const)
             .map((key) => m[key].toLowerCase())
             .join(' ')
@@ -36,7 +41,8 @@
 
   let search = $state('')
   let sizes = $state<Sizes[]>([])
-  let consos = $state<ConsoSizes[]>([])
+  let consos = $state<ConsoSizes[]>(['S', 'M'])
+  let showArchived = $state(true)
   const sizeFilter = {
     id: 'size',
     legend: m['models.list.filters.size.legend'](),
@@ -60,14 +66,9 @@
       const sizeMatch = sizes.length === 0 || sizes.includes(m.friendly_size)
       const consoMatch = consos.length === 0 || consos.includes(m.consoSize)
       const searchMatch = !_search || m.search.includes(_search)
-      // FIXME remove grok models filtering?
-      return (
-        sizeMatch &&
-        consoMatch &&
-        searchMatch &&
-        m.id !== 'grok-4-fast' &&
-        m.id !== 'grok-3-mini-beta'
-      )
+      const archivedMatch = m.status === 'enabled' || showArchived
+
+      return sizeMatch && consoMatch && searchMatch && archivedMatch
     })
   })
 
@@ -82,7 +83,7 @@
 
   let svg = $state<SVGSVGElement>()
   let width = $state(1100)
-  let height = $state(660)
+  let height = $state(700)
 
   const padding = { top: 5, right: 10, bottom: 35, left: 72 }
 
@@ -125,7 +126,7 @@
       class="mb-5"
     />
 
-    <p class="mb-3! text-[13px]! leading-normal!" aria-hidden="true">
+    <p class="mb-1! text-[13px]! leading-normal!" aria-hidden="true">
       <strong>{consoFilter.legend}</strong>
     </p>
     <CheckboxGroup
@@ -137,7 +138,7 @@
       class="mb-5!"
     ></CheckboxGroup>
 
-    <p class="mb-3! text-[13px]! leading-tight!" aria-hidden="true">
+    <p class="mb-1! text-[13px]! leading-tight!" aria-hidden="true">
       <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
       <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
     </p>
@@ -154,13 +155,26 @@
       {/snippet}
     </CheckboxGroup>
 
-    <p class="mb-3! text-[13px]! leading-normal!">
+    <Toggle
+      id="archived-{kind}"
+      bind:value={showArchived}
+      label={m['models.list.filters.archived.label']()}
+      checkedLabel={m['models.list.filters.archived.checkedLabel']()}
+      uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
+      inline={false}
+      groupClass="mb-2"
+      class="mb-2! text-[13px]! leading-tight! text-(--text-default-grey)) font-medium"
+      checkLabelClass="text-[12px]"
+    />
+
+    <hr class="pb-2!" />
+    <p class="mb-1! text-[13px]! leading-normal!">
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
-    <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
+    <ul class="p-0! list-none! mt-0! md:mb-10! flex flex-wrap gap-x-3 font-medium md:block">
       {#each ARCHS.filter((arch) => arch !== 'na') as arch}
-        <li class="p-0! not-last:mb-2 flex items-center">
-          <div class={['dot me-2 rounded-full', arch]}></div>
+        <li class="p-0! md:not-last:mb-2 flex items-center">
+          <div class={['dot border-dark-grey me-2  rounded-full border', arch]}></div>
           {m[`generated.archs.${arch}.name`]()}
           <Tooltip
             id="arch-type-{arch}-{kind}"
@@ -293,7 +307,7 @@
           </div>
         {/if}
 
-        <div class="hidden h-[625px] w-[230px] md:block">
+        <div class="hidden h-[675px] w-[230px] md:block">
           {@render legend('desktop')}
         </div>
       </div>
@@ -314,7 +328,7 @@
   #energy-graph {
     svg {
       width: 100%;
-      height: 660px;
+      height: 700px;
     }
 
     text {
@@ -359,8 +373,8 @@
     }
 
     circle {
-      stroke-width: 2px;
-      stroke: var(--color-white);
+      stroke-width: 1px;
+      stroke: var(--color-dark-grey);
 
       &.hovered {
         stroke: var(--color-dark-grey);
@@ -377,8 +391,8 @@
       background-color: #cecece;
     }
     .moe {
-      fill: var(--green-menthe-850-200);
-      background-color: var(--green-menthe-850-200);
+      fill: var(--green-archipel-925-125);
+      background-color: var(--green-archipel-925-125);
     }
     .dense {
       fill: var(--cg-orange);

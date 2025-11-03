@@ -1288,12 +1288,7 @@
             "title": "Er de mest populære modeller energieffektive?",
             "views": {
                 "graph": {
-                    "desc": "Vælg en model for at kende dens BT-score og energiforbrug",
-                    "faq": {
-                        "1": {
-                            "desc": "Vi har valgt at vise proprietære modeller, som ikke kommunikerer transparent om størrelse og arkitektur, i gråt (ikke analyseret)."
-                        }
-                    }
+                    "desc": "Vælg en model for at kende dens BT-score og energiforbrug"
                 }
             }
         },

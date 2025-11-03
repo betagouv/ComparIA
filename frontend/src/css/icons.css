@@ -63,6 +63,12 @@
   mask-image: url('/icons/copy.svg');
 }
 
+.fr-icon-database::before,
+.fr-icon-database::after {
+  -webkit-mask-image: url('/icons/database.svg');
+  mask-image: url('/icons/database.svg');
+}
+
 .fr-icon-dice::before,
 .fr-icon-dice::after {
   -webkit-mask-image: url('/icons/dice.svg');
@@ -116,6 +122,12 @@
 .fr-icon-school-line::after {
   -webkit-mask-image: url('/icons/school-line.svg');
   mask-image: url('/icons/school-line.svg');
+}
+
+.fr-icon-search-eye::before,
+.fr-icon-search-eye::after {
+  -webkit-mask-image: url('/icons/search-eye.svg');
+  mask-image: url('/icons/search-eye.svg');
 }
 
 .fr-icon-shuffle::before,

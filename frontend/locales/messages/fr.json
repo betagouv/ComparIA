@@ -1110,9 +1110,7 @@
         "menu": "Menu",
         "startDiscussion": "Commencer à discuter",
         "subtitle": "Le comparateur d’IA conversationnelles",
-        "title": 
-            "compar:IA"
-        ,
+        "title": "compar:IA",
         "votes": {
             "count": "{count} votes",
             "legend": "Légende",
@@ -1482,28 +1480,12 @@
     },
     "ranking": {
         "energy": {
-            "desc": "Explorez le graphique qui met en perspective le score de satisfaction d’un modèle (axe des ordonnées) avec sa consommation énergétique (axe des abscisses).",
-            "desc2": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
+            "desc": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
             "tabLabel": "Focus énergie",
             "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
             "views": {
                 "graph": {
                     "desc": "Sélectionnez un modèle pour connaitre son score Bradley-Terry (BT) et sa consommation énergétique",
-                    "faq": {
-                        "1": {
-                            "desc": "Nous prenons le parti d’afficher en grisé (non analysés) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture.",
-                            "title": "Pourquoi certains modèles sont-ils signalés comme non analysés ?"
-                        }
-                    },
-                    "infos": {
-                        "list": {
-                            "1": "En haut à gauche se trouvent les modèles qui plaisent et qui consomment peu d’énergie par rapport aux autres modèles.",
-                            "2": "Plus un modèle est situé en haut du graphique, plus son score de satisfaction Bradley-Terry est élevé.",
-                            "3": "Plus un modèle est situé sur la gauche du graphique, moins il consomme d’énergie par rapport aux autres modèles.",
-                            "4": "Au-delà de la taille, l’architecture a un impact sur la consommation énergétique moyenne des modèles: par exemple, à gabarit similaire, le modèle Llama 3 405B (architecture dense, 405 milliards de paramètres) consomme 10 fois plus d’énergie en moyenne que le modèle GLM 4.5 (architecture MOE, 355 milliards de paramètres et 32 milliards de paramètres actifs)."
-                        },
-                        "title": "Exemples de lecture :"
-                    },
                     "legends": {
                         "arch": "Architecture du modèle",
                         "size": "Filtre par taille",
@@ -1521,6 +1503,33 @@
                     "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
                     "yLabel": "Score Bradley-Terry (BT)"
                 },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong>Plus un modèle est situé en haut du graphique</strong>, plus son score de satisfaction Bradley-Terry est élevé. <strong>Plus un modèle est situé sur la gauche du graphique</strong>, moins il consomme d’énergie par rapport aux autres modèles.",
+                            "2": "<strong>En haut à gauche</strong> se trouvent les modèles qui plaisent et qui consomment peu d’énergie par rapport aux autres modèles.",
+                            "3": "Au-delà de la taille, <strong>l’architecture</strong> a un impact sur la consommation énergétique moyenne des modèles: par exemple, à gabarit similaire, le modèle Llama 3 405B (architecture dense, 405 milliards de paramètres) consomme 10 fois plus d’énergie en moyenne que le modèle GLM 4.5 (architecture MOE, 355 milliards de paramètres et 32 milliards de paramètres actifs)."
+                        },
+                        "subTitle": "Exemples de lecture du graphique",
+                        "title": "Comment trouver le bon équilibre entre performance perçue et sobriété énergétique ?"
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "L’estimation de la consommation énergétique pour l’inférence des modèles repose sur la méthodologie Ecologits qui prend en compte la taille et l’architecture des modèles. Or ces informations ne sont pas rendues publiques par les éditeurs de modèles pour les modèles dits « propriétaires ».",
+                            "2": "Nous prenons ainsi le parti de ne pas intégrer les modèles propriétaires au graphique tant que les informations contribuant au calcul de consommation énergétique ne sont pas transparentes."
+                        },
+                        "title": "Pourquoi les modèles propriétaires ne sont-ils pas affichés sur le graphique ?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "compar:IA utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
+                            "2": "Ecologits applique les principes de l'analyse du cycle de vie (ACV) conformément à la norme ISO 14044 en se concentrant pour le moment sur l'impact de l'inférence (c'est-à-dire l'utilisation des modèles pour répondre aux requêtes) et de la <strong>fabrication des cartes graphiques</strong> (extraction des ressources, fabrication et transport).",
+                            "3": "La consommation électrique du modèle est estimée en tenant compte de divers paramètres tels que la taille et l’architecture du modèle d'IA utilisé, la localisation des serveurs où sont déployés les modèles et le nombre de tokens de sortie. Le calcul de l’indicateur de potentiel de réchauffement climatique exprimé en équivalent CO2 est dérivé de la mesure de consommation électrique du modèle.",
+                            "4": "Il est important de noter que les méthodologies d'évaluation de l'impact environnemental de l'IA sont encore en développement."
+                        },
+                        "title": "Comment est calculé l’impact énergétique des modèles ?"
+                    }
+                },
                 "table": {
                     "title": "Données du graphique en tableau"
                 }
@@ -1529,7 +1538,7 @@
         "methodo": {
             "desc": {
                 "1": "Depuis 2024, des milliers d’utilisateurs ont utilisé compar:IA pour comparer les réponses de différents modèles, générant ainsi des centaines de milliers de votes. Compter simplement le nombre de victoires ne suffit pas pour établir un classement. Un système équitable doit être statistiquement robuste, s’ajuster après chaque confrontation, et refléter réellement la valeur des performances obtenues.",
-                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (PEReN)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {linkProps}>carnet méthodologique</a>."
+                "2": "C’est dans cette perspective qu’a été mis en place un <strong>classement basé sur le modèle Bradley-Terry</strong>, élaboré en collaboration avec les <strong>équipes du Pôle d’Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, à partir de l’ensemble des votes et réactions collectés sur la plateforme. Pour aller plus loin, consultez notre <a {notebookLinkProps}>carnet méthodologique</a>."
             },
             "impacts": {
                 "elo": {
@@ -1604,7 +1613,7 @@
             "title": "Comment se répartissent les préférences des utilisateurs ?"
         },
         "ranking": {
-            "desc": "Merci pour vos contributions ! Vos votes alimentent un classement Bradley-Terry (BT) et que nous vous rendons transparent.<br>Ce score de satisfaction Bradley-Terry (BT) est construit en partenariat avec le <a {linkProps}>Pôle d'Expertise de la Régulation Numérique (PEReN)</a> et repose sur vos votes et vos réactions d’approbation et désapprobation.",
+            "desc": "Merci pour vos contributions !<br> Le classement <strong>compar:IA</strong> repose sur l’ensemble des votes et réactions collectés depuis l’ouverture du service au public en octobre 2024.<br> Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement des modèles est établi en fonction du <strong>score de satisfaction</strong> calculé à partir du modèle statistique <strong>Bradley Terry</strong>, méthode largement répandue pour convertir des votes binaires en classement probabiliste.<br> Le classement compar:IA n’a pas vocation à constituer une recommandation officielle ni à évaluer la performance technique des modèles. Il reflète les <strong>préférences subjectives</strong> des utilisateurs de la plateforme et non la factualité ou la véracité des réponses.",
             "tabLabel": "Classement"
         },
         "table": {
@@ -1612,7 +1621,7 @@
                 "billions": "{count} Mds",
                 "cols": {
                     "arch": "Architecture",
-                    "consumption_wh": "Conso moyenne<br>(1000 tokens)",
+                    "consumption_wh": "Conso. moyenne<br>(1000 tokens)",
                     "elo": "Score de<br> satisfaction BT",
                     "license": "Licence",
                     "n_match": "Total votes",
@@ -1626,6 +1635,7 @@
                 "estimation": "(estimation)",
                 "tooltips": {
                     "arch": "L'architecture d'un modèle LLM désigne les principes de conception qui définissent comment les composants d'un réseau de neurones sont agencés et interagissent pour transformer les données d'entrée en sorties prédictives, incluant le mode d'activation des paramètres (dense vs. sparse), la spécialisation des composants et les mécanismes de traitement de l'information (transformers, réseaux convolutifs, architectures hybrides).",
+                    "consumption_wh": "Mesurée en wattheures, l’énergie consommée représente l'électricité utilisée par le modèle pour traiter une requête et générer la réponse correspondante. La consommation énergétique des modèles dépend de leur taille et de leur architecture. Nous prenons le parti d’afficher en grisé non analysés (N/A) les modèles propriétaires pour lesquels nous ne disposons pas d’information transparente sur la taille et l’architecture.",
                     "elo": "Score statistique estimé selon le modèle Bradley-Terry reflétant la probabilité qu'un modèle soit préféré à un autre. Ce score est calculé à partir de l'ensemble des votes et réactions des utilisateurs. Pour en savoir plus, rendez-vous sur l’onglet méthodologie.",
                     "rank": "Rang de classement attribué selon le score de satisfaction Bradley-Terry",
                     "size": "Taille du modèle en milliards de paramètres, catégorisée selon cinq classes. Pour les modèles propriétaires, cette taille n’est pas communiquée.",
@@ -1714,6 +1724,7 @@
                 "question": "Pourquoi la réponse ne convient-elle pas ?",
                 "superficial": "Superficielle"
             },
+            "other": "Autre…",
             "positive": {
                 "clear-formatting": "Mise en forme claire",
                 "complete": "Complète",

@@ -2,6 +2,7 @@
   import { Accordion, AccordionGroup, Button, Checkbox, Icon, Link } from '$components/dsfr'
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
+  import * as env from '$env/static/public'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'
@@ -11,6 +12,10 @@
   const locale = getLocale()
   const acceptTos = useLocalStorage('comparia:tos', false)
   let tosError = $state<string>()
+
+  let PUBLIC_GIT_COMMIT = $state<string | null>((env as any).PUBLIC_GIT_COMMIT ?? null)
+
+  if (PUBLIC_GIT_COMMIT) console.log(`Git commit: ${PUBLIC_GIT_COMMIT}`)
 
   $effect(() => {
     if (acceptTos.value) tosError = undefined
@@ -24,19 +29,28 @@
     }
   }
 
+  const availableImgsLocales = ['da', 'sv']
   const utilyCards = (
     [
       {
         i18nKey: 'compare',
-        src: '/home/comparer.svg',
-        srcDark: '/home/comparer-dark.jpg',
+        src: availableImgsLocales.includes(locale)
+          ? `/home/comparer-${locale}.png`
+          : '/home/comparer.svg',
+        srcDark: availableImgsLocales.includes(locale)
+          ? `/home/comparer-dark-${locale}.png`
+          : '/home/comparer-dark.jpg',
         classes: ''
       },
       { i18nKey: 'test', src: '/home/tester.png', srcDark: '/home/tester-dark.jpg', classes: '' },
       {
         i18nKey: 'measure',
-        src: '/home/mesurer.svg',
-        srcDark: '/home/mesurer-dark.jpg',
+        src: availableImgsLocales.includes(locale)
+          ? `/home/mesurer-${locale}.png`
+          : '/home/mesurer.svg',
+        srcDark: availableImgsLocales.includes(locale)
+          ? `/home/mesurer-dark-${locale}.png`
+          : '/home/mesurer-dark.jpg',
         classes: 'px-14 py-5'
       }
     ] as const
@@ -237,10 +251,10 @@
         class="py-15 flex w-full flex-col justify-center gap-8 rounded-xl bg-white px-9 xl:flex-row"
       >
         <img
-          src="/home/comparia-stars.svg"
+          src="/home/comparia-stars.png"
           aria-hidden="true"
           alt=""
-          class="m-auto max-w-fit xl:m-0"
+          class="m-auto max-w-[180px] object-contain xl:m-0"
         />
 
         <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
