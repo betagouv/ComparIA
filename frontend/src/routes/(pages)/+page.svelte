@@ -2,15 +2,16 @@
   import { Accordion, AccordionGroup, Button, Checkbox, Icon, Link } from '$components/dsfr'
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
+  import * as env from '$env/static/public'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'
   import { externalLinkProps, propsToAttrs, sanitize } from '$lib/utils/commons'
   import type { HTMLImgAttributes } from 'svelte/elements'
+
   const locale = getLocale()
   const acceptTos = useLocalStorage('comparia:tos', false)
   let tosError = $state<string>()
-  import * as env from '$env/static/public'
 
   let PUBLIC_GIT_COMMIT = $state<string | null>((env as any).PUBLIC_GIT_COMMIT ?? null)
 
@@ -28,19 +29,28 @@
     }
   }
 
+  const availableImgsLocales = ['da', 'sv'] as const
   const utilyCards = (
     [
       {
         i18nKey: 'compare',
-        src: '/home/comparer.svg',
-        srcDark: '/home/comparer-dark.jpg',
+        src: availableImgsLocales.includes(locale as any)
+          ? `/home/comparer-${locale}.png`
+          : '/home/comparer.svg',
+        srcDark: availableImgsLocales.includes(locale as any)
+          ? `/home/comparer-dark-${locale}.png`
+          : '/home/comparer-dark.jpg',
         classes: ''
       },
       { i18nKey: 'test', src: '/home/tester.png', srcDark: '/home/tester-dark.jpg', classes: '' },
       {
         i18nKey: 'measure',
-        src: '/home/mesurer.svg',
-        srcDark: '/home/mesurer-dark.jpg',
+        src: availableImgsLocales.includes(locale as any)
+          ? `/home/mesurer-${locale}.png`
+          : '/home/mesurer.svg',
+        srcDark: availableImgsLocales.includes(locale as any)
+          ? `/home/mesurer-dark-${locale}.png`
+          : '/home/mesurer-dark.jpg',
         classes: 'px-14 py-5'
       }
     ] as const
