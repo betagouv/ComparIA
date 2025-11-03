@@ -11,7 +11,9 @@
     checkedLabel?: string
     uncheckedLabel?: string
     variant?: 'primary' | 'secondary'
+    inline?: boolean
     groupClass?: string
+    checkLabelClass?: string
   }
 
   let {
@@ -23,12 +25,14 @@
     checkedLabel = m['words.activated'](),
     uncheckedLabel = m['words.deactivated'](),
     variant = 'secondary',
+    inline = true,
+    checkLabelClass,
     groupClass,
     ...props
   }: ToggleProps & SvelteHTMLElements['label'] = $props()
 </script>
 
-<div class={['fr-toggle', `toggle-${variant}`, groupClass]}>
+<div class={['fr-toggle', `toggle-${variant}`, { 'l-toggle-block': !inline }, groupClass]}>
   <input
     type="checkbox"
     class="fr-toggle__input"
@@ -36,17 +40,27 @@
     bind:checked={value}
     aria-describedby="toggle-hint-{id}"
   />
+  {#if !inline}
+    <div aria-hidden="true" class={['fr-label w-full', props.class]}>{label}</div>
+  {/if}
   <label
     {...props}
     for={id}
     data-fr-checked-label={checkedLabel}
     data-fr-unchecked-label={uncheckedLabel}
-    class={['fr-toggle__label', props.class]}
+    class={['fr-toggle__label', ...(!inline ? ['max-w-[2.5rem]!'] : [props.class])]}
   >
-    <div class="block">{label}</div>
+    <div class={['block', { 'sr-only': !inline }]}>{label}</div>
   </label>
   {#if !hideCheckLabel}
-    <div aria-hidden="true" class="w-full text-end text-sm text-[#3A3A3A]">
+    <div
+      aria-hidden="true"
+      class={[
+        'w-full text-end text-sm text-[#3A3A3A]',
+        { 'w-auto! ms-2 text-start leading-[1.5rem]': !inline },
+        checkLabelClass
+      ]}
+    >
       {value ? checkedLabel : uncheckedLabel}
     </div>
   {/if}
@@ -58,14 +72,22 @@
 <style lang="postcss">
   .fr-toggle {
     label::before {
-      position: absolute;
-      right: 0;
-      margin-right: 0 !important;
       content: '' !important;
     }
-    label::after {
-      left: unset;
-      right: 1rem;
+    &:not(.l-toggle-block) {
+      label::before {
+        position: absolute;
+        right: 0;
+        margin-right: 0 !important;
+      }
+      label::after {
+        left: unset;
+        right: 1rem;
+      }
+    }
+
+    &.l-toggle-block label {
+      position: relative;
     }
 
     /* Override only light theme blue to purple */
