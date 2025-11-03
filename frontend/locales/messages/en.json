@@ -1354,20 +1354,6 @@
             "views": {
                 "graph": {
                     "desc": "Select a model to find out its BT Score and energy consumption",
-                    "faq": {
-                        "1": {
-                            "desc": "We have decided to display proprietary models that do not communicate transparently on size and architecture in gray (not analyzed).",
-                            "title": "Why are some models reported as not analyzed?"
-                        }
-                    },
-                    "infos": {
-                        "list": {
-                            "1": "At the top left are the models that are the most popular and consume, on average, less energy.",
-                            "2": "The models located at the bottom left are the least popular but consume the least energy.",
-                            "3": "The further a model is located to the right of the graph, the more energy it consumes."
-                        },
-                        "title": "Graph reading examples:"
-                    },
                     "tabLabel": "Graph view",
                     "tooltip": {
                         "consumption_wh": "Average consumption (Wh)",

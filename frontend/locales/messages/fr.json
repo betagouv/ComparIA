@@ -1486,21 +1486,6 @@
             "views": {
                 "graph": {
                     "desc": "Sélectionnez un modèle pour connaitre son score Bradley-Terry (BT) et sa consommation énergétique",
-                    "faq": {
-                        "1": {
-                            "desc": "Nous prenons le parti d’afficher en grisé (non analysés) les modèles propriétaires qui ne communiquent pas de manière transparente sur la taille et l’architecture.",
-                            "title": "Pourquoi certains modèles sont-ils signalés comme non analysés ?"
-                        }
-                    },
-                    "infos": {
-                        "list": {
-                            "1": "En haut à gauche se trouvent les modèles qui plaisent et qui consomment peu d’énergie par rapport aux autres modèles.",
-                            "2": "Plus un modèle est situé en haut du graphique, plus son score de satisfaction Bradley-Terry est élevé.",
-                            "3": "Plus un modèle est situé sur la gauche du graphique, moins il consomme d’énergie par rapport aux autres modèles.",
-                            "4": "Au-delà de la taille, l’architecture a un impact sur la consommation énergétique moyenne des modèles: par exemple, à gabarit similaire, le modèle Llama 3 405B (architecture dense, 405 milliards de paramètres) consomme 10 fois plus d’énergie en moyenne que le modèle GLM 4.5 (architecture MOE, 355 milliards de paramètres et 32 milliards de paramètres actifs)."
-                        },
-                        "title": "Exemples de lecture :"
-                    },
                     "legends": {
                         "arch": "Architecture du modèle",
                         "size": "Filtre par taille",
@@ -1517,6 +1502,32 @@
                     },
                     "xLabel": "Consommation moyenne pour 1000 tokens (Wh)",
                     "yLabel": "Score Bradley-Terry (BT)"
+                },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong>Plus un modèle est situé en haut du graphique</strong>, plus son score de satisfaction Bradley-Terry est élevé. <strong>Plus un modèle est situé sur la gauche du graphique</strong>, moins il consomme d’énergie par rapport aux autres modèles.",
+                            "2": "<strong>En haut à gauche</strong> se trouvent les modèles qui plaisent et qui consomment peu d’énergie par rapport aux autres modèles.",
+                            "3": "Au-delà de la taille, <strong>l’architecture</strong> a un impact sur la consommation énergétique moyenne des modèles: par exemple, à gabarit similaire, le modèle Llama 3 405B (architecture dense, 405 milliards de paramètres) consomme 10 fois plus d’énergie en moyenne que le modèle GLM 4.5 (architecture MOE, 355 milliards de paramètres et 32 milliards de paramètres actifs)."
+                        },
+                        "title": "Comment trouver le bon équilibre entre performance perçue et sobriété énergétique ?Exemples de lecture du graphique"
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "L’estimation de la consommation énergétique pour l’inférence des modèles repose sur la méthodologie Ecologits qui prend en compte la taille et l’architecture des modèles. Or ces informations ne sont pas rendues publiques par les éditeurs de modèles pour les modèles dits « propriétaires ».",
+                            "2": "Nous prenons ainsi le parti de ne pas intégrer les modèles propriétaires au graphique tant que les informations contribuant au calcul de consommation énergétique ne sont pas transparentes."
+                        },
+                        "title": "Pourquoi les modèles propriétaires ne sont-ils pas affichés sur le graphique ?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "compar:IA utilise la méthodologie développée par <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) pour fournir une estimation du bilan énergétique lié à l’inférence des modèles d’IA générative conversationnelle. Cette estimation permet aux utilisateurs de comparer l'impact environnemental de différents modèles d'IA pour une même requête. Cette transparence est essentielle pour encourager le développement et l'adoption de modèles d'IA plus éco-responsables.",
+                            "2": "Ecologits applique les principes de l'analyse du cycle de vie (ACV) conformément à la norme ISO 14044 en se concentrant pour le moment sur l'impact de l'inférence (c'est-à-dire l'utilisation des modèles pour répondre aux requêtes) et de la <strong>fabrication des cartes graphiques</strong> (extraction des ressources, fabrication et transport).",
+                            "3": "La consommation électrique du modèle est estimée en tenant compte de divers paramètres tels que la taille et l’architecture du modèle d'IA utilisé, la localisation des serveurs où sont déployés les modèles et le nombre de tokens de sortie. Le calcul de l’indicateur de potentiel de réchauffement climatique exprimé en équivalent CO2 est dérivé de la mesure de consommation électrique du modèle.",
+                            "4": "Il est important de noter que les méthodologies d'évaluation de l'impact environnemental de l'IA sont encore en développement."
+                        },
+                        "title": "Comment est calculé l’impact énergétique des modèles ?"
+                    }
                 },
                 "table": {
                     "title": "Données du graphique en tableau"
