@@ -1,21 +1,24 @@
 {
-  "timestamp": 1761208447.347806,
+  "timestamp": 1762166691.050267,
   "models": {
     "Apertus-70B-Instruct-2509": {
       "active_params": null,
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1010,
-        "mean_win_prob": 0.5114498215736502,
+        "elo": 1007,
+        "mean_win_prob": 0.5079115231651958,
         "n_match": 89,
         "rank": 42,
         "rank_p2_5": 18,
         "rank_p97_5": 65,
-        "score_p2_5": 945,
-        "score_p97_5": 1069,
-        "trust_range": [24, 23],
-        "win_rate": 0.4638372093023255
+        "score_p2_5": 941,
+        "score_p97_5": 1070,
+        "trust_range": [
+          24,
+          23
+        ],
+        "win_rate": 0.4638372093023256
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -58,15 +61,18 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 967,
-        "mean_win_prob": 0.45181827666337715,
+        "elo": 964,
+        "mean_win_prob": 0.4481948237983913,
         "n_match": 86,
-        "rank": 59,
+        "rank": 60,
         "rank_p2_5": 37,
         "rank_p97_5": 70,
-        "score_p2_5": 907,
-        "score_p97_5": 1018,
-        "trust_range": [22, 11],
+        "score_p2_5": 910,
+        "score_p97_5": 1020,
+        "trust_range": [
+          23,
+          10
+        ],
         "win_rate": 0.46869047619047627
       },
       "distribution": "open-weights",
@@ -134,14 +140,17 @@
       "commercial_use": false,
       "data": {
         "elo": 996,
-        "mean_win_prob": 0.4919886420059455,
+        "mean_win_prob": 0.4922280185520432,
         "n_match": 4054,
         "rank": 45,
         "rank_p2_5": 42,
         "rank_p97_5": 49,
-        "score_p2_5": 987,
-        "score_p97_5": 1006,
-        "trust_range": [3, 4],
+        "score_p2_5": 986,
+        "score_p97_5": 1005,
+        "trust_range": [
+          3,
+          4
+        ],
         "win_rate": 0.4701578687715836
       },
       "distribution": "open-weights",
@@ -185,15 +194,18 @@
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 978,
-        "mean_win_prob": 0.46762641722555415,
+        "elo": 977,
+        "mean_win_prob": 0.46654503739766673,
         "n_match": 1302,
         "rank": 51,
         "rank_p2_5": 46,
         "rank_p97_5": 60,
-        "score_p2_5": 962,
+        "score_p2_5": 960,
         "score_p97_5": 993,
-        "trust_range": [5, 9],
+        "trust_range": [
+          5,
+          9
+        ],
         "win_rate": 0.5014285714285713
       },
       "distribution": "open-weights",
@@ -261,14 +273,17 @@
       "commercial_use": false,
       "data": {
         "elo": 935,
-        "mean_win_prob": 0.4086686552027624,
+        "mean_win_prob": 0.4085859336735136,
         "n_match": 5959,
         "rank": 67,
         "rank_p2_5": 65,
         "rank_p97_5": 69,
-        "score_p2_5": 927,
+        "score_p2_5": 926,
         "score_p97_5": 943,
-        "trust_range": [2, 2],
+        "trust_range": [
+          2,
+          2
+        ],
         "win_rate": 0.42968786709179396
       },
       "distribution": "open-weights",
@@ -335,16 +350,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 756,
-        "mean_win_prob": 0.20369010270635504,
+        "elo": 751,
+        "mean_win_prob": 0.1988579534486402,
         "n_match": 309,
         "rank": 79,
         "rank_p2_5": 78,
         "rank_p97_5": 80,
-        "score_p2_5": 707,
-        "score_p97_5": 798,
-        "trust_range": [1, 1],
-        "win_rate": 0.24022653721682855
+        "score_p2_5": 706,
+        "score_p97_5": 796,
+        "trust_range": [
+          1,
+          1
+        ],
+        "win_rate": 0.2402265372168285
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -411,15 +429,18 @@
       "commercial_use": true,
       "data": {
         "elo": 824,
-        "mean_win_prob": 0.27197026019630677,
+        "mean_win_prob": 0.27214774859609736,
         "n_match": 1796,
         "rank": 77,
         "rank_p2_5": 77,
         "rank_p97_5": 78,
-        "score_p2_5": 806,
+        "score_p2_5": 807,
         "score_p97_5": 839,
-        "trust_range": [0, 1],
-        "win_rate": 0.3317316258351893
+        "trust_range": [
+          0,
+          1
+        ],
+        "win_rate": 0.33173162583518934
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -459,15 +480,18 @@
       "commercial_use": null,
       "data": {
         "elo": 976,
-        "mean_win_prob": 0.4652088832014115,
+        "mean_win_prob": 0.46469989826840236,
         "n_match": 5683,
         "rank": 54,
-        "rank_p2_5": 50,
+        "rank_p2_5": 49,
         "rank_p97_5": 58,
-        "score_p2_5": 967,
+        "score_p2_5": 968,
         "score_p97_5": 985,
-        "trust_range": [4, 4],
-        "win_rate": 0.4921080415273624
+        "trust_range": [
+          5,
+          4
+        ],
+        "win_rate": 0.49210804152736226
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -507,15 +531,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1056,
-        "mean_win_prob": 0.5750659255070321,
+        "mean_win_prob": 0.5747145148799039,
         "n_match": 3907,
         "rank": 24,
         "rank_p2_5": 19,
         "rank_p97_5": 28,
-        "score_p2_5": 1046,
-        "score_p97_5": 1065,
-        "trust_range": [5, 4],
-        "win_rate": 0.524225748656258
+        "score_p2_5": 1045,
+        "score_p97_5": 1066,
+        "trust_range": [
+          5,
+          4
+        ],
+        "win_rate": 0.5242257486562579
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -555,14 +582,17 @@
       "commercial_use": null,
       "data": {
         "elo": 1083,
-        "mean_win_prob": 0.6112105228288874,
+        "mean_win_prob": 0.6118289483825059,
         "n_match": 790,
         "rank": 12,
         "rank_p2_5": 6,
         "rank_p97_5": 20,
-        "score_p2_5": 1064,
+        "score_p2_5": 1063,
         "score_p97_5": 1103,
-        "trust_range": [6, 8],
+        "trust_range": [
+          6,
+          8
+        ],
         "win_rate": 0.5251392405063291
       },
       "distribution": "api-only",
@@ -607,15 +637,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1065,
-        "mean_win_prob": 0.5874813443363986,
+        "mean_win_prob": 0.5874243089088312,
         "n_match": 1127,
-        "rank": 20,
+        "rank": 21,
         "rank_p2_5": 13,
         "rank_p97_5": 26,
-        "score_p2_5": 1049,
+        "score_p2_5": 1048,
         "score_p97_5": 1082,
-        "trust_range": [7, 6],
-        "win_rate": 0.5376198934280639
+        "trust_range": [
+          8,
+          5
+        ],
+        "win_rate": 0.537619893428064
       },
       "distribution": "api-only",
       "endpoint": {
@@ -659,14 +692,17 @@
       "commercial_use": false,
       "data": {
         "elo": 1067,
-        "mean_win_prob": 0.5896189803028824,
+        "mean_win_prob": 0.5895244069277102,
         "n_match": 4831,
         "rank": 19,
         "rank_p2_5": 15,
         "rank_p97_5": 23,
-        "score_p2_5": 1058,
+        "score_p2_5": 1059,
         "score_p97_5": 1076,
-        "trust_range": [4, 4],
+        "trust_range": [
+          4,
+          4
+        ],
         "win_rate": 0.5679958592132506
       },
       "distribution": "open-weights",
@@ -738,15 +774,18 @@
       "commercial_use": true,
       "data": {
         "elo": 1100,
-        "mean_win_prob": 0.6329602020497992,
+        "mean_win_prob": 0.633771835663853,
         "n_match": 314,
         "rank": 5,
         "rank_p2_5": 2,
         "rank_p97_5": 18,
-        "score_p2_5": 1070,
+        "score_p2_5": 1068,
         "score_p97_5": 1134,
-        "trust_range": [3, 13],
-        "win_rate": 0.5103225806451612
+        "trust_range": [
+          3,
+          13
+        ],
+        "win_rate": 0.5103225806451613
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -790,14 +829,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1034,
-        "mean_win_prob": 0.5449043332061375,
+        "mean_win_prob": 0.5446469227517879,
         "n_match": 3510,
         "rank": 33,
         "rank_p2_5": 28,
         "rank_p97_5": 36,
         "score_p2_5": 1023,
-        "score_p97_5": 1045,
-        "trust_range": [5, 3],
+        "score_p97_5": 1044,
+        "trust_range": [
+          5,
+          3
+        ],
         "win_rate": 0.5313019943019943
       },
       "distribution": "open-weights",
@@ -841,15 +883,18 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1081,
-        "mean_win_prob": 0.6091421140776446,
+        "elo": 1078,
+        "mean_win_prob": 0.6051932205904643,
         "n_match": 103,
         "rank": 13,
         "rank_p2_5": 2,
         "rank_p97_5": 34,
-        "score_p2_5": 1026,
+        "score_p2_5": 1028,
         "score_p97_5": 1133,
-        "trust_range": [11, 21],
+        "trust_range": [
+          11,
+          21
+        ],
         "win_rate": 0.5056862745098039
       },
       "distribution": "open-weights",
@@ -894,14 +939,17 @@
       "commercial_use": true,
       "data": {
         "elo": 958,
-        "mean_win_prob": 0.4401176028974063,
+        "mean_win_prob": 0.44013981979889816,
         "n_match": 2721,
         "rank": 62,
         "rank_p2_5": 57,
         "rank_p97_5": 65,
         "score_p2_5": 946,
         "score_p97_5": 969,
-        "trust_range": [5, 3],
+        "trust_range": [
+          5,
+          3
+        ],
         "win_rate": 0.44303420375137914
       },
       "distribution": "open-weights",
@@ -946,14 +994,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1099,
-        "mean_win_prob": 0.6327102176280684,
+        "mean_win_prob": 0.6324987163281275,
         "n_match": 4385,
         "rank": 6,
         "rank_p2_5": 4,
         "rank_p97_5": 11,
-        "score_p2_5": 1091,
-        "score_p97_5": 1108,
-        "trust_range": [2, 5],
+        "score_p2_5": 1089,
+        "score_p97_5": 1109,
+        "trust_range": [
+          2,
+          5
+        ],
         "win_rate": 0.5851128848346637
       },
       "distribution": "open-weights",
@@ -998,14 +1049,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1084,
-        "mean_win_prob": 0.6129952199141866,
+        "mean_win_prob": 0.6132145927762054,
         "n_match": 5388,
         "rank": 11,
         "rank_p2_5": 8,
-        "rank_p97_5": 17,
+        "rank_p97_5": 16,
         "score_p2_5": 1075,
         "score_p97_5": 1093,
-        "trust_range": [3, 6],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.6141481069042317
       },
       "distribution": "open-weights",
@@ -1046,14 +1100,17 @@
       "commercial_use": null,
       "data": {
         "elo": 1036,
-        "mean_win_prob": 0.5472329246370836,
+        "mean_win_prob": 0.5472166264139652,
         "n_match": 7387,
-        "rank": 31,
+        "rank": 32,
         "rank_p2_5": 27,
-        "rank_p97_5": 35,
+        "rank_p97_5": 34,
         "score_p2_5": 1028,
-        "score_p97_5": 1044,
-        "trust_range": [4, 4],
+        "score_p97_5": 1045,
+        "trust_range": [
+          5,
+          2
+        ],
         "win_rate": 0.5830743197509137
       },
       "distribution": "api-only",
@@ -1094,14 +1151,17 @@
       "commercial_use": null,
       "data": {
         "elo": 1106,
-        "mean_win_prob": 0.641662322501461,
+        "mean_win_prob": 0.6415178202373321,
         "n_match": 8684,
         "rank": 4,
         "rank_p2_5": 3,
         "rank_p97_5": 8,
         "score_p2_5": 1099,
         "score_p97_5": 1114,
-        "trust_range": [1, 4],
+        "trust_range": [
+          1,
+          4
+        ],
         "win_rate": 0.6317699216950713
       },
       "distribution": "api-only",
@@ -1141,16 +1201,19 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1128,
-        "mean_win_prob": 0.6696964574098164,
+        "elo": 1129,
+        "mean_win_prob": 0.6702100874630238,
         "n_match": 1042,
         "rank": 2,
         "rank_p2_5": 1,
         "rank_p97_5": 4,
         "score_p2_5": 1110,
-        "score_p97_5": 1146,
-        "trust_range": [1, 2],
-        "win_rate": 0.597341650671785
+        "score_p97_5": 1147,
+        "trust_range": [
+          1,
+          2
+        ],
+        "win_rate": 0.5973416506717851
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1221,14 +1284,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1004,
-        "mean_win_prob": 0.5037547400009338,
+        "mean_win_prob": 0.5034140665913477,
         "n_match": 762,
         "rank": 43,
         "rank_p2_5": 34,
         "rank_p97_5": 52,
-        "score_p2_5": 981,
-        "score_p97_5": 1029,
-        "trust_range": [9, 9],
+        "score_p2_5": 979,
+        "score_p97_5": 1028,
+        "trust_range": [
+          9,
+          9
+        ],
         "win_rate": 0.5826115485564304
       },
       "distribution": "open-weights",
@@ -1296,14 +1362,17 @@
       "commercial_use": true,
       "data": {
         "elo": 957,
-        "mean_win_prob": 0.4394200727547841,
+        "mean_win_prob": 0.4388604518815837,
         "n_match": 5115,
         "rank": 63,
         "rank_p2_5": 58,
         "rank_p97_5": 65,
-        "score_p2_5": 948,
-        "score_p97_5": 966,
-        "trust_range": [5, 2],
+        "score_p2_5": 947,
+        "score_p97_5": 967,
+        "trust_range": [
+          5,
+          2
+        ],
         "win_rate": 0.5068660801564027
       },
       "distribution": "open-weights",
@@ -1344,14 +1413,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1077,
-        "mean_win_prob": 0.603658349279164,
+        "mean_win_prob": 0.6035976854289518,
         "n_match": 4863,
         "rank": 14,
         "rank_p2_5": 11,
         "rank_p97_5": 19,
         "score_p2_5": 1069,
         "score_p97_5": 1086,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.5748498560263267
       },
       "distribution": "open-weights",
@@ -1396,14 +1468,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1098,
-        "mean_win_prob": 0.6313645312751852,
+        "mean_win_prob": 0.6314745159135933,
         "n_match": 5223,
         "rank": 7,
         "rank_p2_5": 4,
         "rank_p97_5": 11,
-        "score_p2_5": 1089,
+        "score_p2_5": 1090,
         "score_p97_5": 1107,
-        "trust_range": [3, 4],
+        "trust_range": [
+          3,
+          4
+        ],
         "win_rate": 0.5971108558299828
       },
       "distribution": "open-weights",
@@ -1448,15 +1523,18 @@
       "commercial_use": true,
       "data": {
         "elo": 1048,
-        "mean_win_prob": 0.5645655872769223,
+        "mean_win_prob": 0.5646357958564941,
         "n_match": 5794,
         "rank": 28,
         "rank_p2_5": 22,
         "rank_p97_5": 30,
-        "score_p2_5": 1041,
+        "score_p2_5": 1040,
         "score_p97_5": 1056,
-        "trust_range": [6, 2],
-        "win_rate": 0.5317897825336554
+        "trust_range": [
+          6,
+          2
+        ],
+        "win_rate": 0.5317897825336556
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1499,15 +1577,18 @@
       "arch": "matformer",
       "commercial_use": true,
       "data": {
-        "elo": 1044,
-        "mean_win_prob": 0.5581136016360454,
+        "elo": 1043,
+        "mean_win_prob": 0.5574173475234657,
         "n_match": 933,
         "rank": 29,
-        "rank_p2_5": 21,
+        "rank_p2_5": 20,
         "rank_p97_5": 35,
-        "score_p2_5": 1024,
-        "score_p97_5": 1062,
-        "trust_range": [8, 6],
+        "score_p2_5": 1025,
+        "score_p97_5": 1063,
+        "trust_range": [
+          9,
+          6
+        ],
         "win_rate": 0.505021505376344
       },
       "distribution": "open-weights",
@@ -1551,15 +1632,18 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1093,
-        "mean_win_prob": 0.6240136774082448,
+        "elo": 1094,
+        "mean_win_prob": 0.6262941971370625,
         "n_match": 274,
-        "rank": 10,
+        "rank": 9,
         "rank_p2_5": 2,
-        "rank_p97_5": 21,
-        "score_p2_5": 1061,
+        "rank_p97_5": 22,
+        "score_p2_5": 1060,
         "score_p97_5": 1129,
-        "trust_range": [8, 11],
+        "trust_range": [
+          7,
+          13
+        ],
         "win_rate": 0.602
       },
       "distribution": "open-weights",
@@ -1603,16 +1687,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1058,
-        "mean_win_prob": 0.5777318189952823,
+        "elo": 1061,
+        "mean_win_prob": 0.5816101905104675,
         "n_match": 121,
         "rank": 23,
         "rank_p2_5": 4,
-        "rank_p97_5": 41,
-        "score_p2_5": 1010,
-        "score_p97_5": 1116,
-        "trust_range": [19, 18],
-        "win_rate": 0.525798319327731
+        "rank_p97_5": 42,
+        "score_p2_5": 1007,
+        "score_p97_5": 1112,
+        "trust_range": [
+          19,
+          19
+        ],
+        "win_rate": 0.5257983193277311
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -1683,14 +1770,17 @@
       "commercial_use": null,
       "data": {
         "elo": 1039,
-        "mean_win_prob": 0.5517324218667737,
+        "mean_win_prob": 0.5519175838969468,
         "n_match": 6078,
         "rank": 30,
-        "rank_p2_5": 26,
+        "rank_p2_5": 27,
         "rank_p97_5": 33,
-        "score_p2_5": 1032,
+        "score_p2_5": 1031,
         "score_p97_5": 1047,
-        "trust_range": [4, 3],
+        "trust_range": [
+          3,
+          3
+        ],
         "win_rate": 0.5149917709019092
       },
       "distribution": "api-only",
@@ -1735,14 +1825,17 @@
       "commercial_use": null,
       "data": {
         "elo": 984,
-        "mean_win_prob": 0.47555994223659903,
+        "mean_win_prob": 0.47549280990212905,
         "n_match": 4646,
         "rank": 50,
-        "rank_p2_5": 45,
+        "rank_p2_5": 46,
         "rank_p97_5": 54,
         "score_p2_5": 975,
-        "score_p97_5": 993,
-        "trust_range": [5, 4],
+        "score_p97_5": 992,
+        "trust_range": [
+          4,
+          4
+        ],
         "win_rate": 0.4719436074042187
       },
       "distribution": "api-only",
@@ -1786,16 +1879,19 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 967,
-        "mean_win_prob": 0.45200211379994937,
+        "elo": 966,
+        "mean_win_prob": 0.45162012715474126,
         "n_match": 5896,
         "rank": 58,
         "rank_p2_5": 54,
         "rank_p97_5": 62,
-        "score_p2_5": 957,
-        "score_p97_5": 975,
-        "trust_range": [4, 4],
-        "win_rate": 0.4886329715061059
+        "score_p2_5": 958,
+        "score_p97_5": 976,
+        "trust_range": [
+          4,
+          4
+        ],
+        "win_rate": 0.48863297150610585
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -1835,15 +1931,18 @@
       "commercial_use": null,
       "data": {
         "elo": 987,
-        "mean_win_prob": 0.4795455350403343,
+        "mean_win_prob": 0.47944166513342285,
         "n_match": 6990,
         "rank": 49,
         "rank_p2_5": 45,
         "rank_p97_5": 53,
-        "score_p2_5": 978,
-        "score_p97_5": 996,
-        "trust_range": [4, 4],
-        "win_rate": 0.49947067238912735
+        "score_p2_5": 979,
+        "score_p97_5": 995,
+        "trust_range": [
+          4,
+          4
+        ],
+        "win_rate": 0.4994706723891274
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -1883,15 +1982,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1014,
-        "mean_win_prob": 0.5167742630115164,
+        "mean_win_prob": 0.5172716090628965,
         "n_match": 1092,
         "rank": 37,
         "rank_p2_5": 33,
         "rank_p97_5": 45,
-        "score_p2_5": 996,
-        "score_p97_5": 1030,
-        "trust_range": [4, 8],
-        "win_rate": 0.46124656278643444
+        "score_p2_5": 997,
+        "score_p97_5": 1031,
+        "trust_range": [
+          4,
+          8
+        ],
+        "win_rate": 0.4612465627864345
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1935,15 +2037,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1030,
-        "mean_win_prob": 0.5389125283446132,
+        "mean_win_prob": 0.5389794951120567,
         "n_match": 539,
         "rank": 34,
-        "rank_p2_5": 25,
+        "rank_p2_5": 24,
         "rank_p97_5": 42,
-        "score_p2_5": 1004,
-        "score_p97_5": 1053,
-        "trust_range": [9, 8],
-        "win_rate": 0.4939219330855019
+        "score_p2_5": 1005,
+        "score_p97_5": 1054,
+        "trust_range": [
+          10,
+          8
+        ],
+        "win_rate": 0.4939219330855018
       },
       "distribution": "api-only",
       "endpoint": {
@@ -1987,15 +2092,18 @@
       "commercial_use": null,
       "data": {
         "elo": 949,
-        "mean_win_prob": 0.4275131664338935,
+        "mean_win_prob": 0.42742256947051344,
         "n_match": 524,
         "rank": 65,
         "rank_p2_5": 54,
         "rank_p97_5": 70,
-        "score_p2_5": 923,
-        "score_p97_5": 976,
-        "trust_range": [11, 5],
-        "win_rate": 0.39656488549618324
+        "score_p2_5": 924,
+        "score_p97_5": 974,
+        "trust_range": [
+          11,
+          5
+        ],
+        "win_rate": 0.3965648854961832
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2039,14 +2147,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1094,
-        "mean_win_prob": 0.6254166033817264,
+        "mean_win_prob": 0.6262955327354,
         "n_match": 684,
-        "rank": 9,
+        "rank": 8,
         "rank_p2_5": 3,
         "rank_p97_5": 17,
         "score_p2_5": 1071,
         "score_p97_5": 1116,
-        "trust_range": [6, 8],
+        "trust_range": [
+          5,
+          9
+        ],
         "win_rate": 0.5710834553440703
       },
       "distribution": "open-weights",
@@ -2090,15 +2201,18 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1035,
-        "mean_win_prob": 0.5464803427582682,
+        "elo": 1037,
+        "mean_win_prob": 0.5485120449799132,
         "n_match": 758,
-        "rank": 32,
-        "rank_p2_5": 22,
-        "rank_p97_5": 39,
-        "score_p2_5": 1015,
+        "rank": 31,
+        "rank_p2_5": 23,
+        "rank_p97_5": 38,
+        "score_p2_5": 1017,
         "score_p97_5": 1058,
-        "trust_range": [10, 7],
+        "trust_range": [
+          8,
+          7
+        ],
         "win_rate": 0.5144782034346104
       },
       "distribution": "open-weights",
@@ -2143,15 +2257,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1073,
-        "mean_win_prob": 0.5982307479688509,
+        "mean_win_prob": 0.5976210565462857,
         "n_match": 1537,
-        "rank": 15,
-        "rank_p2_5": 11,
+        "rank": 16,
+        "rank_p2_5": 10,
         "rank_p97_5": 22,
         "score_p2_5": 1058,
-        "score_p97_5": 1087,
-        "trust_range": [4, 7],
-        "win_rate": 0.5305338541666667
+        "score_p97_5": 1089,
+        "trust_range": [
+          6,
+          6
+        ],
+        "win_rate": 0.5305338541666668
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2194,16 +2311,19 @@
       "arch": "maybe-moe",
       "commercial_use": null,
       "data": {
-        "elo": 1072,
-        "mean_win_prob": 0.596998911297566,
+        "elo": 1073,
+        "mean_win_prob": 0.5982444738198398,
         "n_match": 637,
-        "rank": 16,
-        "rank_p2_5": 9,
+        "rank": 15,
+        "rank_p2_5": 8,
         "rank_p97_5": 25,
-        "score_p2_5": 1051,
-        "score_p97_5": 1095,
-        "trust_range": [7, 9],
-        "win_rate": 0.5672955974842766
+        "score_p2_5": 1052,
+        "score_p97_5": 1097,
+        "trust_range": [
+          7,
+          10
+        ],
+        "win_rate": 0.5672955974842768
       },
       "distribution": "api-only",
       "endpoint": {
@@ -2246,16 +2366,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 946,
-        "mean_win_prob": 0.42457940843665554,
+        "elo": 947,
+        "mean_win_prob": 0.42493606609613704,
         "n_match": 6735,
         "rank": 66,
         "rank_p2_5": 62,
         "rank_p97_5": 66,
         "score_p2_5": 939,
         "score_p97_5": 954,
-        "trust_range": [4, 0],
-        "win_rate": 0.466347438752784
+        "trust_range": [
+          4,
+          0
+        ],
+        "win_rate": 0.46634743875278395
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2295,14 +2418,17 @@
       "commercial_use": true,
       "data": {
         "elo": 899,
-        "mean_win_prob": 0.3621905168876112,
+        "mean_win_prob": 0.3623199116191135,
         "n_match": 478,
         "rank": 71,
         "rank_p2_5": 70,
         "rank_p97_5": 73,
         "score_p2_5": 871,
-        "score_p97_5": 925,
-        "trust_range": [1, 2],
+        "score_p97_5": 926,
+        "trust_range": [
+          1,
+          2
+        ],
         "win_rate": 0.35016806722689076
       },
       "distribution": "open-weights",
@@ -2347,14 +2473,17 @@
       "commercial_use": true,
       "data": {
         "elo": 977,
-        "mean_win_prob": 0.4658144519443739,
+        "mean_win_prob": 0.4660144675996289,
         "n_match": 172,
         "rank": 52,
         "rank_p2_5": 35,
         "rank_p97_5": 68,
-        "score_p2_5": 930,
-        "score_p97_5": 1023,
-        "trust_range": [17, 16],
+        "score_p2_5": 931,
+        "score_p97_5": 1024,
+        "trust_range": [
+          17,
+          16
+        ],
         "win_rate": 0.5449418604651162
       },
       "distribution": "open-weights",
@@ -2394,15 +2523,18 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1060,
-        "mean_win_prob": 0.5801371532332226,
+        "elo": 1062,
+        "mean_win_prob": 0.5827511772966911,
         "n_match": 207,
         "rank": 22,
-        "rank_p2_5": 8,
-        "rank_p97_5": 35,
-        "score_p2_5": 1023,
+        "rank_p2_5": 7,
+        "rank_p97_5": 36,
+        "score_p2_5": 1024,
         "score_p97_5": 1098,
-        "trust_range": [14, 13],
+        "trust_range": [
+          15,
+          14
+        ],
         "win_rate": 0.5792610837438423
       },
       "distribution": "open-weights",
@@ -2446,16 +2578,19 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 886,
-        "mean_win_prob": 0.3458646125096044,
+        "elo": 887,
+        "mean_win_prob": 0.3463219869858048,
         "n_match": 3578,
         "rank": 73,
         "rank_p2_5": 71,
         "rank_p97_5": 73,
-        "score_p2_5": 875,
+        "score_p2_5": 876,
         "score_p97_5": 898,
-        "trust_range": [2, 0],
-        "win_rate": 0.41629681386249306
+        "trust_range": [
+          2,
+          0
+        ],
+        "win_rate": 0.416296813862493
       },
       "distribution": "api-only",
       "endpoint": null,
@@ -2495,15 +2630,18 @@
       "commercial_use": true,
       "data": {
         "elo": 962,
-        "mean_win_prob": 0.4451358584770793,
+        "mean_win_prob": 0.4454390685427613,
         "n_match": 9973,
         "rank": 61,
         "rank_p2_5": 57,
         "rank_p97_5": 63,
-        "score_p2_5": 954,
-        "score_p97_5": 969,
-        "trust_range": [4, 2],
-        "win_rate": 0.4950747166783672
+        "score_p2_5": 955,
+        "score_p97_5": 968,
+        "trust_range": [
+          4,
+          2
+        ],
+        "win_rate": 0.4950747166783673
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2546,16 +2684,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 976,
-        "mean_win_prob": 0.46528717653896534,
+        "elo": 977,
+        "mean_win_prob": 0.4656836180856821,
         "n_match": 5583,
         "rank": 53,
-        "rank_p2_5": 49,
+        "rank_p2_5": 50,
         "rank_p97_5": 58,
         "score_p2_5": 968,
-        "score_p97_5": 986,
-        "trust_range": [4, 5],
-        "win_rate": 0.5304459967759269
+        "score_p97_5": 985,
+        "trust_range": [
+          3,
+          5
+        ],
+        "win_rate": 0.530445996775927
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -2595,14 +2736,17 @@
       "commercial_use": true,
       "data": {
         "elo": 928,
-        "mean_win_prob": 0.3997435608934462,
+        "mean_win_prob": 0.39990770499016887,
         "n_match": 8402,
         "rank": 70,
         "rank_p2_5": 66,
         "rank_p97_5": 70,
         "score_p2_5": 921,
         "score_p97_5": 935,
-        "trust_range": [4, 0],
+        "trust_range": [
+          4,
+          0
+        ],
         "win_rate": 0.4417390786811094
       },
       "distribution": "open-weights",
@@ -2646,16 +2790,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1051,
-        "mean_win_prob": 0.5676832103439327,
+        "elo": 1050,
+        "mean_win_prob": 0.5671957833323135,
         "n_match": 6709,
-        "rank": 26,
-        "rank_p2_5": 21,
+        "rank": 25,
+        "rank_p2_5": 22,
         "rank_p97_5": 29,
-        "score_p2_5": 1042,
-        "score_p97_5": 1059,
-        "trust_range": [5, 3],
-        "win_rate": 0.5452863107664778
+        "score_p2_5": 1043,
+        "score_p97_5": 1058,
+        "trust_range": [
+          3,
+          4
+        ],
+        "win_rate": 0.5452863107664777
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2699,14 +2846,17 @@
       "commercial_use": true,
       "data": {
         "elo": 987,
-        "mean_win_prob": 0.48014515950283504,
+        "mean_win_prob": 0.4798050316204729,
         "n_match": 7120,
         "rank": 48,
         "rank_p2_5": 45,
         "rank_p97_5": 53,
         "score_p2_5": 980,
         "score_p97_5": 994,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.4730341340075854
       },
       "distribution": "open-weights",
@@ -2751,14 +2901,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1019,
-        "mean_win_prob": 0.5249176232873758,
+        "mean_win_prob": 0.5241594590366577,
         "n_match": 3406,
         "rank": 36,
         "rank_p2_5": 33,
         "rank_p97_5": 41,
         "score_p2_5": 1009,
         "score_p97_5": 1030,
-        "trust_range": [3, 5],
+        "trust_range": [
+          3,
+          5
+        ],
         "win_rate": 0.49648529411764714
       },
       "distribution": "open-weights",
@@ -2802,16 +2955,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1012,
-        "mean_win_prob": 0.5151171527109812,
+        "elo": 1013,
+        "mean_win_prob": 0.516288804021962,
         "n_match": 559,
         "rank": 38,
         "rank_p2_5": 31,
-        "rank_p97_5": 47,
-        "score_p2_5": 990,
-        "score_p97_5": 1037,
-        "trust_range": [7, 9],
-        "win_rate": 0.48642728904847404
+        "rank_p97_5": 49,
+        "score_p2_5": 988,
+        "score_p97_5": 1036,
+        "trust_range": [
+          7,
+          11
+        ],
+        "win_rate": 0.486427289048474
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -2855,14 +3011,17 @@
       "commercial_use": null,
       "data": {
         "elo": 1094,
-        "mean_win_prob": 0.6262134970487602,
+        "mean_win_prob": 0.6256664268631636,
         "n_match": 643,
-        "rank": 8,
+        "rank": 10,
         "rank_p2_5": 3,
         "rank_p97_5": 17,
         "score_p2_5": 1072,
-        "score_p97_5": 1117,
-        "trust_range": [5, 9],
+        "score_p97_5": 1118,
+        "trust_range": [
+          7,
+          7
+        ],
         "win_rate": 0.5984136858475895
       },
       "distribution": "api-only",
@@ -2907,14 +3066,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1068,
-        "mean_win_prob": 0.5910094979393204,
+        "mean_win_prob": 0.5911055493074616,
         "n_match": 1053,
         "rank": 18,
-        "rank_p2_5": 11,
+        "rank_p2_5": 12,
         "rank_p97_5": 26,
-        "score_p2_5": 1050,
+        "score_p2_5": 1051,
         "score_p97_5": 1086,
-        "trust_range": [7, 8],
+        "trust_range": [
+          6,
+          8
+        ],
         "win_rate": 0.555361216730038
       },
       "distribution": "open-weights",
@@ -3013,14 +3175,17 @@
       "commercial_use": false,
       "data": {
         "elo": 968,
-        "mean_win_prob": 0.4542486752479652,
+        "mean_win_prob": 0.45406513318009256,
         "n_match": 9278,
         "rank": 56,
-        "rank_p2_5": 53,
+        "rank_p2_5": 54,
         "rank_p97_5": 60,
-        "score_p2_5": 962,
-        "score_p97_5": 976,
-        "trust_range": [3, 4],
+        "score_p2_5": 961,
+        "score_p97_5": 975,
+        "trust_range": [
+          2,
+          4
+        ],
         "win_rate": 0.47576819407008086
       },
       "distribution": "open-weights",
@@ -3060,15 +3225,18 @@
       "arch": "dense",
       "commercial_use": false,
       "data": {
-        "elo": 1024,
-        "mean_win_prob": 0.5318168492804626,
+        "elo": 1025,
+        "mean_win_prob": 0.5318251163123312,
         "n_match": 8829,
         "rank": 35,
         "rank_p2_5": 32,
         "rank_p97_5": 38,
         "score_p2_5": 1018,
         "score_p97_5": 1032,
-        "trust_range": [3, 3],
+        "trust_range": [
+          3,
+          3
+        ],
         "win_rate": 0.527441386340469
       },
       "distribution": "open-weights",
@@ -3108,16 +3276,19 @@
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1065,
-        "mean_win_prob": 0.587011553448694,
+        "elo": 1066,
+        "mean_win_prob": 0.5887711764826035,
         "n_match": 154,
-        "rank": 21,
-        "rank_p2_5": 4,
-        "rank_p97_5": 36,
-        "score_p2_5": 1021,
-        "score_p97_5": 1112,
-        "trust_range": [17, 15],
-        "win_rate": 0.5632467532467532
+        "rank": 20,
+        "rank_p2_5": 5,
+        "rank_p97_5": 37,
+        "score_p2_5": 1019,
+        "score_p97_5": 1110,
+        "trust_range": [
+          15,
+          17
+        ],
+        "win_rate": 0.5632467532467533
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3160,15 +3331,18 @@
       "arch": "maybe-dense",
       "commercial_use": null,
       "data": {
-        "elo": 1148,
-        "mean_win_prob": 0.6939629623472354,
+        "elo": 1149,
+        "mean_win_prob": 0.6945286892182525,
         "n_match": 675,
         "rank": 1,
         "rank_p2_5": 1,
         "rank_p97_5": 3,
         "score_p2_5": 1127,
         "score_p97_5": 1173,
-        "trust_range": [0, 2],
+        "trust_range": [
+          0,
+          2
+        ],
         "win_rate": 0.6027151335311572
       },
       "distribution": "api-only",
@@ -3213,15 +3387,18 @@
       "commercial_use": true,
       "data": {
         "elo": 856,
-        "mean_win_prob": 0.3085931771145354,
+        "mean_win_prob": 0.30860368652407366,
         "n_match": 6251,
         "rank": 75,
         "rank_p2_5": 74,
         "rank_p97_5": 76,
-        "score_p2_5": 847,
-        "score_p97_5": 865,
-        "trust_range": [1, 1],
-        "win_rate": 0.37482482802751554
+        "score_p2_5": 846,
+        "score_p97_5": 864,
+        "trust_range": [
+          1,
+          1
+        ],
+        "win_rate": 0.37482482802751566
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -3261,15 +3438,18 @@
       "commercial_use": null,
       "data": {
         "elo": 1010,
-        "mean_win_prob": 0.5116419969148767,
+        "mean_win_prob": 0.5118317781686801,
         "n_match": 3944,
         "rank": 41,
         "rank_p2_5": 37,
         "rank_p97_5": 44,
         "score_p2_5": 1001,
         "score_p97_5": 1019,
-        "trust_range": [4, 3],
-        "win_rate": 0.4697767630644342
+        "trust_range": [
+          4,
+          3
+        ],
+        "win_rate": 0.4697767630644343
       },
       "distribution": "api-only",
       "endpoint": {
@@ -3313,14 +3493,17 @@
       "commercial_use": true,
       "data": {
         "elo": 991,
-        "mean_win_prob": 0.4853390619102505,
+        "mean_win_prob": 0.48550599842196407,
         "n_match": 3318,
         "rank": 46,
         "rank_p2_5": 43,
         "rank_p97_5": 52,
-        "score_p2_5": 979,
+        "score_p2_5": 980,
         "score_p97_5": 1002,
-        "trust_range": [3, 6],
+        "trust_range": [
+          3,
+          6
+        ],
         "win_rate": 0.4952350813743219
       },
       "distribution": "open-weights",
@@ -3360,15 +3543,18 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 1069,
-        "mean_win_prob": 0.5930885099965143,
+        "elo": 1071,
+        "mean_win_prob": 0.5945809753880781,
         "n_match": 742,
         "rank": 17,
         "rank_p2_5": 10,
-        "rank_p97_5": 26,
-        "score_p2_5": 1050,
+        "rank_p97_5": 25,
+        "score_p2_5": 1051,
         "score_p97_5": 1088,
-        "trust_range": [7, 9],
+        "trust_range": [
+          7,
+          8
+        ],
         "win_rate": 0.561417004048583
       },
       "distribution": "open-weights",
@@ -3413,14 +3599,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1012,
-        "mean_win_prob": 0.5145635663190378,
+        "mean_win_prob": 0.5147185159033105,
         "n_match": 5079,
-        "rank": 39,
+        "rank": 40,
         "rank_p2_5": 36,
         "rank_p97_5": 43,
         "score_p2_5": 1003,
         "score_p97_5": 1021,
-        "trust_range": [3, 4],
+        "trust_range": [
+          4,
+          3
+        ],
         "win_rate": 0.4945107304587517
       },
       "distribution": "open-weights",
@@ -3488,15 +3677,18 @@
       "commercial_use": true,
       "data": {
         "elo": 845,
-        "mean_win_prob": 0.29656979665067656,
+        "mean_win_prob": 0.2963285872318879,
         "n_match": 5455,
         "rank": 76,
         "rank_p2_5": 75,
         "rank_p97_5": 77,
         "score_p2_5": 836,
-        "score_p97_5": 855,
-        "trust_range": [1, 1],
-        "win_rate": 0.36710357470210814
+        "score_p97_5": 854,
+        "trust_range": [
+          1,
+          1
+        ],
+        "win_rate": 0.3671035747021082
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -3536,14 +3728,17 @@
       "commercial_use": true,
       "data": {
         "elo": 888,
-        "mean_win_prob": 0.34822898026868915,
+        "mean_win_prob": 0.3479968510057423,
         "n_match": 2560,
         "rank": 72,
         "rank_p2_5": 71,
         "rank_p97_5": 73,
         "score_p2_5": 874,
         "score_p97_5": 902,
-        "trust_range": [1, 1],
+        "trust_range": [
+          1,
+          1
+        ],
         "win_rate": 0.43488671874999996
       },
       "distribution": "open-weights",
@@ -3584,14 +3779,17 @@
       "commercial_use": null,
       "data": {
         "elo": 989,
-        "mean_win_prob": 0.48261050542005857,
+        "mean_win_prob": 0.4832883435335579,
         "n_match": 1619,
         "rank": 47,
-        "rank_p2_5": 43,
-        "rank_p97_5": 55,
-        "score_p2_5": 974,
+        "rank_p2_5": 42,
+        "rank_p97_5": 54,
+        "score_p2_5": 975,
         "score_p97_5": 1004,
-        "trust_range": [4, 8],
+        "trust_range": [
+          5,
+          7
+        ],
         "win_rate": 0.51142063001853
       },
       "distribution": "api-only",
@@ -3632,14 +3830,17 @@
       "commercial_use": null,
       "data": {
         "elo": 1012,
-        "mean_win_prob": 0.514259440440636,
+        "mean_win_prob": 0.5148693076472337,
         "n_match": 2520,
-        "rank": 40,
+        "rank": 39,
         "rank_p2_5": 35,
         "rank_p97_5": 44,
         "score_p2_5": 1000,
-        "score_p97_5": 1023,
-        "trust_range": [5, 4],
+        "score_p97_5": 1024,
+        "trust_range": [
+          4,
+          5
+        ],
         "win_rate": 0.4673531746031746
       },
       "distribution": "api-only",
@@ -3764,15 +3965,18 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 864,
-        "mean_win_prob": 0.31886832342210925,
+        "elo": 865,
+        "mean_win_prob": 0.319285511292743,
         "n_match": 2535,
         "rank": 74,
-        "rank_p2_5": 74,
+        "rank_p2_5": 73,
         "rank_p97_5": 75,
-        "score_p2_5": 851,
+        "score_p2_5": 849,
         "score_p97_5": 878,
-        "trust_range": [0, 1],
+        "trust_range": [
+          1,
+          1
+        ],
         "win_rate": 0.4021104536489152
       },
       "distribution": "open-weights",
@@ -3813,15 +4017,18 @@
       "commercial_use": true,
       "data": {
         "elo": 972,
-        "mean_win_prob": 0.45973548553731897,
+        "mean_win_prob": 0.45988028804212167,
         "n_match": 8355,
         "rank": 55,
-        "rank_p2_5": 51,
+        "rank_p2_5": 52,
         "rank_p97_5": 59,
-        "score_p2_5": 966,
+        "score_p2_5": 965,
         "score_p97_5": 979,
-        "trust_range": [4, 4],
-        "win_rate": 0.47906870960019143
+        "trust_range": [
+          3,
+          4
+        ],
+        "win_rate": 0.4790687096001915
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -3865,14 +4072,17 @@
       "commercial_use": true,
       "data": {
         "elo": 968,
-        "mean_win_prob": 0.45370501903105737,
+        "mean_win_prob": 0.45379734029991936,
         "n_match": 142,
         "rank": 57,
-        "rank_p2_5": 38,
+        "rank_p2_5": 37,
         "rank_p97_5": 70,
-        "score_p2_5": 913,
-        "score_p97_5": 1017,
-        "trust_range": [19, 13],
+        "score_p2_5": 920,
+        "score_p97_5": 1019,
+        "trust_range": [
+          20,
+          13
+        ],
         "win_rate": 0.45935714285714285
       },
       "distribution": "open-weights",
@@ -3997,16 +4207,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 731,
-        "mean_win_prob": 0.18149734163969775,
+        "elo": 733,
+        "mean_win_prob": 0.18363474147296793,
         "n_match": 80,
         "rank": 80,
         "rank_p2_5": 78,
         "rank_p97_5": 80,
-        "score_p2_5": 646,
-        "score_p97_5": 807,
-        "trust_range": [2, 0],
-        "win_rate": 0.25249999999999995
+        "score_p2_5": 629,
+        "score_p97_5": 813,
+        "trust_range": [
+          2,
+          0
+        ],
+        "win_rate": 0.2525
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -4046,14 +4259,17 @@
       "commercial_use": true,
       "data": {
         "elo": 965,
-        "mean_win_prob": 0.44982028863653145,
+        "mean_win_prob": 0.44935726275682814,
         "n_match": 142,
-        "rank": 60,
+        "rank": 59,
         "rank_p2_5": 36,
-        "rank_p97_5": 70,
-        "score_p2_5": 910,
-        "score_p97_5": 1020,
-        "trust_range": [24, 10],
+        "rank_p97_5": 71,
+        "score_p2_5": 908,
+        "score_p97_5": 1023,
+        "trust_range": [
+          23,
+          12
+        ],
         "win_rate": 0.5557042253521126
       },
       "distribution": "open-weights",
@@ -4094,14 +4310,17 @@
       "commercial_use": true,
       "data": {
         "elo": 930,
-        "mean_win_prob": 0.40256757991373376,
+        "mean_win_prob": 0.4027815239589935,
         "n_match": 1417,
         "rank": 69,
         "rank_p2_5": 64,
-        "rank_p97_5": 70,
+        "rank_p97_5": 71,
         "score_p2_5": 912,
         "score_p97_5": 948,
-        "trust_range": [5, 1],
+        "trust_range": [
+          5,
+          2
+        ],
         "win_rate": 0.49383909668313336
       },
       "distribution": "open-weights",
@@ -4142,15 +4361,18 @@
       "commercial_use": true,
       "data": {
         "elo": 931,
-        "mean_win_prob": 0.40386083220332325,
+        "mean_win_prob": 0.40398226841902285,
         "n_match": 7299,
         "rank": 68,
         "rank_p2_5": 66,
         "rank_p97_5": 70,
         "score_p2_5": 923,
         "score_p97_5": 939,
-        "trust_range": [2, 2],
-        "win_rate": 0.4378942320865873
+        "trust_range": [
+          2,
+          2
+        ],
+        "win_rate": 0.43789423208658723
       },
       "distribution": "open-weights",
       "endpoint": null,
@@ -4189,16 +4411,19 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1000,
-        "mean_win_prob": 0.49746769463087526,
+        "elo": 999,
+        "mean_win_prob": 0.4970130791027926,
         "n_match": 570,
         "rank": 44,
         "rank_p2_5": 36,
         "rank_p97_5": 54,
-        "score_p2_5": 977,
-        "score_p97_5": 1021,
-        "trust_range": [8, 10],
-        "win_rate": 0.4550966608084359
+        "score_p2_5": 975,
+        "score_p97_5": 1023,
+        "trust_range": [
+          8,
+          10
+        ],
+        "win_rate": 0.45509666080843586
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4242,14 +4467,17 @@
       "commercial_use": true,
       "data": {
         "elo": 1049,
-        "mean_win_prob": 0.5658020706953724,
+        "mean_win_prob": 0.5652958565348777,
         "n_match": 829,
         "rank": 27,
         "rank_p2_5": 19,
-        "rank_p97_5": 33,
-        "score_p2_5": 1031,
+        "rank_p97_5": 34,
+        "score_p2_5": 1029,
         "score_p97_5": 1067,
-        "trust_range": [8, 6],
+        "trust_range": [
+          8,
+          7
+        ],
         "win_rate": 0.5591151515151515
       },
       "distribution": "open-weights",
@@ -4293,15 +4521,18 @@
       "arch": "moe",
       "commercial_use": true,
       "data": {
-        "elo": 1052,
-        "mean_win_prob": 0.5693996646204437,
+        "elo": 1050,
+        "mean_win_prob": 0.5670248944037644,
         "n_match": 98,
-        "rank": 25,
-        "rank_p2_5": 6,
-        "rank_p97_5": 45,
-        "score_p2_5": 997,
-        "score_p97_5": 1102,
-        "trust_range": [19, 20],
+        "rank": 26,
+        "rank_p2_5": 5,
+        "rank_p97_5": 46,
+        "score_p2_5": 993,
+        "score_p97_5": 1109,
+        "trust_range": [
+          21,
+          20
+        ],
         "win_rate": 0.4976595744680851
       },
       "distribution": "open-weights",
@@ -4345,15 +4576,18 @@
       "arch": "moe",
       "commercial_use": null,
       "data": {
-        "elo": 1111,
-        "mean_win_prob": 0.6472710700387323,
+        "elo": 1112,
+        "mean_win_prob": 0.6491213750097014,
         "n_match": 199,
         "rank": 3,
         "rank_p2_5": 1,
         "rank_p97_5": 17,
-        "score_p2_5": 1072,
-        "score_p97_5": 1150,
-        "trust_range": [2, 14],
+        "score_p2_5": 1073,
+        "score_p97_5": 1151,
+        "trust_range": [
+          2,
+          14
+        ],
         "win_rate": 0.5498484848484849
       },
       "distribution": "api-only",
@@ -4398,15 +4632,18 @@
       "commercial_use": true,
       "data": {
         "elo": 957,
-        "mean_win_prob": 0.43835419801335707,
+        "mean_win_prob": 0.4387031843935816,
         "n_match": 1566,
         "rank": 64,
         "rank_p2_5": 56,
         "rank_p97_5": 66,
-        "score_p2_5": 942,
+        "score_p2_5": 941,
         "score_p97_5": 972,
-        "trust_range": [8, 2],
-        "win_rate": 0.4485997442455243
+        "trust_range": [
+          8,
+          2
+        ],
+        "win_rate": 0.4485997442455244
       },
       "distribution": "open-weights",
       "endpoint": {
@@ -4449,16 +4686,19 @@
       "arch": "dense",
       "commercial_use": true,
       "data": {
-        "elo": 770,
-        "mean_win_prob": 0.2168682956648327,
+        "elo": 767,
+        "mean_win_prob": 0.21441748321718868,
         "n_match": 65,
         "rank": 78,
-        "rank_p2_5": 75,
+        "rank_p2_5": 76,
         "rank_p97_5": 80,
-        "score_p2_5": 671,
-        "score_p97_5": 862,
-        "trust_range": [3, 2],
-        "win_rate": 0.32599999999999996
+        "score_p2_5": 672,
+        "score_p97_5": 850,
+        "trust_range": [
+          2,
+          2
+        ],
+        "win_rate": 0.326
       },
       "distribution": "open-weights",
       "endpoint": null,
