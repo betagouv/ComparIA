@@ -1480,8 +1480,7 @@
     },
     "ranking": {
         "energy": {
-            "desc": "Explorez le graphique qui met en perspective le score de satisfaction d’un modèle (axe des ordonnées) avec sa consommation énergétique (axe des abscisses).",
-            "desc2": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
+            "desc": "Ce graphique représente pour chaque modèle le score de satisfaction (score Bradley Terry) en fonction de l’estimation de la consommation énergétique moyenne pour 1000 tokens. La consommation énergétique est estimée à partir de la méthodologie <a {linkProps}>Ecologits</a> et repose sur la prise en compte de deux paramètres: la <strong>taille</strong> des modèles (nombre de paramètres) et leur <strong>architecture</strong>. Pour les <strong>modèles propriétaires</strong>, ces informations ne sont pas ou que partiellement communiquées. C’est pourquoi ils sont exclus du graphique ci-dessous.",
             "tabLabel": "Focus énergie",
             "title": "Les modèles les plus appréciés sont-ils économes en énergie ?",
             "views": {

@@ -22,9 +22,8 @@
 
 <div id="ranking-energy">
   <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.energy.title']()}</h2>
-  <p class="text-[14px]! text-dark-grey">{m['ranking.energy.desc']()}</p>
   <p class="mb-8! text-[14px]! text-dark-grey">
-    {@html sanitize(m['ranking.energy.desc2']({
+    {@html sanitize(m['ranking.energy.desc']({
       linkProps: externalLinkProps('https://ecologits.ai/latest/')
     }))}
   </p>
