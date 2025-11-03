@@ -55,7 +55,7 @@
       { id: 'elo', tooltip: m['ranking.table.data.tooltips.elo']() },
       { id: 'trust_range', tooltip: m['ranking.table.data.tooltips.trust_range']() },
       { id: 'n_match' },
-      { id: 'consumption_wh', tooltip: m['reveal.impacts.energy.tooltip']() },
+      { id: 'consumption_wh', tooltip: m['ranking.table.data.tooltips.consumption_wh']() },
       { id: 'size', tooltip: m['ranking.table.data.tooltips.size']() },
       { id: 'arch', tooltip: m['ranking.table.data.tooltips.arch']() },
       { id: 'release' },
@@ -246,7 +246,7 @@
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
       {#if model.license === 'proprietary'}
-        <span class="text-xs text-(--grey-625-425)">{m['words.NA']()}</span>
+        <span class="text-(--grey-625-425) text-xs">{m['words.NA']()}</span>
       {:else}
         {model.consumption_wh} Wh
         {#if !raw}
