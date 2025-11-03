@@ -19,8 +19,9 @@
     desc: m[`product.comparator.challenges.${i18nKey}.desc`]()
   }))
 
+  const availableImgsLocales = ['da', 'sv', 'fr']
   const chatbotScreenshotSrc = $derived(
-    `/product/chatbot-screenshot-${locale === 'fr' ? 'fr' : 'en'}.png`
+    `/product/chatbot-screenshot-${availableImgsLocales.includes(locale) ? locale : 'en'}.png`
   )
 </script>
 

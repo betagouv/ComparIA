@@ -29,15 +29,15 @@
     }
   }
 
-  const availableImgsLocales = ['da', 'sv'] as const
+  const availableImgsLocales = ['da', 'sv']
   const utilyCards = (
     [
       {
         i18nKey: 'compare',
-        src: availableImgsLocales.includes(locale as any)
+        src: availableImgsLocales.includes(locale)
           ? `/home/comparer-${locale}.png`
           : '/home/comparer.svg',
-        srcDark: availableImgsLocales.includes(locale as any)
+        srcDark: availableImgsLocales.includes(locale)
           ? `/home/comparer-dark-${locale}.png`
           : '/home/comparer-dark.jpg',
         classes: ''
@@ -45,10 +45,10 @@
       { i18nKey: 'test', src: '/home/tester.png', srcDark: '/home/tester-dark.jpg', classes: '' },
       {
         i18nKey: 'measure',
-        src: availableImgsLocales.includes(locale as any)
+        src: availableImgsLocales.includes(locale)
           ? `/home/mesurer-${locale}.png`
           : '/home/mesurer.svg',
-        srcDark: availableImgsLocales.includes(locale as any)
+        srcDark: availableImgsLocales.includes(locale)
           ? `/home/mesurer-dark-${locale}.png`
           : '/home/mesurer-dark.jpg',
         classes: 'px-14 py-5'
