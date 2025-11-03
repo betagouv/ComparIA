@@ -263,9 +263,6 @@ def fetch_and_transform_data(conn, table_name, query=None):
 
 
 def export_data(df, table_name, export_dir):
-    if df.empty:
-        logger.warning(f"No data to export for table: {table_name}")
-        return
 
     os.makedirs(export_dir, exist_ok=True)
 
