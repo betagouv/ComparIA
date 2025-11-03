@@ -2,23 +2,26 @@
   import { Link } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
+
+  const locale = getLocale()
 
   const datasetCards = (
     [
       {
         i18nKey: 'conversations',
-        img: '/datasets/conversations.png',
+        img: `/datasets/conversations-${locale === 'fr' ? 'fr' : 'en'}.png`,
         link: 'https://huggingface.co/datasets/ministere-culture/comparia-conversations'
       },
       {
         i18nKey: 'reactions',
-        img: '/datasets/reactions.png',
+        img: `/datasets/reactions-${locale === 'fr' ? 'fr' : 'en'}.png`,
         link: 'https://huggingface.co/datasets/ministere-culture/comparia-reactions'
       },
       {
         i18nKey: 'votes',
-        img: '/datasets/votes.png',
+        img: `/datasets/votes-${locale === 'fr' ? 'fr' : 'en'}.png`,
         link: 'https://huggingface.co/datasets/ministere-culture/comparia-votes'
       }
     ] as const
