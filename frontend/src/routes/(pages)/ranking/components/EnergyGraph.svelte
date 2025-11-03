@@ -13,7 +13,7 @@
 
   const { models: data } = getModelsWithDataContext()
 
-  const dotSizes = { XS: 3, S: 5, M: 7, L: 9, XL: 11 } as const
+  const dotSizes = { XS: 5, S: 7, M: 9, L: 11, XL: 13 } as const
 
   const models = $derived(
     data
@@ -160,7 +160,7 @@
     <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
       {#each ARCHS.filter((arch) => arch !== 'na') as arch}
         <li class="p-0! not-last:mb-2 flex items-center">
-          <div class={['dot me-2 rounded-full', arch]}></div>
+          <div class={['dot border-dark-grey me-2  rounded-full border', arch]}></div>
           {m[`generated.archs.${arch}.name`]()}
           <Tooltip
             id="arch-type-{arch}-{kind}"
@@ -359,8 +359,8 @@
     }
 
     circle {
-      stroke-width: 2px;
-      stroke: var(--color-white);
+      stroke-width: 1px;
+      stroke: var(--color-dark-grey);
 
       &.hovered {
         stroke: var(--color-dark-grey);
@@ -377,8 +377,8 @@
       background-color: #cecece;
     }
     .moe {
-      fill: var(--green-menthe-850-200);
-      background-color: var(--green-menthe-850-200);
+      fill: var(--green-archipel-925-125);
+      background-color: var(--green-archipel-925-125);
     }
     .dense {
       fill: var(--cg-orange);
