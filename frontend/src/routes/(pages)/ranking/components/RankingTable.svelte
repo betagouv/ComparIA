@@ -246,7 +246,7 @@
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
       {#if model.license === 'proprietary'}
-        <span class="text-xs">{m['words.NA']()}</span>
+        <span class="text-xs text-(--grey-625-425)">{m['words.NA']()}</span>
       {:else}
         {model.consumption_wh} Wh
         {#if !raw}
