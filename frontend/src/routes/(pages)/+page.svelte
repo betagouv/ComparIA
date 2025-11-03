@@ -241,10 +241,10 @@
         class="py-15 flex w-full flex-col justify-center gap-8 rounded-xl bg-white px-9 xl:flex-row"
       >
         <img
-          src="/home/comparia-stars.svg"
+          src="/home/comparia-stars.png"
           aria-hidden="true"
           alt=""
-          class="m-auto max-w-fit xl:m-0"
+          class="m-auto max-w-[180px] object-contain xl:m-0"
         />
 
         <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
