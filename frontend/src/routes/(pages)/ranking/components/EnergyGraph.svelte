@@ -36,7 +36,7 @@
 
   let search = $state('')
   let sizes = $state<Sizes[]>([])
-  let consos = $state<ConsoSizes[]>([])
+  let consos = $state<ConsoSizes[]>(['S', 'M'])
   const sizeFilter = {
     id: 'size',
     legend: m['models.list.filters.size.legend'](),
