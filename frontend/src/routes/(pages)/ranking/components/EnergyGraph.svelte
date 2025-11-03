@@ -125,7 +125,7 @@
       class="mb-5"
     />
 
-    <p class="mb-3! text-[13px]! leading-normal!" aria-hidden="true">
+    <p class="mb-1! text-[13px]! leading-normal!" aria-hidden="true">
       <strong>{consoFilter.legend}</strong>
     </p>
     <CheckboxGroup
@@ -137,7 +137,7 @@
       class="mb-5!"
     ></CheckboxGroup>
 
-    <p class="mb-3! text-[13px]! leading-tight!" aria-hidden="true">
+    <p class="mb-1! text-[13px]! leading-tight!" aria-hidden="true">
       <strong>{m['ranking.energy.views.graph.legends.size']()}</strong><br />
       <span class="text-[11px]">{m['ranking.energy.views.graph.legends.sizeSub']()}</span>
     </p>
@@ -154,7 +154,8 @@
       {/snippet}
     </CheckboxGroup>
 
-    <p class="mb-3! text-[13px]! leading-normal!">
+    <hr class="pb-2!" />
+    <p class="mb-1! text-[13px]! leading-normal!">
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
     <ul class="p-0! list-none! mt-0! mb-10! flex flex-wrap gap-x-3 font-medium md:block">
