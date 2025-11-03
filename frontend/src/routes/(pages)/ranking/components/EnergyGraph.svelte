@@ -156,7 +156,7 @@
     </CheckboxGroup>
 
     <Toggle
-      id="energy-archived"
+      id="archived-{kind}"
       bind:value={showArchived}
       label={m['models.list.filters.archived.label']()}
       checkedLabel={m['models.list.filters.archived.checkedLabel']()}
