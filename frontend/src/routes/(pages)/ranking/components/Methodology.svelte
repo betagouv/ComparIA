@@ -59,7 +59,7 @@
     {@html sanitize(
       m['ranking.methodo.desc.2']({
         linkProps: externalLinkProps({
-          href: 'https://github.com/betagouv/ComparIA/blob/develop/utils/ranking_methods/notebooks/graph.ipynb',
+          href: 'https://colab.research.google.com/drive/1j5AfStT3h-IK8V6FSJY9CLAYr_1SvYw7#scrollTo=LgXO1k5Tp0pq',
           class: 'text-primary!'
         })
       })
