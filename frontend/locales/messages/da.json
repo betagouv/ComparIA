@@ -17,6 +17,8 @@
         "downloadData": "Download data",
         "home": "Hjemmeside",
         "returnHome": "Tilbage til startsiden",
+        "scrollLeft": "Rul til venstre",
+        "scrollRight": "Rul til højre",
         "seeMore": "Se mere",
         "selectLanguage": "Vælg sprog",
         "vote": "Giv feedback"
@@ -150,7 +152,7 @@
                 }
             },
             "share": "Vis os, hvordan I bruger datasættene",
-            "title": "Få adgang til compar:IA datasæt"
+            "title": "Få adgang til AI Arena datasættene"
         },
         "reuse": {
             "bunka": {
@@ -297,17 +299,17 @@
         },
         "links": {
             "accessibility": "Tilgængelighed: ikke compliant",
-            "legal": "Juridisk meddelelse",
+            "legal": "Om os",
             "privacy": "Privatlivspolitik",
             "sources": "Kildekode",
             "tos": "Brugsbetingelser"
         },
-        "writeUs": "Hvis du støder på et problem eller har feedback til chatbot-arenaen, er du velkommen til at skrive til os <a {linkProps}>ved hjælp af denne formular</a> – vi læser alle beskeder. Tak!"
+        "writeUs": "Hvis du støder på et problem eller har feedback til AI-Arenaen, er du velkommen til at skrive til os <a {linkProps}>ved hjælp af denne formular</a> – vi læser alle beskeder. Tak!"
     },
     "general": {
         "a11y": {
             "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> comparia.beta.gouv.fr </strong> .",
-            "disclaimer": "<strong> compar:IA </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
+            "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
             "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af beta.gouv.fr for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
@@ -343,7 +345,7 @@
             "securityNoMail": "Under ingen omstændigheder vil de tjenester, der er forbundet med platformen, lede til e-mails, der beder om indtastning af personlige oplysninger.",
             "securityTitle": "Sikkerhed",
             "sources": "Medmindre andet er angivet, er alle tekster på denne hjemmeside underlagt <a {etalabLinkProps}>Etalab Open 2.0-licensen</a>. Kildekoden til denne applikation kan frit genbruges og er tilgængelig på <a {githubLinkProps}>GitHub</a>.",
-            "title": "Juridisk meddelelse"
+            "title": "Om os"
         },
         "privacy": {
             "cookiesBannerDesc": "Det er rigtigt, du behøvede ikke at klikke på et vindue, der dækkede halvdelen af siden, for at sige, at du accepterer brugen af cookies – selvom du ikke ved, hvad det betyder!",
@@ -430,9 +432,21 @@
         "archs": {
             "dense": {
                 "desc": "Den dense arkitektur betegner en type neuralt netværk, hvor hver neuron i et lag er forbundet til alle neuroner i det næste lag. Dette gør det muligt for alle parametrene i laget at bidrage til beregningen af outputtet.",
-                "name": "Dense"
+                "name": "Dense",
+                "title": "Dense Arkitektur"
+            },
+            "matformer": {
+                "desc": "Forestil dig russiske matryoshka dukker (matryoshkas → matryoshka transformer → Matformer): hver blok indeholder flere indlejrede undermodeller af stigende størrelser, som deler de samme parametre. Dette gør det muligt ved hver forespørgsel at vælge en model med passende kapacitet, afhængigt af den tilgængelige hukommelse eller latens, uden behov for at genoptræne forskellige modeller.",
+                "name": "Matformer",
+                "title": "Arkitektur Matformer"
+            },
+            "moe": {
+                "desc": "Mixture of Experts (MoE) arkitekturen bruger en routingmekanisme til kun at aktivere visse specialiserede delmængder (\"eksperter\") af det neurale netværk, afhængigt af input. Dette gør det muligt at konstruere meget store modeller, samtidig med at beregningsomkostningerne holdes lave, da kun en del af netværket bruges ved hvert trin.",
+                "name": "MoE",
+                "title": "Arkitektur MoE"
             },
             "na": {
+                "desc": "Udgiveren har ikke offentliggjort informationerne om modellens arkitektur.",
                 "name": "Proprietær",
                 "title": "Arkitektur N/A"
             }
@@ -673,8 +687,8 @@
                 "size_desc": "<p>De mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og performance: de forbruger langt færre ressourcer end de store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnering.</p>"
             },
             "Gemini 1.5 Pro": {
-                "desc": "<p>Lanceret i februar 2024 er denne multimodale model anvendelig til generering af tekster og billeder, analyse af videoer og transskription af lyd.</p>",
-                "fyi": "<p>Lanceret i februar 2024 er denne flersprogede og multimodale model i stand til at behandle et meget stort volumen af inputdata, uanset om det drejer sig om tekstdata, billeder, lyd (op til 11 timers audio) eller video (op til en time). Det er LLM-modellen, der driver Googles chatbot Gemini.</p>",
+                "desc": "<p>Lanceret i september 2024 er denne multimodale model anvendelig til generering af tekster og billeder, analyse af videoer og transskription af lyd.</p>",
+                "fyi": "<p>Lanceret i september 2024 er denne flersprogede og multimodale model i stand til at behandle et meget stort volumen af inputdata, uanset om det drejer sig om tekstdata, billeder, lyd (op til 11 timers audio) eller video (op til en time). Det er LLM-modellen, der driver Googles chatbot Gemini.</p>",
                 "size_desc": "<p>Disse modeller med flere hundrede milliarder parametre er de mest komplekse og avancerede med hensyn til performance og præcision. De beregnings- og hukommelsesressourcer, der er nødvendige for at implementere disse modeller, er så omfattende, at de er beregnet til de mest avancerede applikationer og højt specialiserede miljøer.</p>"
             },
             "Gemini 2.0 Flash": {
@@ -848,9 +862,28 @@
                 "size_desc": "<p>De mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og performance: de forbruger langt færre ressourcer end de store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnering.</p>"
             },
             "Mistral Small 3.2": {
-                "desc": "<p>På trods af sit navn er det en mellemstor model. Den er multimodal (i stand til at behandle tekst og billeder) og skiller sig ud ved præcis overholdelse af forespørgsler og sin evne til at bruge avancerede værktøjer.</p>"
+                "desc": "<p>På trods af sit navn er det en mellemstor model. Den er multimodal (i stand til at behandle tekst og billeder) og skiller sig ud ved præcis overholdelse af forespørgsler og sin evne til at bruge avancerede værktøjer.</p>",
+                "fyi": "<p>Version 3.2 af denne model er optimeret til at generere strukturerede output, især i JSON, samtidig med at gentagelser og uønsket adfærd ved lange genereringer begrænses. Multimodal kan den behandle både tekstuelle input og billeder, hvilket muliggør en fælles analyse.</p>",
+                "size_desc": "<p>Med 32 milliarder parametre betragtes denne model som en mellemstor model. Den kan hostes på en server med et enkelt kraftfuldt grafikkort, hvilket begrænser infrastrukturomkostningerne. Den har et kontekstvindue på op til 128.000 tokens, nyttigt til analyse af lange dokumenter.</p>"
+            },
+            "Mistral Small 3.2 24B": {
+                "desc": "<p>Mistral Small 3.2 24B Instruct er en forbedret variant af Mistral Small 3.1 (marts 2025), udstyret med 24 milliarder parametre og avancerede multimodale funktioner.</p>",
+                "fyi": "<p>Mistral Small 3.2 24B Instruct er en multimodal model, der tilbyder topmoderne præstationer i opgaver baseret på tekst- og synsbaseret ræsonnement, herunder billedanalyse, programmering, matematisk ræsonnement og flersproget support for snesevis af sprog.</p>",
+                "size_desc": "<p>Mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og præstation: de er langt mindre ressourcekrævende end store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnement.</p>"
+            },
+            "Mixtral 8x22B": {
+                "desc": "<p>Denne flersprogede model, der blev udgivet i april 2024, er især blevet trænet på engelsk, fransk, tysk, italiensk og spansk samt på opgaver inden for matematik, programmering og ræsonnement.</p>",
+                "fyi": "<p>SMoE-arkitekturen (sparse mixture of experts) i denne model gør den hurtigere og optimerer forholdet mellem dens størrelse og omkostninger. Kun 39 mia. parametre er aktive ud af 141 mia. Kontekstvinduet på 64.000 tokens gør det muligt at hente præcise oplysninger fra store dokumenter. Udgivet i april 2024.</p>",
+                "size_desc": "<p>Disse modeller udstyret med flere hundrede milliarder parametre er de mest komplekse og avancerede med hensyn til præstation og præcision. De beregnings- og hukommelsesressourcer, der er nødvendige for at implementere disse modeller, er af en sådan karakter, at de er beregnet til de mest avancerede applikationer og højt specialiserede miljøer.</p>"
+            },
+            "Mixtral-8x7B": {
+                "desc": "<p>Denne model, der er trænet på et flersproget korpus, er effektiv til varierede og mindre komplekse opgaver.</p>",
+                "fyi": "<p>Lillebror i Mixtral-familien, denne model kan behandle kontekster på 32.000 tokens og understøtter engelsk, fransk, italiensk, tysk og spansk. Takket være SMoE-arkitekturen (sparse mixture of experts) aktiveres kun en brøkdel af parametrene ved hver inferens, hvilket reducerer omkostninger og latens.</p>",
+                "size_desc": "<p>Mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og præstation: de er langt mindre ressourcekrævende end store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnement.</p>"
             },
             "Nemotron Llama 3.1 70B": {
+                "desc": "<p>Stor model trænet ud fra Llama 3.1 70B. Denne genoptrænte version (fine-tune) har en tendens til at give flere detaljer og levere mere strukturerede svar.</p>",
+                "fyi": "<p>Denne model er resultatet af en genoptræning af Llama 3.1 70B, deraf tilstedeværelsen af dens kildemodel i navnet! Den introducerer forbedringer takket være forstærkningslæring med menneskelig feedback (RLHF) og REINFORCE-algoritmen: modellen udforsker forskellige svar, modtager feedback i form af belønninger og justerer derefter gradvist sine valg for bedre at imødekomme brugernes forventninger. Denne tilpasningsproces bruges ofte, når man vil have modellen til at tilpasse sig menneskelige præferencer, eller når den skal optimere sine svar efter specifikke kriterier.</p>",
                 "size_desc": "<p>Med 70 milliarder parametre tilhører denne model kategorien af store modeller. Den kræver flere kraftige grafikkort for at fungere, hvilket medfører bemærkelsesværdige driftsomkostninger.</p>"
             },
             "OLMo-2 32B": {
@@ -859,9 +892,22 @@
                 "size_desc": "<p>De mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og performance: de forbruger langt færre ressourcer end de store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnering.</p>"
             },
             "Phi-3-Mini": {
-                "desc": "<p>Performant til opgaver med kodegenerering og resumering, understøtter denne kompakte model en begrænset kontekst på 4.000 tokens.</p>"
+                "desc": "<p>Performant til opgaver med kodegenerering og resumering, understøtter denne kompakte model en begrænset kontekst på 4.000 tokens.</p>",
+                "fyi": "<p>Lillebror i Phi3-familien, denne model understøtter en kontekst på 4000 tokens og er blevet trænet på syntetiske datasæt og fra filtreret web.</p>",
+                "size_desc": "<p>Meget små modeller med mindre end 7 milliarder parametre er de mindst komplekse og mest økonomiske med hensyn til ressourcer og tilbyder tilstrækkelig præstation til simple opgaver som tekstklassificering.</p>"
+            },
+            "Phi-3-small-8k-Instruct": {
+                "desc": "<p>Optimeret til logisk ræsonnement, denne lille model understøtter en kontekst på 8000 tokens, velegnet til kodegenerering og komplekse opgaver.</p>",
+                "fyi": "<p>Storebror i Phi3-familien, denne model understøtter en kontekst på 8000 tokens og er blevet trænet på syntetiske datasæt og fra filtreret web.</p>",
+                "size_desc": "<p>En lille model er mindre kompleks og ressourcekrævende sammenlignet med større modeller, samtidig med at den tilbyder tilstrækkelig præstation til forskellige opgaver (resumé, oversættelse, tekstklassificering...)</p>"
+            },
+            "Phi-3.5-mini": {
+                "desc": "<p>Ydeevnedygtig til kodegenererings- og resuméopgaver, denne model håndterer en stor kontekst på 128k tokens.</p>",
+                "fyi": "<p>Lille model i Phi-familien, der erstatter Phi-3-mini, denne model understøtter en stor kontekst på 128.000 tokens og er blevet trænet på syntetiske datasæt og fra filtreret web.</p>",
+                "size_desc": "<p>Meget små modeller med mindre end 7 milliarder parametre er de mindst komplekse og mest økonomiske med hensyn til ressourcer og tilbyder tilstrækkelig præstation til simple opgaver som tekstklassificering.</p>"
             },
             "Phi-4": {
+                "desc": "<p>Lille flersproget model, i stand til at bruge værktøjer og yde godt på komplekse opgaver som logik, matematik og kode, samtidig med at den forbliver kompakt.</p>",
                 "fyi": "<p>Denne model bruger tiktoken til tokenisering, hvilket forbedrer dens kapaciteter i flersprogede kontekster. Den er blevet trænet på i alt 9,8 <strong>billioner</strong> tokens, hvoraf 400 milliarder specifikt stammer fra højkvalitets syntetiske data, mens resten består af filtrerede organiske data. Træningen foregik på 1.920 H100-grafikkort i 21 dage. Innovative teknikker som selv-evaluering – hvor modellen kritiserer og omskriver sine svar – samt inverterede instruktioner er blevet brugt til at styrke dens forståelse af direktiver og ræsonneringskapaciteter.</p>",
                 "size_desc": "<p>Med 14 milliarder parametre tilhører denne model kategorien af små modeller. Den kan implementeres lokalt på en tilstrækkeligt kraftig computer eller hostes på en server med et enkelt grafikkort, hvilket reducerer infrastrukturomkostningerne. Kontekstvinduet på 16.000 tokens kan være begrænsende til analyse af meget lange dokumenter.</p>"
             },
@@ -876,9 +922,22 @@
                 "size_desc": "<p>Med 30 milliarder parametre tilhører denne model kategorien af mellemstore modeller. Den kan køre på en server udstyret med et enkelt kraftigt grafikkort, hvilket begrænser infrastrukturomkostningerne. Derudover aktiverer Mixture of Experts-arkitekturen (MoE) kun en del af parametrene ved hvert token, hvilket begrænser dens energiforbrug.</p>"
             },
             "Qwen 3 32B": {
-                "desc": "<p>Mellemstor flersproget model med to svarmuligheder: brugeren kan vælge mellem en ræsonneringstilstand for mere dybdegående svar eller en hurtig tilstand til at generere det endelige svar direkte.</p>"
+                "desc": "<p>Mellemstor flersproget model med to svarmuligheder: brugeren kan vælge mellem en ræsonneringstilstand for mere dybdegående svar eller en hurtig tilstand til at generere det endelige svar direkte.</p>",
+                "fyi": "<p>Denne model er blevet trænet på et meget stort datamængde: 36 billioner tokens på 119 sprog. Træningen fandt sted i tre faser. Modellen lærte først fra 30 billioner tokens med en kontekst på 4.000 tokens. Derefter blev 5 billioner tokens tilføjet for at styrke dens faktuelle viden. Endelig blev den eksponeret for et specifikt korpus for at hjælpe den med bedre at håndtere meget lange tekster. Resultatet: den har ved afslutningen af træningen et kontekstvindue på 128.000 tokens, hvilket er nyttigt til at læse og analysere lange dokumenter.</p>",
+                "size_desc": "<p>Med 32 milliarder parametre tilhører denne model kategorien af mellemstore modeller. Den kan køre på en server udstyret med et enkelt kraftfuldt grafikkort, hvilket begrænser infrastrukturomkostningerne.</p>\n<p>Dens kontekstvindue på 128.000 tokens gør det muligt at behandle lange dokumenter.</p>"
+            },
+            "Qwen 3 8B": {
+                "desc": "<p>Lille flersproget tæt model fra Qwen 3-familien, der tilbyder en \"ræsonnements\"-tilstand til komplekse opgaver (matematik, kode) og en \"direkte svar\"-tilstand til hurtigere svar.</p>",
+                "fyi": "<p>Qwen 3 8B er blevet trænet på det samme korpus som de større modeller i Qwen-familien: 36 billioner tokens dækkende 119 sprog. Dens læring følger tre trin: præ-træning på 30 billioner tokens med et vindue på 4.000, faktuel berigelse med 5 billioner tokens, derefter en specialiseret fase for lange kontekster.</p>",
+                "size_desc": "<p>Med 8 milliarder parametre tilhører den de små modeller. Den kan bruges lokalt på en arbejdsstation for at bevare datafortrolighed eller på en billig server for at begrænse omkostningerne sammenlignet med en større model.</p>\n<p>Dens kontekstvindue går op til 128.000 tokens, hvilket gør det muligt at behandle lange dokumenter.</p>"
+            },
+            "Qwen 3 Max": {
+                "desc": "<p>Blandt de få proprietære modeller fra Qwen er denne den største og mest kraftfulde i tredje generation. Den er blevet trænet med særlig opmærksomhed på virksomhedsbrug og agentiske anvendelsestilfælde.</p>",
+                "fyi": "<p>Denne model er blevet trænet på 36 billioner tokens, næsten det dobbelte af Qwen 2.5, og den er officielt i stand til at svare på 100 sprog.</p>",
+                "size_desc": "<p>Den nøjagtige størrelse er ikke kendt. Tegn peger på, at det er en meget stor model, der kræver servere udstyret med flere kraftfulde grafikkort for at fungere. De tilgængelige estimater er baseret på indirekte tegn såsom inferensomkostninger og svarlatens. Modellen har et kontekstvindue på op til 256.000 tokens, velegnet til analyse af lange dokumenter eller kodedepoter.</p>"
             },
             "Qwen1.5-32B": {
+                "desc": "<p>Mellemstor model med en træningsproces, der er meget målrettet tilpasning til brugerpræferencer.</p>",
                 "fyi": "<p>Modellen har gennemgået en alignment-fase med brugerpræferencer via teknikker som DPO (Direct Preference Optimization) og PPO (Proximal Policy Optimization). Ud over disse teknikker, som var meget innovative på tidspunktet for modellens design, har Alibaba-teamet også optimeret træningsdataene for at gøre dem meget flersprogede, især på europæiske, østasiatiske og sydøstasiatiske sprog.</p>",
                 "size_desc": "<p>De mellemstore modeller tilbyder en god balance mellem kompleksitet, omkostninger og performance: de forbruger langt færre ressourcer end de store modeller, samtidig med at de er i stand til at håndtere komplekse opgaver såsom sentimentanalyse eller ræsonnering.</p>"
             },
@@ -912,6 +971,11 @@
                 "fyi": "<p>Denne model er blevet prætrænet på 7,5 billioner tokens (hvoraf 70% er kode) og bruger en avanceret post-træningsproces - Code RL (Hard to Solve, Easy to Verify) til at styrke korrekt kodeudførelse og Agent RL (long-horizon reinforcement learning) til at optimere løsning af multi-turn softwareopgaver med et massivt parallelt miljø (20.000 parallelle simuleringer på Alibaba Cloud).</p>",
                 "size_desc": "<p>Qwen3-Coder-480B-A35B-Instruct er en meget stor model, der kræver flere grafikkort for at fungere. Mixture of Experts-arkitekturen (MoE) gør det dog muligt kun at aktivere en brøkdel af parametrene (35 mia. ud af 480 mia.), hvilket reducerer miljøpåvirkningen og omkostningerne betydeligt sammenlignet med en tilsvarende dense model.\nKontekstvinduet når native op på 256.000 tokens og kan udvides til op til 1 million takket være ekstrapoleringsteknikker (YaRN), hvilket er ideelt til analyse af store kodebaser.</p>"
             },
+            "Yi-1.5 9B": {
+                "desc": "<p>Yi 1.5 er en model fra den kinesiske virksomhed 01-ai, specialiseret i kode, matematik, ræsonnement, instruktionsfølgning, med en solid forståelse af sprog.</p>",
+                "fyi": "<p>Yi 1.5 er en model fra den kinesiske virksomhed 01-ai, specialiseret i kode, matematik, ræsonnement, instruktionsfølgning, med en solid forståelse af sprog.</p>",
+                "size_desc": "<p>En lille model er mindre kompleks og ressourcekrævende sammenlignet med større modeller, samtidig med at den tilbyder tilstrækkelig præstation til forskellige opgaver (resumé, oversættelse, tekstklassificering...)</p>"
+            },
             "o3-mini": {
                 "desc": "<p>o3-mini er lavet til ræsonnering og kode. Den tilbyder en god balance mellem performance, omkostninger og latens, samtidig med at den er mindre end andre modeller fra OpenAI.</p>",
                 "fyi": "<p>Model optimeret til STEM-ræsonneringsopgaver (science, teknologi, ingeniørvirksomhed, matematik) og kodeskrivning. Den skiller sig ud inden for videnskabelige, matematiske og programmeringsmæssige områder.</p>",
@@ -921,11 +985,16 @@
                 "desc": "<p>Meget stor ræsonneringsmodel, egnet til komplekse videnskabelige og teknologiske opgaver og spørgsmål.</p>",
                 "fyi": "<p>Denne model er meget performant til analyse af billeder og grafikker. Den er også blevet trænet til at interagere med andre systemer via funktionskald, hvilket gør det muligt at bruge den til agentiske anvendelsestilfælde. Som en meget kraftig ræsonneringsmodel kan den blandt andet bruges til at fordele opgaver mellem flere mindre og/eller mere specialiserede modeller. Den har et kontekstvindue på op til 200.000 tokens, hvilket letter analysen af lange dokumenter.</p>",
                 "size_desc": "<p>På trods af sit navn og det faktum, at den nøjagtige størrelse ikke er kendt, er o4 mini højst sandsynligt en stor model, der kræver servere udstyret med flere grafikkort. Ræsonneringsmodeller som o4 mini kræver mere tid til at svare, fordi en ræsonneringsfase går forud for genereringen af det endelige resultat, hvilket øger deres energiforbrug. Ikke desto mindre aktiverer den formodede Mixture of Experts-arkitektur (MoE) kun en del af parametrene til at generere hvert token, hvilket begrænser dens energiforbrug. Størrelsesestimaterne bygger på indirekte indikatorer såsom inferensomkostninger og svarlantens.</p>"
+            },
+            "qwq 32B": {
+                "desc": "<p>Mellemstor ræsonneringsmodel, specialiseret og meget ydeevnedygtig inden for matematik, kodegenerering og løsning af logiske problemer.</p>",
+                "fyi": "<p>Denne model er blevet trænet med en forstærkningslæringsmetode (RL) for at optimere håndteringen af matematikproblemer og programmeringsopgaver. Den bruger flere nyere teknikker til at forbedre kvaliteten af svarene. For eksempel gør RoPE-metoden (Rotary Position Embedding) det muligt for den at forstå rækkefølgen af ord i en tekst bedre. Aktiveringsfunktionen SwiGLU er en mere effektiv måde at håndtere beregninger inden i det neurale netværk på, som hjælper modellen med at producere mere pålidelige svar. QKV-justeringsmetoden (Query Key Value-bias) forbedrer den måde, modellen identificerer og udvælger vigtige oplysninger på. Endelig kan den takket være YaRN-metoden (Yet another RoPE extensioN method) behandle meget lange tekster på op til 130.000 tokens, hvilket gør det muligt for den at arbejde med komplekse eller meget detaljerede dokumenter.</p>",
+                "size_desc": "<p>Med 32 milliarder parametre tilhører denne model kategorien af mellemstore modeller. Den kan køre på en server udstyret med et enkelt kraftfuldt grafikkort, hvilket begrænser infrastrukturomkostningerne. Ræsonneringsmodeller af denne type kører dog længere tid for at producere et svar, da en ræsonneringsfase går forud for genereringen af det endelige resultat, hvilket øger energiforbruget.</p>"
             }
         }
     },
     "header": {
-        "banner": "Chatbot-arenaen er nu tilgængelig på litauisk 🇱🇹, svensk 🇸🇪 og dansk 🇩🇰!",
+        "banner": "Claude 4, GLM 4.5, GPT OSS og andre nye modeller kommer til arenaen...for at blive testet!",
         "chatbot": {
             "newDiscussion": "Ny samtale",
             "step": "Trin",
@@ -935,12 +1004,12 @@
             },
             "stepTwo": {
                 "description": "Se den miljømæssige påvirkning af dine samtaler med hver model",
-                "title": "Modellerne er afsløret!"
+                "title": "Modellerne er afsløres!"
             }
         },
         "help": {
             "link": {
-                "content": "Hjælp os med at forbedre compar:IA",
+                "content": "Hjælp os med at forbedre AI Arenaen",
                 "title": "Giv feedback på arenaen – åbner et nyt vindue"
             }
         },
@@ -974,9 +1043,13 @@
             "title": "Dine ofte stillede spørgsmål"
         },
         "intro": {
-            "desc": "Før en blind samtale med to AI'er og vurdér deres svar",
+            "desc": "Chat med to ukendte AI'er og vurdér deres svar",
             "steps": {
                 "a11yDesc": "1. Jeg chatter med to skjulte AI'er: Chat så længe du vil. 2. Jeg angiver mine præferencer: Dermed hjælper du med at forbedre AI-modellerne. 3. Modellernes identiteter afsløres: Få mere at vide om dem og deres egenskaber.",
+                "one": {
+                    "desc": "Chat så længe du ønsker",
+                    "title": "Jeg chatter med to ukendte chatbots"
+                },
                 "three": {
                     "desc": "Lær mere om AI-modeller og deres karakteristika",
                     "title": "Modellerne er afsløret!"
@@ -996,27 +1069,27 @@
         },
         "origin": {
             "project": {
-                "desc": "Chatbot-arenaen blev designet og udviklet som en del af et statsligt startup-projekt ledet af det franske kulturministerium og integreret i programmet <a {linkProps}>Beta.gouv.fr</a> af det tværministerielle digitale direktorat (DINUM). Dette initiativ støtter franske offentlige myndigheder i at opbygge nyttige, enkle og brugervenlige digitale tjenester.",
+                "desc": "AI-Arenaen blev designet og udviklet som en del af et statsligt startup-projekt ledet af det franske kulturministerium og integreret i programmet <a {linkProps}>Beta.gouv.fr</a> af det tværministerielle digitale direktorat (DINUM). Dette initiativ støtter franske offentlige myndigheder i at opbygge nyttige, enkle og brugervenlige digitale tjenester.",
                 "title": "Hvem tog initiativ til projektet?"
             },
             "team": {
-                "desc": "Chatbot-området ledes inden for det franske kulturministerium af et tværfagligt team – AI-eksperter, udviklere, implementeringsspecialister og designere – med en mission om at gøre dialogbaseret AI mere gennemsigtig og tilgængelig for alle.",
+                "desc": "AI Arenaen er et samarbejde mellem Danish Foundation Models, Digitaliseringsstyrelsen og det franske kulturministerium. Danish Foundation Models består af forskere og AI specialister fra Aarhus Universitet, Syddansk Universitet, Københavns Universtet og Aleksandra instituttet. Services er hostet af det fraske kulturministerie hvis team består af AI-eksperter, udviklere, implementeringsspecialister og designere – Missonen med AI Arenaen er at gøre dialogbaseret AI mere gennemsigtig og tilgængelig for alle.",
                 "title": "Hvem er vi?"
             }
         },
         "usage": {
             "desc": "Værktøjet er også rettet mod AI-eksperter og undervisere til mere specifikke anvendelsestilfælde",
             "educate": {
-                "desc": "Brug chatbot-arenaen som et pædagogisk redskab til at diskutere AI med dit publikum",
+                "desc": "Brug AI Arenaen som et pædagogisk redskab til at diskutere AI med dit publikum",
                 "title": "Uddan og skab bevidsthed"
             },
             "explore": {
                 "desc": "Find alle modelspecifikationer og brugsbetingelserne på ét sted",
                 "title": "Udforsk modellerne"
             },
-            "title": "Specifikke use cases for compar:IA",
+            "title": "Specifikke brugscenarier for AI Arenaen",
             "use": {
-                "desc": "Udviklere, forskere, modeludgivere – få adgang til compar:IA's datasæt for at forbedre modeller til sprog med begrænsede ressourcer",
+                "desc": "Udviklere, forskere, modeludgivere – få adgang til AI Arenaen's datasæt for at forbedre modeller til sprog med begrænsede ressourcer",
                 "title": "Genbrug data"
             }
         },
@@ -1026,7 +1099,7 @@
                 "desc": "Diskuter og udvikl din kritiske tænkning ved at give udtryk for dine præferencer",
                 "title": "Sammenlign svarene fra forskellige AI-modeller"
             },
-            "desc": "compar:IA er et gratis værktøj, der hjælper med at øge borgernes bevidsthed om generativ AI og dens udfordringer.",
+            "desc": "AI Arenaen er et gratis værktøj, der hjælper med at øge borgernes bevidsthed om generativ AI og dens udfordringer.",
             "measure": {
                 "alt": "Mål",
                 "desc": "Opdag den miljømæssige påvirkning af dine samtaler med hver model",
@@ -1037,7 +1110,7 @@
                 "desc": "Test forskellige modeller: åbne, proprietære, små, store...",
                 "title": "Test de nyeste AI i økosystemet på ét sted"
             },
-            "title": "Hvad bruges compar:IA til?"
+            "title": "Hvad bruges AI Arenaen til?"
         },
         "vote": {
             "datasetAccess": "Få adgang til datasættene",
@@ -1052,7 +1125,7 @@
                     "title": "Modeller, der er finjusteret til specifikke sprog"
                 },
                 "prefs": {
-                    "desc": "Efter at have snakket med AI'erne, bliver du bedt om at angive din præference for en model ud fra givne kriterier, såsom relevansen eller nytten af svarene.",
+                    "desc": "Efter at have snakket med AI'erne, bliver du bedt om at angive hvilket svar du foretrækker ud fra eksempelvis hvor relevant eller brugbart svaret er.",
                     "title": "Dine præferencer"
                 }
             },
@@ -1072,7 +1145,21 @@
                 "question": "Kan jeg bruge modellens outputs til at træne nye modeller?",
                 "subTitle": "Du kan ikke genbruge dem til at træne andre modeller",
                 "title": "Genbrug af genererede resultater"
+            },
+            "title": "Terms of Use",
+            "types": {
+                "allowed": "Tilladt",
+                "conditions": "Under betingelser",
+                "forbidden": "Forbudt"
             }
+        },
+        "conso": {
+            "count": {
+                "L": "> 100 Wh",
+                "M": "fra 10 til 100 Wh",
+                "S": "< 10 Wh"
+            },
+            "filterLegend": "Filtrer efter gennemsnitligt energiforbrug for 1000 tokens"
         },
         "extra": {
             "experts": {
@@ -1080,7 +1167,7 @@
                 "open-weights": "For at læse mere, se <a {linkProps}>modelsiden på Hugging Face</a>"
             },
             "impacts": "Miljøpåvirkningsberegninger er baseret på <a {linkProps1}>EcoLogits</a> og <a {linkProps2}>Impact CO<sub>2</sub></a> projekterne.",
-            "title": "For at lære mere"
+            "title": "Få mere at vide"
         },
         "licenses": {
             "type": {
@@ -1092,6 +1179,9 @@
         "list": {
             "filters": {
                 "archived": {
+                    "checkedLabel": "Synlig",
+                    "help": "Som standard er kun aktive modeller i arenaen synlige.",
+                    "label": "Arkiverede modeller",
                     "uncheckedLabel": "Ikke synligt"
                 },
                 "display": "Vis filtre",
@@ -1110,7 +1200,7 @@
                         "XL": "> 150 milliarder",
                         "XS": "< 7 milliarder"
                     },
-                    "legend": "Størrelse (i millarder parametre)"
+                    "legend": "Størrelse (parametre)"
                 }
             },
             "intro": "Udforsk de forskellige samtale AI-modeller, deres specifikationer og licenser.",
@@ -1147,7 +1237,11 @@
         "release": "Udgivet {date}",
         "size": {
             "count": {
-                "L": "70 til 160 mia."
+                "L": "100 til 400 mia.",
+                "M": "60 til 100 mia.",
+                "S": "15 til 60 mia.",
+                "XL": ">400 mia.",
+                "XS": "<15 mia."
             },
             "estimated": "Estimeret størrelse ({size})",
             "title": "Størrelse"
@@ -1208,12 +1302,19 @@
             },
             "cta": "Gå til sammenligningsværktøjet",
             "europe": {
-                "adventure": "Fra sommeren 2025 tilslutter Litauen, Sverige og Danmark sig initiativet!",
+                "adventure": "Fra efteråret 2025 tilslutter Litauen, Sverige og Danmark sig initiativet!",
                 "catch": "Vil du gerne have chatbot-arenaen på dit sprog?",
                 "desc": "Arenaen er nu tilgængelig for deres borgere på nationale sprog med en central mission: at opbygge præferencedatasæt for at forbedre fremtidige AI-modellers ydeevne på sprog med begrænsede ressourcer.",
                 "title": "Arenaen <span {props}>bliver europæisk</span>!"
             },
+            "tabLabel": "Arenaen",
             "title": "Arenaen gør det muligt at oprette <span {props}>præference-datasæt</span> med fokus på <span {props}>reel brug</span> i <span {props}>europæiske sprog</span>."
+        },
+        "faq": {
+            "tabLabel": "FAQ"
+        },
+        "history": {
+            "tabLabel": "Historieprojekt"
         },
         "partners": {
             "academy": {
@@ -1233,7 +1334,8 @@
             "services": {
                 "desc": "Beregninger af miljøpåvirkningen er baseret på ovenstående værktøjer.",
                 "title": "Anvendte tjenester"
-            }
+            },
+            "tabLabel": "Partnere"
         },
         "problem": {
             "alignment": {
@@ -1279,28 +1381,114 @@
                     "title": "Bias-forstærkende svar"
                 }
             },
+            "tabLabel": "The oprindelige problem",
             "title": "Respekterer samtalebaserede AI-modeller <span {props}>mangfoldigheden</span> i de europæiske sprog?"
         },
         "title": "Alt, hvad du behøver at vide om chatbot-arenaen"
     },
     "ranking": {
         "energy": {
+            "desc": "Udforsk grafen, der sætter en models tilfredshedsscore (y-aksen) i perspektiv med dens energiforbrug (x-aksen).",
+            "desc2": "Denne graf viser for hver model tilfredshedsscoren (Bradley Terry-score) i forhold til estimatet af det gennemsnitlige energiforbrug for 1000 tokens. Energiforbruget er estimeret ud fra <a {linkProps}>Ecologits</a>-metodologien og er baseret på to parametre: modellernes <strong>størrelse</strong> (antal parametre) og deres <strong>arkitektur</strong>. For <strong>proprietære modeller</strong> er disse oplysninger ikke eller kun delvist kommunikeret. Derfor er de udelukket fra grafen nedenfor.",
+            "tabLabel": "Energi fokus",
             "title": "Er de mest populære modeller energieffektive?",
             "views": {
                 "graph": {
-                    "desc": "Vælg en model for at kende dens BT-score og energiforbrug"
+                    "desc": "Vælg en model for at kende dens Bradley-Terry (BT) score og energiforbrug",
+                    "faq": {
+                        "1": {
+                            "desc": "Vi har valgt at vise proprietære modeller, som ikke kommunikerer transparent om størrelse og arkitektur, i gråt (ikke analyseret).",
+                            "title": "Hvorfor er nogle rapporterede modeller ikke analyseret?"
+                        }
+                    },
+                    "infos": {
+                        "list": {
+                            "1": "Øverst til venstre findes modellerne, som er populære og forbruger lidt energi sammenlignet med andre modeller.",
+                            "2": "Jo højere oppe en model er placeret i grafen, jo højere er dens Bradley-Terry-tilfredshedsscore.",
+                            "3": "Jo længere til venstre en model er placeret i grafen, jo mindre energi forbruger den sammenlignet med andre modeller.",
+                            "4": "Ud over størrelsen har arkitekturen en indvirkning på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (tæt arkitektur, 405 milliarder parametre) ved lignende størrelse i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre)."
+                        },
+                        "title": "Læseeksempler:"
+                    },
+                    "legends": {
+                        "arch": "Model arkitektur",
+                        "size": "filtrer på størrelse",
+                        "sizeSub": "(mia. parametre)"
+                    },
+                    "tabLabel": "Grafisk visning",
+                    "title": "Bradley-Terry (BT) tilfredshedsscore VS Gennemsnitsforbrug for 1000 tokens",
+                    "tooltip": {
+                        "active_params": "Aktive parametre (mia.)",
+                        "arch": "Arkitektur",
+                        "consumption_wh": "Gennemsnitsforbrug (Wh)",
+                        "elo": "BT score",
+                        "params": "Parametre (mia.)"
+                    },
+                    "xLabel": "Forbrug pr. 1000 tokens (Wh)",
+                    "yLabel": "Bradley-Terry Score (BT)"
+                },
+                "table": {
+                    "title": "Grafdata i tabelform"
                 }
             }
         },
         "methodo": {
+            "desc": {
+                "1": "Siden 2024 har tusindvis af brugere brugt compar:IA til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
+                "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (PEReN)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {linkProps}>metodologiske notesbog</a>."
+            },
+            "impacts": {
+                "elo": {
+                    "desc": {
+                        "1": "<strong>Bradley-Terry</strong>-modellen omdanner et sæt af lokale og potentielt ufuldstændige sammenligninger til et sammenhængende og statistisk robust globalt rangordningssystem, der hvor den empiriske sejrsrate forbliver begrænset til direkte observationer."
+                    },
+                    "title": "10 første modeller i rangordningen ifølge den estimerede sejrsrate med Bradley-Terry-modellen"
+                },
+                "title": "Indvirkningen af valget af metode på rangordningen af modeller",
+                "winrate": {
+                    "desc": {
+                        "1": "Ved kun at basere sig på den <strong>gennemsnitlige sejrsrate</strong> kan man opnå en global rangordning, men denne beregning forudsætter, at hver model har spillet mod alle andre.",
+                        "2": "Denne metode er ikke ideel, da den kræver data fra alle kombinationer af modeller, og så snart man øger antallet af modeller, bliver det hurtigt dyrt og tungt at vedligeholde."
+                    },
+                    "title": "10 første modeller i rangordningen ifølge den \"empiriske\" sejrsrate"
+                }
+            },
             "methods": {
+                "cons": "Hovedproblemer",
+                "elo": {
+                    "def": "<strong>Definition</strong>: Rangordningssystem, hvor gevinst eller tab af point afhænger af resultatet (sejr/nederlag/uafgjort) <strong>og</strong> det estimerede niveau af modstanderen: hvis en svagere model slår en stærkere model, er dens fremgang i rangordningen større.",
+                    "list": {
+                        "1": "<strong>Probabilistisk model</strong>: man kan estimere det sandsynlige resultat af enhver sammenligning, selv mellem modeller, der aldrig er blevet direkte sammenlignet.",
+                        "2": "<strong>Hensyntagen til sværhedsgraden af kampene</strong>: de estimerede scores fra Bradley Terry-modellen tager højde for niveauet af de mødte modstandere, hvilket muliggør en retfærdig sammenligning mellem modeller.",
+                        "3": "<strong>Bedre håndtering af usikkerhed</strong>: konfidensintervallet integrerer hele netværket af sammenligninger. Dette muliggør et mere præcist estimat af usikkerheden, især for modeller med få direkte sammenligninger, men mange fælles modstandere."
+                    },
+                    "title": "Bradley-Terry (BT) rangordning"
+                },
                 "pros": "Fordele",
-                "title": "To måders at opdele modeller"
-            }
+                "title": "To måders at opdele modeller",
+                "winrate": {
+                    "def": "<strong>Definition</strong>: Empirisk rangordningssystem for modeller baseret på procentdelen af kampe vundet af en model mod alle andre modeller.",
+                    "list": {
+                        "1": "<strong>Bias fra antal kampe</strong>: en model, der har vundet tre sejre ud af tre \"kampe\", viser en sejrsrate på 100%, men denne score er lidt signifikant, da den er baseret på meget lidt data.",
+                        "2": "<strong>Ingen hensyntagen til sværhedsgraden af kampene</strong>: at slå en \"begynder\"-model eller en \"ekspert\"-model tæller det samme. Sejrsraterne er ikke retfærdige, da de ikke tager højde for sværhedsgraden af kampene.",
+                        "3": "<strong>Stagnation</strong>: på lang sigt ender mange gode modeller omkring 50% sejrsrate, fordi de møder modeller på deres niveau, hvilket gør rangordningen mindre diskriminerende."
+                    },
+                    "title": "Rangordning efter sejrsrate"
+                }
+            },
+            "tabLabel": "Metodologi",
+            "title": "Hvordan vælger man metoden til rangordning af modeller?"
         },
         "preferences": {
+            "desc": "Når du stemmer, kan du kvalificere din præference efter forskellige positive og negative kategorier. Sammenlign deres fordeling fra en model til en anden.",
+            "modal": {
+                "cta": "Hvad er en præference?",
+                "title": "Positive og negative præferencer"
+            },
+            "tabLabel": "Fokus præferencer",
             "table": {
                 "cols": {
+                    "clear_formatting": "Tydelig formatering<br>",
                     "complete": "Fuldendt",
                     "creative": "Kreativ",
                     "incorrect": "Forkert",
@@ -1321,7 +1509,7 @@
             "title": "Hvordan fordeler brugernes præferencer sig?"
         },
         "ranking": {
-            "desc": "Tak for jeres bidrag! Jeres stemmer indgår i en Bradley-Terry (BT)-rangering, som vi gør transparent for jer.<br>Denne BT-tilfredshedsscore, udviklet i partnerskab med PEReN, bygger på jeres stemmer, jeres godkendelses- og afvisningsreaktioner.",
+            "desc": "Tak for jeres bidrag! Jeres stemmer fodrer en Bradley-Terry (BT) rangordning, som vi gør transparent for jer.<br>Denne Bradley-Terry (BT) tilfredshedsscore er konstrueret i partnerskab med <a {linkProps}>Pôle d'Expertise de la Régulation Numérique (PEReN)</a> og er baseret på jeres stemmer og jeres godkendelses- og misbilligelsesreaktioner.",
             "tabLabel": "Rangliste"
         },
         "table": {
@@ -1330,7 +1518,8 @@
                 "cols": {
                     "arch": "Arkitektur",
                     "consumption_wh": "Gns. forbrug<br>(1.000 tokens)",
-                    "elo": "BT Score",
+                    "elo": "BT<br>tilfredshedsscore",
+                    "license": "Licens",
                     "n_match": "Samlet antal stemmer",
                     "name": "Model",
                     "organisation": "Organisation",
@@ -1343,6 +1532,7 @@
                 "tooltips": {
                     "arch": "Et LLM-models arkitektur refererer til designprincipperne, der definerer, hvordan komponenterne i et neuralt netværk er arrangeret og interagerer for at transformere inputdata til prædiktive outputs, herunder måden hvorpå parametre aktiveres (dense vs. sparse), komponentspecialisering og informationsbehandlingsmekanismer (transformers, konvolutionsnetværk, hybride arkitekturer).",
                     "elo": "Estimeret statistisk score i henhold til Bradley-Terry-modellen, som afspejler sandsynligheden for, at en model foretrækkes frem for en anden. Denne score beregnes ud fra alle brugernes stemmer og reaktioner. For at lære mere, gå til metodefanen.",
+                    "rank": "Rangordningsplacering tildelt ifølge Bradley-Terry-tilfredshedsscoren",
                     "size": "Modellens størrelse i milliarder af parametre, kategoriseret i fem klasser. For proprietære modeller oplyses denne størrelse ikke.",
                     "trust_range": "Interval, der angiver pålideligheden af rangordningen: jo smallere intervallet er, jo mere pålidelig er rangestimat. Der er 95% sandsynlighed for, at modellens sande rang ligger i dette spænd."
                 }
@@ -1371,7 +1561,7 @@
             "title": "Hvilket svarer til:"
         },
         "feedback": {
-            "description": "Del compar:AI med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
+            "description": "Del AI Arena'en med andre ved at dele de AI-modeller, du har interageret med! Kun navnene og energipåvirkningen af diskussionen vil være synlige via dette link, uden adgang til beskederne i samtalen.",
             "example": "Eksempel på delte resultater",
             "moreOnVotes": "Lær mere om stemmer",
             "shareResult": "Del dit resultat"
@@ -1408,7 +1598,7 @@
             "faq": "Ofte stillede spørgsmål",
             "history": "Projektets historie",
             "home": "Hjem",
-            "mentions-legales": "Juridisk meddelelse",
+            "mentions-legales": "Om os",
             "modalites": "Brugsbetingelser",
             "modeles": "Modelliste",
             "news": "Nyheder",
@@ -1462,13 +1652,13 @@
     "welcome": {
         "errors": "AI kan begå fejl: vi opfordrer dig til at kontrollere de leverede oplysninger",
         "go": "Så er vi klar",
-        "privacy": "Del ikke personlige oplysninger såsom dit navn, efternavn eller adresse",
+        "privacy": "Del ikke personlige oplysninger såsom dit navn, efternavn eller adresse.",
         "title": "Velkommen til AI Arenaen!",
         "tos": {
             "desc": "Samtalerne og de præferencer, du udtrykker på compar:IA, bruges anonymt til at udgøre datasæt, der er repræsentative for europæiske sprog og anvendelser for at reducere kulturelle bias og tilbyde fremtidige AI-modeller, der er mere inkluderende.",
             "moreInfos": "Lær mere om projektet"
         },
-        "use": "Brug ikke sammenligningsværktøjet til ulovlige eller skadelige formål"
+        "use": "Brug ikke arenaen til ulovlige eller skadelige formål."
     },
     "words": {
         "NA": "N/A",

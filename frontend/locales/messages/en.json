@@ -1153,6 +1153,14 @@
                 "forbidden": "Forbidden"
             }
         },
+        "conso": {
+            "count": {
+                "L": "> 100 Wh",
+                "M": "from 10 to 100 Wh",
+                "S": "< 10 Wh"
+            },
+            "filterLegend": "Filter by average energy consumption per 1000 tokens"
+        },
         "extra": {
             "experts": {
                 "api-only": "To dive deeper, check out the <a {linkProps}>official model website</a>",
@@ -1381,11 +1389,27 @@
     "ranking": {
         "energy": {
             "desc": "Explore the graph that puts a model's satisfaction score (y-axis) into perspective with its energy consumption (x-axis).",
+            "desc2": "This graph represents the satisfaction score (Bradley Terry score) for each model as a function of the estimated average energy consumption per 1000 tokens. Energy consumption is estimated using the Ecologits methodology and is based on two parameters: the size of the models (number of parameters) and their architecture. For proprietary models, this information is either not provided or only partially available. Therefore, they are excluded from the graph below.",
             "tabLabel": "Energy focus",
             "title": "Are the most popular models energy efficient?",
             "views": {
                 "graph": {
                     "desc": "Select a model to find out its Bradley-Terry (BT) score and estimated energy consumption",
+                    "faq": {
+                        "1": {
+                            "desc": "We have decided to display proprietary models that do not communicate transparently on size and architecture in gray (not analyzed).",
+                            "title": "Why are some models reported as not analyzed?"
+                        }
+                    },
+                    "infos": {
+                        "list": {
+                            "1": "In the top left corner are the models that are popular and consume less energy compared to other models.",
+                            "2": "The higher a model is located on the graph, the higher its Bradley-Terry satisfaction score.",
+                            "3": "The further to the left a model is located on the graph, the less energy it consumes compared to other models.",
+                            "4": "Beyond size, architecture has an impact on the average energy consumption of models: for example, with a similar size, the Llama 3 405B model (dense architecture, 405 billion parameters) consumes 10 times more energy on average than the GLM 4.5 model (MOE architecture, 355 billion parameters and 32 billion active parameters)."
+                        },
+                        "title": "Graph reading examples:"
+                    },
                     "legends": {
                         "arch": "Model architecture",
                         "size": "Filter by size",
@@ -1418,7 +1442,7 @@
                     "desc": {
                         "1": "The <strong> Bradley-Terry </strong> model transforms a set of local and potentially incomplete comparisons into a consistent and statistically robust global ranking system, where the empirical win rate remains limited to direct observations."
                     },
-                    "title": "Ranking of the top 10 models by estimated win rate from Bradley Terry (BT) scores"
+                    "title": "Top 10 models in the ranking based on estimated win rate with the Bradley-Terry model"
                 },
                 "title": "Impact of methodological choice on model ranking",
                 "winrate": {
@@ -1426,7 +1450,7 @@
                         "1": "Based solely on the <strong> average win rate </strong> , an overall ranking can be obtained, but this calculation assumes that each model has played against all others.",
                         "2": "This method is not ideal because it requires data from all combinations of models and as soon as the number of models increases, it quickly becomes expensive and cumbersome to maintain."
                     },
-                    "title": "Top 10 Models Ranking by Model Win Rate"
+                    "title": "Top 10 models in the ranking based on \"empirical\" win rates"
                 }
             },
             "methods": {
