@@ -274,14 +274,13 @@ def commit_and_push(repo_org, repo_name, repo_path):
 
     # Commit
     commit_message = f"Update data files {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-    #  huggingface-cli upload ministere-culture/comparia-votes comparia-votes  --repo-type=dataset
     logger.info(
-        f"huggingface-cli upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'"
+        f"hf upload {repo_org}/{repo_name} {repo_path} --token $HF_PUSH_DATASET_KEY --repo-type dataset --commit-message '{commit_message}'"
     )
 
     push_result = subprocess.run(
         [
-            "huggingface-cli",
+            "hf",
             "upload",
             (repo_org + "/" + repo_name),
             repo_path,
@@ -358,11 +357,12 @@ def main():
     # subprocess.run(args=
     #         ["git", "--global" "config","credential.helper", "store"]
     #     )
-    logger.info("huggingface-cli login --token $HF_PUSH_DATASET_KEY")
+    logger.info("hf auth login --token $HF_PUSH_DATASET_KEY")
 
     _login_result = subprocess.run(
         args=[
-            "huggingface-cli",
+            "hf",
+            "auth",
             "login",
             "--token",
             os.getenv("HF_PUSH_DATASET_KEY", ""),
