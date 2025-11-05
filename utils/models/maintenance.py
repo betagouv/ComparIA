@@ -1,14 +1,30 @@
 from datetime import date
-from rich import print
-from build_models import (
+
+from languia.models import Archs, Licenses, RawOrgas
+from utils.models.build_models import (
+    ARCHS_PATH,
+    LICENSES_PATH,
     MODELS_PATH,
     validate_orgas_and_models,
     log,
 )
-from utils import read_json, write_json, filter_dict, sort_dict
+from utils.models.utils import read_json, write_json
 
 
 def clean_models():
+    # Clean models.json
+    # put 'missing_data' models first in list
+    # reorder models based on date (most recent first)
+    # remove keys that are default values
+
+    context = {
+        "licenses": {
+            l["license"]: l
+            for l in Licenses(read_json(LICENSES_PATH)).model_dump(exclude_none=True)
+        },
+        "archs": {a.pop("id"): a for a in Archs(read_json(ARCHS_PATH)).model_dump()},
+    }
+
     raw_orgas = read_json(MODELS_PATH)
     filtered_out_models = {}
 
@@ -17,6 +33,7 @@ def clean_models():
         filtered_models = []
         for model in orga["models"]:
             if model.get("status", None) == "missing_data":
+                print(f"Warning: Missing model data for '{model["id"]}'")
                 if not orga["name"] in filtered_out_models:
                     filtered_out_models[orga["name"]] = []
                 filtered_out_models[orga["name"]].append(model)
@@ -24,13 +41,11 @@ def clean_models():
                 filtered_models.append(model)
         orga["models"] = filtered_models
 
-    dumped_orgas = validate_orgas_and_models(raw_orgas, exclude_defaults=True)
+    orgas = RawOrgas.model_validate(raw_orgas, context=context).model_dump(
+        exclude_defaults=True
+    )
 
-    if not dumped_orgas:
-        log.error("Something went wrong, aborting…")
-        return
-
-    for orga in dumped_orgas:
+    for orga in orgas:
         orga["models"] = sorted(
             orga["models"],
             key=lambda m: date(
@@ -43,10 +58,10 @@ def clean_models():
 
     # Reinject non validated models
     for name, models in filtered_out_models.items():
-        orga = next((orga for orga in dumped_orgas if orga["name"] == name))
-        orga["models"] = models + orga["models"]
+        orga = next((orga for orga in orgas if orga["name"] == name))
+        orga["models"] = orga["models"] + models
 
-    write_json(MODELS_PATH, dumped_orgas)
+    write_json(MODELS_PATH, orgas)
 
 
 if __name__ == "__main__":
