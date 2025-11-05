@@ -58,7 +58,7 @@
     <section class="rounded-xl bg-white p-4 md:p-10">
       <h3 class="text-lg! flex items-center gap-3">
         <Icon icon="leaf-line" size="lg" block class="text-green" />
-        {m['ranking.energy.views.methodo.2.title']()}
+        {m['ranking.energy.views.methodo.3.title']()}
       </h3>
 
       <p class="text-grey text-[14px]!">
