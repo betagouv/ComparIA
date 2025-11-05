@@ -18,7 +18,7 @@
   </p>
 
   <div class="flex flex-col gap-8">
-    <section class="rounded-xl bg-white p-4 md:p-10">
+    <section class="cg-border bg-white p-4 md:p-10">
       <div class="mb-10 text-center">
         <h3 class="text-lg! mt-3! mb-0!">{m['ranking.energy.views.graph.title']()}</h3>
         <p class="text-grey! text-sm!">{m['ranking.energy.views.graph.desc']()}</p>
@@ -28,7 +28,7 @@
     </section>
 
     <div class="flex flex-col gap-8 md:flex-row">
-      <section class="basis-1/2 rounded-xl bg-white p-4 md:p-10">
+      <section class="cg-border basis-1/2 bg-white p-4 md:p-10">
         <h3 class="text-lg! flex items-center gap-3">
           <Icon icon="search-eye" size="lg" block class="text-yellow" />
           <span>
@@ -44,7 +44,7 @@
         </ul>
       </section>
 
-      <section class="basis-1/2 rounded-xl bg-white p-4 md:p-10">
+      <section class="cg-border basis-1/2 bg-white p-4 md:p-10">
         <h3 class="text-lg! flex items-center gap-3">
           <Icon icon="database" size="lg" block class="text-primary" />
           {m['ranking.energy.views.methodo.2.title']()}
@@ -55,7 +55,7 @@
       </section>
     </div>
 
-    <section class="rounded-xl bg-white p-4 md:p-10">
+    <section class="cg-border bg-white p-4 md:p-10">
       <h3 class="text-lg! flex items-center gap-3">
         <Icon icon="leaf-line" size="lg" block class="text-green" />
         {m['ranking.energy.views.methodo.3.title']()}
@@ -76,7 +76,7 @@
       <p class="text-grey text-[14px]! mb-0!">{m['ranking.energy.views.methodo.3.descs.4']()}</p>
     </section>
 
-    <section class="rounded-xl bg-white p-4 md:p-10">
+    <section class="cg-border bg-white p-4 md:p-10">
       <h3 class="text-lg! mb-0!">{m['ranking.energy.views.table.title']()}</h3>
       <RankingTable
         id="energy-table"
