@@ -120,6 +120,12 @@ ranking-pipeline: ## Execute the ranking pipeline (see notebooks for more option
 	@echo "  - utils/ranking_methods/notebooks/rankers.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/frugal.ipynb"
 	@echo "  - utils/ranking_methods/notebooks/graph.ipynb"
+	
+	@echo "Running ranking pipeline..."
+	$(UV) run python -m utils.models.build_peren_model_list
+	cd utils/ranking_methods/src && poetry run python -m rank_comparia.export
+	cp utils/ranking_methods/src/output/ml_final_data.json utils/models/generated-models-extra-data.json
+	@$(MAKE) models-build
 
 # Cleanup
 clean: ## Clean generated files
