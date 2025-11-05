@@ -20,14 +20,14 @@
         ],
         "win_rate": 0.4155311355311355
       },
-      "distribution": "open-weights",
+      "distribution": "fully-open-source",
       "endpoint": {
         "api_base": "https://router.huggingface.co/v1",
         "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
         "api_type": "huggingface"
       },
       "friendly_size": "M",
-      "fully_open_source": false,
+      "fully_open_source": true,
       "icon_path": "swissai.webp",
       "id": "Apertus-70B-Instruct-2509",
       "license": "Apache 2.0",
@@ -75,10 +75,10 @@
         ],
         "win_rate": 0.46869047619047627
       },
-      "distribution": "open-weights",
+      "distribution": "fully-open-source",
       "endpoint": null,
       "friendly_size": "XS",
-      "fully_open_source": false,
+      "fully_open_source": true,
       "icon_path": "swissai.webp",
       "id": "Apertus-8B-Instruct-2509",
       "license": "Apache 2.0",
