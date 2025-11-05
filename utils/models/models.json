@@ -1081,7 +1081,7 @@
         "license": "proprietary",
         "release_date": "08/2025",
         "arch": "maybe-dense",
-        "params": 95,
+        "params": 123,
         "url": "https://mistral.ai/news/mistral-medium-3",
         "endpoint": {
           "api_type": "openrouter",
