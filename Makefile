@@ -86,7 +86,7 @@ db-migrate: ## Apply database migrations
 # Models utilities
 models-build: ## Build/generate model files from JSON sources
 	@echo "Generating models..."
-	$(UV) run python utils/models/build_models.py
+	$(UV) run python -m utils.models.build_models
 
 models-maintenance: ## Run the models maintenance script
 	@echo "Models maintenance..."
