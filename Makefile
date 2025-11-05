@@ -61,6 +61,10 @@ format-frontend: ## Format frontend code
 	@echo "Formatting frontend code..."
 	cd frontend && $(NPM) run format
 
+clean-locales-frontend: ## Remove locales keys not present in fr
+	@echo "Cleaning frontend locales keys..."
+	cd frontend/locales && python maintenance.py
+
 # Database utilities
 db-schema-init: ## Initialize database schema
 	@echo "Initializing database schema..."
