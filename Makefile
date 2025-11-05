@@ -90,7 +90,7 @@ models-build: ## Build/generate model files from JSON sources
 
 models-maintenance: ## Run the models maintenance script
 	@echo "Models maintenance..."
-	$(UV) run python utils/models/maintenance.py
+	$(UV) run python -m utils.models.maintenance
 
 # Dataset utilities
 dataset-export: ## Export datasets to HuggingFace (requires HF_PUSH_DATASET_KEY and DATABASE_URI)
