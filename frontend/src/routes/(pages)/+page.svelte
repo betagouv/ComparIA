@@ -29,37 +29,29 @@
     }
   }
 
-  const availableImgsLocales = ['da', 'sv']
-  const utilyCards = (
-    [
-      {
-        i18nKey: 'compare',
-        src: availableImgsLocales.includes(locale)
-          ? `/home/comparer-${locale}.png`
-          : '/home/comparer.svg',
-        srcDark: availableImgsLocales.includes(locale)
-          ? `/home/comparer-dark-${locale}.png`
-          : '/home/comparer-dark.jpg',
-        classes: ''
-      },
-      { i18nKey: 'test', src: '/home/tester.png', srcDark: '/home/tester-dark.jpg', classes: '' },
-      {
-        i18nKey: 'measure',
-        src: availableImgsLocales.includes(locale)
-          ? `/home/mesurer-${locale}.png`
-          : '/home/mesurer.svg',
-        srcDark: availableImgsLocales.includes(locale)
-          ? `/home/mesurer-dark-${locale}.png`
-          : '/home/mesurer-dark.jpg',
-        classes: 'px-14 py-5'
-      }
-    ] as const
-  ).map(({ i18nKey, ...card }) => ({
-    ...card,
-    title: m[`home.use.${i18nKey}.title`](),
-    desc: m[`home.use.${i18nKey}.desc`](),
-    alt: m[`home.use.${i18nKey}.alt`]()
-  }))
+  const localeOrDefault = $derived(['da', 'sv', 'en', 'fr'].includes(locale) ? locale : 'en')
+  const utilyCards = $derived(
+    (
+      [
+        {
+          i18nKey: 'compare',
+          src: `/home/comparer-${localeOrDefault}.png`,
+          srcDark: `/home/comparer-dark-${localeOrDefault}.png`
+        },
+        { i18nKey: 'test', src: '/home/tester.png', srcDark: '/home/tester-dark.jpg' },
+        {
+          i18nKey: 'measure',
+          src: `/home/mesurer-${localeOrDefault}.png`,
+          srcDark: `/home/mesurer-dark-${localeOrDefault}.png`
+        }
+      ] as const
+    ).map(({ i18nKey, ...card }) => ({
+      ...card,
+      title: m[`home.use.${i18nKey}.title`](),
+      desc: m[`home.use.${i18nKey}.desc`](),
+      alt: m[`home.use.${i18nKey}.alt`]()
+    }))
+  )
 
   const europeCards = [
     {
@@ -202,18 +194,12 @@
             <img
               src={card.src}
               alt={card.alt}
-              class={[
-                'fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey rounded-t-xl object-contain dark:hidden',
-                card.classes
-              ]}
+              class="fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey rounded-t-xl object-contain dark:hidden"
             />
             <img
               src={card.srcDark}
               alt={card.alt}
-              class={[
-                'fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey hidden rounded-t-xl object-contain dark:block',
-                card.classes
-              ]}
+              class="fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey hidden rounded-t-xl object-contain dark:block"
             />
             <div class="px-5 pb-7 pt-4 md:px-8 md:pb-10 md:pt-5">
               <h6 class="mb-1! md:mb-2!">{card.title}</h6>
