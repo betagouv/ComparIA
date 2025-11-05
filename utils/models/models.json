@@ -1588,7 +1588,7 @@
       {
         "simple_name": "Apertus 8B Instruct",
         "license": "Apache 2.0",
-        "fully_open_source": false,
+        "fully_open_source": true,
         "id": "Apertus-8B-Instruct-2509",
         "release_date": "09/2025",
         "params": 8,
@@ -1602,7 +1602,7 @@
       {
         "simple_name": "Apertus 70B Instruct",
         "license": "Apache 2.0",
-        "fully_open_source": false,
+        "fully_open_source": true,
         "id": "Apertus-70B-Instruct-2509",
         "release_date": "09/2025",
         "params": 70,
