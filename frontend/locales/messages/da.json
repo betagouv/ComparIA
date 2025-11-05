@@ -1389,27 +1389,11 @@
     "ranking": {
         "energy": {
             "desc": "Udforsk grafen, der sætter en models tilfredshedsscore (y-aksen) i perspektiv med dens energiforbrug (x-aksen).",
-            "desc2": "Denne graf viser for hver model tilfredshedsscoren (Bradley Terry-score) i forhold til estimatet af det gennemsnitlige energiforbrug for 1000 tokens. Energiforbruget er estimeret ud fra <a {linkProps}>Ecologits</a>-metodologien og er baseret på to parametre: modellernes <strong>størrelse</strong> (antal parametre) og deres <strong>arkitektur</strong>. For <strong>proprietære modeller</strong> er disse oplysninger ikke eller kun delvist kommunikeret. Derfor er de udelukket fra grafen nedenfor.",
             "tabLabel": "Energi fokus",
             "title": "Er de mest populære modeller energieffektive?",
             "views": {
                 "graph": {
                     "desc": "Vælg en model for at kende dens Bradley-Terry (BT) score og energiforbrug",
-                    "faq": {
-                        "1": {
-                            "desc": "Vi har valgt at vise proprietære modeller, som ikke kommunikerer transparent om størrelse og arkitektur, i gråt (ikke analyseret).",
-                            "title": "Hvorfor er nogle rapporterede modeller ikke analyseret?"
-                        }
-                    },
-                    "infos": {
-                        "list": {
-                            "1": "Øverst til venstre findes modellerne, som er populære og forbruger lidt energi sammenlignet med andre modeller.",
-                            "2": "Jo højere oppe en model er placeret i grafen, jo højere er dens Bradley-Terry-tilfredshedsscore.",
-                            "3": "Jo længere til venstre en model er placeret i grafen, jo mindre energi forbruger den sammenlignet med andre modeller.",
-                            "4": "Ud over størrelsen har arkitekturen en indvirkning på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (tæt arkitektur, 405 milliarder parametre) ved lignende størrelse i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre)."
-                        },
-                        "title": "Læseeksempler:"
-                    },
                     "legends": {
                         "arch": "Model arkitektur",
                         "size": "filtrer på størrelse",
