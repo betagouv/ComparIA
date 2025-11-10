@@ -1,3 +1,125 @@
 [
+  {
+    "title": "Administrativt",
+    "description": "Udarbejd et administrativt dokument",
+    "icon": "draft-line",
+    "suggestions": [
+      "Skriv en kort e-mail for at anmode om et tilbud fra en [elektriker] til et problem med en strømafbrydelse. Jeg skal have hjælp inden for en uge.",
+      "Udarbejd et brev for at opsige lejemålet på min lejlighed.",
+      "Udarbejd et opsigelsesbrev til en abonnementskontrakt til en [telefoni-, internet-]tjeneste, med angivelse af årsagerne til opsigelsen og den ønskede ikrafttrædelsesdato.",
+      "Udarbejd et formelt brev for at anmode en tidligere arbejdsgiver om en arbejdsattest, med angivelse af ansættelsesdatoer og den stilling, der blev besat.",
+      "Opret en skabelon til indkaldelse til et formelt møde for en forening, med angivelse af dagsordenen, datoen, tidspunktet og stedet for mødet.",
+      "Udarbejd strukturen for referatet [fra generalforsamlingen i en forening], der opsummerer de trufne beslutninger og de vigtigste diskussioner.",
+      "Udarbejd et formelt brev for at rapportere en fejl på en modtaget faktura, med forklaring af den pågældende fejl og anmodning om en korrektion eller refusion.",
+      "Hvordan skriver man et overbevisende følgebrev til en ansøgning om tilskud, der fremhæver projektets behov og dets potentielle indvirkning?",
+      "Hvordan skriver man en indkvarteringsattest for en person, der bor i dit hjem, med angivelse af de nødvendige detaljer til administrative formål?",
+      "Hvad er den bedste tilgang til at skrive et brev, der anmoder om yderligere frist til betaling af en faktura?"
+    ]
+  },
+  {
+    "title": "Råd",
+    "description": "Få råd om kost og motion",
+    "icon": "clipboard-line",
+    "suggestions": [
+      "Hvordan kompenserer man for køds nærringsindhold i en vegetarisk kost?",
+      "Foreslå mig en balanceret madplan for ugen til en husstand på to personer, der bor i byen og ikke altid har meget tid til at lave mad.",
+      "Jeg er ved at træne op til et maraton, og jeg søger råd om den bedste måde at tilpasse min kost på. Hvad er de mest hydrerende og nærende fødevarer?",
+      "Jeg vil øge min muskelmasse. Kan du anbefale styrketræningsøvelser, jeg kan lave derhjemme?",
+      "Jeg er begyndt at løbe. Kan du foreslå et løbeprogram til de næste 30 dage?",
+      "Jeg ønsker at tabe mig ved at følge en balanceret kost. Kan du give mig en madplan for en uge?",
+      "Jeg har brug for at forbedre min kondition. Kan du foreslå et simpelt træningsprogram over 7 dage?",
+      "Hvilke styrketræningsøvelser kan jeg lave derhjemme med kun [tilbehør]?",
+      "Hvilke fødevarer bør jeg prioritere for at opbygge muskelmasse, mens jeg forbliver sund?",
+      "Kan du foreslå et simpelt træningsprogram til begyndere i fitness?",
+      "Hvordan kan jeg oprette et træningsprogram på 20 minutter om dagen for at holde mig i form?",
+    ]
+  },
+  {
+    "title": "Forklaringer",
+    "description": "Forklar et koncept simpelt",
+    "icon": "chat-3-line",
+    "suggestions": [
+      "Beskriv [gæringsprocessen] ved hjælp af eksempler relateret til traditionel dansk madlavning.",
+      "Du er økonomilærer. Forklar mig spilteori på en enkel måde. Giv mig eksempler på anvendelse i den virkelige verden. Til sidst skal du give en ordliste over begreber og termer, man skal kende om emnet.",
+      "Forklar [begrebet fødekæden] for et barn ved hjælp af gårdsdyr.",
+      "Omformuler [begrebet vedvarende energi] for et ældre publikum ved hjælp af analogier med gamle værktøjer og genstande.",
+      "Omformuler [relativitetsteorien] i enkle vendinger for 9. klasses elever.",
+      "Hvordan forklarer man begrebet tyngdekraft i fysik for et barn i mellemskolen?",
+      "Du er en meget pædagogisk matematiklærer. Hvordan forklarer du begrebet dyb læring (deep learning) til en 8. klasses elev?",
+      "Hvordan forklarer man begrebet kvantefysik til en gymnasieelev.",
+      "Du er lærer i samfundsfag. Opsummer [Danmarks politiske system] for nogen, der kender USA's politiske system godt."
+    ]
+  },
 
+  {
+    "title": "Ideer",
+    "description": "Generere nye ideer",
+    "icon": "lightbulb-line",
+    "suggestions": [
+      "Jeg forbereder en brainstorming-session om [emne] med 15 personer. Foreslå mig dine 3 bedste ideer til at igangsætte kreative diskussioner.",
+      "Jeg søger at løse mit problem med [problem], foreslå mig en liste med 3 innovative løsningsspor",
+      "Jeg lancerer et nyt koncept for [koncept] og søger kreative marketingideer for at nå [målgruppe]. Kan du foreslå mig 5 forslag?",
+      "Generer navneforslag til en ny parfume til en 20-30 år gammel, urban, kvindelig kundekreds.",
+      "Jeg arrangerer en fest for lanceringen af mit nye produkt, foreslå mig en liste med 5 kreative ideer, så mine gæster husker denne begivenhed",
+      "Jeg arrangerer en skattejagt til mit barns fødselsdag. De vil være omkring femten i alt, og det må ikke vare mere end 2 timer og 30 minutter. Kan du hjælpe mig?",
+      "Jeg vil begynde at [aktivitet], hvad er forudsætningerne for at starte?"
+    ]
+  },
+  {
+    "title": "Oversættelse",
+    "description": "udtryk dig på et andet sprog",
+    "icon": "translate-2",
+    "suggestions": [
+      "Hvad er betyder en kneppemand på sønderjysk?",
+      "Hvad betyder udtrykket 'slå to fluer med ét smæk'?",
+      "Skriv en dialog på [sprog] mellem to venner, der diskuterer sejlsport.",
+      "Hvad betyder 'fin' på norsk?",
+      "Oversæt 'kæmpe tillykke med brylluppet!' til svensk"
+    ]
+  },
+  {
+    "title": "Opskrifter",
+    "description": "Opdag en ny madopskrift",
+    "icon": "bowl",
+    "suggestions": [
+      "Kan du hjælpe mig med at lave en ret med det, jeg har i mit køleskab: [ingrediens 1], [ingrediens 2] og [ingrediens 3]?",
+      "Jeg vil gerne opdage en let og hurtig opskrift baseret på [ingrediens]. Kan du foreslå mig en?",
+      "Foreslå en læker vegansk dessertopskrift, der er let at lave",
+      "Jeg er igang med at lave ris-a-la-mande. Skal jeg varme den op efter jeg har tilsat fløden?",
+      "Jeg ville gerne lave en opfindsom julemiddag, kan du hjælpe mig med at finde på nogle idéer? Det skal være dansk med et twist",
+      "Jeg får internationale venner på besøg imorgen og vil gerne bage en traditionel dansk kage. Har du et forslag til en opskrift?",
+      "Kan du give mig en opskrift på stegt flæsk med persillesovs?",
+      "Hvad er forskellen på 'new nordic' or tradionel dansk mad? Kan du forklare det med nogle eksempler.",
+    ]
+  },
+  {
+    "title": "Anbefalinger",
+    "description": "Foreslå ideer til film, bøger, musik",
+    "icon": "music-2-line",
+    "suggestions": [
+      "Kan du anbefale film om temaet [tema] med en mere dramatisk tone?",
+      "Hvad er de bedste forslag til science fiction-film at se, hvis jeg kan lide komplekse plots?",
+      "Kan du foreslå mig en playliste med musik til at motivere mig til at dyrke motion?",
+      "Hvilke albums bør jeg lytte til, hvis jeg vil lære mere om moderne jazz?",
+      "Kan du anbefale en film, der blander science fiction og komedie?",
+      "Hvis jeg kunne lide filmen [titel], hvilke andre film i samme genre vil du råde mig til?",
+      "Kan du foreslå mig dansktalende forfattere, jeg absolut skal læse?",
+      "Hvilke danske film har vundet priser internationalt?",
+      "Jeg elsker litteratur. Hvad er de klassikere, jeg ikke bør gå glip af?",
+      "Jeg er fan [af en bestemt kunstner eller genre]. Kan du give mig anbefalinger af lignende eller komplementære kunstnere, som jeg måske ville kunne lide?",
+      "Jeg har lyst til glad og medrivende musik. Hvilke sange eller albums skal jeg lytte til?"
+    ]
+  },
+  {
+    "title": "Historier",
+    "description": "Fortælle en historie",
+    "icon": "book-open",
+    "suggestions": [
+      "Skriv en historie på 100 ord uden at bruge bogstavet \"e\", hvor et barn opdager en mystisk genstand på sine bedsteforældres loft.",
+      "Lav en historie på 200 ord, hvor en person skal konfrontere en overnaturlig begivenhed. Historien skal foregår på Mols.",
+      "Fortæl en historie på 200 ord, der foregår på en enkelt dag i en storby, hvor hvert øjeblik tæller.",
+      "Fortæl en historie på 100 ord, hvor et barn opdager en gammel glemt tradition fra sin landsby.",
+      "Fortæl mig en historie fra Grønland som alle de lokale ville kende",
+    ]
+  }
 ]
