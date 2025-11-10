@@ -28,11 +28,12 @@ class SuggestionCategory(BaseModel):
     title: str
     description: str
     icon: str
+    tooltip: str | None = None
     suggestions: list[str]
 
 
 # Don't forget to reflects Category type changes to exported TS type
-TS_TYPE = "export type SuggestionCategory = { title: string; description: string; icon: string; suggestions: string[] }\n"
+TS_TYPE = "export type SuggestionCategory = { title: string; description: string; icon: string; tooltip?: string; suggestions: string[] }\n"
 
 
 Categories = RootModel[list[SuggestionCategory]]
@@ -40,7 +41,7 @@ Categories = RootModel[list[SuggestionCategory]]
 
 def main():
     categories = {
-        locale: Categories(read_json(path)).model_dump()
+        locale: Categories(read_json(path)).model_dump(exclude_none=True)
         for locale, path in LOCALE_FILES.items()
     }
 
