@@ -63,7 +63,7 @@
                 value={model.params}
                 desc={m['reveal.impacts.size.label']()}
                 tooltip={m['models.openWeight.tooltips.params']()}
-                class="z-10 -mb-2 h-full bg-white "
+                class="z-1 -mb-2 h-full bg-white "
               >
                 {m['reveal.impacts.size.count']()}
                 {#if model.distribution === 'api-only'}

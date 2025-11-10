@@ -1649,6 +1649,11 @@
                 "tokens": "jetons",
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand."
             }
+        },
+        "thanks": {
+            "cta": "Accéder au classement",
+            "desc": "Découvrez comment votre préférence se situe par rapport au classement général des modèles dans compar:IA.",
+            "title": "Merci pour votre contribution !"
         }
     },
     "seo": {
