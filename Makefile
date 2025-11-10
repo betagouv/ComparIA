@@ -61,9 +61,14 @@ format-frontend: ## Format frontend code
 	@echo "Formatting frontend code..."
 	cd frontend && $(NPM) run format
 
-clean-locales-frontend: ## Remove locales keys not present in fr
+# i18n utilities
+i18n-clean-locales: ## Remove locales keys not present in fr
 	@echo "Cleaning frontend locales keys..."
 	cd frontend/locales && python maintenance.py
+
+i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
+	@echo "Generating frontend prompt suggestions..."
+	$(UV) run python -m utils.suggestions.build_suggestions
 
 # Database utilities
 db-schema-init: ## Initialize database schema
