@@ -23,7 +23,7 @@ MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
 MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
 GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
 I18N_PATH = FRONTEND_FOLDER / "locales" / "messages" / "fr.json"
-TS_DATA_PATH = FRONTEND_FOLDER / "src" / "lib" / "generated.ts"
+TS_DATA_PATH = FRONTEND_FOLDER / "src" / "lib" / "generated" / "models.ts"
 
 I18N_OS_LICENSE_KEYS = [
     "license_desc",
