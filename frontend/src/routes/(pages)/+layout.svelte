@@ -13,7 +13,7 @@
 <Header hideDiscussBtn={isHome} />
 
 {#if isHome}
-  <Link button href="#european" text={m['header.banner']()} cornered class="w-auto!" />
+  <Link button href="/ranking" text={m['header.banner']()} cornered class="w-auto!" />
 {/if}
 
 <div
