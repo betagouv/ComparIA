@@ -51,6 +51,17 @@
                 <p class="fr-logo">
                   République<br />Française
                 </p>
+              {:else if locale === 'da'}
+                <img
+                  src={`/orgs/countries/da-light.png`}
+                  alt={m['header.logoAlt']()}
+                  class="max-h-[55px] dark:hidden"
+                />
+                <img
+                  src={`/orgs/countries/da-dark.png`}
+                  alt={m['header.logoAlt']()}
+                  class="hidden max-h-[55px] dark:block"
+                />
               {:else}
                 <img
                   src={`/orgs/countries/${locale}.png`}
