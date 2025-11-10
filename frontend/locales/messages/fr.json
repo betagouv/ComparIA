@@ -39,45 +39,6 @@
             "question": "Quels modèles voulez-vous comparer ?"
         },
         "suggestions": {
-            "choices": {
-                "administrative": {
-                    "iconAlt": "Administratif",
-                    "title": "Rédiger un document administratif"
-                },
-                "coach": {
-                    "iconAlt": "Conseils",
-                    "title": "Obtenir des conseils sur l’alimentation et le sport"
-                },
-                "explanations": {
-                    "iconAlt": "Explications",
-                    "title": "Expliquer simplement un concept"
-                },
-                "iasummit": {
-                    "iconAlt": "Sommet pour l'action sur l'IA",
-                    "title": "Prompts issus de la consultation citoyenne sur l’IA ",
-                    "tooltip": "Ces questions sont issues de la consultation citoyenne sur l’IA qui a lieu du 16/09/2024 au 08/11/2024. Elle visait à associer largement les citoyens et la société civile au Sommet international pour l’action sur l’IA, en collectant leurs idées pour faire de l’intelligence artificielle une opportunité pour toutes et tous, mais aussi de nous prémunir ensemble contre tout usage inapproprié ou abusif de ces technologies."
-                },
-                "ideas": {
-                    "iconAlt": "Idées",
-                    "title": "Générer de nouvelles idées"
-                },
-                "languages": {
-                    "iconAlt": "Traduction",
-                    "title": "M’exprimer dans une autre langue"
-                },
-                "recipes": {
-                    "iconAlt": "Recettes",
-                    "title": "Découvrir une nouvelle recette de cuisine"
-                },
-                "recommendations": {
-                    "iconAlt": "Recommandations",
-                    "title": "Proposer des idées de films, livres, musiques"
-                },
-                "stories": {
-                    "iconAlt": "Histoires",
-                    "title": "Raconter une histoire"
-                }
-            },
             "generateAnother": "Générer un autre message",
             "title": "Suggestions de prompts"
         },
