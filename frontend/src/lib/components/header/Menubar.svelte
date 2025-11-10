@@ -15,6 +15,7 @@
     // { href: '/news', label: m['seo.titles.news']() }
   ].filter((link) => {
     if (link.href === '/duel' && locale !== 'fr') return false
+    if (link.href === '/ranking' && !['fr', 'en'].includes(locale)) return false
     return true
   })
 
