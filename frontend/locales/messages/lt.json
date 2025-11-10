@@ -35,45 +35,6 @@
             "question": "Kuriuos modelius norėtumėte palyginti?"
         },
         "suggestions": {
-            "choices": {
-                "administrative": {
-                    "iconAlt": "Administracinis",
-                    "title": "Administracinio dokumento rengimas"
-                },
-                "coach": {
-                    "iconAlt": "Patarimai",
-                    "title": "Gauti patarimus apie sveikatą ir sportą"
-                },
-                "explanations": {
-                    "iconAlt": "Paaiškinimas",
-                    "title": "Paaiškinti sąvoką"
-                },
-                "iasummit": {
-                    "iconAlt": "„AI Action Summit“",
-                    "title": "Pasiūlymai, gauti iš piliečių konsultacijų apie DI. ",
-                    "tooltip": "Šie klausimai yra visuomenės konsultacijos dėl dirbtinio intelekto, vykusios nuo 2024-09-16 iki 2024-11-08, rezultatas. Konsultacijos tikslas buvo plačiai įtraukti piliečius ir pilietinę visuomenę į „AI Action Summit“, surinkti jų idėjas, kaip padaryti DI pasiekiamu visiems, kartu ribojant netinkamą ar piktavališką naudojimą."
-                },
-                "ideas": {
-                    "iconAlt": "Idėjos",
-                    "title": "Generuoti naujas idėjas"
-                },
-                "languages": {
-                    "iconAlt": "Vertimas",
-                    "title": "Rašyti kita kalba"
-                },
-                "recipes": {
-                    "iconAlt": "Maisto ruošimas",
-                    "title": "Pasiūlyk naujų maisto ruošimo receptų"
-                },
-                "recommendations": {
-                    "iconAlt": "Rekomendacijos",
-                    "title": "Pasiūlykite filmų, knygų, muzikos"
-                },
-                "stories": {
-                    "iconAlt": "Istorijos",
-                    "title": "Papasakok istoriją"
-                }
-            },
             "generateAnother": "Sukurti dar vieną užklausą",
             "title": "Siūlomos užklausos"
         },
