@@ -26,13 +26,11 @@
     return shuffleArray(categories)
   })
   const suggestionsCategoriesCards = $derived(
-    suggestionsCategories
-      .slice(0, 4)
-      .map((c) => ({
-        ...c,
-        label: c.description,
-        value: c.title.toLowerCase().replace(/[^a-z]/g, '')
-      }))
+    suggestionsCategories.slice(0, 4).map((c) => ({
+      ...c,
+      label: c.description,
+      value: c.title.toLowerCase().replace(/[^a-z]/g, '')
+    }))
   )
 
   let selected = $state<string>()
@@ -109,7 +107,7 @@
       options={suggestionsCategoriesCards}
       onChange={handleCardSelect}
     >
-      {#snippet item({ value, label, icon, title })}
+      {#snippet item({ value, label, icon, title, tooltip })}
         {#if icon.includes('iasummit')}
           <img
             class="mb-3 hidden md:block dark:invert"
@@ -124,17 +122,15 @@
             src="/iasummit-small.png"
             alt={title}
           />
-          <span>
-            {label}
-            <Tooltip
-              id="iasummit-tooltip-{value}"
-              text={m['arenaHome.suggestions.choices.iasummit.tooltip']()}
-            />
-          </span>
         {:else}
           <Icon {icon} aria-label={title} class="text-primary me-2 md:mb-4 md:block" />
-          <span>{label}</span>
         {/if}
+        <span>
+          {label}
+          {#if tooltip}
+            <Tooltip id="tooltip-{value}" text={tooltip} />
+          {/if}
+        </span>
       {/snippet}
     </RadioGroupCard>
 
