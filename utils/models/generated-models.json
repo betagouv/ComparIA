@@ -1684,7 +1684,7 @@
     },
     "glm-4.6": {
       "active_params": 32,
-      "arch": "dense",
+      "arch": "moe",
       "commercial_use": true,
       "data": {
         "elo": 1055,
@@ -3296,7 +3296,7 @@
         "api_model_id": "mistralai/mistral-medium-3",
         "api_type": "openrouter"
       },
-      "friendly_size": "M",
+      "friendly_size": "L",
       "fully_open_source": false,
       "icon_path": "mistral.png",
       "id": "mistral-medium-2508",
@@ -3319,12 +3319,12 @@
       "quantization": null,
       "reasoning": false,
       "release_date": "08/2025",
-      "required_ram": 95,
+      "required_ram": 123,
       "reuse": false,
       "simple_name": "Mistral Medium 2508",
       "status": "enabled",
       "url": "https://mistral.ai/news/mistral-medium-3",
-      "wh_per_million_token": 15977.149999999998
+      "wh_per_million_token": 19906.576666666668
     },
     "mistral-medium-3.1": {
       "active_params": null,
