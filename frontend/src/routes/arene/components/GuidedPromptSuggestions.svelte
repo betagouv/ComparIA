@@ -97,58 +97,60 @@
   }
 </script>
 
-<div class="fr-container px-0!">
-  <h4 class="text-dark-grey text-[14px]! md:text-base! mb-4! md:mb-5!">
-    <strong>{m['arenaHome.suggestions.title']()}</strong>
-  </h4>
+{#if suggestionsCategoriesCards.length}
+  <div class="fr-container px-0!">
+    <h4 class="text-dark-grey text-[14px]! md:text-base! mb-4! md:mb-5!">
+      <strong>{m['arenaHome.suggestions.title']()}</strong>
+    </h4>
 
-  <RadioGroupCard
-    id="guided-cards"
-    bind:value={selected}
-    options={suggestionsCategoriesCards}
-    onChange={handleCardSelect}
-  >
-    {#snippet item({ value, label, icon, title })}
-      {#if icon.includes('iasummit')}
-        <img
-          class="mb-3 hidden md:block dark:invert"
-          width="110"
-          height="35"
-          src="/iasummit.png"
-          alt={title}
-        />
-        <img
-          class="me-2 inline-block object-contain md:hidden dark:invert"
-          width="24"
-          src="/iasummit-small.png"
-          alt={title}
-        />
-        <span>
-          {label}
-          <Tooltip
-            id="iasummit-tooltip-{value}"
-            text={m['arenaHome.suggestions.choices.iasummit.tooltip']()}
+    <RadioGroupCard
+      id="guided-cards"
+      bind:value={selected}
+      options={suggestionsCategoriesCards}
+      onChange={handleCardSelect}
+    >
+      {#snippet item({ value, label, icon, title })}
+        {#if icon.includes('iasummit')}
+          <img
+            class="mb-3 hidden md:block dark:invert"
+            width="110"
+            height="35"
+            src="/iasummit.png"
+            alt={title}
           />
-        </span>
-      {:else}
-        <Icon {icon} aria-label={title} class="text-primary me-2 md:mb-4 md:block" />
-        <span>{label}</span>
-      {/if}
-    {/snippet}
-  </RadioGroupCard>
+          <img
+            class="me-2 inline-block object-contain md:hidden dark:invert"
+            width="24"
+            src="/iasummit-small.png"
+            alt={title}
+          />
+          <span>
+            {label}
+            <Tooltip
+              id="iasummit-tooltip-{value}"
+              text={m['arenaHome.suggestions.choices.iasummit.tooltip']()}
+            />
+          </span>
+        {:else}
+          <Icon {icon} aria-label={title} class="text-primary me-2 md:mb-4 md:block" />
+          <span>{label}</span>
+        {/if}
+      {/snippet}
+    </RadioGroupCard>
 
-  {#if selected}
-    <div class="mt-4 text-center md:mt-5">
-      <Button
-        icon="shuffle"
-        variant="secondary"
-        text={m['arenaHome.suggestions.generateAnother']()}
-        class="w-full! md:w-auto!"
-        onclick={shufflePrompts}
-      />
-    </div>
-  {/if}
-</div>
+    {#if selected}
+      <div class="mt-4 text-center md:mt-5">
+        <Button
+          icon="shuffle"
+          variant="secondary"
+          text={m['arenaHome.suggestions.generateAnother']()}
+          class="w-full! md:w-auto!"
+          onclick={shufflePrompts}
+        />
+      </div>
+    {/if}
+  </div>
+{/if}
 
 <style lang="postcss">
   :global(.iasummit) {
