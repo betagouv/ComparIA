@@ -1377,7 +1377,7 @@
         "simple_name": "GLM 4.6",
         "license": "MIT",
         "release_date": "09/2025",
-        "arch": "dense",
+        "arch": "moe",
         "params": 357,
         "active_params": 32,
         "endpoint": {
