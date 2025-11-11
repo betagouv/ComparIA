@@ -1,10 +1,10 @@
 <script lang="ts">
   import { Button, Icon, Tooltip } from '$components/dsfr'
   import RadioGroupCard from '$components/RadioGroupCard.svelte'
+  import { SUGGESTIONS } from '$lib/generated/suggestions'
   import { m } from '$lib/i18n/messages'
-  import promptsTable from '$lib/promptsTable'
+  import { getLocale } from '$lib/i18n/runtime'
   import { selectRandomFromArray, shuffleArray } from '$lib/utils/commons'
-  import type { ClassValue } from 'svelte/elements'
 
   let {
     onPromptSelected
@@ -12,45 +12,27 @@
     onPromptSelected: (text: string, selectionStart?: number, selectionEnd?: number) => void
   } = $props()
 
-  // Interface pour les données des cartes, utilisant des props au lieu de HTML brut
-  interface GuidedCardData {
-    iconSrc: string
-    iconAlt: string
-    label: string
-    value: string
-    isIASummit?: boolean
-    iaSummitSmallIconSrc?: string
-    iaSummitTooltip?: string
-    class?: ClassValue
-  }
+  const locale = getLocale()
+  const suggestionsCategories = $derived.by(() => {
+    if (!(locale in SUGGESTIONS)) return []
+    let categories = [...SUGGESTIONS[locale as keyof typeof SUGGESTIONS]]
+    if (locale === 'fr') {
+      const iasummit = categories.splice(
+        categories.findIndex((c) => c.icon === 'iasummit'),
+        1
+      )
+      return [iasummit[0], ...shuffleArray(categories)]
+    }
+    return shuffleArray(categories)
+  })
+  const suggestionsCategoriesCards = $derived(
+    suggestionsCategories.slice(0, 4).map((c) => ({
+      ...c,
+      label: c.description,
+      value: c.title.toLowerCase().replace(/[^a-z]/g, '')
+    }))
+  )
 
-  const totalGuidedCardsChoices: GuidedCardData[] = [
-    { value: 'ideas' as const, iconSrc: 'lightbulb-line' },
-    { value: 'explanations' as const, iconSrc: 'chat-3-line' },
-    { value: 'languages' as const, iconSrc: 'translate-2' },
-    { value: 'administrative' as const, iconSrc: 'draft-line' },
-    { value: 'recipes' as const, iconSrc: 'bowl' },
-    { value: 'coach' as const, iconSrc: 'clipboard-line' },
-    { value: 'stories' as const, iconSrc: 'book-open' },
-    { value: 'recommendations' as const, iconSrc: 'music-2-line' }
-  ].map((item) => ({
-    ...item,
-    label: m[`arenaHome.suggestions.choices.${item.value}.title`](),
-    iconAlt: m[`arenaHome.suggestions.choices.${item.value}.iconAlt`]()
-  }))
-
-  const iaSummitChoice: GuidedCardData = {
-    value: 'iasummit',
-    iconSrc: '/iasummit.png',
-    iconAlt: m['arenaHome.suggestions.choices.iasummit.iconAlt'](),
-    label: m['arenaHome.suggestions.choices.iasummit.title'](),
-    isIASummit: true,
-    iaSummitSmallIconSrc: '/iasummit-small.png',
-    iaSummitTooltip: m['arenaHome.suggestions.choices.iasummit.tooltip'](),
-    class: 'iasummit'
-  }
-
-  const displayedCards = [iaSummitChoice, ...shuffleArray(totalGuidedCardsChoices).slice(0, 3)]
   let selected = $state<string>()
 
   // Helper function to dispatch prompt with or without selection
@@ -80,8 +62,9 @@
 
   function shufflePrompts() {
     if (selected) {
-      const promptsForCategory = promptsTable[selected]
-      const randomPromptText = selectRandomFromArray(promptsForCategory)
+      const categorySuggestions =
+        suggestionsCategoriesCards.find((c) => c.value === selected)?.suggestions ?? []
+      const randomPromptText = selectRandomFromArray(categorySuggestions)
 
       if (randomPromptText) {
         dispatchPromptWithSelection(randomPromptText, 'shufflePrompts')
@@ -96,7 +79,8 @@
   }
 
   function handleCardSelect(categoryValue: string) {
-    const promptsForCategory = promptsTable[categoryValue]
+    const promptsForCategory =
+      suggestionsCategoriesCards.find((c) => c.value === categoryValue)?.suggestions ?? []
     const randomPromptText = selectRandomFromArray(promptsForCategory)
 
     if (randomPromptText) {
@@ -111,59 +95,58 @@
   }
 </script>
 
-<div class="fr-container px-0!">
-  <h4 class="text-dark-grey text-[14px]! md:text-base! mb-4! md:mb-5!">
-    <strong>{m['arenaHome.suggestions.title']()}</strong>
-  </h4>
+{#if suggestionsCategoriesCards.length}
+  <div class="fr-container px-0!">
+    <h4 class="text-dark-grey text-[14px]! md:text-base! mb-4! md:mb-5!">
+      <strong>{m['arenaHome.suggestions.title']()}</strong>
+    </h4>
 
-  <RadioGroupCard
-    id="guided-cards"
-    bind:value={selected}
-    options={displayedCards}
-    onChange={handleCardSelect}
-  >
-    {#snippet item({ value, label, iconSrc, iconAlt, iaSummitSmallIconSrc, iaSummitTooltip })}
-      {#if value === 'iasummit'}
-        <img
-          class="mb-3 hidden md:block dark:invert"
-          width="110"
-          height="35"
-          src={iconSrc}
-          alt={iconAlt}
-        />
-        {#if iaSummitSmallIconSrc}
+    <RadioGroupCard
+      id="guided-cards"
+      bind:value={selected}
+      options={suggestionsCategoriesCards}
+      onChange={handleCardSelect}
+    >
+      {#snippet item({ value, label, icon, title, tooltip })}
+        {#if icon.includes('iasummit')}
+          <img
+            class="mb-3 hidden md:block dark:invert"
+            width="110"
+            height="35"
+            src="/iasummit.png"
+            alt={title}
+          />
           <img
             class="me-2 inline-block object-contain md:hidden dark:invert"
             width="24"
-            src={iaSummitSmallIconSrc}
-            alt={iconAlt}
+            src="/iasummit-small.png"
+            alt={title}
           />
+        {:else}
+          <Icon {icon} aria-label={title} class="text-primary me-2 md:mb-4 md:block" />
         {/if}
         <span>
           {label}
-          {#if iaSummitTooltip}
-            <Tooltip id="iasummit-tooltip-{value}" text={iaSummitTooltip} />
+          {#if tooltip}
+            <Tooltip id="tooltip-{value}" text={tooltip} />
           {/if}
         </span>
-      {:else}
-        <Icon icon={iconSrc} aria-label={iconAlt} class="text-primary me-2 md:mb-4 md:block" />
-        <span>{label}</span>
-      {/if}
-    {/snippet}
-  </RadioGroupCard>
+      {/snippet}
+    </RadioGroupCard>
 
-  {#if selected}
-    <div class="mt-4 text-center md:mt-5">
-      <Button
-        icon="shuffle"
-        variant="secondary"
-        text={m['arenaHome.suggestions.generateAnother']()}
-        class="w-full! md:w-auto!"
-        onclick={shufflePrompts}
-      />
-    </div>
-  {/if}
-</div>
+    {#if selected}
+      <div class="mt-4 text-center md:mt-5">
+        <Button
+          icon="shuffle"
+          variant="secondary"
+          text={m['arenaHome.suggestions.generateAnother']()}
+          class="w-full! md:w-auto!"
+          onclick={shufflePrompts}
+        />
+      </div>
+    {/if}
+  </div>
+{/if}
 
 <style lang="postcss">
   :global(.iasummit) {

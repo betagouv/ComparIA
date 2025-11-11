@@ -5,10 +5,13 @@
   import { scrollTo } from '$lib/helpers/attachments'
   import { useToast } from '$lib/helpers/useToast.svelte'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
   import { MiniCard } from '.'
 
   let { data }: { data: RevealData } = $props()
+
+  const locale = getLocale()
 
   const { selected, modelsData, shareB64Data } = data
 
@@ -60,7 +63,7 @@
                 value={model.params}
                 desc={m['reveal.impacts.size.label']()}
                 tooltip={m['models.openWeight.tooltips.params']()}
-                class="z-10 -mb-2 h-full bg-white "
+                class="z-1 -mb-2 h-full bg-white "
               >
                 {m['reveal.impacts.size.count']()}
                 {#if model.distribution === 'api-only'}
@@ -235,6 +238,39 @@
     </dialog>
   </div>
 </div>
+
+{#if ['fr', 'en'].includes(locale)}
+  <section class="fr-container--fluid bg-light-info">
+    <div class="fr-container">
+      <div class="lg:px-15 gap-x-15 lg:gap-x-30 flex flex-col gap-y-10 py-8 md:flex-row">
+        <div class="flex max-w-[350px] flex-col">
+          <h5 class="font mb-3!">{m['reveal.thanks.title']()}</h5>
+          <p class="mb-8!">{m['reveal.thanks.desc']()}</p>
+
+          <Link
+            button
+            size="lg"
+            href="/ranking"
+            icon="trophy-line"
+            text={m['reveal.thanks.cta']()}
+            class="w-full! sm:w-auto!"
+          />
+        </div>
+
+        <div class="relative flex max-w-[640px] items-start">
+          <img
+            src="/arena/ranking-table.png"
+            class="-me-[30%] w-full max-w-[400px] rounded-xl shadow-md md:-me-[10%]"
+          />
+          <img
+            src="/arena/ranking-graph.png"
+            class="mt-[30px] w-full max-w-[300px] rounded-xl shadow-md"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+{/if}
 
 <style>
   #reveal-area {

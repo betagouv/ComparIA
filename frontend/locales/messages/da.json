@@ -39,45 +39,6 @@
             "question": "Hvilke modeller vil du gerne sammenligne?"
         },
         "suggestions": {
-            "choices": {
-                "administrative": {
-                    "iconAlt": "Administrativ",
-                    "title": "Skriv et administrativt dokument"
-                },
-                "coach": {
-                    "iconAlt": "Rådgivning",
-                    "title": "Giv mig råd omkring sundhed og fitness"
-                },
-                "explanations": {
-                    "iconAlt": "Forklaring",
-                    "title": "Forklar et koncept"
-                },
-                "iasummit": {
-                    "iconAlt": "AI Action Summit",
-                    "title": "Spørgsmål fra en borgerhøring om kunstig intelligens",
-                    "tooltip": "Disse spørgsmål er resultatet af en borgerhøring om AI, der blev afholdt fra 16.09.2024 til 08.11.2024. Formålet var at inddrage borgere og civilsamfundet bredt i AI Action Summit og indsamle deres idéer til, hvordan AI kan blive en mulighed for alle, samtidig med at misbrug og forkert brug begrænses."
-                },
-                "ideas": {
-                    "iconAlt": "Idéer",
-                    "title": "Generér nye idéer"
-                },
-                "languages": {
-                    "iconAlt": "Oversættelse",
-                    "title": "Skriv på et andet sprog"
-                },
-                "recipes": {
-                    "iconAlt": "Madlavning",
-                    "title": "Vis mig nye opskrifter"
-                },
-                "recommendations": {
-                    "iconAlt": "Forslag",
-                    "title": "Foreslå film, bøger, musik"
-                },
-                "stories": {
-                    "iconAlt": "Historier",
-                    "title": "Fortæl mig en historie"
-                }
-            },
             "generateAnother": "Generér en ny prompt",
             "title": "Foreslåede prompts"
         },

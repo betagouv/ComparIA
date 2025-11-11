@@ -33,6 +33,17 @@
             <p class="fr-logo">
               Ministère<br />de la culture
             </p>
+          {:else if locale === 'da'}
+            <img
+              src={`/orgs/countries/da-light.png`}
+              alt={m['header.logoAlt']()}
+              class="max-h-[80px] dark:hidden"
+            />
+            <img
+              src={`/orgs/countries/da-dark.png`}
+              alt={m['header.logoAlt']()}
+              class="hidden max-h-[80px] dark:block"
+            />
           {:else}
             <img
               src={`/orgs/countries/${locale}.png`}

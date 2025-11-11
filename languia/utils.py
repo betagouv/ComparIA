@@ -130,10 +130,20 @@ def metadata_to_dict(metadata):
     return metadata_dict if metadata_dict else None
 
 
-def strip_metadata(messages):
-    return [
-        {"role": message["role"], "content": message["content"]} for message in messages
-    ]
+def strip_metadata(messages: list[dict]) -> list[dict]:
+    stripped_messages: list[dict] = []
+    for message in messages:
+        if "content" in message:
+            stripped_messages.append({
+                "role": message["role"],
+                "content": message["content"]
+            })
+        else:
+            stripped_messages.append({
+                "role": message["role"],
+                "content": ""
+            })
+    return stripped_messages
 
 
 def messages_to_dict_list(

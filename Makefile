@@ -11,7 +11,7 @@ CONTROLLER_PORT := 21001
 help: ## Display this help
 	@echo "Available commands for compar:IA:"
 	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-25s\033[0m %s\n", $$1, $$2}'
 
 install: install-backend install-frontend ## Install all dependencies (backend + frontend)
 
@@ -60,6 +60,15 @@ lint-frontend: ## Check frontend code
 format-frontend: ## Format frontend code
 	@echo "Formatting frontend code..."
 	cd frontend && $(NPM) run format
+
+# i18n utilities
+i18n-clean-locales: ## Remove locales keys not present in fr
+	@echo "Cleaning frontend locales keys..."
+	cd frontend/locales && python maintenance.py
+
+i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
+	@echo "Generating frontend prompt suggestions..."
+	$(UV) run python -m utils.suggestions.build_suggestions
 
 # Database utilities
 db-schema-init: ## Initialize database schema

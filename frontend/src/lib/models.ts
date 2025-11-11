@@ -1,5 +1,5 @@
+import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from '$lib/generated/models'
 import { getContext, setContext } from 'svelte'
-import { ARCHS, LICENSES, MAYBE_ARCHS, MODELS, ORGANISATIONS } from './generated'
 import { m } from './i18n/messages'
 
 export const SIZES = ['XS', 'S', 'M', 'L', 'XL'] as const

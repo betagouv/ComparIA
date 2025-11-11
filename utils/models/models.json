@@ -1081,7 +1081,7 @@
         "license": "proprietary",
         "release_date": "08/2025",
         "arch": "maybe-dense",
-        "params": 95,
+        "params": 123,
         "url": "https://mistral.ai/news/mistral-medium-3",
         "endpoint": {
           "api_type": "openrouter",
@@ -1377,7 +1377,7 @@
         "simple_name": "GLM 4.6",
         "license": "MIT",
         "release_date": "09/2025",
-        "arch": "dense",
+        "arch": "moe",
         "params": 357,
         "active_params": 32,
         "endpoint": {

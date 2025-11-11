@@ -39,45 +39,6 @@
             "question": "Which models would you like to compare?"
         },
         "suggestions": {
-            "choices": {
-                "administrative": {
-                    "iconAlt": "Administrative",
-                    "title": "Write an administrative document"
-                },
-                "coach": {
-                    "iconAlt": "Advice",
-                    "title": "Give me advice on health and fitness"
-                },
-                "explanations": {
-                    "iconAlt": "Explanation",
-                    "title": "Explain a concept"
-                },
-                "iasummit": {
-                    "iconAlt": "AI Action Summit",
-                    "title": "Prompts from a citizen consultation on AI",
-                    "tooltip": "These questions are the outcomes of a citizen consultation on AI held from 09/16/2024 to 11/08/2024. It aimed to broadly involve citizens and civil society in the AI Action Summit, gathering their ideas on how to make AI an opportunity for all, while limiting misuse or abuse."
-                },
-                "ideas": {
-                    "iconAlt": "Ideas",
-                    "title": "Generate new ideas"
-                },
-                "languages": {
-                    "iconAlt": "Translation",
-                    "title": "Write in another language"
-                },
-                "recipes": {
-                    "iconAlt": "Cooking",
-                    "title": "Show me new recipes"
-                },
-                "recommendations": {
-                    "iconAlt": "Recommendations",
-                    "title": "Suggest films, books, music"
-                },
-                "stories": {
-                    "iconAlt": "Stories",
-                    "title": "Tell me a story"
-                }
-            },
             "generateAnother": "Generate another prompt",
             "title": "Suggested prompts"
         },

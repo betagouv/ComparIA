@@ -39,45 +39,6 @@
             "question": "Vilka modeller vill du jämföra?"
         },
         "suggestions": {
-            "choices": {
-                "administrative": {
-                    "iconAlt": "Administrativt",
-                    "title": "Skriv ett administrativt dokument"
-                },
-                "coach": {
-                    "iconAlt": "Tips",
-                    "title": "Få råd om kost och träning"
-                },
-                "explanations": {
-                    "iconAlt": "Förklaringar",
-                    "title": "Förklara ett koncept enkelt"
-                },
-                "iasummit": {
-                    "iconAlt": "AI Action Summit",
-                    "title": "Prompter from medborgarkonsultation om AI ",
-                    "tooltip": "Dessa frågor är resultatet av en medborgarkonsultation om IA som hölls 16/9 till 8/11 2024. Syftet var att låta medborgare och samhälle delta i AI Action Summit, och samla deras idéer om hur AI kan skapa möjligheter för alla, medan missbruk minimeras."
-                },
-                "ideas": {
-                    "iconAlt": "Idéer",
-                    "title": "Generera nya idéer"
-                },
-                "languages": {
-                    "iconAlt": "Översättning",
-                    "title": "Skriv på annat språk"
-                },
-                "recipes": {
-                    "iconAlt": "Recept",
-                    "title": "Upptäck ett nytt recept"
-                },
-                "recommendations": {
-                    "iconAlt": "Rekommendationer",
-                    "title": "Föreslå filmer, böcker och musik"
-                },
-                "stories": {
-                    "iconAlt": "Berättelser",
-                    "title": "Berätta en historia"
-                }
-            },
             "generateAnother": "Skapa ett nytt meddelande",
             "title": "Förslag på prompter"
         },

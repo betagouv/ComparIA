@@ -1,0 +1,262 @@
+{
+  "repo_notes": [
+    {
+      "content": ""
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce ComparIA, explaining its mission to provide transparent AI model comparison and build French-language preference datasets",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "System Architecture",
+      "purpose": "Describe the high-level architecture showing how frontend, backend, LLM providers, and data pipeline interact",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Backend System",
+      "purpose": "Document the FastAPI and Gradio backend architecture, explaining the core server components",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Arena Interface",
+      "purpose": "Detailed documentation of the core arena system including event listeners, conversation management, and user interaction flow",
+      "parent": "Backend System",
+      "page_notes": [
+        {
+          "content": "don't forget 'reactions' in the user interaction flow"
+        }
+      ]
+    },
+    {
+      "title": "LLM Integration",
+      "purpose": "Explain how ComparIA integrates with multiple LLM providers through LiteLLM, including configuration and credentials management",
+      "parent": "Backend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Model Metadata System",
+      "purpose": "Document the model metadata pipeline, including validation, enrichment, and impact calculation",
+      "parent": "Backend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Logging and Observability",
+      "purpose": "Describe the logging infrastructure including PostgreSQL handlers, JSONL files, Sentry, and Langfuse integration",
+      "parent": "Backend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Frontend System",
+      "purpose": "Overview of the SvelteKit frontend architecture, routing, and state management",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Arena User Interface",
+      "purpose": "Document the arena user journey from prompt input through chat, voting, and model reveal",
+      "parent": "Frontend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Ranking System",
+      "purpose": "Explain the ranking visualization system including ELO scores, energy graphs, and preference tables",
+      "parent": "Frontend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Model Catalog",
+      "purpose": "Document the model listing and filtering interface, including the ModelCard and ModelInfoModal components",
+      "parent": "Frontend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Product Information Pages",
+      "purpose": "Describe the static product pages including comparator features, problem statements, FAQ, and partners",
+      "parent": "Frontend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Internationalization",
+      "purpose": "Document the i18n system supporting French, English, Swedish, Danish, and Lithuanian",
+      "parent": "Frontend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Chat Service and API Client",
+      "purpose": "Explain the frontend's chat service layer, API communication, and state management",
+      "parent": "Frontend System",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Data Pipeline",
+      "purpose": "Overview of the data collection, anonymization, and export pipeline for building public datasets",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Data Collection and Storage",
+      "purpose": "Document how user interactions are captured and stored in PostgreSQL and JSONL files",
+      "parent": "Data Pipeline",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Export and Anonymization",
+      "purpose": "Explain the export pipeline that anonymizes data and publishes to Hugging Face datasets",
+      "parent": "Data Pipeline",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Ranking Pipeline",
+      "purpose": "Document the ranking calculation pipeline including ELO computation, bootstrap confidence intervals, and frugality scores",
+      "parent": "Data Pipeline",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Deployment and Configuration",
+      "purpose": "Guide for deploying ComparIA including Docker setup, environment variables, and service orchestration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Docker Deployment",
+      "purpose": "Detailed documentation of Docker Compose setup, image builds, and service configuration",
+      "parent": "Deployment and Configuration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Environment Variables",
+      "purpose": "Comprehensive reference for all environment variables used across backend and frontend",
+      "parent": "Deployment and Configuration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "LLM Provider Configuration",
+      "purpose": "Guide for configuring and registering LLM API endpoints including OpenRouter, Vertex AI, and custom providers",
+      "parent": "Deployment and Configuration",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Development Guide",
+      "purpose": "Guide for developers including local setup, testing, and contribution guidelines",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Local Development Setup",
+      "purpose": "Step-by-step instructions for setting up the development environment",
+      "parent": "Development Guide",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Frontend Development",
+      "purpose": "Guide for working with the SvelteKit frontend including component structure and styling",
+      "parent": "Development Guide",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Backend Development",
+      "purpose": "Guide for working with the FastAPI/Gradio backend including adding new models and extending functionality",
+      "parent": "Development Guide",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}

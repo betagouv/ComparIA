@@ -1,6 +1,6 @@
 <script lang="ts">
   import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
-  import { ARCHS } from '$lib/generated'
+  import { ARCHS } from '$lib/generated/models'
   import { m } from '$lib/i18n/messages'
   import type { Archs, ConsoSizes, Sizes } from '$lib/models'
   import { CONSO_SIZES, getModelsWithDataContext, SIZES } from '$lib/models'
