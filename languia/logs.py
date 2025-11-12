@@ -665,8 +665,6 @@ def upsert_conv_to_db(data):
     cursor = None
 
     try:
-        conn = psycopg2.connect(dsn)
-        cursor = conn.cursor()
         query = sql.SQL(
             # TODO: tstamp should be earlier
             """
