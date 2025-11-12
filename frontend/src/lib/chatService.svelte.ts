@@ -1,5 +1,6 @@
 import { api } from '$lib/api'
 import { m } from '$lib/i18n/messages'
+import { getLocale } from '$lib/i18n/runtime'
 import type { APIBotModel, BotModel } from '$lib/models'
 import { parseModel } from '$lib/models'
 import type { LoadingStatus } from '@gradio/statustracker'
@@ -187,7 +188,8 @@ export async function runChatBots(args: APIModeAndPromptData) {
 
   try {
     const job = await api.submit<APIChatMessage[]>('/add_first_text', {
-      model_dropdown_scoped: args
+      model_dropdown_scoped: args,
+      locale: getLocale()
     })
 
     arena.currentScreen = 'chat'
