@@ -97,7 +97,7 @@
     "datasets": {
         "access": {
             "catch": "Modeludgivere, forskere, virksomheder, nu er det jeres tur!",
-            "desc": "Platformens spørgsmål og præferencer er primært på fransk, dansk, svensk og litauisk, hvilket afspejler organisk, reel brug – ikke kunstige spørgsmål. Disse datasæt er offentligt tilgængelige på <a {linkProps}>data.gouv.fr</a> og Hugging Face.",
+            "desc": "Platformens spørgsmål og præferencer er tilgængelige på dansk, engelsk, fransk og forventes udvidet i fremtiden til blandt andet at inkludere svensk. Spørgsmålene afspejler organisk brug – ikke kunstige spørgsmål. Disse datasæt er offentligt tilgængelige på <a {linkProps}>data.gouv.fr</a> og Hugging Face.",
             "repos": {
                 "conversations": {
                     "desc": "Alle spørgsmål og svar",
@@ -112,7 +112,7 @@
                     "title": "/stemmer"
                 }
             },
-            "share": "Vis os, hvordan I bruger datasættene",
+            "share": "Vis os, hvordan du bruger datasættene",
             "title": "Få adgang til AI Arena datasættene"
         },
         "reuse": {
@@ -128,7 +128,7 @@
                 "desc": "Bunka.ai-teamet gennemførte en storstilet undersøgelse af bruger-AI-interaktioner på chatbot-området, hvor de kortlagde dominerende temaer, nøgleopgaver og balancen mellem automatisering og menneskelig forstærkning. Deres analyse, der er baseret på 25.000 reelle samtaler, giver en sjælden empirisk indsigt i, hvordan mennesker rent faktisk bruger AI.",
                 "method": "Lær mere om metodikken"
             },
-            "desc": "Eksempler på brug af compar:IA datasæt",
+            "desc": "Eksempler på brug af AI-arena datasæt",
             "title": "Hvordan bruges disse data?"
         }
     },
@@ -155,7 +155,7 @@
                     "title": "Har præferencedata en umiddelbar effekt på forbedringen af modellerne?"
                 },
                 "2": {
-                    "desc": "<p>Det særlige ved de data, der indsamles på platformen, er, at de er på dansk, og at de svarer til brugernes faktiske opgaver. Disse data afspejler menneskelige præferencer i en sproglig og kulturel kontekst. De gør det muligt i anden omgang at justere modellerne, så de bliver mere relevante og tilpasset danske brugers behov, samtidig med at de udfylder eventuelle skævheder eller mangler i de nuværende modeller.</p>",
+                    "desc": "<p>Det særlige ved de data, der indsamles på platformen, er, at de er på dansk, og at de svarer til brugernes faktiske opgaver. Disse data afspejler menneskelige præferencer i en sproglig og kulturel kontekst. De gør det muligt at justere modellerne, så de bliver mere relevante og tilpasset danske brugeres behov, samtidig med at de udjævner eventuelle skævheder eller mangler i de nuværende modeller.</p>",
                     "title": "Hvorfor er præferencedata værdifulde?"
                 },
                 "3": {
@@ -168,7 +168,7 @@
         "ecology": {
             "questions": {
                 "1": {
-                    "desc": "<p>AI Arenaen bruger den metode, der er udviklet af <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> til at levere et energiregnskab, der gør det muligt for brugerne at sammenligne den miljømæssige påvirkning fra forskellige AI-modeller for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og implementeringen af mere miljøansvarlige AI-modeller.</p><p>Ecologits anvender principperne for livscyklusvurdering (LCA) i overensstemmelse med ISO 14044-standarden ved i øjeblikket at fokusere på påvirkningen fra <strong>inferens</strong> (det vil sige brugen af modeller til at besvare forespørgsler) og <strong>fremstillingen af grafikkort</strong> (udvinding af ressourcer, fremstilling og transport).</p><p>Modellens elforbrug estimeres under hensyntagen til forskellige parametre såsom størrelsen af den anvendte AI-model, placeringen af de servere, hvor modellerne er implementeret, og antallet af output-tokens. Beregningen af indikatoren for globalt opvarmningspotentiale udtrykt i CO2-ækvivalenter er afledt af målingen af modellens elforbrug.</p><p>Det er vigtigt at bemærke, at metoderne til vurdering af AI's miljøpåvirkning stadig er under udvikling samt at det er estimat.</p>",
+                    "desc": "<p>AI Arenaen bruger den metode, der er udviklet af <a target='_blank' href='https://ecologits.ai/latest/'><strong>Ecologits</strong> (GenAI Impact)</a> til at levere et energiregnskab, der gør det muligt for brugerne at sammenligne den miljømæssige påvirkning fra forskellige AI-modeller for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og implementeringen af mere miljøansvarlige AI-modeller.</p><p>Ecologits anvender principperne for livscyklusvurdering (LCA) i overensstemmelse med ISO 14044-standarden ved i øjeblikket at fokusere på påvirkningen fra <strong>inferens</strong> (det vil sige brugen af modeller til at besvare forespørgsler) og <strong>fremstillingen af grafikkort</strong> (udvinding af ressourcer, fremstilling og transport).</p><p>Modellens elforbrug estimeres under hensyntagen til forskellige parametre såsom størrelsen af den anvendte AI-model, placeringen af de servere, hvor modellerne er implementeret, og antallet af output-tokens. Beregningen af indikatoren for globalt opvarmningspotentiale udtrykt i CO2-ækvivalenter er afledt af målingen af modellens elforbrug.</p><p>Det er vigtigt at bemærke, at metoderne til vurdering af AI's miljøpåvirkning stadig er under udvikling, samt at der er tale om estimater.</p>",
                     "title": "Hvordan beregnes miljøindikatorerne?"
                 },
                 "2": {
@@ -185,8 +185,8 @@
         "i18n": {
             "questions": {
                 "1": {
-                    "desc": "<p>Ja, internationaliseringen af AI Arenaen er i gang. Projektet havde først success I Frankrig og er nu kommet til Danmark, samt Litauen og Sverige. Denne første fase gør det muligt at teste tilgangen og tilpasse interfacet til forskellige sproglige og kulturelle kontekster i Europa. På sigt kan kredsen udvides til flere europæiske sprog afhængigt af erfaringerne fra disse pilotlande. Målet er gradvist at opbygge et reelt europæisk digitalt fællesgode til evaluering af dialogbaserede AI-systemer, med en samarbejdsbaseret styring, der stadig skal defineres mellem de forskellige deltagende lande.</p>",
-                    "title": "Er AI Arenaen kun på dansk eller er der planer for andre europæiske sprog?"
+                    "desc": "<p>Ja, internationaliseringen af AI Arenaen er i gang. Projektet havde først success I Frankrig og er nu kommet til Danmark, samt Litauen og Sverige. Denne første fase gør det muligt at teste tilgangen og tilpasse interfacet til forskellige sproglige og kulturelle kontekster i Europa. På sigt kan kredsen udvides til flere europæiske sprog afhængigt af erfaringerne fra disse pilotlande. Målet er gradvist at opbygge en egentligt europæisk digital ressource til menneskelig evaluering af dialogbaserede AI-systemer baseret på en samarbejdsmodel, der skal fastlægges mellem de forskellige deltagende lande.</p>",
+                    "title": "Er AI Arenaen kun på dansk, eller er der planer om andre europæiske sprog?"
                 },
                 "2": {
                     "desc": "<p>Udviklingen af en europæisk platform til sammenligning af dialogbaserede AI-systemer giver flere konkrete fordele. Den gør det muligt at indsamle præferencedata, der afspejler de reelle behov hos europæiske brugere, og dermed forbedre modellernes relevans for dette publikum. Den sikrer således en bedre repræsentation af europæiske sprog og kulturer, som ofte er underrepræsenteret i globale evalueringer domineret af engelsk. Den sikrer også overholdelse af europæiske reguleringer (GDPR, AI Act) og integrerer evalueringskriterier, der er i overensstemmelse med europæiske prioriteter som miljømæssig bæredygtighed og algoritmisk gennemsigtighed. Endelig fremmer den fremkomsten af et konkurrencedygtigt og selvstændigt europæisk AI-økosystem.</p>",
@@ -228,7 +228,7 @@
                     "title": "Kan modellerne citere deres kilder?"
                 },
                 "2": {
-                    "desc": "<p>Du har stillet spørgsmålet \"hvem vandt fodboldkampen i går, og angiv dine kilder\", og du blev skuffet over svarene? Det er normalt…</p><p><strong>De \"rå\" dialogbaserede AI-systemer kan ikke besvare spørgsmål om de seneste nyheder.</strong> De er trænet på statiske datasæt og kan ikke interagere med nettet eller åbne links. De har ikke evnen til at opdatere sig i realtid med de begivenheder, der finder sted i verden. De oplysninger, som modellen har adgang til, er begrænset til datoen for dens seneste træning.</p><p>Hvis du derfor stiller et spørgsmål om en nylig aktuel begivenhed, vil modellen basere sig på potentielt forældede oplysninger med risiko for at generere unøjagtige svar.</p><p>I tilfældet med Perplexity, Copilot eller ChatGPT er de såkaldte \"rå\" dialogbaserede AI-systemer kombineret med andre teknologiske komponenter, der gør det muligt at forbinde til internettet for at få adgang til realtidsoplysninger. Man taler da om \"dialogbaserede agenter\".</p>",
+                    "desc": "<p>Du har stillet spørgsmålet \"hvem vandt fodboldkampen i går, og angiv dine kilder\", og du blev skuffet over svarene? Det er normalt…</p><p><strong>De \"rå\" dialogbaserede AI-systemer kan ikke besvare spørgsmål om de seneste nyheder.</strong> De er trænet på statiske datasæt og kan ikke interagere med nettet eller åbne links. De har ikke evnen til at opdatere sig i realtid med de begivenheder, der finder sted i verden. De oplysninger, som modellen har adgang til, er begrænset til datoen for dens seneste træning.</p><p>Hvis du derfor stiller et spørgsmål om en nylig aktuel begivenhed, vil modellen basere sig på potentielt forældede oplysninger med risiko for at generere unøjagtige svar.</p><p>I Perplexity, Copilot eller ChatGPT er de såkaldte \"rå\" dialogbaserede AI-systemer kombineret med andre teknologiske komponenter, der har forbindelse til internettet for at få adgang til realtidsoplysninger. Man taler da om \"dialogbaserede agenter\".</p>",
                     "title": "Hvis jeg stiller et spørgsmål om de seneste nyheder, kan modellen så svare?"
                 },
                 "3": {
@@ -244,15 +244,15 @@
                     "title": "Hvad er de gode praksisser for at prompte?"
                 },
                 "6": {
-                    "desc": "<p>Dialogbaseret AI svarer direkte ved at formulere sætninger ud fra et stort datasæt, som modellen er blevet trænet på, mens en søgemaskine foreslår links og ressourcer, som brugeren selv kan udforske.</p>",
-                    "title": "Hvad er forskellen mellem at stille et spørgsmål til en dialogbaseret AI-model og at lave en søgning på Google?"
+                    "desc": "<p>Chatbots svarer direkte ved at formulere sætninger ud fra et stort datasæt, som modellen er blevet trænet på, mens en søgemaskine foreslår links og ressourcer, som brugeren selv kan udforske.</p>",
+                    "title": "Hvad er forskellen mellem at stille et spørgsmål til en chatbot og at lave en søgning på Google?"
                 }
             },
             "title": "Brug"
         }
     },
     "footer": {
-        "backHome": "TIlbage til hjem - compar:IA",
+        "backHome": "TIlbage til hjem - AI Arenaen",
         "helpUs": "Hjælp os med at forbedre produktet!",
         "license": {
             "linkTitle": "Etalab-licens - nyt vindue",
@@ -265,24 +265,24 @@
             "sources": "Kildekode",
             "tos": "Brugsbetingelser"
         },
-        "writeUs": "Hvis du støder på et problem eller har feedback til AI-Arenaen, er du velkommen til at skrive til os <a {linkProps}>ved hjælp af denne formular</a> – vi læser alle beskeder. Tak!"
+        "writeUs": "Hvis du støder på et problem eller har feedback til AI-Arenaen, er du velkommen til at skrive til os på contact@aiarenaen.dk."
     },
     "general": {
         "a11y": {
-            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> comparia.beta.gouv.fr </strong> .",
+            "desc": "Denne tilgængelighedserklæring gælder for webstedet <strong> ai-arenaen.dk </strong> .",
             "disclaimer": "<strong> AI Arenaen </strong> forpligter sig til at gøre sine digitale tjenester tilgængelige i overensstemmelse med artikel 47 i lov nr. 2005-102 a' 11. februar 2005.",
             "improveAdress": "Adresse: DINUM, 20 avenue de Ségur 75007 Paris",
             "improveDelay": "Vi forsøger at svare inden for 2 hverdage.",
-            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af beta.gouv.fr for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
+            "improveDesc": "Hvis du ikke kan få adgang til noget indhold eller nogen tjeneste, kan du kontakte administratoren af ai-arenaen.dk for at blive henvist til et tilgængeligt alternativ eller få indholdet i et andet format.",
             "improveMail": "E-mail: <a {linkProps}>contact@beta.gouv.fr</a>",
             "improveTitle": "Forbedring og kontakt",
             "remedyAdvocate": "Skriv en besked til <a {linkProps}>Ombudsmanden</a>",
-            "remedyAdvocateAdress": "Send et brev med posten (gratis, uden frimærke): Ombudsmanden - Gratis svar 71120 75342 Paris CEDEX 07",
+            "remedyAdvocateAdress": "Send et brev med posten: Ombudsmanden - Gratis svar 71120 75342 Paris CEDEX 07",
             "remedyDelegateAdvocate": "Kontakt repræsentanten for <a {linkProps}>ombudsmanden i dit område</a>",
             "remedyDesc": "Denne procedure skal anvendes i følgende tilfælde: Du har rapporteret en tilgængelighedsfejl til webstedsadministratoren, som forhindrer dig i at få adgang til indhold eller en af portalens tjenester, og du har ikke modtaget et tilfredsstillende svar.",
             "remedyList": "Du kan:",
             "remedyTitle": "Klageadgang",
-            "stateDesc": "Hjemmesiden comparia.beta.gouv.fr overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret <strong>. Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
+            "stateDesc": "Hjemmesiden ai-arenaen.dk overholder ikke RGAA 4.1. Webstedet er endnu ikke blevet auditeret. <strong>Det er dog designet til at være tilgængeligt for så mange mennesker som muligt </strong> . Du bør derfor kunne:",
             "stateNavigate": "navigere på alle sider på webstedet ved hjælp af et tastatur",
             "statePrefs": "tilpasse siden til dine præferencer (skriftstørrelse, skærmzoom, ændring af typografi osv.) uden tab af indhold",
             "stateScreenReader": "se hjemmesiden med en skærmlæser.",
@@ -316,7 +316,7 @@
             "cookiesDesc": "Denne hjemmeside placerer en lille tekstfil (en \"cookie\") på din computer, når du besøger den. Dette giver os mulighed for at måle antallet af besøg og forstå, hvilke sider der er mest besøgte.",
             "cookiesDescMore": "Du kan fravælge sporing af din browsing på dette websted. Dette beskytter dit privatliv, men det forhindrer også ejeren i at lære af dine handlinger og skabe en bedre oplevelse for dig og andre brugere.",
             "cookiesTitle": "Cookies og samtykke",
-            "dataAccessDatasets": "Brugerdialog og præferencedata distribueres under Etalabs Open License 2.0 på Hugging Face-platformen samt på Data.gouv.fr via Kulturministeriets konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
+            "dataAccessDatasets": "Brugerdialog og præferencedata distribueres under Etalabs Open License 2.0 på Hugging Face-platformen samt på Data.gouv.fr via det franske kulturministeries konto (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
             "dataAccessDesc": "Selvfølgelig! Webstedets brugsstatistikker er frit tilgængelige på <a {linkProps}>stats.beta.gouv.fr</a>.",
             "dataAccessTitle": "Jeg bidrager til at berige dine data, kan jeg få adgang til dem?",
             "dataExtraCountry": "Destinationsland: Frankrig",
@@ -367,7 +367,7 @@
             "featuresModels": "De modeller, der er integreret i platformen, implementeres på forskellige partneres inferensservere (Scaleway, OVH, Hugging Face, Google Cloud, Mistral AI). Betingelserne for standardiseret inferens er specificeret på platformen for at sikre gennemsigtighed i brugen af modellerne.",
             "featuresModelsMore": "Modelsammenligningsgrænsefladen.",
             "featuresTitle": "4. Funktioner",
-            "featuresVote": "Når afstemningen er afsluttet, kan brugeren se listen over modeller, der er integreret i chatbot-arenaen, og få adgang til en liste med oplysninger om disse modeller. Oplysningerne om modellerne er hentet fra forskellige kilder.",
+            "featuresVote": "Når afstemningen er afsluttet, kan brugeren se listen over modeller, der er integreret i AI Arenaen, og få adgang til en liste med oplysninger om disse modeller. Oplysningerne om modellerne er hentet fra forskellige kilder.",
             "featuresVoteMore": "Deling og adgang til datasæt, der er resultatet af indsamling af brugerpræferencer.",
             "licenceCode": "Platformens kildekode er åben og tilgængelig her: <a {linkProps}>https://github.com/betagouv/ComparIA</a>",
             "licenceLLM": "De LLM'er, der bruges til at drive tjenesterne, er underlagt følgende licenser:",
@@ -996,12 +996,12 @@
                 "lt": "på litauisk",
                 "sv": "på svensk"
             },
-            "question": "Vil du gerne have chatbot-arenaen på dit sprog?",
+            "question": "Vil du gerne have AI Arenaen på dit sprog?",
             "title": "Sammenligneren <span {props}>bliver europæisk!</span>"
         },
         "faq": {
             "discover": "Se andre spørgsmål",
-            "title": "Dine ofte stillede spørgsmål"
+            "title": "Ofte stillede spørgsmål"
         },
         "intro": {
             "desc": "Chat med to ukendte AI'er og vurdér deres svar",
@@ -1034,7 +1034,7 @@
                 "title": "Hvem tog initiativ til projektet?"
             },
             "team": {
-                "desc": "AI Arenaen er et samarbejde mellem Danish Foundation Models, Digitaliseringsstyrelsen og det franske kulturministerium. Danish Foundation Models består af forskere og AI specialister fra Aarhus Universitet, Syddansk Universitet, Københavns Universtet og Aleksandra instituttet. Services er hostet af det fraske kulturministerie hvis team består af AI-eksperter, udviklere, implementeringsspecialister og designere – Missonen med AI Arenaen er at gøre dialogbaseret AI mere gennemsigtig og tilgængelig for alle.",
+                "desc": "AI Arenaen er et samarbejde mellem Danish Foundation Models, Digitaliseringsstyrelsen og det franske kulturministerium. Danish Foundation Models består af forskere og AI specialister fra Aarhus Universitet, Syddansk Universitet, Københavns Universitet og Alexandra instituttet. Servicen er hostet af det franske kulturministerie hvis team består af AI-eksperter, udviklere, implementeringsspecialister og designere – Missionen med AI Arenaen er at gøre AI mere gennemsigtig og tilgængelig for alle.",
                 "title": "Hvem er vi?"
             }
         },
@@ -1042,7 +1042,7 @@
             "desc": "Værktøjet er også rettet mod AI-eksperter og undervisere til mere specifikke anvendelsestilfælde",
             "educate": {
                 "desc": "Brug AI Arenaen som et pædagogisk redskab til at diskutere AI med dit publikum",
-                "title": "Uddan og skab bevidsthed"
+                "title": "Træning og awareness"
             },
             "explore": {
                 "desc": "Find alle modelspecifikationer og brugsbetingelserne på ét sted",
@@ -1063,8 +1063,8 @@
             "desc": "AI Arenaen er et gratis værktøj, der hjælper med at øge borgernes bevidsthed om generativ AI og dens udfordringer.",
             "measure": {
                 "alt": "Mål",
-                "desc": "Opdag den miljømæssige påvirkning af dine samtaler med hver model",
-                "title": "Mål det miljømæssige fodaftryk af spørgsmål stillet til AI"
+                "desc": "Få indsigt i, hvordan det påvirker miljøet at stille spørgsmål til modellerne.",
+                "title": "Miljøaftryk af AI-forespørgsler"
             },
             "test": {
                 "alt": "Test",
@@ -1075,14 +1075,14 @@
         },
         "vote": {
             "datasetAccess": "Få adgang til datasættene",
-            "desc": "Værktøjet er brugbart for AI-eksperter, udviklere og i undervisning",
+            "desc": "Udviklere, forskere, modeludgivere – få adgang til AI-Arenas datasæt for at forbedre modeller til sprog med begrænsede ressourcer.",
             "steps": {
                 "datasets": {
                     "desc": "Alle spørgsmål og afstemninger samles i datasæt og offentliggøres efter anonymisering.",
                     "title": "Datasæt efter sprog"
                 },
                 "finetune": {
-                    "desc": "Virksomheder og akademiske institutioner kan bruge datasættene til at træne nye modeller, der i højere grad respekterer sproglig og kulturel mangfoldighed.",
+                    "desc": "Virksomheder og videninstitutioner kan bruge datasættene til at træne nye modeller, der i højere grad tager højde for sproglig og kulturel mangfoldighed.",
                     "title": "Modeller, der er finjusteret til specifikke sprog"
                 },
                 "prefs": {
@@ -1244,19 +1244,19 @@
         "comparator": {
             "challenges": {
                 "bias": {
-                    "desc": "Fremhæv AI bias, der skyldes underrepræsentation af ikke-engelske data i modeller, og øg bevidstheden om deres virkelige indvirkning.",
+                    "desc": "Sætter fokus på AI bias, der skyldes underrepræsentation af ikke-engelske data i modellerne, og øger bevidstheden om, hvad det betyder i praksis.",
                     "title": "Kulturel og sproglig bias"
                 },
                 "impacts": {
-                    "desc": "Vis den miljømæssige påvirkning af generativ AI, som stadig er stort set ukendt for offentligheden.",
+                    "desc": "Viser den miljømæssige påvirkning af generativ AI, som stadig er stort set ukendt for offentligheden.",
                     "title": "Miljøpåvirkning"
                 },
                 "pluralism": {
-                    "desc": "Sikr at borgerne har adgang til en bred vifte af AI-modeller, så de kan træffe informerede valg og udvikle en kritisk forståelse af disse teknologier.",
+                    "desc": "Sikrer, at borgerne har adgang til en bred vifte af AI-modeller, så de kan træffe informerede valg og udvikle en kritisk forståelse af disse teknologier.",
                     "title": "Model-diversitet"
                 },
                 "thinking": {
-                    "desc": "Frem kritisk tænkning om generativ AI's rolle i personlige og professionelle praksisser.",
+                    "desc": "Fremmer kritisk tænkning om generativ AI's rolle i privat og arbejdsmæssig sammenhæng.",
                     "title": "Kritisk tænkning og samfundsmæssige spørgsmål"
                 },
                 "title": "Platformen adresserer flere udfordringer"
@@ -1264,7 +1264,7 @@
             "cta": "Gå til sammenligningsværktøjet",
             "europe": {
                 "adventure": "Fra efteråret 2025 tilslutter Litauen, Sverige og Danmark sig initiativet!",
-                "catch": "Vil du gerne have chatbot-arenaen på dit sprog?",
+                "catch": "Vil du gerne have AI Arenaen på dit sprog?",
                 "desc": "Arenaen er nu tilgængelig for deres borgere på nationale sprog med en central mission: at opbygge præferencedatasæt for at forbedre fremtidige AI-modellers ydeevne på sprog med begrænsede ressourcer.",
                 "title": "Arenaen <span {props}>bliver europæisk</span>!"
             },
@@ -1284,7 +1284,7 @@
                 "title": "Akademiske partnere"
             },
             "diffusion": {
-                "catch": "Vil du gerne bruge chatbot-arenaen i en professionel sammenhæng?",
+                "catch": "Vil du gerne bruge AI Arenaen i en professionel sammenhæng?",
                 "cta": "Giv os besked",
                 "desc": "Vi opbygger et netværk af partnere, der integrerer chatbot-området i deres tjenester og uddannelsestilbud.",
                 "title": "Kommunikationspartnere"
@@ -1326,7 +1326,7 @@
                     "c": "compar:IA er en chatbot-arena, der er designet til at samle multilingvale samtaler, som indfanger regionsspecifikke kulturelle referencer som daglige gøremål, lokale kulinariske traditioner, uddannelsessystemer eller historiske og litterære milepæle.",
                     "title": "De europæiske sprog lider under en mangel på præferencedata"
                 },
-                "title": "Hvordan kan vi reducere kulturel og sproglig bias i disse modeller?"
+                "title": "Hvordan kan vi mindske kulturel og sproglig bias i disse modeller?"
             },
             "diversity": {
                 "diversity": {
@@ -1342,10 +1342,10 @@
                     "title": "Bias-forstærkende svar"
                 }
             },
-            "tabLabel": "The oprindelige problem",
+            "tabLabel": "Det oprindelige problem",
             "title": "Respekterer samtalebaserede AI-modeller <span {props}>mangfoldigheden</span> i de europæiske sprog?"
         },
-        "title": "Alt, hvad du behøver at vide om chatbot-arenaen"
+        "title": "Alt, hvad du behøver at vide om AI Arenaen"
     },
     "ranking": {
         "energy": {
@@ -1600,7 +1600,7 @@
         "privacy": "Del ikke personlige oplysninger såsom dit navn, efternavn eller adresse.",
         "title": "Velkommen til AI Arenaen!",
         "tos": {
-            "desc": "Samtalerne og de præferencer, du udtrykker på compar:IA, bruges anonymt til at udgøre datasæt, der er repræsentative for europæiske sprog og anvendelser for at reducere kulturelle bias og tilbyde fremtidige AI-modeller, der er mere inkluderende.",
+            "desc": "Samtalerne og de præferencer, du udtrykker på AI-arenaen, bruges anonymt til at udgøre datasæt, der er repræsentative for europæiske sprog og anvendelser for at reducere kulturelle bias og tilbyde fremtidige AI-modeller, der er mere inkluderende.",
             "moreInfos": "Lær mere om projektet"
         },
         "use": "Brug ikke arenaen til ulovlige eller skadelige formål."
