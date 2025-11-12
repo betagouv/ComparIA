@@ -11,7 +11,7 @@ export default defineConfig({
     paraglideVitePlugin({
       project: './locales',
       outdir: './src/lib/i18n',
-      strategy: ['cookie', 'preferredLanguage', 'baseLocale']
+      strategy: ['cookie', 'baseLocale']
     })
   ],
   optimizeDeps: {
