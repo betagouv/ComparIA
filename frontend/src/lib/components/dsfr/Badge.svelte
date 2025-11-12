@@ -49,7 +49,7 @@
   {id}
   class={[
     `fr-badge fr-badge--${variants[variant]} fr-badge--${size} fr-badge--no-icon`,
-    { 'text-xs!': size === 'xs' },
+    { 'text-xs!': size === 'xs', 'py-1!': size === 'md' },
     props.class
   ]}
 >
