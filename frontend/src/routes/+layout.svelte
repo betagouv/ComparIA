@@ -1,7 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment'
   import Toaster from '$components/Toaster.svelte'
-  import { setVotesContext } from '$lib/global.svelte'
+  import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { setModelsContext } from '$lib/models'
   import '../css/app.css'
 
@@ -15,6 +15,7 @@
 
   setVotesContext(data.votes)
   setModelsContext(data.data)
+  setI18nContext()
 </script>
 
 <Toaster />
