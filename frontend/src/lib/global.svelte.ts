@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/public'
+import { getLocale } from '$lib/i18n/runtime'
 import { getContext, setContext } from 'svelte'
 
 const disabledLocaleCodes = env.PUBLIC_DISABLED_LOCALES
@@ -27,4 +28,21 @@ export function setVotesContext(votes: VotesData) {
 
 export function getVotesContext() {
   return getContext<VotesData>('votes')
+}
+
+export type I18nData = {
+  contact: string
+}
+
+export function setI18nContext() {
+  const i18nData: Record<string, I18nData> = {
+    da: { contact: 'kontakt@ai-arenaen.dk' },
+    fr: { contact: 'contact@comparia.beta.gouv.fr' }
+  } as const
+  const locale = getLocale() === 'da' ? 'da' : 'fr'
+  setContext('i18n', i18nData[locale])
+}
+
+export function getI18nContext() {
+  return getContext<I18nData>('i18n')
 }
