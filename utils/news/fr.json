@@ -27,6 +27,16 @@
     "date": "4/11/2025",
     "href": "https://www.numerama.com/tech/2109747-la-france-devoile-son-classement-des-meilleures-ia-le-gagnant-va-vous-surprendre.html"
   },
+ {
+    "kind": "media",
+    "subKind": "press",
+    "title": "Article ZDNet",
+    "desc": "« Compar:IA : un premier bilan de ses tests d'IA à l'aveugle »",
+    "imgSrc": "??.png",
+    "date": "5/11/2025",
+    "href": "https://www.zdnet.fr/actualites/comparia-un-premier-bilan-de-ses-tests-dia-a-laveugle-484510.htm"
+  },
+  
   {
     "kind": "resource",
     "subKind": "blog",
@@ -66,7 +76,7 @@
   },
   {
     "kind": "talk",
-    "subKind": "event",
+    "subKind": "panel",
     "title": "Table ronde - conférence ORBICOM",
     "desc": "comparIA était au Parlement européen à Strasbourg pour le congrès de la chaire Orbicom qui réunit chercheur·es, expert·es, institutions et société civile pour réfléchir à la manière dont l’IA doit être intégrée dans l’éducation.",
     "imgSrc": "orbicom.jpg",
@@ -86,16 +96,16 @@
     "kind": "talk",
     "subKind": "webinar",
     "title": "Webinaire - Découvrez ComparIA et ses ressources de médiation numérique",
-    "desc": "Lorem ipsum",
+    "desc": "Présentation du kit d'animation Duels de l'IA auprès des médiateurs de la MedNum",
     "imgSrc": "webinaire-mediation.png",
     "date": "16/09/2025",
     "href": "https://www.youtube.com/watch?v=26mvg98iA0A"
   },
   {
     "kind": "talk",
-    "subKind": "event",
+    "subKind": "workshop",
     "title": "Atelier - Semaine de l’apprentissage numérique de l’Unesco",
-    "desc": "Lorem ipsum",
+    "desc": "Atelier co-animé avec Magda Fusaro (UQAM) sur les transformations de la relation pédagogique « Professeur·es – Étudiant·es » à l’ère des IAGEN",
     "imgSrc": "??.png",
     "date": "08/09/2025",
     "href": "https://orbicom.ca/2025/09/08/retour-sur-latelier-comparia-a-la-semaine-de-lapprentissage-numerique-de-lunesco/"
@@ -113,7 +123,7 @@
     "kind": "media",
     "subKind": "press",
     "title": "Article Blog du Modérateur",
-    "desc": "Lorem ipsum",
+    "desc": "Étude : comment les Français utilisent l’IA au quotidien en 2025",
     "imgSrc": "blog-moderateur.png",
     "date": "26/08/2025",
     "href": "https://www.blogdumoderateur.com/etude-comment-francais-utilisent-ia-quotidien-2025/"
