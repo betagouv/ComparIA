@@ -1,9 +1,11 @@
 <script>
   import SeoHead from '$components/SEOHead.svelte'
+  import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getModelsContext } from '$lib/models'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
+  const i18nData = getI18nContext()
   const models = getModelsContext().models.filter((model) => model.status === 'enabled')
 </script>
 
@@ -115,7 +117,8 @@
     <p>
       {@html sanitize(
         m['general.tos.contactDesc']({
-          linkProps: externalLinkProps('mailto:contact@comparia.beta.gouv.fr')
+          linkProps: externalLinkProps(`mailto:${i18nData.contact}`),
+          contactLink: i18nData.contact
         })
       )}
     </p>

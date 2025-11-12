@@ -340,7 +340,7 @@
             "title": "Privacy policy"
         },
         "tos": {
-            "contactDesc": "For any questions about the service, you can write to <a {linkProps}>contact@comparia.beta.gouv.fr</a>.",
+            "contactDesc": "For any questions about the service, you can write to <a {linkProps}>{contactLink}</a>.",
             "contactTitle": "9. Contact",
             "defsEditor": "“Publisher” refers to the Digital Department of the Ministry of Culture.",
             "defsModels": "\"Models\" refers to the large language models (LLMs) reused under their usage license by the platform to fulfill its purposes.",

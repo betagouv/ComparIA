@@ -340,7 +340,7 @@
             "title": "Integritetspolicy"
         },
         "tos": {
-            "contactDesc": "Om du har frågor om tjänsten kan du skriva till <a {linkProps}>contact@comparia.beta.gouv.fr</a>.",
+            "contactDesc": "Om du har frågor om tjänsten kan du skriva till <a {linkProps}>{contactLink}</a>.",
             "contactTitle": "9. Kontakt",
             "defsEditor": "”Utgivare” avser franska kulturministeriets digitala tjänst.",
             "defsModels": "”Modeller” avser de stora språkmodeller (LLM) som används av plattformen inom ramen för sina licenser.",

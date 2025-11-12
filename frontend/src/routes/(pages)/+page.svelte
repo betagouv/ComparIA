@@ -3,6 +3,7 @@
   import HowItWorks from '$components/HowItWorks.svelte'
   import Newsletter from '$components/Newsletter.svelte'
   import * as env from '$env/static/public'
+  import { getI18nContext } from '$lib/global.svelte'
   import { useLocalStorage } from '$lib/helpers/useLocalStorage.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, type Locale } from '$lib/i18n/runtime'
@@ -10,6 +11,7 @@
   import type { HTMLImgAttributes } from 'svelte/elements'
 
   const locale = getLocale()
+  const i18nData = getI18nContext()
   const acceptTos = useLocalStorage('comparia:tos', false)
   let tosError = $state<string>()
 
@@ -227,7 +229,7 @@
         <Link
           button
           size="lg"
-          href="mailto:contact@comparia.beta.gouv.fr"
+          href="mailto:{i18nData.contact}"
           text={m['actions.contactUs']()}
           class="w-full! sm:w-auto!"
         />

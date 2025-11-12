@@ -1,11 +1,13 @@
 <script lang="ts">
   import { Link } from '$components/dsfr'
   import SeoHead from '$components/SEOHead.svelte'
+  import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const locale = getLocale()
+  const i18nData = getI18nContext()
 
   const datasetCards = (
     [
@@ -73,7 +75,7 @@
           <Link
             button
             variant="secondary"
-            href="mailto:contact@comparia.beta.gouv.fr"
+            href="mailto:{i18nData.contact}"
             text={m['datasets.access.share']()}
             class="w-full! md:w-auto!"
           />

@@ -340,7 +340,7 @@
             "title": "Politique de confidentialité"
         },
         "tos": {
-            "contactDesc": "Pour toute question sur le service, vous pouvez écrire à <a {linkProps}>contact@comparia.beta.gouv.fr</a>.",
+            "contactDesc": "Pour toute question sur le service, vous pouvez écrire à <a {linkProps}>{contactLink}</a>.",
             "contactTitle": "9. Contact",
             "defsEditor": "« Éditeur » désigne le Service du numérique du Ministère de la Culture.",
             "defsModels": "« Modèles » désigne les grands modèles de langages (LLM) réutilisés dans le cadre de leur licence d’utilisation par la plateforme pour répondre à ses finalités.",

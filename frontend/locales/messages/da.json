@@ -340,7 +340,7 @@
             "title": "Fortrolighedspolitik"
         },
         "tos": {
-            "contactDesc": "Hvis du har spørgsmål om tjenesten, kan du skrive til <a {linkProps}>contact@comparia.beta.gouv.fr</a>.",
+            "contactDesc": "Hvis du har spørgsmål om tjenesten, kan du skrive til <a {linkProps}>{contactLink}</a>.",
             "contactTitle": "9. Kontakt",
             "defsEditor": "\"Udgiver\" henviser til Kulturministeriets digitale afdeling.",
             "defsModels": "\"Modeller\" henviser til de store sprogmodeller (LLM'er), der genbruges under deres brugslicens af platformen for at opfylde dens formål.",

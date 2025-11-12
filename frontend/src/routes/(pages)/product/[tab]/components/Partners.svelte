@@ -1,9 +1,11 @@
 <script>
   import { Icon, Link } from '$components/dsfr'
+  import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
 
   const locale = getLocale()
+  const i18nData = getI18nContext()
 </script>
 
 <div class="grid gap-8 lg:grid-cols-2">
@@ -63,7 +65,7 @@
 
       <Link
         button
-        href="mailto:contact@comparia.beta.gouv.fr"
+        href="mailto:{i18nData.contact}"
         text={m['product.partners.diffusion.cta']()}
         class="w-full! sm:w-auto!"
       />
@@ -86,7 +88,7 @@
 
       <Link
         button
-        href="mailto:contact@comparia.beta.gouv.fr"
+        href="mailto:{i18nData.contact}"
         text={m['actions.contactUs']()}
         class="w-full! sm:w-auto!"
       />

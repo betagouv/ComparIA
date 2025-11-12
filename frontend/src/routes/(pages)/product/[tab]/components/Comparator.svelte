@@ -1,10 +1,12 @@
 <script lang="ts">
   import { Icon, Link } from '$components/dsfr'
+  import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { sanitize } from '$lib/utils/commons'
 
   const locale = getLocale()
+  const i18nData = getI18nContext()
 
   const challengesCards = (
     [
@@ -82,7 +84,7 @@
 
       <Link
         button
-        href="mailto:contact@comparia.beta.gouv.fr"
+        href="mailto:{i18nData.contact}"
         text={m['actions.contactUs']()}
         class="w-full! sm:w-auto!"
       />
