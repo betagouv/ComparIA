@@ -19,6 +19,8 @@ from languia.utils import (
     sum_tokens,
 )
 
+from languia.models import ConversationPair
+
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 
@@ -652,7 +654,7 @@ def record_reaction(
     return data
 
 
-def upsert_conv_to_db(data):
+def upsert_conv_to_db(data: ConversationPair):
 
     from languia.config import db as dsn
 
@@ -785,31 +787,33 @@ def record_conversations(
     else:
         custom_models_selection = []
 
-    data = {
-        "selected_category": category,
-        "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
-        "model_a_name": conversations[0].model_name,
-        "model_b_name": conversations[1].model_name,
-        "opening_msg": opening_msg,
-        "conversation_a": json.dumps(conversation_a_messages),
-        "conversation_b": json.dumps(conversation_b_messages),
-        "conv_turns": conv_turns,
-        "system_prompt_a": get_model_system_prompt(conversations[0].model_name),
-        "system_prompt_b": get_model_system_prompt(conversations[1].model_name),
-        "conversation_pair_id": conv_pair_id,
-        "conv_a_id": conversations[0].conv_id,
-        "conv_b_id": conversations[1].conv_id,
-        "session_hash": str(request.session_hash),
-        "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
-        # Warning: IP is a PII
-        "ip": str(get_ip(request)),
-        "model_pair_name": model_pair_name,
-        "mode": str(mode),
-        "custom_models_selection": json.dumps(custom_models_selection),
-        "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
-        "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
-        "country_portal": locale,
-    }
+    data = ConversationPair(
+        {
+            "selected_category": category,
+            "is_unedited_prompt": (is_unedited_prompt(opening_msg, category)),
+            "model_a_name": conversations[0].model_name,
+            "model_b_name": conversations[1].model_name,
+            "opening_msg": opening_msg,
+            "conversation_a": json.dumps(conversation_a_messages),
+            "conversation_b": json.dumps(conversation_b_messages),
+            "conv_turns": conv_turns,
+            "system_prompt_a": get_model_system_prompt(conversations[0].model_name),
+            "system_prompt_b": get_model_system_prompt(conversations[1].model_name),
+            "conversation_pair_id": conv_pair_id,
+            "conv_a_id": conversations[0].conv_id,
+            "conv_b_id": conversations[1].conv_id,
+            "session_hash": str(request.session_hash),
+            "visitor_id": (get_matomo_tracker_from_cookies(request.cookies)),
+            # Warning: IP is a PII
+            "ip": str(get_ip(request)),
+            "model_pair_name": model_pair_name,
+            "mode": str(mode),
+            "custom_models_selection": json.dumps(custom_models_selection),
+            "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
+            "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
+            "country_portal": locale,
+        }
+    )
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
     conv_log_path = os.path.join(LOGDIR, conv_log_filename)
