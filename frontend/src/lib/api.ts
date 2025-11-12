@@ -1,3 +1,4 @@
+import { dev } from '$app/environment'
 import { env } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
@@ -52,7 +53,9 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 }
 
 export const api = {
-  url: env.PUBLIC_API_URL || 'http://localhost:8000',
+  url: dev ? 'http://localhost:8000' : '',
+  // url: env.PUBLIC_API_URL || 'http://localhost:8000',
+  // FIXME shoud remove PUBLIC_API_URL on prod/stg/dev and set it for local dev only
   client: undefined as Client | undefined,
 
   _getLoadBalancedEndpoint(): string {
