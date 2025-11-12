@@ -1,12 +1,22 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import { Button } from '$components/dsfr'
-  import { LOCALES } from '$lib/global.svelte'
+  import { LOCALES, type LocaleOption } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, setLocale } from '$lib/i18n/runtime'
 
   let { id }: { id: string } = $props()
 
   const currentLocale = getLocale()
+
+  function onLocaleSelect(locale: LocaleOption) {
+    if (page.url.hostname !== locale.host) {
+      setLocale(locale.code, { reload: false })
+      window.location.host = locale.host
+    } else {
+      setLocale(locale.code)
+    }
+  }
 </script>
 
 <nav class="fr-translate fr-nav">
@@ -36,7 +46,7 @@
               class="fr-translate__language fr-nav__link"
               lang={locale.code}
               aria-current={locale.code == currentLocale}
-              onclick={() => setLocale(locale.code)}
+              onclick={() => onLocaleSelect(locale)}
             >
               {locale.long}
             </button>
