@@ -4,7 +4,7 @@ services:
     environment:
       LOGDIR: /data
       # LANGUIA_CONTROLLER_URL: "http://languia-controller:21001"
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/languia"
+      COMPARIA_DB_URI: "postgresql://postgres:postgres@postgres:5432/languia"
       COMPARIA_REDIS_HOST: redis
     build:
       context: ..
