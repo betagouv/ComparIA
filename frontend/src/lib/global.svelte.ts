@@ -1,22 +1,43 @@
+import { dev } from '$app/environment'
 import { env } from '$env/dynamic/public'
-import { getLocale } from '$lib/i18n/runtime'
+import { getLocale, type Locale } from '$lib/i18n/runtime'
 import { getContext, setContext } from 'svelte'
 
 const disabledLocaleCodes = env.PUBLIC_DISABLED_LOCALES
   ? env.PUBLIC_DISABLED_LOCALES.split(',').map((code) => code.trim())
   : null
 
-type Locale = { code: string; short: string; long: string }
+export type LocaleOption = { code: Locale; short: string; long: string; host: string }
 
 const ALL_LOCALES = [
-  { code: 'da', short: 'DA', long: 'DA - Dansk' } as Locale,
-  { code: 'fr', short: 'FR', long: 'FR - Français' } as Locale,
-  { code: 'en', short: 'EN', long: 'EN - English' } as Locale,
-  { code: 'lt', short: 'LT', long: 'LT - Lietuvių' } as Locale,
-  { code: 'sv', short: 'SV', long: 'SV - Svensk' } as Locale
-] as const
+  { code: 'da', short: 'DA', long: 'DA - Dansk', host: dev ? 'localhost:5173' : 'ai-arenaen.dk' },
+  {
+    code: 'fr',
+    short: 'FR',
+    long: 'FR - Français',
+    host: dev ? 'localhost:5173' : 'comparia.beta.gouv.fr'
+  },
+  {
+    code: 'en',
+    short: 'EN',
+    long: 'EN - English',
+    host: dev ? 'localhost:5173' : 'comparia.beta.gouv.fr'
+  },
+  {
+    code: 'lt',
+    short: 'LT',
+    long: 'LT - Lietuvių',
+    host: dev ? 'localhost:5173' : 'comparia.beta.gouv.fr'
+  },
+  {
+    code: 'sv',
+    short: 'SV',
+    long: 'SV - Svensk',
+    host: dev ? 'localhost:5173' : 'comparia.beta.gouv.fr'
+  }
+] satisfies LocaleOption[]
 
-export const LOCALES = ALL_LOCALES.filter((locale: Locale) => {
+export const LOCALES = ALL_LOCALES.filter((locale) => {
   return !disabledLocaleCodes?.includes(locale.code)
 })
 
