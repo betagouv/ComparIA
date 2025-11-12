@@ -79,8 +79,13 @@ def litellm_stream_iter(
     messages = strip_metadata(messages)
     logging.debug("stripping metadata")
 
+    # Check for mock response environment variable
+    mock_response = os.getenv("MOCK_RESPONSE")
+    if mock_response:
+        logger = logging.getLogger("languia")
+        logger.warning(f"MOCK_RESPONSE enabled with value: {mock_response}")
+
     kwargs = {
-        # "mock_response": "Here's the answer: print('Hello')",
         "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
         "stream_timeout": 30,
@@ -107,6 +112,9 @@ def litellm_stream_iter(
         # "generation_id": span.id
         # },
     }
+
+    if mock_response:
+        kwargs["mock_response"] = mock_response
 
     if "c4ai-aya-expanse-32b" not in model_name:
         kwargs["stream_options"] = {"include_usage": True}
