@@ -4,7 +4,7 @@
     "subKind": "comparia",
     "title": "Atelier Duel de l’IA",
     "desc": "Sensibilisez votre public à l’impact environnemental de l’IA générative en organisant un Duel de l’IA dans votre établissement, association ou entreprise !",
-    "imgSrc": "duel.png",
+    "imgSrc": "duel.jpg",
     "date": "year",
     "href": "/duel",
     "pinned": true
@@ -70,7 +70,7 @@
     "subKind": "press",
     "title": "compar:IA au JT de France 2",
     "desc": "« Intelligence artificielle : la riposte de l'école contre la triche »",
-    "imgSrc": "jt-france2.png",
+    "imgSrc": "jt-france2.jpeg",
     "date": "06/10/2025",
     "href": "https://www.franceinfo.fr/internet/intelligence-artificielle/intelligence-artificielle-la-riposte-de-l-ecole-contre-la-triche_7536016.html"
   },
