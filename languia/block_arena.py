@@ -25,6 +25,8 @@ with gr.Blocks(
 
     app_state = gr.State(value=AppState())
 
+    locale = gr.Text()
+
     conv_a = gr.State()
     conv_b = gr.State()
     welcome_modal = gr.HTML("", elem_id="welcome-modal-html")

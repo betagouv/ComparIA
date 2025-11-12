@@ -28,6 +28,7 @@ from languia.block_arena import (
     available_models,
     reveal_data,
     reaction_json,
+    locale,
 )
 import traceback
 import os
@@ -119,6 +120,7 @@ def register_listeners():
     def add_first_text(
         app_state_scoped: AppState,
         model_dropdown_scoped: CustomDropdown,
+        locale: gr.Text,
         request: gr.Request,
         # event: gr.EventData,
     ):
@@ -129,6 +131,11 @@ def register_listeners():
         app_state_scoped.mode = mode
         custom_models_selection = model_dropdown_scoped.get(
             "custom_models_selection", []
+        )
+        logger.info(
+            # f"({request.session_hash}) locale: {locale}", extra={"request": request}
+            f"(locale: {locale}",
+            extra={"request": request},
         )
 
         logger.info("chose mode: " + mode, extra={"request": request})
@@ -661,7 +668,7 @@ def register_listeners():
         ],
         fn=add_first_text,
         api_name="add_first_text",
-        inputs=[app_state, model_dropdown],
+        inputs=[app_state, model_dropdown, locale],
         outputs=[app_state]
         + [conv_a]
         + [conv_b]
