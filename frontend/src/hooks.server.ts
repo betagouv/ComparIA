@@ -5,10 +5,18 @@ import { env } from '$env/dynamic/private'
 const MATOMO_ID = env.MATOMO_ID || ''
 const MATOMO_URL = env.MATOMO_URL || ''
 
-
 // creating a handle to use the paraglide middleware
-const paraglideHandle: Handle = ({ event, resolve }) =>
-  paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
+const paraglideHandle: Handle = ({ event, resolve }) => {
+  const localeFromCookie = event.cookies.get('PARAGLIDE_LOCALE')
+  const localeFromHost = {
+    'ai-arenaen.dk': 'da'
+  }[event.url.hostname]
+
+  if (localeFromHost && localeFromHost !== localeFromCookie) {
+    event.cookies.set('PARAGLIDE_LOCALE', localeFromHost, { path: '/', httpOnly: false })
+  }
+
+  return paraglideMiddleware(event.request, ({ request: localizedRequest, locale }) => {
     event.request = localizedRequest
 
     return resolve(event, {
@@ -22,5 +30,6 @@ const paraglideHandle: Handle = ({ event, resolve }) =>
       }
     })
   })
+}
 
 export const handle: Handle = paraglideHandle
