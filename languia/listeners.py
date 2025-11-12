@@ -200,8 +200,10 @@ def register_listeners():
             extra={"request": request},
         )
 
-        # record for questions only dataset and stats on ppl abandoning before generation completion
-        record_conversations(app_state_scoped, [conv_a_scoped, conv_b_scoped], request)
+        # record for questions only dataset and stats on ppl abandoning before generation completion + add locale info
+        record_conversations(
+            app_state_scoped, [conv_a_scoped, conv_b_scoped], request, locale
+        )
         chatbot = to_threeway_chatbot([conv_a_scoped, conv_b_scoped])
 
         app_state_scoped.awaiting_responses = True

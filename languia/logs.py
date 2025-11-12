@@ -691,7 +691,9 @@ def upsert_conv_to_db(data):
                 mode,
                 custom_models_selection,
                 total_conv_a_output_tokens,
-                total_conv_b_output_tokens
+                total_conv_b_output_tokens,
+                country_portal
+                
                                         )
             VALUES (
                 %(model_a_name)s,
@@ -714,10 +716,12 @@ def upsert_conv_to_db(data):
                 %(mode)s,
                 %(custom_models_selection)s,
                 %(total_conv_a_output_tokens)s,
-                %(total_conv_b_output_tokens)s
+                %(total_conv_b_output_tokens)s,
+                %(country_portal)s
             )
             ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
+                country_portal =  coalesce(EXCLUDED.country_portal, conversations.country_portal)
                 conversation_a = EXCLUDED.conversation_a,
                 conversation_b = EXCLUDED.conversation_b,
                 conv_turns = EXCLUDED.conv_turns,
@@ -744,11 +748,8 @@ def upsert_conv_to_db(data):
     return data
 
 
-# TODO: save the beginning of conversation (i.e. when first user msg is sent) instead of time of first db insertion
 def record_conversations(
-    app_state_scoped,
-    conversations,
-    request: gr.Request,
+    app_state_scoped, conversations, request: gr.Request, locale=None
 ):
     from languia.config import get_model_system_prompt
 
@@ -807,6 +808,7 @@ def record_conversations(
         "custom_models_selection": json.dumps(custom_models_selection),
         "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
         "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
+        "country_portal": locale,
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
