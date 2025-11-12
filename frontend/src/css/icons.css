@@ -51,6 +51,12 @@
   mask-image: url('/icons/chat-charts.svg');
 }
 
+.fr-icon-book-ai-fill::before,
+.fr-icon-book-ai-fill::after {
+  -webkit-mask-image: url('/icons/book-ai-fill.svg');
+  mask-image: url('/icons/book-ai-fill.svg');
+}
+
 .fr-icon-chat-search::before,
 .fr-icon-chat-search::after {
   -webkit-mask-image: url('/icons/chat-search.svg');
@@ -87,6 +93,12 @@
   mask-image: url('/icons/heart-hand.svg');
 }
 
+.fr-icon-megaphone-fill::before,
+.fr-icon-megaphone-fill::after {
+  -webkit-mask-image: url('/icons/megaphone-fill.svg');
+  mask-image: url('/icons/megaphone-fill.svg');
+}
+
 .fr-icon-old-globe::before,
 .fr-icon-old-globe::after {
   -webkit-mask-image: url('/icons/old-globe.svg');
@@ -109,6 +121,12 @@
 .fr-icon-presentation::after {
   -webkit-mask-image: url('/icons/presentation.svg');
   mask-image: url('/icons/presentation.svg');
+}
+
+.fr-icon-pushpin-fill::before,
+.fr-icon-pushpin-fill::after {
+  -webkit-mask-image: url('/icons/pushpin-fill.svg');
+  mask-image: url('/icons/pushpin-fill.svg');
 }
 
 .fr-icon-ruler::before,
@@ -148,6 +166,12 @@
 .fr-icon-sort-desc::after {
   -webkit-mask-image: url('/icons/sort-desc.svg');
   mask-image: url('/icons/sort-desc.svg');
+}
+
+.fr-icon-speak-ai-fill::before,
+.fr-icon-speak-ai-fill::after {
+  -webkit-mask-image: url('/icons/speak-ai-fill.svg');
+  mask-image: url('/icons/speak-ai-fill.svg');
 }
 
 .fr-icon-university::before,
