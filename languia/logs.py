@@ -719,7 +719,7 @@ def upsert_conv_to_db(data):
             )
             ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
-                country_portal =  coalesce(EXCLUDED.country_portal, conversations.country_portal)
+                country_portal =  coalesce(EXCLUDED.country_portal, conversations.country_portal),
                 conversation_a = EXCLUDED.conversation_a,
                 conversation_b = EXCLUDED.conversation_b,
                 conv_turns = EXCLUDED.conv_turns,
