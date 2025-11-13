@@ -88,7 +88,7 @@ export const api = {
     if (this.client) return this.client
 
     const endpoint = this._getLoadBalancedEndpoint()
-    const fullUrl = this.url + endpoint
+    const fullUrl = window.location.origin + endpoint
 
     console.debug('Connecting to Gradio at:', fullUrl)
     try {
