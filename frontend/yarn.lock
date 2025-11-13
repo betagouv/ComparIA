@@ -648,10 +648,10 @@
     local-pkg "^1.0.0"
     mlly "^1.7.4"
 
-"@inlang/paraglide-js@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@inlang/paraglide-js/-/paraglide-js-2.2.0.tgz#e0c479db804570ea66aa941d3da92854fc783d1a"
-  integrity sha512-pkpXu1LanvpcAbvpVPf7PgF11Uq7DliSEBngrcUN36l4ZOOpzn3QBTvVr/tJxvks0O67WseQgiMHet8KH7Oz5A==
+"@inlang/paraglide-js@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@inlang/paraglide-js/-/paraglide-js-2.4.0.tgz#79a7a3980c56b73605daa2c5682e1c186c0c3f6b"
+  integrity sha512-T/m9uoev574/1JrhCnPcgK1xnAwkVMgaDev4LFthnmID8ubX2xjboSGO3IztwXWwO0aJoT1UJr89JCwjbwgnJQ==
   dependencies:
     "@inlang/recommend-sherlock" "0.2.1"
     "@inlang/sdk" "2.4.9"
