@@ -1193,7 +1193,7 @@
                 "ram": "RAM (random access memory) gemmer data, der behandles af en LLM i realtid. Jo større modellen er, jo mere RAM kræver den for at køre."
             }
         },
-        "parameters": "{number} parametre",
+        "parameters": "{number} mia. parametre",
         "ram": "{min} til {max} GB",
         "release": "Udgivet {date}",
         "size": {
