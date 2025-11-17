@@ -5,7 +5,16 @@
   export type BadgeProps = {
     id?: string
     size?: 'xs' | 'sm' | 'md'
-    variant?: '' | 'info' | 'green' | 'orange' | 'yellow' | 'purple' | 'red'
+    variant?:
+      | ''
+      | 'info'
+      | 'light-info'
+      | 'green'
+      | 'orange'
+      | 'yellow'
+      | 'green-tilleul'
+      | 'purple'
+      | 'red'
     text?: string
     tooltip?: string
     noTooltip?: boolean
@@ -25,7 +34,9 @@
   const variants = {
     '': '',
     info: 'info',
+    'light-info': 'light-info',
     green: 'green-emeraude',
+    'green-tilleul': 'green-tilleul-verveine',
     orange: 'orange-terre-battue',
     yellow: 'yellow-tournesol',
     purple: 'purple-glycine',
@@ -38,7 +49,7 @@
   {id}
   class={[
     `fr-badge fr-badge--${variants[variant]} fr-badge--${size} fr-badge--no-icon`,
-    { 'text-xs!': size === 'xs' },
+    { 'text-xs!': size === 'xs', 'py-1!': size === 'md' },
     props.class
   ]}
 >
@@ -51,3 +62,10 @@
     {@render children?.()}
   {/if}
 </span>
+
+<style>
+  .fr-badge--light-info {
+    background-color: var(--color-light-info);
+    color: var(--color-info);
+  }
+</style>

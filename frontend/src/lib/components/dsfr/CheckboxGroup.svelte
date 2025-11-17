@@ -10,6 +10,7 @@
     row = false,
     legendClass = '',
     labelClass = '',
+    legendSlot,
     labelSlot,
     ...props
   }: {
@@ -19,6 +20,7 @@
     row?: boolean
     legendClass?: ClassValue
     labelClass?: ClassValue
+    legendSlot?: Snippet<[{ legend: string }]>
     labelSlot?: Snippet<[{ option: Option; index: number }]>
   } & HTMLFieldsetAttributes = $props()
 </script>
@@ -33,7 +35,11 @@
     class={['fr-fieldset__legend--regular fr-fieldset__legend', legendClass]}
     id={`${id}-form-legend`}
   >
-    {legend}
+    {#if legendSlot}
+      {@render legendSlot({ legend })}
+    {:else}
+      {legend}
+    {/if}
   </legend>
 
   <div class="flex flex-wrap">

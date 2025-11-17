@@ -1,3 +1,4 @@
+import { browser, dev } from '$app/environment'
 import { env } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
@@ -52,45 +53,49 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 }
 
 export const api = {
-  url: env.PUBLIC_API_URL || 'http://localhost:8000',
+  url: dev ? 'http://localhost:8000' : browser ? '' : env.PUBLIC_API_URL,
+  // url: env.PUBLIC_API_URL || 'http://localhost:8000',
+  // FIXME shoud remove PUBLIC_API_URL on prod/stg/dev and set it for local dev only
   client: undefined as Client | undefined,
 
   _getLoadBalancedEndpoint(): string {
-    const replicas = parseInt(env.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10);
-    
+    const replicas = parseInt(env.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10)
+
     if (replicas <= 0) {
       return '/api'
     }
-    
+
     if (typeof window !== 'undefined' && window.localStorage) {
       const storedEndpoint = localStorage.getItem('languia-api-endpoint')
-      
+
       if (storedEndpoint) {
         const endpointNum = parseInt(storedEndpoint, 10)
         if (endpointNum >= 1 && endpointNum <= replicas) {
           return `/api/${endpointNum}`
         }
       }
-      
+
       const randomEndpoint = Math.floor(Math.random() * replicas) + 1
       localStorage.setItem('languia-api-endpoint', randomEndpoint.toString())
-      
+
       return `/api/${randomEndpoint}`
     }
-    
+
     return '/api/1'
   },
 
   async _connect() {
     if (this.client) return this.client
-    
+
     const endpoint = this._getLoadBalancedEndpoint()
-    const fullUrl = this.url + endpoint
-    
+    const fullUrl = window.location.origin + endpoint
+
     console.debug('Connecting to Gradio at:', fullUrl)
     try {
       this.client = await Client.connect(fullUrl, { events: ['data', 'status'] })
-      console.debug(`Successfully connected to Gradio (session hash: ${this.client.session_hash}) using endpoint: ${endpoint}`)
+      console.debug(
+        `Successfully connected to Gradio (session hash: ${this.client.session_hash}) using endpoint: ${endpoint}`
+      )
       return this.client
     } catch (error) {
       console.error('Failed to connect to Gradio:', error)
