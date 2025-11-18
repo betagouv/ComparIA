@@ -443,6 +443,26 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
+            {
+        "simple_name": "Gemini 3 Pro",
+        "license": "proprietary",
+        "id": "gemini-3-pro-preview",
+        "release_date": "11/2025",
+        "params": 750,
+        "active_params": 45,
+        "arch": "moe",
+        "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
+        "desc": "Grand modèle multimodal natif et multilingue. Il intègre une capacité de raisonnement avancée (\"Deep Think\") activable à la demande pour les tâches complexes (mathématiques, logique, codage), distincte de sa capacité de génération standard plus rapide. Le modèle prend en charge nativement le texte, le code, l'audio, l'image, la vidéo et la 3D.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE). Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton d'entrée, ce qui nécessite moins de puissance de calcul pour générer. Sa fenêtre de contexte s'étend jusqu'à 1 million de jetons, adaptée à l'analyse de vastes ensembles de documents, y compris des dépôts de code entiers et des fichiers vidéo.",
+        "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio.",
+        "new": true,
+        "endpoint": {
+          "api_type": "vertex_ai",
+          "api_model_id": "google/gemini-3-pro-preview"
+        }
+      }
+    ]
+  },
       {
         "new": true,
         "id": "gemini-2.5-flash",
