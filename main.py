@@ -46,7 +46,7 @@ app = gr.mount_gradio_app(
     show_error=config.debug,
 )
 
-from languia.utils import get_gauge_count
+from languia.utils import get_gauge_count, get_country_portal_count
 
 objective = config.OBJECTIVE
 
@@ -70,10 +70,31 @@ async def available_models():
 # async def enabled_models():
 #     return JSONResponse(dict(config.models))
 
+from fastapi import Query
+from typing import Annotated, Optional
 
 @app.get("/counter", response_class=JSONResponse)
-async def counter():
-    return JSONResponse({"count": get_gauge_count(), "objective": config.OBJECTIVE})
+async def counter(
+    request,
+    c: Annotated[Optional[str], Query(alias="c", max_length=2)] = None
+):
+    # Get hostname from request headers
+    hostname = request.headers.get("host", "")
+    
+    # Check if we should use country portal count based on hostname or query parameter
+    country_portal = request.query_params.get("c")
+    
+    if hostname == "ai-arenaen.dk" or country_portal == "da":
+        count = get_country_portal_count('da')
+    else:
+        count = get_gauge_count()
+    
+    return JSONResponse(
+        {
+            "count": count,
+            "objective": config.OBJECTIVE,
+        }
+    )
 
 
 app = SentryAsgiMiddleware(app)
