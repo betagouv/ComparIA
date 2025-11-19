@@ -251,13 +251,36 @@ def main() -> None:
                 for k, v in model.model_dump(include=I18N_MODEL_KEYS).items()
             }
 
-            if model.data is None or model.prefs is None:
-                log.warning(
-                    f"Missing data for model '{model.id}' (status: {model.status})"
-                )
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
+    # Check for missing data/prefs and log warnings
+    missing_info_events = []
+    for model in orgas.root:
+        for m in model.models:
+            missing = []
+            if m.data is None:
+                missing.append("data")
+            if m.prefs is None:
+                missing.append("prefs")
+
+            if missing:
+                missing_info_events.append(
+                    {
+                        "id": m.id,
+                        "status": m.status,
+                        "missing": missing,
+                    }
+                )
+
+    # Sort: Enabled models first (False < True), then alphabetical by ID
+    missing_info_events.sort(key=lambda x: (x["status"] != "enabled", x["id"]))
+
+    for event in missing_info_events:
+        missing_str = " & ".join(event["missing"])
+        log.warning(
+            f"Missing {missing_str} for model '{event['id']}' (status: {event['status']})"
+        )
     # Integrate translatable content to frontend locales
     log.info(f"Saving '{I18N_PATH.relative_to(ROOT_PATH)}'...")
     frontend_i18n = read_json(I18N_PATH)
