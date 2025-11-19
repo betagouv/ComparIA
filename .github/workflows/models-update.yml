@@ -28,17 +28,17 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v3
-
-      - name: Install dependencies
+      - name: Setup Python virtual environment
         run: |
-          uv pip install -r requirements.txt
-        working-directory: .
+          python -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
 
       - name: Run model builder
         run: |
-          uv run python -m utils.models.build_models
+          source .venv/bin/activate
+          python -m utils.models.build_models
+        working-directory: .
 
       - name: Create PR if changes on main
         if: github.ref == 'refs/heads/main'

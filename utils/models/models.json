@@ -441,7 +441,7 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Google, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée de Google.",
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
-            {
+      {
         "simple_name": "Gemini 3 Pro",
         "license": "proprietary",
         "id": "gemini-3-pro-preview",
@@ -461,167 +461,165 @@
       }
     ]
   },
-      {
-        "simple_name": "Gemini 2.5 Flash",
-        "license": "proprietary",
-        "id": "gemini-2.5-flash",
-        "release_date": "06/2025",
-        "params": 440,
-        "active_params": 137,
-        "arch": "moe",
-        "desc": "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.",
-        "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale.",
-        "endpoint": {
-          "api_type": "vertex_ai",
-          "api_model_id": "gemini-2.5-flash"
-        }
-      },
-      {
-        "simple_name": "Gemma 3n 4B",
-        "license": "Gemma",
-        "id": "gemma-3n-e4b-it",
-        "release_date": "05/2025",
-        "params": 8,
-        "active_params": 4,
-        "arch": "matformer",
-        "desc": "Très petit modèle multimodal et compact conçu pour fonctionner localement sur un ordinateur ou un smartphone, sans recours à un serveur - il est capable d’adapter sa puissance selon la capacité de la capacité et le besoin.",
-        "size_desc": "Avec 4 milliards de paramètres, il fait partie des modèles de très petite taille. Il peut être utilisé localement sur un ordinateur ou un smartphone pour préserver la confidentialité des données, ou sur serveur pour limiter les coûts par rapport à un modèle plus grand.\n\nSa fenêtre de contexte va jusqu’à 32 000 jetons.",
-        "fyi": "Ce modèle peut traiter du texte, des images et de l’audio. Il repose sur l’architecture MatFormer et un système de cache PLE (per-layer embeddings), qui active uniquement les paramètres utiles selon la tâche, s'adaptant à la capacité des machines sur lesquelles fonctionne le modèle.",
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "google/gemma-3n-e4b-it"
-        }
-      },
-      {
-        "id": "gemma-3-4b",
-        "simple_name": "Gemma 3 4B",
-        "license": "Gemma",
-        "release_date": "03/2025",
-        "arch": "dense",
-        "params": 4,
-        "url": "https://huggingface.co/google/gemma-3-4b-it",
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "google/gemma-3-4b-it"
-        },
-        "desc": "Très petit modèle multimodal et compact adapté aux tâches courantes comme les questions-réponses, les résumés ou l’interprétation d’images.",
-        "size_desc": "Avec 4 milliards de paramètres, il fait partie des modèles de très petite taille. Il peut être utilisé localement pour préserver la confidentialité des données, ou sur serveur pour limiter les coûts par rapport à un modèle plus grand. \n\nSa fenêtre de contexte peut atteindre 128 000 jetons, ce qui permet d’analyser de longs documents.",
-        "fyi": "Il peut traiter du texte et des images en fonctionnant sur des appareils peu puissants, y compris smartphones et tablettes. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
-      },
-      {
-        "id": "gemma-3-12b",
-        "simple_name": "Gemma 3 12B",
-        "license": "Gemma",
-        "release_date": "03/2025",
-        "arch": "dense",
-        "params": 12,
-        "url": "https://huggingface.co/google/gemma-3-12b-it",
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "google/gemma-3-12b-it"
-        },
-        "desc": "Petit modèle multimodal adapté aux tâches courantes comme les questions-réponses, les résumés ou l’interprétation d’images.",
-        "size_desc": "Avec 12 milliards de paramètres, il fait partie des modèles de petite taille. Il peut être utilisé localement sur un poste pour préserver la confidentialité des données, ou sur serveur peu coûteux pour limiter les coûts par rapport à un modèle plus grand. \n\nSa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter de longs documents.",
-        "fyi": "Il traite du texte et des images et peut fonctionner en local sur des ordinateurs portables puissants ou des serveurs avec une seule carte graphique. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
-      },
-      {
-        "id": "gemma-3-27b",
-        "simple_name": "Gemma 3 27B",
-        "license": "Gemma",
-        "release_date": "03/2025",
-        "arch": "dense",
-        "params": 27,
-        "url": "https://huggingface.co/google/gemma-3-27b-it",
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "google/gemma-3-27b-it"
-        },
-        "desc": "Modèle de taille moyenne multimodal adapté aux tâches courantes comme les questions-réponses, les résumés ou l’interprétation d’images.",
-        "size_desc": "Avec 27 milliards de paramètres, il appartient à la catégorie des modèles de taille moyenne. Il peut être déployé sur un serveur avec une seule carte graphique (GPU). \n\nIl accepte des contextes jusqu’à 128 000 jetons, ce qui convient pour l’analyse de documents longs.",
-        "fyi": "Il peut traiter du texte et des images sur un serveur équipé d’une seule carte graphique puissante. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
-      },
-      {
-        "status": "archived",
-        "id": "gemini-2.0-flash",
-        "simple_name": "Gemini 2.0 Flash",
-        "license": "proprietary",
-        "release_date": "12/2024",
-        "arch": "moe",
-        "params": 440,
-        "active_params": 137,
-        "url": "https://ai.google.dev/gemini-api",
-        "desc": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés.",
-        "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-        "fyi": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
-      },
-      {
-        "status": "archived",
-        "id": "gemini-1.5-pro",
-        "simple_name": "Gemini 1.5 Pro",
-        "license": "proprietary",
-        "release_date": "09/2024",
-        "arch": "moe",
-        "params": 600,
-        "active_params": 220,
-        "url": "https://ai.google.dev/gemini-api",
-        "desc": "Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio.",
-        "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
-        "fyi": "Sorti en février 2024 et amélioré en septembre 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
-      },
-      {
-        "status": "archived",
-        "id": "gemma-2-2b-it",
-        "simple_name": "Gemma 2 2B",
-        "license": "Gemma",
-        "release_date": "07/2024",
-        "arch": "dense",
-        "params": 2,
-        "url": "https://huggingface.co/google/gemma-2-2b-it",
-        "desc": "Très petit modèle qui offrait des performances très compétitives pour sa taille et la plupart des tâches.",
-        "size_desc": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
-        "fyi": "Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros."
-      },
-      {
-        "status": "archived",
-        "id": "gemma-2-27b-it-q8",
-        "simple_name": "Gemma 2 27B",
-        "license": "Gemma",
-        "release_date": "06/2024",
-        "arch": "dense",
-        "params": 27,
-        "url": "https://huggingface.co/google/gemma-2-27b-it",
-        "desc": "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.",
-        "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-        "fyi": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions. Le modèle sollicité ici est la version quantisée (q8)."
-      },
-      {
-        "status": "archived",
-        "id": "gemma-2-27b-it",
-        "simple_name": "Gemma 2 27B",
-        "license": "Gemma",
-        "release_date": "06/2024",
-        "arch": "dense",
-        "params": 27,
-        "url": "https://huggingface.co/google/gemma-2-27b-it",
-        "desc": "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.",
-        "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
-        "fyi": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions. Le modèle sollicité ici est la version quantisée (q8)."
-      },
-      {
-        "status": "archived",
-        "id": "gemma-2-9b-it",
-        "simple_name": "Gemma 2 9B",
-        "license": "Gemma",
-        "release_date": "06/2024",
-        "arch": "dense",
-        "params": 9,
-        "url": "https://huggingface.co/google/gemma-2-9b-it",
-        "desc": "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives.",
-        "size_desc": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
-        "fyi": "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
-      }
-    ]
+  {
+    "simple_name": "Gemini 2.5 Flash",
+    "license": "proprietary",
+    "id": "gemini-2.5-flash",
+    "release_date": "06/2025",
+    "params": 440,
+    "active_params": 137,
+    "arch": "moe",
+    "desc": "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.",
+    "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.",
+    "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale.",
+    "endpoint": {
+      "api_type": "vertex_ai",
+      "api_model_id": "gemini-2.5-flash"
+    }
+  },
+  {
+    "simple_name": "Gemma 3n 4B",
+    "license": "Gemma",
+    "id": "gemma-3n-e4b-it",
+    "release_date": "05/2025",
+    "params": 8,
+    "active_params": 4,
+    "arch": "matformer",
+    "desc": "Très petit modèle multimodal et compact conçu pour fonctionner localement sur un ordinateur ou un smartphone, sans recours à un serveur - il est capable d’adapter sa puissance selon la capacité de la capacité et le besoin.",
+    "size_desc": "Avec 4 milliards de paramètres, il fait partie des modèles de très petite taille. Il peut être utilisé localement sur un ordinateur ou un smartphone pour préserver la confidentialité des données, ou sur serveur pour limiter les coûts par rapport à un modèle plus grand.\n\nSa fenêtre de contexte va jusqu’à 32 000 jetons.",
+    "fyi": "Ce modèle peut traiter du texte, des images et de l’audio. Il repose sur l’architecture MatFormer et un système de cache PLE (per-layer embeddings), qui active uniquement les paramètres utiles selon la tâche, s'adaptant à la capacité des machines sur lesquelles fonctionne le modèle.",
+    "endpoint": {
+      "api_type": "openrouter",
+      "api_model_id": "google/gemma-3n-e4b-it"
+    }
+  },
+  {
+    "id": "gemma-3-4b",
+    "simple_name": "Gemma 3 4B",
+    "license": "Gemma",
+    "release_date": "03/2025",
+    "arch": "dense",
+    "params": 4,
+    "url": "https://huggingface.co/google/gemma-3-4b-it",
+    "endpoint": {
+      "api_type": "openrouter",
+      "api_model_id": "google/gemma-3-4b-it"
+    },
+    "desc": "Très petit modèle multimodal et compact adapté aux tâches courantes comme les questions-réponses, les résumés ou l’interprétation d’images.",
+    "size_desc": "Avec 4 milliards de paramètres, il fait partie des modèles de très petite taille. Il peut être utilisé localement pour préserver la confidentialité des données, ou sur serveur pour limiter les coûts par rapport à un modèle plus grand. \n\nSa fenêtre de contexte peut atteindre 128 000 jetons, ce qui permet d’analyser de longs documents.",
+    "fyi": "Il peut traiter du texte et des images en fonctionnant sur des appareils peu puissants, y compris smartphones et tablettes. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
+  },
+  {
+    "id": "gemma-3-12b",
+    "simple_name": "Gemma 3 12B",
+    "license": "Gemma",
+    "release_date": "03/2025",
+    "arch": "dense",
+    "params": 12,
+    "url": "https://huggingface.co/google/gemma-3-12b-it",
+    "endpoint": {
+      "api_type": "openrouter",
+      "api_model_id": "google/gemma-3-12b-it"
+    },
+    "desc": "Petit modèle multimodal adapté aux tâches courantes comme les questions-réponses, les résumés ou l’interprétation d’images.",
+    "size_desc": "Avec 12 milliards de paramètres, il fait partie des modèles de petite taille. Il peut être utilisé localement sur un poste pour préserver la confidentialité des données, ou sur serveur peu coûteux pour limiter les coûts par rapport à un modèle plus grand. \n\nSa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter de longs documents.",
+    "fyi": "Il traite du texte et des images et peut fonctionner en local sur des ordinateurs portables puissants ou des serveurs avec une seule carte graphique. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
+  },
+  {
+    "id": "gemma-3-27b",
+    "simple_name": "Gemma 3 27B",
+    "license": "Gemma",
+    "release_date": "03/2025",
+    "arch": "dense",
+    "params": 27,
+    "url": "https://huggingface.co/google/gemma-3-27b-it",
+    "endpoint": {
+      "api_type": "openrouter",
+      "api_model_id": "google/gemma-3-27b-it"
+    },
+    "desc": "Modèle de taille moyenne multimodal adapté aux tâches courantes comme les questions-réponses, les résumés ou l’interprétation d’images.",
+    "size_desc": "Avec 27 milliards de paramètres, il appartient à la catégorie des modèles de taille moyenne. Il peut être déployé sur un serveur avec une seule carte graphique (GPU). \n\nIl accepte des contextes jusqu’à 128 000 jetons, ce qui convient pour l’analyse de documents longs.",
+    "fyi": "Il peut traiter du texte et des images sur un serveur équipé d’une seule carte graphique puissante. Il a été entraîné pour pouvoir interagir avec des outils externes (recherche internet...) via des appels de fonctions, ce qui le rend utilisable dans des contextes agentiques."
+  },
+  {
+    "status": "archived",
+    "id": "gemini-2.0-flash",
+    "simple_name": "Gemini 2.0 Flash",
+    "license": "proprietary",
+    "release_date": "12/2024",
+    "arch": "moe",
+    "params": 440,
+    "active_params": 137,
+    "url": "https://ai.google.dev/gemini-api",
+    "desc": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés.",
+    "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+    "fyi": "Sorti en décembre 2024, ce plus petit modèle multilingue et multimodal est de la famille Flash de Gemini, permettant une réponse très rapide pour des raisonnements moins avancés que les modèles Gemini Pro."
+  },
+  {
+    "status": "archived",
+    "id": "gemini-1.5-pro",
+    "simple_name": "Gemini 1.5 Pro",
+    "license": "proprietary",
+    "release_date": "09/2024",
+    "arch": "moe",
+    "params": 600,
+    "active_params": 220,
+    "url": "https://ai.google.dev/gemini-api",
+    "desc": "Sorti en septembre 2024, ce modèle multimodal s'applique à la génération de textes et d'images, l'analyse de vidéos et la transcription d'audio.",
+    "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
+    "fyi": "Sorti en février 2024 et amélioré en septembre 2024, ce modèle multilingue et multimodal est capable de traiter un très grand volume de données d’entrées qu’il s’agisse de données textuelles, d’image, de son (jusqu’à 11h d’audio) ou de vidéo (jusqu’à une heure). C’est le modèle LLM qui alimente le chatbot Gemini de Google."
+  },
+  {
+    "status": "archived",
+    "id": "gemma-2-2b-it",
+    "simple_name": "Gemma 2 2B",
+    "license": "Gemma",
+    "release_date": "07/2024",
+    "arch": "dense",
+    "params": 2,
+    "url": "https://huggingface.co/google/gemma-2-2b-it",
+    "desc": "Très petit modèle qui offrait des performances très compétitives pour sa taille et la plupart des tâches.",
+    "size_desc": "Les modèles très petits, avec moins de 7 milliards de paramètres, sont les moins complexes et les plus économiques en termes de ressources, offrant des performances suffisantes pour des tâches simples comme la classification de texte.",
+    "fyi": "Petit frère de la famille Gemma 2, ce très petit modèle sorti en juillet 2024 arrive à rivaliser avec des modèles bien plus gros."
+  },
+  {
+    "status": "archived",
+    "id": "gemma-2-27b-it-q8",
+    "simple_name": "Gemma 2 27B",
+    "license": "Gemma",
+    "release_date": "06/2024",
+    "arch": "dense",
+    "params": 27,
+    "url": "https://huggingface.co/google/gemma-2-27b-it",
+    "desc": "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.",
+    "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+    "fyi": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions. Le modèle sollicité ici est la version quantisée (q8)."
+  },
+  {
+    "status": "archived",
+    "id": "gemma-2-27b-it",
+    "simple_name": "Gemma 2 27B",
+    "license": "Gemma",
+    "release_date": "06/2024",
+    "arch": "dense",
+    "params": 27,
+    "url": "https://huggingface.co/google/gemma-2-27b-it",
+    "desc": "Modèle performant avec une taille correcte, son coût relativement élevé le destine à des usages spécifiques nécessitant une grande précision.",
+    "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
+    "fyi": "Avec trois fois plus de paramètre que son petit frère de la famille Gemma 2, ce modèle est plus précis pour répondre aux instructions. Le modèle sollicité ici est la version quantisée (q8)."
+  },
+  {
+    "status": "archived",
+    "id": "gemma-2-9b-it",
+    "simple_name": "Gemma 2 9B",
+    "license": "Gemma",
+    "release_date": "06/2024",
+    "arch": "dense",
+    "params": 9,
+    "url": "https://huggingface.co/google/gemma-2-9b-it",
+    "desc": "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives.",
+    "size_desc": "Un modèle de petit gabarit est moins complexe et coûteux en ressources par rapport aux modèles plus grands, tout en offrant une performance suffisante pour diverses tâches (résumé, traduction, classification de texte...)",
+    "fyi": "Petit frère de la famille Gemma 2, ce modèle sorti en juin 2024 est entrainé pour répondre à des instructions spécifiques, traiter des requêtes complexes et offrir des solutions créatives."
   },
   {
     "name": "Alibaba",
