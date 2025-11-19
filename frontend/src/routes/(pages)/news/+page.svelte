@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { Badge, Button, CheckboxGroup, Icon } from '$components/dsfr'
+  import { Badge, Button, CheckboxGroup, Icon, Link } from '$components/dsfr'
+  import type { BadgeProps } from '$components/dsfr/Badge.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import data from '$lib/generated/news.json'
   import { m } from '$lib/i18n/messages'
@@ -12,12 +13,19 @@
     desc: string
     imgSrc: string
     date: string
+    linkLabel?: string
     href: string
     pinned?: boolean
   }
+  type Sub = {
+    title: string
+    variant: BadgeProps['variant']
+    icon: string
+    subKinds: { id: string; label: string; linkLabel?: string }[]
+  }
 
   const NEWS_KINDS = ['resource', 'talk', 'media'] as const
-  const SUBKINDS = {
+  const SUBKINDS: Record<NewsKind, Sub> = {
     resource: {
       title: 'Ressources',
       variant: 'light-info',
@@ -33,8 +41,8 @@
       variant: 'purple',
       icon: 'speak-ai-fill',
       subKinds: [
-        { id: 'podcast', label: 'Podcast' },
-        { id: 'webinar', label: 'Webinaire' },
+        { id: 'podcast', label: 'Podcast', linkLabel: 'Écouter le podcast' },
+        { id: 'webinar', label: 'Webinaire', linkLabel: 'Revoir le webinaire' },
         { id: 'event', label: 'Participation évènement' },
         { id: 'workshop', label: 'Atelier' },
         { id: 'panel', label: 'Table ronde' }
@@ -46,16 +54,20 @@
       icon: 'megaphone-fill',
       subKinds: [
         { id: 'analyze', label: 'Analyse' },
-        { id: 'press', label: 'Presse écrite' },
-        { id: 'video', label: 'Vidéo' }
+        { id: 'press', label: 'Presse écrite', linkLabel: "Lire l'article" },
+        { id: 'video', label: 'Vidéo', linkLabel: 'Voir la vidéo' }
       ]
     }
-  } as const
+  }
 
   const news = (data as News[]).map((n) => {
     const [day, month, year] = n.date.split('/')
     return {
       ...n,
+      linkLabel:
+        n.linkLabel ??
+        SUBKINDS[n.kind].subKinds.find((sk) => sk.id === n.subKind)?.linkLabel ??
+        'Découvrir',
       date: n.date === 'year' ? null : new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
     }
   })
@@ -210,9 +222,11 @@
           {#each filteredNews as news (news.title)}
             <div class="fr-card fr-enlarge-link fr-card--no-border cg-border bg-none! rounded-xl">
               <div class="fr-card__body">
-                <div class="fr-card__content px-5! md:px-4! md:pt-4!">
+                <div class="fr-card__content px-5! md:px-4! md:pt-4! pb-18!">
                   <h6 class="fr-card__title text-lg! mb-0!">
-                    <a href={news.href} class="text-(--grey-50-1000)!">{news.title}</a>
+                    <Link href={news.href} text={news.title} class="after:content-none!">
+                      <span class="text-(--grey-50-1000)!">{news.title}</span>
+                    </Link>
                   </h6>
 
                   <div class="fr-card__desc text-grey text-[14px]">
@@ -247,6 +261,22 @@
                         />
                       </li>
                     </ul>
+                  </div>
+
+                  <div class="fr-card__end pe-1!" aria-hidden="true">
+                    <p class="fr-card__detail flex justify-end">
+                      <Link
+                        href={news.href}
+                        text=""
+                        class="text-primary! border-b-1 text-[14px]!"
+                        tabindex={-1}
+                      >
+                        {news.linkLabel}
+                        {#if news.href.startsWith('/')}
+                          <Icon icon="arrow-right-line" size="xs" />
+                        {/if}
+                      </Link>
+                    </p>
                   </div>
                 </div>
               </div>
