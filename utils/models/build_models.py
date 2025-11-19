@@ -1,6 +1,7 @@
 import logging
 import markdown
 import os
+import requests
 from pathlib import Path
 from pydantic import ValidationError
 from rich.logging import RichHandler
@@ -162,6 +163,12 @@ def fetch_distinct_model_ids(engine, models_data):
 
 
 def main() -> None:
+    # Fetch the latest dataset from Hugging Face
+    hf_data = fetch_ranking_results()
+    
+    if hf_data.get("models") and len(hf_data.get("models")) > 0:
+        write_json(MODELS_EXTRA_DATA_PATH, hf_data)
+    
     raw_licenses = read_json(LICENSES_PATH)
     raw_archs = read_json(ARCHS_PATH)
     raw_orgas = read_json(MODELS_PATH)
@@ -278,6 +285,19 @@ export const MODELS = {[model["simple_name"] for model in generated_models.value
     )
 
     log.info("Generation is successfull!")
+
+
+def fetch_ranking_results() -> dict:
+    """Fetch the latest dataset ranking results from GitHub Actions pipeline."""
+    url = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        log.error(f"Failed to fetch dataset results from Hugging Face: {e}")
+        # Return empty data structure if fetch fails
+        return {"models": [], "timestamp": None}
 
 
 if __name__ == "__main__":

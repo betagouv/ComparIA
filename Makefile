@@ -25,7 +25,7 @@ install-backend: ## Install Python backend dependencies with uv
 
 install-frontend: ## Install npm frontend dependencies
 	@echo "Installing frontend dependencies..."
-	cd frontend && $(NPM) install
+	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
 dev: ## Launch backend and frontend in parallel (Ctrl+C to stop)
 	@echo "Launching compar:IA..."
@@ -48,10 +48,6 @@ dev-controller: ## Launch the dashboard controller
 build-frontend: ## Build the frontend for production
 	@echo "Building frontend..."
 	cd frontend && $(NPM) run build
-
-preview-frontend: build-frontend ## Preview the frontend build
-	@echo "Previewing frontend..."
-	cd frontend && $(NPM) run preview
 
 lint-frontend: ## Check frontend code
 	@echo "Checking frontend code..."
