@@ -21,11 +21,11 @@ LICENSES_PATH = CURRENT_FOLDER / "licenses.json"
 ARCHS_PATH = CURRENT_FOLDER / "archs.json"
 MODELS_PATH = CURRENT_FOLDER / "models.json"
 MODELS_EXTRA_DATA_PATH = CURRENT_FOLDER / "generated-models-extra-data.json"
+MODELS_EXTRA_DATA_URL = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
 MODELS_PREFERENCES_PATH = CURRENT_FOLDER / "generated-preferences.json"
 GENERATED_MODELS_PATH = CURRENT_FOLDER / "generated-models.json"
 I18N_PATH = FRONTEND_FOLDER / "locales" / "messages" / "fr.json"
 TS_DATA_PATH = FRONTEND_FOLDER / "src" / "lib" / "generated" / "models.ts"
-
 I18N_OS_LICENSE_KEYS = [
     "license_desc",
     "reuse_specificities",
@@ -163,12 +163,12 @@ def fetch_distinct_model_ids(engine, models_data):
 
 
 def main() -> None:
-    # Fetch the latest dataset from Hugging Face
-    hf_data = fetch_ranking_results()
-    
-    if hf_data.get("models") and len(hf_data.get("models")) > 0:
-        write_json(MODELS_EXTRA_DATA_PATH, hf_data)
-    
+    # Fetch the latest dataset results from ranking pipelinerepo
+    new_extra_data = fetch_ranking_results(MODELS_EXTRA_DATA_URL)
+
+    if new_extra_data.get("models") and len(new_extra_data.get("models")) > 0:
+        write_json(MODELS_EXTRA_DATA_PATH, new_extra_data)
+
     raw_licenses = read_json(LICENSES_PATH)
     raw_archs = read_json(ARCHS_PATH)
     raw_orgas = read_json(MODELS_PATH)
@@ -287,15 +287,15 @@ export const MODELS = {[model["simple_name"] for model in generated_models.value
     log.info("Generation is successfull!")
 
 
-def fetch_ranking_results() -> dict:
+def fetch_ranking_results(url) -> dict:
     """Fetch the latest dataset ranking results from GitHub Actions pipeline."""
-    url = "https://github.com/betagouv/ranking_methods/releases/latest/download/ml_final_data.json"
+
     try:
         response = requests.get(url)
         response.raise_for_status()
         return response.json()
     except requests.exceptions.RequestException as e:
-        log.error(f"Failed to fetch dataset results from Hugging Face: {e}")
+        log.error(f"Failed to fetch ranking results from repo: {e}")
         # Return empty data structure if fetch fails
         return {"models": [], "timestamp": None}
 
