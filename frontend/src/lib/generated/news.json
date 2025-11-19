@@ -14,7 +14,7 @@
     "subKind": "press",
     "title": "Article Usine digitale",
     "desc": "« Mistral Medium 3.1 jugé meilleur modèle selon les votants au classement Compar:IA établi par le gouvernement français »",
-    "imgSrc": "??.png",
+    "imgSrc": "article-usine-digitale.png",
     "date": "10/11/2025",
     "href": "https://www.usine-digitale.fr/article/mistral-medium-3-1-juge-meilleur-modele-selon-les-votants-au-classement-compar-ia-etabli-par-le-gouvernement-francais.N2241098"
   },
@@ -23,20 +23,19 @@
     "subKind": "press",
     "title": "Article Numerama",
     "desc": "« La France dévoile son classement des meilleures IA : le gagnant va vous surprendre »",
-    "imgSrc": "??.png",
+    "imgSrc": "article-numerama.png",
     "date": "4/11/2025",
     "href": "https://www.numerama.com/tech/2109747-la-france-devoile-son-classement-des-meilleures-ia-le-gagnant-va-vous-surprendre.html"
   },
- {
+  {
     "kind": "media",
     "subKind": "press",
     "title": "Article ZDNet",
     "desc": "« Compar:IA : un premier bilan de ses tests d'IA à l'aveugle »",
-    "imgSrc": "??.png",
+    "imgSrc": "article-ZDNet.png",
     "date": "5/11/2025",
     "href": "https://www.zdnet.fr/actualites/comparia-un-premier-bilan-de-ses-tests-dia-a-laveugle-484510.htm"
   },
-  
   {
     "kind": "resource",
     "subKind": "blog",
@@ -52,7 +51,7 @@
     "subKind": "event",
     "title": "Numérique en communs - session de pitch",
     "desc": "Accédez au replay de la présentation de comparIA lors de la session de pitchs « 6 modèles ouverts pour mettre vraiment l'IA à son service »",
-    "imgSrc": "??.png",
+    "imgSrc": "nec-pitch.jpg",
     "date": "29/10/2025",
     "href": "??"
   },
@@ -106,7 +105,7 @@
     "subKind": "workshop",
     "title": "Atelier - Semaine de l’apprentissage numérique de l’Unesco",
     "desc": "Atelier co-animé avec Magda Fusaro (UQAM) sur les transformations de la relation pédagogique « Professeur·es – Étudiant·es » à l’ère des IAGEN",
-    "imgSrc": "??.png",
+    "imgSrc": "atelier-unesco.png",
     "date": "08/09/2025",
     "href": "https://orbicom.ca/2025/09/08/retour-sur-latelier-comparia-a-la-semaine-de-lapprentissage-numerique-de-lunesco/"
   },
