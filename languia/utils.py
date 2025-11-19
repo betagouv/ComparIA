@@ -390,20 +390,31 @@ AS total_approx;
             conn.close()
 
 
-def get_danish_count():
+def get_country_portal_count(country_code: str) -> int:
+    """
+    Get the count of votes and reactions for conversations with a specific country portal.
+    
+    Args:
+        country_code: The country code to filter by (e.g., 'da' for Danish)
+        
+    Returns:
+        The count of votes and reactions for the specified country portal
+    """
     import psycopg2
     from psycopg2 import sql
     from languia.config import db as dsn
     from languia.session import r
-
+    
+    cache_key = f"{country_code}_count"
+    
     # Try Redis first
     if r:
         try:
-            count = r.get("danish_count")
+            count = r.get(cache_key)
             if count is not None:
                 return int(count)
         except Exception as e:
-            logger.error(f"Error getting danish count from Redis: {e}")
+            logger.error(f"Error getting {country_code} count from Redis: {e}")
 
     # Fallback to Postgres
     logger = logging.getLogger("languia")
@@ -417,34 +428,39 @@ def get_danish_count():
     try:
         conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
-        # Count votes and reactions linked to conversations with country_portal='da'
+        # Count votes and reactions linked to conversations with country_portal
         query = sql.SQL("""
-            SELECT 
-                (SELECT COUNT(*) FROM votes v 
-                 JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id 
-                 WHERE c.country_portal = 'da') +
-                (SELECT COUNT(*) FROM reactions r 
-                 JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id 
-                 WHERE c.country_portal = 'da')
+            SELECT
+                (SELECT COUNT(*) FROM votes v
+                 JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
+                 WHERE c.country_portal = %s) +
+                (SELECT COUNT(*) FROM reactions r
+                 JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
+                 WHERE c.country_portal = %s)
             as total;
         """)
-        cursor.execute(query)
+        cursor.execute(query, (country_code, country_code))
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0
 
-        # Update Redis
+        # Update Redis with 2 minute TTL
         if r:
             try:
-                r.set("danish_count", result)
+                r.setex(cache_key, 120, result)  # 120 seconds = 2 minutes
             except Exception as e:
-                logger.error(f"Error setting danish count in Redis: {e}")
+                logger.error(f"Error setting {country_code} count in Redis: {e}")
 
         return result
     except Exception as e:
-        logger.error(f"Error getting danish count from db: {e}")
+        logger.error(f"Error getting {country_code} count from db: {e}")
         return 0
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
+
+def get_danish_count() -> int:
+    """Get the count of votes and reactions for Danish portal conversations."""
+    return get_country_portal_count('da')

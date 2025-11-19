@@ -254,16 +254,18 @@ def main() -> None:
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
-    # Check for missing data/prefs and log warnings
+    # Check for missing data/prefs and log detailed debug information
     missing_info_events = []
     for model in orgas.root:
         for m in model.models:
             missing = []
             if m.data is None:
                 missing.append("data")
+                log.debug(f"Model '{m.id}' has no data attribute (status: {m.status})")
             if m.prefs is None:
                 missing.append("prefs")
-
+                log.debug(f"Model '{m.id}' has no prefs attribute (status: {m.status})")
+    
             if missing:
                 missing_info_events.append(
                     {
@@ -272,10 +274,10 @@ def main() -> None:
                         "missing": missing,
                     }
                 )
-
+    
     # Sort: Enabled models first (False < True), then alphabetical by ID
     missing_info_events.sort(key=lambda x: (x["status"] != "enabled", x["id"]))
-
+    
     for event in missing_info_events:
         missing_str = " & ".join(event["missing"])
         log.warning(
