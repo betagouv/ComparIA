@@ -202,7 +202,7 @@
                     "title": "Comment choisissez-vous les modèles présents dans le comparateur ?"
                 },
                 "2": {
-                    "desc": "<p>L’inférence, c’est-à-dire le fait de pouvoir interroger les modèles, est rendue possible grâce à des dons des entreprises fournisseuses de cloud qui soutiennent le projet : Google Cloud Platform, Hugging Face, Microsoft Azure, OVH, Scaleway.</p>",
+                    "desc": "<p>L’inférence, c’est-à-dire le fait de pouvoir interroger les modèles, est prise en charge par le projet. Pour la plupart des modèles, nous passons par les API d’Open Router et de Hugging Face et nous réglons les coûts à l’usage, au jeton.</p>",
                     "title": "Comment parvenez-vous à rendre ce service gratuit ?"
                 },
                 "3": {
@@ -364,7 +364,7 @@
             "featuresDatasetsMore": "L’éditeur se réserve le droit de distribuer sous licence ouverte 2.0 les données de dialogue et de préférence de l’utilisateur. Le jeu de données est diffusé sur la plateforme Hugging Face à travers le compte du ministère de la culture (<a {linkProps}>https://huggingface.co/ministere-culture</a>).",
             "featuresDesc": "Afin de répondre au double objectif de sensibiliser les citoyens aux grands modèles de langage et collecter les préférences des utilisateurs et utilisatrices, les services rendus par la plateforme sans restriction d’accès sont les suivants :",
             "featuresDescMore": "Une interface humain-machine permettant de dialoguer simultanément avec deux modèles conversationnels et de voter pour la réponse préférée.",
-            "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents partenaires (Scaleway, OVH, Hugging Face, Google Cloud, Mistral Ai). Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
+            "featuresModels": "Les modèles intégrés à la plateforme sont déployés sur les serveurs d’inférence des différents hébergeurs et éditeurs de modèles. Les requêtes sont gérées notamment par le service Open Router. Les conditions de standardisation d’inférence sont renseignées sur la plateforme pour garantir la transparence d’utilisation des modèles.",
             "featuresModelsMore": "Une interface de comparaison des modèles.",
             "featuresTitle": "4. Fonctionnalités",
             "featuresVote": "À l’issue du parcours de vote, l’utilisateur peut consulter la liste des modèles intégrés au comparateur et accéder à une liste d’informations sur ces modèles. Les informations documentant les modèles sont sourcées.",
