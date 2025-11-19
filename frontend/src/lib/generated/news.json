@@ -53,7 +53,7 @@
     "desc": "Accédez au replay de la présentation de comparIA lors de la session de pitchs « 6 modèles ouverts pour mettre vraiment l'IA à son service »",
     "imgSrc": "nec-pitch.jpg",
     "date": "29/10/2025",
-    "href": "??"
+    "href": ""
   },
   {
     "kind": "media",
@@ -80,6 +80,7 @@
     "desc": "comparIA était au Parlement européen à Strasbourg pour le congrès de la chaire Orbicom qui réunit chercheur·es, expert·es, institutions et société civile pour réfléchir à la manière dont l’IA doit être intégrée dans l’éducation.",
     "imgSrc": "orbicom.jpg",
     "date": "30/09/2025",
+    "linkLabel": "Voir la publication",
     "href": "https://services-numeriques.unistra.fr/les-services-aux-usagers/centre-de-culture-numerique/rendez-vous/rendez-vous/article/congres-ciarei-en-distanciel-communication-intelligence-artificielle-remediation-ethique-et-i-1.html"
   },
   {
