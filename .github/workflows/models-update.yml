@@ -1,0 +1,76 @@
+name: Update Models
+
+on:
+  pull_request:
+    paths:
+      - 'utils/models/models.json'
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+    paths:
+      - 'utils/models/models.json'
+
+jobs:
+  update-models:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          # This is needed to allow the workflow to create a PR
+          ref: ${{ github.head_ref || github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: |
+          uv pip install -r requirements.txt
+        working-directory: .
+
+      - name: Run model builder
+        run: |
+          uv run python -m utils.models.build_models
+
+      - name: Create PR if changes on main
+        if: github.ref == 'refs/heads/main'
+        run: |
+          # Check if generated-models.json has changes
+          if git diff --quiet HEAD -- utils/models/generated-models.json; then
+            echo "No changes to generated-models.json, skipping PR creation"
+            exit 0
+          fi
+          
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Commit changes
+          git add utils/models/generated-models.json
+          git commit -m "Update generated models data"
+          
+          # Create a new branch
+          BRANCH_NAME="update-generated-models"
+          git branch "$BRANCH_NAME"
+          git switch "$BRANCH_NAME"
+          
+          # Push the branch
+          git push origin "$BRANCH_NAME"
+          
+          # Create PR using GitHub CLI
+          gh pr create \
+            --title "Update generated models data" \
+            --body "Automated PR created due to changes in models.json" \
+            --head "$BRANCH_NAME" \
+            --base "main" || true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
