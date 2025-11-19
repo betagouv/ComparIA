@@ -1078,7 +1078,7 @@
             "desc": "Udviklere, forskere, modeludgivere – få adgang til AI-Arenas datasæt for at forbedre modeller til sprog med begrænsede ressourcer.",
             "steps": {
                 "datasets": {
-                    "desc": "Alle spørgsmål og afstemninger samles i datasæt og offentliggøres efter anonymisering.",
+                    "desc": "Alle spørgsmål og stemmer samles i datasæt og offentliggøres efter anonymisering.",
                     "title": "Datasæt efter sprog"
                 },
                 "finetune": {
@@ -1193,7 +1193,7 @@
                 "ram": "RAM (random access memory) gemmer data, der behandles af en LLM i realtid. Jo større modellen er, jo mere RAM kræver den for at køre."
             }
         },
-        "parameters": "{number} parametre",
+        "parameters": "{number} mia. parametre",
         "ram": "{min} til {max} GB",
         "release": "Udgivet {date}",
         "size": {
@@ -1349,7 +1349,7 @@
     },
     "ranking": {
         "energy": {
-            "desc": "Udforsk grafen, der sætter en models tilfredshedsscore (y-aksen) i perspektiv med dens energiforbrug (x-aksen).",
+            "desc": "Denne graf viser for hver model sammenhængen mellem tilfredshedsscore (Bradley Terry-score) og det estimerede gennemsnitlige energiforbrug pr. 1000 tokens. Energiforbruget estimeres ved hjælp af <a {linkProps}>Ecologits</a>-metodologien, som tager højde for to faktorer: modellernes <strong>størrelse</strong> (antal parametre) og deres <strong>arkitektur</strong>. Da <strong>proprietære modeller</strong> ikke offentliggør disse oplysninger - eller kun gør det delvist - er de ikke medtaget i grafen nedenfor.",
             "tabLabel": "Energi fokus",
             "title": "Er de mest populære modeller energieffektive?",
             "views": {
@@ -1372,6 +1372,33 @@
                     "xLabel": "Forbrug pr. 1000 tokens (Wh)",
                     "yLabel": "Bradley-Terry Score (BT)"
                 },
+                "methodo": {
+                    "1": {
+                        "list": {
+                            "1": "<strong>Jo højere oppe i grafen en model er placeret</strong>, desto højere er dens Bradley-Terry-tilfredshedsscore. <strong>Jo længere til venstre i grafen en model er placeret</strong>, desto mindre energi forbruger den i forhold til de andre modeller.",
+                            "2": "<strong>Øverst til venstre</strong> finder man de modeller, som er populære og forbruger relativt lidt energi sammenlignet med de andre modeller.",
+                            "3": "Ud over størrelsen har <strong>arkitekturen</strong> også indflydelse på modellernes gennemsnitlige energiforbrug: for eksempel forbruger Llama 3 405B-modellen (tæt arkitektur, 405 milliarder parametre) i gennemsnit 10 gange mere energi end GLM 4.5-modellen (MOE-arkitektur, 355 milliarder parametre og 32 milliarder aktive parametre), selv om de har en lignende størrelse."
+                        },
+                        "subTitle": "Eksempler på læsning af grafen",
+                        "title": "Hvordan finder man den rette balance mellem opfattet performance og energieffektivitet?"
+                    },
+                    "2": {
+                        "descs": {
+                            "1": "Estimeringen af energiforbruget ved inferens af modellerne bygger på Ecologits metode, som tager højde for modellernes størrelse og arkitektur. Disse oplysninger offentliggøres imidlertid ikke af modeludviklerne for såkaldte \"proprietære\" modeller.",
+                            "2": "Vi har derfor valgt ikke at medtage de proprietære modeller i grafen, så længe oplysningerne om energiforbrugsberegningen ikke er gennemsigtige."
+                        },
+                        "title": "Hvorfor vises de proprietære modeller ikke i grafen?"
+                    },
+                    "3": {
+                        "descs": {
+                            "1": "compar:IA bruger metodologien udviklet af <a {ecoLinkProps}><strong>Ecologits</strong></a> (<a {genaiLinkProps}><strong>GenAI Impact</strong></a>) til at give et estimat af energiforbruget forbundet med inferens af konversationelle generative AI-modeller. Dette estimat gør det muligt for brugerne at sammenligne forskellige AI-modellers miljøpåvirkning for den samme forespørgsel. Denne gennemsigtighed er afgørende for at fremme udviklingen og anvendelsen af mere miljøansvarlige AI-modeller.",
+                            "2": "Ecologits anvender principperne for livscyklusanalyse (LCA) i overensstemmelse med ISO 14044-standarden ved i første omgang at fokusere på påvirkningen fra inferens (dvs. brugen af modeller til at besvare forespørgsler) og <strong>fremstillingen af grafikkort</strong> (udvinding af ressourcer, produktion og transport).",
+                            "3": "Modellens elektricitetsforbrug estimeres under hensyntagen til forskellige parametre såsom størrelsen og arkitekturen af den anvendte AI-model, placeringen af de servere, hvor modellerne er implementeret, samt antallet af output-tokens. Beregningen af indikatoren for global opvarmningspotentiale udtrykt i CO2-ækvivalenter udledes af målingen af modellens elektricitetsforbrug.",
+                            "4": "Det er vigtigt at bemærke, at metoderne til vurdering af AI's miljøpåvirkning stadig er under udvikling."
+                        },
+                        "title": "Hvordan beregnes modellernes energipåvirkning?"
+                    }
+                },
                 "table": {
                     "title": "Grafdata i tabelform"
                 }
@@ -1380,7 +1407,7 @@
         "methodo": {
             "desc": {
                 "1": "Siden 2024 har tusindvis af brugere brugt compar:IA til at sammenligne forskellige modellers svar, hvilket har genereret hundredtusindvis af stemmer. At tælle antallet af sejre er ikke nok til at etablere en rangordning. Et retfærdigt system skal være statistisk robust, justere sig efter hver sammenligning og reelt afspejle værdien af de opnåede præstationer.",
-                "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (PEReN)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {linkProps}>metodologiske notesbog</a>."
+                "2": "Det er i dette perspektiv, at der er blevet etableret en <strong>rangordning baseret på Bradley-Terry-modellen</strong>, udarbejdet i samarbejde med <strong>teamet fra Pôle d'Expertise de la Régulation numérique (<a {perenLinkProps}>PEReN</a>)</strong>, ud fra alle de stemmer og reaktioner, der er indsamlet på platformen. For at gå videre, se vores <a {notebookLinkProps}>metodologiske notesbog</a>."
             },
             "impacts": {
                 "elo": {
@@ -1564,6 +1591,7 @@
                 "question": "Hvorfor kunne du ikke lide svaret?",
                 "superficial": "Overfladisk"
             },
+            "other": "Andet…",
             "positive": {
                 "clear-formatting": "Klar formattering",
                 "complete": "Fuldstændigt",
