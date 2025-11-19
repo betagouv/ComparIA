@@ -180,7 +180,7 @@ def main() -> None:
         dumped_archs = validate_archs(raw_archs)
     except Exception as err:
         log.error(str(err))
-        return
+        sys.exit(1)
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
@@ -205,7 +205,7 @@ def main() -> None:
         dumped_orgas = validate_orgas_and_models(raw_orgas, context=context)
     except Exception as err:
         log.error(str(err))
-        return
+        sys.exit(1)
 
     # Then use the full Orgas builder
     # Any errors comming from here are code generation errors, not errors in 'models.json'
