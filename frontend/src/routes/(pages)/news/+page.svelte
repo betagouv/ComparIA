@@ -52,7 +52,13 @@
     }
   } as const
 
-  const news = data as News[]
+  const news = (data as News[]).map((n) => {
+    const [day, month, year] = n.date.split('/')
+    return {
+      ...n,
+      date: n.date === 'year' ? null : new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
+    }
+  })
 
   const filters = NEWS_KINDS.map((k) => ({
     id: k,
@@ -79,11 +85,29 @@
   const allFilters = $derived(Object.values(kinds).flat())
   const filterCount = $derived(allFilters.reduce((acc, f) => acc + (f.length ? 1 : 0), 0))
   const filteredNews = $derived.by(() => {
-    return news.filter((n) => {
-      if (allFilters.length === 0) return true
+    return news
+      .filter((n) => {
+        if (allFilters.length === 0) return true
 
-      return allFilters.some((k) => n.subKind === k)
-    })
+        return allFilters.some((k) => n.subKind === k)
+      })
+      .sort((a, b) => {
+        switch (sortingMethod) {
+          case 'kind-asc':
+            return SUBKINDS[a.kind].title.localeCompare(SUBKINDS[b.kind].title)
+          default:
+            if (!a.date) return -1
+            if (!b.date) return 1
+            // @ts-ignore
+            return b.date - a.date
+        }
+      })
+      .sort((a, b) => {
+        if (a.pinned && b.pinned) return 0
+        if (a.pinned) return -1
+        if (b.pinned) return 1
+        return 0
+      })
   })
 
   function resetFilters(e: MouseEvent) {
@@ -217,7 +241,7 @@
                         <Badge
                           id="card-badge-kind"
                           size="xs"
-                          text={news.date === 'year' ? "Toute l'année" : news.date}
+                          text={!news.date ? "Toute l'année" : news.date.toLocaleDateString()}
                           noTooltip
                           class="me-0!"
                         />
