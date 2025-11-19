@@ -70,6 +70,10 @@ i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
 	@echo "Generating frontend prompt suggestions..."
 	$(UV) run python -m utils.suggestions.build_suggestions
 
+i18n-build-news: ## generate news files
+	@echo "Generating news files..."
+	$(UV) run python -m utils.news.build_news
+
 # Database utilities
 db-schema-init: ## Initialize database schema
 	@echo "Initializing database schema..."
