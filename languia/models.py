@@ -316,7 +316,7 @@ class ConversationMessage(BaseModel):
 ConversationMessages = RootModel[list[ConversationMessage]]
 
 
-class Conversation(BaseModel):
+class ConversationPair(BaseModel):
     id: int
     # TODO: fuseau horaire
     timestamp: datetime.datetime = Field(default_factory=datetime.datetime.now)
@@ -349,3 +349,4 @@ class Conversation(BaseModel):
     total_conv_b_output_tokens: int | None = None
     ip_map: str | None = None
     postprocess_failed: bool = False
+    country_portal: str | None
