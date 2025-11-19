@@ -1651,5 +1651,29 @@
         }
       }
     ]
+  },
+  {
+    "name": "IBM",
+    "icon_path": "ibm.png",
+    "models": [
+      {
+        "simple_name": "Granite 4.0-H-Small",
+        "license": "Apache 2.0",
+        "id": "granite-4.0-h-small",
+        "release_date": "10/2025",
+        "params": 32,
+        "active_params": 9,
+        "arch": "moe",
+        "url": "https://www.ibm.com/fr-fr/new/announcements/ibm-granite-4-0-hyper-efficient-high-performance-hybrid-models",
+        "desc": "Modèle hybride Mamba-2 et Transformer, conçu pour un usage en entreprise et optimisé pour les besoins professionnels.",
+        "size_desc": "Grâce à son architecture mêlant Mamba-2 et Transformers, le modèle utilise beaucoup moins de mémoire et fonctionne plus vite sur les tâches avec long contexte ou en lots. On observe une réduction de mémoire de plus de 70 pour cent et une vitesse d’inférence pouvant aller jusqu’à deux fois celle de modèles de taille comparable basés uniquement sur des Transformers. Il peut gérer jusqu’à 128k jetons de contexte, ce qui le rend adapté à l’analyse de longs documents.",
+        "fyi": "Granite 4 remplace presque toutes les couches Transformer par des couches Mamba-2, un type de modèle dit à états spatiaux. Il utilise neuf couches Mamba pour une couche Transformer. Les couches Mamba gèrent l’augmentation de la longueur de contexte de façon linéaire, alors que les Transformers classiques ont un coût de calcul qui augmente beaucoup plus vite (on parle de blocage quadratique, car le temps et la mémoire nécessaires explosent quand le texte devient long). Avec Mamba, cette limite est largement réduite, ce qui rend le modèle plus efficace pour traiter de grandes quantités de texte.",
+        "new": true,
+        "endpoint": {
+          "api_type": "Replicate",
+          "api_model_id": "ibm-granite/granite-4.0-h-small"
+        }
+      }
+    ]
   }
 ]
