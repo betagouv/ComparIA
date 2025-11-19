@@ -1278,7 +1278,7 @@
       "required_ram": 750,
       "reuse": false,
       "simple_name": "Gemini 3 Pro",
-      "status": "enabled",
+      "status": "disabled",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
       "wh_per_million_token": 53761.899999999994
     },
