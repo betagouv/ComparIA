@@ -33,7 +33,7 @@ jobs:
           python -m venv .venv
           source .venv/bin/activate
           pip install --upgrade pip
-          pip install markdown rich requests pydantic
+          pip install markdown rich requests pydantic numpy
 
       - name: Run model builder
         run: |
