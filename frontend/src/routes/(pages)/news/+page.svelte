@@ -77,7 +77,7 @@
       value: k.id,
       label: k.label,
       count: news.filter((n) => n.subKind === k.id).length
-    }))
+    })).filter((opt) => opt.count > 0)
   }))
 
   const sortingOptions = [
