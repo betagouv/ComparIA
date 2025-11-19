@@ -161,7 +161,8 @@ def save_vote_to_db(data):
             conv_superficial_b, 
             conv_instructions_not_followed_b, 
             conv_comments_a, 
-            conv_comments_b
+            conv_comments_b,
+            country_portal
         )
         VALUES (
             %(timestamp)s, 
@@ -197,13 +198,23 @@ def save_vote_to_db(data):
             %(conv_superficial_b)s, 
             %(conv_instructions_not_followed_b)s, 
             %(conv_comments_a)s, 
-            %(conv_comments_b)s
+            %(conv_comments_b)s,
+            %(country_portal)s
         )
     """
         )
 
         cursor.execute(insert_statement, data)
         conn.commit()
+        
+        if data.get("country_portal") == "da":
+            from languia.session import r
+            if r:
+                try:
+                    r.incr("danish_count")
+                except Exception as e:
+                    logger.error(f"Error incrementing danish count in Redis: {e}")
+
     except Exception as e:
         logger.error(f"Error saving vote to db: {e}")
     finally:
@@ -280,6 +291,7 @@ def vote_last_response(
         in details["prefs_b"],
         "conv_comments_a": details["comments_a"],
         "conv_comments_b": details["comments_b"],
+        "country_portal": request.query_params.get("country_portal") or request.query_params.get("locale"),
     }
     vote_string = chosen_model_name or "both_equal"
     vote_log_filename = f"vote-{t.year}-{t.month:02d}-{t.day:02d}-{t.hour:02d}-{t.minute:02d}-{request.session_hash}.json"
@@ -444,6 +456,15 @@ def upsert_reaction_to_db(data, request):
         cursor.execute(query, data)
         conn.commit()
         logger.info("Reaction data successfully saved to DB.")
+
+        country_portal = request.query_params.get("country_portal") or request.query_params.get("locale")
+        if country_portal == "da":
+            from languia.session import r
+            if r:
+                try:
+                    r.incr("danish_count")
+                except Exception as e:
+                    logger.error(f"Error incrementing danish count in Redis: {e}")
 
     except Exception as e:
         logger.error(f"Error saving reaction to DB: {e}")
@@ -690,8 +711,8 @@ def upsert_conv_to_db(data):
                 custom_models_selection,
                 total_conv_a_output_tokens,
                 total_conv_b_output_tokens,
-                country_portal
-                
+                country_portal,
+                cohorts
                                         )
             VALUES (
                 %(model_a_name)s,
@@ -715,7 +736,8 @@ def upsert_conv_to_db(data):
                 %(custom_models_selection)s,
                 %(total_conv_a_output_tokens)s,
                 %(total_conv_b_output_tokens)s,
-                %(country_portal)s
+                %(country_portal)s,
+                %(cohorts)s
             )
             ON CONFLICT (conversation_pair_id)
             DO UPDATE SET
@@ -724,7 +746,9 @@ def upsert_conv_to_db(data):
                 conversation_b = EXCLUDED.conversation_b,
                 conv_turns = EXCLUDED.conv_turns,
                 total_conv_a_output_tokens = EXCLUDED.total_conv_a_output_tokens,
-                total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens
+                total_conv_b_output_tokens = EXCLUDED.total_conv_b_output_tokens,
+                country_portal = EXCLUDED.country_portal,
+                cohorts = EXCLUDED.cohorts
                 """
         )
 
@@ -806,7 +830,12 @@ def record_conversations(
         "custom_models_selection": json.dumps(custom_models_selection),
         "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
         "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
+<<<<<<< HEAD
         "country_portal": locale,
+=======
+        "country_portal": request.query_params.get("locale"),
+        "cohorts": "pix_donottrack" if request.query_params.get("c") == "pix" else None,
+>>>>>>> adffd54a (feat: implement cohort handling with pix_donottrack support)
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
