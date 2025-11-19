@@ -12,7 +12,7 @@
     title: string
     desc: string
     imgSrc: string
-    date: string
+    date?: number
     linkLabel?: string
     href: string
     pinned?: boolean
@@ -60,17 +60,14 @@
     }
   }
 
-  const news = (data as News[]).map((n) => {
-    const [day, month, year] = n.date.split('/')
-    return {
-      ...n,
-      linkLabel:
-        n.linkLabel ??
-        SUBKINDS[n.kind].subKinds.find((sk) => sk.id === n.subKind)?.linkLabel ??
-        'Découvrir',
-      date: n.date === 'year' ? null : new Date(parseInt(year), parseInt(month) - 1, parseInt(day))
-    }
-  })
+  const news = (data as News[]).map((n) => ({
+    ...n,
+    linkLabel:
+      n.linkLabel ??
+      SUBKINDS[n.kind].subKinds.find((sk) => sk.id === n.subKind)?.linkLabel ??
+      'Découvrir',
+    date: n.date ? new Date(n.date * 1000) : null
+  }))
 
   const filters = NEWS_KINDS.map((k) => ({
     id: k,
