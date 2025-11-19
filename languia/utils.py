@@ -386,6 +386,64 @@ AS total_approx;
     except Exception as e:
         logger.error(f"Error getting vote numbers from db: {e}")
     finally:
+        if conn:
+            conn.close()
+
+
+def get_danish_count():
+    import psycopg2
+    from psycopg2 import sql
+    from languia.config import db as dsn
+    from languia.session import r
+
+    # Try Redis first
+    if r:
+        try:
+            count = r.get("danish_count")
+            if count is not None:
+                return int(count)
+        except Exception as e:
+            logger.error(f"Error getting danish count from Redis: {e}")
+
+    # Fallback to Postgres
+    logger = logging.getLogger("languia")
+    if not dsn:
+        logger.warning("Cannot log to db: no db configured")
+        return 0
+
+    conn = None
+    cursor = None
+    result = 0
+    try:
+        conn = psycopg2.connect(dsn)
+        cursor = conn.cursor()
+        # Count votes and reactions linked to conversations with country_portal='da'
+        query = sql.SQL("""
+            SELECT 
+                (SELECT COUNT(*) FROM votes v 
+                 JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id 
+                 WHERE c.country_portal = 'da') +
+                (SELECT COUNT(*) FROM reactions r 
+                 JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id 
+                 WHERE c.country_portal = 'da')
+            as total;
+        """)
+        cursor.execute(query)
+        res = cursor.fetchone()
+        result = res[0] if res and res[0] is not None else 0
+
+        # Update Redis
+        if r:
+            try:
+                r.set("danish_count", result)
+            except Exception as e:
+                logger.error(f"Error setting danish count in Redis: {e}")
+
+        return result
+    except Exception as e:
+        logger.error(f"Error getting danish count from db: {e}")
+        return 0
+    finally:
         if cursor:
             cursor.close()
         if conn:
