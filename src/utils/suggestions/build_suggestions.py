@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from pydantic import BaseModel, RootModel
 
-from utils.models.utils import read_json, write_json
+from utils.models.model_utils import read_json, write_json
 
 
 CURRENT_FOLDER = Path(__file__).parent

@@ -8,7 +8,7 @@ from utils.models.build_models import (
     validate_orgas_and_models,
     log,
 )
-from utils.models.utils import read_json, write_json
+from utils.models.model_utils import read_json, write_json
 
 
 def clean_models():

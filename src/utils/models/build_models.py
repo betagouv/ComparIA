@@ -8,7 +8,7 @@ from rich.logging import RichHandler
 from typing import Any
 
 from languia.models import ROOT_PATH, Archs, Licenses, Orgas, RawOrgas
-from utils.models.utils import Obj, read_json, write_json, sort_dict
+from utils.models.model_utils import Obj, read_json, write_json, sort_dict
 
 logging.basicConfig(
     level="NOTSET", format="%(message)s", datefmt="|", handlers=[RichHandler()]
@@ -184,6 +184,9 @@ def main() -> None:
 
     # Filter out some models based on attr `status`
     for orga in raw_orgas:
+        if "models" not in orga:
+            log.error(f"Item in models.json missing 'models' key: {orga.get('name', 'Unknown')}")
+            continue
         filtered_models = []
         for model in orga["models"]:
             if model.get("status", None) == "missing_data":
@@ -258,14 +261,15 @@ def main() -> None:
 
             generated_models[model.id] = model.model_dump(exclude=I18N_MODEL_KEYS)
 
+    REPO_ROOT = CURRENT_FOLDER.parent.parent
     # Integrate translatable content to frontend locales
-    log.info(f"Saving '{I18N_PATH.relative_to(ROOT_PATH)}'...")
+    log.info(f"Saving '{I18N_PATH.relative_to(REPO_ROOT)}'...")
     frontend_i18n = read_json(I18N_PATH)
     frontend_i18n["generated"] = sort_dict(i18n)
     write_json(I18N_PATH, frontend_i18n, indent=4)
 
     # Save generated models
-    log.info(f"Saving '{GENERATED_MODELS_PATH.relative_to(ROOT_PATH)}'...")
+    log.info(f"Saving '{GENERATED_MODELS_PATH.relative_to(REPO_ROOT)}'...")
     write_json(
         GENERATED_MODELS_PATH,
         {
