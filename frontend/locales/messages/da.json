@@ -265,7 +265,7 @@
             "sources": "Kildekode",
             "tos": "Brugsbetingelser"
         },
-        "writeUs": "Hvis du støder på et problem eller har feedback til AI-Arenaen, er du velkommen til at skrive til os på contact@aiarenaen.dk."
+        "writeUs": "Hvis du støder på et problem eller har feedback til AI-Arenaen, er du velkommen til at skrive til os på kontakt@ai-arenaen.dk."
     },
     "general": {
         "a11y": {
@@ -1134,7 +1134,7 @@
             "type": {
                 "openSource": "Open source",
                 "proprietary": "Ophavsretligt beskyttet",
-                "semiOpen": "Halvåben"
+                "semiOpen": "Open-weight"
             }
         },
         "list": {
