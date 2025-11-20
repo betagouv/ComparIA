@@ -194,3 +194,10 @@ For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_meth
 ### Evolution
 
 We want to get rid of that Gradio code by transforming it into async FastAPI code and Redis session handling.
+
+<div align="center">
+
+<br />
+<a href="https://digitalpublicgoods.net/r/comparia" target="_blank" rel="noopener noreferrer"><img src="https://github.com/DPGAlliance/dpg-resources/blob/main/docs/assets/dpg-badge.png?raw=true" width="100" alt="Digital Public Goods Badge"></a>
+
+</div>
