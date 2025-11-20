@@ -198,6 +198,6 @@ We want to get rid of that Gradio code by transforming it into async FastAPI cod
 <div align="center">
 
 <br />
-<a href="https://digitalpublicgoods.net/r/dpg-slug" target="_blank" rel="noopener noreferrer"><img src="https://github.com/DPGAlliance/dpg-resources/blob/main/docs/assets/dpg-badge.png?raw=true" width="100" alt="Digital Public Goods Badge"></a>
+<a href="https://digitalpublicgoods.net/r/comparia" target="_blank" rel="noopener noreferrer"><img src="https://github.com/DPGAlliance/dpg-resources/blob/main/docs/assets/dpg-badge.png?raw=true" width="100" alt="Digital Public Goods Badge"></a>
 
 </div>
