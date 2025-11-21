@@ -129,23 +129,22 @@
     "icon_path": "deepseek.png",
     "models": [
       {
-        "new": true,
-        "id": "deepseek-chat-v3.1",
         "simple_name": "DeepSeek v3.1",
         "license": "MIT",
+        "id": "deepseek-chat-v3.1",
         "release_date": "08/2025",
-        "arch": "moe",
         "params": 685,
         "active_params": 37,
-        "reasoning": true,
+        "arch": "moe",
         "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.1",
+        "desc": "Très grand modèle conçu pour des tâches complexes : génération de code, analyse de documents longs. Cette version est particulièrement forte en  utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.",
+        "size_desc": "DeepSeek V3.1 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.\n\nLa fenêtre de contexte atteint désormais 163 000 jetons, contre 128 000 dans la version précédente, ce qui améliore l’analyse de très longs documents.",
+        "fyi": "Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code. L’entraînement a recours au FP8 microscaling, ce qui réduit les coûts de calcul et de mémoire tout en maintenant la précision. Le modèle a été formé en deux phases : d’abord sur des séquences de 32 000 jetons, puis étendu à 163 000 jetons, permettant une meilleure stabilité et une performance accrue sur les contextes très longs.",
+        "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "deepseek/deepseek-chat-v3.1"
-        },
-        "desc": "Très grand modèle conçu pour des tâches complexes : génération de code, analyse de documents longs. Cette version est particulièrement forte en  utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.",
-        "size_desc": "DeepSeek V3.1 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille.\n\nLa fenêtre de contexte atteint désormais 163 000 jetons, contre 128 000 dans la version précédente, ce qui améliore l’analyse de très longs documents.",
-        "fyi": "Ce modèle est basé sur une architecture de mélange d’experts (MoE, Mixture of Experts), comptant 671 milliards de paramètres mais n’en activant que 37 milliards par jeton généré. Il est efficace pour les appels d’outils, la génération de sorties structurées (JSON) et la génération de code. L’entraînement a recours au FP8 microscaling, ce qui réduit les coûts de calcul et de mémoire tout en maintenant la précision. Le modèle a été formé en deux phases : d’abord sur des séquences de 32 000 jetons, puis étendu à 163 000 jetons, permettant une meilleure stabilité et une performance accrue sur les contextes très longs."
+        }
       },
       {
         "id": "deepseek-r1-0528",
@@ -339,22 +338,21 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via X et xAI, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
-        "id": "grok-4-fast",
         "simple_name": "Grok 4 Fast",
         "license": "proprietary",
+        "id": "grok-4-fast",
         "release_date": "09/2025",
-        "arch": "maybe-moe",
         "params": 1700,
         "active_params": 121,
+        "arch": "maybe-moe",
         "url": "https://x.ai/news/grok-4-fast",
+        "desc": "Grok 4 Fast est un modèle axé sur l'équilibre entre performance, vitesse et coût, notamment pour des tâches de recherche d'information et d'autres actions \"agentiques\".",
+        "size_desc": "Doté d’une fenêtre de contexte de 2 millions de jetons, Grok 4 Fast combine un mode raisonnement et un mode réponse directe dans un même modèle. Il utilise environ 40 % de jetons de raisonnement en moins que Grok 4, permettant une réduction sensible du coût d’exécution et de latence.",
+        "fyi": "La taille exacte du modèle n’est pas connue. Malgré son nom, Grok 4 Fast est sans doute un très grand modèle, nécessitant plusieurs cartes graphiques puissantes pour fonctionner. De plus, il contient une phase de raisonnement facultative qui implique une génération plus longue et donc une consommation énergétique plus élevée. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nEntraîné par renforcement, Grok 4 Fast atteint des scores proches du très grand modèle - Grok 4 tout en restant plus économe. Il a été entraîné pour être performant sur la navigation web et spécifiquement de la plateforme X, ainsi que des capacités d’appel d’outils et de l’exécution de code.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "x-ai/grok-4-fast"
-        },
-        "desc": "Grok 4 Fast est un modèle axé sur l'équilibre entre performance, vitesse et coût, notamment pour des tâches de recherche d'information et d'autres actions \"agentiques\".",
-        "size_desc": "Doté d’une fenêtre de contexte de 2 millions de jetons, Grok 4 Fast combine un mode raisonnement et un mode réponse directe dans un même modèle. Il utilise environ 40 % de jetons de raisonnement en moins que Grok 4, permettant une réduction sensible du coût d’exécution et de latence.",
-        "fyi": "La taille exacte du modèle n’est pas connue. Malgré son nom, Grok 4 Fast est sans doute un très grand modèle, nécessitant plusieurs cartes graphiques puissantes pour fonctionner. De plus, il contient une phase de raisonnement facultative qui implique une génération plus longue et donc une consommation énergétique plus élevée. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nEntraîné par renforcement, Grok 4 Fast atteint des scores proches du très grand modèle - Grok 4 tout en restant plus économe. Il a été entraîné pour être performant sur la navigation web et spécifiquement de la plateforme X, ainsi que des capacités d’appel d’outils et de l’exécution de code."
+        }
       },
       {
         "status": "archived",
@@ -444,38 +442,55 @@
     "proprietary_reuse_specificities": "sauf pour entraîner d’autres modèles sur Vertex AI",
     "models": [
       {
+        "simple_name": "Gemini 3 Pro",
+        "license": "proprietary",
+        "id": "gemini-3-pro-preview",
+        "release_date": "11/2025",
+        "params": 750,
+        "status":"disabled",
+        "active_params": 45,
+        "arch": "moe",
+        "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
+        "desc": "Grand modèle multimodal natif et multilingue. Il intègre une capacité de raisonnement avancée (\"Deep Think\") activable à la demande pour les tâches complexes (mathématiques, logique, codage), distincte de sa capacité de génération standard plus rapide. Le modèle prend en charge nativement le texte, le code, l'audio, l'image, la vidéo et la 3D.",
+        "size_desc": "La taille exacte du modèle n'est pas communiquée, mais il repose sur une architecture de type mélange d'experts (MoE). Cette architecture active uniquement un sous-ensemble de paramètres pour chaque jeton d'entrée, ce qui nécessite moins de puissance de calcul pour générer. Sa fenêtre de contexte s'étend jusqu'à 1 million de jetons, adaptée à l'analyse de vastes ensembles de documents, y compris des dépôts de code entiers et des fichiers vidéo.",
+        "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio.",
         "new": true,
-        "id": "gemini-2.5-flash",
+        "endpoint": {
+          "api_type": "vertex_ai",
+          "api_model_id": "google/gemini-3-pro-preview"
+        }
+      },
+      {
         "simple_name": "Gemini 2.5 Flash",
         "license": "proprietary",
+        "id": "gemini-2.5-flash",
         "release_date": "06/2025",
-        "arch": "moe",
         "params": 440,
         "active_params": 137,
+        "arch": "moe",
+        "desc": "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.",
+        "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale.",
         "endpoint": {
           "api_type": "vertex_ai",
           "api_model_id": "gemini-2.5-flash"
-        },
-        "desc": "Grand modèle multimodal et multilingue avec deux modalités de réponses: l’utilisateur peut choisir entre un mode de raisonnement, pour des réponses plus approfondies, ou un mode rapide, pour générer directement à la réponse finale.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant plusieurs cartes graphiques puissantes pour le fonctionnement. Néanmoins, l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Sa fenêtre de contexte va jusqu’à 1 millions de jetons, ce qui permet de traiter de très grands corpus documentaires.",
-        "fyi": "Ce modèle repose sur une architecture de mélange d’experts (MoE, Mixture of Experts) et a été distillé en ne conservant qu'une approximation des prédictions du modèle enseignant - Gemini 2.5 Pro. Il a été entraîné sur une architecture TPUv5p intégrant des avancées comme la possibilité de poursuivre l'entraînement automatiquement même en cas d’erreurs d’entraînement, de corruption de données ou de problèmes de mémoire.\n\nGemini 2.5 Flash gère des contextes allant jusqu'à 1 million de jetons, et trois heures de contenu vidéo. L'optimisation du traitement de la vision permet de traiter des vidéos environ trois fois plus longues dans la même fenêtre de contexte: seuls 66 jetons visuels sont nécessaires pour générer une image contre 258 auparavant. Ce modèle permet  également la génération audio native pour les dialogues et la synthèse vocale."
+        }
       },
       {
-        "new": true,
-        "id": "gemma-3n-e4b-it",
         "simple_name": "Gemma 3n 4B",
         "license": "Gemma",
+        "id": "gemma-3n-e4b-it",
         "release_date": "05/2025",
-        "arch": "matformer",
         "params": 8,
         "active_params": 4,
+        "arch": "matformer",
+        "desc": "Très petit modèle multimodal et compact conçu pour fonctionner localement sur un ordinateur ou un smartphone, sans recours à un serveur - il est capable d’adapter sa puissance selon la capacité de la capacité et le besoin.",
+        "size_desc": "Avec 4 milliards de paramètres, il fait partie des modèles de très petite taille. Il peut être utilisé localement sur un ordinateur ou un smartphone pour préserver la confidentialité des données, ou sur serveur pour limiter les coûts par rapport à un modèle plus grand.\n\nSa fenêtre de contexte va jusqu’à 32 000 jetons.",
+        "fyi": "Ce modèle peut traiter du texte, des images et de l’audio. Il repose sur l’architecture MatFormer et un système de cache PLE (per-layer embeddings), qui active uniquement les paramètres utiles selon la tâche, s'adaptant à la capacité des machines sur lesquelles fonctionne le modèle.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "google/gemma-3n-e4b-it"
-        },
-        "desc": "Très petit modèle multimodal et compact conçu pour fonctionner localement sur un ordinateur ou un smartphone, sans recours à un serveur - il est capable d’adapter sa puissance selon la capacité de la capacité et le besoin.",
-        "size_desc": "Avec 4 milliards de paramètres, il fait partie des modèles de très petite taille. Il peut être utilisé localement sur un ordinateur ou un smartphone pour préserver la confidentialité des données, ou sur serveur pour limiter les coûts par rapport à un modèle plus grand.\n\nSa fenêtre de contexte va jusqu’à 32 000 jetons.",
-        "fyi": "Ce modèle peut traiter du texte, des images et de l’audio. Il repose sur l’architecture MatFormer et un système de cache PLE (per-layer embeddings), qui active uniquement les paramètres utiles selon la tâche, s'adaptant à la capacité des machines sur lesquelles fonctionne le modèle."
+        }
       },
       {
         "id": "gemma-3-4b",
@@ -613,75 +628,71 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Alibaba, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
-        "id": "qwen3-max-2025-09-23",
         "simple_name": "Qwen 3 Max",
         "license": "proprietary",
+        "id": "qwen3-max-2025-09-23",
         "release_date": "09/2025",
-        "arch": "moe",
         "params": 1000,
         "active_params": 32,
+        "arch": "moe",
         "url": "https://qwen.ai/blog?id=241398b9cd6353de490b0f82806c7848c5d2777d&from=research.latest-advancements-list",
+        "desc": "Parmi les rares modèles propriétaires de Qwen, celui-ci est le plus grand et le plus puissant de la troisième génération. Il a été entraîné avec une attention particulière à l’usage en entreprise et aux cas d’utilisation agentiques.",
+        "size_desc": "La taille exacte n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Le modèle dispose d’une fenêtre de contexte allant jusqu’à 256 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
+        "fyi": "Ce modèle a été entraîné sur 36 billions de jetons, soit presque le double de Qwen 2.5, et il est officiellement capable de répondre dans 100 langues.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "qwen/qwen3-max"
-        },
-        "desc": "Parmi les rares modèles propriétaires de Qwen, celui-ci est le plus grand et le plus puissant de la troisième génération. Il a été entraîné avec une attention particulière à l’usage en entreprise et aux cas d’utilisation agentiques.",
-        "size_desc": "La taille exacte n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de très grande taille, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse. Le modèle dispose d’une fenêtre de contexte allant jusqu’à 256 000 jetons, adaptée à l’analyse de longs documents ou de dépôts de code.",
-        "fyi": "Ce modèle a été entraîné sur 36 billions de jetons, soit presque le double de Qwen 2.5, et il est officiellement capable de répondre dans 100 langues."
+        }
       },
       {
-        "new": true,
-        "id": "Qwen3-Coder-480B-A35B-Instruct",
         "simple_name": "Qwen3 Coder 480B A35B",
         "license": "Apache 2.0",
+        "id": "Qwen3-Coder-480B-A35B-Instruct",
         "release_date": "07/2025",
-        "arch": "moe",
         "params": 480,
         "active_params": 35,
-        "reasoning": true,
+        "arch": "moe",
         "url": "https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct",
+        "desc": "Très grand modèle spécialisé dans la génération de code, analyse de dépôts entiers et résolution de problèmes multi-étapes. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.",
+        "size_desc": "Qwen3-Coder-480B-A35B-Instruct est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une fraction des paramètres (35 B sur 480 B), ce qui réduit considérablement l'impact environnemental et le coût par rapport à un modèle dense équivalent.\nLa fenêtre de contexte atteint nativement 256 000 jetons et peut être étendue jusqu’à 1 million grâce à des techniques d’extrapolation (YaRN), ce qui est idéal pour l’analyse de bases de code volumineuses.",
+        "fyi": "Ce modèle a été pré-entraîné sur 7,5 trillions de jetons (dont 70 % de code), et utilise un processus de post-entraînement avancée - Code RL (Hard to Solve, Easy to Verify) pour renforcer l’exécution correcte du code et Agent RL (long-horizon reinforcement learning) pour optimiser la résolution de tâches logicielles multi-tours, avec un environnement massivement parallèle (20 000 simulations en parallèle sur Alibaba Cloud).",
+        "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "qwen/qwen3-coder"
-        },
-        "desc": "Très grand modèle spécialisé dans la génération de code, analyse de dépôts entiers et résolution de problèmes multi-étapes. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale. ",
-        "size_desc": "Qwen3-Coder-480B-A35B-Instruct est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une fraction des paramètres (35 B sur 480 B), ce qui réduit considérablement l'impact environnemental et le coût par rapport à un modèle dense équivalent.\nLa fenêtre de contexte atteint nativement 256 000 jetons et peut être étendue jusqu’à 1 million grâce à des techniques d’extrapolation (YaRN), ce qui est idéal pour l’analyse de bases de code volumineuses.",
-        "fyi": "Ce modèle a été pré-entraîné sur 7,5 trillions de jetons (dont 70 % de code), et utilise un processus de post-entraînement avancée - Code RL (Hard to Solve, Easy to Verify) pour renforcer l’exécution correcte du code et Agent RL (long-horizon reinforcement learning) pour optimiser la résolution de tâches logicielles multi-tours, avec un environnement massivement parallèle (20 000 simulations en parallèle sur Alibaba Cloud)."
+        }
       },
       {
-        "new": true,
-        "id": "qwen-3-8b",
         "simple_name": "Qwen 3 8B",
         "license": "Apache 2.0",
+        "id": "qwen-3-8b",
         "release_date": "07/2025",
-        "arch": "dense",
         "params": 8,
+        "arch": "dense",
         "url": "https://huggingface.co/Qwen/Qwen3-8B-AWQ",
+        "desc": "Petit modèle multilingue dense de la famille Qwen 3, offrant un mode “raisonnement” pour des tâches complexes (mathématiques, code) et un mode “réponse directe” pour des réponses plus rapides.",
+        "size_desc": "Avec 8 milliards de paramètres, il fait partie des modèles de petite taille. Il peut être utilisé localement sur un poste pour préserver la confidentialité des données, ou sur serveur peu coûteux pour limiter les coûts par rapport à un modèle plus grand. \n\nSa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter de longs documents.",
+        "fyi": "Qwen 3 8B a été entraîné sur le même corpus que les modèles plus grands de la famille Qwen : 36 billions de jetons couvrant 119 langues. Son apprentissage suit trois étapes : pré-entraînement sur 30 billions de jetons avec une fenêtre de 4 000, enrichissement factuel avec 5 billions de jetons, puis une phase spécialisée pour les contextes longs.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "qwen/qwen3-8b"
-        },
-        "desc": "Petit modèle multilingue dense de la famille Qwen 3, offrant un mode “raisonnement” pour des tâches complexes (mathématiques, code) et un mode “réponse directe” pour des réponses plus rapides.",
-        "size_desc": "Avec 8 milliards de paramètres, il fait partie des modèles de petite taille. Il peut être utilisé localement sur un poste pour préserver la confidentialité des données, ou sur serveur peu coûteux pour limiter les coûts par rapport à un modèle plus grand. \n\nSa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter de longs documents.",
-        "fyi": "Qwen 3 8B a été entraîné sur le même corpus que les modèles plus grands de la famille Qwen : 36 billions de jetons couvrant 119 langues. Son apprentissage suit trois étapes : pré-entraînement sur 30 billions de jetons avec une fenêtre de 4 000, enrichissement factuel avec 5 billions de jetons, puis une phase spécialisée pour les contextes longs."
+        }
       },
       {
-        "new": true,
-        "id": "qwen3-30b-a3b",
         "simple_name": "Qwen 3 30B A3B",
         "license": "Apache 2.0",
+        "id": "qwen3-30b-a3b",
         "release_date": "05/2025",
-        "arch": "moe",
         "params": 30,
         "active_params": 3.3,
+        "arch": "moe",
+        "desc": "Modèle de taille moyenne multilingue.",
+        "size_desc": "Avec 30 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. De plus l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique.",
+        "fyi": "Ce modèle MoE (Mixture of Experts) se distingue par une configuration de 128 experts au total, avec seulement 8 experts activés par jeton, ce qui permet une inférence plus rapide et plus efficace. Il utilise un système appelé *global-batch* pour optimiser la répartition du travail entre les experts, afin qu'ils soient tous utilisés de manière équilibrée.\n\nContrairement à d'autres modèles comme Qwen 2.5-MoE qui recyclent les mêmes experts à travers plusieurs couches du réseau, Qwen 3 30B A2B attribue des experts uniques à chaque couche. Concrètement, cela signifie que les experts de la première couche ne sont jamais réutilisés dans les couches suivantes - chaque niveau du modèle dispose de son propre ensemble d'experts spécialisés. Cette architecture permet à chaque expert de se concentrer exclusivement sur les tâches spécifiques à sa position dans le réseau neuronal, résultant en une spécialisation plus fine et des performances optimisées pour chaque étape du traitement de l'information.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "qwen/qwen3-30b-a3b"
-        },
-        "desc": "Modèle de taille moyenne multilingue.",
-        "size_desc": "Avec 30 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. Il peut fonctionner sur un serveur équipé d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. De plus l'architecture de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres à chaque jeton, limitant ainsi son empreinte énergétique.",
-        "fyi": "Ce modèle MoE (Mixture of Experts) se distingue par une configuration de 128 experts au total, avec seulement 8 experts activés par jeton, ce qui permet une inférence plus rapide et plus efficace. Il utilise un système appelé *global-batch* pour optimiser la répartition du travail entre les experts, afin qu'ils soient tous utilisés de manière équilibrée.\n\nContrairement à d'autres modèles comme Qwen 2.5-MoE qui recyclent les mêmes experts à travers plusieurs couches du réseau, Qwen 3 30B A2B attribue des experts uniques à chaque couche. Concrètement, cela signifie que les experts de la première couche ne sont jamais réutilisés dans les couches suivantes - chaque niveau du modèle dispose de son propre ensemble d'experts spécialisés. Cette architecture permet à chaque expert de se concentrer exclusivement sur les tâches spécifiques à sa position dans le réseau neuronal, résultant en une spécialisation plus fine et des performances optimisées pour chaque étape du traitement de l'information."
+        }
       },
       {
         "status": "archived",
@@ -828,23 +839,22 @@
     "icon_path": "moonshot-ai.webp",
     "models": [
       {
-        "new": true,
-        "id": "kimi-k2",
         "simple_name": "Kimi K2",
         "license": "MIT",
+        "id": "kimi-k2",
         "release_date": "09/2025",
-        "arch": "moe",
         "params": 1000,
         "active_params": 32,
-        "reasoning": true,
+        "arch": "moe",
         "url": "https://huggingface.co/moonshotai/Kimi-K2-Instruct",
+        "desc": "Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte.",
+        "size_desc": "Avec 1 billion de paramètres, ce modèle est un des plus grands modèles qui existe. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.",
+        "fyi": "Pour stabiliser l’entraînement à très grande échelle, Moonshot AI a introduit MuonClip, un “limiteur de vitesse” pour l’entraînement qui permet d’entraîner un modèle de cette taille et sur un corpus de 15,5 trillions de jetons sans dérailler dans l’apprentissage.\n\nCôté données, K2 a beaucoup pratiqué en “simulateur” avec de vrais outils (navigateur, terminal, exécuteurs de code, API…). Comme un pilote sur simulateur, il apprend à planifier, essayer, rater puis réessayer, et à enchaîner plusieurs actions pour atteindre un objectif. Résultat: il est particulièrement bon pour orchestrer des outils et réussir des tâches en plusieurs étapes.",
+        "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "moonshotai/kimi-k2-0905"
-        },
-        "desc": "Développé par Moonshot AI (亦称「月之暗面」/ Yue Zhi An Mian), une société basée à Pékin, Kimi K2 est un très grand modèle orienté code et usages agentiques. Il est reconnu pour les tâches de développement dans des contextes agentiques (par ex. dans Cursor ou Windsurf) notamment pour son rôle en tant qu’orchestrateur. Il n’expose pas de “mode raisonnement” explicite, mais pour les grandes tâches il sous-divise sa réponse en étapes et alterne entre actions (appels d’outils) et rédaction de texte.",
-        "size_desc": "Avec 1 billion de paramètres, ce modèle est un des plus grands modèles qui existe. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 128 000 jetons, ce qui permet de traiter des documents assez longs.",
-        "fyi": "Pour stabiliser l’entraînement à très grande échelle, Moonshot AI a introduit MuonClip, un “limiteur de vitesse” pour l’entraînement qui permet d’entraîner un modèle de cette taille et sur un corpus de 15,5 trillions de jetons sans dérailler dans l’apprentissage.\n\nCôté données, K2 a beaucoup pratiqué en “simulateur” avec de vrais outils (navigateur, terminal, exécuteurs de code, API…). Comme un pilote sur simulateur, il apprend à planifier, essayer, rater puis réessayer, et à enchaîner plusieurs actions pour atteindre un objectif. Résultat: il est particulièrement bon pour orchestrer des outils et réussir des tâches en plusieurs étapes."
+        }
       }
     ]
   },
@@ -877,92 +887,86 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société OpenAI ou via les services Microsoft Azure, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
-        "id": "gpt-oss-120b",
         "simple_name": "GPT OSS-120B",
         "license": "Apache 2.0",
+        "id": "gpt-oss-120b",
         "release_date": "08/2025",
-        "arch": "moe",
         "params": 117,
         "active_params": 5.1,
+        "arch": "moe",
+        "desc": "Le plus grand des deux premiers modèles semi-ouverts d'OpenAI depuis GPT-2. Conçu en réponse à la montée en puissance des acteurs open source comme Meta (LLaMA) et Mistral, il s'agit d'un modèle de raisonnement performant, notamment sur des tâches complexes et dans des environnements « agentiques ».",
+        "size_desc": "L'architecture est basée sur le principe du « mélange d'experts » (MoE), ce qui permet une meilleure efficacité énergétique en n'activant qu'une partie des paramètres (5,1 milliards par jeton) pour chaque requête. C’est un modèle de raisonnement, donc sa consommation d’énergie est plus élevée car ils génère une chaîne de pensée interne avant de fournir la réponse finale. Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux.",
+        "fyi": "Ce modèle peut fonctionner sur une seule GPU de 80 Go (comme la NVIDIA H100). Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (*low*, *medium*, et *high*) qui déterminent la verbosité du modèle.",
         "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "openai/gpt-oss-120b"
-        },
-        "desc": "Le plus grand des deux premiers modèles semi-ouverts d'OpenAI depuis GPT-2. Conçu en réponse à la montée en puissance des acteurs open source comme Meta (LLaMA) et Mistral, il s'agit d'un modèle de raisonnement performant, notamment sur des tâches complexes et dans des environnements « agentiques ».",
-        "size_desc": "L'architecture est basée sur le principe du « mélange d'experts » (MoE), ce qui permet une meilleure efficacité énergétique en n'activant qu'une partie des paramètres (5,1 milliards par jeton) pour chaque requête. C’est un modèle de raisonnement, donc sa consommation d’énergie est plus élevée car ils génère une chaîne de pensée interne avant de fournir la réponse finale. Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux.",
-        "fyi": "Ce modèle peut fonctionner sur une seule GPU de 80 Go (comme la NVIDIA H100). Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (*low*, *medium*, et *high*) qui déterminent la verbosité du modèle."
+        }
       },
       {
-        "new": true,
-        "id": "gpt-oss-20b",
         "simple_name": "GPT OSS-20B",
         "license": "Apache 2.0",
+        "id": "gpt-oss-20b",
         "release_date": "08/2025",
-        "arch": "moe",
         "params": 21,
         "active_params": 3.6,
+        "arch": "moe",
+        "desc": "Le plus petit des deux modèles semi-ouverts d'OpenAI. Il a été conçu en réponse à la concurrence de l'open source et est destiné aux cas d'utilisation nécessitant une faible latence ainsi qu'aux déploiements locaux ou spécialisés.",
+        "size_desc": "Avec 20 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. L'architecture est basée sur le « mélange d'experts » (MoE), ce qui permet une meilleure efficacité énergétique en n'activant qu'une partie des paramètres (3,6 milliards par jeton) pour chaque requête. Il s'agit d'un modèle de raisonnement, ce qui se traduit par une consommation d'énergie plus élevée car il génère une chaîne de pensée interne avant de fournir la réponse finale. Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux.",
+        "fyi": "Ce modèle peut être exécuté localement sur un ordinateur portable haut de gamme équipé de seulement 16 Go de VRAM (ou de RAM système). Cela en fait une option très accessible pour les développeurs. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (*low*, *medium*, et *high*) qui déterminent la verbosité du modèle.",
         "reasoning": true,
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "openai/gpt-oss-20b"
-        },
-        "desc": "Le plus petit des deux modèles semi-ouverts d'OpenAI. Il a été conçu en réponse à la concurrence de l'open source et est destiné aux cas d'utilisation nécessitant une faible latence ainsi qu'aux déploiements locaux ou spécialisés.",
-        "size_desc": "Avec 20 milliards de paramètres, ce modèle appartient à la catégorie des modèles de taille moyenne. L'architecture est basée sur le « mélange d'experts » (MoE), ce qui permet une meilleure efficacité énergétique en n'activant qu'une partie des paramètres (3,6 milliards par jeton) pour chaque requête. Il s'agit d'un modèle de raisonnement, ce qui se traduit par une consommation d'énergie plus élevée car il génère une chaîne de pensée interne avant de fournir la réponse finale. Il dispose d'une fenêtre de contexte de 131 000 jetons, ce qui le rend idéal pour l'analyse de documents volumineux.",
-        "fyi": "Ce modèle peut être exécuté localement sur un ordinateur portable haut de gamme équipé de seulement 16 Go de VRAM (ou de RAM système). Cela en fait une option très accessible pour les développeurs. \n\nDans les configurations du modèle, il est possible de choisir entre trois niveaux de raisonnement (*low*, *medium*, et *high*) qui déterminent la verbosité du modèle."
+        }
       },
       {
-        "new": true,
-        "id": "gpt-5",
         "simple_name": "GPT 5",
         "license": "proprietary",
+        "id": "gpt-5",
         "release_date": "08/2025",
-        "arch": "maybe-moe",
         "params": 300,
         "active_params": 94,
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "openai/gpt-5"
-        },
+        "arch": "maybe-moe",
         "desc": "Le GPT-5 n'est pas un modèle unique, mais un système unifié composé de deux modèles distincts : un modèle rapide (`gpt-5-main`) pour les requêtes courantes et un modèle de raisonnement (`gpt-5-thinking`) pour les problèmes complexes. Comparé à ses prédécesseurs, OpenAI affirme qu'il est plus utile dans les requêtes du monde réel, avec des améliorations notables dans les domaines de l'écriture, du codage et de la santé. Il réduit également le phénomène des hallucinations. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
         "size_desc": "Le système GPT-5 est composé de modèles de différentes tailles, mais les tailles exactes ne sont pas connues. Son architecture est conçue pour inclure plusieurs modèles, orchestrés par un système de routage interne, qui sélectionne le plus petit modèle adapté à la tâche pour optimiser la vitesse et la profondeur du raisonnement. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.",
         "fyi": "Les développeurs qui utilisent ce modèle peuvent configurer un paramètre de verbosité pour ajuster la longueur de la phase de raisonnement.\n\nEn matière de sécurité, le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête. Les créateurs du modèle ont aussi utilisé la phase d’entraînement au “raisonnement” pour le rendre plus “résistant” aux tentatives de contournement de leurs règles de sécurité (*jailbreaking*).",
-        "pricey": true
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5"
+        }
       },
       {
-        "new": true,
-        "id": "gpt-5-mini",
         "simple_name": "GPT 5 Mini",
         "license": "proprietary",
+        "id": "gpt-5-mini",
         "release_date": "08/2025",
-        "arch": "maybe-dense",
         "params": 47,
+        "arch": "maybe-dense",
         "url": "https://platform.openai.com/docs/models/gpt-5-mini",
+        "desc": "Le GPT-5 Mini est une version allégée du modèle GPT-5 principal. Il est conçu pour être utilisé dans des environnements où il est nécessaire de limiter les coûts, par exemple à grande échelle. Son modèle de raisonnement est presque aussi performant que celui du modèle principal (`gpt-5-thinking`) malgré sa taille plus petite. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
+        "size_desc": "Le modèle Mini est une déclinaison plus compacte (taille moyenne supposée) du système GPT-5. Il est conçu pour fonctionner de manière optimale pour un bon équilibre entre performance et coût, grâce à un système de routage qui le sélectionne pour des tâches spécifiques. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Néanmoins, les modèles sont probablement très grands, nécessitant plusieurs cartes graphiques puissantes pour l’inférence.",
+        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.\n\nBien qu'il soit une version plus petite, il se montre très compétitif face au modèle GPT-5 principal sur de nombreux benchmarks, en particulier dans le domaine médical.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "openai/gpt-5-mini"
-        },
-        "desc": "Le GPT-5 Mini est une version allégée du modèle GPT-5 principal. Il est conçu pour être utilisé dans des environnements où il est nécessaire de limiter les coûts, par exemple à grande échelle. Son modèle de raisonnement est presque aussi performant que celui du modèle principal (`gpt-5-thinking`) malgré sa taille plus petite. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
-        "size_desc": "Le modèle Mini est une déclinaison plus compacte (taille moyenne supposée) du système GPT-5. Il est conçu pour fonctionner de manière optimale pour un bon équilibre entre performance et coût, grâce à un système de routage qui le sélectionne pour des tâches spécifiques. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Néanmoins, les modèles sont probablement très grands, nécessitant plusieurs cartes graphiques puissantes pour l’inférence.",
-        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.\n\nBien qu'il soit une version plus petite, il se montre très compétitif face au modèle GPT-5 principal sur de nombreux benchmarks, en particulier dans le domaine médical."
+        }
       },
       {
-        "new": true,
-        "id": "gpt-5-nano",
         "simple_name": "GPT 5 Nano",
         "license": "proprietary",
+        "id": "gpt-5-nano",
         "release_date": "04/2025",
-        "arch": "maybe-dense",
         "params": 11,
+        "arch": "maybe-dense",
         "url": "https://platform.openai.com/docs/models/gpt-5-nano",
+        "desc": "Le GPT-5 Nano est la plus petite et la plus rapide version du modèle de raisonnement GPT-5. Il est conçu pour des contextes où une latence ou un coût ultra-faible est nécessaire. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
+        "size_desc": "Le modèle Nano est le plus compact de la famille GPT-5 (taille petite supposée). Il est sélectionné par le système de routage pour les requêtes nécessitant une latence ultra-faible et des réponses instantanées. Son architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui permet une meilleure efficacité énergétique et des performances élevées, même sur des requêtes nécessitant une réponse rapide.",
+        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "openai/gpt-5-nano"
-        },
-        "desc": "Le GPT-5 Nano est la plus petite et la plus rapide version du modèle de raisonnement GPT-5. Il est conçu pour des contextes où une latence ou un coût ultra-faible est nécessaire. Grâce à sa fenêtre de contexte de 400 000 jetons, il peut accepter de longues requêtes, ce rend possible l'analyse de plusieurs documents à la fois.",
-        "size_desc": "Le modèle Nano est le plus compact de la famille GPT-5 (taille petite supposée). Il est sélectionné par le système de routage pour les requêtes nécessitant une latence ultra-faible et des réponses instantanées. Son architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui permet une meilleure efficacité énergétique et des performances élevées, même sur des requêtes nécessitant une réponse rapide.",
-        "fyi": "Le système utilise une nouvelle approche de sécurité appelée « safe-completions » pour prévenir le contenu non autorisé au moment de la réponse plutôt qu’au moment de la requête."
+        }
       },
       {
         "id": "gpt-4.1-nano",
@@ -1066,6 +1070,23 @@
         "desc": "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel.",
         "size_desc": "Les grands modèles nécessitent des ressources significatives, mais offrent les meilleures performances pour des tâches avancées comme la rédaction créative, la modélisation de dialogues et les applications nécessitant une compréhension fine du contexte.",
         "fyi": "Modèle lancé en mars 2023, GPT-3.5 est un modèle plus petit d'OpenAI suffisant pour diverses tâches de traitement du langage naturel."
+      },
+      {
+        "simple_name": "GPT 5.1",
+        "license": "proprietary",
+        "id": "gpt-5.1",
+        "release_date": "11/2025",
+        "params": 300,
+        "active_params": 94,
+        "arch": "maybe-moe",
+        "desc": "Deuxième itération de GPT 5, avec un style jugé (par l'éditeur) plus naturel, avec de meilleurs résultats en code et en tâches d’agents. Le modèle a la spécificité d'ajuster son temps de raisonnement selon la difficulté.",
+        "size_desc": "Les tailles des modèles derrière le système GPT-5.1 ne sont pas connues. L'architecture est probablement basée sur un « mélange d'experts » (MoE, Mixture of Experts), ce qui signifie que seule une partie des paramètres est activée pour chaque requête. Cela permet une meilleure efficacité énergétique et des performances élevées. Les estimations disponibles sur la taille des modèles s'appuient sur des informations publiques et des indices indirects tels que les coûts d'inférence et la latence de réponse.",
+        "fyi": "L’arrivée de cette nouvelle itération apporte un routage automatique entre deux modes. Pour les demandes simples, le modèle choisit une réponse rapide. Pour les tâches plus complexes, il bascule vers un mode avec raisonnement avant de répondre. Cette logique évite de perdre du temps sur les requêtes faciles tout en gardant une vraie profondeur quand il le faut.\n\nLa première sortie de la famille GPT 5 avait provoqué beaucoup de réactions négatives vis-à-vis de son style d'écriture. Beaucoup d’utilisateurs trouvaient le modèle moins chaleureux que GPT 4o. Cette itération vise à revenir vers un style plus chaleureux.\n\nCette nouvelle version marque aussi des progrès en code et en mathématiques qui sont confirmés par des benchmarks comme SWE Bench pour le code et AIME pour les compétences mathématiques.",
+        "new": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "openai/gpt-5.1"
+        }
       }
     ]
   },
@@ -1075,85 +1096,80 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via l'API Mistral, Amazon Sagemaker et plusieurs autres hébergeurs, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
-        "id": "mistral-medium-2508",
         "simple_name": "Mistral Medium 2508",
         "license": "proprietary",
+        "id": "mistral-medium-2508",
         "release_date": "08/2025",
-        "arch": "maybe-dense",
         "params": 123,
+        "arch": "maybe-dense",
         "url": "https://mistral.ai/news/mistral-medium-3",
+        "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est devenu particulièrement intéressant après une mise à jour en août 2025 avec des améliorations importantes de performance générale, un ton \"amélioré\" et une meilleure capacité de chercher des informations sur Internet.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
+        "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "mistralai/mistral-medium-3"
-        },
-        "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est devenu particulièrement intéressant après une mise à jour en août 2025 avec des améliorations importantes de performance générale, un ton \"amélioré\" et une meilleure capacité de chercher des informations sur Internet.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
-        "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement."
+        }
       },
       {
-        "new": true,
-        "id": "mistral-medium-3.1",
         "simple_name": "Mistral Medium 3.1",
         "license": "proprietary",
+        "id": "mistral-medium-3.1",
         "release_date": "08/2025",
-        "arch": "maybe-dense",
         "params": 95,
+        "arch": "maybe-dense",
+        "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est particulièrement intéressant pour des tâches de programmation ou des tâches de raisonnement, par exemple les mathématiques.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
+        "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "mistralai/mistral-medium-3.1"
-        },
-        "desc": "Modèle de taille moyenne multilingue, multimodal et peu couteux par rapport à d’autres modèles qui offrent des performances similaires. Il est particulièrement intéressant pour des tâches de programmation ou des tâches de raisonnement, par exemple les mathématiques.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
-        "fyi": "Ce modèle a été conçu pour offrir des performances solides à un coût inférieur à celui des modèles propriétaires ou semi-ouverts. Une attention particulière a été portée aux données d’usage professionnel pendant son entraînement. Il est particulièrement bon en comparaison à d’autres modèles de taille similaire à générer du code et réaliser des tâches mathématiques.\n\nCe modèle a servi de base pour entraîner Magistral Medium - un modèle de raisonnement."
+        }
       },
       {
-        "new": true,
-        "id": "mistral-small-2506",
         "simple_name": "Mistral Small 3.2",
         "license": "Apache 2.0",
+        "id": "mistral-small-2506",
         "release_date": "06/2025",
-        "arch": "dense",
         "params": 24,
+        "arch": "dense",
+        "desc": "Malgré son nom, c’est un modèle de taille moyenne. Il est multimodal (capable de traiter texte et images) et il se démarque par un respect précis des requêtes et sa capacité à utiliser des outils avancées.",
+        "size_desc": "Avec 32 milliards de paramètres, ce modèle est considéré comme un modèle de taille moyenne. Il peut être hébergé sur un serveur disposant d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
+        "fyi": "La version 3.2 de ce modèle est optimisée pour générer des sorties structurées, notamment en JSON, tout en limitant la répétitivité et les comportements indésirables lors de longues générations. Multimodal, il traite à la fois des entrées textuelles et des images, permettant une analyse conjointe.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "mistralai/mistral-small-3.2-24b-instruct"
-        },
-        "desc": "Malgré son nom, c’est un modèle de taille moyenne. Il est multimodal (capable de traiter texte et images) et il se démarque par un respect précis des requêtes et sa capacité à utiliser des outils avancées.",
-        "size_desc": "Avec 32 milliards de paramètres, ce modèle est considéré comme un modèle de taille moyenne. Il peut être hébergé sur un serveur disposant d’une seule carte graphique puissante, ce qui limite les coûts d’infrastructure. Il dispose d’une fenêtre de contexte allant jusqu’à 128 000 jetons, utile pour l’analyse de longs documents.",
-        "fyi": "La version 3.2 de ce modèle est optimisée pour générer des sorties structurées, notamment en JSON, tout en limitant la répétitivité et les comportements indésirables lors de longues générations. Multimodal, il traite à la fois des entrées textuelles et des images, permettant une analyse conjointe."
+        }
       },
       {
-        "new": true,
-        "id": "magistral-medium",
         "simple_name": "Magistral Medium",
         "license": "proprietary",
+        "id": "magistral-medium",
         "release_date": "06/2025",
-        "arch": "maybe-dense",
         "params": 95,
+        "arch": "maybe-dense",
+        "desc": "Modèle de raisonnement de taille moyenne multimodal et multilingue. Adapté à des tâches de programmation ou autres tâches nécessitant analyse approfondie compréhension de systèmes logiques complexes ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes.",
+        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les modèles de raisonnement requièrent plus de capacité de calcul pour produire une réponse, ce qui augmente leur consommation énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 40 000 jetons, utile pour l’analyse de documents courts mais insuffisant pour analyser des corpus de documents larges.",
+        "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. Il a été entraîné avec de l’apprentissage par renforcement sur Mistral Medium 3 et n'a pas été distillé à partir de modèles de raisonnement existants. Ce modèle hérite des capacités multimodales de Mistral Medium 3 même si l'apprentissage par renforcement n'a été réalisé que sur du texte.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "mistralai/magistral-medium-2506"
-        },
-        "desc": "Modèle de raisonnement de taille moyenne multimodal et multilingue. Adapté à des tâches de programmation ou autres tâches nécessitant analyse approfondie compréhension de systèmes logiques complexes ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes.",
-        "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les modèles de raisonnement requièrent plus de capacité de calcul pour produire une réponse, ce qui augmente leur consommation énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 40 000 jetons, utile pour l’analyse de documents courts mais insuffisant pour analyser des corpus de documents larges.",
-        "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. Il a été entraîné avec de l’apprentissage par renforcement sur Mistral Medium 3 et n'a pas été distillé à partir de modèles de raisonnement existants. Ce modèle hérite des capacités multimodales de Mistral Medium 3 même si l'apprentissage par renforcement n'a été réalisé que sur du texte."
+        }
       },
       {
-        "new": true,
-        "id": "magistral-small-2506",
         "simple_name": "Magistral Small",
         "license": "Apache 2.0",
+        "id": "magistral-small-2506",
         "release_date": "06/2025",
-        "arch": "dense",
         "params": 24,
+        "arch": "dense",
+        "desc": "Modèle de raisonnement de taille moyenne, multimodal et multilingue. Adapté à des tâches nécessitant une analyse approfondie, compréhension de systèmes logiques ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes.",
+        "size_desc": "Avec 24 milliards de paramètres, ce modèle est classé parmi les modèles de taille moyenne. Il nécessite une seule carte graphiques puissante pour fonctionner. Les modèles de raisonnement fonctionnent également plus longtemps pour produire une réponse, ce qui augmente leur consommation énergétique.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 40 000 jetons, utile pour l’analyse de documents courts mais insuffisant pour analyser des corpus de documents larges.",
+        "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. \n\nL'entraînement s'est fait en deux phases. La première, dite de raisonnement *cold-start* par distillation (de Mistral Medium 3 et OpenThoughts/OpenR1) permet au modèle d'acquérir des capacités de base en raisonnement à partir de données d'instruction générale (10%). La seconde est une phase d'apprentissage par renforcement (RL, *renforcement learning*) à haute entropie, où le modèle est encouragé à explorer des solutions diverses et variées plutôt que de converger vers une seule réponse, et à générer des complétions longues (jusqu'à 32 000 jetons), ce qui permet de développer des capacités de raisonnement qui dépassent celles du modèle enseignant.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "mistralai/magistral-small-2506"
-        },
-        "desc": "Modèle de raisonnement de taille moyenne, multimodal et multilingue. Adapté à des tâches nécessitant une analyse approfondie, compréhension de systèmes logiques ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes.",
-        "size_desc": "Avec 24 milliards de paramètres, ce modèle est classé parmi les modèles de taille moyenne. Il nécessite une seule carte graphiques puissante pour fonctionner. Les modèles de raisonnement fonctionnent également plus longtemps pour produire une réponse, ce qui augmente leur consommation énergétique.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 40 000 jetons, utile pour l’analyse de documents courts mais insuffisant pour analyser des corpus de documents larges.",
-        "fyi": "Ce modèle fait partie de la première génération des modèles de raisonnement de Mistral AI (été 2025). Contrairement à la plupart des autres modèles de raisonnement, ce modèle peut raisonner en plusieurs langues incluant l'anglais, le français, l'espagnol, l'allemand, l'italien, l'arabe, le russe et le chinois simplifié. \n\nL'entraînement s'est fait en deux phases. La première, dite de raisonnement *cold-start* par distillation (de Mistral Medium 3 et OpenThoughts/OpenR1) permet au modèle d'acquérir des capacités de base en raisonnement à partir de données d'instruction générale (10%). La seconde est une phase d'apprentissage par renforcement (RL, *renforcement learning*) à haute entropie, où le modèle est encouragé à explorer des solutions diverses et variées plutôt que de converger vers une seule réponse, et à générer des complétions longues (jusqu'à 32 000 jetons), ce qui permet de développer des capacités de raisonnement qui dépassent celles du modèle enseignant."
+        }
       },
       {
         "status": "archived",
@@ -1302,23 +1318,21 @@
     "proprietary_license_desc": "Le modèle est disponible sous licence payante et accessible via API sur les plateformes de la société Anthropic ou des sociétés partenaires, nécessitant un paiement à l'utilisation basé sur le nombre de jetons traités ou sur l’infrastructure réservée.",
     "models": [
       {
-        "new": true,
-        "id": "claude-4-5-sonnet",
         "simple_name": "Claude 4.5 Sonnet",
         "license": "proprietary",
+        "id": "claude-4-5-sonnet",
         "release_date": "09/2025",
-        "arch": "maybe-moe",
         "params": 440,
         "active_params": 137.5,
+        "arch": "maybe-moe",
         "url": "https://www.anthropic.com/news/claude-sonnet-4-5",
-        "endpoint": {
-          "api_type": "openrouter",
-          "api_model_id": "anthropic/claude-sonnet-4.5"
-        },
         "desc": "Très grand modèle multimodal et multilingue, extrêmement performant en code, en raisonnement et en mathématiques. L'utilisateur ou le développeur qui utilise ce modèle peut choisir entre plusieurs niveaux de raisonnement.",
         "size_desc": "La taille exacte n’est pas connue. Tout indique qu’il s’agit d’un très grand modèle, nécessitant des serveurs équipés de plusieurs cartes graphiques puissantes pour le faire fonctionner. Les estimations de taille et de consommation énergétique reposent sur des indices indirects comme les coûts d’inférence et la latence observée. Claude Sonnet 4.5 dispose d’une fenêtre de contexte allant jusqu’à 1 000 000 jetons, adaptée à l’analyse de dépôts de code entiers ou de documents très volumineux.",
         "fyi": "Claude Sonnet 4.5 est une évolution directe de Sonnet 4. Le « .5 » désigne les changements majeurs introduits lors du post-entraînement, qui se traduisent par des gains significatifs en raisonnement, en mathématiques et surtout dans l’utilisation concrète des ordinateurs. Au moment de sa sortie, il est considéré comme le meilleur modèle au monde pour le code et excelle dans la résolution de tâches multi-étapes longues et complexes. Ses performances sur des benchmarks comme SWE-bench Verified et OSWorld marquent un net progrès par rapport aux versions précédentes, avec une capacité à maintenir sa \"concentration\" pendant plus de trente heures sur un même problème.",
-        "pricey": true
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "anthropic/claude-sonnet-4.5"
+        }
       },
       {
         "id": "claude-4-sonnet",
@@ -1372,21 +1386,20 @@
     "icon_path": "zhipu.svg",
     "models": [
       {
-        "new": true,
-        "id": "glm-4.6",
         "simple_name": "GLM 4.6",
         "license": "MIT",
+        "id": "glm-4.6",
         "release_date": "09/2025",
-        "arch": "moe",
         "params": 357,
         "active_params": 32,
+        "arch": "moe",
+        "desc": "Mise à jour du grand modèle créé par Zhipu AI - GLM 4.6, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour augmente la taille de la fenêtre de contexte, améliore sa performance en code, s'aligne plus avec les préférences humaines et est plus capable en cas d'usages agentiques/utilisation d'outils.",
+        "size_desc": "Avec 357 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 200 000 jetons, ce qui permet de traiter de très longs documents.",
+        "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin.",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "z-ai/glm-4.6"
-        },
-        "desc": "Mise à jour du grand modèle créé par Zhipu AI - GLM 4.6, un éditeur de modèles d’IA Chinois créé en 2019 par des professeurs de l’université de Tsinghua et soutenu par des grands acteurs comme Alibaba et Tencent. Cette mise à jour augmente la taille de la fenêtre de contexte, améliore sa performance en code, s'aligne plus avec les préférences humaines et est plus capable en cas d'usages agentiques/utilisation d'outils.",
-        "size_desc": "Avec 357 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que certains autres modèles de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Sa fenêtre de contexte va jusqu’à 200 000 jetons, ce qui permet de traiter de très longs documents.",
-        "fyi": "Ce modèle a de bonnes capacités agentiques, lui permettant d'effectuer des appels de fonctions avec une grande fiabilité. Ses performances en codage sont élevées et le modèle a une bonne capacité de créer des applications web complètes et de générer des artefacts, qui sont des programmes d’un seul fichier utilisable à l’intérieur même des interfaces des agents conversationnels. Pour l'entraînement, une infrastructure d'apprentissage par renforcement spécifique, nommée slime, a été conçue pour optimiser les performances sur des tâches complexes et agentiques en gérant de manière efficiente les flux de travail longs - le modèle est capable de traiter des tâches complexes et de longue durée, comme la création d'une application de A à Z, en utilisant au mieux ses outils et en restant cohérent du début à la fin."
+        }
       },
       {
         "id": "glm-4.5",
@@ -1411,20 +1424,19 @@
     "icon_path": "nous.webp",
     "models": [
       {
-        "new": true,
-        "id": "hermes-4-70b",
         "simple_name": "Hermes 4 70B",
         "license": "Llama 3.1",
+        "id": "hermes-4-70b",
         "release_date": "08/2025",
-        "arch": "dense",
         "params": 70,
+        "arch": "dense",
+        "desc": "Grand modèle réentraîné à partir du Llama 3.1 70B, ajusté pour mieux répondre aux demandes et instructions stylistiques des utilisateurs.",
+        "size_desc": "Hermes 4-70B est un modèle de très grande taille, nécessitant au moins une carte graphique puissante.\n\nLa fenêtre de contexte atteint 40 960 jetons en raisonnement et 32 768 jetons pour d’autres tâches, avec des mécanismes de fine-tuning qui ont été utilisés pour lui apprendre à “fermer” la séquence de réflexion vers 30k jetons.",
+        "fyi": "Hermes 4-70B a été entraîné sur 56 milliards de tokens en combinant Fully Sharded Data Parallel (FSDP) et Tensor Parallelism pour gérer sa taille. Le modèle repose sur la base de Llama 3.1 70B, adaptée avec TorchTitan et enrichie par environ 19 milliards de tokens synthétiques centrés sur le raisonnement. Son entraînement suit une approche multi-phase, avec un supervised fine-tuning sur des chaînes de raisonnement pouvant dépasser les 30 000 jetons. Il exploite également l’environnement Atropos, utilisé pour générer et vérifier des trajectoires complexes (code, JSON, tâches agentiques), grâce à un rejection sampling massif qui garantit la qualité des données).",
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "nousresearch/hermes-4-70b"
-        },
-        "desc": "Grand modèle réentraîné à partir du Llama 3.1 70B, ajusté pour mieux répondre aux demandes et instructions stylistiques des utilisateurs.",
-        "size_desc": "Hermes 4-70B est un modèle de très grande taille, nécessitant au moins une carte graphique puissante.\n\nLa fenêtre de contexte atteint 40 960 jetons en raisonnement et 32 768 jetons pour d’autres tâches, avec des mécanismes de fine-tuning qui ont été utilisés pour lui apprendre à “fermer” la séquence de réflexion vers 30k jetons. ",
-        "fyi": "Hermes 4-70B a été entraîné sur 56 milliards de tokens en combinant Fully Sharded Data Parallel (FSDP) et Tensor Parallelism pour gérer sa taille. Le modèle repose sur la base de Llama 3.1 70B, adaptée avec TorchTitan et enrichie par environ 19 milliards de tokens synthétiques centrés sur le raisonnement. Son entraînement suit une approche multi-phase, avec un supervised fine-tuning sur des chaînes de raisonnement pouvant dépasser les 30 000 jetons. Il exploite également l’environnement Atropos, utilisé pour générer et vérifier des trajectoires complexes (code, JSON, tâches agentiques), grâce à un rejection sampling massif qui garantit la qualité des données)."
+        }
       },
       {
         "status": "disabled",
@@ -1599,22 +1611,45 @@
         "fyi": "Le modèle a été entraîné sur le supercalculateur Alps à Lugano, utilisant plus de 10 millions d’heures GPU alimentées par une énergie hydroélectrique neutre en carbone. Le modèle a été préentraîné sur 15 000 milliards jetons couvrant plus de 1 800 langues, dont une part importante de langues peu représentées.\n\nApertus s’appuie sur un tokenizer byte-level BPE de 131 000 entrées, dérivé du tokenizer « tekken » de Mistral AI, optimisé pour le multilinguisme, le code et les expressions mathématiques. L’architecture combine plusieurs innovations : Rotary Positional Embeddings (RoPE) avec base étendue et ajustement NTK-aware pour les longs contextes, Grouped Query Attention (GQA) pour une meilleure efficacité mémoire, normalisation QK-Norm pour stabiliser l’entraînement, et une fonction d’activation xIELU (extended Integrated ELU) améliorant la performance des MLP.\n\nL’affinage final du modèle repose sur un algorithme d’alignement appelé QRPO (Quantile Reward-Preferring Optimization), une alternative au RLHF classique, qui utilise des signaux de récompense absolus pour un apprentissage plus stable et mieux aligné sur les préférences humaines. Bien qu’il ne rivalise pas directement avec les modèles propriétaires les plus avancés, Apertus se distingue par son niveau de transparence."
       },
       {
-        "new": true,
-        "id": "Apertus-70B-Instruct-2509",
         "simple_name": "Apertus 70B Instruct",
         "license": "Apache 2.0",
+        "id": "Apertus-70B-Instruct-2509",
         "release_date": "09/2025",
-        "arch": "dense",
         "params": 70,
+        "arch": "dense",
         "url": "https://huggingface.co/swiss-ai/Apertus-70B-Instruct-2509",
-        "endpoint": {
-          "api_type": "huggingface",
-          "api_base": "https://router.huggingface.co/v1",
-          "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai"
-        },
         "desc": "Modèle semi-ouvert et reproductible de taille moyenne, développé par un consortium d’institutions suisses. Ses poids et son code d’entraînement sont publiés sous licence permissive. Il a été entraîné sur plus de 1 800 langues sur plus de 15 000 milliards de jetons. L’entraînement a eu lieu sur le supercalculateur Alps du CSCS à Lugano, alimenté par une énergie hydroélectrique neutre en carbone.",
         "size_desc": "Avec 70 milliards de paramètres, ce modèle fait partie des petits modèles. Il peut être utilisé localement sur un ordinateur puissant, garantissant la confidentialité des données, ou hébergé sur un serveur équipé d’une seule carte graphique, ce qui limite les coûts d’infrastructure. Sa fenêtre de contexte de 65 536 jetons ce qui permet de traiter d'assez longs documents.",
-        "fyi": "Le modèle a été entraîné sur le supercalculateur Alps à Lugano, utilisant plus de 10 millions d’heures GPU alimentées par une énergie hydroélectrique neutre en carbone. Le modèle a été préentraîné sur 15 000 milliards jetons couvrant plus de 1 800 langues, dont une part importante de langues peu représentées.\n\nApertus s’appuie sur un tokenizer byte-level BPE de 131 000 entrées, dérivé du tokenizer « tekken » de Mistral AI, optimisé pour le multilinguisme, le code et les expressions mathématiques. L’architecture combine plusieurs innovations : Rotary Positional Embeddings (RoPE) avec base étendue et ajustement NTK-aware pour les longs contextes, Grouped Query Attention (GQA) pour une meilleure efficacité mémoire, normalisation QK-Norm pour stabiliser l’entraînement, et une fonction d’activation xIELU (extended Integrated ELU) améliorant la performance des MLP.\n\nL’affinage final du modèle repose sur un algorithme d’alignement appelé QRPO (Quantile Reward-Preferring Optimization), une alternative au RLHF classique, qui utilise des signaux de récompense absolus pour un apprentissage plus stable et mieux aligné sur les préférences humaines. Bien qu’il ne rivalise pas directement avec les modèles propriétaires les plus avancés, Apertus se distingue par son niveau de transparence."
+        "fyi": "Le modèle a été entraîné sur le supercalculateur Alps à Lugano, utilisant plus de 10 millions d’heures GPU alimentées par une énergie hydroélectrique neutre en carbone. Le modèle a été préentraîné sur 15 000 milliards jetons couvrant plus de 1 800 langues, dont une part importante de langues peu représentées.\n\nApertus s’appuie sur un tokenizer byte-level BPE de 131 000 entrées, dérivé du tokenizer « tekken » de Mistral AI, optimisé pour le multilinguisme, le code et les expressions mathématiques. L’architecture combine plusieurs innovations : Rotary Positional Embeddings (RoPE) avec base étendue et ajustement NTK-aware pour les longs contextes, Grouped Query Attention (GQA) pour une meilleure efficacité mémoire, normalisation QK-Norm pour stabiliser l’entraînement, et une fonction d’activation xIELU (extended Integrated ELU) améliorant la performance des MLP.\n\nL’affinage final du modèle repose sur un algorithme d’alignement appelé QRPO (Quantile Reward-Preferring Optimization), une alternative au RLHF classique, qui utilise des signaux de récompense absolus pour un apprentissage plus stable et mieux aligné sur les préférences humaines. Bien qu’il ne rivalise pas directement avec les modèles propriétaires les plus avancés, Apertus se distingue par son niveau de transparence.",
+        "endpoint": {
+          "api_type": "huggingface",
+          "api_model_id": "swiss-ai/Apertus-70B-Instruct-2509:publicai",
+          "api_base": "https://router.huggingface.co/v1"
+        }
+      }
+    ]
+  },
+  {
+    "name": "MiniMax",
+    "icon_path": "minimax.png",
+    "models": [
+      {
+        "simple_name": "MiniMax M2",
+        "license": "MIT",
+        "id": "minimax-m2",
+        "release_date": "10/2025",
+        "params": 230,
+        "active_params": 10,
+        "arch": "moe",
+        "url": "https://www.minimax.io/news/minimax-m2",
+        "desc": "Modèle spécialisé dans le code avec un rapport qualité/rapidité/prix très compétitif. Il a été conçu par MiniMax, entreprise basée à Shanghai en Chine.",
+        "size_desc": "Modèle d'architecture mélange d'experts avec 230 milliards de paramètres (dont 10 milliards actifs par génération de jeton). La fenêtre de contexte s'élève à 200 000 jetons, permettant de traîter des bases de code entières et des documents longs.",
+        "fyi": "Modèle conçu spécifiquement pour des tâches agentiques (notamment du code), avec un entraînement pour respecter des protocoles stricts de contrôle d'agent (planification, appels d'outils, vérification).",
+        "new": true,
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "minimax/minimax-m2"
+        }
       }
     ]
   }

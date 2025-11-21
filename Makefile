@@ -25,7 +25,7 @@ install-backend: ## Install Python backend dependencies with uv
 
 install-frontend: ## Install npm frontend dependencies
 	@echo "Installing frontend dependencies..."
-	cd frontend && $(NPM) install
+	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
 dev: ## Launch backend and frontend in parallel (Ctrl+C to stop)
 	@echo "Launching compar:IA..."
@@ -49,10 +49,6 @@ build-frontend: ## Build the frontend for production
 	@echo "Building frontend..."
 	cd frontend && $(NPM) run build
 
-preview-frontend: build-frontend ## Preview the frontend build
-	@echo "Previewing frontend..."
-	cd frontend && $(NPM) run preview
-
 lint-frontend: ## Check frontend code
 	@echo "Checking frontend code..."
 	cd frontend && $(NPM) run lint
@@ -69,6 +65,10 @@ i18n-clean-locales: ## Remove locales keys not present in fr
 i18n-build-suggestions: ## generate frontend i18n prompt suggestions file
 	@echo "Generating frontend prompt suggestions..."
 	$(UV) run python -m utils.suggestions.build_suggestions
+
+i18n-build-news: ## generate news files
+	@echo "Generating news files..."
+	$(UV) run python -m utils.news.build_news
 
 # Database utilities
 db-schema-init: ## Initialize database schema

@@ -5,7 +5,6 @@
     "title": "Atelier Duel de l’IA",
     "desc": "Sensibilisez votre public à l’impact environnemental de l’IA générative en organisant un Duel de l’IA dans votre établissement, association ou entreprise !",
     "imgSrc": "duel.jpg",
-    "date": "year",
     "href": "/duel",
     "pinned": true
   },
@@ -14,37 +13,36 @@
     "subKind": "press",
     "title": "Article Usine digitale",
     "desc": "« Mistral Medium 3.1 jugé meilleur modèle selon les votants au classement Compar:IA établi par le gouvernement français »",
-    "imgSrc": "??.png",
-    "date": "10/11/2025",
-    "href": "https://www.usine-digitale.fr/article/mistral-medium-3-1-juge-meilleur-modele-selon-les-votants-au-classement-compar-ia-etabli-par-le-gouvernement-francais.N2241098"
+    "imgSrc": "article-usine-digitale.png",
+    "href": "https://www.usine-digitale.fr/article/mistral-medium-3-1-juge-meilleur-modele-selon-les-votants-au-classement-compar-ia-etabli-par-le-gouvernement-francais.N2241098",
+    "date": 1762729200.0
   },
   {
     "kind": "media",
     "subKind": "press",
     "title": "Article Numerama",
     "desc": "« La France dévoile son classement des meilleures IA : le gagnant va vous surprendre »",
-    "imgSrc": "??.png",
-    "date": "4/11/2025",
-    "href": "https://www.numerama.com/tech/2109747-la-france-devoile-son-classement-des-meilleures-ia-le-gagnant-va-vous-surprendre.html"
+    "imgSrc": "article-numerama.png",
+    "href": "https://www.numerama.com/tech/2109747-la-france-devoile-son-classement-des-meilleures-ia-le-gagnant-va-vous-surprendre.html",
+    "date": 1762210800.0
   },
- {
+  {
     "kind": "media",
     "subKind": "press",
     "title": "Article ZDNet",
     "desc": "« Compar:IA : un premier bilan de ses tests d'IA à l'aveugle »",
-    "imgSrc": "??.png",
-    "date": "5/11/2025",
-    "href": "https://www.zdnet.fr/actualites/comparia-un-premier-bilan-de-ses-tests-dia-a-laveugle-484510.htm"
+    "imgSrc": "article-ZDNet.png",
+    "href": "https://www.zdnet.fr/actualites/comparia-un-premier-bilan-de-ses-tests-dia-a-laveugle-484510.htm",
+    "date": 1762297200.0
   },
-  
   {
     "kind": "resource",
     "subKind": "blog",
     "title": "Classement compar:IA : des votes des utilisateurs au classement participatif des modèles",
     "desc": "Retour sur la démarche de classement des modèles : objectifs, méthodologie, premières analyses et limites.",
     "imgSrc": "ranking.png",
-    "date": "03/11/2025",
     "href": "https://huggingface.co/blog/comparIA/publication-du-premier-classement",
+    "date": 1762124400.0,
     "pinned": true
   },
   {
@@ -52,9 +50,9 @@
     "subKind": "event",
     "title": "Numérique en communs - session de pitch",
     "desc": "Accédez au replay de la présentation de comparIA lors de la session de pitchs « 6 modèles ouverts pour mettre vraiment l'IA à son service »",
-    "imgSrc": "??.png",
-    "date": "29/10/2025",
-    "href": "??"
+    "imgSrc": "nec-pitch.jpg",
+    "href": "",
+    "date": 1761692400.0
   },
   {
     "kind": "media",
@@ -62,8 +60,8 @@
     "title": "MiNumEchos : initiatives pour un numérique public écoresponsable (podcast)",
     "desc": "Lucie Termignon était l’invitée du podcast MiNumEchos",
     "imgSrc": "minumechos_podcast_comparIA.jfif",
-    "date": "28/10/2025",
-    "href": "https://ecoresponsable.numerique.gouv.fr/actualites/S2E6/"
+    "href": "https://ecoresponsable.numerique.gouv.fr/actualites/S2E6/",
+    "date": 1761606000.0
   },
   {
     "kind": "media",
@@ -71,8 +69,8 @@
     "title": "compar:IA au JT de France 2",
     "desc": "« Intelligence artificielle : la riposte de l'école contre la triche »",
     "imgSrc": "jt-france2.jpeg",
-    "date": "06/10/2025",
-    "href": "https://www.franceinfo.fr/internet/intelligence-artificielle/intelligence-artificielle-la-riposte-de-l-ecole-contre-la-triche_7536016.html"
+    "href": "https://www.franceinfo.fr/internet/intelligence-artificielle/intelligence-artificielle-la-riposte-de-l-ecole-contre-la-triche_7536016.html",
+    "date": 1759701600.0
   },
   {
     "kind": "talk",
@@ -80,8 +78,9 @@
     "title": "Table ronde - conférence ORBICOM",
     "desc": "comparIA était au Parlement européen à Strasbourg pour le congrès de la chaire Orbicom qui réunit chercheur·es, expert·es, institutions et société civile pour réfléchir à la manière dont l’IA doit être intégrée dans l’éducation.",
     "imgSrc": "orbicom.jpg",
-    "date": "30/09/2025",
-    "href": "https://services-numeriques.unistra.fr/les-services-aux-usagers/centre-de-culture-numerique/rendez-vous/rendez-vous/article/congres-ciarei-en-distanciel-communication-intelligence-artificielle-remediation-ethique-et-i-1.html"
+    "href": "https://services-numeriques.unistra.fr/les-services-aux-usagers/centre-de-culture-numerique/rendez-vous/rendez-vous/article/congres-ciarei-en-distanciel-communication-intelligence-artificielle-remediation-ethique-et-i-1.html",
+    "date": 1759183200.0,
+    "linkLabel": "Voir la publication"
   },
   {
     "kind": "resource",
@@ -89,8 +88,8 @@
     "title": "Infolettre #4",
     "desc": "Une vague de nouveaux modèles à tester dès maintenant 🎉",
     "imgSrc": "infolettre4.png",
-    "date": "23/09/2025",
-    "href": "/news/infolettre4"
+    "href": "/news/infolettre4",
+    "date": 1758578400.0
   },
   {
     "kind": "talk",
@@ -98,17 +97,17 @@
     "title": "Webinaire - Découvrez ComparIA et ses ressources de médiation numérique",
     "desc": "Présentation du kit d'animation Duels de l'IA auprès des médiateurs de la MedNum",
     "imgSrc": "webinaire-mediation.png",
-    "date": "16/09/2025",
-    "href": "https://www.youtube.com/watch?v=26mvg98iA0A"
+    "href": "https://www.youtube.com/watch?v=26mvg98iA0A",
+    "date": 1757973600.0
   },
   {
     "kind": "talk",
     "subKind": "workshop",
     "title": "Atelier - Semaine de l’apprentissage numérique de l’Unesco",
     "desc": "Atelier co-animé avec Magda Fusaro (UQAM) sur les transformations de la relation pédagogique « Professeur·es – Étudiant·es » à l’ère des IAGEN",
-    "imgSrc": "??.png",
-    "date": "08/09/2025",
-    "href": "https://orbicom.ca/2025/09/08/retour-sur-latelier-comparia-a-la-semaine-de-lapprentissage-numerique-de-lunesco/"
+    "imgSrc": "atelier-unesco.png",
+    "href": "https://orbicom.ca/2025/09/08/retour-sur-latelier-comparia-a-la-semaine-de-lapprentissage-numerique-de-lunesco/",
+    "date": 1757282400.0
   },
   {
     "kind": "media",
@@ -116,8 +115,8 @@
     "title": "Cartographie des usages de comparIA par Bunka.ai",
     "desc": "Exemple d’analyse des jeux de données comparIA et panorama des usages",
     "imgSrc": "analyse-bunka.png",
-    "date": "01/09/2025",
-    "href": "https://monitor.bunka.ai/compar:ia"
+    "href": "https://monitor.bunka.ai/compar:ia",
+    "date": 1756677600.0
   },
   {
     "kind": "media",
@@ -125,8 +124,8 @@
     "title": "Article Blog du Modérateur",
     "desc": "Étude : comment les Français utilisent l’IA au quotidien en 2025",
     "imgSrc": "blog-moderateur.png",
-    "date": "26/08/2025",
-    "href": "https://www.blogdumoderateur.com/etude-comment-francais-utilisent-ia-quotidien-2025/"
+    "href": "https://www.blogdumoderateur.com/etude-comment-francais-utilisent-ia-quotidien-2025/",
+    "date": 1750888800.0
   },
   {
     "kind": "resource",
@@ -134,8 +133,8 @@
     "title": "Infolettre #3",
     "desc": "Le jeu de données compar:IA est publié ! (+ de 130k préférences) 🎉​",
     "imgSrc": "infolettre3.png",
-    "date": "11/06/2025",
-    "href": "/news/infolettre3"
+    "href": "/news/infolettre3",
+    "date": 1749592800.0
   },
   {
     "kind": "resource",
@@ -143,8 +142,8 @@
     "title": "Journée compar:IA à la BNF",
     "desc": "Redécouvrez les enjeux clés de l’IA générative avec les rediffusions de cet évènement organisé par compar:IA.",
     "imgSrc": "bnf.png",
-    "date": "07/02/2025",
     "href": "/news/bnf",
+    "date": 1738882800.0,
     "pinned": true
   },
   {
@@ -153,8 +152,8 @@
     "title": "Parlez-moi d'IA (émission radio 93.1FM & podcast)",
     "desc": "Mathilde Bras et Hadrien Pélissier étaient les invités du podcast Parlez-moi d’IA",
     "imgSrc": "parlezmoidia.png",
-    "date": "01/02/2025",
-    "href": "https://www.youtube.com/watch?v=xkSsk3vn0sE"
+    "href": "https://www.youtube.com/watch?v=xkSsk3vn0sE",
+    "date": 1738364400.0
   },
   {
     "kind": "media",
@@ -162,7 +161,7 @@
     "title": "Article France Info",
     "desc": "« Toutes les intelligences artificielles ne se valent pas, faites en vous-même l'expérience »",
     "imgSrc": "article-franceinfo.png",
-    "date": "13/10/2024",
-    "href": "https://www.franceinfo.fr/replay-radio/nouveau-monde/toutes-les-intelligences-artificielles-ne-se-valent-pas-faites-en-vous-meme-l-experience_6807529.html"
+    "href": "https://www.franceinfo.fr/replay-radio/nouveau-monde/toutes-les-intelligences-artificielles-ne-se-valent-pas-faites-en-vous-meme-l-experience_6807529.html",
+    "date": 1728770400.0
   }
 ]
