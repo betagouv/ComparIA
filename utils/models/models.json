@@ -1631,6 +1631,24 @@
         "desc": "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts, dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres.",
         "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
         "fyi": "Sorti en septembre 2024, ce modèle de l'entreprise américaine Liquid est un modèle de type Mixture of Experts (MoE), dont l'architecture cherche à tirer le meilleur parti du nombre de paramètres."
+      },
+      {
+        "id": "lfm2-8b-a1b",
+        "simple_name": "LFM 2 8B A1B",
+        "license": "LFM 1.0",
+        "release_date": "10/2025",
+        "arch": "moe",
+        "params": 8,
+        "active_params": 1.5,
+        "url": "https://www.liquid.ai/blog/lfm2-8b-a1b-an-efficient-on-device-mixture-of-experts",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "liquid/lfm2-8b-a1b"
+        },
+        "desc": "Un modèle spécifiquement conçu pour l'inférence efficace sur appareils locaux (on-device deployment). Son architecture vise à offrir une qualité de sortie compétitive avec celle de modèles denses de plus grande taille, tout en minimisant la latence et les exigences en ressources de calcul.",
+        "size_desc": "Le modèle possède un total de 8,3 milliards de paramètres. Grâce à une architecture de mélange d'experts (Mixture of Experts, MoE), l'activation est limitée à environ 1,5 milliard de paramètres par jeton lors de l'inférence. Cette configuration lui permet d'atteindre une performance généralement associée aux modèles denses de la classe des 3 à 4 milliards de paramètres, avec une vitesse d'exécution comparable à celle des modèles de 1,5 milliard de paramètres. Il est proposé dans des variantes quantifiées optimisées pour les environnements locaux (comme par exemple pour un smartphone). La fenêtre de contexte est limitée à 32 000 jetons.",
+        "fyi": "LFM2-8B-A1B est basé sur une architecture hybride intégrant des blocs de convolution ainsi que des mécanismes d'Attention à Requêtes Groupées (GQA). L'implémentation de mélange d'experts (MoE) est composée de 32 experts par bloc de transformation. Le \"routeur\" sélectionne et active les 4 meilleurs experts (top-4 gating) pour le traitement de chaque jeton. Cette conception vise à établir une référence pour les modèles de mélange d'experts optimisés pour l'inférence locale.",
+        "new": true
       }
     ]
   },
