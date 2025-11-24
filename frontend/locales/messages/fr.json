@@ -1456,7 +1456,97 @@
             "tabLabel": "FAQ"
         },
         "history": {
-            "tabLabel": "Historique du projet"
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "Mars 2025",
+                            "desc": "Création et mise à disposition du premier jeu de données compar:IA en français regroupant les questions et préférences des utilisateurs de la plateforme.",
+                            "title": "50 000 votes sur le comparateur !"
+                        },
+                        "2": {
+                            "date": "Mai 2025",
+                            "desc": "Et première réutilisation du jeu de données avec Bunka.ai qui a mené une <a {linkProps}>étude approfondie</a> sur les interactions entre les utilisateurs de la plateforme.",
+                            "title": "Objectif des 100 000 votes atteint !"
+                        },
+                        "3": {
+                            "date": "Juin 2025",
+                            "desc": "Mise à disposition de ces trois jeux de données, conversations, réactions, votes, sur <a {hgLinkProps}>HuggingFace</a> et <a {dataLinkProps}>Data.gouv.fr</a>.",
+                            "title": "Publication des trois jeux de données compar:IA"
+                        }
+                    },
+                    "tag": "Accélération"
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "Juin-Sept 2024",
+                            "desc": "Développement des premières fonctionnalités du comparateur et intégrations des retours des premiers bêta-testeurs.",
+                            "title": "Conception du produit minimum viable"
+                        },
+                        "2": {
+                            "date": "Octobre 2024",
+                            "desc": "Présentation officielle et premiers déploiements de l’outil.",
+                            "title": "Lancement officiel lors du Sommet de la francophonie à Villers Cotterêts !"
+                        },
+                        "3": {
+                            "date": "Janvier 2025",
+                            "desc": "Lancement de la nouvelle fonctionnalité de choix du mode de sélection des modèles.",
+                            "title": "compar:IA v2"
+                        },
+                        "4": {
+                            "date": "Février 2025",
+                            "desc": "Plus de 300 personnes dans le cadre de conférences et d’ateliers dédiés aux enjeux éthiques, culturels et environnementaux des systèmes d'IA conversationnelle.",
+                            "title": "<a {linkProps}>Journée comparIA à la BnF</a> pendant le sommet pour l’action sur l’IA"
+                        }
+                    },
+                    "tag": "Construction"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Été 2025",
+                            "desc": "Partenariat avec le Danemark, la Suède et la Lituanie pour ouvrir le service dans leur langue.",
+                            "title": "Extension à l’échelle européenne"
+                        },
+                        "2": {
+                            "date": "Septembre 2025",
+                            "desc": "Création de ce nouveau format d’atelier ouvert à tout public, pour découvrir les coulisses des IA génératives et réfléchir à leur impact environnemental, et publication du kit de facilitation associé à l’extension « Duels de l’IA ».",
+                            "title": "Lancement des <a {linkProps}>« Duels de l’IA »</a>"
+                        },
+                        "3": {
+                            "desc": "Construit en partenariat avec le Pôle d'Expertise de la Régulation Numérique (<a {linkProps}>PEReN</a>), le classement compar:IA repose sur l’ensemble des votes et réactions collectés depuis l’ouverture du service au public en octobre 2024.",
+                            "title": "Publication du <a {linkProps}>classement compar:IA</a>"
+                        },
+                        "4": {
+                            "desc": "Le Danemark rejoint l’aventure en proposant le comparateur dans sa langue national avec un nom de domaine dédié.",
+                            "title": "Ouverture de compar:IA <a {linkProps}>en danois</a>"
+                        },
+                        "5": {
+                            "desc": "Le service est reconnu comme un bien public numérique par l’Alliance Digital Public Goods.",
+                            "title": "compar:IA reconnu comme <a {linkProps}>Bien Commun numérique</a>"
+                        },
+                        "6": {
+                            "date": "Novembre 2025",
+                            "desc": "Avec plus de 500 000 conversations uniques depuis le lancement de compar:IA.",
+                            "title": "Objectif des 200 000 votes atteint !"
+                        }
+                    },
+                    "tag": "Internationalisation"
+                },
+                "investigation": {
+                    "items": {
+                        "1": {
+                            "date": "Janv-Mars 2024",
+                            "desc": "Entretiens avec des acteurs de l’écosystème et premières hypothèses de solution sur la problématique : « Comment faciliter l’accès à des données en français pour l’entrainement des modèles de langue ? ».",
+                            "title": "Phase d’investigation"
+                        }
+                    },
+                    "tag": "Investigation"
+                }
+            },
+            "tabLabel": "Dates clés",
+            "title": "compar:IA en quelques dates"
         },
         "partners": {
             "academy": {
@@ -1757,7 +1847,7 @@
             "donnees-personnelles": "Politique de confidentialité",
             "duel": "Atelier Duel de l’IA",
             "faq": "FAQ",
-            "history": "Historique du projet",
+            "history": "Dates clés",
             "home": "Accueil",
             "mentions-legales": "Mentions légales",
             "modalites": "Modalités d’utilisation",
