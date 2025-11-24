@@ -12,13 +12,11 @@ from languia import config
 
 app = FastAPI()
 
-origins = zip([
+origins = [
     "http://localhost",
     "http://localhost:3000",
     "http://localhost:5173",
-    "http://localhost:8000"],
-    config.ADDITIONAL_CORS_ORIGINS
-)
+    "http://localhost:8000"]
 
 app.add_middleware(
     CORSMiddleware,
