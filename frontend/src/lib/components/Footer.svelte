@@ -1,10 +1,12 @@
 <script lang="ts">
   import ThemeSelector from '$components/ThemeSelector.svelte'
+  import { getI18nContext } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale } from '$lib/i18n/runtime'
   import { externalLinkProps, sanitize } from '$lib/utils/commons'
 
   const locale = getLocale()
+  const i18nData = getI18nContext()
 
   const links = (
     [
@@ -58,7 +60,8 @@
           <strong>{m['footer.helpUs']()}</strong><br />
           {@html sanitize(
             m['footer.writeUs']({
-              linkProps: externalLinkProps('https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX')
+              formLinkProps: externalLinkProps('https://adtk8x51mbw.eu.typeform.com/to/duuGRyEX'),
+              contactLinkProps: externalLinkProps(`mailto:${i18nData.contact}`)
             })
           )}
         </p>

@@ -265,7 +265,7 @@
             "sources": "Source code",
             "tos": "Terms of use"
         },
-        "writeUs": "If you encounter a problem or have feedback on the chatbot arena, feel free to write to us <a {linkProps}>using this form</a> - we read every message.<br />Thank you!"
+        "writeUs": "If you encounter a problem or have feedback on the chatbot arena, feel free to write to us <a {formLinkProps}>using this form</a> - we read every message.<br />Thank you!"
     },
     "general": {
         "a11y": {

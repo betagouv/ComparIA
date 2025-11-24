@@ -265,7 +265,7 @@
             "sources": "Code source",
             "tos": "Modalités d'utilisation"
         },
-        "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {linkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !"
+        "writeUs": "Si vous rencontrez un problème ou si vous avez un commentaire sur le comparateur, n'hésitez pas à nous écrire <a {formLinkProps}>via ce formulaire</a>, nous lisons tous vos messages.<br />Merci !"
     },
     "general": {
         "a11y": {

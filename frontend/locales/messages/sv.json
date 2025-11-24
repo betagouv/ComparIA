@@ -265,7 +265,7 @@
             "sources": "Källkod",
             "tos": "Användarvillkor"
         },
-        "writeUs": "Om du stöter på problem eller har kommentarer om jämförelseverktyget är du välkommen att skriva till oss med hjälp av <a {linkProps}>det här formuläret</a>. Vi läser alla meddelanden.<br />Tack!"
+        "writeUs": "Om du stöter på problem eller har kommentarer om jämförelseverktyget är du välkommen att skriva till oss med hjälp av <a {formLinkProps}>det här formuläret</a>. Vi läser alla meddelanden.<br />Tack!"
     },
     "general": {
         "a11y": {
