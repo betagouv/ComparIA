@@ -104,23 +104,26 @@
 
   {#each steps as step}
     <div class="relative pb-8">
-      <div class="ms-[196px]">
+      <div class="md:ms-[196px]">
         <Badge
           text={step.tag}
           variant="blue-ecume"
-          class="text-(--blue-france-sun-113-625)! mb-6 ms-4"
+          class="text-(--blue-france-sun-113-625)! mb-6 md:ms-4"
         />
       </div>
 
       {#each step.items as item}
+        {#if item.date}
+          <p class="ms-7! font-bold md:hidden">{item.date}</p>
+        {/if}
         <div class="flex gap-4">
-          <div class="flex w-[196px] min-w-[196px] gap-4">
+          <div class="flex gap-4 md:w-[196px] md:min-w-[196px]">
             {#if item.date}
-              <p class="w-full text-end font-bold">{item.date}</p>
+              <p class="hidden w-full text-end font-bold md:block">{item.date}</p>
             {/if}
             <div
               class={[
-                'z-1 border-3 ms-auto h-[26px] min-w-[26px] rounded-full',
+                'z-1 border-3 h-[26px] w-[26px] min-w-[26px] rounded-full md:ms-auto',
                 item.special
                   ? 'bg-(--green-tilleul-verveine-975-75) border-[#FFCC00]'
                   : 'border-primary bg-white'
@@ -135,7 +138,7 @@
       {/each}
 
       <div
-        class="absolute left-[182px] top-14 h-full border-s-2 border-dashed border-[#CECECE]"
+        class="absolute left-[12px] top-14 h-full border-s-2 border-dashed border-[#CECECE] md:left-[182px]"
         class:hidden={step.key === 'investigation'}
       ></div>
     </div>
