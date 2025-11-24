@@ -12,7 +12,7 @@ from languia.models import filter_enabled_models
 
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
-OBJECTIVE = 200_000
+OBJECTIVES = {"fr": 250_000, "da": 10_000}
 
 MAX_INPUT_CHARS_PER_HOUR = 200_000
 

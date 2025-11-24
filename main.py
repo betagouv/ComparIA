@@ -46,9 +46,7 @@ app = gr.mount_gradio_app(
     show_error=config.debug,
 )
 
-from languia.utils import get_gauge_count, get_country_portal_count
-
-objective = config.OBJECTIVE
+from languia.utils import get_country_portal_count
 
 
 @app.get("/", response_class=JSONResponse)
@@ -86,13 +84,15 @@ async def counter(
     
     if hostname == "ai-arenaen.dk" or country_portal == "da":
         count = get_country_portal_count('da')
+        objective = config.OBJECTIVES.get("da")
     else:
-        count = get_gauge_count()
+        count = get_country_portal_count('fr')
+        objective = config.OBJECTIVES.get("fr")
     
     return JSONResponse(
         {
             "count": count,
-            "objective": config.OBJECTIVE,
+            "objective": objective,
         }
     )
 
