@@ -264,7 +264,7 @@
         "params": 32,
         "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
         "endpoint": {
-          "api_type": "huggingface",
+          "api_type": "openai",
           "api_model_id": "c4ai-aya-expanse-32b",
           "api_base": "https://router.huggingface.co/cohere/compatibility/v1/"
         },
@@ -476,6 +476,7 @@
         "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio.",
         "new": true,
         "endpoint": {
+          "vertex_ai_location": "global",
           "api_type": "vertex_ai",
           "api_model_id": "google/gemini-3-pro-preview"
         }
