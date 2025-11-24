@@ -1,8 +1,11 @@
 <script lang="ts">
   import { browser } from '$app/environment'
+  import { goto } from '$app/navigation'
+  import { page } from '$app/state'
   import Toaster from '$components/Toaster.svelte'
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { setModelsContext } from '$lib/models'
+  import { onMount } from 'svelte'
   import '../css/app.css'
 
   if (browser) {
@@ -12,6 +15,13 @@
   }
 
   let { children, data } = $props()
+
+  onMount(() => {
+    // Remove locale param to avoid locale changes override problems
+    const params = new URLSearchParams(page.url.searchParams)
+    params.delete('locale')
+    goto(`?${params}`)
+  })
 
   setVotesContext(data.votes)
   setModelsContext(data.data)

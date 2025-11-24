@@ -10,9 +10,11 @@
   const currentLocale = getLocale()
 
   function onLocaleSelect(locale: LocaleOption) {
-    if (page.url.hostname !== locale.host) {
-      setLocale(locale.code, { reload: false })
-      window.location.host = locale.host
+    if (page.url.host !== locale.host) {
+      const url = new URL(window.location.href)
+      url.host = locale.host
+      url.search = `locale=${locale.code}`
+      window.location.href = url.href
     } else {
       setLocale(locale.code)
     }
