@@ -253,6 +253,7 @@
     },
     "footer": {
         "backHome": "Retour à l'accueil du site - compar:IA",
+        "dpg": "Le service est reconnu comme un bien public numérique par l’Alliance Digital Public Goods",
         "helpUs": "Aidez-nous à améliorer ce service !",
         "license": {
             "linkTitle": "Licence etalab - nouvelle fenêtre",

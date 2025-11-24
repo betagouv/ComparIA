@@ -29,31 +29,46 @@
 <footer class="fr-footer fr-pb-2w" role="contentinfo" id="main-footer">
   <div class="fr-container">
     <div class="fr-footer__body">
-      <div class="fr-footer__brand fr-enlarge-link">
-        <a href="/" title={m['footer.backHome']()}>
-          {#if locale === 'fr' || locale === 'en'}
-            <p class="fr-logo">
-              Ministère<br />de la culture
-            </p>
-          {:else if locale === 'da'}
-            <img
-              src={`/orgs/countries/da-light.png`}
-              alt={m['header.logoAlt']()}
-              class="max-h-[80px] dark:hidden"
-            />
-            <img
-              src={`/orgs/countries/da-dark.png`}
-              alt={m['header.logoAlt']()}
-              class="hidden max-h-[80px] dark:block"
-            />
-          {:else}
-            <img
-              src={`/orgs/countries/${locale}.png`}
-              alt={m['header.logoAlt']()}
-              class="max-h-[100px]"
-            />
-          {/if}
-        </a>
+      <div class="flex gap-8">
+        <div class="fr-footer__brand fr-enlarge-link">
+          <div class="">
+            <a href="/" title={m['footer.backHome']()}>
+              {#if locale === 'fr' || locale === 'en'}
+                <p class="fr-logo">
+                  Ministère<br />de la culture
+                </p>
+              {:else if locale === 'da'}
+                <img
+                  src={`/orgs/countries/da-light.png`}
+                  alt={m['header.logoAlt']()}
+                  class="max-h-[80px] dark:hidden"
+                />
+                <img
+                  src={`/orgs/countries/da-dark.png`}
+                  alt={m['header.logoAlt']()}
+                  class="hidden max-h-[80px] dark:block"
+                />
+              {:else}
+                <img
+                  src={`/orgs/countries/${locale}.png`}
+                  alt={m['header.logoAlt']()}
+                  class="max-h-[100px]"
+                />
+              {/if}
+            </a>
+          </div>
+        </div>
+
+        <div class="fr-footer__brand fr-enlarge-link flex-col! items-start! max-w-[165px] gap-3">
+          <a
+            href="https://www.digitalpublicgoods.net/r/comparia"
+            target="_blank"
+            class="after:content-none!"
+          >
+            <img src={`/orgs/dpg.png`} alt="DPG" class="max-h-[47px]" />
+          </a>
+          <p class="text-[11px]! leading-normal! mb-0!">{m['footer.dpg']()}</p>
+        </div>
       </div>
       <div class="fr-footer__content">
         <p class="fr-footer__content-desc">
