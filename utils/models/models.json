@@ -264,7 +264,7 @@
         "params": 32,
         "url": "https://huggingface.co/CohereForAI/aya-expanse-32b",
         "endpoint": {
-          "api_type": "huggingface",
+          "api_type": "openai",
           "api_model_id": "c4ai-aya-expanse-32b",
           "api_base": "https://router.huggingface.co/cohere/compatibility/v1/"
         },
