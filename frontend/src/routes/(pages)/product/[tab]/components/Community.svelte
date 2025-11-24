@@ -108,12 +108,16 @@
   <div class="grid gap-x-9 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
     {#each frTeam as person}
       <div class="cg-border cl-card p-4! flex gap-5">
-        <img
-          src={'/product/community/' + person.imgSrc}
-          aria-hidden="true"
-          alt=""
-          class="h-[100px] w-[100px] rounded-full"
-        />
+        <div
+          class="after:bg-primary relative h-[100px] min-w-[100px] after:absolute after:inset-0 after:rounded-full after:opacity-10 after:content-['']"
+        >
+          <img
+            src={'/product/community/' + person.imgSrc}
+            aria-hidden="true"
+            alt=""
+            class="saturate-80 h-[100px] w-[100px] rounded-full"
+          />
+        </div>
         <div class="flex flex-col">
           <p class="mb-2! font-bold">{person.name}</p>
           <p class="text-grey text-[12px]! leading-normal! mb-0!">{person.job}</p>
