@@ -11,7 +11,7 @@
       { id: 'comparator' },
       { id: 'problem' },
       { id: 'community' },
-      // { id: 'history' },
+      { id: 'history' },
       { id: 'faq' },
       { id: 'partners' }
     ] as const
@@ -41,8 +41,8 @@
           <Problem />
         {:else if id === 'community'}
           <Community />
-          <!-- {:else if id === 'history'}
-          <History /> -->
+        {:else if id === 'history'}
+          <History />
         {:else if id === 'faq'}
           <FAQ />
         {:else if id === 'partners'}
@@ -55,7 +55,7 @@
 
 <style>
   /* FIXME remove when avaible */
-  :global(#tab-community) {
+  :global(#tab-community, #tab-history) {
     display: none;
   }
 </style>
