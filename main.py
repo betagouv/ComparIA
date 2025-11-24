@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -75,11 +75,11 @@ from typing import Annotated, Optional
 
 @app.get("/counter", response_class=JSONResponse)
 async def counter(
-    request,
-    c: Annotated[Optional[str], Query(alias="c", max_length=2)] = None
+    request: Request,
+    c: str | None = None,
 ):
     # Get hostname from request headers
-    hostname = request.headers.get("host", "")
+    hostname = request.client.host
     
     # Check if we should use country portal count based on hostname or query parameter
     country_portal = request.query_params.get("c")
