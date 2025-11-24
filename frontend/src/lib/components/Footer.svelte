@@ -29,7 +29,7 @@
 <footer class="fr-footer fr-pb-2w" role="contentinfo" id="main-footer">
   <div class="fr-container">
     <div class="fr-footer__body">
-      <div class="flex gap-8">
+      <div class="flex flex-wrap gap-8 lg:basis-1/2">
         <div class="fr-footer__brand fr-enlarge-link">
           <div class="">
             <a href="/" title={m['footer.backHome']()}>
@@ -41,12 +41,12 @@
                 <img
                   src={`/orgs/countries/da-light.png`}
                   alt={m['header.logoAlt']()}
-                  class="max-h-[80px] dark:hidden"
+                  class="max-h-[70px] dark:hidden"
                 />
                 <img
                   src={`/orgs/countries/da-dark.png`}
                   alt={m['header.logoAlt']()}
-                  class="hidden max-h-[80px] dark:block"
+                  class="hidden max-h-[70px] dark:block"
                 />
               {:else}
                 <img
