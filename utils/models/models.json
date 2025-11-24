@@ -468,7 +468,6 @@
         "id": "gemini-3-pro-preview",
         "release_date": "11/2025",
         "params": 750,
-        "status":"disabled",
         "active_params": 45,
         "arch": "moe",
         "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
