@@ -1,3 +1,16 @@
+"""
+Configuration and initialization for ComparIA application.
+
+Handles:
+- Environment variable parsing
+- Logger setup (console, file, PostgreSQL)
+- Sentry error tracking configuration
+- Model loading and categorization
+- Database connection setup
+- API timeout settings
+- Rate limiting thresholds
+"""
+
 import os
 import sentry_sdk
 import json5
@@ -10,42 +23,77 @@ from languia.logs import JSONFormatter, PostgresHandler
 from httpx import Timeout
 from languia.models import filter_enabled_models
 
+# HTTP timeout for API calls to LLM providers
+# Structure: total timeout, read, write, connect (all in seconds)
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
+# Per-country objectives for data collection (rows to collect)
 OBJECTIVES = {"fr": 250_000, "da": 10_000}
 
+# Maximum input characters per IP per hour (rate limiting)
 MAX_INPUT_CHARS_PER_HOUR = 200_000
 
-SMALL_MODELS_BUCKET_UPPER_LIMIT = 60
-BIG_MODELS_BUCKET_LOWER_LIMIT = 100
+# Model parameter thresholds for categorization
+SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
+BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
 
+# Debug mode flag from environment variable
 env_debug = os.getenv("LANGUIA_DEBUG")
 
+# Rate limiting specifically for expensive models (openai models, etc.)
 RATELIMIT_PRICEY_MODELS_INPUT = 50_000
+
+# Character limit for blind mode (comparison without model names)
 BLIND_MODE_INPUT_CHAR_LEN_LIMIT = 60_000
 
-# unavailable models won't be sampled.
+# Models that should not be sampled/selected (can be populated from config)
 unavailable_models = []
 
+# Parse debug flag from environment
 if env_debug:
-    if env_debug.lower() == "true":
-        debug = True
-    else:
-        debug = False
+    debug = env_debug.lower() == "true"
 else:
     debug = False
 
+# Log file naming with hostname and timestamp
 t = datetime.datetime.now()
 hostname = os.uname().nodename
 log_filename = f"logs-{hostname}-{t.year}-{t.month:02d}-{t.day:02d}.jsonl"
 
+# Directory for local JSON log files (fallback storage)
 LOGDIR = os.getenv("LOGDIR", "./data")
 
+# PostgreSQL connection string for database persistence
 db = os.getenv("COMPARIA_DB_URI", None)
+
+# Enable PostgreSQL logging handler (can be disabled for testing)
 enable_postgres_handler = True
 
 
 def build_logger(logger_filename):
+    """
+    Configure and initialize application logger with multiple handlers.
+
+    Sets up three logging destinations:
+    1. Console (stdout) - human-readable format
+    2. File (JSONL) - structured JSON for log analysis
+    3. PostgreSQL - centralized database logging
+
+    The logger uses different formatting for console vs file:
+    - Console: Human-readable timestamp and function name
+    - File: Structured JSON with request context
+
+    Args:
+        logger_filename: Filename for JSONL log output (relative to LOGDIR)
+
+    Returns:
+        Logger: Configured logger instance for "languia"
+
+    Environment Variables:
+        - LANGUIA_DEBUG: Set to "true" for DEBUG level, "false" for INFO
+        - LOGDIR: Directory for log files (default "./data")
+        - COMPARIA_DB_URI: PostgreSQL connection string for database logging
+    """
     # TODO: log "funcName"
     logger = logging.getLogger("languia")
     if debug:
@@ -129,30 +177,43 @@ if os.getenv("SENTRY_DSN"):
         + str(git_commit)
     )
 
+# Load model definitions from generated configuration
+# File contains metadata: params, pricing, reasoning capability, licenses, etc.
 all_models_data = json5.loads(Path("./utils/models/generated-models.json").read_text())
 
+# Filter to only enabled models (removes disabled or deprecated models)
 models = filter_enabled_models(all_models_data["models"])
 
+# Models with extended reasoning capability (o1-like models)
+# Used for "reasoning" selection mode
 reasoning_models = [id for id, model in models.items() if model.get("reasoning", False)]
 
+# All models except reasoning models (for standard random selection)
 random_pool = [id for id, _model in models.items() if id not in reasoning_models]
 
+# Models with parameters <= 60B (for "small-models" selection mode)
 small_models = [
     id
     for id, model in models.items()
     if model["params"] <= SMALL_MODELS_BUCKET_UPPER_LIMIT and id not in reasoning_models
 ]
 
+# Models with parameters >= 100B (for "big-vs-small" selection mode)
 big_models = [
     id
     for id, model in models.items()
     if model["params"] >= BIG_MODELS_BUCKET_LOWER_LIMIT and id not in reasoning_models
 ]
 
+# Commercial models with higher API costs (e.g., Claude, GPT-4)
+# These have stricter rate limits applied
 pricey_models = [id for id, model in models.items() if model.get("pricey", False)]
 
+# HTTP headers for API requests (identifies as FastChat client)
 headers = {"User-Agent": "FastChat Client"}
 
+# URL of FastChat controller for local model serving (optional)
+# Used when serving models through FastChat instead of external APIs
 if os.getenv("LANGUIA_CONTROLLER_URL") is not None:
     controller_url = os.getenv("LANGUIA_CONTROLLER_URL")
 else:
@@ -160,7 +221,25 @@ else:
 
 
 def get_model_system_prompt(model_name):
+    """
+    Get model-specific system prompt if configured.
+
+    Allows customization of model behavior through system prompts.
+    Currently only specific French models (chocolatine, lfm-40b) have custom prompts.
+    Other models use None (no system prompt by default).
+
+    Args:
+        model_name: Model identifier (e.g., "openai/gpt-4", "chocolatine")
+
+    Returns:
+        str: French system prompt, or None for no custom system prompt
+
+    Note:
+        The system prompt is included in conversations when provided.
+        This ensures consistent behavior across multiple conversations.
+    """
     if "chocolatine" in model_name or "lfm-40b" in model_name:
+        # French system prompt for helpful and concise responses
         return "Tu es un assistant IA serviable et bienveillant. Tu fais des réponses concises et précises."
     else:
         return None

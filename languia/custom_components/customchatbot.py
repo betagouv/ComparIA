@@ -112,16 +112,55 @@ if TYPE_CHECKING:
 def import_component_and_data(
     component_name: str,
 ) -> GradioComponent | ComponentMeta | Any | None:
+    """
+    Dynamically import and retrieve a Gradio component by name.
+
+    Searches through all available Gradio components and returns the component class
+    that matches the given name. Used to dynamically load custom or built-in Gradio
+    components without hardcoding imports.
+
+    Args:
+        component_name: Name of the component class to import (e.g., "Textbox", "Button")
+
+    Returns:
+        ComponentMeta: The component class if found
+        None: If component not found after searching all components
+
+    Raises:
+        ValueError: If ModuleNotFoundError occurs during component discovery
+
+    Process:
+        1. Get all available Gradio components from utils
+        2. Iterate through each component
+        3. Match by class name (exact string comparison)
+        4. Verify component is a ComponentMeta instance
+        5. Return the matching component class
+        6. If not found, return None silently
+
+    Example:
+        >>> textbox_class = import_component_and_data("Textbox")
+        >>> textbox_instance = textbox_class()
+
+    Note:
+        - Returns None if component not found (no exception raised)
+        - Catches and ignores AttributeError (some components may not have __name__)
+        - Re-raises ModuleNotFoundError as ValueError
+    """
     try:
+        # Iterate through all available Gradio components
         for component in utils.get_all_components():
+            # Match component by class name and verify it's a Gradio component meta
             if component_name == component.__name__ and isinstance(
                 component, ComponentMeta
             ):
                 return component
     except ModuleNotFoundError as e:
+        # Re-raise module errors with better context
         raise ValueError(f"Error importing {component_name}: {e}") from e
     except AttributeError:
+        # Some components may not have __name__ attribute; skip silently
         pass
+    # Return None if no matching component found (instead of raising error)
 
 
 class CustomChatbot(Component):
