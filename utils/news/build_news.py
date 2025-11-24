@@ -32,7 +32,7 @@ class News(BaseModel):
     title: str
     desc: str
     imgSrc: str
-    href: str
+    href: str | None = None
     date: datetime | None = None
     linkLabel: str | None = None
     pinned: bool | None = None

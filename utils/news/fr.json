@@ -52,7 +52,8 @@
     "desc": "Accédez au replay de la présentation de comparIA lors de la session de pitchs « 6 modèles ouverts pour mettre vraiment l'IA à son service »",
     "imgSrc": "nec-pitch.jpg",
     "date": "2025-10-29",
-    "href": ""
+    "linkLabel": "Accédez bientôt au replay",
+    "href": null
   },
   {
     "kind": "media",
