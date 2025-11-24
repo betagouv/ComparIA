@@ -406,9 +406,9 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     from psycopg2 import sql
     from languia.config import db as dsn
     from languia.session import r
+    logger = logging.getLogger("languia")
     
     cache_key = f"{country_code}_count"
-    
     # Try Redis first
     if r:
         try:
@@ -416,10 +416,9 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
             if count is not None:
                 return int(count)
         except Exception as e:
-            logger.error(f"Error getting {country_code} count from Redis: {e}")
+            logger.debug(f"cache miss for {country_code} count from Redis: {e}")
 
     # Fallback to Postgres
-    logger = logging.getLogger("languia")
     if not dsn:
         logger.warning("Cannot log to db: no db configured")
         return 0
@@ -445,7 +444,6 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0
 
-        # Update Redis with configurable TTL
         if r:
             try:
                 r.setex(cache_key, ttl, result)
