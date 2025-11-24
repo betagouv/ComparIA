@@ -1,5 +1,8 @@
 """
-Utilities to communicate with different APIs
+LiteLLM integration for unified API communication.
+
+This module provides a unified interface to call different LLM APIs (OpenAI, Google Vertex AI,
+OpenRouter, etc.) through LiteLLM, handling streaming responses, token counting, and error handling.
 """
 
 import os
@@ -13,6 +16,7 @@ from languia.utils import strip_metadata, ContextTooLongError
 
 # from langfuse import get_client, observe
 
+# Load Google Cloud credentials for Vertex AI if available
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "r") as file:
         vertex_credentials = json.load(file)
@@ -23,7 +27,7 @@ else:
     vertex_credentials_json = None
 
 
-# @observe(as_type="generation")
+# @observe(as_type="generation") - Langfuse integration (commented out)
 def litellm_stream_iter(
     model_name,
     messages,
@@ -37,16 +41,40 @@ def litellm_stream_iter(
     include_reasoning=False,
     enable_reasoning=False,
 ):
+    """
+    Stream responses from an LLM API using LiteLLM.
 
-    # Too verbose:
+    This function handles unified API calls to various LLM providers through LiteLLM,
+    manages streaming responses, and processes tokens and metadata.
+
+    Args:
+        model_name: Model identifier in LiteLLM format (e.g., "openai/gpt-4")
+        messages: List of message dicts with role/content
+        temperature: Sampling temperature for response diversity
+        max_new_tokens: Maximum tokens to generate
+        api_base: Optional API base URL override
+        api_key: API key for the provider
+        request: Gradio request for logging context
+        api_version: Optional API version (e.g., for Azure)
+        vertex_ai_location: Google Vertex AI region
+        include_reasoning: Whether to include reasoning in response
+        enable_reasoning: Whether to enable reasoning mode
+
+    Yields:
+        Dict containing: text, reasoning, output_tokens, generation_id
+    """
+
+    # Debug mode can be enabled but is very verbose for streaming
     # from languia.config import debug
     # if debug:
     #     litellm._turn_on_debug()
 
+    # Configure Sentry error tracking if available
     if os.getenv("SENTRY_DSN"):
         litellm.input_callback = ["sentry"]  # adds sentry breadcrumbing
         litellm.failure_callback.append("sentry")
 
+    # Set Vertex AI location for Google Cloud models
     if not vertex_ai_location and os.getenv("VERTEXAI_LOCATION"):
         litellm.vertex_location = os.getenv("VERTEXAI_LOCATION")
     else:
@@ -76,74 +104,74 @@ def litellm_stream_iter(
     #     session_id=session_id,
     # )
 
+    # Remove custom metadata from messages before sending to API
     messages = strip_metadata(messages)
     logging.debug("stripping metadata")
 
-    # Check for mock response environment variable
+    # Check for mock response environment variable (useful for testing/demo)
     mock_response = os.getenv("MOCK_RESPONSE")
     if mock_response:
         logger = logging.getLogger("languia")
         logger.warning(f"MOCK_RESPONSE enabled with value: {mock_response}")
 
+    # Build parameters for LiteLLM API call
     kwargs = {
         "api_version": api_version,
         "timeout": GLOBAL_TIMEOUT,
         "stream_timeout": 30,
         "base_url": api_base,
         "api_key": api_key,
-        # max_retries=
+        # max_retries can be added if needed
         "model": model_name,
         "messages": messages,
         "temperature": temperature,
         "max_tokens": max_new_tokens,
-        "stream": True,
+        "stream": True,  # Enable streaming for real-time responses
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
-        # manually add langfuse span/trace metadata, see https://github.com/langfuse/langfuse/issues/2238
-        # "metadata": {
-        # "trace_user_id": user_id,
-        # "session_id": session_id,
-        # "langfuse_parent_observation_id": span.id,
-        # "langfuse_trace_id": span.trace_id,
-        # "trace_id": span.trace_id,
-        # "parent_span_id": span.id,
-        # "existing_trace_id": span.trace_id,
-        # "parent_observation_id": span.id,
-        # "generation_id": span.id
-        # },
+        # Langfuse integration can be added via metadata for tracing
     }
 
+    # Use mock response for testing if enabled
     if mock_response:
         kwargs["mock_response"] = mock_response
 
+    # Request token usage reporting (except for Aya which doesn't support it)
     if "c4ai-aya-expanse-32b" not in model_name:
         kwargs["stream_options"] = {"include_usage": True}
 
+    # Enable extended reasoning (e.g., o1 models)
     if include_reasoning:
         kwargs["include_reasoning"] = True
 
+    # Some models support enable_reasoning mode
     if enable_reasoning:
         kwargs["enable_reasoning"] = True
 
+    # Make the API call through LiteLLM
     res = litellm.completion(**kwargs)
 
-    # openrouter specific params
-    # transforms = [""],
-    # route= ""
+    # OpenRouter specific params could be added here
+    # transforms = [""], route= ""
 
+    # Initialize accumulators for streaming response
     text = ""
     reasoning = ""
     logger = logging.getLogger("languia")
 
+    # Data dict to accumulate response metadata
     data = dict()
 
-    for i, chunk in enumerate(res):
+    # Process streaming chunks from the API
+    for chunk in res:
+        # Extract generation ID for tracking/debugging
         if hasattr(chunk, "id"):
             data["generation_id"] = chunk.id
             logger.debug(
                 f"generation_id: {chunk.id} for api {api_base} and model {model_name}",
                 extra={"request": request},
             )
+        # Extract token count from streaming completion (if available)
         if hasattr(chunk, "usage") and hasattr(chunk.usage, "completion_tokens"):
             data["output_tokens"] = chunk.usage.completion_tokens
             logger.debug(
@@ -151,32 +179,41 @@ def litellm_stream_iter(
                 + str(data["output_tokens"]),
                 extra={"request": request},
             )
+        # Process content chunks
         if hasattr(chunk, "choices") and len(chunk.choices) > 0:
+            # Extract delta content and reasoning from chunk
             if hasattr(chunk.choices[0], "delta"):
                 reasoning_delta = ""
+                # Get the text content of this chunk
                 if hasattr(chunk.choices[0].delta, "content"):
                     content = chunk.choices[0].delta.content or ""
                 else:
                     content = ""
+                # Get reasoning content (for reasoning models)
                 if hasattr(chunk.choices[0].delta, "reasoning"):
                     reasoning_delta = chunk.choices[0].delta.reasoning or ""
             else:
                 content = ""
 
+            # Accumulate text and reasoning across chunks
             text += content
             reasoning += reasoning_delta
             data["reasoning"] = reasoning
             data["text"] = text
 
+            # Check for generation completion signal
             if hasattr(chunk.choices[0], "finish_reason"):
                 if chunk.choices[0].finish_reason == "stop":
                     data["text"] = text
                     break
                 elif chunk.choices[0].finish_reason == "length":
+                    # Model hit max tokens limit
                     logger.error(
                         "context_too_long: " + str(chunk), extra={request: request}
                     )
                     raise ContextTooLongError
 
+            # Yield partial results for streaming to frontend
             yield data
+    # Final yield after loop completes
     yield data
