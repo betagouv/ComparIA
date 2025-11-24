@@ -14,7 +14,7 @@
     imgSrc: string
     date?: number
     linkLabel?: string
-    href: string
+    href?: string
     pinned?: boolean
   }
   type Sub = {
@@ -62,6 +62,7 @@
 
   const news = (data as News[]).map((n) => ({
     ...n,
+    href: n.href ?? '#',
     linkLabel:
       n.linkLabel ??
       SUBKINDS[n.kind].subKinds.find((sk) => sk.id === n.subKind)?.linkLabel ??
@@ -73,11 +74,13 @@
     id: k,
     ...SUBKINDS[k],
     legend: SUBKINDS[k].title,
-    options: SUBKINDS[k].subKinds.map((k) => ({
-      value: k.id,
-      label: k.label,
-      count: news.filter((n) => n.subKind === k.id).length
-    })).filter((opt) => opt.count > 0)
+    options: SUBKINDS[k].subKinds
+      .map((k) => ({
+        value: k.id,
+        label: k.label,
+        count: news.filter((n) => n.subKind === k.id).length
+      }))
+      .filter((opt) => opt.count > 0)
   }))
 
   const sortingOptions = [
@@ -221,7 +224,12 @@
               <div class="fr-card__body">
                 <div class="fr-card__content px-5! md:px-4! md:pt-4! pb-18!">
                   <h6 class="fr-card__title text-lg! mb-0!">
-                    <Link href={news.href} text={news.title} class="after:content-none!">
+                    <Link
+                      href={news.href}
+                      text={news.title}
+                      class="after:content-none!"
+                      onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}
+                    >
                       <span class="text-(--grey-50-1000)!">{news.title}</span>
                     </Link>
                   </h6>
@@ -265,8 +273,12 @@
                       <Link
                         href={news.href}
                         text=""
-                        class="text-primary! border-b-1 text-[14px]!"
+                        class={[
+                          'text-[14px]!',
+                          news.href !== '#' ? 'text-primary! border-b-1' : 'text-grey!'
+                        ]}
                         tabindex={-1}
+                        onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}
                       >
                         {news.linkLabel}
                         {#if news.href.startsWith('/')}
