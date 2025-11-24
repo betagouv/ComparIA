@@ -71,20 +71,18 @@ async def available_models():
 from fastapi import Query
 from typing import Annotated, Optional
 
+from languia.utils import get_countr_portal
+
 @app.get("/counter", response_class=JSONResponse)
 async def counter(
     request: Request,
     c: str | None = None,
 ):
-    # Get hostname from request headers
-    hostname = request.client.host
+    hostname = request.headers.get("Host")
     
-    # Check if we should use country portal count based on hostname or query parameter
-    country_portal = request.query_params.get("c")
-    
-    if hostname == "ai-arenaen.dk" or country_portal == "da":
-        count = get_country_portal_count('da')
-        objective = config.OBJECTIVES.get("da")
+    if get_country_portal(hostname) == "dk" or request.query_params.get("c") == "dk":
+        count = get_country_portal_count('dk')
+        objective = config.OBJECTIVES.get("dk")
     else:
         count = get_country_portal_count('fr')
         objective = config.OBJECTIVES.get("fr")

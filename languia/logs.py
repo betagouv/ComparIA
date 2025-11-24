@@ -8,7 +8,6 @@ import logging
 
 import datetime
 
-
 from languia.utils import (
     get_chosen_model_name,
     messages_to_dict_list,
@@ -17,6 +16,7 @@ from languia.utils import (
     get_ip,
     get_matomo_tracker_from_cookies,
     sum_tokens,
+    get_country_portal
 )
 
 LOGDIR = os.getenv("LOGDIR", "./data")
@@ -752,6 +752,9 @@ def record_conversations(
     from languia.config import get_model_system_prompt
 
     # logger = logging.getLogger("languia")
+    hostname = request.headers.get("Host")
+
+    country_portal = get_country_portal(hostname)
 
     conversation_a_messages = messages_to_dict_list(conversations[0].messages)
     conversation_b_messages = messages_to_dict_list(conversations[1].messages)
@@ -806,7 +809,8 @@ def record_conversations(
         "custom_models_selection": json.dumps(custom_models_selection),
         "total_conv_a_output_tokens": sum_tokens(conversations[0].messages),
         "total_conv_b_output_tokens": sum_tokens(conversations[1].messages),
-        "country_portal": locale,
+        "locale": locale,
+        "country_portal": country_portal
     }
 
     conv_log_filename = f"conv-{conv_pair_id}.json"
