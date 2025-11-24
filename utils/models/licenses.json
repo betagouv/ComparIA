@@ -81,5 +81,12 @@
     "reuse": true,
     "commercial_use": true,
     "license_desc": "Cette licence est conçue pour encourager l'utilisation, la modification et la redistribution des logiciels mais inclut une clause stipulant que toutes les versions modifiées ou améliorées doivent être partagées avec la communauté sous la même licence source, favorisant ainsi la collaboration et la transparence dans le développement logiciel."
+  },
+  {
+    "license": "LFM 1.0",
+    "distribution": "open-weights",
+    "reuse": true,
+    "commercial_use": true,
+    "license_desc": "Cette licence mondiale, gratuite et non-exclusive autorise l’usage, la modification et la redistribution du modèle et de ses dérivés, y compris la réutilisation des sorties pour entraîner d’autres modèles. Elle reste permissive, mais limite tout usage commercial aux organisations dont les revenus annuels sont inférieurs à 10 millions de dollars, au-delà desquels l’usage n’est plus couvert."
   }
 ]
