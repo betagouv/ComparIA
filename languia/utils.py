@@ -356,41 +356,6 @@ def to_threeway_chatbot(conversations):
     return threeway_chatbot
 
 
-def get_gauge_count():
-    import psycopg2
-    from psycopg2 import sql
-    from languia.config import db as dsn
-
-    cursor = None
-    conn = None
-    result = 55000
-    logger = logging.getLogger("languia")
-    if not dsn:
-        logger.warning("Cannot log to db: no db configured")
-        return result
-    try:
-        conn = psycopg2.connect(dsn)
-        cursor = conn.cursor()
-        select_statement = sql.SQL(
-            """
-        SELECT 
-(SELECT n_live_tup FROM pg_stat_user_tables WHERE relname='reactions') + 
-(SELECT n_live_tup FROM pg_stat_user_tables WHERE relname='votes') 
-AS total_approx;
-    """
-        )
-        cursor.execute(select_statement)
-        res = cursor.fetchone()
-        result = res[0]
-        return result
-    except Exception as e:
-        logger.error(f"Error getting vote numbers from db: {e}")
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
-
 def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
