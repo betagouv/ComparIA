@@ -81,6 +81,12 @@
   mask-image: url('/icons/dice.svg');
 }
 
+.fr-icon-flag-2-line::before,
+.fr-icon-flag-2-line::after {
+  -webkit-mask-image: url('/icons/flag-2-line.svg');
+  mask-image: url('/icons/flag-2-line.svg');
+}
+
 .fr-icon-glass::before,
 .fr-icon-glass::after {
   -webkit-mask-image: url('/icons/glass.svg');
