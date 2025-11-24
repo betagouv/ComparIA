@@ -1353,6 +1353,49 @@
         }
     },
     "product": {
+        "community": {
+            "countries": {
+                "da": "Danemark",
+                "fr": "France"
+            },
+            "tabLabel": "Communauté",
+            "teams": {
+                "fr": {
+                    "people": {
+                        "aurelien": {
+                            "date": "Depuis Juin 2024",
+                            "job": "Designer produit UX/UI"
+                        },
+                        "elie": {
+                            "date": "Depuis Novembre 2025",
+                            "job": "Développeur Full stack"
+                        },
+                        "hadrien": {
+                            "date": "Juin 2024 - Novembre 2025",
+                            "job": "Développeur Full stack"
+                        },
+                        "lucie": {
+                            "date": "Janvier 2024 - Décembre 2025",
+                            "job": "Fondatrice - cheffe de produit"
+                        },
+                        "mathilde": {
+                            "date": "Depuis Septembre 2024",
+                            "job": "Responsable de l'Atelier numérique / Product Ops"
+                        },
+                        "nicolas": {
+                            "date": "Depuis Juin 2025",
+                            "job": "Développeur Full stack"
+                        },
+                        "simonas": {
+                            "date": "Depuis Décembre 2024",
+                            "job": "Chef de produit - ex chargé de déploiement"
+                        }
+                    },
+                    "title": "L’équipe compar:IA - France"
+                }
+            },
+            "title": "Les partenaires"
+        },
         "comparator": {
             "challenges": {
                 "bias": {
@@ -1682,6 +1725,7 @@
         "titles": {
             "accessibilite": "Déclaration d’accessibilité",
             "arene": "Discussion",
+            "community": "Communauté",
             "comparator": "Le comparateur",
             "datasets": "Jeux de données",
             "donnees-personnelles": "Politique de confidentialité",
