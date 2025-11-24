@@ -12,10 +12,6 @@ from languia.models import filter_enabled_models
 
 GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 
-ADDITIONAL_CORS_ORIGINS = [   
-    "https://ai-arenaen.dk/"
-]
-
 OBJECTIVE = 200_000
 
 MAX_INPUT_CHARS_PER_HOUR = 200_000
