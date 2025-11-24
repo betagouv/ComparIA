@@ -67,9 +67,12 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 }
 
 export const api = {
-  url: dev ? 'http://localhost:8000' : browser ? '' : env.PUBLIC_API_URL,
-  // url: env.PUBLIC_API_URL || 'http://localhost:8000',
-  // FIXME shoud remove PUBLIC_API_URL on prod/stg/dev and set it for local dev only
+  url: (() => {
+    const ssr = !browser; // browser false if SSR
+    if (dev) return 'http://localhost:8000' // if npm run dev
+    else if (ssr) return env.PUBLIC_API_URL
+    else return ''
+  })(),
   client: undefined as Client | undefined,
 
   _getLoadBalancedEndpoint(): string {
