@@ -1260,7 +1260,7 @@
       "endpoint": {
         "api_base": null,
         "api_model_id": "google/gemini-3-pro-preview",
-        "api_type": "vertex_ai"
+        "api_type": "openrouter"
       },
       "friendly_size": "XL",
       "fully_open_source": false,
@@ -1278,7 +1278,7 @@
       "required_ram": 750,
       "reuse": false,
       "simple_name": "Gemini 3 Pro",
-      "status": "disabled",
+      "status": "enabled",
       "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
       "wh_per_million_token": 53761.899999999994
     },

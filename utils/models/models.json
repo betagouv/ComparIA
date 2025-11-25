@@ -468,7 +468,7 @@
         "id": "gemini-3-pro-preview",
         "release_date": "11/2025",
         "params": 750,
-        "status":"disabled",
+        "status": "enabled",
         "active_params": 45,
         "arch": "moe",
         "url": "https://blog.google/products/gemini/gemini-3/#note-from-ceo",
@@ -477,8 +477,7 @@
         "fyi": "Le modèle a été entraîné sur une infrastructure uniquement composée de TPU (Tensor Processing Units). Au moment de sa sortie, le modèle marque un très grand pas en avant au niveau des évaluations - par exemple sur Humanity's Last Exam, ARC-AGI-2 et MathArena Apex. Le modèle est optimisé pour l'usage \"agentique\" : il a été entraîné pour simuler des étapes de planification, utilisation d'outils, exécution du code et auto-correction au sein d'environnements de code. Sa compréhension multimodale a été affinée pour réduire significativement le nombre de jetons nécessaires à l'encodage vidéo et audio.",
         "new": true,
         "endpoint": {
-          "vertex_ai_location": "global",
-          "api_type": "vertex_ai",
+          "api_type": "openrouter",
           "api_model_id": "google/gemini-3-pro-preview"
         }
       },
