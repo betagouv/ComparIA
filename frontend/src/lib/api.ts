@@ -1,9 +1,12 @@
 import { browser, dev } from '$app/environment'
-import { env } from '$env/dynamic/public'
+import { env as publicEnv } from '$env/dynamic/public'
+import { env as privateEnv } from '$env/dynamic/private'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
+
+const BACKEND_URL = privateEnv.PRIVATE_API_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
 
 export interface GradioPayload<T> extends Payload {
   type: 'data'
@@ -69,14 +72,14 @@ async function* iterGradioResponses<T>(responses: GradioSubmitIterable<T>): Asyn
 export const api = {
   url: (() => {
     const ssr = !browser; // browser false if SSR
-    if (dev) return 'http://localhost:8000' // if npm run dev
-    else if (ssr) return env.PUBLIC_API_URL // prod : ssr when code executed by sveltekit -> should be routed inside kube with languiaè-default service
+    if (dev) return 'http://localhost:8001' // if npm run dev - updated to 8001
+    else if (ssr) return BACKEND_URL // prod : ssr when code executed by sveltekit -> use PRIVATE_API_URL for internal service communication
     else return window.location.origin // prod : when browser client contact api
   })(),
   client: undefined as Client | undefined,
 
   _getLoadBalancedEndpoint(): string {
-    const replicas = parseInt(env.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10)
+    const replicas = parseInt(publicEnv.PUBLIC_COMPARIA_LB_REPLICAS || '0', 10)
 
     // No load balancing configured, use single API endpoint
     if (replicas <= 0) {
