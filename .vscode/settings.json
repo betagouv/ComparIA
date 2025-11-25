@@ -17,4 +17,5 @@
     // "python.analysis.inlayHints.callArgumentNames": "off",
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.terminal.executeInFileDir": true,
+    "python.formatting.provider": "black",
 }
