@@ -126,10 +126,11 @@
 <style>
   .message-bot {
     --extra-margin: 2.5rem;
-    max-height: calc(
+    height: calc(
       100vh - var(--second-header-size) - var(--footer-size) - var(--message-size) -
         var(--extra-margin)
     );
+    min-height: 50vh;
   }
   @media (min-width: 48em) {
     .message-bot {
