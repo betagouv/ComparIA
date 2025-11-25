@@ -179,7 +179,6 @@ For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_meth
 - `languia`: backend code.
   Most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py` with `languia/config.py` for config.
   It runs on port 8000 by default. Backend is a mounted `gradio.Blocks` within a FastAPI app.
-- `demo.py`: the Python file for Gradio's `gr.Blocks` configuration
 
 - `docker/`: Docker config
 - `utils/`: utilities for models generation and maintenance, ranking methods (Elo, maximum likelihood), database schemas, and dataset export to HuggingFace

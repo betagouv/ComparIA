@@ -262,10 +262,9 @@ def strip_metadata(messages: list[dict]) -> list[dict]:
     for message in messages:
         # Keep only role and content, drop metadata
         if "content" in message:
-            stripped_messages.append({
-                "role": message["role"],
-                "content": message["content"]
-            })
+            stripped_messages.append(
+                {"role": message["role"], "content": message["content"]}
+            )
         else:
             # Handle missing content gracefully
             stripped_messages.append({
@@ -524,6 +523,9 @@ def get_api_key(endpoint: "Endpoint"):
         str: API key, or None if using standard provider (OpenRouter/Vertex)
     """
     # Albert is French government LLM
+    # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
+
+    # "api_type": "huggingface/cohere" doesn't work, using the openai api type and api_base="https://router.huggingface.co/cohere/compatibility/v1/"
     if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get(
         "api_base"
     ):
@@ -533,6 +535,8 @@ def get_api_key(endpoint: "Endpoint"):
         return os.getenv("HF_INFERENCE_KEY")
     # OpenRouter and Vertex AI are handled by LiteLLM reading env variables directly
     # OPENROUTER_API_KEY and Google credentials are checked automatically
+    # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value
+    # And no need for Vertex, handled with GOOGLE_APPLICATION_CREDENTIALS pointing to a json file
     return None
 
 
@@ -548,7 +552,9 @@ def sum_tokens(messages) -> int:
     """
     # Add up output_tokens from metadata of all assistant messages
     total_output_tokens = sum(
-        msg.metadata.get("output_tokens") for msg in messages if msg.role == "assistant"
+        msg.metadata.get("output_tokens", 0) or 0
+        for msg in messages
+        if msg.role == "assistant"
     )
     return total_output_tokens
 
@@ -617,11 +623,11 @@ def to_threeway_chatbot(conversations):
 def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
-    
+
     Args:
         country_code: The country code to filter by (e.g., 'da' for Danish)
         ttl: Time-to-live for Redis cache in seconds (default: 120 seconds = 2 minutes)
-        
+
     Returns:
         The count of votes and reactions for the specified country portal
     """
@@ -629,8 +635,9 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     from psycopg2 import sql
     from languia.config import db as dsn
     from languia.session import r
+
     logger = logging.getLogger("languia")
-    
+
     cache_key = f"{country_code}_count"
     # Try Redis first
     if r:
@@ -653,7 +660,8 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
         conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
         # Count votes and reactions linked to conversations with country_portal
-        query = sql.SQL("""
+        query = sql.SQL(
+            """
             SELECT
                 (SELECT COUNT(*) FROM votes v
                  JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
@@ -662,7 +670,8 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
                  JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
                  WHERE c.country_portal = %s)
             as total;
-        """)
+        """
+        )
         cursor.execute(query, (country_code, country_code))
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0

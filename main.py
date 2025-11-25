@@ -77,7 +77,7 @@ async def counter(
     c: str | None = None,
 ):
     # Get hostname from request headers
-    hostname = request.client.host
+    hostname = request.headers.get("Host")
     
     # Check if we should use country portal count based on hostname or query parameter
     country_portal = request.query_params.get("c")

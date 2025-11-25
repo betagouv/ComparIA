@@ -75,10 +75,10 @@ def litellm_stream_iter(
         litellm.failure_callback.append("sentry")
 
     # Set Vertex AI location for Google Cloud models
-    if not vertex_ai_location and os.getenv("VERTEXAI_LOCATION"):
-        litellm.vertex_location = os.getenv("VERTEXAI_LOCATION")
-    else:
+    if vertex_ai_location:
         litellm.vertex_location = vertex_ai_location
+    else:
+        litellm.vertex_location = os.getenv("VERTEXAI_LOCATION", None)
 
     # nice to have: openrouter specific params
     # completion = client.chat.completions.create(
