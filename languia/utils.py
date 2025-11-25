@@ -147,7 +147,6 @@ def messages_to_dict_list(
     output = []
     for message in messages:
         msg_dict = {"role": message.role}
-
         if message.reasoning and not concat_reasoning_with_content:
             msg_dict["reasoning_content"] = message.reasoning
         elif message.reasoning and concat_reasoning_with_content:
@@ -285,10 +284,9 @@ def pick_models(mode, custom_models_selection, unavailable_models):
 
 
 def get_api_key(endpoint: "Endpoint"):
-    # // "api_type": "huggingface/cohere",
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
 
-    # "api_base": "https://router.huggingface.co/cohere/compatibility/v1/",
+    # "api_type": "huggingface/cohere" doesn't work, using the openai api type and api_base="https://router.huggingface.co/cohere/compatibility/v1/"
     if endpoint.get("api_base") and "albert.api.etalab.gouv.fr" in endpoint.get(
         "api_base"
     ):
@@ -296,7 +294,7 @@ def get_api_key(endpoint: "Endpoint"):
     if endpoint.get("api_base") and "huggingface.co" in endpoint.get("api_base"):
         return os.getenv("HF_INFERENCE_KEY")
     # Normally no need for OpenRouter, litellm reads OPENROUTER_API_KEY env value
-    # And no need for Vertex, handled differently
+    # And no need for Vertex, handled with GOOGLE_APPLICATION_CREDENTIALS pointing to a json file
     return None
 
 
@@ -389,7 +387,8 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
         conn = psycopg2.connect(dsn)
         cursor = conn.cursor()
         # Count votes and reactions linked to conversations with country_portal
-        query = sql.SQL("""
+        query = sql.SQL(
+            """
             SELECT
                 (SELECT COUNT(*) FROM votes v
                  JOIN conversations c ON v.conversation_pair_id = c.conversation_pair_id
@@ -398,7 +397,8 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
                  JOIN conversations c ON r.conversation_pair_id = c.conversation_pair_id
                  WHERE c.country_portal = %s)
             as total;
-        """)
+        """
+        )
         cursor.execute(query, (country_code, country_code))
         res = cursor.fetchone()
         result = res[0] if res and res[0] is not None else 0
