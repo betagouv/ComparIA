@@ -20,7 +20,6 @@ from languia.block_arena import (
     chatbot,
     comments_a,
     comments_b,
-    comments_link,
     conclude_btn,
     conv_a,
     conv_b,
@@ -32,7 +31,6 @@ from languia.block_arena import (
     positive_b,
     send_area,
     send_btn,
-    supervote_area,
     supervote_send_btn,
     # first_textbox,
     textbox,
@@ -827,7 +825,6 @@ def register_listeners():
         inputs=[app_state] + [conv_a] + [conv_b] + [chatbot] + [reaction_json],
         outputs=[app_state],
         api_name="chatbot_react",
-        show_progress="hidden",
     )
     def record_like_json(
         app_state_scoped,
@@ -860,82 +857,6 @@ def register_listeners():
             request=request,
         )
         return app_state_scoped
-
-    @chatbot.like(
-        inputs=[app_state] + [conv_a] + [conv_b] + [chatbot],
-        outputs=[app_state],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def record_like(
-        app_state_scoped,
-        conv_a_scoped,
-        conv_b_scoped,
-        chatbot,
-        event: gr.EventData,
-        request: gr.Request,
-    ):
-        # A comment is always on an existing reaction, but the like event on commenting doesn't give you the full reaction, it could though
-        # TODO: or just create another event type like "Event.react"
-        if "comment" in event._data:
-            app_state_scoped.reactions[event._data["index"]]["comment"] = event._data[
-                "comment"
-            ]
-        else:
-            while len(app_state_scoped.reactions) <= event._data["index"]:
-                app_state_scoped.reactions.extend([None])
-
-            # re-add comment if select a pref after commenting
-
-            if (
-                app_state_scoped.reactions[event._data["index"]]
-                and "comment" in app_state_scoped.reactions[event._data["index"]]
-            ):
-                event._data["comment"] = app_state_scoped.reactions[
-                    event._data["index"]
-                ]["comment"]
-
-            app_state_scoped.reactions[event._data["index"]] = event._data
-
-        sync_reactions(
-            conv_a_scoped,
-            conv_b_scoped,
-            chatbot,
-            app_state_scoped.reactions,
-            request=request,
-        )
-        return app_state_scoped
-
-    @which_model_radio.select(
-        inputs=[which_model_radio],
-        outputs=[supervote_area, supervote_send_btn],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def build_supervote_area(vote_radio, request: gr.Request):
-        logger.info(
-            "vote_selection_temp:" + str(vote_radio),
-            extra={"request": request},
-        )
-
-        # outputs=[supervote_area, supervote_send_btn, why_vote] +
-        # relevance_slider: gr.update(interactive=False),
-        # form_slider: gr.update(interactive=False),
-        # style_slider: gr.update(interactive=False),
-        # comments_text: gr.update(interactive=False),
-        return [
-            gr.update(visible=True),
-            gr.update(interactive=True),
-        ]
-
-    # Step 3
-    @comments_link.click(
-        outputs=[comments_a, comments_b, comments_link],
-        api_name=False,
-        show_progress="hidden",
-    )
-    def show_comments():
-        return [gr.update(visible=True)] * 2 + [gr.update(visible=False)]
 
     def vote_preferences(
         app_state_scoped,
