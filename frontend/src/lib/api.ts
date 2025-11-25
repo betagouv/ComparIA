@@ -70,8 +70,8 @@ export const api = {
   url: (() => {
     const ssr = !browser; // browser false if SSR
     if (dev) return 'http://localhost:8000' // if npm run dev
-    else if (ssr) return env.PUBLIC_API_URL // prod : ssr when code executed by sveltekit -> should be routed inside kube with languiaè-default service
-    else return window.location.origin // prod : when browser client contact api
+    else if (ssr) return env.PUBLIC_API_URL
+    else return ''
   })(),
   client: undefined as Client | undefined,
 
@@ -121,7 +121,7 @@ export const api = {
 
     // Get the load-balanced endpoint (with session affinity)
     const endpoint = this._getLoadBalancedEndpoint()
-    const fullUrl = this.url + endpoint
+    const fullUrl = window.location.origin + endpoint
 
     console.debug('Connecting to Gradio at:', fullUrl)
     try {
