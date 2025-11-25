@@ -58,3 +58,8 @@ litellm_config.yml
 results-output/
 venv.bak
 cache/
+
+# Claude Code
+CLAUDE.md
+.claude
+ignored_files

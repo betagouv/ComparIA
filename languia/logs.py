@@ -1,3 +1,13 @@
+"""
+Logging and data persistence for ComparIA.
+
+This module handles:
+- JSON formatted logging to files and PostgreSQL
+- Vote and reaction persistence to database
+- Conversation history recording
+- User preferences tracking
+"""
+
 import gradio as gr
 
 import os
@@ -19,6 +29,7 @@ from languia.utils import (
     sum_tokens,
 )
 
+# Directory for local log files (fallback if DB unavailable)
 LOGDIR = os.getenv("LOGDIR", "./data")
 
 
@@ -27,22 +38,38 @@ from psycopg2 import sql
 
 
 class JSONFormatter(logging.Formatter):
-    def format(self, record):
+    """
+    Custom logging formatter that outputs structured JSON.
 
+    Converts log records to JSON with context information (IP, session, query params).
+    Used for both file and database logging.
+    """
+    def format(self, record):
+        """
+        Format a log record as JSON with request context.
+
+        Args:
+            record: LogRecord from Python logging
+
+        Returns:
+            str: JSON-formatted log entry
+        """
         msg = super().format(record)
 
         log_data = {"message": msg}
 
+        # Extract request context if available
         if hasattr(record, "request"):
             try:
                 log_data["query_params"] = dict(record.request.query_params)
                 log_data["path_params"] = dict(record.request.path_params)
-                # TODO: remove IP?
+                # TODO: remove IP? (privacy concern)
                 log_data["ip"] = get_ip(record.request)
                 log_data["session_hash"] = record.request.session_hash
 
             except:
                 pass
+        # Include extra metadata if provided
         if hasattr(record, "extra"):
             log_data["extra"] = record.extra
 
@@ -50,12 +77,25 @@ class JSONFormatter(logging.Formatter):
 
 
 class PostgresHandler(logging.Handler):
+    """
+    Custom logging handler that writes logs to PostgreSQL.
+
+    Connects to database and stores log entries for centralized logging.
+    Maintains persistent connection with auto-reconnection.
+    """
     def __init__(self, dsn):
+        """
+        Initialize PostgreSQL logging handler.
+
+        Args:
+            dsn: Database connection string (postgres://user:pass@host/db)
+        """
         super().__init__()
         self.dsn = dsn
         self.connection = None
 
     def connect(self):
+        """Connect to PostgreSQL database, reconnecting if connection is closed."""
         if not self.connection or self.connection.closed:
             try:
                 self.connection = psycopg2.connect(self.dsn)
@@ -63,7 +103,12 @@ class PostgresHandler(logging.Handler):
                 print(f"Error connecting to database: {e}")
 
     def emit(self, record):
+        """
+        Emit a log record by writing it to PostgreSQL.
 
+        Args:
+            record: LogRecord from Python logging
+        """
         assert isinstance(record, logging.LogRecord)
         # print((record.__dict__))
         # print("LoggingHandler received LogRecord: {}".format(record))
@@ -116,6 +161,33 @@ class PostgresHandler(logging.Handler):
 
 
 def save_vote_to_db(data):
+    """
+    Save vote data to PostgreSQL database.
+
+    Inserts or updates a vote record with comprehensive preference data.
+    This function handles the final vote when a user selects a preferred model
+    or marks them as equal, along with detailed preference ratings.
+
+    Args:
+        data: Dictionary containing vote fields:
+            - timestamp: When the vote was cast
+            - model_a_name, model_b_name: Model identifiers
+            - chosen_model_name: Winner (None if both_equal)
+            - both_equal: Boolean indicating tie
+            - opening_msg: Initial user prompt
+            - conversation_a, conversation_b: Full chat histories (JSON)
+            - conv_turns: Number of conversation turns
+            - selected_category: Category/use case for the prompt
+            - is_unedited_prompt: Whether user modified prompt
+            - system_prompt_a/b: System prompts used
+            - ip, session_hash, visitor_id: User identification
+            - Preference fields: useful, complete, creative, clear_formatting,
+              incorrect, superficial, instructions_not_followed (for both models)
+            - conv_comments_a/b: User feedback text
+
+    Returns:
+        None. Vote data is persisted to database.
+    """
     from languia.config import db as dsn
 
     logger = logging.getLogger("languia")
@@ -220,6 +292,38 @@ def vote_last_response(
     details: list,
     request: gr.Request,
 ):
+    """
+    Record user's model preference vote and detailed feedback.
+
+    Main event handler called when user submits voting form.
+    Aggregates conversation state, user preferences, and feedback.
+    Writes to both JSON log files (for backup) and PostgreSQL (for analysis).
+
+    Args:
+        conversations: List of 2 Conversation objects (model_a, model_b)
+        which_model_radio: User's selection ("Model A", "Model B", or "Both equal")
+        category: Problem category (e.g., "writing", "math", "coding")
+        details: Dict containing:
+            - prefs_a/b: List of selected preference tags for each model
+            - comments_a/b: Text comments for each model
+        request: Gradio request object with session_hash, IP, cookies
+
+    Returns:
+        dict: Vote data saved to database, including:
+            - timestamp, model names, chosen model
+            - full conversation histories
+            - preference ratings
+            - IP, session_hash, visitor_id
+            - comment text
+
+    Process:
+        1. Extract chosen model from radio selection
+        2. Get conversation messages and convert to dict format
+        3. Determine opening prompt and turn count
+        4. Assemble metadata (system prompts, model pair, etc.)
+        5. Write to JSON log file
+        6. Call save_vote_to_db() for database persistence
+    """
     logger = logging.getLogger("languia")
     from languia.config import get_model_system_prompt
 
@@ -312,6 +416,25 @@ def vote_last_response(
 
 
 def upsert_reaction_to_db(data, request):
+    """
+    Insert or update a reaction record in PostgreSQL using UPSERT.
+
+    Allows users to change their reactions (like → dislike or vice versa)
+    without creating duplicate records. Updates on conflict of
+    (refers_to_conv_id, msg_index).
+
+    Args:
+        data: Reaction data dict (see record_reaction for fields)
+        request: Gradio request object (for logging)
+
+    Returns:
+        dict: The inserted/updated data
+
+    Database Operation:
+        - Uses PostgreSQL UPSERT (INSERT ... ON CONFLICT ... DO UPDATE)
+        - Key conflict: (refers_to_conv_id, msg_index)
+        - Updates all fields except timestamps on conflict
+    """
     logger = logging.getLogger("languia")
     from languia.config import db as dsn
 
@@ -459,6 +582,23 @@ def upsert_reaction_to_db(data, request):
 
 
 def delete_reaction_in_db(msg_index, refers_to_conv_id):
+    """
+    Delete a reaction record from PostgreSQL.
+
+    Called when user removes a reaction (changes from liked/disliked to none).
+    Deletes exactly one reaction identified by message index and conversation ID.
+
+    Args:
+        msg_index: Message index in conversation
+        refers_to_conv_id: Conversation ID
+
+    Returns:
+        dict: The deletion parameters for logging
+
+    Database Operation:
+        - Deletes single row matching (msg_index, refers_to_conv_id)
+        - Safely handles missing records (no error if not found)
+    """
     logger = logging.getLogger("languia")
     from languia.config import db as dsn
 
@@ -496,6 +636,34 @@ WHERE refers_to_conv_id = %(refers_to_conv_id)s
 
 
 def sync_reactions(conv_a, conv_b, chatbot, state_reactions, request):
+    """
+    Synchronize reaction updates from UI to database.
+
+    Processes all pending reactions (likes/dislikes) from the merged 3-way chatbot
+    view and records them individually to database. Handles message index mapping
+    from 3-way view back to individual conversation indices.
+
+    Args:
+        conv_a: Conversation object for model A
+        conv_b: Conversation object for model B
+        chatbot: Merged 3-way chatbot list (alternating A/B/user messages)
+        state_reactions: List of reaction objects from UI state, each containing:
+            - index: Position in 3-way chatbot
+            - liked: Boolean or None (True=like, False=dislike, None=undone)
+            - prefs: List of preference tags
+            - value: Response text content
+            - comment: User comment text
+        request: Gradio request object
+
+    Returns:
+        None. Reactions are persisted via record_reaction() calls.
+
+    Logic:
+        - Iterates through state_reactions
+        - Maps 3-way chatbot index to individual conversation message index
+        - Handles system prompt offsets (if present in conversation)
+        - Calls record_reaction() for each reaction
+    """
 
     for data in state_reactions:
         if data == None:
@@ -565,6 +733,37 @@ def record_reaction(
     comment,
     request: gr.Request,
 ):
+    """
+    Record a single message reaction (like/dislike + preferences).
+
+    Handles individual reactions to specific bot responses. Uses UPSERT logic
+    to allow users to change reactions without creating duplicates.
+    Also handles deleting reactions when user removes feedback.
+
+    Args:
+        conversations: List of 2 Conversation objects
+        model_pos: Which model ("a" or "b")
+        msg_index: Message index in the conversation
+        chatbot_index: Index in the 3-way merged chatbot view
+        question_content: User's question text
+        response_content: Bot's response text
+        reaction: "liked", "disliked", or "none" (undone)
+        prefs: List of preference tags (useful, complete, creative, etc.)
+        comment: User's comment text
+        request: Gradio request object
+
+    Returns:
+        dict: Reaction data saved/deleted, including:
+            - msg_rank: Which turn in conversation (msg_index // 2)
+            - question_id: Unique ID combining pair_id and turn
+            - All model/conversation context
+            - IP, session_hash, visitor_id
+
+    Special Handling:
+        - reaction="none": Deletes reaction from database (undo)
+        - Uses UPSERT to allow reaction changes
+        - Handles system prompt offsets in message indexing
+    """
     from languia.config import get_model_system_prompt
 
     logger = logging.getLogger("languia")
@@ -653,6 +852,28 @@ def record_reaction(
 
 
 def upsert_conv_to_db(data):
+    """
+    Insert or update a conversation record in PostgreSQL using UPSERT.
+
+    Allows conversation data to be updated as users continue chatting.
+    Uses conversation_pair_id as the unique key. Updates token counts and
+    message histories while preserving other metadata.
+
+    Args:
+        data: Conversation data dict from record_conversations containing:
+            - conversation_pair_id: Unique key for this pair
+            - All fields from record_conversations (see docstring there)
+            - total_conv_a/b_output_tokens: Token usage for each model
+
+    Returns:
+        dict: The inserted/updated data
+
+    Database Operation:
+        - Key: conversation_pair_id (text, unique)
+        - On conflict: Updates message histories and token counts
+        - On conflict: Updates country_portal only if EXCLUDED value exists
+        - Preserves initial timestamps on updates
+    """
 
     from languia.config import db as dsn
 
@@ -749,6 +970,43 @@ def upsert_conv_to_db(data):
 def record_conversations(
     app_state_scoped, conversations, request: gr.Request, locale=None
 ):
+    """
+    Record complete conversation pair to database and JSON log files.
+
+    Called when conversation ends or when collecting data.
+    Captures full chat history, metadata, and token usage for both models.
+    Uses UPSERT to allow updates as conversation continues.
+
+    Args:
+        app_state_scoped: Application state containing:
+            - category: Problem category/use case
+            - mode: Model selection mode (random, big-vs-small, etc.)
+            - custom_models_selection: List of custom selected models (if mode=custom)
+        conversations: List of 2 Conversation objects
+        request: Gradio request object with session_hash, IP, cookies
+        locale: Country portal code (e.g., "fr", "en") - optional
+
+    Returns:
+        dict: Conversation record saved, including:
+            - conversation_pair_id: Unique pair identifier
+            - Full message histories (JSON)
+            - Total token counts for each model
+            - System prompts used
+            - Model pair name (sorted)
+            - Category and mode
+            - User tracking info (IP, session_hash, visitor_id)
+            - Opening prompt text
+            - Is the prompt unmodified
+
+    Process:
+        1. Extract messages from both conversations
+        2. Get opening prompt (skip system prompt if present)
+        3. Count conversation turns
+        4. Determine category and mode from app state
+        5. Calculate total output tokens for each model
+        6. Write JSON log file (full overwrite)
+        7. Call upsert_conv_to_db() for database
+    """
     from languia.config import get_model_system_prompt
 
     # logger = logging.getLogger("languia")
