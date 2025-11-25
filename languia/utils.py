@@ -103,7 +103,6 @@ def get_chosen_model_name(which_model_radio, conversations):
 
 
 def count_turns(messages):
-
     if messages[0].role == "system":
         return (len(messages) - 1) // 2
     else:
@@ -134,15 +133,11 @@ def strip_metadata(messages: list[dict]) -> list[dict]:
     stripped_messages: list[dict] = []
     for message in messages:
         if "content" in message:
-            stripped_messages.append({
-                "role": message["role"],
-                "content": message["content"]
-            })
+            stripped_messages.append(
+                {"role": message["role"], "content": message["content"]}
+            )
         else:
-            stripped_messages.append({
-                "role": message["role"],
-                "content": ""
-            })
+            stripped_messages.append({"role": message["role"], "content": ""})
     return stripped_messages
 
 
@@ -237,7 +232,6 @@ def choose_among(
 
 
 def pick_models(mode, custom_models_selection, unavailable_models):
-
     from languia.config import big_models, small_models, reasoning_models, random_pool
     import random
 
@@ -274,7 +268,6 @@ def pick_models(mode, custom_models_selection, unavailable_models):
             )
 
         elif len(custom_models_selection) == 2:
-
             model_left_name = custom_models_selection[0]
             model_right_name = custom_models_selection[1]
 
@@ -292,7 +285,6 @@ def pick_models(mode, custom_models_selection, unavailable_models):
 
 
 def get_api_key(endpoint: "Endpoint"):
-
     # // "api_type": "huggingface/cohere",
     # "api_base": "https://albert.api.etalab.gouv.fr/v1/",
 
@@ -310,7 +302,9 @@ def get_api_key(endpoint: "Endpoint"):
 
 def sum_tokens(messages) -> int:
     total_output_tokens = sum(
-        msg.metadata.get("output_tokens") for msg in messages if msg.role == "assistant"
+        msg.metadata.get("output_tokens", 0) or 0
+        for msg in messages
+        if msg.role == "assistant"
     )
     return total_output_tokens
 
@@ -342,7 +336,6 @@ def to_threeway_chatbot(conversations):
                     }
                 )
             if msg_b:
-
                 msg_b.metadata.update({"bot": "b"})
                 threeway_chatbot.append(
                     {
@@ -359,11 +352,11 @@ def to_threeway_chatbot(conversations):
 def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     """
     Get the count of votes and reactions for conversations with a specific country portal.
-    
+
     Args:
         country_code: The country code to filter by (e.g., 'da' for Danish)
         ttl: Time-to-live for Redis cache in seconds (default: 120 seconds = 2 minutes)
-        
+
     Returns:
         The count of votes and reactions for the specified country portal
     """
@@ -371,8 +364,9 @@ def get_country_portal_count(country_code: str, ttl: int = 120) -> int:
     from psycopg2 import sql
     from languia.config import db as dsn
     from languia.session import r
+
     logger = logging.getLogger("languia")
-    
+
     cache_key = f"{country_code}_count"
     # Try Redis first
     if r:
