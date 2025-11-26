@@ -1284,17 +1284,6 @@
       "new": true,
       "organisation": "Google",
       "params": 750,
-      "prefs": {
-        "clear_formatting": 0,
-        "complete": 0,
-        "creative": 0,
-        "incorrect": 0,
-        "instructions_not_followed": 0,
-        "positive_prefs_ratio": NaN,
-        "superficial": 0,
-        "total_prefs": 0,
-        "useful": 0
-      },
       "pricey": false,
       "quantization": null,
       "reasoning": false,
