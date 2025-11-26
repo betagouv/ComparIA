@@ -64,7 +64,7 @@ make dev
 
 This will start:
 
-- Backend (FastAPI + Gradio) on http://localhost:8000
+- Backend (FastAPI + Gradio) on http://localhost:8001
 - Frontend (SvelteKit) on http://localhost:5173
 
 ### Manual Setup
@@ -73,7 +73,7 @@ This will start:
 
 1. Install `uv`: `curl -LsSf https://astral.sh/uv/install.sh | sh`
 2. Install dependencies: `uv sync`
-3. Run the server: `uv run uvicorn main:app --reload --timeout-graceful-shutdown 1`
+3. Run the server: `uv run uvicorn main:app --reload --timeout-graceful-shutdown 1 --port 8001`
 
 **Frontend:**
 
@@ -178,7 +178,7 @@ For more details, consult [`utils/ranking_methods/README.md`](utils/ranking_meth
 - `main.py`: the Python file for the main FastAPI app
 - `languia`: backend code.
   Most of the Gradio code is split between `languia/block_arena.py` and `languia/listeners.py` with `languia/config.py` for config.
-  It runs on port 8000 by default. Backend is a mounted `gradio.Blocks` within a FastAPI app.
+  It runs on port 8001 by default. Backend is a mounted `gradio.Blocks` within a FastAPI app.
 
 - `docker/`: Docker config
 - `utils/`: utilities for models generation and maintenance, ranking methods (Elo, maximum likelihood), database schemas, and dataset export to HuggingFace
