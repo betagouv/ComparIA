@@ -12,8 +12,8 @@ function getBackendUrl(): string {
   if (dev) {
     return 'http://localhost:8001' // if npm run dev - updated to 8001
   } else if (ssr) {
-    // Server-side: use PUBLIC_INTERNAL_API for internal service communication
-    return publicEnv.PUBLIC_INTERNAL_API || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
+    // Server-side: use PUBLIC_API_LOCAL_URL for internal service communication
+    return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   } else {
     // Client-side: use public URL or origin
     return publicEnv.PUBLIC_API_URL || window.location.origin

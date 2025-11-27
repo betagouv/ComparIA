@@ -31,7 +31,7 @@ services:
       - backend
     environment:
       PUBLIC_API_URL: "http://127.0.0.1:8001"
-      PRIVATE_API_URL: "http://comparia:80"
+      PUBLIC_API_LOCAL_URL: "http://comparia:80"
     # ports:
     # - 3000:3000
     # Dev config
