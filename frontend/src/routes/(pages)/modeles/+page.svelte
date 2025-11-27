@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { Accordion, AccordionGroup, Button, CheckboxGroup, Toggle } from '$components/dsfr'
+  import {
+    Accordion,
+    AccordionGroup,
+    Button,
+    CheckboxGroup,
+    Search,
+    Toggle
+  } from '$components/dsfr'
   import ModelCard from '$components/ModelCard.svelte'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import SeoHead from '$components/SEOHead.svelte'
@@ -50,15 +57,18 @@
   let licenses = $state<License[]>([])
   let sortingMethod = $state<'name-asc' | 'date-desc' | 'params-asc' | 'org-asc'>('name-asc')
   let showArchived = $state(false)
+  let search = $state('')
 
-  const filteredModels = $derived(
-    models
+  const filteredModels = $derived.by(() => {
+    const _search = search.toLowerCase()
+    return models
       .filter((model) => {
+        const searchMatch = !_search || model.search.includes(_search)
         const sizeMatch = sizes.length === 0 || sizes.includes(model.friendly_size)
         const orgMatch = editors.length === 0 || editors.includes(model.organisation)
         const licenseMatch = licenses.length === 0 || licenses.includes(model.license)
         const archivedMatch = model.status === 'enabled' || showArchived
-        return sizeMatch && orgMatch && licenseMatch && archivedMatch
+        return searchMatch && sizeMatch && orgMatch && licenseMatch && archivedMatch
       })
       .sort((a, b) => {
         switch (sortingMethod) {
@@ -81,7 +91,7 @@
             return a.simple_name.localeCompare(b.simple_name)
         }
       })
-  )
+  })
 
   const allFilter = $derived([editors, sizes, licenses])
   const filterCount = $derived(allFilter.reduce((acc, f) => acc + (f.length ? 1 : 0), 0))
@@ -120,11 +130,18 @@
           {/if}
         </button>
         <div class="fr-collapse" id="fr-modal-filters-section">
-          <p class="fr-h5 mb-5! hidden md:block">
+          <p class="fr-h5 mb-5! -mt-4! hidden md:block">
             {filteredModels.length}
             {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
           <form class="mt-8 md:mt-0">
+            <Search
+              id="model-list-search"
+              bind:value={search}
+              label={m['actions.searchModel']()}
+              class="mb-7"
+            />
+
             <Toggle
               id="archived"
               bind:value={showArchived}
