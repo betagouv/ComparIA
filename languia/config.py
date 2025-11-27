@@ -30,9 +30,6 @@ GLOBAL_TIMEOUT = Timeout(10.0, read=10.0, write=5.0, connect=10.0)
 # Per-country objectives for data collection (rows to collect)
 OBJECTIVES = {"fr": 250_000, "da": 10_000}
 
-# Maximum input characters per IP per hour (rate limiting)
-MAX_INPUT_CHARS_PER_HOUR = 200_000
-
 # Model parameter thresholds for categorization
 SMALL_MODELS_BUCKET_UPPER_LIMIT = 60  # Models with <= 60B params
 BIG_MODELS_BUCKET_LOWER_LIMIT = 100  # Models with >= 100B params
