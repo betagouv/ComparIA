@@ -145,7 +145,10 @@ export function parseModel(model: APIBotModel) {
         tooltip: m[`generated.archs.${isMaybeArch(model.arch) ? 'na' : model.arch}.desc`]()
       },
       reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
-    }
+    },
+    search: (['id', 'simple_name', 'organisation'] as const)
+              .map((key) => model[key].toLowerCase())
+              .join(' ')
   }
 }
 

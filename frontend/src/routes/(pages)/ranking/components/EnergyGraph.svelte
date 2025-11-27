@@ -31,10 +31,7 @@
               ? ('S' as const)
               : m.consumption_wh < 100
                 ? ('M' as const)
-                : ('L' as const),
-          search: (['id', 'simple_name', 'organisation'] as const)
-            .map((key) => m[key].toLowerCase())
-            .join(' ')
+                : ('L' as const)
         }
       })
   )

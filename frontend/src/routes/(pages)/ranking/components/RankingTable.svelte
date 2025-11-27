@@ -101,10 +101,7 @@
         arch: (model.license === 'proprietary' ? 'na' : model.arch) as Archs,
         release_date: new Date([month, '01', year].join('/')),
         eloRangeWidth: Math.ceil(((model.data.elo - lowestElo) / (highestElo - lowestElo)) * 100),
-        consoRangeWidth: Math.ceil((model.consumption_wh / highestConso) * 100),
-        search: (['id', 'simple_name', 'organisation'] as const)
-          .map((key) => model[key].toLowerCase())
-          .join(' ')
+        consoRangeWidth: Math.ceil((model.consumption_wh / highestConso) * 100)
       }
     })
   })

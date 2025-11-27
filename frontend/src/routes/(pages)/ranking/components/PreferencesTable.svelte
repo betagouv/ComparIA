@@ -80,9 +80,7 @@
       ...model.prefs,
       total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs[v], 0),
       total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs[v], 0),
-      search: (['id', 'simple_name', 'organisation'] as const)
-        .map((key) => model[key].toLowerCase())
-        .join(' ')
+      search: model.search,
     }))
   })
 
