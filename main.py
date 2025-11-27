@@ -80,16 +80,21 @@ async def counter(
     request: Request,
     c: str | None = None,
 ):
-    # Get hostname from request headers
-    hostname = request.headers.get("Host")
+    # don't get it from host
+    # hostname = request.headers.get("Host")
+    # Always check the query parameter 'c' for locale
+    country_portal = request.query_params.get(
+        "c", "fr"
+    )  # Default to "fr" if not provided
 
-    # Check if we should use country portal count based on hostname or query parameter
-    country_portal = request.query_params.get("c")
+    # Only allow "da" or "fr" as valid locales
+    if country_portal not in ("da", "fr"):
+        country_portal = "fr"  # Default to "fr" for invalid values
 
-    if hostname == "ai-arenaen.dk" or country_portal == "da":
+    if country_portal == "da":
         count = get_country_portal_count("da")
         objective = config.OBJECTIVES.get("da")
-    else:
+    else:  # country_portal == "fr"
         count = get_country_portal_count("fr")
         objective = config.OBJECTIVES.get("fr")
 
