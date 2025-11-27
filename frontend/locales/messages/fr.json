@@ -19,6 +19,7 @@
         "returnHome": "Revenir à l'accueil",
         "scrollLeft": "Defiler vers la gauche",
         "scrollRight": "Défiler vers la droite",
+        "searchModel": "Rechercher un modèle",
         "seeMore": "Voir plus",
         "selectLanguage": "Sélectionner une langue",
         "vote": "Donner mon avis"
@@ -1783,7 +1784,6 @@
                 }
             },
             "lastUpdate": "Mise à jour le {date}",
-            "search": "Rechercher un modèle",
             "totalModels": "Total modèles :",
             "totalVotes": "Total votes :"
         },

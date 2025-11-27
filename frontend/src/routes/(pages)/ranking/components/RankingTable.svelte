@@ -157,7 +157,7 @@
   bind:orderingCol
   bind:orderingMethod
   bind:search
-  searchLabel={m['ranking.table.search']()}
+  searchLabel={m['actions.searchModel']()}
   caption={m['ranking.title']()}
   hideCaption
 >

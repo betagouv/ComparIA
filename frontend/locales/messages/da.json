@@ -19,6 +19,7 @@
         "returnHome": "Tilbage til startsiden",
         "scrollLeft": "Rul til venstre",
         "scrollRight": "Rul til højre",
+        "searchModel": "Søg efter en model",
         "seeMore": "Se mere",
         "selectLanguage": "Vælg sprog",
         "vote": "Giv feedback"
@@ -1510,7 +1511,6 @@
                 }
             },
             "lastUpdate": "Updateret {date}",
-            "search": "Søg efter en model",
             "totalModels": "Total antal modeller:",
             "totalVotes": "Total antal stemmer:"
         },

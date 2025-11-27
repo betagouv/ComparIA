@@ -19,6 +19,7 @@
         "returnHome": "Tillbaka till startsida",
         "scrollLeft": "Scrolla till vänster",
         "scrollRight": "Scrolla till höger",
+        "searchModel": "Sök modell",
         "seeMore": "Visa mer",
         "selectLanguage": "Välj språk",
         "vote": "Skicka åsikt"
@@ -1398,7 +1399,6 @@
                 }
             },
             "lastUpdate": "Uppdaterat {date}",
-            "search": "Sök modell",
             "totalModels": "Totalt antal modeller:",
             "totalVotes": "Totalt antal röster:"
         },

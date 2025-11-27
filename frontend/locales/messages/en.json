@@ -19,6 +19,7 @@
         "returnHome": "Return to homepage",
         "scrollLeft": "Scroll left",
         "scrollRight": "Scroll right",
+        "searchModel": "Search for a model",
         "seeMore": "See more",
         "selectLanguage": "Select a language",
         "vote": "Give feedback"
@@ -1483,7 +1484,6 @@
                 }
             },
             "lastUpdate": "Updated on {date}",
-            "search": "Search for a model",
             "totalModels": "Total models:",
             "totalVotes": "Total votes:"
         },
