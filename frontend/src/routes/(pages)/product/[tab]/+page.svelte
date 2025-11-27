@@ -2,9 +2,12 @@
   import SeoHead from '$components/SEOHead.svelte'
   import { Tabs } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
+  import { getLocale } from '$lib/i18n/runtime'
   import { Community, Comparator, FAQ, History, Partners, Problem } from './components'
 
   const { data } = $props()
+  const locale = getLocale()
+  const isFr = $derived(['fr', 'en'].includes(locale))
 
   const tabs = (
     [
@@ -24,7 +27,7 @@
 
 <SeoHead title={m[`seo.titles.${data.tab}`]()} />
 
-<main class="pb-30 bg-light-grey pt-12">
+<main class={['pb-30 bg-light-grey pt-12', isFr ? 'next' : 'prev']}>
   <div class="fr-container">
     <h1 class="fr-h3 mb-10!">{m['product.title']()}</h1>
 
@@ -55,7 +58,11 @@
 
 <style>
   /* FIXME remove when avaible */
-  :global(#tab-community, #tab-history) {
+  :global(main.prev #tab-community, main.prev #tab-history) {
+    display: none;
+  }
+
+  :global(main.next #tab-partners) {
     display: none;
   }
 </style>
