@@ -64,6 +64,7 @@ WHERE archived = FALSE
 AND pii_analyzed = TRUE
 AND contains_pii = FALSE
 AND postprocess_failed = FALSE
+AND (cohorts NOT LIKE '%pix%' AND cohorts NOT LIKE '%do-not-track%')
 ;""",
         "repo": "comparia-conversations",
     },
@@ -78,6 +79,7 @@ AND EXISTS (
     AND c.pii_analyzed = TRUE
     AND c.contains_pii = FALSE
     AND c.postprocess_failed = FALSE
+    AND (c.cohorts NOT LIKE '%pix%' AND c.cohorts NOT LIKE '%do-not-track%')
 )
 ;""",
         "repo": "comparia-votes",
@@ -93,6 +95,7 @@ AND EXISTS (
     AND c.contains_pii = FALSE
     AND c.pii_analyzed = TRUE
     AND c.postprocess_failed = FALSE
+    AND (c.cohorts NOT LIKE '%pix%' AND c.cohorts NOT LIKE '%do-not-track%')
 )
 ;""",
         "repo": "comparia-reactions",
