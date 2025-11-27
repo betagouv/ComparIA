@@ -1,7 +1,6 @@
 import { api } from '$lib/api'
 import type { VotesData } from '$lib/global.svelte'
 import type { APIData } from '$lib/models'
-import { error } from '@sveltejs/kit'
 
 export async function load() {
   // Try to connect to the backend first
@@ -14,9 +13,7 @@ export async function load() {
     console.error('Failed to connect to backend:', err)
     backendAvailable = false
     connectionError = err as Error
-
-    // Return 503 error if we can't connect to backend
-    throw error(503, 'Backend service unavailable')
+    // Don't throw error here, let individual pages handle it
   }
 
   // Try to fetch data from backend, but provide fallbacks if backend is down
@@ -28,6 +25,7 @@ export async function load() {
     votes = await api.get<VotesData>('/counter')
   } catch (error) {
     console.warn('Backend is unavailable, using default votes:', error)
+    backendAvailable = false
     // Use default values when backend is down
   }
 
@@ -35,6 +33,7 @@ export async function load() {
     data = await api.get<APIData>('/available_models')
   } catch (error) {
     console.warn('Backend is unavailable, using default models:', error)
+    backendAvailable = false
     // Use empty arrays when backend is down
   }
 

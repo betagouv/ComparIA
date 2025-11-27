@@ -3,11 +3,16 @@
   import Header from '$components/header/Header.svelte'
   import SeoHead from '$components/SEOHead.svelte'
   import { arena, modeInfos, runChatBots } from '$lib/chatService.svelte'
+  import { api } from '$lib/api'
+  import { page } from '$app/state'
   import { m } from '$lib/i18n/messages'
-  import { TOSModal, ViewChat, ViewPrompt } from './components'
+  import { ArenaError, TOSModal, ViewChat, ViewPrompt } from './components'
 
   const mode = $derived(arena.mode ? modeInfos.find((mode) => mode.value === arena.mode)! : null)
   let toggled = $state(false)
+  let backendError = $state(false)
+  let reconnectAttempts = $state(0)
+  let reconnectTimeout: ReturnType<typeof setTimeout> | null = null
 
   // Compute second header height for autoscrolling
   let secondHeader = $state<HTMLElement>()
@@ -19,6 +24,53 @@
 
   $effect(() => {
     secondHeaderSize = secondHeader ? secondHeader.offsetHeight : 0
+  })
+
+  // Exponential backoff reconnection logic
+  async function tryReconnect() {
+    if (reconnectTimeout) {
+      clearTimeout(reconnectTimeout)
+    }
+
+    const delay = Math.min(1000 * Math.pow(2, reconnectAttempts), 30000) // Max 30 seconds
+
+    reconnectTimeout = setTimeout(async () => {
+      try {
+        await api._connect()
+        backendError = false
+        reconnectAttempts = 0
+        console.log('Successfully reconnected to backend')
+      } catch (error) {
+        console.error('Reconnection failed:', error)
+        reconnectAttempts++
+        backendError = true
+        tryReconnect()
+      }
+    }, delay)
+  }
+
+  $effect(() => {
+    const backendAvailable = page.data?.backendAvailable ?? true
+    if (!backendAvailable && !backendError) {
+      backendError = true
+      tryReconnect()
+    } else if (backendAvailable && backendError) {
+      backendError = false
+      reconnectAttempts = 0
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout)
+        reconnectTimeout = null
+      }
+    }
+  })
+
+  // Cleanup on unmount
+  $effect(() => {
+    return () => {
+      if (reconnectTimeout) {
+        clearTimeout(reconnectTimeout)
+      }
+    }
   })
 </script>
 
@@ -131,7 +183,9 @@
 {/if}
 
 <main class="bg-very-light-grey relative" style="--second-header-size: {secondHeaderSize}px;">
-  {#if arena.currentScreen === 'prompt'}
+  {#if backendError}
+    <ArenaError {reconnectAttempts} onRetry={tryReconnect} />
+  {:else if arena.currentScreen === 'prompt'}
     <ViewPrompt onSubmit={runChatBots} />
   {:else}
     <ViewChat />

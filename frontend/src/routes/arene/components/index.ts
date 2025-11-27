@@ -1,3 +1,4 @@
+export { default as ArenaError } from './ArenaError.svelte'
 export { default as ChatBot } from './ChatBot.svelte'
 export { default as CopyAll } from './CopyAll.svelte'
 export { default as Dropdown } from './Dropdown.svelte'
