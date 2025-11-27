@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, Icon } from '$components/dsfr'
+  import { Button, Icon, Search } from '$components/dsfr'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { modeInfos as modeChoices } from '$lib/chatService.svelte'
   import { m } from '$lib/i18n/messages'
@@ -21,6 +21,12 @@
 
   let neverClicked = $state(true)
   let showModelsSelection = $state(false)
+  let search = $state('')
+
+  const filteredModels = $derived.by(() => {
+    const _search = search.toLowerCase()
+    return models.filter((m) => !_search || m.search.includes(_search))
+  })
 
   const choice = $derived(modeChoices.find((c) => c.value === mode) || modeChoices[0])
   const { modelA, modelB } = $derived({
@@ -133,19 +139,30 @@
               class="fr-btn--close"
             />
 
-            <div class="mt-2 self-start">
+            <div class="mt-2 w-full self-start">
               {#if showModelsSelection == false}
                 <h6 id="modal-mode-selection-title" class="mb-3!">
                   {m['arenaHome.selectModels.question']()}
                 </h6>
                 <p class="mb-6!">{m['arenaHome.selectModels.help']()}</p>
               {:else}
-                <h6 id="modal-mode-selection" class="mb-3!">
-                  {m['arenaHome.compareModels.question']()}
-                </h6>
-                <p class="mb-0!">
-                  {m['arenaHome.compareModels.help']()}
-                </p>
+                <div class="flex w-full flex-col gap-3 md:flex-row">
+                  <div>
+                    <h6 id="modal-mode-selection" class="mb-3!">
+                      {m['arenaHome.compareModels.question']()}
+                    </h6>
+                    <p class="mb-0!">
+                      {m['arenaHome.compareModels.help']()}
+                    </p>
+                  </div>
+
+                  <Search
+                    id="model-list-search"
+                    bind:value={search}
+                    label={m['actions.searchModel']()}
+                    class="w-full self-end md:ms-auto md:w-auto"
+                  />
+                </div>
               {/if}
             </div>
           </div>
@@ -158,7 +175,15 @@
               />
             {:else}
               <div in:fade class="my-4">
-                <ModelsSelection {models} bind:selection={modelsSelection} {toggleModelSelection} />
+                {#if filteredModels.length === 0}
+                  <p>{m['models.list.noresults']()}</p>
+                {/if}
+
+                <ModelsSelection
+                  models={filteredModels}
+                  bind:selection={modelsSelection}
+                  {toggleModelSelection}
+                />
               </div>
             {/if}
           </div>
