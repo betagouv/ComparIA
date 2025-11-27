@@ -17,8 +17,8 @@ origins = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:8000",
-    "http://localhost:8001"
-    ]
+    "http://localhost:8001",
+]
 
 app.add_middleware(
     CORSMiddleware,
@@ -73,6 +73,7 @@ async def available_models():
 from fastapi import Query
 from typing import Annotated, Optional
 
+
 @app.get("/counter", response_class=JSONResponse)
 async def counter(
     request: Request,
@@ -80,21 +81,65 @@ async def counter(
 ):
     # Get hostname from request headers
     hostname = request.headers.get("Host")
-    
+
     # Check if we should use country portal count based on hostname or query parameter
     country_portal = request.query_params.get("c")
-    
+
     if hostname == "ai-arenaen.dk" or country_portal == "da":
-        count = get_country_portal_count('da')
+        count = get_country_portal_count("da")
         objective = config.OBJECTIVES.get("da")
     else:
-        count = get_country_portal_count('fr')
+        count = get_country_portal_count("fr")
         objective = config.OBJECTIVES.get("fr")
-    
+
     return JSONResponse(
         {
             "count": count,
             "objective": objective,
+        }
+    )
+
+
+@app.post("/cohorts", response_class=JSONResponse)
+async def set_cohorts(
+    # request: Request,
+    session_hash: str | None = None,
+    cohorts: str = "do-not-track",
+):
+    """
+    Route pour définir la cohorte de ne pas suivre pour une session.
+
+    Args:
+        request: La requête FastAPI
+        session_hash: Identifiant unique de la session
+        cohort: Nom de la cohorte (par défaut "do-not-track")
+
+    Returns:
+        JSONResponse: Statut du suivi de cohorte
+    """
+    from languia.session import set_do_not_track
+
+    if not session_hash:
+        return JSONResponse(
+            {
+                "success": False,
+                "error": "session_hash is required",
+                "tracking_info": None,
+            },
+            status_code=400,
+        )
+
+    # Définir le suivi de cohorte
+    success = set_do_not_track(session_hash, cohorts)
+
+    # Vérifier le statut actuel
+    # tracking_info = get_do_not_track(session_hash)
+
+    return JSONResponse(
+        {
+            "success": success,
+            "session_hash": session_hash,
+            "tracking_info": cohorts,
         }
     )
 

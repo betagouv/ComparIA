@@ -2,6 +2,7 @@ import { browser, dev } from '$app/environment'
 import { env as publicEnv } from '$env/dynamic/public'
 import { useToast } from '$lib/helpers/useToast.svelte'
 import { m } from '$lib/i18n/messages'
+import { getCurrentCohorts } from '$lib/utils/cohortsDetection'
 import type { Payload, StatusMessage } from '@gradio/client'
 import { Client } from '@gradio/client'
 
@@ -19,6 +20,7 @@ function getBackendUrl(): string {
     return publicEnv.PUBLIC_API_URL || window.location.origin
   }
 }
+let cohortsSent = false // Track if cohort has been sent for this session
 
 export interface GradioPayload<T> extends Payload {
   type: 'data'
@@ -140,6 +142,10 @@ export const api = {
       console.debug(
         `Successfully connected to Gradio (session hash: ${this.client.session_hash}) using endpoint: ${endpoint}`
       )
+
+      // Send cohort information to backend if not already sent
+      this.sendCohortsToBackend()
+
       return this.client
     } catch (error) {
       console.error('Failed to connect to Gradio:', error)
@@ -261,5 +267,44 @@ export const api = {
       console.error(message)
       throw new Error(message)
     })
+  },
+
+  /**
+   * Send cohort information to backend via /cohort endpoint.
+   * This should be called when session hash is available.
+   */
+  async sendCohortsToBackend() {
+    // Only send once per session
+    if (cohortsSent || !this.client?.session_hash) {
+      return
+    }
+
+    // Get cohort from sessionStorage (set by client-side detection)
+    const cohorts = getCurrentCohorts()
+
+    // Only send if we have a cohort (do-not-track)
+    if (cohorts.includes("do-not-track")) {
+      try {
+        const response = await fetch(`${this.url}/cohort`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session_hash: this.client.session_hash,
+            cohorts: cohorts
+          })
+        })
+
+        if (response.ok) {
+          cohortsSent = true
+          console.debug('Cohort information sent to backend successfully')
+        } else {
+          console.error('Failed to send cohort to backend:', response.statusText)
+        }
+      } catch (error) {
+        console.error('Error sending cohort to backend:', error)
+      }
+    }
   }
 }
