@@ -11,16 +11,20 @@
     { href: '/ranking', label: m['seo.titles.ranking']() },
     { href: '/modeles', label: m['seo.titles.modeles']() },
     { href: '/datasets', label: m['seo.titles.datasets']() },
-    { href: '/duel', label: m['seo.titles.duel']() }
-    // { href: '/news', label: m['seo.titles.news']() }
+    { href: '/news', label: m['seo.titles.news']() }
   ].filter((link) => {
-    if (link.href === '/duel' && locale !== 'fr') return false
-    if (link.href === '/ranking' && !['fr', 'en'].includes(locale)) return false
+    if (
+      (link.href === '/ranking' || link.href.includes('/news')) &&
+      !['fr', 'en'].includes(locale)
+    ) {
+      return false
+    }
     return true
   })
 
   function isCurrentPage(path: string, href: string) {
     if (path.includes('product')) return href.includes('product')
+    if (path.includes('news')) return href.includes('news')
     return path === href
   }
 </script>
