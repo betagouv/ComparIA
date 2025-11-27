@@ -14,8 +14,6 @@ import json
 
 from languia.utils import strip_metadata, ContextTooLongError
 
-# from langfuse import get_client, observe
-
 # Load Google Cloud credentials for Vertex AI if available
 if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     with open(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"), "r") as file:
@@ -27,7 +25,6 @@ else:
     vertex_credentials_json = None
 
 
-# @observe(as_type="generation") - Langfuse integration (commented out)
 def litellm_stream_iter(
     model_name,
     messages,
@@ -86,24 +83,6 @@ def litellm_stream_iter(
     #     "HTTP-Referer": "<YOUR_SITE_URL>", # Optional. Site URL for rankings on openrouter.ai.
     #     "X-Title": "<YOUR_SITE_NAME>", # Optional. Site title for rankings on openrouter.ai.
     #   },
-
-    # Not ready yet, see https://github.com/BerriAI/litellm/issues/11742
-    # if (
-    #     os.getenv("LANGFUSE_PUBLIC_KEY")
-    #     and os.getenv("LANGFUSE_SECRET_KEY")
-    #     # os.getenv("LANGFUSE_HOST") is optional (sent to SaaS if unset)
-    # ):
-    #     litellm.success_callback = ["langfuse_otel"]
-    #     litellm.failure_callback.append("langfuse_otel")
-
-    # Update langfuse trace explicitly
-    # user_id, session_id = get_user_info(request)
-    # langfuse = get_client()
-    # langfuse.update_current_trace(
-    #     user_id=user_id,
-    #     session_id=session_id,
-    # )
-
     # Remove custom metadata from messages before sending to API
     messages = strip_metadata(messages)
     logging.debug("stripping metadata")
@@ -129,7 +108,6 @@ def litellm_stream_iter(
         "stream": True,  # Enable streaming for real-time responses
         "vertex_credentials": vertex_credentials_json,
         "vertex_ai_location": litellm.vertex_location,
-        # Langfuse integration can be added via metadata for tracing
     }
 
     # Use mock response for testing if enabled

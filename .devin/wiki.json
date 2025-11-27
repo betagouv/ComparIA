@@ -64,7 +64,7 @@
     },
     {
       "title": "Logging and Observability",
-      "purpose": "Describe the logging infrastructure including PostgreSQL handlers, JSONL files, Sentry, and Langfuse integration",
+      "purpose": "Describe the logging infrastructure including PostgreSQL handlers, JSONL files, Redis and Sentry integration",
       "parent": "Backend System",
       "page_notes": [
         {
