@@ -1,4 +1,4 @@
-.PHONY: help install install-backend install-frontend dev dev-backend dev-frontend dev-controller build-frontend clean
+.PHONY: help install install-backend install-frontend dev dev-redis dev-backend dev-frontend dev-controller build-frontend clean redis
 
 # Variables
 PYTHON := python3
@@ -27,7 +27,19 @@ install-frontend: ## Install npm frontend dependencies
 	@echo "Installing frontend dependencies..."
 	cd frontend && $(NPM) install || npm install --legacy-peer-deps
 
-dev: ## Launch backend and frontend in parallel (Ctrl+C to stop)
+redis: ## Launch Redis using docker compose
+	@echo "Starting Redis..."
+	cd docker && docker compose up redis -d
+
+dev-redis: ## Launch backend and frontend with Redis (Ctrl+C to stop)
+	@echo "Launching compar:IA with Redis..."
+	@echo "Starting Redis..."
+	@cd docker && docker compose up redis -d || echo "Redis already running or failed to start"
+	@echo "Backend: http://localhost:$(BACKEND_PORT)"
+	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
+	@COMPARIA_REDIS_HOST=localhost $(MAKE) -j 2 dev-backend dev-frontend
+
+dev: ## Launch backend and frontend without Redis (Ctrl+C to stop)
 	@echo "Launching compar:IA..."
 	@echo "Backend: http://localhost:$(BACKEND_PORT)"
 	@echo "Frontend: http://localhost:$(FRONTEND_PORT)"
