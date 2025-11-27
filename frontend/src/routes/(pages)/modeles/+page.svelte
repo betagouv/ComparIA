@@ -139,7 +139,7 @@
               id="model-list-search"
               bind:value={search}
               label={m['actions.searchModel']()}
-              class="mb-7"
+              class="mb-7 hidden! md:flex!"
             />
 
             <Toggle
@@ -227,6 +227,13 @@
         {filteredModels.length}
         {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
       </p>
+
+      <Search
+        id="model-list-search"
+        bind:value={search}
+        label={m['actions.searchModel']()}
+        class="mb-4 md:hidden!"
+      />
 
       <div class="fr-select-group">
         <label class="fr-label" for="model-order">{m['models.list.triage.label']()}</label>
