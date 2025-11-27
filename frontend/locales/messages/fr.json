@@ -1822,12 +1822,13 @@
                 "label": "taille du modèle",
                 "quantized": "(quantisé)"
             },
-            "title": "Impact énergétique de la discussion",
+            "title": "Impact énergétique estimé de la discussion",
             "tokens": {
                 "label": "taille du texte",
                 "tokens": "jetons",
                 "tooltip": "L’IA analyse et génère des phrases à partir de mots ou de parties de mots d’à peu près quatre lettres, cette unité de texte est appelée token (« jeton »). Plus un texte est long, plus le nombre de tokens est grand."
-            }
+            },
+            "tooltip": "Estimation basée sur la taille du modèle, son architecture et la longueur de la réponse générée."
         },
         "thanks": {
             "cta": "Accéder au classement",

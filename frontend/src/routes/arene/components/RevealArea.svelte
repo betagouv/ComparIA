@@ -54,7 +54,10 @@
           {@html sanitize(model.desc).replaceAll('<p>', '<p class="fr-text--sm text-grey!">')}
         </div>
 
-        <h6 class="mt-auto! mb-5! text-base!">{m['reveal.impacts.title']()}</h6>
+        <h6 class="mt-auto! mb-5! text-base!">
+          {m['reveal.impacts.title']()}
+          <Tooltip id="impact-{side}" text={m['reveal.impacts.tooltip']()} />
+        </h6>
         <div class="flex">
           <div class="flex basis-1/2 flex-col md:basis-2/3 md:flex-row">
             <div class="relative md:w-full">
@@ -101,7 +104,7 @@
           </div>
 
           <div class="flex basis-1/2 items-center md:basis-1/3">
-            <strong class="m-auto">=</strong>
+            <strong class="m-auto">≈</strong>
 
             <MiniCard
               id="energy-{side}"
