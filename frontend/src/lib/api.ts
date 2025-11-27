@@ -16,7 +16,7 @@ function getBackendUrl(): string {
     return publicEnv.PUBLIC_API_LOCAL_URL || publicEnv.PUBLIC_API_URL || 'http://localhost:8001'
   } else {
     // Client-side: use public URL or origin
-    return publicEnv.PUBLIC_API_URL || window.location.origin
+    return window.location.origin || publicEnv.PUBLIC_API_URL
   }
 }
 
