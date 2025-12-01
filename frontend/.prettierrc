@@ -17,5 +17,6 @@
         "tabWidth": 4
       }
     }
-  ]
+  ],
+  "tailwindStylesheet": "./src/css/app.css"
 }
