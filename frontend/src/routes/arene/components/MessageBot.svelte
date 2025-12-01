@@ -49,12 +49,12 @@
 
 <div class="flex flex-col">
   <div
-    class="message-bot cg-border rounded-lg! relative flex h-full flex-col overflow-scroll bg-white px-5"
+    class="message-bot cg-border relative flex h-full flex-col overflow-scroll rounded-lg! bg-white px-5"
   >
     <div>
-      <div class="z-2 sticky top-0 flex items-center bg-white pb-5 pt-7">
+      <div class="sticky top-0 z-2 flex items-center bg-white pt-7 pb-5">
         <div class="c-bot-disk-{bot}"></div>
-        <h3 class="mb-0! ms-2! text-base!">{m[`models.names.${bot}`]()}</h3>
+        <h3 class="ms-2! mb-0! text-base!">{m[`models.names.${bot}`]()}</h3>
       </div>
 
       {#if message.reasoning != ''}
@@ -108,7 +108,7 @@
   </div>
 
   {#if reaction.liked !== null}
-    <div class="cg-border rounded-lg! border-dashed! mt-3 bg-white p-5">
+    <div class="cg-border mt-3 rounded-lg! border-dashed! bg-white p-5">
       <LikePanel
         kind={reaction.liked ? 'like' : 'dislike'}
         show={true}

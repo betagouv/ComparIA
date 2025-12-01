@@ -38,7 +38,7 @@
 />
 
 {#snippet desc()}
-  <p class="text-grey text-sm! mb-0! leading-normal! mt-2! md:mt-0!">
+  <p class="text-grey mt-2! mb-0! text-sm! leading-normal! md:mt-0!">
     {#if arena.chat.step == 1}
       {m['header.chatbot.stepOne.description']()}
     {:else}
@@ -50,7 +50,7 @@
 {#snippet extra()}
   {#if arena.chat.step == 1}
     <div
-      class="cg-border border-dashed! rounded-lg! mt-2 w-full bg-white py-1 text-center text-sm md:mt-0 md:py-3"
+      class="cg-border mt-2 w-full rounded-lg! border-dashed! bg-white py-1 text-center text-sm md:mt-0 md:py-3"
     >
       <Icon icon={mode!.icon} size="sm" class="text-primary" />
       &nbsp;<strong>{mode!.title}</strong>
@@ -84,11 +84,11 @@
   <div
     bind:this={secondHeader}
     id="second-header"
-    class="fr-container--fluid bg-light-grey drop-shadow-(--raised-shadow) z-3 sticky top-0 py-3 md:py-4"
+    class="fr-container--fluid bg-light-grey sticky top-0 z-3 py-3 drop-shadow-(--raised-shadow) md:py-4"
   >
     <div class="fr-container flex flex-col items-center gap-3 md:flex-row">
       <div class="flex basis-2/3 flex-col items-center gap-3 md:flex-row">
-        <div class="bg-primary text-nowrap rounded-[3.75rem] px-4 py-2 font-bold text-white">
+        <div class="bg-primary rounded-[3.75rem] px-4 py-2 font-bold text-nowrap text-white">
           {m['header.chatbot.step']()}
           {arena.chat.step}/2
         </div>

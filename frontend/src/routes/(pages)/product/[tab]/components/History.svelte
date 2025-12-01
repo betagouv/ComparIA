@@ -108,7 +108,7 @@
         <Badge
           text={step.tag}
           variant="blue-ecume"
-          class="text-(--blue-france-sun-113-625)! mb-6 md:ms-4"
+          class="mb-6 text-(--blue-france-sun-113-625)! md:ms-4"
         />
       </div>
 
@@ -123,22 +123,22 @@
             {/if}
             <div
               class={[
-                'z-1 border-3 h-[26px] w-[26px] min-w-[26px] rounded-full md:ms-auto',
+                'z-1 h-[26px] w-[26px] min-w-[26px] rounded-full border-3 md:ms-auto',
                 item.special
-                  ? 'bg-(--green-tilleul-verveine-975-75) border-[#FFCC00]'
+                  ? 'border-[#FFCC00] bg-(--green-tilleul-verveine-975-75)'
                   : 'border-primary bg-white'
               ]}
             ></div>
           </div>
           <div class="mb-10 max-w-[620px]">
             <p class="mb-1!"><strong>{@html sanitize(item.title)}</strong></p>
-            <p class="text-grey text-sm! leading-normal! mb-0!">{@html sanitize(item.desc)}</p>
+            <p class="text-grey mb-0! text-sm! leading-normal!">{@html sanitize(item.desc)}</p>
           </div>
         </div>
       {/each}
 
       <div
-        class="absolute left-[12px] top-14 h-full border-s-2 border-dashed border-[#CECECE] md:left-[182px]"
+        class="absolute top-14 left-[12px] h-full border-s-2 border-dashed border-[#CECECE] md:left-[182px]"
         class:hidden={step.key === 'investigation'}
       ></div>
     </div>

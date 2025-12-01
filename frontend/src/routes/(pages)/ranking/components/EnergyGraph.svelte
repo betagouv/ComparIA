@@ -115,7 +115,7 @@
 {#snippet legend(kind: string)}
   <div
     id="graph-legend"
-    class="cg-border rounded-md! bg-very-light-grey flex h-full flex-col p-4 text-[12px] leading-normal"
+    class="cg-border bg-very-light-grey flex h-full flex-col rounded-md! p-4 text-[12px] leading-normal"
   >
     <Search
       id="energy-graph-model-search"
@@ -161,7 +161,7 @@
       uncheckedLabel={m['models.list.filters.archived.uncheckedLabel']()}
       inline={false}
       groupClass="mb-2"
-      class="mb-2! text-[13px]! leading-tight! text-(--text-default-grey)) font-medium"
+      class="text-(--text-default-grey)) mb-2! text-[13px]! leading-tight! font-medium"
       checkLabelClass="text-[12px]"
     />
 
@@ -169,9 +169,9 @@
     <p class="mb-1! text-[13px]! leading-normal!">
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
-    <ul class="p-0! list-none! mt-0! md:mb-10! flex flex-wrap gap-x-3 font-medium md:block">
+    <ul class="mt-0! flex list-none! flex-wrap gap-x-3 p-0! font-medium md:mb-10! md:block">
       {#each ARCHS.filter((arch) => arch !== 'na') as arch}
-        <li class="p-0! md:not-last:mb-2 flex items-center">
+        <li class="flex items-center p-0! md:not-last:mb-2">
           <div class={['dot border-dark-grey me-2  rounded-full border', arch]}></div>
           {m[`generated.archs.${arch}.name`]()}
           <Tooltip
@@ -189,7 +189,7 @@
 <div id="energy-graph">
   <div class="flex items-center gap-2">
     <div
-      class="-me-8 h-6 w-6 translate-y-[35px] -rotate-90 overflow-visible whitespace-nowrap text-center"
+      class="-me-8 h-6 w-6 translate-y-[35px] -rotate-90 overflow-visible text-center whitespace-nowrap"
     >
       <Icon icon="thumb-up-line" class="text-primary" />
       <strong>{m['ranking.energy.views.graph.yLabel']()}</strong>
@@ -254,7 +254,7 @@
         {#if hoveredModelData}
           <div
             id="graph-tooltip"
-            class="cg-border rounded-sm! z-1 absolute min-w-[175px] bg-white p-3 drop-shadow-md"
+            class="cg-border absolute z-1 min-w-[175px] rounded-sm! bg-white p-3 drop-shadow-md"
             style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
           >
             <div class="flex">
@@ -270,7 +270,7 @@
               {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item}
                 <div class="flex gap-1 leading-relaxed">
                   <Icon icon={item.icon} size="xxs" class="text-primary" />
-                  <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
+                  <p class="text-grey mb-0! text-[12px]! leading-relaxed!">
                     {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
                   </p>
                   <strong class="ms-auto"
@@ -285,7 +285,7 @@
                 {#each tooltipExtraData as key}
                   {#if hoveredModelData[key]}
                     <div class="flex gap-1 leading-relaxed">
-                      <p class="mb-0! text-[12px]! text-grey leading-relaxed!">
+                      <p class="text-grey mb-0! text-[12px]! leading-relaxed!">
                         {m[`ranking.energy.views.graph.tooltip.${key}`]()}
                       </p>
                       <strong class="ms-auto">

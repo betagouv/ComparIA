@@ -56,13 +56,13 @@
 <dialog
   aria-labelledby="{modalId}-title"
   id={modalId}
-  class="fr-modal before:h-[5vh]! after:h-[5vh]! before:basis-[5vh]! after:basis-[5vh]!"
+  class="fr-modal before:h-[5vh]! before:basis-[5vh]! after:h-[5vh]! after:basis-[5vh]!"
 >
   <div class="fr-container fr-container--fluid">
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div
-          class="fr-modal__body bg-light-grey! dark:border! dark:border-grey! lg:max-h-[90vh]! rounded-xl"
+          class="fr-modal__body bg-light-grey! dark:border-grey! rounded-xl lg:max-h-[90vh]! dark:border!"
         >
           <div class="fr-modal__header pb-0!">
             <Button
@@ -78,7 +78,7 @@
             <div class="fr-modal__content">
               <h5
                 id="{modalId}-title"
-                class="text-dark-grey font-normal! text-lg! mb-3! flex items-center gap-2"
+                class="text-dark-grey mb-3! flex items-center gap-2 text-lg! font-normal!"
               >
                 <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
                 <div>
@@ -97,11 +97,11 @@
               <div class="grid gap-5 lg:grid-cols-8">
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
-                    <h6 class="mb-0! text-lg! flex">
+                    <h6 class="mb-0! flex text-lg!">
                       <Icon icon="ruler" block class="text-info me-2" />
                       {m['models.size.title']()}
                     </h6>
-                    <Badge {...model.badges.size} size="sm" class="self-center! ms-auto" />
+                    <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
                   </div>
 
                   <div class="fr-message block!">
@@ -114,7 +114,7 @@
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
-                    <h6 class="mb-0! text-lg! flex">
+                    <h6 class="mb-0! flex text-lg!">
                       <Icon icon="lightbulb-line" block class="text-yellow me-2" />
                       {m['models.arch.title']()}
                     </h6>
@@ -122,7 +122,7 @@
                       {...model.badges.arch}
                       id={modalId + '-arch'}
                       size="sm"
-                      class="self-center! ms-auto"
+                      class="ms-auto self-center!"
                     />
                   </div>
 
@@ -142,11 +142,11 @@
                 >
                   <div class={[licenseCards.length > 1 ? '' : 'col-span-2']}>
                     <div class="mb-2 flex flex-wrap gap-2">
-                      <h6 class="mb-0! text-sm! flex">
+                      <h6 class="mb-0! flex text-sm!">
                         <Icon icon="copyright-line" block class="me-2" />
                         {m['models.conditions.title']()}
                       </h6>
-                      <Badge {...model.badges.licenseName} size="sm" class="self-center! ms-auto" />
+                      <Badge {...model.badges.licenseName} size="sm" class="ms-auto self-center!" />
                     </div>
 
                     <div class="fr-message block!">
@@ -159,7 +159,7 @@
 
                   <div
                     class={[
-                      'text-xs! grid gap-4',
+                      'grid gap-4 text-xs!',
                       licenseCards.length > 1 ? 'col-span-1 grid-cols-2' : ''
                     ]}
                   >
@@ -170,11 +170,11 @@
                           { 'justify-between': !!card.subtitle }
                         ]}
                       >
-                        <p class="text-xs! mb-3! font-bold">{card.title}</p>
+                        <p class="mb-3! text-xs! font-bold">{card.title}</p>
 
                         <Badge {...card.badge} size="sm" />
                         {#if !!card.subtitle}
-                          <p class="text-xs! mb-0! mt-3!">{card.subtitle}</p>
+                          <p class="mt-3! mb-0! text-xs!">{card.subtitle}</p>
                         {/if}
                       </div>
                     {/each}
@@ -182,12 +182,12 @@
                 </div>
 
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-2">
-                  <h6 class="text-sm! mb-2! flex">
+                  <h6 class="mb-2! flex text-sm!">
                     <Icon icon="link" block class="me-2" />
                     {m['models.extra.title']()}
                   </h6>
 
-                  <p class="text-grey text-xs! mb-3!">
+                  <p class="text-grey mb-3! text-xs!">
                     {@html sanitize(
                       m[
                         `models.extra.experts.${model.distribution === 'api-only' ? 'api-only' : 'open-weights'}`
@@ -196,7 +196,7 @@
                       })
                     )}
                   </p>
-                  <p class="text-grey text-xs! mb-0!">
+                  <p class="text-grey mb-0! text-xs!">
                     {@html sanitize(
                       m['models.extra.impacts']({
                         linkProps1: externalLinkProps(

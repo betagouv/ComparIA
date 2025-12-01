@@ -82,7 +82,7 @@
     <div class="fr-container">
       <div class="grid gap-10 md:grid-cols-2 lg:px-20">
         <div class="my-auto md:max-w-[415px]">
-          <h1 class="mb-3! fr-h2">
+          <h1 class="fr-h2 mb-3!">
             Vous souhaitez <span class="text-primary">sensibiliser votre public</span> à l’impact environnemental
             de l’IA générative ?
           </h1>
@@ -118,9 +118,9 @@
           <span class="text-primary">impact environnemental</span>.
         </h2>
 
-        <ul class="p-0! m-0! md:ms-auto! my-auto">
+        <ul class="m-0! my-auto p-0! md:ms-auto!">
           {#each ['Durée : 45min à 1h30', 'Format présentiel ou en ligne', 'Accès à compar:IA et des supports fournis', 'Atelier clé en main, accessible et interactif'] as text}
-            <li class="not-last:mb-4 p-0! list-none md:text-lg">
+            <li class="list-none p-0! not-last:mb-4 md:text-lg">
               <Icon icon="checkbox-line" class="text-primary" />
               {text}
             </li>
@@ -144,7 +144,7 @@
           {#each publicCards as card}
             <div class="cg-border bg-white p-4 md:px-7 md:py-6">
               <Icon icon={card.icon} class={card.variant} size="lg" block />
-              <h3 class="text-lg! my-3! md:mt-5!">{card.title}</h3>
+              <h3 class="my-3! text-lg! md:mt-5!">{card.title}</h3>
               <p class="text-grey text-sm!">{card.desc}</p>
             </div>
           {/each}
@@ -157,11 +157,11 @@
     <div class="fr-container">
       <div class="lg:px-10">
         <div class="mb-11 text-center">
-          <h2 class="fr-h3 mb-3! text-primary!">Déroulé type d’un atelier</h2>
+          <h2 class="fr-h3 text-primary! mb-3!">Déroulé type d’un atelier</h2>
           <p class="text-grey mb-0!">Durée approximative : 60 minutes</p>
         </div>
 
-        <div class="gap-x-15 grid gap-y-10 md:grid-cols-2 md:gap-y-20 lg:grid-cols-3">
+        <div class="grid gap-x-15 gap-y-10 md:grid-cols-2 md:gap-y-20 lg:grid-cols-3">
           {#each workshopSteps as step, i}
             <div class="flex items-start gap-2">
               <div class="mt-1 flex items-end gap-1">
@@ -186,9 +186,9 @@
         <div class="my-auto md:max-w-[440px]">
           <h2 class="mb-6!">Le guide facilitateur</h2>
 
-          <ul class="p-0! m-0! mb-13!">
+          <ul class="m-0! mb-13! p-0!">
             {#each ['Guide détaillé avec tout le déroulé expliqué', 'Diapositives prêtes à projeter', 'FAQ et glossaire pour répondre facilement aux questions', 'Exension Chrome pour avoir toutes ces informations à portée de main'] as text}
-              <li class="not-last:mb-3 p-0! list-none md:text-lg">
+              <li class="list-none p-0! not-last:mb-3 md:text-lg">
                 <Icon icon="checkbox-line" class="text-primary" />
                 {text}
               </li>
@@ -210,10 +210,10 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid py-15 bg-white">
+  <section class="fr-container--fluid bg-white py-15">
     <div class="fr-container">
       <div class="lg:px-24">
-        <h2 class="fr-h3 mb-8! lg:mb-10! text-center">Foire aux questions</h2>
+        <h2 class="fr-h3 mb-8! text-center lg:mb-10!">Foire aux questions</h2>
 
         <AccordionGroup>
           {#each faq as q, i}

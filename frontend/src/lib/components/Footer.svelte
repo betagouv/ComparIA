@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <div class="fr-footer__brand fr-enlarge-link flex-col! items-start! max-w-[165px] gap-3">
+        <div class="fr-footer__brand fr-enlarge-link max-w-[165px] flex-col! items-start! gap-3">
           <a
             href="https://www.digitalpublicgoods.net/r/comparia"
             target="_blank"
@@ -67,7 +67,7 @@
           >
             <img src="/orgs/dpg.png" alt="DPG" class="max-h-[47px]" />
           </a>
-          <p class="text-[11px]! leading-normal! mb-0!">{m['footer.dpg']()}</p>
+          <p class="mb-0! text-[11px]! leading-normal!">{m['footer.dpg']()}</p>
         </div>
       </div>
       <div class="fr-footer__content">

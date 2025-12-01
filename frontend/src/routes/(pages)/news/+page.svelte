@@ -150,7 +150,7 @@
           >
             Afficher les filtres
             {#if filterCount}
-              <span class="fr-badge bg-primary! fr-badge--sm rounded-full! text-white! ms-2">
+              <span class="fr-badge bg-primary! fr-badge--sm ms-2 rounded-full! text-white!">
                 {filterCount}
               </span>
             {/if}
@@ -172,7 +172,7 @@
                       variant={filter.variant}
                       size="md"
                       noTooltip
-                      class="w-full! block"
+                      class="block w-full!"
                     >
                       <Icon icon={filter.icon} size="xs" class="me-1" />
                       {legend}
@@ -180,7 +180,7 @@
                   {/snippet}
                   {#snippet labelSlot({ option })}
                     <div class="me-2">{option.label}</div>
-                    <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                    <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
                   {/snippet}
                 </CheckboxGroup>
               {/each}
@@ -220,10 +220,10 @@
 
         <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {#each filteredNews as news (news.title)}
-            <div class="fr-card fr-enlarge-link fr-card--no-border cg-border bg-none! rounded-xl">
+            <div class="fr-card fr-enlarge-link fr-card--no-border cg-border rounded-xl bg-none!">
               <div class="fr-card__body">
-                <div class="fr-card__content px-5! md:px-4! md:pt-4! pb-18!">
-                  <h6 class="fr-card__title text-lg! mb-0!">
+                <div class="fr-card__content px-5! pb-18! md:px-4! md:pt-4!">
+                  <h6 class="fr-card__title mb-0! text-lg!">
                     <Link
                       href={news.href}
                       text={news.title}

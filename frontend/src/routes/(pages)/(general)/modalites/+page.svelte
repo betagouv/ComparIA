@@ -11,7 +11,7 @@
 
 <SeoHead title={m['seo.titles.modalites']()} />
 
-<main class="lg:py-15 py-10">
+<main class="py-10 lg:py-15">
   <div class="fr-container">
     <h1 id="modalites-d-utilisation">{m['general.tos.title']()}</h1>
 

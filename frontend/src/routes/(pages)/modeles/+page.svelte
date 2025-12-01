@@ -124,13 +124,13 @@
         >
           {m['models.list.filters.display']()}
           {#if filterCount}
-            <span class="fr-badge bg-primary! fr-badge--sm rounded-full! text-white! ms-2">
+            <span class="fr-badge bg-primary! fr-badge--sm ms-2 rounded-full! text-white!">
               {filterCount}
             </span>
           {/if}
         </button>
         <div class="fr-collapse" id="fr-modal-filters-section">
-          <p class="fr-h5 mb-5! -mt-4! hidden md:block">
+          <p class="fr-h5 -mt-4! mb-5! hidden md:block">
             {filteredModels.length}
             {m[`models.list.${models.length === 1 ? 'model' : 'models'}`]()}
           </p>
@@ -152,7 +152,7 @@
               groupClass="mx-4 md:mx-0"
             />
 
-            <AccordionGroup class="mb-6 mt-6">
+            <AccordionGroup class="mt-6 mb-6">
               <Accordion id="field-editors" label={editorFilter.legend}>
                 <div class="p-4">
                   <CheckboxGroup
@@ -164,7 +164,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2">{option.value}</div>
-                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                      <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -181,7 +181,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2"><strong>{option.value} :</strong> {option.label}</div>
-                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                      <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>
@@ -198,7 +198,7 @@
                   >
                     {#snippet labelSlot({ option })}
                       <div class="me-2">{option.label}</div>
-                      <div class="text-(--grey-625-425) ms-auto text-sm">{option.count}</div>
+                      <div class="ms-auto text-sm text-(--grey-625-425)">{option.count}</div>
                     {/snippet}
                   </CheckboxGroup>
                 </div>

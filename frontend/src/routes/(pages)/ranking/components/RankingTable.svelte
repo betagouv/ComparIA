@@ -228,23 +228,23 @@
         {model.data.elo}
       {:else}
         <div
-          class="cg-border text-info rounded-sm! relative max-w-[100px]"
+          class="cg-border text-info relative max-w-[100px] rounded-sm!"
           style="--range-width: {model.eloRangeWidth}%"
         >
-          <div class="bg-light-info w-(--range-width) absolute z-0 h-full rounded-sm"></div>
-          <span class="z-1 relative p-1 text-xs font-bold">{model.data.elo}</span>
+          <div class="bg-light-info absolute z-0 h-full w-(--range-width) rounded-sm"></div>
+          <span class="relative z-1 p-1 text-xs font-bold">{model.data.elo}</span>
         </div>
       {/if}
     {:else if col.id === 'trust_range'}
       -{model.data.trust_range![1]}/+{model.data.trust_range![0]}
     {:else if col.id === 'consumption_wh'}
       {#if model.license === 'proprietary'}
-        <span class="text-(--grey-625-425) text-xs">{m['words.NA']()}</span>
+        <span class="text-xs text-(--grey-625-425)">{m['words.NA']()}</span>
       {:else}
         {model.consumption_wh} Wh
         {#if !raw}
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-            <div class="rounded-xs bg-info w-(--range-width) h-[4px]"></div>
+            <div class="bg-info h-[4px] w-(--range-width) rounded-xs"></div>
           </div>
         {/if}
       {/if}

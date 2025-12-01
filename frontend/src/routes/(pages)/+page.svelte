@@ -146,9 +146,9 @@
 </script>
 
 <main id="content" class="">
-  <section class="fr-container--fluid bg-light-grey pb-13 lg:pt-18 pt-10 lg:pb-28">
+  <section class="fr-container--fluid bg-light-grey pt-10 pb-13 lg:pt-18 lg:pb-28">
     <div
-      class="fr-container max-w-[1070px]! flex flex-col gap-20 md:flex-row md:items-center md:gap-0"
+      class="fr-container flex max-w-[1070px]! flex-col gap-20 md:flex-row md:items-center md:gap-0"
     >
       <div class="">
         <div class="mb-15 px-4 md:px-0">
@@ -185,7 +185,7 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid md:py-15 py-10">
+  <section class="fr-container--fluid py-10 md:py-15">
     <div class="fr-container">
       <h3 class="mb-3! text-center">{m['home.use.title']()}</h3>
       <p class="text-grey mb-8! text-center">{m['home.use.desc']()}</p>
@@ -196,14 +196,14 @@
             <img
               src={card.src}
               alt={card.alt}
-              class="fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey rounded-t-xl object-contain dark:hidden"
+              class="fr-responsive-img bg-light-grey h-full! max-h-3/5 rounded-t-xl object-contain sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 dark:hidden"
             />
             <img
               src={card.srcDark}
               alt={card.alt}
-              class="fr-responsive-img h-full! max-h-3/5 sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 bg-light-grey hidden rounded-t-xl object-contain dark:block"
+              class="fr-responsive-img bg-light-grey hidden h-full! max-h-3/5 rounded-t-xl object-contain sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 dark:block"
             />
-            <div class="px-5 pb-7 pt-4 md:px-8 md:pb-10 md:pt-5">
+            <div class="px-5 pt-4 pb-7 md:px-8 md:pt-5 md:pb-10">
               <h6 class="mb-1! md:mb-2!">{card.title}</h6>
               <p class="text-grey mb-0!">{card.desc}</p>
             </div>
@@ -216,11 +216,11 @@
   <!-- TODO remove hidden -->
   <section
     id="european"
-    class="fr-container--fluid bg-light-info pb-18 lg:pb-25 hidden pt-10 lg:pt-20"
+    class="fr-container--fluid bg-light-info hidden pt-10 pb-18 lg:pt-20 lg:pb-25"
   >
-    <div class="fr-container max-w-[1150px]! flex flex-col gap-8 lg:flex-row lg:items-center">
+    <div class="fr-container flex max-w-[1150px]! flex-col gap-8 lg:flex-row lg:items-center">
       <div class="lg:max-w-[360px]">
-        <h3 class="mb-4! fr-h2 max-w-[320px]">
+        <h3 class="fr-h2 mb-4! max-w-[320px]">
           {@html sanitize(m['home.europe.title']({ props: 'class="text-primary"' }))}
         </h3>
         <p class="mb-2!">{m['home.europe.desc']()}</p>
@@ -236,7 +236,7 @@
       </div>
 
       <div
-        class="py-15 flex w-full flex-col justify-center gap-8 rounded-xl bg-white px-9 xl:flex-row"
+        class="flex w-full flex-col justify-center gap-8 rounded-xl bg-white px-9 py-15 xl:flex-row"
       >
         <img
           src="/home/comparia-stars.png"
@@ -259,7 +259,7 @@
                   text={card.title}
                   size="sm"
                 />
-                <p class="mb-0! fr-message">{card.desc}</p>
+                <p class="fr-message mb-0!">{card.desc}</p>
               </div>
             </div>
           {/each}
@@ -270,26 +270,26 @@
 
   <section class="fr-container--fluid bg-very-light-grey py-10 lg:py-14">
     <div class="fr-container">
-      <div class="cg-border xl:p-13! bg-white px-4 py-10">
+      <div class="cg-border bg-white px-4 py-10 xl:p-13!">
         <h4 class="mb-2! text-center">{m['home.vote.title']()}</h4>
         <p class="text-grey text-center">{m['home.vote.desc']()}</p>
 
-        <div class="md:mt-13 mt-10 flex flex-col text-center lg:flex-row">
+        <div class="mt-10 flex flex-col text-center md:mt-13 lg:flex-row">
           {#each whyVoteCards as card, index}
             <div class="basis-1/3">
-              <div class="xl:h-4/7 lg:h-1/2">
+              <div class="lg:h-1/2 xl:h-4/7">
                 <img src={card.src} alt={card.title} width="72" height="72" class="m-auto mb-4" />
-                <h6 class="mb-1! mx-auto! max-w-[230px]">{card.title}</h6>
+                <h6 class="mx-auto! mb-1! max-w-[230px]">{card.title}</h6>
               </div>
-              <p class="m-auto! text-sm! text-grey max-w-[280px]">{card.desc}</p>
+              <p class="text-grey m-auto! max-w-[280px] text-sm!">{card.desc}</p>
             </div>
             {#if index < 2}
-              <div class="arrow relative my-5 shrink-0 xl:-me-12 xl:-ms-12"></div>
+              <div class="arrow relative my-5 shrink-0 xl:-ms-12 xl:-me-12"></div>
             {/if}
           {/each}
         </div>
 
-        <div class="lg:mt-19 mt-12 flex justify-center">
+        <div class="mt-12 flex justify-center lg:mt-19">
           <Link
             button
             hideExternalIcon
@@ -309,7 +309,7 @@
 
       <div class="grid gap-8 md:grid-cols-3">
         {#each usageCards as card}
-          <div class="cg-border bg-white p-5 lg:px-8 lg:pb-11 lg:pt-6">
+          <div class="cg-border bg-white p-5 lg:px-8 lg:pt-6 lg:pb-11">
             <Icon icon={card.icon} size="lg" block class="text-primary mb-4" />
             <h6 class="mb-2!">{card.title}</h6>
             <p class="text-grey mb-0!">{card.desc}</p>
@@ -319,7 +319,7 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid bg-very-light-grey lg:pb-38 py-12 lg:pt-20">
+  <section class="fr-container--fluid bg-very-light-grey py-12 lg:pt-20 lg:pb-38">
     <div class="fr-container grid gap-10 lg:grid-cols-2 lg:gap-6">
       <!-- i18n: specific to locales -->
       <div class="cg-border bg-white px-5 py-10 md:px-8">
@@ -363,9 +363,9 @@
     </div>
   </section>
 
-  <section class="fr-container--fluid pb-18 lg:pb-25 pt-10 lg:pt-20">
+  <section class="fr-container--fluid pt-10 pb-18 lg:pt-20 lg:pb-25">
     <div class="fr-container">
-      <h3 class="mb-8! lg:mb-10! text-center">{m['home.faq.title']()}</h3>
+      <h3 class="mb-8! text-center lg:mb-10!">{m['home.faq.title']()}</h3>
 
       <AccordionGroup>
         {#each reducedFAQ as q (q.id)}

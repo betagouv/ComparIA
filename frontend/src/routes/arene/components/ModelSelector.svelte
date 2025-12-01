@@ -71,7 +71,7 @@
     aria-controls="modal-mode-selection"
     {disabled}
     data-fr-opened="false"
-    class="px-3! bg-white! text-dark-grey! text-sm! w-full! md:w-auto! items-center justify-start"
+    class="text-dark-grey! w-full! items-center justify-start bg-white! px-3! text-sm! md:w-auto!"
     style="--border-action-high-blue-france: var(--grey-925-125)"
     onclick={() => {
       neverClicked = false
@@ -90,7 +90,7 @@
       aria-controls="modal-mode-selection"
       {disabled}
       data-fr-opened="false"
-      class="px-3! bg-white! text-dark-grey! text-sm! w-full! md:w-auto! justify-start"
+      class="text-dark-grey! w-full! justify-start bg-white! px-3! text-sm! md:w-auto!"
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
@@ -119,7 +119,7 @@
           <div
             class={[
               'fr-modal__header flex-col! bg-white',
-              { 'z-1 top-0 md:sticky': showModelsSelection }
+              { 'top-0 z-1 md:sticky': showModelsSelection }
             ]}
           >
             <Button
@@ -157,7 +157,7 @@
               {/if}
             </div>
           </div>
-          <div class="fr-modal__content pb-12! m-0!">
+          <div class="fr-modal__content m-0! pb-12!">
             {#if showModelsSelection == false}
               <Dropdown
                 bind:mode
@@ -184,7 +184,7 @@
                 <Button
                   text={m['words.back']()}
                   variant="tertiary"
-                  class="md:me-auto! w-full! md:w-auto!"
+                  class="w-full! md:me-auto! md:w-auto!"
                   icon="arrow-left-line"
                   onclick={() => (showModelsSelection = false)}
                 />

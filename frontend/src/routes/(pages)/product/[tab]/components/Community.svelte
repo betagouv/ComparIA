@@ -107,7 +107,7 @@
 
   <div class="grid gap-x-9 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
     {#each frTeam as person}
-      <div class="cg-border cl-card p-4! flex gap-5">
+      <div class="cg-border cl-card flex gap-5 p-4!">
         <div
           class="after:bg-primary relative h-[100px] min-w-[100px] after:absolute after:inset-0 after:rounded-full after:opacity-10 after:content-['']"
         >
@@ -115,13 +115,13 @@
             src={'/product/community/' + person.imgSrc}
             aria-hidden="true"
             alt=""
-            class="saturate-80 h-[100px] w-[100px] rounded-full"
+            class="h-[100px] w-[100px] rounded-full saturate-80"
           />
         </div>
         <div class="flex flex-col">
           <p class="mb-2! font-bold">{person.name}</p>
-          <p class="text-grey text-[12px]! leading-normal! mb-0!">{person.job}</p>
-          <p class="text-[10px]! leading-normal! mb-0! mt-auto!">{person.date}</p>
+          <p class="text-grey mb-0! text-[12px]! leading-normal!">{person.job}</p>
+          <p class="mt-auto! mb-0! text-[10px]! leading-normal!">{person.date}</p>
         </div>
       </div>
     {/each}

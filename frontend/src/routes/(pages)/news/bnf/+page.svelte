@@ -251,7 +251,7 @@
 <SeoHead title={m['seo.titles.news']()} />
 
 <main>
-  <section class="fr-container--fluid bg-very-light-grey pb-16 pt-8 md:pt-16">
+  <section class="fr-container--fluid bg-very-light-grey pt-8 pb-16 md:pt-16">
     <div class="fr-container grid items-center gap-16 md:grid-cols-2">
       <div class="mx-auto max-w-[470px]">
         <img
@@ -318,7 +318,7 @@
         {#each workshops as workshop}
           <div class="cg-border bg-white p-6">
             <div class="mb-4 flex items-center">
-              <p class="text-grey text-sm! mb-0! inline-flex">
+              <p class="text-grey mb-0! inline-flex text-sm!">
                 <Icon icon="time-line" size="sm" class="me-1" />
                 {workshop.time}
               </p>
@@ -341,7 +341,7 @@
           <img class="w-full rounded-lg" src={speaker.img} alt="" />
           <h6 class="my-2!">{speaker.name}</h6>
           <p class="text-grey text-sm!">{speaker.desc}</p>
-          
+
           <div class="mt-auto flex flex-wrap gap-2">
             {#each speaker.logos as logo}
               <img

@@ -114,14 +114,14 @@
 
 <SeoHead title={m['seo.titles.ranking']()} />
 
-<main class="pb-30 bg-light-grey pt-12">
+<main class="bg-light-grey pt-12 pb-30">
   <div class="fr-container">
     <h1 class="fr-h3 mb-8!">{m['ranking.title']()}</h1>
 
     <Tabs {tabs} noBorders kind="nav">
       {#snippet tab({ id })}
         {#if id === 'ranking'}
-          <p class="text-[14px]! text-dark-grey mb-12!">
+          <p class="text-dark-grey mb-12! text-[14px]!">
             {@html sanitize(
               m['ranking.ranking.desc']({
                 linkProps: externalLinkProps('https://www.peren.gouv.fr/')

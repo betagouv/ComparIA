@@ -38,7 +38,7 @@
         button
         href="/arene"
         text={m['product.comparator.cta']()}
-        class="lg:mt-13 w-full! sm:w-auto!"
+        class="w-full! sm:w-auto! lg:mt-13"
       />
     </div>
 

@@ -21,7 +21,7 @@
 </script>
 
 <div
-  class="grouped-messages not-last:mb-15 px-4 md:px-8 xl:px-16"
+  class="grouped-messages px-4 not-last:mb-15 md:px-8 xl:px-16"
   style="--message-size: {userMessageSize}px;"
   {@attach scrollTo}
 >

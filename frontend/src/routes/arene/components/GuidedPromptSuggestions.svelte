@@ -97,7 +97,7 @@
 
 {#if suggestionsCategoriesCards.length}
   <div class="fr-container px-0!">
-    <h4 class="text-dark-grey text-[14px]! md:text-base! mb-4! md:mb-5!">
+    <h4 class="text-dark-grey mb-4! text-[14px]! md:mb-5! md:text-base!">
       <strong>{m['arenaHome.suggestions.title']()}</strong>
     </h4>
 

@@ -39,8 +39,8 @@
         <div class="fr-modal__body rounded-xl">
           <div class="fr-modal__content mb-0! px-0!">
             <div class="grid-cols-2 md:grid">
-              <div class="px-7 pb-7 pt-10">
-                <h2 id="fr-modal-title-modal-welcome" class="fr-modal__title mb-0! text-primary!">
+              <div class="px-7 pt-10 pb-7">
+                <h2 id="fr-modal-title-modal-welcome" class="fr-modal__title text-primary! mb-0!">
                   {m['welcome.title']()}
                 </h2>
               </div>

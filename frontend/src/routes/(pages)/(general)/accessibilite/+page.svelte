@@ -6,7 +6,7 @@
 
 <SeoHead title={m['seo.titles.accessibilite']()} />
 
-<main class="lg:py-15 py-10">
+<main class="py-10 lg:py-15">
   <div class="fr-container">
     <p>{@html sanitize(m['general.a11y.disclaimer']())}</p>
 

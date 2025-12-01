@@ -47,7 +47,7 @@
   {...props}
   class={[
     'fr-tabs',
-    { 'tabs-nav': kind === 'nav', 'before:shadow-none! shadow-none!': noBorders },
+    { 'tabs-nav': kind === 'nav', 'shadow-none! before:shadow-none!': noBorders },
     props.class
   ]}
 >
@@ -77,7 +77,7 @@
         {
           'fr-tabs__panel--selected': item.id === initialId,
           'px-0! py-5!': noBorders,
-          'transition-none! visibility-none!': item.href && item.id !== currentTabId
+          'visibility-none! transition-none!': item.href && item.id !== currentTabId
         },
         panelClass
       ]}

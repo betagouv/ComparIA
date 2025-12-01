@@ -42,7 +42,7 @@
   </div>
 </div>
 <section class="fr-container--fluid bg-light-info">
-  <div class="fr-container pb-10 pt-8 lg:grid lg:grid-cols-2 lg:gap-6">
+  <div class="fr-container pt-8 pb-10 lg:grid lg:grid-cols-2 lg:gap-6">
     <div>
       <h5 class="mb-2! flex items-center">
         <Icon icon="mail-line" size="lg" block class="text-primary me-2" />
@@ -70,7 +70,7 @@
           value=""
           data-value="**MBV_EMAIL**"
           placeholder="Votre adresse électronique"
-          class="fr-input bg-white! rounded-tl-sm"
+          class="fr-input rounded-tl-sm bg-white!"
         />
         <input type="hidden" name="required-formItem-mbtext-email" value="true" />
         <Button

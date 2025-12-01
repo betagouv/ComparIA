@@ -29,11 +29,11 @@
     <div class="mt-11 flex flex-col gap-6 md:flex-row">
       {#each ['a', 'b'] as const as model (model)}
         <div
-          class="cg-border rounded-lg! flex w-full flex-col gap-4 bg-white p-4 md:rounded-lg md:px-6 md:py-8"
+          class="cg-border flex w-full flex-col gap-4 rounded-lg! bg-white p-4 md:rounded-lg md:px-6 md:py-8"
         >
           <div class="flex items-center">
             <div class="c-bot-disk-{model}"></div>
-            <p class="mb-0! ms-1! font-bold">{m[`models.names.${model}`]()}</p>
+            <p class="ms-1! mb-0! font-bold">{m[`models.names.${model}`]()}</p>
           </div>
 
           <p class="mb-0! font-bold">{m['vote.qualify.question']()}</p>

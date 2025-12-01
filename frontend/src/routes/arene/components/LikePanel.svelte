@@ -111,7 +111,7 @@
   class:hidden={show === false}
   class:flex={mode === 'vote'}
 >
-  <p class="me-3! {mode === 'vote' ? 'mb-0! mt-1!' : 'mb-3!'}">
+  <p class="me-3! {mode === 'vote' ? 'mt-1! mb-0!' : 'mb-3!'}">
     <Icon icon={reaction.icon} class="text-primary" />
     <span
       class="text-dark-grey ms-2 text-[14px] font-bold md:text-base"
@@ -125,7 +125,7 @@
       <label
         class:disabled
         class:selected={selection.includes(value)}
-        class="checkbox-btn cg-border bg-white! px-2! md:px-3! py-1! text-[14px]"
+        class="checkbox-btn cg-border bg-white! px-2! py-1! text-[14px] md:px-3!"
         aria-checked={selection.includes(value)}
         aria-disabled={disabled ? 'true' : 'false'}
         tabindex="0"
@@ -150,7 +150,7 @@
       <button
         {disabled}
         class:selected={comment !== ''}
-        class="checkbox-btn cg-border bg-white! px-2! md:px-3! py-1! text-[14px]!"
+        class="checkbox-btn cg-border bg-white! px-2! py-1! text-[14px]! md:px-3!"
         data-fr-opened="false"
         aria-controls={modalId}
       >

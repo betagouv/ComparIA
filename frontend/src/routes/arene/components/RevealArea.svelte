@@ -40,7 +40,7 @@
             <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
             {#if selected === side}
               <div
-                class="bg-(--blue-france-975-75) text-primary border-primary ms-auto rounded-[3.75rem] border px-3 text-[14px] font-bold"
+                class="text-primary border-primary ms-auto rounded-[3.75rem] border bg-(--blue-france-975-75) px-3 text-[14px] font-bold"
               >
                 {m['vote.yours']()}
               </div>
@@ -78,7 +78,7 @@
                 {/if}
               </MiniCard>
               <div
-                class="cg-border rounded-sm! bg-(--beige-gris-galet-950-100) absolute z-0 flex w-full p-1 ps-3 pt-2 text-[11px] leading-normal"
+                class="cg-border absolute z-0 flex w-full rounded-sm! bg-(--beige-gris-galet-950-100) p-1 ps-3 pt-2 text-[11px] leading-normal"
               >
                 <span class="text-(--beige-gris-galet-sun-407-moon-821)">
                   {model.badges.arch.text}
@@ -120,7 +120,7 @@
           </div>
         </div>
 
-        <h6 class="mt-9! md:mt-14! mb-5! text-base!">{m['reveal.equivalent.title']()}</h6>
+        <h6 class="mt-9! mb-5! text-base! md:mt-14!">{m['reveal.equivalent.title']()}</h6>
         <div class="grid grid-cols-3 gap-2">
           <MiniCard
             id="co2-{side}"
@@ -172,7 +172,7 @@
   </div>
 
   <div class="feedback py-7">
-    <div class="fr-container md:max-w-[280px]! flex flex-col items-center gap-4">
+    <div class="fr-container flex flex-col items-center gap-4 md:max-w-[280px]!">
       <Link
         button
         icon="edit-line"
@@ -207,11 +207,11 @@
                 />
               </div>
               <div class="fr-modal__content">
-                <h6 class="mb-3! text-dark-grey!">
+                <h6 class="text-dark-grey! mb-3!">
                   {m['reveal.feedback.shareResult']()}
                 </h6>
 
-                <p class="text-sm! mb-0!">
+                <p class="mb-0! text-sm!">
                   {m['reveal.feedback.description']()}
                 </p>
                 <div class="flex flex-wrap gap-3 py-8">
@@ -246,7 +246,7 @@
 {#if ['fr', 'en'].includes(locale)}
   <section class="fr-container--fluid bg-light-info">
     <div class="fr-container">
-      <div class="lg:px-15 gap-x-15 lg:gap-x-30 flex flex-col gap-y-10 py-8 md:flex-row">
+      <div class="flex flex-col gap-x-15 gap-y-10 py-8 md:flex-row lg:gap-x-30 lg:px-15">
         <div class="flex max-w-[350px] flex-col">
           <h5 class="font mb-3!">{m['reveal.thanks.title']()}</h5>
           <p class="mb-8!">{m['reveal.thanks.desc']()}</p>

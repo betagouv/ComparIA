@@ -57,7 +57,7 @@
       aria-hidden="true"
       class={[
         'w-full text-end text-sm text-[#3A3A3A]',
-        { 'w-auto! ms-2 text-start leading-[1.5rem]': !inline },
+        { 'ms-2 w-auto! text-start leading-[1.5rem]': !inline },
         checkLabelClass
       ]}
     >

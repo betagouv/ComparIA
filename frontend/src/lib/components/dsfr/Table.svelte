@@ -154,7 +154,7 @@
   <div class="fr-table__wrapper relative">
     <div
       id="table-gradient"
-      class={['z-3 absolute inset-0 start-[80%] md:start-[95%]', { hidden: !scrollable.right }]}
+      class={['absolute inset-0 start-[80%] z-3 md:start-[95%]', { hidden: !scrollable.right }]}
     ></div>
 
     <div
@@ -166,7 +166,7 @@
         <table {id} {...props}>
           <caption>{caption}</caption>
 
-          <thead bind:this={stickyElem} class="z-2 relative">
+          <thead bind:this={stickyElem} class="relative z-2">
             <tr>
               {#each cols as col (col.id)}
                 <th class={col.colHeaderClass}>

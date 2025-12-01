@@ -111,7 +111,7 @@
     <div
       bind:this={footer}
       id="send-area"
-      class="z-2 bg-very-light-grey sticky bottom-0 mt-auto flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]"
+      class="bg-very-light-grey sticky bottom-0 z-2 mt-auto flex flex-col items-center gap-3 px-4 py-3 md:px-[20%]"
     >
       {#if step === 'chat'}
         <div class="flex w-full flex-col gap-3 md:flex-row">
@@ -131,7 +131,7 @@
             id="send-btn"
             text={m['words.send']()}
             disabled={arena.chat.status !== 'complete' || prompt === ''}
-            class="md:self-end! w-full! md:w-auto!"
+            class="w-full! md:w-auto! md:self-end!"
             onclick={onPromptSubmit}
           />
         </div>

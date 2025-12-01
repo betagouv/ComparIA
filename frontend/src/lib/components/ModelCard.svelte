@@ -21,19 +21,19 @@
 
 <div
   class={[
-    'fr-card fr-enlarge-link cg-border bg-none! rounded-xl',
+    'fr-card fr-enlarge-link cg-border rounded-xl bg-none!',
     { 'border-primary!': model.new }
   ]}
 >
   <div class="fr-card__body">
     <div class="fr-card__content px-5! md:px-4! md:pt-4!">
       <h6
-        class="fr-card__title text-dark-grey font-normal! text-[14px]! leading-normal! mb-3! flex items-center gap-3"
+        class="fr-card__title text-dark-grey mb-3! flex items-center gap-3 text-[14px]! leading-normal! font-normal!"
       >
         <AILogo iconPath={model.icon_path} alt={model.organisation} />
         <div>
           {model.organisation}/<a
-            class="text-black! after:text-primary"
+            class="after:text-primary text-black!"
             data-fr-opened="false"
             aria-controls={modalId}
             href="#{model.id}"
@@ -52,8 +52,8 @@
           {#if model.status === 'archived' || model.new}
             <li
               class={[
-                'px-4! py-1! absolute bottom-[1.75rem] rounded-[3.75rem] text-[14px] font-bold',
-                model.new ? 'bg-primary text-white' : 'bg-(--grey-900-175) text-dark-grey'
+                'absolute bottom-[1.75rem] rounded-[3.75rem] px-4! py-1! text-[14px] font-bold',
+                model.new ? 'bg-primary text-white' : 'text-dark-grey bg-(--grey-900-175)'
               ]}
             >
               {m[model.new ? 'words.new' : 'words.archived']()}

@@ -7,7 +7,7 @@ import { Client } from '@gradio/client'
 
 // Function to get the appropriate backend URL
 function getBackendUrl(): string {
-  const ssr = !browser; // browser false if SSR
+  const ssr = !browser // browser false if SSR
 
   if (dev) {
     return 'http://localhost:8001' // if npm run dev - updated to 8001

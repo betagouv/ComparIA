@@ -54,8 +54,8 @@
 
 <div id="ranking-methodo">
   <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.methodo.title']()}</h2>
-  <p class="text-[14px]! text-dark-grey mb-4!">{m['ranking.methodo.desc.1']()}</p>
-  <p class="text-[14px]! text-dark-grey">
+  <p class="text-dark-grey mb-4! text-[14px]!">{m['ranking.methodo.desc.1']()}</p>
+  <p class="text-dark-grey text-[14px]!">
     {@html sanitize(
       m['ranking.methodo.desc.2']({
         notebookLinkProps: externalLinkProps({
@@ -86,10 +86,10 @@
               </p>
             </div>
 
-            <h4 class="text-lg! mb-5!">{m[`ranking.methodo.methods.${card.k}`]()}</h4>
-            <ul class="list-none! p-0! m-0!">
+            <h4 class="mb-5! text-lg!">{m[`ranking.methodo.methods.${card.k}`]()}</h4>
+            <ul class="m-0! list-none! p-0!">
               {#each ['1', '2', '3'] as const as i}
-                <li class="p-0! not-last:mb-5 flex">
+                <li class="flex p-0! not-last:mb-5">
                   <Icon
                     icon={card.k === 'pros' ? 'checkbox-circle-fill' : 'close-circle-fill'}
                     class={['me-1', card.k === 'pros' ? 'text-[#58B77D]' : 'text-[#FF9575]']}
@@ -109,7 +109,7 @@
 
     <div class="grid gap-6 lg:grid-cols-2">
       <div class="max-w-[528px]">
-        <h4 class="text-[14px]! mb-5! lg:mb-10! leading-normal!">
+        <h4 class="mb-5! text-[14px]! leading-normal! lg:mb-10!">
           {m['ranking.methodo.impacts.winrate.title']()}
         </h4>
 
@@ -117,7 +117,7 @@
           <div class="h-[400px] rounded-sm bg-white">
             <WinHistogram data={modelsData['win_rate']} {minMaxY} />
           </div>
-          <div class="mb-5 mt-2 flex gap-5">
+          <div class="mt-2 mb-5 flex gap-5">
             <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
@@ -130,7 +130,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-[14px]! text-dark-grey!"
+              class="text-dark-grey! text-[14px]!"
               onclick={() => onDownloadData()}
             />
           </div>
@@ -143,7 +143,7 @@
       </div>
 
       <div class="max-w-[528px]">
-        <h4 class="text-[14px]! mb-5! leading-normal!">
+        <h4 class="mb-5! text-[14px]! leading-normal!">
           {m['ranking.methodo.impacts.elo.title']()}
         </h4>
 
@@ -151,7 +151,7 @@
           <div class="h-[400px] rounded-sm bg-white">
             <WinHistogram data={modelsData['mean_win_prob']} {minMaxY} />
           </div>
-          <div class="mb-5 mt-2 flex gap-5">
+          <div class="mt-2 mb-5 flex gap-5">
             <!-- <Link
               href="FIXME"
               text={m['actions.accessData']()}
@@ -164,7 +164,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-[14px]! text-dark-grey!"
+              class="text-dark-grey! text-[14px]!"
               onclick={() => onDownloadData()}
             />
           </div>

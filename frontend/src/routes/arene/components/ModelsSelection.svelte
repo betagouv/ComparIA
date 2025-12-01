@@ -58,7 +58,7 @@
           >{simple_name}</strong
         >
       </div>
-      <ul class="fr-badges-group hidden! md:flex! mt-3!">
+      <ul class="fr-badges-group mt-3! hidden! md:flex!">
         {#each modelBadges as badge, i}
           <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
         {/each}

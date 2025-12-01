@@ -1,7 +1,7 @@
 import { api } from '$lib/api'
 import type { VotesData } from '$lib/global.svelte'
-import type { APIData } from '$lib/models'
 import { getLocale } from '$lib/i18n/runtime'
+import type { APIData } from '$lib/models'
 
 export async function load() {
   // Get the current locale using the runtime function

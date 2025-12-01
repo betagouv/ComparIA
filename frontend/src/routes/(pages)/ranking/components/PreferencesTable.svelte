@@ -120,7 +120,7 @@
         text={m['actions.downloadData']()}
         icon="download-line"
         iconPos="right"
-        class="text-[14px]! text-grey!"
+        class="text-grey! text-[14px]!"
         onclick={() => onDownloadData()}
       />
     </div>
@@ -133,7 +133,7 @@
       label={m['ranking.preferences.table.percentLabel']()}
       hideCheckLabel
       variant="primary"
-      class="text-[14px]! me-14"
+      class="me-14 text-[14px]!"
     />
   {/snippet}
 
@@ -153,12 +153,12 @@
       {@const size = Math.round(model[col.id] * 100)}
       <div class="flex h-[25px] w-full rounded-sm border border-[#cecece] text-[12px] font-bold">
         <div
-          class="w-(--width) bg-(--green-emeraude-975-75) text-(--green-emeraude-sun-425-moon-753) rounded-s-sm ps-1"
+          class="w-(--width) rounded-s-sm bg-(--green-emeraude-975-75) ps-1 text-(--green-emeraude-sun-425-moon-753)"
           style="width: {size}%"
         >
           {size}%
         </div>
-        <div class="bg-(--warning-950-100) text-(--warning-425-625) grow rounded-e-sm ps-1">
+        <div class="grow rounded-e-sm bg-(--warning-950-100) ps-1 text-(--warning-425-625)">
           {Math.round((1 - model[col.id]) * 100)}%
         </div>
       </div>

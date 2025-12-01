@@ -50,7 +50,7 @@
     <label
       for="{id}-{option.value}"
       class={[
-        'cg-border text-dark-grey! px-4! py-3! md:py-5! flex items-center bg-white text-sm font-medium md:flex-col md:items-start',
+        'cg-border text-dark-grey! flex items-center bg-white px-4! py-3! text-sm font-medium md:flex-col md:items-start md:py-5!',
         option.class
       ]}
     >

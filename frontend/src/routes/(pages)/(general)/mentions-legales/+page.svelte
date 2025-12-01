@@ -6,7 +6,7 @@
 
 <SeoHead title={m['seo.titles.mentions-legales']()} />
 
-<main class="lg:py-15 py-10">
+<main class="py-10 lg:py-15">
   <div class="fr-container">
     <h1 id="mentions-legales" class="fr-h2">{m['general.legal.title']()}</h1>
 

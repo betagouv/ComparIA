@@ -147,8 +147,8 @@ export function parseModel(model: APIBotModel) {
       reasoning: model.reasoning ? ({ variant: '', text: 'Modèle de raisonnement' } as const) : null
     },
     search: (['id', 'simple_name', 'organisation'] as const)
-              .map((key) => model[key].toLowerCase())
-              .join(' ')
+      .map((key) => model[key].toLowerCase())
+      .join(' ')
   }
 }
 
