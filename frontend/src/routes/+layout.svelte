@@ -6,6 +6,7 @@
   import { setI18nContext, setVotesContext } from '$lib/global.svelte'
   import { setModelsContext } from '$lib/models'
   import { onMount } from 'svelte'
+  import { SvelteURLSearchParams } from 'svelte/reactivity'
   import '../css/app.css'
 
   if (browser) {
@@ -18,7 +19,7 @@
 
   onMount(() => {
     // Remove locale param to avoid locale changes override problems
-    const params = new URLSearchParams(page.url.searchParams)
+    const params = new SvelteURLSearchParams(page.url.searchParams)
     params.delete('locale')
     goto(`?${params}`)
   })

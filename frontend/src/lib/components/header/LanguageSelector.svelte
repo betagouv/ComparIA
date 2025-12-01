@@ -4,6 +4,7 @@
   import { LOCALES, type LocaleOption } from '$lib/global.svelte'
   import { m } from '$lib/i18n/messages'
   import { getLocale, setLocale } from '$lib/i18n/runtime'
+  import { SvelteURL } from 'svelte/reactivity'
 
   let { id }: { id: string } = $props()
 
@@ -11,7 +12,7 @@
 
   function onLocaleSelect(locale: LocaleOption) {
     if (page.url.host !== locale.host) {
-      const url = new URL(window.location.href)
+      const url = new SvelteURL(window.location.href)
       url.host = locale.host
       url.search = `locale=${locale.code}`
       window.location.href = url.href
