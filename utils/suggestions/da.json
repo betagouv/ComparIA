@@ -53,7 +53,7 @@
 
   {
     "title": "Ideer",
-    "description": "Generere nye ideer",
+    "description": "Generé nye ideer",
     "icon": "lightbulb-line",
     "suggestions": [
       "Jeg forbereder en brainstorming-session om [emne] med 15 personer. Foreslå mig dine 3 bedste ideer til at igangsætte kreative diskussioner.",
@@ -67,7 +67,7 @@
   },
   {
     "title": "Oversættelse",
-    "description": "udtryk dig på et andet sprog",
+    "description": "Udtryk dig på et andet sprog",
     "icon": "translate-2",
     "suggestions": [
       "Hvad er betyder en kneppemand på sønderjysk?",
@@ -112,7 +112,7 @@
   },
   {
     "title": "Historier",
-    "description": "Fortælle en historie",
+    "description": "Fortæl en historie",
     "icon": "book-open",
     "suggestions": [
       "Skriv en historie på 100 ord uden at bruge bogstavet \"e\", hvor et barn opdager en mystisk genstand på sine bedsteforældres loft.",
