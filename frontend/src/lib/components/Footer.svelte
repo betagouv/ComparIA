@@ -39,12 +39,12 @@
                 </p>
               {:else if locale === 'da'}
                 <img
-                  src={`/orgs/countries/da-light.png`}
+                  src="/orgs/countries/da-light.png"
                   alt={m['header.logoAlt']()}
                   class="max-h-[70px] dark:hidden"
                 />
                 <img
-                  src={`/orgs/countries/da-dark.png`}
+                  src="/orgs/countries/da-dark.png"
                   alt={m['header.logoAlt']()}
                   class="hidden max-h-[70px] dark:block"
                 />
@@ -65,7 +65,7 @@
             target="_blank"
             class="after:content-none!"
           >
-            <img src={`/orgs/dpg.png`} alt="DPG" class="max-h-[47px]" />
+            <img src="/orgs/dpg.png" alt="DPG" class="max-h-[47px]" />
           </a>
           <p class="text-[11px]! leading-normal! mb-0!">{m['footer.dpg']()}</p>
         </div>

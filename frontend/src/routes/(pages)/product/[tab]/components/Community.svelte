@@ -85,12 +85,12 @@
       <div class="my-6 flex flex-col gap-8">
         <div class="cl-logos">
           <img
-            src={`/orgs/countries/da-light.png`}
+            src="/orgs/countries/da-light.png"
             alt={m['header.logoAlt']()}
             class="max-h-[75px] dark:hidden"
           />
           <img
-            src={`/orgs/countries/da-dark.png`}
+            src="/orgs/countries/da-dark.png"
             alt={m['header.logoAlt']()}
             class="hidden max-h-[75px] dark:block"
           />

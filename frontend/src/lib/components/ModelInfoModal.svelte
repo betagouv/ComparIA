@@ -25,7 +25,7 @@
             }
           : {
               title: m['models.conditions.commercialUse.title'](),
-              badge: !!model.licenseInfos.commercialUseSpecificities
+              badge: model.licenseInfos.commercialUseSpecificities
                 ? {
                     variant: 'purple' as const,
                     text: m['models.conditions.types.conditions']()
@@ -41,7 +41,7 @@
           }
         : {
             title: m['models.conditions.reuse.title'](),
-            badge: !!model.licenseInfos.reuseSpecificities
+            badge: model.licenseInfos.reuseSpecificities
               ? {
                   variant: 'purple' as const,
                   text: m['models.conditions.types.conditions']()
