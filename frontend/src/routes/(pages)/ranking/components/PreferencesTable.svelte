@@ -44,12 +44,12 @@
       },
       { id: 'total_positive_prefs' },
       { id: 'total_negative_prefs' },
-      ...APIPositiveReactions.map((reaction, i) => ({
+      ...APIPositiveReactions.map((reaction) => ({
         id: reaction,
         colHeaderClass: 'bg-(--green-emeraude-975-75)!',
         orderable: true
       })),
-      ...APINegativeReactions.map((reaction, i) => ({
+      ...APINegativeReactions.map((reaction) => ({
         id: reaction,
         colHeaderClass: 'bg-(--warning-950-100)!',
         orderable: true

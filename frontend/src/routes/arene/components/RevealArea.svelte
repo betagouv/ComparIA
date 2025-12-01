@@ -47,7 +47,7 @@
             {/if}
           </h5>
           <ul class="fr-badges-group mb-4!">
-            {#each modelBadges as badge, i}
+            {#each modelBadges as badge, i (i)}
               <li><Badge id="card-badge-{i}" {...badge} noTooltip /></li>
             {/each}
           </ul>

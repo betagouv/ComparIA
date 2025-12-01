@@ -59,7 +59,7 @@
               {m[model.new ? 'words.new' : 'words.archived']()}
             </li>
           {/if}
-          {#each badges as badge, i}
+          {#each badges as badge, i (i)}
             <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
           {/each}
         </ul>

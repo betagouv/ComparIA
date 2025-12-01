@@ -106,7 +106,7 @@
   </h2>
 
   <div class="grid gap-x-9 gap-y-6 md:grid-cols-2 lg:grid-cols-3">
-    {#each frTeam as person}
+    {#each frTeam as person (person.key)}
       <div class="cg-border cl-card flex gap-5 p-4!">
         <div
           class="after:bg-primary relative h-[100px] min-w-[100px] after:absolute after:inset-0 after:rounded-full after:opacity-10 after:content-['']"

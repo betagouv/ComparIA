@@ -31,7 +31,7 @@
 
 <nav class="fr-nav" data-fr-js-navigation="true">
   <ul class="fr-nav__list fr-container">
-    {#each navLinks as link}
+    {#each navLinks as link (link.href)}
       <li class="fr-nav__item" data-fr-js-navigation-item="true">
         <a
           href={link.href}

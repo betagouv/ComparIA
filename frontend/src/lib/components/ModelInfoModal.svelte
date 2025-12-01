@@ -87,7 +87,7 @@
               </h5>
 
               <ul class="fr-badges-group mb-4!">
-                {#each badges as badge, i}
+                {#each badges as badge, i (i)}
                   <li><Badge id="general-badge-{i}" {...badge} /></li>
                 {/each}
               </ul>
@@ -163,7 +163,7 @@
                       licenseCards.length > 1 ? 'col-span-1 grid-cols-2' : ''
                     ]}
                   >
-                    {#each licenseCards as card}
+                    {#each licenseCards as card, i (i)}
                       <div
                         class={[
                           'cg-border flex w-full flex-col items-center p-3 text-center',

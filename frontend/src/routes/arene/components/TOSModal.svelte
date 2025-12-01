@@ -49,7 +49,7 @@
 
             <div class="grid-cols-2 md:grid">
               <div class="px-7">
-                {#each pratices as { label, icon }}
+                {#each pratices as { label, icon } (label)}
                   <div class="mb-7 md:last-of-type:mb-0">
                     <Icon {icon} block size="lg" class="text-primary me-2" />
                     <p class="mb-0! text-[14px]!">{m[label]()}</p>

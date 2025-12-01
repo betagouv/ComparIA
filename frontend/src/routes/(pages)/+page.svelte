@@ -191,7 +191,7 @@
       <p class="text-grey mb-8! text-center">{m['home.use.desc']()}</p>
 
       <div class="grid gap-7 md:grid-cols-3">
-        {#each utilyCards as card}
+        {#each utilyCards as card, i (i)}
           <div class="cg-border">
             <img
               src={card.src}
@@ -246,7 +246,7 @@
         />
 
         <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
-          {#each europeCards as card}
+          {#each europeCards as card, i (i)}
             <div class="cg-border bg-very-light-grey flex items-center gap-4 px-4 py-5">
               <div class="bg-light-info rounded-md p-2 leading-none">
                 {card.flag}
@@ -275,7 +275,7 @@
         <p class="text-grey text-center">{m['home.vote.desc']()}</p>
 
         <div class="mt-10 flex flex-col text-center md:mt-13 lg:flex-row">
-          {#each whyVoteCards as card, index}
+          {#each whyVoteCards as card, index (index)}
             <div class="basis-1/3">
               <div class="lg:h-1/2 xl:h-4/7">
                 <img src={card.src} alt={card.title} width="72" height="72" class="m-auto mb-4" />
@@ -308,7 +308,7 @@
       <p class="text-grey fr-mb-4w text-center">{m['home.vote.desc']()}</p>
 
       <div class="grid gap-8 md:grid-cols-3">
-        {#each usageCards as card}
+        {#each usageCards as card, i (i)}
           <div class="cg-border bg-white p-5 lg:px-8 lg:pt-6 lg:pb-11">
             <Icon icon={card.icon} size="lg" block class="text-primary mb-4" />
             <h6 class="mb-2!">{card.title}</h6>
@@ -327,7 +327,7 @@
         <p>{m['home.origin.team.desc']()}</p>
 
         <div class="mt-12 flex flex-wrap gap-8">
-          {#each localizedLogos as logoProps}
+          {#each localizedLogos as logoProps, i (i)}
             <img {...logoProps} />
           {/each}
         </div>

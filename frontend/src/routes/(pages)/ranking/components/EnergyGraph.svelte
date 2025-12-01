@@ -170,7 +170,7 @@
       <strong>{m['ranking.energy.views.graph.legends.arch']()}</strong>
     </p>
     <ul class="mt-0! flex list-none! flex-wrap gap-x-3 p-0! font-medium md:mb-10! md:block">
-      {#each ARCHS.filter((arch) => arch !== 'na') as arch}
+      {#each ARCHS.filter((arch) => arch !== 'na') as arch (arch)}
         <li class="flex items-center p-0! md:not-last:mb-2">
           <div class={['dot border-dark-grey me-2  rounded-full border', arch]}></div>
           {m[`generated.archs.${arch}.name`]()}
@@ -200,7 +200,7 @@
         <svg bind:this={svg}>
           <!-- y axis -->
           <g class="axis y-axis">
-            {#each yTicks as tick}
+            {#each yTicks as tick (tick)}
               <g transform="translate(0, {yScale(tick)})">
                 <line x1={padding.left} x2={xScale(minMaxX[1])} />
                 <text x={padding.left - 8} y="+4">{tick}</text>
@@ -210,7 +210,7 @@
 
           <!-- x axis -->
           <g class="axis x-axis">
-            {#each xTicks as tick}
+            {#each xTicks as tick (tick)}
               <g transform="translate({xScale(tick)},0)">
                 <line y1={yScale(minMaxY[0])} y2={yScale(minMaxY[1])} />
                 <text y={height - padding.bottom + 20}>{tick}</text>
@@ -236,7 +236,7 @@
           {/if}
 
           <!-- data -->
-          {#each filteredModels as m}
+          {#each filteredModels as m (m.id)}
             <circle
               cx={xScale(m.x)}
               cy={yScale(m.y)}
@@ -267,7 +267,7 @@
             </div>
 
             <div class="mt-1 text-[12px]">
-              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item}
+              {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item (item.key)}
                 <div class="flex gap-1 leading-relaxed">
                   <Icon icon={item.icon} size="xxs" class="text-primary" />
                   <p class="text-grey mb-0! text-[12px]! leading-relaxed!">
@@ -282,7 +282,7 @@
               {/each}
 
               <div class="mt-4">
-                {#each tooltipExtraData as key}
+                {#each tooltipExtraData as key (key)}
                   {#if hoveredModelData[key]}
                     <div class="flex gap-1 leading-relaxed">
                       <p class="text-grey mb-0! text-[12px]! leading-relaxed!">

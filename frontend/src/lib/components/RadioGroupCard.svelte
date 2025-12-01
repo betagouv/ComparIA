@@ -33,7 +33,7 @@
 </script>
 
 <div {...props} {id} class={['grid gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-4', props.class]}>
-  {#each options as option}
+  {#each options as option (option.value)}
     <input
       id="{id}-{option.value}"
       name={id}

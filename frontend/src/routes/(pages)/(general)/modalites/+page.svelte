@@ -84,7 +84,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each models as model}
+        {#each models as model (model.id)}
           <tr>
             <td>{model['simple_name']}</td>
             <td>

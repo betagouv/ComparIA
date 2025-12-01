@@ -94,7 +94,7 @@
     const lowestElo = models.reduce((a, m) => (m.data.elo < a ? m.data.elo : a), highestElo)
     const highestConso = models.reduce((a, m) => (m.consumption_wh > a ? m.consumption_wh : a), 0)
 
-    return models.map((model, i) => {
+    return models.map((model) => {
       const [month, year] = model.release_date.split('/')
 
       return {
@@ -121,18 +121,20 @@
           case 'elo':
           case 'n_match':
             return sortIfDefined(a.data, b.data, orderingCol)
-          case 'consumption_wh':
+          case 'consumption_wh': {
             const aProprietary = a.license === 'proprietary'
             const bProprietary = b.license === 'proprietary'
             if (aProprietary && bProprietary) return a.id.localeCompare(b.id)
             if (aProprietary) return orderingMethod === 'ascending' ? -1 : 1
             if (bProprietary) return orderingMethod === 'ascending' ? 1 : -1
             return b.consumption_wh - a.consumption_wh
-          case 'trust_range':
+          }
+          case 'trust_range': {
             const aCount = a.data.trust_range[0] + a.data.trust_range[1]
             const bCount = b.data.trust_range[0] + b.data.trust_range[1]
             if (aCount === bCount) return a.data.rank - b.data.rank
             return aCount - bCount
+          }
           case 'size':
             return b.params - a.params
           case 'release':

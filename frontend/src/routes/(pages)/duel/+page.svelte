@@ -119,7 +119,7 @@
         </h2>
 
         <ul class="m-0! my-auto p-0! md:ms-auto!">
-          {#each ['Durée : 45min à 1h30', 'Format présentiel ou en ligne', 'Accès à compar:IA et des supports fournis', 'Atelier clé en main, accessible et interactif'] as text}
+          {#each ['Durée : 45min à 1h30', 'Format présentiel ou en ligne', 'Accès à compar:IA et des supports fournis', 'Atelier clé en main, accessible et interactif'] as text, i (i)}
             <li class="list-none p-0! not-last:mb-4 md:text-lg">
               <Icon icon="checkbox-line" class="text-primary" />
               {text}
@@ -141,7 +141,7 @@
         </div>
 
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {#each publicCards as card}
+          {#each publicCards as card, i (i)}
             <div class="cg-border bg-white p-4 md:px-7 md:py-6">
               <Icon icon={card.icon} class={card.variant} size="lg" block />
               <h3 class="my-3! text-lg! md:mt-5!">{card.title}</h3>
@@ -162,7 +162,7 @@
         </div>
 
         <div class="grid gap-x-15 gap-y-10 md:grid-cols-2 md:gap-y-20 lg:grid-cols-3">
-          {#each workshopSteps as step, i}
+          {#each workshopSteps as step, i (i)}
             <div class="flex items-start gap-2">
               <div class="mt-1 flex items-end gap-1">
                 <div class="bg-primary h-[11px] w-[11px] rounded-full"></div>
@@ -187,7 +187,7 @@
           <h2 class="mb-6!">Le guide facilitateur</h2>
 
           <ul class="m-0! mb-13! p-0!">
-            {#each ['Guide détaillé avec tout le déroulé expliqué', 'Diapositives prêtes à projeter', 'FAQ et glossaire pour répondre facilement aux questions', 'Exension Chrome pour avoir toutes ces informations à portée de main'] as text}
+            {#each ['Guide détaillé avec tout le déroulé expliqué', 'Diapositives prêtes à projeter', 'FAQ et glossaire pour répondre facilement aux questions', 'Exension Chrome pour avoir toutes ces informations à portée de main'] as text, i (i)}
               <li class="list-none p-0! not-last:mb-3 md:text-lg">
                 <Icon icon="checkbox-line" class="text-primary" />
                 {text}
@@ -216,7 +216,7 @@
         <h2 class="fr-h3 mb-8! text-center lg:mb-10!">Foire aux questions</h2>
 
         <AccordionGroup>
-          {#each faq as q, i}
+          {#each faq as q, i (i)}
             <Accordion id={`faq-${i}`} label={q.title}>
               {q.desc}
             </Accordion>

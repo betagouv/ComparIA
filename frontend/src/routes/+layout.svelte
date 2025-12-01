@@ -10,7 +10,7 @@
 
   if (browser) {
     // FIXME import only needed parts?
-    // @ts-ignore - DSFR module import
+    // @ts-expect-error - DSFR module import
     import('@gouvfr/dsfr/dist/dsfr/dsfr.module.min.js')
   }
 

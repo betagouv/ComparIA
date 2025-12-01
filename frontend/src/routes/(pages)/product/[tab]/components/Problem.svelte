@@ -44,7 +44,7 @@
       {@html sanitize(m['product.problem.title']({ props: 'class="text-orange"' }))}
     </h2>
 
-    {#each diversityCards as card}
+    {#each diversityCards as card, i (i)}
       <section class="cg-border p-5">
         <h3 class="mb-3! text-base!">{card.title}</h3>
         <p class="text-start! text-sm!">{card.desc}</p>
@@ -58,12 +58,12 @@
   </div>
 
   <div class="mt-12 grid gap-6 md:grid-cols-2">
-    {#each alignmentCards as card}
+    {#each alignmentCards as card, i (i)}
       <section class="cg-border bg-very-light-grey px-5 py-6">
         <Icon icon={card.icon} block class={card.class + ' mb-3'} />
         <h4 class="fr-h6 mb-3!">{card.title}</h4>
 
-        {#each card.ps as p}
+        {#each card.ps as p, j (j)}
           <p class="mb-3! text-[12px]! leading-normal!">{@html sanitize(p)}</p>
         {/each}
       </section>

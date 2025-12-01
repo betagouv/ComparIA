@@ -110,7 +110,7 @@
           default:
             if (!a.date) return -1
             if (!b.date) return 1
-            // @ts-ignore
+            // @ts-expect-error date works
             return b.date - a.date
         }
       })
@@ -158,7 +158,7 @@
 
           <div class="fr-collapse" id="fr-modal-filters-section">
             <form class="mt-8 md:mt-0">
-              {#each filters as filter}
+              {#each filters as filter (filter.id)}
                 <CheckboxGroup
                   {...filter}
                   bind:value={kinds[filter.id]}
@@ -212,7 +212,7 @@
             name="news-order"
             class="fr-select w-auto! max-w-full"
           >
-            {#each sortingOptions as option}
+            {#each sortingOptions as option (option.value)}
               <option value={option.value}>{option.label}</option>
             {/each}
           </select>

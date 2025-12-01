@@ -52,7 +52,7 @@
   ]}
 >
   <ul class={['fr-tabs__list', { 'px-0!': kind === 'nav' }]} role="tablist" aria-label={label}>
-    {#each items as item}
+    {#each items as item, i (i)}
       <li role="presentation" class="whitespace-nowrap">
         {#if item.href}
           <a {...item.props} href={item.href}>
@@ -66,7 +66,7 @@
       </li>
     {/each}
   </ul>
-  {#each tabs as item, i}
+  {#each tabs as item, i (i)}
     <div
       id={`tab-${item.id}-panel`}
       role="tabpanel"

@@ -84,7 +84,7 @@
         <div
           class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:content-center md:gap-6 lg:grid-cols-2 xl:grid-cols-3"
         >
-          {#each datasetCards as card}
+          {#each datasetCards as card, i (i)}
             <div class="cg-border bg-very-light-grey">
               <img
                 src={card.img}
@@ -121,7 +121,7 @@
 
       <div>
         <div class="grid gap-5 md:grid-cols-2 md:grid-rows-1 md:gap-10">
-          {#each bunkaCards as card}
+          {#each bunkaCards as card, i (i)}
             <div
               class="fr-container bg-very-light-grey flex flex-col rounded-xl px-3! py-5! md:px-10! md:py-8!"
             >

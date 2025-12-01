@@ -20,7 +20,7 @@
   <legend class="sr-only" id="vote-cards-legend">{m['vote.title']()}</legend>
 
   <div class="grid auto-rows-max grid-cols-3 gap-5 md:flex md:justify-center">
-    {#each choices as { value, label }, i (value)}
+    {#each choices as { value, label } (value)}
       <div class="h-full">
         <input
           type="radio"

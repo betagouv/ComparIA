@@ -11,15 +11,11 @@
 
   // Compute second header height for autoscrolling
   let secondHeader = $state<HTMLElement>()
-  let secondHeaderSize: number = $state(0)
+  let secondHeaderSize = $derived<number>(secondHeader?.offsetHeight ?? 0)
 
   function onResize() {
     secondHeaderSize = secondHeader ? secondHeader.offsetHeight : 0
   }
-
-  $effect(() => {
-    secondHeaderSize = secondHeader ? secondHeader.offsetHeight : 0
-  })
 </script>
 
 <svelte:window onresize={onResize} />

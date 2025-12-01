@@ -42,7 +42,7 @@
 
     <div class="fr-collapse fr-translate__menu fr-menu" {id}>
       <ul class="fr-menu__list">
-        {#each LOCALES as locale}
+        {#each LOCALES as locale (locale.code)}
           <li>
             <button
               class="fr-translate__language fr-nav__link"

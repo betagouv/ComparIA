@@ -84,7 +84,7 @@
     </div>
     <div class="fr-footer__bottom">
       <ul class="fr-footer__bottom-list">
-        {#each links as { label, ...props }}
+        {#each links as { label, ...props } (props.href)}
           <li class="fr-footer__bottom-item">
             <a class="fr-footer__bottom-link" {...props}>{label}</a>
           </li>

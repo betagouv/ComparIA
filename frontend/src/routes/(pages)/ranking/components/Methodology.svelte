@@ -16,7 +16,7 @@
       .filter((m) => !!m.data[key])
       .slice(0, 10)
       .sort((a, b) => b.data[key]! - a.data[key]!)
-      .map((m, i) => ({
+      .map((m) => ({
         x: m.id,
         y: m.data[key]!
       }))
@@ -71,7 +71,7 @@
     <h3 class="fr-h6 mb-5!">{m['ranking.methodo.methods.title']()}</h3>
 
     <div class="grid gap-6 lg:grid-cols-2">
-      {#each [{ id: 'winrate', k: 'cons' }, { id: 'elo', k: 'pros' }] as const as card}
+      {#each [{ id: 'winrate', k: 'cons' }, { id: 'elo', k: 'pros' }] as const as card (card.id)}
         <div
           class={[
             'cg-border bg-white p-7 pb-8',
@@ -88,7 +88,7 @@
 
             <h4 class="mb-5! text-lg!">{m[`ranking.methodo.methods.${card.k}`]()}</h4>
             <ul class="m-0! list-none! p-0!">
-              {#each ['1', '2', '3'] as const as i}
+              {#each ['1', '2', '3'] as const as i (i)}
                 <li class="flex p-0! not-last:mb-5">
                   <Icon
                     icon={card.k === 'pros' ? 'checkbox-circle-fill' : 'close-circle-fill'}

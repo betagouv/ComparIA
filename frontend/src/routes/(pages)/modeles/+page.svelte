@@ -74,17 +74,19 @@
         switch (sortingMethod) {
           case 'date-desc':
             if (a.release_date && b.release_date && a.release_date !== b.release_date) {
-              // @ts-ignore
+              // @ts-expect-error date works
               return new Date('01/' + b.release_date) - new Date('01/' + a.release_date)
             } else if (a.release_date) {
               return -1
             } else if (b.release_date) {
               return 1
             }
+          // falls through
           case 'params-asc':
             if (a.params && b.params && a.params !== b.params) {
               return a.params - b.params
             }
+          // falls through
           case 'org-asc':
             return a.organisation.localeCompare(b.organisation)
           default:
@@ -243,7 +245,7 @@
           name="model-order"
           class="fr-select w-auto! max-w-full"
         >
-          {#each sortingOptions as option}
+          {#each sortingOptions as option (option.value)}
             <option value={option.value}>{option.label}</option>
           {/each}
         </select>

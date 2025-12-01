@@ -56,7 +56,7 @@
       const modeSelectionModal = document.getElementById('modal-mode-selection')
       if (modeSelectionModal) {
         window.setTimeout(() => {
-          // @ts-ignore - DSFR is globally available
+          // @ts-expect-error - DSFR is globally available
           window.dsfr(modeSelectionModal).modal.conceal()
         }, 300)
       }

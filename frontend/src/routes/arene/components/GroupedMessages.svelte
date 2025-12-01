@@ -28,7 +28,7 @@
   <MessageUser bind:size={userMessageSize} message={user} />
 
   <div class="grid gap-10 md:grid-cols-2 md:gap-6">
-    {#each bots as botMessage, j}
+    {#each bots as botMessage, j (j)}
       <MessageBot message={botMessage} {generating} {disabled} {onReactionChange} />
     {/each}
   </div>

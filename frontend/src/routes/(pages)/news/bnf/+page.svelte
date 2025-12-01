@@ -291,7 +291,7 @@
       <h3 class="text-center">Les conférences</h3>
 
       <div class="grid gap-8 md:grid-cols-2">
-        {#each talks as talk}
+        {#each talks as talk, i (i)}
           <div class="cg-border bg-white p-6">
             <iframe
               width="100%"
@@ -315,7 +315,7 @@
       <h3 class="my-12! text-center">Les ateliers</h3>
 
       <div class="grid grid-cols-3 gap-6">
-        {#each workshops as workshop}
+        {#each workshops as workshop, i (i)}
           <div class="cg-border bg-white p-6">
             <div class="mb-4 flex items-center">
               <p class="text-grey mb-0! inline-flex text-sm!">
@@ -336,14 +336,14 @@
   <section class="py-15">
     <h3 class="text-center">Les intervenant·es</h3>
     <div class="fr-container grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {#each speakers as speaker}
+      {#each speakers as speaker (speaker.name)}
         <div class="cg-border bg-light-grey flex flex-col p-7">
           <img class="w-full rounded-lg" src={speaker.img} alt="" />
           <h6 class="my-2!">{speaker.name}</h6>
           <p class="text-grey text-sm!">{speaker.desc}</p>
 
           <div class="mt-auto flex flex-wrap gap-2">
-            {#each speaker.logos as logo}
+            {#each speaker.logos as logo, i (`${speaker.name}-${i}`)}
               <img
                 src={logo.src}
                 width={logo.width ?? 100}

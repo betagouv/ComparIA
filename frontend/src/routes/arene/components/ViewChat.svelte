@@ -75,17 +75,11 @@
 
   // Compute second header height for autoscrolling
   let footer = $state<HTMLElement>()
-  let footerSize: number = $state(0)
+  let footerSize: number = $derived(step && footer ? footer.offsetHeight : 0)
 
   function onResize() {
     footerSize = footer ? footer.offsetHeight : 0
   }
-
-  $effect(() => {
-    // Take step change into account for footer offset calculation
-    step
-    footerSize = footer ? footer.offsetHeight : 0
-  })
 </script>
 
 <svelte:window onresize={onResize} />

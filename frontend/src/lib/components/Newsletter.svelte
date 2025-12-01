@@ -11,7 +11,7 @@
       const response = await fetch(form.action, {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        // @ts-ignore (legit)
+        // @ts-expect-error (legit)
         body: new URLSearchParams(formData).toString()
       })
 

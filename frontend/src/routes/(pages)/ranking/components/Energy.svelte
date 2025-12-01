@@ -38,7 +38,7 @@
         </h3>
 
         <ul class="text-grey text-[14px]">
-          {#each ['1', '2', '3'] as const as n}
+          {#each ['1', '2', '3'] as const as n (n)}
             <li>{@html sanitize(m[`ranking.energy.views.methodo.1.list.${n}`]())}</li>
           {/each}
         </ul>

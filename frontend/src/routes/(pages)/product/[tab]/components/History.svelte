@@ -85,13 +85,13 @@
       items: step.items.map((item) => {
         const baseKey = `product.history.steps.${step.key}.items.${item.index}` as const
         return {
-          // @ts-expect-error
+          // @ts-expect-error i18n
           date: !item.noDate ? m[`${baseKey}.date`]() : null,
-          // @ts-expect-error
+          // @ts-expect-error i18n
           special: item.vote,
-          // @ts-expect-error
+          // @ts-expect-error i18n
           title: item.title ?? m[`${baseKey}.title`](),
-          // @ts-expect-error
+          // @ts-expect-error i18n
           desc: item.desc ?? m[`${baseKey}.desc`]()
         }
       })
@@ -102,7 +102,7 @@
 <div>
   <h2 class="fr-h4 mb-12!">{m['product.history.title']()}</h2>
 
-  {#each steps as step}
+  {#each steps as step (step.key)}
     <div class="relative pb-8">
       <div class="md:ms-[196px]">
         <Badge
@@ -112,7 +112,7 @@
         />
       </div>
 
-      {#each step.items as item}
+      {#each step.items as item, i (`${step.key}-${i}`)}
         {#if item.date}
           <p class="ms-7! font-bold md:hidden">{item.date}</p>
         {/if}

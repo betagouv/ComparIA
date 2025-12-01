@@ -51,7 +51,7 @@
     <h3 class="fr-h4 md:text-center">{m['product.comparator.challenges.title']()}</h3>
 
     <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-      {#each challengesCards as card}
+      {#each challengesCards as card, i (i)}
         <div class="cg-border px-4 py-5 md:px-8 md:py-6">
           <Icon icon={card.icon} block class={card.class + ' mb-5'} />
           <h4 class="fr-h6 mb-3!">{card.title}</h4>

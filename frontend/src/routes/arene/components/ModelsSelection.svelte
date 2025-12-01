@@ -25,7 +25,7 @@
 </script>
 
 <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
-  {#each models as { id, simple_name, icon_path, organisation, badges }, index}
+  {#each models as { id, simple_name, icon_path, organisation, badges }, index (id)}
     {@const modelBadges = (['license', 'releaseDate', 'size'] as const)
       .map((k) => badges[k])
       .filter((b) => !!b)}
@@ -59,7 +59,7 @@
         >
       </div>
       <ul class="fr-badges-group mt-3! hidden! md:flex!">
-        {#each modelBadges as badge, i}
+        {#each modelBadges as badge, i (i)}
           <li><Badge id="card-badge-{i}" size="xs" {...badge} noTooltip /></li>
         {/each}
       </ul>

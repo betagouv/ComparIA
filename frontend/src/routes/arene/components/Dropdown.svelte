@@ -28,9 +28,7 @@
 </script>
 
 <div class="flex flex-col gap-3 md:gap-4">
-  {#each choices as { value, label, icon, description }, index}
-    <!-- svelte-ignore a11y-no-noninteractive-element-to-interactive-role -->
-    <!-- svelte-ignore a11y-click-events-have-key-events -->
+  {#each choices as { value, label, icon, description }, index (value)}
     <label
       class:selected={value === mode}
       class:disabled

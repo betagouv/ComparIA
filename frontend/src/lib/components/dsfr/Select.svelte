@@ -30,7 +30,7 @@
   </label>
 
   <select {...props} {id} bind:value={selected} class={['fr-select', props.class]}>
-    {#each options as option}
+    {#each options as option (option.value)}
       <option value={option.value}>{option.label}</option>
     {/each}
   </select>

@@ -48,7 +48,7 @@
   aria-live="polite"
   class="flex grow flex-col pb-7"
 >
-  {#each groupedMessages as { user, bots }, i}
+  {#each groupedMessages as { user, bots }, i (i)}
     <GroupedMessages {user} {bots} {generating} {disabled} {onReactionChange} />
   {/each}
 
