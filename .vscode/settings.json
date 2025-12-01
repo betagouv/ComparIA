@@ -26,5 +26,6 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   },
-  "isort.args": ["--profile", "black"]
+  "isort.args": ["--profile", "black"],
+  "eslint.validate": ["javascript", "typescript", "svelte"]
 }

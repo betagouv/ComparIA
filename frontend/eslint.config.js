@@ -24,6 +24,7 @@ export default ts.config(
     },
     rules: {
       '@typescript-eslint/no-explicit-any': 'warn',
+      'svelte/valid-compile': 'warn',
       'svelte/no-at-html-tags': 'off'
     }
   },
