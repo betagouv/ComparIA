@@ -6,3 +6,4 @@ bun.lock
 bun.lockb
 
 src/lib/icons
+src/lib/generated
