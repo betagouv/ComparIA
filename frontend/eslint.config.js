@@ -23,8 +23,8 @@ export default ts.config(
       globals: { ...globals.browser, ...globals.node }
     },
     rules: {
-      'no-undef': 'off', // FIXME rm?
-      '@typescript-eslint/no-explicit-any': 'warn'
+      '@typescript-eslint/no-explicit-any': 'warn',
+      'svelte/no-at-html-tags': 'off'
     }
   },
   {

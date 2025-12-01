@@ -7,3 +7,4 @@ bun.lockb
 
 src/lib/icons
 src/lib/generated
+static/bundle.tracing.replay.min.js
