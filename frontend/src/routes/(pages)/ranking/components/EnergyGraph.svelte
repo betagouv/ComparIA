@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { CheckboxGroup, Icon, Search, Toggle, Tooltip } from '$components/dsfr'
   import { ARCHS } from '$lib/generated/models'
   import { m } from '$lib/i18n/messages'
@@ -257,10 +258,10 @@
             style="--x: {tooltipPos.x}px; --y:{tooltipPos.y}px;"
           >
             <div class="flex">
-              <img
-                src="/orgs/ai/{hoveredModelData.icon_path}"
+              <AILogo
+                iconPath={hoveredModelData.icon_path}
                 alt={hoveredModelData.organisation}
-                class="me-1 w-[14px] object-contain"
+                class="me-1"
               />
               <strong class="text-[14px] leading-normal">{hoveredModelData.id}</strong>
             </div>

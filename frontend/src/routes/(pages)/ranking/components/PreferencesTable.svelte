@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Link, Table, Toggle } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import {
@@ -80,7 +81,7 @@
       ...model.prefs,
       total_positive_prefs: APIPositiveReactions.reduce((acc, v) => acc + model.prefs[v], 0),
       total_negative_prefs: APINegativeReactions.reduce((acc, v) => acc + model.prefs[v], 0),
-      search: model.search,
+      search: model.search
     }))
   })
 
@@ -138,12 +139,7 @@
 
   {#snippet cell(model, col)}
     {#if col.id === 'name'}
-      <img
-        src="/orgs/ai/{model.icon_path}"
-        alt={model.organisation}
-        width="20"
-        class="me-1 inline-block"
-      />
+      <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
       <a
         href="#{model.id}"
         data-fr-opened="false"

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Link, Tooltip } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import type { RevealData } from '$lib/chatService.svelte'
@@ -35,7 +36,7 @@
       <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
         <div>
           <h5 class="fr-h6 text-dark-grey! mb-4! flex items-center gap-2">
-            <img src="/orgs/ai/{model.icon_path}" width="34" aria-hidden="true" alt="" />
+            <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
             <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
             {#if selected === side}
               <div

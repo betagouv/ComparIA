@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Button, Icon, Search } from '$components/dsfr'
   import type { APIModeAndPromptData } from '$lib/chatService.svelte'
   import { modeInfos as modeChoices } from '$lib/chatService.svelte'
@@ -93,21 +94,11 @@
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
-      <img
-        src="/orgs/ai/{modelA.icon_path}"
-        alt={modelA.simple_name}
-        width="20"
-        class="fr-mr-1v inline"
-      />
+      <AILogo iconPath={modelA.icon_path} alt={modelA.simple_name} class="me-1 inline" />
       {modelA.simple_name}
       <strong class="mx-2">VS</strong>
       {#if modelB}
-        <img
-          src="/orgs/ai/{modelB.icon_path}"
-          alt={modelB.simple_name}
-          width="20"
-          class="fr-mr-1v inline"
-        />
+        <AILogo iconPath={modelB.icon_path} alt={modelB.simple_name} class="me-1 inline" />
         {modelB.simple_name}
       {:else}
         {m['words.random']()}

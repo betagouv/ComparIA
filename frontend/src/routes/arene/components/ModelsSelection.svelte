@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Badge } from '$components/dsfr'
   import type { BotModel } from '$lib/models'
 
@@ -52,7 +53,7 @@
         }}
       />
       <div class="text-dark-grey flex">
-        <img src="/orgs/ai/{icon_path}" alt={organisation} class="me-2 w-[20px] object-contain" />
+        <AILogo iconPath={icon_path} alt={organisation} class="me-2" />
         <span class="organisation hidden md:inline">{organisation}/</span><strong
           >{simple_name}</strong
         >

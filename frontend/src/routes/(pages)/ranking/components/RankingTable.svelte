@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Badge, Link, Table } from '$components/dsfr'
   import ModelInfoModal from '$components/ModelInfoModal.svelte'
   import { getVotesContext } from '$lib/global.svelte'
@@ -198,12 +199,7 @@
       <div
         class="max-w-[205px] overflow-hidden overflow-ellipsis sm:max-w-none sm:overflow-visible"
       >
-        <img
-          src="/orgs/ai/{model.icon_path}"
-          alt={model.organisation}
-          width="20"
-          class=" inline-block"
-        />
+        <AILogo iconPath={model.icon_path} alt={model.organisation} class="me-1 inline-block" />
         <a
           href="#{model.id}"
           data-fr-opened="false"

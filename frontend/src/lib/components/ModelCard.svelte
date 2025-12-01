@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
   import { sanitize } from '$lib/utils/commons'
@@ -29,12 +30,7 @@
       <h6
         class="fr-card__title text-dark-grey font-normal! text-[14px]! leading-normal! mb-3! flex items-center gap-3"
       >
-        <img
-          class="object-contain"
-          src="/orgs/ai/{model.icon_path}"
-          width="20"
-          alt="{model.organisation} logo"
-        />
+        <AILogo iconPath={model.icon_path} alt={model.organisation} />
         <div>
           {model.organisation}/<a
             class="text-black! after:text-primary"

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AILogo from '$components/AILogo.svelte'
   import { Badge, Button, Icon } from '$components/dsfr'
   import { m } from '$lib/i18n/messages'
   import type { BotModel } from '$lib/models'
@@ -79,11 +80,7 @@
                 id="{modalId}-title"
                 class="text-dark-grey font-normal! text-lg! mb-3! flex items-center gap-2"
               >
-                <img
-                  class="h-[34px] object-contain"
-                  src="/orgs/ai/{model.icon_path}"
-                  alt="{model.organisation} logo"
-                />
+                <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
                 <div>
                   {model.organisation}/<span class="font-extrabold">{model.simple_name}</span>
                 </div>
