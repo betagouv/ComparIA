@@ -12,7 +12,7 @@ const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url))
 
 export default ts.config(
   includeIgnoreFile(gitignorePath),
-  globalIgnores(['static/bundle.tracing.replay.min.js']),
+  globalIgnores(['static/bundle.tracing.replay.min.js', 'src/lib/i18n/*']),
   js.configs.recommended,
   ...ts.configs.recommended,
   ...svelte.configs.recommended,
