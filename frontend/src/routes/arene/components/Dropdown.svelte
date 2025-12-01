@@ -36,7 +36,7 @@
       tabindex="0"
       role="radio"
       aria-checked={value === mode ? 'true' : 'false'}
-      class="text-dark-grey flex items-center p-4"
+      class="flex items-center p-4 text-dark-grey"
       onclick={() => onChange(value)}
       onkeydown={(e) => onKeydown(e, value)}
       aria-controls={value != 'custom' ? 'modal-mode-selection' : ''}
@@ -49,7 +49,7 @@
         aria-checked={value === mode}
         {disabled}
       />
-      <Icon {icon} class="text-primary me-3" />
+      <Icon {icon} class="me-3 text-primary" />
       {#if value != 'custom'}
         <div><strong>{label}</strong>&nbsp;: {description}</div>
       {:else}

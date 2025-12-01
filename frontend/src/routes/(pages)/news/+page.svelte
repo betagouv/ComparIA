@@ -150,7 +150,7 @@
           >
             Afficher les filtres
             {#if filterCount}
-              <span class="fr-badge bg-primary! fr-badge--sm ms-2 rounded-full! text-white!">
+              <span class="fr-badge fr-badge--sm ms-2 rounded-full! bg-primary! text-white!">
                 {filterCount}
               </span>
             {/if}
@@ -234,7 +234,7 @@
                     </Link>
                   </h6>
 
-                  <div class="fr-card__desc text-grey text-[14px]">
+                  <div class="fr-card__desc text-[14px] text-grey">
                     {news.desc}
                   </div>
 
@@ -275,7 +275,7 @@
                         text=""
                         class={[
                           'text-[14px]!',
-                          news.href !== '#' ? 'text-primary! border-b-1' : 'text-grey!'
+                          news.href !== '#' ? 'border-b-1 text-primary!' : 'text-grey!'
                         ]}
                         tabindex={-1}
                         onclick={(e) => (news.href === '#' ? e.preventDefault() : undefined)}

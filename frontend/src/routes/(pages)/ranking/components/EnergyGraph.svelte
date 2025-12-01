@@ -115,7 +115,7 @@
 {#snippet legend(kind: string)}
   <div
     id="graph-legend"
-    class="cg-border bg-very-light-grey flex h-full flex-col rounded-md! p-4 text-[12px] leading-normal"
+    class="cg-border flex h-full flex-col rounded-md! bg-very-light-grey p-4 text-[12px] leading-normal"
   >
     <Search
       id="energy-graph-model-search"
@@ -145,10 +145,10 @@
       {#snippet labelSlot({ option })}
         <div class="flex items-center">
           <div
-            class={['dot border-dark-grey me-2 rounded-full border']}
+            class={['dot me-2 rounded-full border border-dark-grey']}
             style="--size: {dotSizes[option.value] * 2}px"
           ></div>
-          <span class="text-dark-grey text-[12px] font-medium">{option.label}</span>
+          <span class="text-[12px] font-medium text-dark-grey">{option.label}</span>
         </div>
       {/snippet}
     </CheckboxGroup>
@@ -172,7 +172,7 @@
     <ul class="mt-0! flex list-none! flex-wrap gap-x-3 p-0! font-medium md:mb-10! md:block">
       {#each ARCHS.filter((arch) => arch !== 'na') as arch (arch)}
         <li class="flex items-center p-0! md:not-last:mb-2">
-          <div class={['dot border-dark-grey me-2  rounded-full border', arch]}></div>
+          <div class={['dot me-2 rounded-full  border border-dark-grey', arch]}></div>
           {m[`generated.archs.${arch}.name`]()}
           <Tooltip
             id="arch-type-{arch}-{kind}"
@@ -270,7 +270,7 @@
               {#each [{ key: 'elo', icon: 'thumb-up-line' }, { key: 'consumption_wh', icon: 'flashlight-line' }] as const as item (item.key)}
                 <div class="flex gap-1 leading-relaxed">
                   <Icon icon={item.icon} size="xxs" class="text-primary" />
-                  <p class="text-grey mb-0! text-[12px]! leading-relaxed!">
+                  <p class="mb-0! text-[12px]! leading-relaxed! text-grey">
                     {m[`ranking.energy.views.graph.tooltip.${item.key}`]()}
                   </p>
                   <strong class="ms-auto"
@@ -285,7 +285,7 @@
                 {#each tooltipExtraData as key (key)}
                   {#if hoveredModelData[key]}
                     <div class="flex gap-1 leading-relaxed">
-                      <p class="text-grey mb-0! text-[12px]! leading-relaxed!">
+                      <p class="mb-0! text-[12px]! leading-relaxed! text-grey">
                         {m[`ranking.energy.views.graph.tooltip.${key}`]()}
                       </p>
                       <strong class="ms-auto">

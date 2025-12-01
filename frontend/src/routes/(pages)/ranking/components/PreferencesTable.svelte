@@ -120,7 +120,7 @@
         text={m['actions.downloadData']()}
         icon="download-line"
         iconPos="right"
-        class="text-grey! text-[14px]!"
+        class="text-[14px]! text-grey!"
         onclick={() => onDownloadData()}
       />
     </div>

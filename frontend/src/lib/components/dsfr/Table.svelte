@@ -170,7 +170,7 @@
             <tr>
               {#each cols as col (col.id)}
                 <th class={col.colHeaderClass}>
-                  <div class="text-dark-grey! flex items-center text-xs font-medium">
+                  <div class="flex items-center text-xs font-medium text-dark-grey!">
                     <span>{@html sanitize(col.label)}</span>
                     {#if col.tooltip}
                       <Tooltip id="{id}-{col.id}" text={col.tooltip} size="xs" class="ms-1" />

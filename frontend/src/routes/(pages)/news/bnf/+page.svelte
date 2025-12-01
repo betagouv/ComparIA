@@ -318,7 +318,7 @@
         {#each workshops as workshop, i (i)}
           <div class="cg-border bg-white p-6">
             <div class="mb-4 flex items-center">
-              <p class="text-grey mb-0! inline-flex text-sm!">
+              <p class="mb-0! inline-flex text-sm! text-grey">
                 <Icon icon="time-line" size="sm" class="me-1" />
                 {workshop.time}
               </p>
@@ -326,7 +326,7 @@
             </div>
 
             <h6 class="mb-3!">{workshop.title}</h6>
-            <p class="text-grey text-sm!">{workshop.desc}</p>
+            <p class="text-sm! text-grey">{workshop.desc}</p>
           </div>
         {/each}
       </div>
@@ -337,10 +337,10 @@
     <h3 class="text-center">Les intervenant·es</h3>
     <div class="fr-container grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {#each speakers as speaker (speaker.name)}
-        <div class="cg-border bg-light-grey flex flex-col p-7">
+        <div class="cg-border flex flex-col bg-light-grey p-7">
           <img class="w-full rounded-lg" src={speaker.img} alt="" />
           <h6 class="my-2!">{speaker.name}</h6>
-          <p class="text-grey text-sm!">{speaker.desc}</p>
+          <p class="text-sm! text-grey">{speaker.desc}</p>
 
           <div class="mt-auto flex flex-wrap gap-2">
             {#each speaker.logos as logo, i (`${speaker.name}-${i}`)}
@@ -358,7 +358,7 @@
     </div>
   </section>
 
-  <section class="bg-light-grey flex flex-col items-center">
+  <section class="flex flex-col items-center bg-light-grey">
     <div class="fr-container md:w-1/2!">
       <h4 class="mt-12! text-center">À propos de la journée compar:IA</h4>
       <p class="text-center">

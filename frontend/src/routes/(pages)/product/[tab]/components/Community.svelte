@@ -109,7 +109,7 @@
     {#each frTeam as person (person.key)}
       <div class="cg-border cl-card flex gap-5 p-4!">
         <div
-          class="after:bg-primary relative h-[100px] min-w-[100px] after:absolute after:inset-0 after:rounded-full after:opacity-10 after:content-['']"
+          class="relative h-[100px] min-w-[100px] after:absolute after:inset-0 after:rounded-full after:bg-primary after:opacity-10 after:content-['']"
         >
           <img
             src={'/product/community/' + person.imgSrc}
@@ -120,7 +120,7 @@
         </div>
         <div class="flex flex-col">
           <p class="mb-2! font-bold">{person.name}</p>
-          <p class="text-grey mb-0! text-[12px]! leading-normal!">{person.job}</p>
+          <p class="mb-0! text-[12px]! leading-normal! text-grey">{person.job}</p>
           <p class="mt-auto! mb-0! text-[10px]! leading-normal!">{person.date}</p>
         </div>
       </div>

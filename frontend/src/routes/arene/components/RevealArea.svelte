@@ -35,12 +35,12 @@
 
       <div class="cg-border flex flex-col bg-white p-5 md:p-7 md:pb-10">
         <div>
-          <h5 class="fr-h6 text-dark-grey! mb-4! flex items-center gap-2">
+          <h5 class="fr-h6 mb-4! flex items-center gap-2 text-dark-grey!">
             <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
             <div><span class="font-normal">{model.organisation}/</span>{model.simple_name}</div>
             {#if selected === side}
               <div
-                class="text-primary border-primary ms-auto rounded-[3.75rem] border bg-(--blue-france-975-75) px-3 text-[14px] font-bold"
+                class="ms-auto rounded-[3.75rem] border border-primary bg-(--blue-france-975-75) px-3 text-[14px] font-bold text-primary"
               >
                 {m['vote.yours']()}
               </div>
@@ -207,7 +207,7 @@
                 />
               </div>
               <div class="fr-modal__content">
-                <h6 class="text-dark-grey! mb-3!">
+                <h6 class="mb-3! text-dark-grey!">
                   {m['reveal.feedback.shareResult']()}
                 </h6>
 

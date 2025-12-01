@@ -52,7 +52,7 @@
           e.stopPropagation()
         }}
       />
-      <div class="text-dark-grey flex">
+      <div class="flex text-dark-grey">
         <AILogo iconPath={icon_path} alt={organisation} class="me-2" />
         <span class="organisation hidden md:inline">{organisation}/</span><strong
           >{simple_name}</strong

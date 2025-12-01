@@ -63,11 +63,11 @@
             <h3 class="fr-accordion__title ms-1!">
               <button
                 type="button"
-                class="fr-accordion__btn text-primary! bg-transparent!"
+                class="fr-accordion__btn bg-transparent! text-primary!"
                 aria-expanded="true"
                 aria-controls="reasoning-{message.metadata.bot}"
               >
-                <Icon icon="brain" class="text-primary me-1" />
+                <Icon icon="brain" class="me-1 text-primary" />
                 {#if message.content === '' && generating}
                   {m['chatbot.reasoning.inProgress']()}
                 {:else}

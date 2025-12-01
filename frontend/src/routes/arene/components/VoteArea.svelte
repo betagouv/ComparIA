@@ -20,7 +20,7 @@
 <div id="vote-area" class="fr-container py-7 md:py-20" {@attach scrollTo}>
   <div class="text-center">
     <h4 class="fr-h6 mb-2!">{m['vote.title']()}</h4>
-    <p class="text-grey fr-text--sm">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
+    <p class="fr-text--sm text-grey">{m['vote.introA']()}<br />{m['vote.introB']()}</p>
   </div>
 
   <VoteRadioGroup bind:value={form.selected} {disabled} />

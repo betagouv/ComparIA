@@ -126,7 +126,7 @@
         >
           {m['models.list.filters.display']()}
           {#if filterCount}
-            <span class="fr-badge bg-primary! fr-badge--sm ms-2 rounded-full! text-white!">
+            <span class="fr-badge fr-badge--sm ms-2 rounded-full! bg-primary! text-white!">
               {filterCount}
             </span>
           {/if}

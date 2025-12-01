@@ -132,7 +132,7 @@
           </div>
           <div class="mb-10 max-w-[620px]">
             <p class="mb-1!"><strong>{@html sanitize(item.title)}</strong></p>
-            <p class="text-grey mb-0! text-sm! leading-normal!">{@html sanitize(item.desc)}</p>
+            <p class="mb-0! text-sm! leading-normal! text-grey">{@html sanitize(item.desc)}</p>
           </div>
         </div>
       {/each}

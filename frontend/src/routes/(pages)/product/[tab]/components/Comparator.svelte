@@ -61,7 +61,7 @@
     </div>
   </div>
 
-  <div class="cg-border bg-light-grey grid gap-10 px-4 py-10 md:grid-cols-2">
+  <div class="cg-border grid gap-10 bg-light-grey px-4 py-10 md:grid-cols-2">
     <div class="flex">
       <img
         src="/product/comparia-europe.png"

@@ -135,7 +135,7 @@
       <div class="lg:px-10">
         <div class="mb-6 text-center">
           <h2 class="fr-h3 mb-3!">Pour quels publics ?</h2>
-          <p class="text-grey mb-0!">
+          <p class="mb-0! text-grey">
             Cet atelier est ouvert à tous, quel que soit le niveau de connaissance initial.
           </p>
         </div>
@@ -145,7 +145,7 @@
             <div class="cg-border bg-white p-4 md:px-7 md:py-6">
               <Icon icon={card.icon} class={card.variant} size="lg" block />
               <h3 class="my-3! text-lg! md:mt-5!">{card.title}</h3>
-              <p class="text-grey text-sm!">{card.desc}</p>
+              <p class="text-sm! text-grey">{card.desc}</p>
             </div>
           {/each}
         </div>
@@ -157,21 +157,21 @@
     <div class="fr-container">
       <div class="lg:px-10">
         <div class="mb-11 text-center">
-          <h2 class="fr-h3 text-primary! mb-3!">Déroulé type d’un atelier</h2>
-          <p class="text-grey mb-0!">Durée approximative : 60 minutes</p>
+          <h2 class="fr-h3 mb-3! text-primary!">Déroulé type d’un atelier</h2>
+          <p class="mb-0! text-grey">Durée approximative : 60 minutes</p>
         </div>
 
         <div class="grid gap-x-15 gap-y-10 md:grid-cols-2 md:gap-y-20 lg:grid-cols-3">
           {#each workshopSteps as step, i (i)}
             <div class="flex items-start gap-2">
               <div class="mt-1 flex items-end gap-1">
-                <div class="bg-primary h-[11px] w-[11px] rounded-full"></div>
-                <span class="text-primary text-[40px] font-bold">{i + 1}</span>
+                <div class="h-[11px] w-[11px] rounded-full bg-primary"></div>
+                <span class="text-[40px] font-bold text-primary">{i + 1}</span>
               </div>
               <div>
                 <h3 class="fr-h6 mb-1!">{step.title}</h3>
                 <p class="mb-0!"><em>{step.duration}</em></p>
-                <p class="text-grey mb-0! leading-[1.7]!">{step.desc}</p>
+                <p class="mb-0! leading-[1.7]! text-grey">{step.desc}</p>
               </div>
             </div>
           {/each}

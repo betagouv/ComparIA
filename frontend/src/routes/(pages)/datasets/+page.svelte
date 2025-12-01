@@ -97,7 +97,7 @@
                 <p class="mb-1! text-sm!">
                   <Link variant="primary" href={card.link} text={card.title} native={false} />
                 </p>
-                <p class="text-grey mb-0! text-xs!">{card.desc}</p>
+                <p class="mb-0! text-xs! text-grey">{card.desc}</p>
               </div>
             </div>
           {/each}
@@ -108,9 +108,9 @@
 
   <section class="fr-container mb-20 py-8!">
     <h2 class="fr-h4 mb-4! text-center">{m['datasets.reuse.title']()}</h2>
-    <p class="text-grey mb-10! px-10! text-center">{m['datasets.reuse.desc']()}</p>
+    <p class="mb-10! px-10! text-center text-grey">{m['datasets.reuse.desc']()}</p>
 
-    <div class="fr-container cg-border bg-light-grey rounded-2xl p-5! md:p-10!">
+    <div class="fr-container cg-border rounded-2xl bg-light-grey p-5! md:p-10!">
       <div class="pb-8 md:flex">
         <img
           src="/datasets/bunka-ai-logo.jpg"
@@ -123,11 +123,11 @@
         <div class="grid gap-5 md:grid-cols-2 md:grid-rows-1 md:gap-10">
           {#each bunkaCards as card, i (i)}
             <div
-              class="fr-container bg-very-light-grey flex flex-col rounded-xl px-3! py-5! md:px-10! md:py-8!"
+              class="fr-container flex flex-col rounded-xl bg-very-light-grey px-3! py-5! md:px-10! md:py-8!"
             >
               <div class="px-2 md:p-0">
                 <img src={card.img} class="fr-responsive-img" />
-                <p class="text-grey m-0! py-5! text-sm!">{card.desc}</p>
+                <p class="m-0! py-5! text-sm! text-grey">{card.desc}</p>
               </div>
               <Link
                 button

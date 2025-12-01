@@ -34,7 +34,7 @@
 />
 
 {#snippet desc()}
-  <p class="text-grey mt-2! mb-0! text-sm! leading-normal! md:mt-0!">
+  <p class="mt-2! mb-0! text-sm! leading-normal! text-grey md:mt-0!">
     {#if arena.chat.step == 1}
       {m['header.chatbot.stepOne.description']()}
     {:else}
@@ -80,11 +80,11 @@
   <div
     bind:this={secondHeader}
     id="second-header"
-    class="fr-container--fluid bg-light-grey sticky top-0 z-3 py-3 drop-shadow-(--raised-shadow) md:py-4"
+    class="fr-container--fluid sticky top-0 z-3 bg-light-grey py-3 drop-shadow-(--raised-shadow) md:py-4"
   >
     <div class="fr-container flex flex-col items-center gap-3 md:flex-row">
       <div class="flex basis-2/3 flex-col items-center gap-3 md:flex-row">
-        <div class="bg-primary rounded-[3.75rem] px-4 py-2 font-bold text-nowrap text-white">
+        <div class="rounded-[3.75rem] bg-primary px-4 py-2 font-bold text-nowrap text-white">
           {m['header.chatbot.step']()}
           {arena.chat.step}/2
         </div>
@@ -126,7 +126,7 @@
   </div>
 {/if}
 
-<main class="bg-very-light-grey relative" style="--second-header-size: {secondHeaderSize}px;">
+<main class="relative bg-very-light-grey" style="--second-header-size: {secondHeaderSize}px;">
   {#if arena.currentScreen === 'prompt'}
     <ViewPrompt onSubmit={runChatBots} />
   {:else}

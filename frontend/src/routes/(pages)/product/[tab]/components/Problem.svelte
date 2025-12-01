@@ -53,7 +53,7 @@
   </div>
 
   <div class="mt-17">
-    <h3 class="fr-h5 text-primary! text-center">{m['product.problem.alignment.title']()}</h3>
+    <h3 class="fr-h5 text-center text-primary!">{m['product.problem.alignment.title']()}</h3>
     <p class="fr-h5 text-center!">{m['product.problem.alignment.desc']()}</p>
   </div>
 

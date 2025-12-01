@@ -230,10 +230,10 @@
         {model.data.elo}
       {:else}
         <div
-          class="cg-border text-info relative max-w-[100px] rounded-sm!"
+          class="cg-border relative max-w-[100px] rounded-sm! text-info"
           style="--range-width: {model.eloRangeWidth}%"
         >
-          <div class="bg-light-info absolute z-0 h-full w-(--range-width) rounded-sm"></div>
+          <div class="absolute z-0 h-full w-(--range-width) rounded-sm bg-light-info"></div>
           <span class="relative z-1 p-1 text-xs font-bold">{model.data.elo}</span>
         </div>
       {/if}
@@ -246,7 +246,7 @@
         {model.consumption_wh} Wh
         {#if !raw}
           <div class="max-w-[80px]" style="--range-width: {model.consoRangeWidth}%">
-            <div class="bg-info h-[4px] w-(--range-width) rounded-xs"></div>
+            <div class="h-[4px] w-(--range-width) rounded-xs bg-info"></div>
           </div>
         {/if}
       {/if}

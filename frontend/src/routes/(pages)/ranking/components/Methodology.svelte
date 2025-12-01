@@ -53,9 +53,9 @@
 </script>
 
 <div id="ranking-methodo">
-  <h2 class="fr-h6 text-primary! mb-4!">{m['ranking.methodo.title']()}</h2>
-  <p class="text-dark-grey mb-4! text-[14px]!">{m['ranking.methodo.desc.1']()}</p>
-  <p class="text-dark-grey text-[14px]!">
+  <h2 class="fr-h6 mb-4! text-primary!">{m['ranking.methodo.title']()}</h2>
+  <p class="mb-4! text-[14px]! text-dark-grey">{m['ranking.methodo.desc.1']()}</p>
+  <p class="text-[14px]! text-dark-grey">
     {@html sanitize(
       m['ranking.methodo.desc.2']({
         notebookLinkProps: externalLinkProps({
@@ -130,7 +130,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-dark-grey! text-[14px]!"
+              class="text-[14px]! text-dark-grey!"
               onclick={() => onDownloadData()}
             />
           </div>
@@ -164,7 +164,7 @@
               text={m['actions.downloadData']()}
               icon="download-line"
               iconPos="right"
-              class="text-dark-grey! text-[14px]!"
+              class="text-[14px]! text-dark-grey!"
               onclick={() => onDownloadData()}
             />
           </div>

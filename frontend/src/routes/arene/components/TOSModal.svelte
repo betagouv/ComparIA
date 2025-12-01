@@ -40,18 +40,18 @@
           <div class="fr-modal__content mb-0! px-0!">
             <div class="grid-cols-2 md:grid">
               <div class="px-7 pt-10 pb-7">
-                <h2 id="fr-modal-title-modal-welcome" class="fr-modal__title text-primary! mb-0!">
+                <h2 id="fr-modal-title-modal-welcome" class="fr-modal__title mb-0! text-primary!">
                   {m['welcome.title']()}
                 </h2>
               </div>
-              <div class="bg-light-grey hidden md:block"></div>
+              <div class="hidden bg-light-grey md:block"></div>
             </div>
 
             <div class="grid-cols-2 md:grid">
               <div class="px-7">
                 {#each pratices as { label, icon } (label)}
                   <div class="mb-7 md:last-of-type:mb-0">
-                    <Icon {icon} block size="lg" class="text-primary me-2" />
+                    <Icon {icon} block size="lg" class="me-2 text-primary" />
                     <p class="mb-0! text-[14px]!">{m[label]()}</p>
                   </div>
                 {/each}
@@ -77,7 +77,7 @@
 
             <div class="grid-cols-2 md:grid">
               <div class="hidden md:block"></div>
-              <div class="bg-light-grey flex justify-end px-7 py-7">
+              <div class="flex justify-end bg-light-grey px-7 py-7">
                 <Button
                   text={m['welcome.go']()}
                   aria-controls="fr-modal-welcome"

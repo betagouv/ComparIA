@@ -97,7 +97,7 @@
 
 {#if suggestionsCategoriesCards.length}
   <div class="fr-container px-0!">
-    <h4 class="text-dark-grey mb-4! text-[14px]! md:mb-5! md:text-base!">
+    <h4 class="mb-4! text-[14px]! text-dark-grey md:mb-5! md:text-base!">
       <strong>{m['arenaHome.suggestions.title']()}</strong>
     </h4>
 
@@ -123,7 +123,7 @@
             alt={title}
           />
         {:else}
-          <Icon {icon} aria-label={title} class="text-primary me-2 md:mb-4 md:block" />
+          <Icon {icon} aria-label={title} class="me-2 text-primary md:mb-4 md:block" />
         {/if}
         <span>
           {label}

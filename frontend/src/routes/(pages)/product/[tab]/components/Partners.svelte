@@ -11,7 +11,7 @@
 <div class="grid gap-8 lg:grid-cols-2">
   <section class="cg-border cl-card">
     <h2 class="fr-h6">
-      <Icon icon="government-line" size="lg" class="text-primary me-1" />
+      <Icon icon="government-line" size="lg" class="me-1 text-primary" />
       {m['product.partners.institution.title']()}
     </h2>
 
@@ -48,7 +48,7 @@
   {#if locale === 'fr' || locale === 'en'}
     <section class="cg-border cl-card">
       <h2 class="fr-h6">
-        <Icon icon="presentation" size="lg" class="text-yellow me-1" />
+        <Icon icon="presentation" size="lg" class="me-1 text-yellow" />
         {m['product.partners.diffusion.title']()}
       </h2>
 
@@ -84,7 +84,7 @@
 
     <section class="cg-border cl-card">
       <h2 class="fr-h6">
-        <Icon icon="chat-search" size="lg" class="text-orange me-1" />
+        <Icon icon="chat-search" size="lg" class="me-1 text-orange" />
         {m['product.partners.academy.title']()}
       </h2>
 
@@ -106,7 +106,7 @@
 
   <section class="cg-border cl-card">
     <h2 class="fr-h6">
-      <Icon icon="presentation" size="lg" class="text-green me-1" />
+      <Icon icon="presentation" size="lg" class="me-1 text-green" />
       {m['product.partners.services.title']()}
     </h2>
 

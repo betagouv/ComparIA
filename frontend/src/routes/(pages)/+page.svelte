@@ -179,7 +179,7 @@
           onclick={handleRedirect}
         />
       </div>
-      <div class="bg-light-grey m-auto max-w-[545px] grow px-4 md:me-0 md:px-0">
+      <div class="m-auto max-w-[545px] grow bg-light-grey px-4 md:me-0 md:px-0">
         <HowItWorks />
       </div>
     </div>
@@ -188,7 +188,7 @@
   <section class="fr-container--fluid py-10 md:py-15">
     <div class="fr-container">
       <h3 class="mb-3! text-center">{m['home.use.title']()}</h3>
-      <p class="text-grey mb-8! text-center">{m['home.use.desc']()}</p>
+      <p class="mb-8! text-center text-grey">{m['home.use.desc']()}</p>
 
       <div class="grid gap-7 md:grid-cols-3">
         {#each utilyCards as card, i (i)}
@@ -196,16 +196,16 @@
             <img
               src={card.src}
               alt={card.alt}
-              class="fr-responsive-img bg-light-grey h-full! max-h-3/5 rounded-t-xl object-contain sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 dark:hidden"
+              class="fr-responsive-img h-full! max-h-3/5 rounded-t-xl bg-light-grey object-contain sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 dark:hidden"
             />
             <img
               src={card.srcDark}
               alt={card.alt}
-              class="fr-responsive-img bg-light-grey hidden h-full! max-h-3/5 rounded-t-xl object-contain sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 dark:block"
+              class="fr-responsive-img hidden h-full! max-h-3/5 rounded-t-xl bg-light-grey object-contain sm:max-h-2/3 md:max-h-1/3 lg:max-h-1/2 xl:max-h-3/5 dark:block"
             />
             <div class="px-5 pt-4 pb-7 md:px-8 md:pt-5 md:pb-10">
               <h6 class="mb-1! md:mb-2!">{card.title}</h6>
-              <p class="text-grey mb-0!">{card.desc}</p>
+              <p class="mb-0! text-grey">{card.desc}</p>
             </div>
           </div>
         {/each}
@@ -216,7 +216,7 @@
   <!-- TODO remove hidden -->
   <section
     id="european"
-    class="fr-container--fluid bg-light-info hidden pt-10 pb-18 lg:pt-20 lg:pb-25"
+    class="fr-container--fluid hidden bg-light-info pt-10 pb-18 lg:pt-20 lg:pb-25"
   >
     <div class="fr-container flex max-w-[1150px]! flex-col gap-8 lg:flex-row lg:items-center">
       <div class="lg:max-w-[360px]">
@@ -247,8 +247,8 @@
 
         <div class="grid gap-4 sm:grid-cols-2 xl:gap-8">
           {#each europeCards as card, i (i)}
-            <div class="cg-border bg-very-light-grey flex items-center gap-4 px-4 py-5">
-              <div class="bg-light-info rounded-md p-2 leading-none">
+            <div class="cg-border flex items-center gap-4 bg-very-light-grey px-4 py-5">
+              <div class="rounded-md bg-light-info p-2 leading-none">
                 {card.flag}
               </div>
               <div>
@@ -272,7 +272,7 @@
     <div class="fr-container">
       <div class="cg-border bg-white px-4 py-10 xl:p-13!">
         <h4 class="mb-2! text-center">{m['home.vote.title']()}</h4>
-        <p class="text-grey text-center">{m['home.vote.desc']()}</p>
+        <p class="text-center text-grey">{m['home.vote.desc']()}</p>
 
         <div class="mt-10 flex flex-col text-center md:mt-13 lg:flex-row">
           {#each whyVoteCards as card, index (index)}
@@ -281,7 +281,7 @@
                 <img src={card.src} alt={card.title} width="72" height="72" class="m-auto mb-4" />
                 <h6 class="mx-auto! mb-1! max-w-[230px]">{card.title}</h6>
               </div>
-              <p class="text-grey m-auto! max-w-[280px] text-sm!">{card.desc}</p>
+              <p class="m-auto! max-w-[280px] text-sm! text-grey">{card.desc}</p>
             </div>
             {#if index < 2}
               <div class="arrow relative my-5 shrink-0 xl:-ms-12 xl:-me-12"></div>
@@ -305,14 +305,14 @@
   <section class="fr-container--fluid bg-light-grey py-10 lg:py-20">
     <div class="fr-container">
       <h3 class="mb-2! text-center">{m['home.usage.title']()}</h3>
-      <p class="text-grey fr-mb-4w text-center">{m['home.vote.desc']()}</p>
+      <p class="fr-mb-4w text-center text-grey">{m['home.vote.desc']()}</p>
 
       <div class="grid gap-8 md:grid-cols-3">
         {#each usageCards as card, i (i)}
           <div class="cg-border bg-white p-5 lg:px-8 lg:pt-6 lg:pb-11">
-            <Icon icon={card.icon} size="lg" block class="text-primary mb-4" />
+            <Icon icon={card.icon} size="lg" block class="mb-4 text-primary" />
             <h6 class="mb-2!">{card.title}</h6>
-            <p class="text-grey mb-0!">{card.desc}</p>
+            <p class="mb-0! text-grey">{card.desc}</p>
           </div>
         {/each}
       </div>

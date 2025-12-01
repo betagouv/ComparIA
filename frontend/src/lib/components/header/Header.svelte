@@ -93,7 +93,7 @@
               </p>
 
               <p
-                class="fr-header__service-tagline text-dark-grey mb-0! text-[10px]! leading-normal! md:text-[14px]!"
+                class="fr-header__service-tagline mb-0! text-[10px]! leading-normal! text-dark-grey md:text-[14px]!"
               >
                 {m['header.subtitle']()}
               </p>

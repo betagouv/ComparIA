@@ -71,14 +71,14 @@
     aria-controls="modal-mode-selection"
     {disabled}
     data-fr-opened="false"
-    class="text-dark-grey! w-full! items-center justify-start bg-white! px-3! text-sm! md:w-auto!"
+    class="w-full! items-center justify-start bg-white! px-3! text-sm! text-dark-grey! md:w-auto!"
     style="--border-action-high-blue-france: var(--grey-925-125)"
     onclick={() => {
       neverClicked = false
       showModelsSelection = false
     }}
   >
-    <Icon icon="equalizer-fill" size="sm" class="text-primary me-2" />
+    <Icon icon="equalizer-fill" size="sm" class="me-2 text-primary" />
     <span class="label">{altLabel}</span>
     <Icon icon="arrow-down-s-line" size="sm" class="ms-auto md:ms-2" />
   </Button>
@@ -90,7 +90,7 @@
       aria-controls="modal-mode-selection"
       {disabled}
       data-fr-opened="false"
-      class="text-dark-grey! w-full! justify-start bg-white! px-3! text-sm! md:w-auto!"
+      class="w-full! justify-start bg-white! px-3! text-sm! text-dark-grey! md:w-auto!"
       style="--border-action-high-blue-france: var(--grey-925-125)"
       onclick={() => (showModelsSelection = true)}
     >
@@ -190,7 +190,7 @@
                 />
 
                 <div class="flex flex-col gap-4 md:flex-row">
-                  <p class="text-primary mb-0! font-bold md:self-center">
+                  <p class="mb-0! font-bold text-primary md:self-center">
                     {m['arenaHome.compareModels.count']({ count: modelsSelection.length })}
                   </p>
 

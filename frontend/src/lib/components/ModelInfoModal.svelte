@@ -62,7 +62,7 @@
     <div class="fr-grid-row fr-grid-row--center">
       <div class="fr-col-12 fr-col-md-12 fr-col-lg-12">
         <div
-          class="fr-modal__body bg-light-grey! dark:border-grey! rounded-xl lg:max-h-[90vh]! dark:border!"
+          class="fr-modal__body rounded-xl bg-light-grey! lg:max-h-[90vh]! dark:border! dark:border-grey!"
         >
           <div class="fr-modal__header pb-0!">
             <Button
@@ -78,7 +78,7 @@
             <div class="fr-modal__content">
               <h5
                 id="{modalId}-title"
-                class="text-dark-grey mb-3! flex items-center gap-2 text-lg! font-normal!"
+                class="mb-3! flex items-center gap-2 text-lg! font-normal! text-dark-grey"
               >
                 <AILogo iconPath={model.icon_path} size="lg" alt={model.organisation} />
                 <div>
@@ -98,7 +98,7 @@
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
                     <h6 class="mb-0! flex text-lg!">
-                      <Icon icon="ruler" block class="text-info me-2" />
+                      <Icon icon="ruler" block class="me-2 text-info" />
                       {m['models.size.title']()}
                     </h6>
                     <Badge {...model.badges.size} size="sm" class="ms-auto self-center!" />
@@ -115,7 +115,7 @@
                 <div class="cg-border bg-white p-4 pb-6 lg:col-span-4">
                   <div class="mb-4 flex">
                     <h6 class="mb-0! flex text-lg!">
-                      <Icon icon="lightbulb-line" block class="text-yellow me-2" />
+                      <Icon icon="lightbulb-line" block class="me-2 text-yellow" />
                       {m['models.arch.title']()}
                     </h6>
                     <Badge
@@ -187,7 +187,7 @@
                     {m['models.extra.title']()}
                   </h6>
 
-                  <p class="text-grey mb-3! text-xs!">
+                  <p class="mb-3! text-xs! text-grey">
                     {@html sanitize(
                       m[
                         `models.extra.experts.${model.distribution === 'api-only' ? 'api-only' : 'open-weights'}`
@@ -196,7 +196,7 @@
                       })
                     )}
                   </p>
-                  <p class="text-grey mb-0! text-xs!">
+                  <p class="mb-0! text-xs! text-grey">
                     {@html sanitize(
                       m['models.extra.impacts']({
                         linkProps1: externalLinkProps(
