@@ -1,4 +1,5 @@
 <script lang="ts">
+  /* eslint-disable no-irregular-whitespace */
   import { Accordion, AccordionGroup, Icon, Link } from '$components/dsfr'
 
   const publicCards = [

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import GithubSlugger from 'github-slugger'
 import { type Renderer, Marked } from 'marked'
 import { gfmHeadingId } from 'marked-gfm-heading-id'
