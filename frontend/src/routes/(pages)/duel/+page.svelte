@@ -101,7 +101,11 @@
         </div>
 
         <div class="my-auto">
-          <img src="/duel/workshop.jpg" class="fr-responsive-img rounded-xl shadow-md" />
+          <img
+            src="/duel/workshop.jpg"
+            class="fr-responsive-img rounded-xl shadow-md"
+            alt="Présentation publique de compar:ia dans une salle bondée"
+          />
         </div>
       </div>
     </div>
@@ -204,7 +208,11 @@
         </div>
 
         <div class="my-auto">
-          <img src="/duel/extension.png" class="fr-responsive-img rounded-xl shadow-md" />
+          <img
+            src="/duel/extension.png"
+            class="fr-responsive-img rounded-xl shadow-md"
+            alt="Capture d'écran de l'extension Chrome présentant les duels de l'IA"
+          />
         </div>
       </div>
     </div>

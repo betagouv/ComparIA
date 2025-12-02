@@ -26,7 +26,7 @@
   })
 </script>
 
-<footer class="fr-footer fr-pb-2w" role="contentinfo" id="main-footer">
+<footer class="fr-footer fr-pb-2w" id="main-footer">
   <div class="fr-container">
     <div class="fr-footer__body">
       <div class="flex flex-wrap gap-8 lg:basis-1/2">

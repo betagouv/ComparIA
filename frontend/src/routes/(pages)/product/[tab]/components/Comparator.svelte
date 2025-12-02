@@ -43,7 +43,11 @@
     </div>
 
     <div class="rounded-[28px] bg-[#686868] p-4">
-      <img src={chatbotScreenshotSrc} class="w-full max-w-[622px] rounded-2xl" />
+      <img
+        src={chatbotScreenshotSrc}
+        alt={m['product.comparator.screenshotAlt']()}
+        class="w-full max-w-[622px] rounded-2xl"
+      />
     </div>
   </div>
 
