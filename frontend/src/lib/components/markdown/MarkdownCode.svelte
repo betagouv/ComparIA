@@ -5,7 +5,7 @@
   import { tick } from 'svelte'
   import { standardHtmlAndSvgTags } from './html-tags'
   import './prism.css'
-  import { create_marked } from './utils'
+  import { copy, create_marked } from './utils'
 
   let {
     message,
@@ -31,7 +31,7 @@
     kind?: 'bot' | 'user'
   } = $props()
 
-  let el = $state<HTMLSpanElement>()
+  let el = $state<HTMLElement>()
   let katex_loaded = $state(false)
   const html = $derived(message && message.trim() ? process_message(message) : '')
 
@@ -171,6 +171,7 @@
 </script>
 
 <span
+  {@attach copy}
   class:chatbot
   bind:this={el}
   class={['md', kind]}
@@ -309,5 +310,12 @@
   span :global(pre) {
     --tw-prose-pre-code: var(--grey-200-850);
     margin-bottom: 1rem;
+  }
+
+  span :global(.copy_code_button) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100% !important;
   }
 </style>

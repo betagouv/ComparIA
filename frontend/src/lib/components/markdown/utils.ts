@@ -228,7 +228,7 @@ export function create_marked({
   return marked
 }
 
-export function copy(node: HTMLDivElement): any {
+export function copy(node: HTMLElement) {
   node.addEventListener('click', handle_copy)
 
   async function handle_copy(event: MouseEvent): Promise<void> {
@@ -242,25 +242,29 @@ export function copy(node: HTMLDivElement): any {
       event.stopImmediatePropagation()
 
       const copy_text = copy_button.parentElement!.innerText.trim()
-      const copy_sucess_button = Array.from(copy_button.children)[1] as HTMLDivElement
+      const copy_button_icon = Array.from(copy_button.children)[0] as HTMLSpanElement
+      const copy_sucess_button = Array.from(copy_button.children)[1] as HTMLSpanElement
 
       const copied = await copy_to_clipboard(copy_text)
 
-      if (copied) copy_feedback(copy_sucess_button)
+      if (copied) copy_feedback(copy_button_icon, copy_sucess_button)
 
-      function copy_feedback(_copy_sucess_button: HTMLDivElement): void {
+      function copy_feedback(
+        _copy_button_icon: HTMLSpanElement,
+        _copy_sucess_button: HTMLSpanElement
+      ): void {
+        _copy_button_icon.style.opacity = '0'
         _copy_sucess_button.style.opacity = '1'
         setTimeout(() => {
+          _copy_button_icon.style.opacity = '1'
           _copy_sucess_button.style.opacity = '0'
         }, 2000)
       }
     }
   }
 
-  return {
-    destroy(): void {
-      node.removeEventListener('click', handle_copy)
-    }
+  return () => {
+    node.removeEventListener('click', handle_copy)
   }
 }
 
