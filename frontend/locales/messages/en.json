@@ -1666,6 +1666,10 @@
                 "tokens": "tokens",
                 "tooltip": "AI analyzes and generates sentences from words or parts of words of approximately four letters; this unit of text is called a token. The longer a text, the greater the number of tokens."
             }
+        },
+        "thanks": {
+            "cta": "Access the rankings",
+            "title": "Thank you for your contribution!"
         }
     },
     "seo": {
@@ -1674,17 +1678,18 @@
         "titles": {
             "accessibilite": "Accessibility statement",
             "arene": "Chat",
+            "community": "Community",
             "comparator": "The arena",
             "datasets": "Datasets",
             "donnees-personnelles": "Privacy policy",
             "duel": "AI Duel Workshop",
             "faq": "FAQ",
-            "history": "Project history",
+            "history": "Key Dates",
             "home": "Home",
             "mentions-legales": "Legal notice",
             "modalites": "Terms of use",
             "modeles": "Model list",
-            "news": "News",
+            "news": "News and resources",
             "partners": "Partners",
             "problem": "The initial challenge",
             "product": "About us",
@@ -1702,6 +1707,7 @@
                 "question": "Why did you not like the answer",
                 "superficial": "Superficial"
             },
+            "other": "Other…",
             "positive": {
                 "clear-formatting": "Clear formatting",
                 "complete": "Complete",
