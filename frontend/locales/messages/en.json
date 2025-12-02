@@ -1294,10 +1294,32 @@
                         "elie": {
                             "date": "Since november 2025",
                             "job": "Full-stack developer"
+                        },
+                        "hadrien": {
+                            "date": "June 2024 - November 2025",
+                            "job": "Full-stack developer"
+                        },
+                        "lucie": {
+                            "date": "January 2024 - December 2025",
+                            "job": "Founder - Product Lead"
+                        },
+                        "mathilde": {
+                            "date": "Since September 2024",
+                            "job": "Head of \"Atelier numérique\" / Product Ops"
+                        },
+                        "nicolas": {
+                            "date": "Since June 2025",
+                            "job": "Full-stack developer"
+                        },
+                        "simonas": {
+                            "date": "Since December 2024",
+                            "job": "Product Manager - ex-deployment manager"
                         }
-                    }
+                    },
+                    "title": "The compar:IA France team"
                 }
-            }
+            },
+            "title": "Partners"
         },
         "comparator": {
             "challenges": {
@@ -1333,6 +1355,65 @@
             "tabLabel": "FAQ"
         },
         "history": {
+            "steps": {
+                "acceleration": {
+                    "items": {
+                        "1": {
+                            "date": "March 2025",
+                            "desc": "Creation and publishing of the first compar:IA dataset in French including the questions and preferences of the platform's users.",
+                            "title": "50,000 votes on the arena!"
+                        },
+                        "2": {
+                            "date": "May 2025",
+                            "desc": "And first reuse of the dataset with Bunka.ai which conducted an in-depth study on the interactions between users of the platform.",
+                            "title": "Goal of 100,000 votes reached!"
+                        },
+                        "3": {
+                            "date": "June 2025",
+                            "desc": "Three datasets, conversations, reactions, votes, are available on <a {hgLinkProps}>HuggingFace</a> and <a {dataLinkProps}>Data.gouv.fr</a>.",
+                            "title": "Publication of the three datasets"
+                        }
+                    },
+                    "tag": "Acceleration"
+                },
+                "construction": {
+                    "items": {
+                        "1": {
+                            "date": "June-September 2024",
+                            "desc": "Development of the first MVP of the arena and integration of feedback from beta testers.",
+                            "title": "Minimum viable product design"
+                        },
+                        "2": {
+                            "date": "October 2024",
+                            "desc": "Official presentation and first deployment of the tool.",
+                            "title": "Official launch during the Francophonie Summit in Villers Cotterêts!"
+                        },
+                        "3": {
+                            "date": "January 2025",
+                            "desc": "Launch of the feature allowing to choose models manually.",
+                            "title": "v2 of the arena"
+                        },
+                        "4": {
+                            "date": "February 2025",
+                            "desc": "More than 300 people in conferences and workshops on ethical, cultural and environmental challenges of conversational AI systems.",
+                            "title": "<a {linkProps}>ComparIA Day at the BnF</a> during the AI Action Summit"
+                        }
+                    },
+                    "tag": "Building"
+                },
+                "i18n": {
+                    "items": {
+                        "1": {
+                            "date": "Summer 2025",
+                            "desc": "Partnership with Denmark, Sweden and Lithuania to open the platform in their language and region.",
+                            "title": "Scaling at the European level"
+                        },
+                        "2": {
+                            "date": "September 2025"
+                        }
+                    }
+                }
+            },
             "tabLabel": "Project history"
         },
         "partners": {
