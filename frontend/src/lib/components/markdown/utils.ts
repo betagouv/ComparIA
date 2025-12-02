@@ -76,8 +76,8 @@ function createLatexTokenizer(
   delimiters: { left: string; right: string; display: boolean }[]
 ): Tokenizer {
   const delimiterPatterns = delimiters.map((delimiter) => ({
-    start: new RegExp(delimiter.left.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')),
-    end: new RegExp(delimiter.right.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'))
+    start: new RegExp(delimiter.left.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')),
+    end: new RegExp(delimiter.right.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'))
   }))
 
   return {
@@ -92,7 +92,7 @@ function createLatexTokenizer(
       }
       return -1
     },
-    tokenizer(src: string, tokens: any) {
+    tokenizer(src: string, _tokens: any) {
       for (const pattern of delimiterPatterns) {
         const match = new RegExp(`${pattern.start.source}([\\s\\S]+?)${pattern.end.source}`).exec(
           src
@@ -206,7 +206,7 @@ export function create_marked({
             const raw = token.raw
               .toLowerCase()
               .trim()
-              .replace(/<[!\/a-z].*?>/gi, '')
+              .replace(/<[!/a-z].*?>/gi, '')
             const id = 'h' + slugger.slug(raw)
             const level = token.depth
             const text = this.parser.parseInline(token.tokens!)
