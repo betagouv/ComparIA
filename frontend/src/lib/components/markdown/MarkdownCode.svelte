@@ -305,4 +305,9 @@
       font-size: 1.25rem;
     }
   }
+
+  span :global(pre) {
+    --tw-prose-pre-code: var(--grey-200-850);
+    margin-bottom: 1rem;
+  }
 </style>
