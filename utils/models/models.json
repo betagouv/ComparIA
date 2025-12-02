@@ -1188,7 +1188,7 @@
         "license": "proprietary",
         "id": "magistral-medium",
         "release_date": "06/2025",
-        "params": 95,
+        "params": 123,
         "arch": "maybe-dense",
         "desc": "Modèle de raisonnement de taille moyenne multimodal et multilingue. Adapté à des tâches de programmation ou autres tâches nécessitant analyse approfondie compréhension de systèmes logiques complexes ou planification - par exemple pour des cas d’usages agentiques ou de la rédaction de longs contenus complexes.",
         "size_desc": "La taille exacte du modèle n’est pas connue. Des indices laissent penser qu’il s’agit d’un modèle de grande taille, nécessitant au moins plusieurs cartes graphiques puissantes pour fonctionner. Les modèles de raisonnement requièrent plus de capacité de calcul pour produire une réponse, ce qui augmente leur consommation énergétique. Les estimations disponibles s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.\n\nIl dispose d’une fenêtre de contexte allant jusqu’à 40 000 jetons, utile pour l’analyse de documents courts mais insuffisant pour analyser des corpus de documents larges.",
