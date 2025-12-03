@@ -4591,11 +4591,11 @@ vega-hierarchy@~5.1.0:
     vega-util "^2.1.0"
 
 vega-interpreter@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/vega-interpreter/-/vega-interpreter-2.0.0.tgz#17adb893d37bb77e2add1fc1aa7d317bea8964bf"
-  integrity sha512-ZjA7AC+xjfi4k9vgA49N5F/bS4fzf9E1KC0ljey4uMgHbmtKR53BWyOOzxHk+btfS9bEJ5gUvuoZzfqG3wIWEg==
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/vega-interpreter/-/vega-interpreter-2.2.1.tgz#947d8f2887a59d124addd884d01b02f6573fb851"
+  integrity sha512-o+4ZEme2mdFLewlpF76dwPWW2VkZ3TAF3DMcq75/NzA5KPvnN4wnlCM8At2FVawbaHRyGdVkJSS5ROF5KwpHPQ==
   dependencies:
-    vega-util "^2.0.0"
+    vega-util "^2.1.0"
 
 vega-label@~2.1.0:
   version "2.1.0"
