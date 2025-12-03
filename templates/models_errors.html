@@ -1,83 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-
-<head>
+  <head>
     <title>Dashboard compar:IA</title>
-    <link rel="stylesheet" href="assets/dsfr/dsfr.min.css">
-    <meta http-equiv="refresh" content="30">
+    <link rel="stylesheet" href="assets/dsfr/dsfr.min.css" />
+    <meta http-equiv="refresh" content="30" />
+  </head>
 
-</head>
-
-<body>
+  <body>
     <div class="fr-container fr-mx-6w fr-my-4w">
-        <h1 class="fr-h1"><a href="/">Dashboard compar:IA</a></h1>
+      <h1 class="fr-h1"><a href="/">Dashboard compar:IA</a></h1>
 
-
-        <h3 class="fr-h3">Incidents</h3>
-        <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
-            <tr>
-                <th>Modèle</th>
-                <th>Date de détection</th>
-                <th>Raison</th>
-            </tr>
-            {% for model_id, detection_time, outage_details in models_errors %}
-            <tr>
-                <td>{{ model_id }}</td>
-                <td>{{ detection_time|string }}</td>
-                <td>{% if outage_details %}
-                    {{ outage_details|string|truncate(500, True) }}
-                    {% else %}
-                    <em>Pas d'erreur fournie</em>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-        <h3 class="fr-h3">Modèles</h3>
-        <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
-            <tr>
-                <th>Modèle</th>
-                <th>Stats</th>
-                <th>Pools</th>
-                <th>Infos</th>
-            </tr>
-            {% for key, model in models.items() %}
-            <tr>
-                <td>{{ key }}</td>
-                <td>{{ error_count[key] | string }}</td>
-                <td>
-                    {% set pools = [] %}
-                    {% if key in big_models %}{% set pools = pools + ["big models"] %}{% endif %}
-                    {% if key in small_models %}{% set pools = pools + ["small models"] %}{% endif %}
-                    {% if key in reasoning_models %}{% set pools = pools + ["reasoning models"] %}{% endif %}
-                    {% if key in random_pool %}{% set pools = pools + ["random pool"] %}{% endif %}
-                    {{ pools | join(", ") }}
-                </td>
-                <td><details><summary>{{ model['endpoint'] | string | truncate(100, True) }}</summary><pre>{{ model |  tojson(2) }}</pre></details></td>
-
-            </tr>
-            {% endfor %}
-        </table>
-        {# <h3 class="fr-h3">Tests récents</h3>
-        <table class="fr-table fr-table__wrapper fr-table__container fr-table__content">
-            <tr>
-                <th>Date</th>
-                <th>Modèle</th>
-                <th>Nombre de tokens</th>
-                <th>Résultat</th>
-            </tr>
-            {% for test in tests %}
-            {% set diff = now - test['timestamp'] %}
-            {% if diff < 60 %} {% set time_ago=diff ~ "s" %} {% else %} {% set minutes=diff // 60 %} {% set seconds=diff
-                % 60 %} {% set time_ago=minutes ~ "min " ~ seconds ~ "s" %} {% endif %} <tr>
-                <td>il y a {{ time_ago }}</td>
-                <td>{{ test['model_id'] }}</td>
-                <td>{{ test.get('output_tokens', '') }}</td>
-                <td>{{ test['message'] }}</td>
-                </tr>
-                {% endfor %}
-        </table> #}
+      <h3 class="fr-h3">Incidents</h3>
+      <table
+        class="fr-table fr-table__wrapper fr-table__container fr-table__content"
+      >
+        <tr>
+          <th>Modèle</th>
+          <th>Date de détection</th>
+          <th>Raison</th>
+        </tr>
+        {% for model_id, detection_time, outage_details in models_errors %}
+        <tr>
+          <td>{{ model_id }}</td>
+          <td>{{ detection_time|string }}</td>
+          <td>
+            {% if outage_details %} {{ outage_details|string|truncate(500, True)
+            }} {% else %}
+            <em>Pas d'erreur fournie</em>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      <h3 class="fr-h3">Modèles</h3>
+      <table
+        class="fr-table fr-table__wrapper fr-table__container fr-table__content"
+      >
+        <tr>
+          <th>Modèle</th>
+          <th>Stats</th>
+          <th>Pools</th>
+          <th>Infos</th>
+        </tr>
+        {% for key, model in models.items() %}
+        <tr>
+          <td>{{ key }}</td>
+          <td>{{ error_count[key] | string }}</td>
+          <td>
+            {% set pools = [] %} {% if key in big_models %}{% set pools = pools
+            + ["big models"] %}{% endif %} {% if key in small_models %}{% set
+            pools = pools + ["small models"] %}{% endif %} {% if key in
+            random_pool %}{% set pools = pools + ["random pool"] %}{% endif %}
+            {{ pools | join(", ") }}
+          </td>
+          <td>
+            <details>
+              <summary>
+                {{ model['endpoint'] | string | truncate(100, True) }}
+              </summary>
+              <pre>{{ model |  tojson(2) }}</pre>
+            </details>
+          </td>
+        </tr>
+        {% endfor %}
+      </table>
+      {#
+      <h3 class="fr-h3">Tests récents</h3>
+      <table
+        class="fr-table fr-table__wrapper fr-table__container fr-table__content"
+      >
+        <tr>
+          <th>Date</th>
+          <th>Modèle</th>
+          <th>Nombre de tokens</th>
+          <th>Résultat</th>
+        </tr>
+        {% for test in tests %} {% set diff = now - test['timestamp'] %} {% if
+        diff < 60 %} {% set time_ago=diff ~ "s" %} {% else %} {% set
+        minutes=diff // 60 %} {% set seconds=diff % 60 %} {% set
+        time_ago=minutes ~ "min " ~ seconds ~ "s" %} {% endif %}
+        <tr>
+          <td>il y a {{ time_ago }}</td>
+          <td>{{ test['model_id'] }}</td>
+          <td>{{ test.get('output_tokens', '') }}</td>
+          <td>{{ test['message'] }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      #}
     </div>
-</body>
-
+  </body>
 </html>

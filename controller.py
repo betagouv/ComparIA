@@ -59,7 +59,7 @@ def get_models() -> List[str]:  # Return type hint
 )
 def index(request: Request):
     # error_count = Dict()
-    from languia.config import big_models, small_models, reasoning_models, random_pool
+    from languia.config import big_models, small_models, random_pool
 
     error_count = dict.fromkeys(models, 0)
     for model_id, _date, _details in models_errors:
@@ -74,7 +74,6 @@ def index(request: Request):
             "models": models,
             "big_models": big_models,
             "small_models": small_models,
-            "reasoning_models": reasoning_models,
             "random_pool": random_pool,
             "request": request,
             "now": int(time.time()),

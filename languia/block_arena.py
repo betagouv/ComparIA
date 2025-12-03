@@ -20,7 +20,7 @@ Architecture:
 
 Main Components:
 1. Model Selector (CustomDropdown)
-   - Modes: random, big-vs-small, small-models, reasoning, custom
+   - Modes: random, big-vs-small, small-models, custom
 2. Chat Area (CustomChatbot)
    - Likeable interface for individual message reactions
    - Textarea for continued conversation
@@ -69,12 +69,12 @@ with gr.Blocks(
     header = gr.HTML("", elem_id="header-html")
 
     # Model selection UI (custom component with built-in UI logic)
-    # Provides 5 modes: random, big-vs-small, small-models, reasoning, custom
+    # Provides 4 modes: random, big-vs-small, small-models, custom
     # The CustomDropdown component handles rendering and manages selected models
     model_dropdown = CustomDropdown(
         models=config.models,
         # Note: choices parameter is ignored, hardcoded in custom component
-        choices=["random", "big-vs-small", "small-models", "reasoning", "custom"],
+        choices=["random", "big-vs-small", "small-models", "custom"],
         interactive=True,
     )
 
