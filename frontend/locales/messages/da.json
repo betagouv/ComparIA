@@ -1045,17 +1045,17 @@
             "steps": {
                 "a11yDesc": "1. Jeg chatter med to skjulte AI'er: Chat så længe du vil. 2. Jeg angiver mine præferencer: Dermed hjælper du med at forbedre AI-modellerne. 3. Modellernes identiteter afsløres: Få mere at vide om dem og deres egenskaber.",
                 "one": {
-                    "desc": "Chat så længe du ønsker",
-                    "title": "Jeg chatter med to ukendte chatbots"
+                    "desc": "Chat så længe du har lyst",
+                    "title": "Chat med to ukendte chatbotter"
                 },
                 "three": {
-                    "desc": "Lær mere om AI-modeller og deres karakteristika",
-                    "title": "Modellerne er afsløret!"
+                    "desc": "Lær mere om AI-modeller, chatbotter og deres karakteristika",
+                    "title": "Se hvilke chatbotter du har chattet med!"
                 },
                 "title": "Sådan fungerer det",
                 "two": {
-                    "desc": "Du bidrager dermed til forbedringen af AI-modeller",
-                    "title": "Jeg giver min feedback"
+                    "desc": "Du bidrager dermed til at forbedre chatbotterne",
+                    "title": "Giv din feedback"
                 }
             },
             "title": "Stol ikke på svarene <span {props}>fra en enkelt AI</span>",
