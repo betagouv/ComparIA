@@ -110,11 +110,11 @@
   {#if reaction.liked !== null}
     <div class="cg-border mt-3 rounded-lg! border-dashed! bg-white p-5">
       <LikePanel
+        id={message.metadata.generation_id}
         kind={reaction.liked ? 'like' : 'dislike'}
         show={true}
         bind:selection={reaction.prefs}
         bind:comment={reaction.comment}
-        modalId="modal-prefs-{message.metadata.generation_id}"
         onSelectionChange={() => dispatchOnReactionChange('like')}
         onCommentChange={() => dispatchOnReactionChange('comment')}
         model={bot.toUpperCase()}

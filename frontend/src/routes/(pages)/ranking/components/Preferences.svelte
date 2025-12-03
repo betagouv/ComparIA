@@ -30,7 +30,7 @@
     </h6>
 
     <!-- FIXME alt -->
-    <img src="/ranking/preferences.png" />
+    <img src="/ranking/preferences.png" alt="" />
   </Modal>
 
   <PreferencesTable id="preferences-table" {onDownloadData} />

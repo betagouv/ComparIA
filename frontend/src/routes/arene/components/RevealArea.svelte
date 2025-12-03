@@ -265,10 +265,12 @@
           <img
             src="/arena/ranking-table.png"
             class="-me-[30%] w-full max-w-[400px] rounded-xl shadow-md md:-me-[10%]"
+            alt={m['reveal.thanks.rankingAlt']()}
           />
           <img
             src="/arena/ranking-graph.png"
             class="mt-[30px] w-full max-w-[300px] rounded-xl shadow-md"
+            alt={m['reveal.thanks.graphAlt']()}
           />
         </div>
       </div>

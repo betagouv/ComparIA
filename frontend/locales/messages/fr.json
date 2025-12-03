@@ -1450,6 +1450,7 @@
                 "desc": "Le comparateur sera mis à disposition de leurs citoyens dans leurs langues nationales. L’objectif est de créer des jeux de données de préférence afin d’améliorer les futurs modèles d’IA dans ces langues européennes.",
                 "title": "Le comparateur <span {props}>devient européen</span> !"
             },
+            "screenshotAlt": "Capture d'écran de l'arène compar:ia, avec la question initiale, les deux réponses des modèles et les boutons de vote.",
             "tabLabel": "Le comparateur",
             "title": "Le comparateur permet de créer des <span {props}>jeux de données</span> de préférence centrés sur des <span {props}>usages réels</span> exprimés dans les <span {props}>langues européennes</span>."
         },
@@ -1833,6 +1834,8 @@
         "thanks": {
             "cta": "Accéder au classement",
             "desc": "Découvrez comment votre préférence se situe par rapport au classement général des modèles dans compar:IA.",
+            "graphAlt": "Aperçu du graphique représentant le score et la consommation d'électricité des modèles",
+            "rankingAlt": "Aperçu du classement sous forme de tableau",
             "title": "Merci pour votre contribution !"
         }
     },

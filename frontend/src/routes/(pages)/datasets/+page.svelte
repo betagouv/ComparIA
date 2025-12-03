@@ -115,6 +115,7 @@
         <img
           src="/datasets/bunka-ai-logo.jpg"
           class="mb-2 block h-[100px] w-[100px] rounded-2xl md:mr-8 md:mb-0"
+          alt="Bunka.ai"
         />
         <p class="mb-0!">{m['datasets.reuse.bunka.desc']()}</p>
       </div>
@@ -126,7 +127,7 @@
               class="fr-container flex flex-col rounded-xl bg-very-light-grey px-3! py-5! md:px-10! md:py-8!"
             >
               <div class="px-2 md:p-0">
-                <img src={card.img} class="fr-responsive-img" />
+                <img src={card.img} class="fr-responsive-img" alt="" aria-hidden="true" />
                 <p class="m-0! py-5! text-sm! text-grey">{card.desc}</p>
               </div>
               <Link
