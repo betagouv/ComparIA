@@ -78,12 +78,14 @@
         "params": 8,
         "url": "https://huggingface.co/meta-llama/Meta-Llama-3.1-8B-Instruct",
         "endpoint": {
-          "api_base": "https://albert.api.etalab.gouv.fr/v1/",
-          "api_model_id": "meta-llama/Llama-3.1-8B-Instruct"
+          "api_type": "albert",
+          "api_model_id": "meta-llama/Llama-3.1-8B-Instruct",
+          "api_base": "https://albert.api.etalab.gouv.fr/v1/"
         },
         "desc": "Petit modèle conçu pour un usage local sur ordinateur portable, tout en offrant de bonnes capacités pour la synthèse de texte et les réponses simples.",
         "size_desc": "Avec 8 milliards de paramètres, ce modèle fait partie des petits modèles. Il peut être utilisé localement sur un ordinateur puissant, garantissant la confidentialité des données, ou hébergé sur un serveur équipé d’une seule carte graphique, ce qui limite les coûts d’infrastructure. Sa fenêtre de contexte de 128 000 jetons permet de traiter de longs documents.",
-        "fyi": "Ce modèle est une version distillée issue des modèles Llama 3 de plus grande tailles : il a été entraîné grâce à un transfert d’une partie des connaissances des plus grands modèles."
+        "fyi": "Ce modèle est une version distillée issue des modèles Llama 3 de plus grande tailles : il a été entraîné grâce à un transfert d’une partie des connaissances des plus grands modèles.",
+        "status": "archived"
       },
       {
         "status": "archived",
@@ -232,6 +234,24 @@
         "desc": "Sorti en décembre 2024, le modèle DeepSeek V3 possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence.",
         "size_desc": "Ces modèles dotés de plusieurs centaines de milliards de paramètres sont les plus complexes et avancés en termes de performance et de précision. Les ressources de calcul et de mémoire nécessaires pour déployer ces modèles sont telles qu’ils sont destinés aux applications les plus avancées et aux environnements hautement spécialisés.",
         "fyi": "Sorti en décembre 2024, ce modèle phare de la société chinoise DeepSeek possède une architecture Mixture-of-Experts qui lui permet d'être d'une très grande taille en diminuant les coûts d'inférence."
+      },
+      {
+        "id": "DeepSeek-V3.2",
+        "simple_name": "DeepSeek V3.2",
+        "license": "Apache 2.0",
+        "release_date": "12/2025",
+        "arch": "moe",
+        "params": 685,
+        "active_params": 37,
+        "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "deepseek-ai/DeepSeek-V3.2"
+        },
+        "desc": "Très grand modèle conçu pour des tâches complexes : orchestration agentique, génération de code, analyse de documents longs. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.",
+        "size_desc": "DeepSeek V3.2 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte atteint 163 000 jetons, ce qui est utile pour l’analyse de très longs documents ou des bases de code.",
+        "fyi": "Pour cette version, le coût de l’API et les besoins en calcul sont réduits d’environ 50 % ou plus pour les contextes longs. Cette amélioration repose sur le \"DeepSeek Sparse Attention (DSA)\", un mécanisme d’attention clairsemée à granularité fine qui calcule l’attention de façon sélective afin de diminuer la complexité sur les longues séquences tout en préservant l’essentiel du contexte.\n\nLe modèle a été entraîné en donnant la priorité aux capacités de raisonnement et aux usages agentiques.",
+        "new": true
       }
     ]
   },
@@ -414,7 +434,8 @@
         },
         "desc": "Petit modèle multilingue, capable d’utiliser des outils et performant sur des tâches complexes comme la logique, les mathématiques et le code, tout en restant compact.",
         "size_desc": "Avec 14 milliards de paramètres, ce modèle appartient à la catégorie des petits modèles. Il peut être déployé localement sur un ordinateur suffisamment puissant, ou hébergé sur un serveur avec une seule carte graphique, ce qui réduit les coûts d’infrastructure. La fenêtre de contexte, de 16 000 jetons, peut être limitante pour l’analyse de documents très longs.",
-        "fyi": "Ce modèle utilise tiktoken pour la tokenisation, ce qui améliore ses capacités en contexte multilingue. Il a été entraîné sur un total de 9,8 **billions** de jetons, dont 400 milliards proviennent spécifiquement de données synthétiques de haute qualité, le reste étant constitué de données organiques filtrées. L'entraînement s'est déroulé sur 1 920 cartes graphiques H100 pendant 21 jours. Des techniques innovantes comme l'auto-évaluation – pendant laquelle le modèle critique et réécrit ses réponses – ainsi que l'inversion des instructions ont été utilisées pour renforcer sa compréhension des consignes et ses capacités de raisonnement."
+        "fyi": "Ce modèle utilise tiktoken pour la tokenisation, ce qui améliore ses capacités en contexte multilingue. Il a été entraîné sur un total de 9,8 **billions** de jetons, dont 400 milliards proviennent spécifiquement de données synthétiques de haute qualité, le reste étant constitué de données organiques filtrées. L'entraînement s'est déroulé sur 1 920 cartes graphiques H100 pendant 21 jours. Des techniques innovantes comme l'auto-évaluation – pendant laquelle le modèle critique et réécrit ses réponses – ainsi que l'inversion des instructions ont été utilisées pour renforcer sa compréhension des consignes et ses capacités de raisonnement.",
+        "status": "archived"
       },
       {
         "status": "archived",
@@ -974,7 +995,8 @@
         "endpoint": {
           "api_type": "openrouter",
           "api_model_id": "openai/gpt-5"
-        }
+        },
+        "status": "archived"
       },
       {
         "simple_name": "GPT 5 Mini",
@@ -1057,7 +1079,8 @@
         },
         "desc": "Très grand modèle de raisonnement, adapté pour des tâches et questions scientifiques et technologiques complexes.",
         "size_desc": "Malgré son nom et le fait que la taille exacte n’est pas connue, o4 mini est très probablement un grand modèle nécessitant des serveurs équipés de plusieurs cartes graphiques. Les modèles de raisonnement comme o4 mini nécessitent plus de temps pour répondre, car une phase de raisonnement précède la génération du résultat final, ce qui accroit leur consommation énergétique. Néanmoins, l'architecture supposée de mélange d’experts (MoE, Mixture of Experts) n'active qu'une partie des paramètres pour générer chaque jeton, limitant ainsi son empreinte énergétique. Les estimations de taille s’appuient sur des indices indirects comme les coûts d'inférence et la latence de réponse.",
-        "fyi": "Ce modèle est très performant pour l’analyse d’images et de graphiques. Il a aussi été entraîné pour interagir avec d’autres systèmes via des appels de fonctions, ce qui rend possible son utilisation pour des cas d’usage agentiques. En tant que modèle très puissant de raisonnement, il peut notamment être utilisé pour répartir des tâches entre plusieurs modèles plus petits et/ou plus spécialisés.  Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, ce qui facilite l’analyse de longs documents."
+        "fyi": "Ce modèle est très performant pour l’analyse d’images et de graphiques. Il a aussi été entraîné pour interagir avec d’autres systèmes via des appels de fonctions, ce qui rend possible son utilisation pour des cas d’usage agentiques. En tant que modèle très puissant de raisonnement, il peut notamment être utilisé pour répartir des tâches entre plusieurs modèles plus petits et/ou plus spécialisés.  Il dispose d’une fenêtre de contexte allant jusqu’à 200 000 jetons, ce qui facilite l’analyse de longs documents.",
+        "status": "archived"
       },
       {
         "status": "archived",
@@ -1335,6 +1358,24 @@
         "desc": "Ce modèle entraîné sur un corpus multilingue est efficace pour des tâches variées et peu complexes.",
         "size_desc": "Les modèles moyens offrent un bon équilibre entre complexité, coût et performance : ils sont beaucoup moins consommateurs de ressources que les grands modèles tout en étant capables de gérer des tâches complexes telles que l'analyse de sentiment ou le raisonnement.",
         "fyi": "Petit frère de la famille Mixtral, ce modèle est capable de traiter des contextes de 32 000 tokens et supporte l'anglais, le français, l'italien, l'allemand et l'espagnol. Grâce à l’architecture SMoE (sparse mixture of experts), seule une fraction des paramètres est activée pour chaque inférence, réduisant ainsi les coûts et la latence."
+      },
+      {
+        "id": "mistral-large-2512",
+        "simple_name": "Mistral 3 Large",
+        "license": "Apache 2.0",
+        "release_date": "12/2025",
+        "arch": "moe",
+        "params": 675,
+        "active_params": 41,
+        "url": "https://mistral.ai/news/mistral-3",
+        "endpoint": {
+          "api_type": "openrouter",
+          "api_model_id": "mistralai/mistral-large-2512"
+        },
+        "desc": "Très grand modèle multimodal semi-ouvert performant en code et contextes multilingues.",
+        "size_desc": "Avec 675 milliards de paramètres, ce modèle se place dans la catégorie des très grands modèles. Grâce à une architecture de mélange d’experts (MoE, Mixture of Experts) il est plus efficace que des modèles denses de taille similaire, mais il nécessite quand-même un serveur doté de plusieurs cartes graphiques très puissantes pour être hébergé. Ce modèle active 41 milliards de paramètres par génération de jeton. Sa fenêtre de contexte va jusqu’à 256 000 jetons, ce qui permet de traiter de très longs documents.",
+        "fyi": "Ce modèle a été entraîné sur 3 000 GPU Nvidia H200. Il se positionne en concurrence directe avec les modèles semi-ouverts chinois. À sa sortie, il est compétitif avec DeepSeek V3.1, Kimi K2, GLM 4.6 et d’autres références en termes de code et cas d'usages généralistes.",
+        "new": true
       }
     ]
   },
