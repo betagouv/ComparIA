@@ -1102,7 +1102,7 @@
       "distribution": "open-weights",
       "endpoint": {
         "api_base": null,
-        "api_model_id": "deepseek-ai/DeepSeek-V3.2",
+        "api_model_id": "deepseek/deepseek-v3.2",
         "api_type": "openrouter"
       },
       "friendly_size": "XL",
@@ -1122,7 +1122,7 @@
       "reuse": true,
       "simple_name": "DeepSeek V3.2",
       "status": "enabled",
-      "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+      "url": "https://huggingface.co/deepseek/deepseek-v3.2",
       "wh_per_million_token": 47025.74
     },
     "gemini-1.5-pro": {

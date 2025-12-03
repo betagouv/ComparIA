@@ -242,10 +242,10 @@
         "arch": "moe",
         "params": 685,
         "active_params": 37,
-        "url": "https://huggingface.co/deepseek-ai/DeepSeek-V3.2",
+        "url": "https://huggingface.co/deepseek/deepseek-v3.2",
         "endpoint": {
           "api_type": "openrouter",
-          "api_model_id": "deepseek-ai/DeepSeek-V3.2"
+          "api_model_id": "deepseek/deepseek-v3.2"
         },
         "desc": "Très grand modèle conçu pour des tâches complexes : orchestration agentique, génération de code, analyse de documents longs. Cette version est particulièrement forte en utilisation d’outils et peut simuler une phase de raisonnement avant de fournir la réponse finale.",
         "size_desc": "DeepSeek V3.2 est un modèle de très grande taille, nécessitant plusieurs cartes graphiques pour fonctionner. L’architecture de mélange d’experts (MoE, Mixture of Experts) permet néanmoins de n’activer qu’une partie des paramètres, ce qui réduit l’empreinte par rapport à un modèle dense de même taille. La fenêtre de contexte atteint 163 000 jetons, ce qui est utile pour l’analyse de très longs documents ou des bases de code.",
