@@ -52,7 +52,7 @@ jobs:
         id: changes
         run: |
           # Check if any files were modified
-          if git diff --quiet HEAD -- utils/models/generated-models.json frontend/locales/messages/fr.json frontend/src/lib/generated/models.ts; then
+          if git diff --quiet HEAD -- utils/models/generated-models.json utils/models/generated-models-extra-data.json frontend/locales/messages/fr.json frontend/src/lib/generated/models.ts; then
             echo "has_changes=false" >> $GITHUB_OUTPUT
             echo "No changes detected in generated files"
           else
@@ -74,6 +74,7 @@ jobs:
           
           # Add all generated files
           git add utils/models/generated-models.json
+          git add utils/models/generated-models-extra-data.json
           git add frontend/locales/messages/fr.json
           git add frontend/src/lib/generated/models.ts
           
@@ -94,6 +95,7 @@ jobs:
           
           ### Changes:
           - Updated `utils/models/generated-models.json` with latest model rankings and preferences
+          - Updated `utils/models/generated-models-extra-data.json` with latest model extra data
           - Updated `frontend/locales/messages/fr.json` with new model descriptions and license information
           - Updated `frontend/src/lib/generated/models.ts` with TypeScript constants
           
@@ -106,7 +108,8 @@ jobs:
           )
           
           # Check if PR already exists
-          if gh pr list --head rankings-update --json number | jq '. | length' > /dev/null 2>&1; then
+          PR_COUNT=$(gh pr list --head rankings-update --json number | jq '. | length')
+          if [ "$PR_COUNT" -gt 0 ]; then
             # Update existing PR
             PR_NUMBER=$(gh pr list --head rankings-update --json number | jq -r '.[0].number')
             gh pr edit "$PR_NUMBER" --body "$PR_BODY"
