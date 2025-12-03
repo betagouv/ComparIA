@@ -12,9 +12,12 @@ ENV MATOMO_URL=$MATOMO_URL
 
 WORKDIR /app
 RUN npm install -g vite
-COPY ./package.json ./yarn.lock /app
+COPY ./package.json ./yarn.lock /app/
 RUN yarn install
 COPY ./ /app
+
+# graceful degradation: copy models data for the /models endpoint
+# COPY ../utils/models/generated-models.json /app/src/lib/generated-models.json
 
 RUN vite build
 
