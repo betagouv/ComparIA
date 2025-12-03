@@ -949,7 +949,7 @@
       "superficial": 0,
       "instructions_not_followed": 0,
       "total_prefs": 0,
-      "positive_prefs_ratio": 0
+      "positive_prefs_ratio": NaN
     },
     {
       "model_name": "mistral-large-2411",

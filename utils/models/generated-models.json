@@ -1321,7 +1321,7 @@
         "creative": 0,
         "incorrect": 0,
         "instructions_not_followed": 0,
-        "positive_prefs_ratio": 0,
+        "positive_prefs_ratio": -1.0,
         "superficial": 0,
         "total_prefs": 0,
         "useful": 0
