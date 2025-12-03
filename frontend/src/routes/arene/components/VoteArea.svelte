@@ -39,19 +39,21 @@
           <p class="mb-0! font-bold">{m['vote.qualify.question']()}</p>
 
           <LikePanel
+            id="model-{model}"
             show={true}
             kind="like"
             mode="vote"
             model={model.toUpperCase()}
-            selection={form[model].like}
+            bind:selection={form[model].like}
             {disabled}
           />
           <LikePanel
+            id="model-{model}"
             show={true}
             kind="dislike"
             mode="vote"
             model={model.toUpperCase()}
-            selection={form[model].dislike}
+            bind:selection={form[model].dislike}
             {disabled}
           />
 
