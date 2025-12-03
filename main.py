@@ -74,6 +74,7 @@ async def available_models():
 from fastapi import Query
 from typing import Annotated, Optional
 
+from languia.models import CohortRequest
 
 @app.get("/counter", response_class=JSONResponse)
 async def counter(
@@ -102,6 +103,46 @@ async def counter(
         {
             "count": count,
             "objective": objective,
+        }
+    )
+
+
+@app.post("/cohorts", response_class=JSONResponse)
+async def set_cohorts(request: CohortRequest):
+    """
+    Route pour définir la cohorte de ne pas suivre pour une session.
+
+    Args:
+        request: La requête FastAPI
+        session_hash: Identifiant unique de la session
+        cohort: Nom de la cohorte (par défaut "do-not-track")
+
+    Returns:
+        JSONResponse: Statut du suivi de cohorte
+    """
+    from languia.session import set_do_not_track
+
+    if not request.session_hash:
+        return JSONResponse(
+            {
+                "success": False,
+                "error": "session_hash is required",
+                "tracking_info": None,
+            },
+            status_code=400,
+        )
+
+    # Définir le suivi de cohorte
+    success = set_do_not_track(request.session_hash, ",".join(request.cohorts))
+
+    # Vérifier le statut actuel
+    # tracking_info = get_do_not_track(session_hash)
+
+    return JSONResponse(
+        {
+            "success": success,
+            "session_hash": request.session_hash,
+            "tracking_info": ",".join(request.cohorts),
         }
     )
 

@@ -529,3 +529,8 @@ class Conversation(BaseModel):
     total_conv_b_output_tokens: int | None = None
     ip_map: str | None = None
     postprocess_failed: bool = False
+
+
+class CohortRequest(BaseModel):
+    session_hash: str
+    cohorts: list[str]
